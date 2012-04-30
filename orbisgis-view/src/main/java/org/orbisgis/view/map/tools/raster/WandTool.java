@@ -77,12 +77,14 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import org.apache.log4j.Logger;
 import org.xnap.commons.i18n.I18n;
 
 public class WandTool extends AbstractPointTool {
 	private final static String wandLayername = I18n.marktr("orbisgis.org.orbisgis.ui.tools.WandTool.0"); //$NON-NLS-1$
 	private final static DataSourceFactory dsf = ((DataManager) Services
 			.getService(DataManager.class)).getDataSourceFactory();
+        private static Logger UILOGGER = Logger.getLogger("gui."+WandTool.class);
 	private final static GeometryFactory geometryFactory = new GeometryFactory();
 	private final static UniqueSymbolLegend uniqueSymbolLegend = LegendFactory
 			.createUniqueSymbolLegend();
@@ -94,14 +96,14 @@ public class WandTool extends AbstractPointTool {
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
 		try {
-			if ((vc.getSelectedLayers().length == 1)
-					&& vc.getSelectedLayers()[0].isRaster()
-					&& vc.getSelectedLayers()[0].isVisible()) {
-				return true;
-			}
+            if ((vc.getSelectedLayers().length == 1)
+                            && vc.getSelectedLayers()[0].isRaster()
+                            && vc.getSelectedLayers()[0].isVisible()) {
+                    return true;
+            }
 		} catch (DriverException e) {
 		}
-		return false;
+            return false;
 	}
 
 	public boolean isVisible(MapContext vc, ToolManager tm) {
@@ -153,28 +155,28 @@ public class WandTool extends AbstractPointTool {
                         throw new UnsupportedOperationException();
 //			wandLayer.setLegend(uniqueSymbolLegend);
 		} catch (LayerException e) {
-			Services.getErrorManager().error(
+			UILOGGER.error(
 					I18N.tr("orbisgis.org.orbisgis.ui.tools.WandTool.cannotUseWandTool") + e.getMessage(), e); //$NON-NLS-1$
 		} catch (DriverException e) {
-			Services.getErrorManager().error(
+			UILOGGER.error(
 					I18N.tr("orbisgis.org.orbisgis.ui.tools.WandTool.cannotApplyLegend") + e.getMessage(), e); //$NON-NLS-1$
 		} catch (IOException e) {
-			Services.getErrorManager().error(
+			UILOGGER.error(
 					I18N.tr("orbisgis.org.orbisgis.ui.tools.WandTool.errorAccessingGeoraster") + e.getMessage(), e); //$NON-NLS-1$
 		} catch (DriverLoadException e) {
-			Services.getErrorManager().error(
+			UILOGGER.error(
 					I18N.tr("orbisgis.org.orbisgis.ui.tools.WandTool.errorAccessingWandDatasource") //$NON-NLS-1$
 							+ e.getMessage(), e);
 		} catch (NoSuchTableException e) {
-			Services.getErrorManager().error(
+			UILOGGER.error(
 					I18N.tr("orbisgis.org.orbisgis.ui.tools.WandTool.errorAccessingWandDatasource") //$NON-NLS-1$
 							+ e.getMessage(), e);
 		} catch (DataSourceCreationException e) {
-			Services.getErrorManager().error(
+			UILOGGER.error(
 					I18N.tr("orbisgis.org.orbisgis.ui.tools.WandTool.errorAccessingWandDatasource") //$NON-NLS-1$
 							+ e.getMessage(), e);
 		} catch (NonEditableDataSourceException e) {
-			Services.getErrorManager().error(
+			UILOGGER.error(
 					I18N.tr("orbisgis.org.orbisgis.ui.tools.WandTool.errorCommittingWandDatasource") //$NON-NLS-1$
 							+ e.getMessage(), e);
 		}
@@ -217,6 +219,7 @@ public class WandTool extends AbstractPointTool {
 		//PlugInContext.checkTool(this);
 	}
 
+        @Override
 	public String getName() {
 		return I18N.tr("orbisgis.org.orbisgis.ui.tools.WandTool.vectorizeSetPixels"); //$NON-NLS-1$
 	}

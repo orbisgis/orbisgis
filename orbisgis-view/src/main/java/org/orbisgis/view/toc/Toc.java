@@ -28,8 +28,12 @@
  */
 package org.orbisgis.view.toc;
 
-import java.awt.Component;
+import java.awt.BorderLayout;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.tree.TreeSelectionModel;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -40,30 +44,41 @@ import org.xnap.commons.i18n.I18nFactory;
  * @brief The Toc Panel component
  */
 
-
 public class Toc extends JPanel implements DockingPanel  {
     //The UID must be incremented when the serialization is not compatible with the new version of this class
     private static final long serialVersionUID = 1L; 
     protected final static I18n i18n = I18nFactory.getI18n(Toc.class);
     DockingPanelParameters dockingPanelParameters;
     
+    private JTree tree;
     /**
      * Constructor
      */
     public Toc() {
+        super(new BorderLayout());
+        //Set docking parameters
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName("toc");
         //dockingPanelParameters.setDockingArea("toc_map");
         dockingPanelParameters.setTitle(i18n.tr("orbisgis.view.toc.TocTitle"));
         dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
         dockingPanelParameters.setCloseable(false);
+        
+        //Initialise an empty tree
+        tree = new JTree();
+        //Items can be selected freely
+        tree.getSelectionModel().setSelectionMode(
+				TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+        JScrollPane treeView = new JScrollPane(tree);
+        
+        tree.setTransferHandler(new TocTransferHandler());
     }
     
     public DockingPanelParameters getDockingParameters() {
         return dockingPanelParameters;
     }
 
-    public Component getComponent() {
+    public JComponent getComponent() {
         return this;
     }
     

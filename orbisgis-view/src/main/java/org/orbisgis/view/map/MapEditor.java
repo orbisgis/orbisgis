@@ -29,11 +29,17 @@
 package org.orbisgis.view.map;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.map.tool.Automaton;
+import org.orbisgis.view.map.tools.ZoomInTool;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -60,11 +66,33 @@ public class MapEditor extends JPanel implements DockingPanel   {
         dockingPanelParameters.setMinimizable(false);
         dockingPanelParameters.setExternalizable(false);
         dockingPanelParameters.setCloseable(false);
-        
+        //Declare Tools of Map Editors
+        JToolBar toolBar = createToolBar();
+        //For debug purpose, also add the toolbar in the frame
+        add(toolBar, BorderLayout.PAGE_START);
+        //Add the tools in the docking Panel title
+        dockingPanelParameters.setToolBar(toolBar);
         mapControl = new MapControl();
         this.add(mapControl, BorderLayout.CENTER);
     }
 
+    /**
+     * Create a toolbar corresponding to the current state of the Editor
+     * @return 
+     */
+    private JToolBar createToolBar() {
+        JToolBar toolBar = new JToolBar();
+        //Navigation Tools
+        addButton(toolBar,I18N.tr("Zoom in"),new ZoomInTool());
+        return toolBar;
+    }
+    
+    private void addButton(JToolBar toolBar,String name,Automaton automaton) {
+        JToggleButton button = new JToggleButton(name,automaton.getImageIcon());
+        button.setToolTipText(automaton.getTooltip());
+        button.addActionListener(new AutomatonActionListener(automaton));
+        toolBar.add(button);
+    }
     /**
      * Give information on the behaviour of this panel related to the current
      * docking system
@@ -74,11 +102,27 @@ public class MapEditor extends JPanel implements DockingPanel   {
         return dockingPanelParameters;
     }
 
-    /**
-     * Return the content of the view.
-     * @return An awt content to show in this panel
-     */
-    public Component getComponent() {
+    public JComponent getComponent() {
         return this;
+    }
+    /**
+     * The user click on a Map Tool
+     * @param automaton 
+     */
+    public void onToolClick(Automaton automaton) {
+        mapControl.setDefaultTool(automaton);
+    }
+    
+    /**
+     * Internal Listener that store an automaton
+     */
+    private class AutomatonActionListener implements ActionListener {
+        private Automaton automaton;
+        AutomatonActionListener(Automaton automaton) {
+            this.automaton = automaton;
+        }
+        public void actionPerformed(ActionEvent ae) {
+            onToolClick(automaton);
+        }        
     }
 }

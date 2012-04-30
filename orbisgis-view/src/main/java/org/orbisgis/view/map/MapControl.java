@@ -37,22 +37,13 @@
  */
 package org.orbisgis.view.map;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
-import java.awt.event.ContainerEvent;
-import java.awt.event.ContainerListener;
+import com.vividsolutions.jts.geom.Envelope;
+import java.awt.*;
+import java.awt.event.*;
 import java.awt.image.BufferedImage;
-
 import javax.swing.JComponent;
 import javax.swing.Timer;
-
+import org.apache.log4j.Logger;
 import org.gdms.data.ClosedDataSourceException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceListener;
@@ -63,25 +54,14 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.background.DefaultJobId;
-import org.orbisgis.core.edition.EditableElement;
-import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.LayerCollectionEvent;
-import org.orbisgis.core.layerModel.LayerListener;
-import org.orbisgis.core.layerModel.LayerListenerEvent;
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.layerModel.SelectionEvent;
+import org.orbisgis.core.layerModel.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.ToolListener;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
-import org.orbisgis.progress.ProgressMonitor;
-
-
-import com.vividsolutions.jts.geom.Envelope;
-import org.apache.log4j.Logger;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

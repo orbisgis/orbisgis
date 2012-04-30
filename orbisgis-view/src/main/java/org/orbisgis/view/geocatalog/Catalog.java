@@ -29,7 +29,6 @@
 package org.orbisgis.view.geocatalog;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -158,40 +157,40 @@ public class Catalog extends JPanel implements DockingPanel {
         public void onMouseActionOnSourceList(MouseEvent e) {
                 //Manage selection of items before popping up the menu
                 if (e.isPopupTrigger()) { //Right mouse button under linux and windows
-                        int itemUnderMouse = -1; //Item under the position of the mouse event
-                        //Find the Item under the position of the mouse cursor
-                        for (int i = 0; i < sourceListContent.getSize(); i++) {
-                                //If the coordinate of the cursor cover the cell bouding box
-                                if (sourceList.getCellBounds(i, i).contains(e.getPoint())) {
-                                        itemUnderMouse = i;
-                                        break;
-                                }
-                        }
-                        //Retrieve all selected items index
-                        int[] selectedItems = sourceList.getSelectedIndices();
-                        //If there are a list item under the mouse
-                        if ((selectedItems != null) && (itemUnderMouse != -1)) {
-                                //If the item under the mouse was not previously selected
-                                if (!CollectionUtils.contains(selectedItems, itemUnderMouse)) {
-                                        //Control must be pushed to add the list item to the selection
-                                        if (e.isControlDown()) {
-                                                sourceList.addSelectionInterval(itemUnderMouse, itemUnderMouse);
-                                        } else {
-                                                //Unselect the other items and select only the item under the mouse
-                                                sourceList.setSelectionInterval(itemUnderMouse, itemUnderMouse);
-                                        }
-                                }
-                        } else if (itemUnderMouse == -1) {
-                                //Unselect all items
-                                sourceList.clearSelection();
-                        }
+                    int itemUnderMouse = -1; //Item under the position of the mouse event
+                    //Find the Item under the position of the mouse cursor
+                    for (int i = 0; i < sourceListContent.getSize(); i++) {
+                            //If the coordinate of the cursor cover the cell bouding box
+                            if (sourceList.getCellBounds(i, i).contains(e.getPoint())) {
+                                    itemUnderMouse = i;
+                                    break;
+                            }
+                    }
+                    //Retrieve all selected items index
+                    int[] selectedItems = sourceList.getSelectedIndices();
+                    //If there are a list item under the mouse
+                    if ((selectedItems != null) && (itemUnderMouse != -1)) {
+                            //If the item under the mouse was not previously selected
+                            if (!CollectionUtils.contains(selectedItems, itemUnderMouse)) {
+                                    //Control must be pushed to add the list item to the selection
+                                    if (e.isControlDown()) {
+                                            sourceList.addSelectionInterval(itemUnderMouse, itemUnderMouse);
+                                    } else {
+                                            //Unselect the other items and select only the item under the mouse
+                                            sourceList.setSelectionInterval(itemUnderMouse, itemUnderMouse);
+                                    }
+                            }
+                    } else if (itemUnderMouse == -1) {
+                            //Unselect all items
+                            sourceList.clearSelection();
+                    }
                         //Selection are ready, now create the popup menu
                         JPopupMenu popup = makePopupMenu();
                         if (popup != null) {
                                 popup.show(e.getComponent(), e.getX(), e.getY());
-                        }
+            }
 
-                }
+        }
         }
 
         /**
@@ -393,11 +392,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 return dockingParameters;
         }
 
-        /**
-         * Return the content of the view.
-         * @return An awt content to show in this panel
-         */
-        public Component getComponent() {
+        public JComponent getComponent() {
                 return this;
         }
 }

@@ -75,7 +75,6 @@ public abstract class AbstractPolygonTool extends Polygon implements
     }
 
 
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
     @Override
     public void transitionTo_Done(MapContext vc, ToolManager tm)
             throws FinishedAutomatonException, TransitionException {

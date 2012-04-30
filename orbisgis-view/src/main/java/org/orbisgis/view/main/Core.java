@@ -32,9 +32,9 @@ import java.awt.Rectangle;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
 import java.io.File;
-import java.util.Locale;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.docking.DockingManager;
@@ -95,6 +95,12 @@ public class Core {
         UIFactory.setPersistencyDirectory(new File(viewWorkspace.getSIFPath()));
         UIFactory.setTempDirectory(new File(mainContext.getCoreWorkspace().getTempFolder()));
         UIFactory.setDefaultImageIcon(OrbisGISIcon.getIcon("mini_orbisgis"));
+    }
+    /**
+     * Register Services 
+     */
+    private void initServices() {
+        
     }
     /**
      * 

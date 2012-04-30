@@ -22,9 +22,10 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
+import org.apache.log4j.Logger;
 
 public class CompassTool extends Compass {
-
+        private static Logger GUILOGGER = Logger.getLogger("gui."+CompassTool.class);
 	private static final DecimalFormat DECIMAL_FORMAT = new DecimalFormat(
 			"###.###");
 	private Coordinate c1;
@@ -34,8 +35,7 @@ public class CompassTool extends Compass {
 	private AbstractButton button;
 
 	private void showAngle() {
-		OutputManager om = Services.getService(OutputManager.class);
-		om.println("Angle : " + getFormatedAngle(c1, c2, c3), Color.blue);
+            GUILOGGER.info(I18N.tr("Angle : {0}",getFormatedAngle(c1, c2, c3)));
 	}
 
 	private double getAngle(Coordinate c1, Coordinate c2, Coordinate c3) {

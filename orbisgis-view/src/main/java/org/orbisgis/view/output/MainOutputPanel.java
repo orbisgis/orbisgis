@@ -31,6 +31,7 @@ package org.orbisgis.view.output;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import org.orbisgis.view.docking.DockingPanel;
@@ -95,7 +96,7 @@ public class MainOutputPanel extends JPanel implements DockingPanel {
         return dockingParameters;
     }
 
-    public Component getComponent() {
+    public JComponent getComponent() {
         return this;
     }
     

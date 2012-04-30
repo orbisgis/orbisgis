@@ -37,17 +37,19 @@
  */
 package org.orbisgis.view.map.tools;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LinearRing;
+import com.vividsolutions.jts.io.WKTWriter;
 import java.awt.geom.Rectangle2D;
 import java.util.Observable;
-
 import javax.swing.AbstractButton;
-
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gdms.sql.engine.ParseException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
@@ -55,20 +57,12 @@ import org.orbisgis.core.background.BackgroundManager;
 import org.orbisgis.core.background.DefaultJobId;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
-import org.orbisgis.progress.ProgressMonitor;
-
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.io.WKTWriter;
 
 public class InfoTool extends AbstractRectangleTool {
-
-	private static Logger logger = Logger.getLogger(InfoTool.class);
+        private static Logger UILOGGER = Logger.getLogger("gui."+InfoTool.class);
 	AbstractButton button;
 
 	@Override
@@ -92,7 +86,7 @@ public class InfoTool extends AbstractRectangleTool {
 			throws TransitionException {
 		ILayer layer = vc.getSelectedLayers()[0];
 		DataSource sds = layer.getDataSource();
-		String sql = null;
+		String sql;
 		try {
 			GeometryFactory gf = ToolManager.toolsGeometryFactory;
 			double minx = rect.getMinX();
@@ -124,17 +118,17 @@ public class InfoTool extends AbstractRectangleTool {
 
         @Override
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		if (vc.getSelectedLayers().length == 1) {
+            if (vc.getSelectedLayers().length == 1) {
 			try {
-				if (vc.getSelectedLayers()[0].isVectorial()) {
-					return vc.getSelectedLayers()[0].isVisible();
-				}
+                if (vc.getSelectedLayers()[0].isVectorial()) {
+                        return vc.getSelectedLayers()[0].isVisible();
+                }
 			} catch (DriverException e) {
 				return false;
-			}
+            }
 		}
 
-		return false;
+            return false;
 	}
 
         @Override
@@ -158,28 +152,18 @@ public class InfoTool extends AbstractRectangleTool {
                 @Override
 		public void run(ProgressMonitor pm) {
 			try {
-				logger.debug("Info query: " + sql);
-				final DataSource ds = ((DataManager) Services
-						.getService(DataManager.class)).getDataSourceFactory()
-						.getDataSourceFromSQL(sql, pm);
-				if (!pm.isCancelled()) {
-//					try {
-//						Services.getService(InformationManager.class).setContents(ds);
-//					} catch (DriverException e) {
+				UILOGGER.debug("Info query: " + sql);
+                                if (!pm.isCancelled()) {
+                                //					try {
+                                //						Services.getService(InformationManager.class).setContents(ds);
+                                //					} catch (DriverException e) {
 //						Services.getErrorManager().error(
-//								"Cannot show the data", e);
-//					}
+                                //								"Cannot show the data", e);
+                                //					}
 				}
-			} catch (DataSourceCreationException e) {
-				Services.getErrorManager().error("Cannot get the result", e);
-			} catch (DriverException e) {
-				Services.getErrorManager().error("Cannot access the data", e);
-			} catch (DriverLoadException e) {
-				Services.getErrorManager().error("Cannot execute the query", e);
-			} catch (ParseException e) {
-				Services.getErrorManager().error(
-						"Cannot parse the instruction", e);
-			}
+                        } catch (DriverLoadException e) {
+				UILOGGER.error("Cannot execute the query", e);
+                        }
 		}
 	}
 

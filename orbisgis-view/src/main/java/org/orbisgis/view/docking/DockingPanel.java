@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.docking;
 
-import java.awt.Component;
+import javax.swing.JComponent;
 
 /**
  * A panel must implement theses function to return a DockingPanel properties
@@ -49,7 +49,7 @@ public interface DockingPanel {
     
     /**
      * Return the content of the view.
-     * @return An awt content to show in this panel
+     * @return A swing content to show in this panel
      */
-    Component getComponent();
+    JComponent getComponent();
 }

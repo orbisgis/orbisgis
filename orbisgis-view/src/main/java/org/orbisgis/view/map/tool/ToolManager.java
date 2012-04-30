@@ -120,7 +120,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
         public static GeometryFactory toolsGeometryFactory = new GeometryFactory();
         
         protected final static I18n I18N = I18nFactory.getI18n(ToolManager.class);
-        private static Logger LOGGER = Logger.getLogger(ToolManager.class);
+        private static Logger UILOGGER = Logger.getLogger("gui."+ToolManager.class);
         private Automaton currentTool;
         private ILayer activeLayer = null;
         private MapContextListener mapContextListener;
@@ -281,7 +281,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                         leftClickTransition(e, POINT);
                         setTool(oldTool);
                 } catch (TransitionException e1) {
-                        Services.getErrorManager().error(I18N.tr("Cannot set the automaton"), e1); //$NON-NLS-1$
+                        UILOGGER.error(I18N.tr("Cannot set the automaton"), e1); //$NON-NLS-1$
                 }
         }
 
@@ -334,7 +334,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                                 setTool(new PanTool());
                                 leftClickTransition(e, PRESS);
                         } catch (TransitionException e1) {
-                                Services.getErrorManager().error(I18N.tr("Cannot set the automaton"), e1); //$NON-NLS-1$
+                                UILOGGER.error(I18N.tr("Cannot set the automaton"), e1); //$NON-NLS-1$
                         }
                 }
         }
@@ -393,37 +393,37 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                 Graphics2D g2 = (Graphics2D) g;
                 for (int i = 0; i < geomToDraw.size(); i++) {
                         try {
-                                GeometryAndSymbol geomAndSymbol = geomToDraw.get(i);
-                                Geometry geometry = geomAndSymbol.getGeometry();
-                                Symbol symbol = geomAndSymbol.getSymbol();
-                                if (symbol == null) {
-                                        if ((geometry instanceof com.vividsolutions.jts.geom.Point)
-                                                || (geometry instanceof com.vividsolutions.jts.geom.MultiPoint)) {
-                                                symbol = SymbolFactory.createPointSquareSymbol(Color.black,
-                                                        Color.red, 5);
-                                        }
-                                        if ((geometry instanceof LineString)
-                                                || (geometry instanceof MultiLineString)) {
-                                                symbol = SymbolFactory.createLineSymbol(Color.black, 2);
-                                        }
-                                        if ((geometry instanceof Polygon)
-                                                || (geometry instanceof MultiPolygon)) {
-                                                symbol = SymbolFactory.createPolygonSymbol(Color.black);
-                                        }
-                                }
+                    GeometryAndSymbol geomAndSymbol = geomToDraw.get(i);
+                    Geometry geometry = geomAndSymbol.getGeometry();
+                    Symbol symbol = geomAndSymbol.getSymbol();
+                    if (symbol == null) {
+                            if ((geometry instanceof com.vividsolutions.jts.geom.Point)
+                                    || (geometry instanceof com.vividsolutions.jts.geom.MultiPoint)) {
+                                    symbol = SymbolFactory.createPointSquareSymbol(Color.black,
+                                            Color.red, 5);
+                            }
+                            if ((geometry instanceof LineString)
+                                    || (geometry instanceof MultiLineString)) {
+                                    symbol = SymbolFactory.createLineSymbol(Color.black, 2);
+                            }
+                            if ((geometry instanceof Polygon)
+                                    || (geometry instanceof MultiPolygon)) {
+                                    symbol = SymbolFactory.createPolygonSymbol(Color.black);
+                            }
+                    }
 
-                                BufferedImage bi = new BufferedImage(mapTransform.getWidth(),
-                                        mapTransform.getHeight(), BufferedImage.TYPE_INT_ARGB);
-                                Graphics2D graphics = bi.createGraphics();
+                    BufferedImage bi = new BufferedImage(mapTransform.getWidth(),
+                            mapTransform.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D graphics = bi.createGraphics();
 
-                                symbol.draw(graphics, geometry, mapTransform,
-                                        new AllowAllRenderContext());
+                    symbol.draw(graphics, geometry, mapTransform,
+                            new AllowAllRenderContext());
 
-                                g2.drawImage(bi, 0, 0, null);
+                    g2.drawImage(bi, 0, 0, null);
                         } catch (DriverException e) {
                                 Services.getErrorManager().error(
                                         I18N.tr("The legend of the map cannot be drawn correctly"), e); //$NON-NLS-1$
-                        }
+                }
                 }
                 if (adjustedPoint != null) {
                         g2.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND,
@@ -470,14 +470,6 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
          */
         private void drawCursor(Graphics g) {
                 int x, y;
-                if (adjustedPoint == null) {
-                        x = lastMouseX;
-                        y = lastMouseY;
-                } else {
-                        x = (int) adjustedPoint.getX();
-                        y = (int) adjustedPoint.getY();
-                }
-
                 x = 0;
                 y = 0;
 
@@ -492,7 +484,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
         }
 
         private void updateCursor() {
-                Cursor c = null;
+                Cursor c;
                 ImageIcon cursor = getTool().getImageIcon();
                 if (cursor == null) {
                         BufferedImage image = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(32, 32,
@@ -546,7 +538,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
          * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#setUITolerance(int)
          */
         public void setUITolerance(int tolerance) {
-                LOGGER.info("setting uiTolerance: " + tolerance); //$NON-NLS-1$
+                UILOGGER.info("setting uiTolerance: " + tolerance); //$NON-NLS-1$
                 uiTolerance = tolerance;
         }
 
@@ -610,7 +602,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                                                         transition(e.getActionCommand());
                                                         component.repaint();
                                                 } catch (NoSuchTransitionException e1) {
-                                                        Services.getErrorManager().error(
+                                                        UILOGGER.error(
                                                                 I18N.tr("Error in the tool."), e1); //$NON-NLS-1$
                                                 } catch (TransitionException e1) {
                                                         fireToolError(e1);
@@ -636,7 +628,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
          */
         public void setTool(Automaton tool) throws TransitionException {
                 Automaton lastTool = currentTool;
-                LOGGER.info("seting tool " + tool.getClass().getName()); //$NON-NLS-1$
+                UILOGGER.info("setting tool " + tool.getClass().getName()); //$NON-NLS-1$
                 try {
                         if ((currentTool != null) && (activeLayer != null)) {
                                 try {
@@ -730,7 +722,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                                 }
                         }
                 } catch (DriverException e) {
-                        Services.getErrorManager().warning(
+                        UILOGGER.warn(
                                 I18N.tr("Cannot recalculate the handlers"), e); //$NON-NLS-1$
                 }
         }

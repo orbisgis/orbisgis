@@ -32,6 +32,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import javax.swing.Icon;
+import javax.swing.JToolBar;
 
 
 /**
@@ -42,6 +43,9 @@ import javax.swing.Icon;
  * This class is created thanks to the NetBeans user interface.
  * Use the "Add property" NetBeans function to add properties easily.
  * See documentation related to java.beans management systems
+ * 
+ * Using parameter beans instead of implementing docking frame panels
+ * help to extends/update functionnality of application without breaking codes
  * 
  * @warning New properties must be linked with the current docking system {@link OrbisGISView} 
  */
@@ -58,6 +62,27 @@ public class DockingPanelParameters implements Serializable {
     public static final String PROP_EXTERNALIZABLE = "externalizable";
     private boolean closeable = true;
     public static final String PROP_CLOSEABLE = "closeable";
+    private JToolBar toolBar = null;
+    public static final String PROP_TOOLBAR = "toolBar";
+
+    /**
+     * Get the value of toolBar
+     *
+     * @return the value of toolBar
+     */
+    public JToolBar getToolBar() {
+        return toolBar;
+    }
+
+    /**
+     * Set the value of toolBar
+     * @param toolBar new value of toolBar
+     */
+    public void setToolBar(JToolBar toolBar) {
+        JToolBar oldToolBar = this.toolBar;
+        this.toolBar = toolBar;
+        propertySupport.firePropertyChange(PROP_TOOLBAR, oldToolBar, toolBar);
+    }
 
     /**
      * Get the value of closeable

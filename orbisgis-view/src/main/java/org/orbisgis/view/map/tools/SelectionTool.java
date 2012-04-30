@@ -101,12 +101,12 @@ public class SelectionTool extends AbstractSelectionTool {
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
 		if (vc.getSelectedLayers().length == 1) {
 			try {
-				if (vc.getSelectedLayers()[0].isVectorial()) {
-					return vc.getSelectedLayers()[0].isVisible();
-				}
+                    if (vc.getSelectedLayers()[0].isVectorial()) {
+                            return vc.getSelectedLayers()[0].isVisible();
+                    }
 			} catch (DriverException e) {
 				return false;
-			}
+		}
 		}
 
 		return false;

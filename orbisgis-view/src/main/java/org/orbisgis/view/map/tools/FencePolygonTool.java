@@ -66,12 +66,13 @@ import org.orbisgis.view.map.tool.TransitionException;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 import java.io.File;
+import org.apache.log4j.Logger;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata; 
 import org.gdms.driver.gdms.GdmsWriter;
 
 public class FencePolygonTool extends AbstractPolygonTool {
-
+        private static Logger UILOGGER = Logger.getLogger("gui."+FencePolygonTool.class);
         private ILayer layer;
         private String fenceFile = "fence.gdms";
         private final String fenceLayerName = "fence";
@@ -101,17 +102,8 @@ public class FencePolygonTool extends AbstractPolygonTool {
                         layer = createFenceLayer(g);
 
                         vc.getLayerModel().insertLayer(layer, 0);
-
-                        final UniqueSymbolLegend l = LegendFactory.createUniqueSymbolLegend();
-                        final Symbol polSym = SymbolFactory.createPolygonSymbol(
-                                Color.ORANGE, 4, null);
-                        l.setSymbol(polSym);
-                        throw new UnsupportedOperationException();
-//                        layer.setLegend(l);
                 } catch (LayerException e) {
-                        Services.getErrorManager().error(I18N.tr("orbisgis.core.ui.editors.map.tool.fence.use"), e);
-//                } catch (DriverException e) {
-//                        Services.getErrorManager().error(I18N.getString("orbisgis.org.orbisgis.ui.layer.legend.cannotApplyLegend"), e);
+                        UILOGGER.error(I18N.tr("orbisgis.core.ui.editors.map.tool.fence.use"), e);
                 }
         }
 
