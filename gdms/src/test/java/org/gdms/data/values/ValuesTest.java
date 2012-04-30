@@ -114,8 +114,8 @@ public class ValuesTest {
 
 
                 ValueCollection b = ValueFactory.createValue(new Value[0]);
-                assertFalse((b.equals(n)).getAsBoolean());
-                assertFalse((b.notEquals(n)).getAsBoolean());
+                assertTrue((b.equals(n)).isNull());
+                assertTrue(b.notEquals(n).isNull());
 
                 Value v = ValueFactory.createValue(true);
                 v.and(n);

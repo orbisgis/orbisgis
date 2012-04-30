@@ -264,8 +264,6 @@ class DefaultValueCollection extends AbstractValue implements ValueCollection {
                 // all inner values are equal
                 return ValueFactory.createValue(true);
         }
-        
-        
 
         /**
          * Gets the ith value of the array
@@ -300,12 +298,16 @@ class DefaultValueCollection extends AbstractValue implements ValueCollection {
         @Override
         public BooleanValue notEquals(Value value) {
                 if (value instanceof NullValue) {
-                        return ValueFactory.createValue(false);
+                        return ValueFactory.createNullValue();
                 }
 
                 BooleanValue bv = equals(value);
 
-                return ValueFactory.createValue(!bv.getAsBoolean());
+                if (bv.isNull()) {
+                        return bv;
+                } else {
+                        return ValueFactory.createValue(!bv.getAsBoolean());
+                }
         }
 
         @Override
