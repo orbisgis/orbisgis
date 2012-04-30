@@ -45,69 +45,147 @@
 package org.gdms.tool;
 
 import java.io.BufferedReader;
-import java.io.FileReader;
+import java.io.Console;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.Reader;
+import java.util.Arrays;
 
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.driver.DriverException;
-import org.gdms.sql.engine.ParseException;
+import org.gdms.data.DataSourceFinalizationException;
+import org.gdms.data.schema.Metadata;
 import org.gdms.sql.engine.Engine;
+import org.gdms.sql.engine.SQLStatement;
 
 /**
  * Main class for command-line invocation of gdms
+ *
  * @author Antoine Gourlay
  */
 public final class Shell {
 
-        // 03/24/2011 TODO to be improved; this shell isn't terrific...
-
-        private static DataSourceFactory dsf;
-        private static final String EOL = System.getProperty("line.separator");
-
-        private Shell() {
-        }
-
-        private static void execute(String scriptFileName) throws
-                IOException, ParseException, DriverException {
-                Engine.execute(readScriptFile(scriptFileName), dsf);
-        }
-
-        private static String readScriptFile(String scriptFileName) throws IOException {
-                StringBuilder ret = new StringBuilder();
-                BufferedReader in = null;
-                try {
-                        in = new BufferedReader(new FileReader(
-                                scriptFileName));
-                        String line;
-
-                        while ((line = in.readLine()) != null) {
-                                ret.append(line).append(EOL);
+        /**
+         * Entry point.
+         *
+         * @param args
+         */
+        public static void main(String[] args) throws IOException {
+                System.out.println("Gdms 2.0 Console");
+                System.out.println();
+                Console c = System.console();
+                c.readLine();
+                if (c != null) {
+                        DataSourceFactory dsf = new DataSourceFactory();
+                        interactive(c.reader(), c.writer(), dsf);
+                        try {
+                                dsf.freeResources();
+                        } catch (DataSourceFinalizationException ex) {
+                                System.out.print("Error : ");
+                                System.out.println(ex.getLocalizedMessage());
                         }
 
-                } finally {
-                        if (in != null) {
-                                in.close();
-                        }
+                } else {
+                        System.out.println("No interactive console. Exiting.");
                 }
-
-                return ret.toString();
         }
 
         /**
-         * Entry point.
-         * @param args
-         * @throws IOException
-         * @throws ParseException
+         * Interactive entry point.
+         *
+         * @param reader input
+         * @param writer output
+         * @param dsf DSF
+         * @throws IOException if there is an error reading the input
          */
-        public static void main(String[] args) throws IOException, ParseException, DriverException {
+        public static void interactive(Reader reader, PrintWriter writer, DataSourceFactory dsf) throws IOException {
+                BufferedReader bu = new BufferedReader(reader);
 
-                if (args != null && args.length > 0) {
-                        String script = args[0];
+                writer.println("Interactive console");
+                writer.println("Type 'help' for available commands,");
+                writer.println("     'exit' to quit.");
+                writer.println("SQL can be execute with the 'sql' command.");
+                writer.println("Example: 'sql SELECT 42;'");
 
-                        if (script != null) {
-                                dsf = new DataSourceFactory();
-                                execute(script);
+                while (true) {
+                        writer.write("> ");
+                        String line = bu.readLine();
+                        if (line.startsWith("sql")) {
+                                int idx = line.indexOf(" ");
+                                if (idx == -1 || idx == line.length() - 1) {
+                                        writer.println("Error with command 'sql': there"
+                                                + " must be some SQL statement after 'sql'.");
+                                        continue;
+                                }
+                                String sql = line.substring(idx + 1);
+                                SQLStatement[] s = null;
+                                try {
+                                        s = Engine.parse(sql, DataSourceFactory.getDefaultProperties());
+                                } catch (Exception e) {
+                                        writer.format("Error: %s", e.getLocalizedMessage());
+                                        writer.println();
+                                        continue;
+                                }
+                                if (s.length != 1) {
+                                        writer.println("Error: there must be only one statement.");
+                                        continue;
+                                }
+                                SQLStatement st = s[0];
+                                st.setDataSourceFactory(dsf);
+                                try {
+                                        st.prepare();
+                                } catch (Exception e) {
+                                        writer.format("Error: %s", e.getLocalizedMessage());
+                                        writer.println();
+                                        continue;
+                                }
+                                Metadata m = st.getResultMetadata();
+                                if (m == null) {
+                                        try {
+                                                st.execute();
+                                                st.cleanUp();
+                                        } catch (Exception e) {
+                                                writer.println("Error: there must be only one statement.");
+                                                continue;
+                                        }
+                                } else {
+                                        try {
+                                                DataSource ds = dsf.getDataSource(st, DataSourceFactory.DEFAULT, null);
+                                                ds.open();
+                                                int colCount = ds.getFieldCount();
+                                                writer.print(ds.getFieldName(0));
+                                                for (int i = 1; i < colCount; i++) {
+                                                        writer.print(", ");
+                                                        writer.print(ds.getFieldName(i));
+                                                }
+                                                writer.print('\n');
+                                                final long rC = ds.getRowCount();
+                                                int stop = rC > 20 ? 20 : (int) rC;
+                                                for (int i = 0; i < stop; i++) {
+                                                        writer.println(Arrays.toString(ds.getRow(i)));
+                                                }
+                                                if (stop < rC) {
+                                                        writer.format("and %d more rows.", rC - stop);
+
+                                                }
+                                                ds.close();
+                                        } catch (Exception e) {
+                                                writer.format("Error: %s", e.getLocalizedMessage());
+                                                writer.println();
+                                                continue;
+                                        }
+                                }
+                        } else if (line.startsWith("exit")) {
+                                writer.println("Exiting.");
+                                break;
+                        } else if (line.startsWith("help")) {
+                                writer.println("");
+                        } else {
+                                writer.println("Unknown command!");
                         }
                 }
+        }
+
+        private Shell() {
         }
 }
