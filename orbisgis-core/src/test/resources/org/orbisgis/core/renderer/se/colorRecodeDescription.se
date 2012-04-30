@@ -14,6 +14,7 @@
 			<ns2:Keywords>
 				<ns2:Keyword xml:lang="fr">salut</ns2:Keyword>
 				<ns2:Keyword xml:lang="fr">Bonjour</ns2:Keyword>
+				<ns2:Keyword xml:lang="de">Hallo</ns2:Keyword>
 				<ns2:Type codeSpace="http://www.orbisgis.org">politesse</ns2:Type>
 			</ns2:Keywords>
 			<ns2:Abstract xml:lang="de">Ich habe guten Tag gesagt !</ns2:Abstract>

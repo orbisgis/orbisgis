@@ -4,8 +4,6 @@
  */
 package org.orbisgis.core.renderer.se.common;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Locale;
 import java.util.SortedSet;
@@ -14,19 +12,21 @@ import net.opengis.ows._2.CodeType;
 import net.opengis.ows._2.KeywordsType;
 import net.opengis.ows._2.LanguageStringType;
 import net.opengis.ows._2.ObjectFactory;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.label.StyledText;
 
 /**
  * Keywords are list of {@code LocalizedText}, associated with an optional
  * type. They are used to describe some objects (Rule, Style...).</p>
  * <p>A {@code Keywords} can be associated to a code type and a code space. This
  * way, it becomes possible to associate a dictionary, thesaurus or authority to
- * the list of keywords contained in the {@code Keywords} instance. Note that
+ * the list of keywords contained in the {@code Keywords} instance.</p>
+ * <p>Note that
  * the authority is defined only with the code space (returned by the {@link
- * Keywords#getSpace() } method).
+ * Keywords#getSpace() } method). The URI is not stored here. As it is used to
+ * distinguish {@code Keywords} instances, this would duplicate data.
  * @author alexis
  */
-public class Keywords implements Comparable<Keywords>{
+public class Keywords {
 
     /*
      * We can't use a HashMap<Locale, String> here, as we have to be able to
@@ -34,8 +34,7 @@ public class Keywords implements Comparable<Keywords>{
      */
     private TreeSet<LocalizedText> keywords;
     private String type;
-    private URI space;
-    LocaleAndTextComparator comp=new LocaleAndTextComparator();
+    private LocaleAndTextComparator comp=new LocaleAndTextComparator();
 
     /**
      * Builds a new empty {@code Keywords} instance.
@@ -48,7 +47,7 @@ public class Keywords implements Comparable<Keywords>{
      * Build a new {@code Keywords} instance from the given JAXB object.
      * @param kt
      */
-    public Keywords(KeywordsType kt) throws InvalidStyle{
+    public Keywords(KeywordsType kt) {
         this();
         if(kt.getKeyword() != null){
             for(LanguageStringType k : kt.getKeyword()){
@@ -56,34 +55,9 @@ public class Keywords implements Comparable<Keywords>{
             }
         }
         if(kt.getType() != null){
-            try {
-                CodeType ct = kt.getType();
-                type = ct.getValue();
-                String sp = ct.getCodeSpace();
-                if(sp != null){
-                    space = new URI(sp);
-                }
-            } catch (URISyntaxException ex) {
-                throw new InvalidStyle("The provided URI is not valid.", ex);
-            }
+            CodeType ct = kt.getType();
+            type = ct.getValue();
         }
-    }
-
-    /**
-     * Gets the code space where the keywords contained in {@code this} are.
-     * declared.
-     * @return
-     */
-    public URI getSpace() {
-        return space;
-    }
-
-    /**
-     * Sets the code space where the keywords contained in {@code this} are.
-     * @param space
-     */
-    public void setSpace(URI space) {
-        this.space = space;
     }
 
     /**
@@ -116,7 +90,7 @@ public class Keywords implements Comparable<Keywords>{
      * @param l
      * @return
      */
-    public SortedSet<LocalizedText> getKeyworkds(Locale l){
+    public SortedSet<LocalizedText> getKeywords(Locale l){
         SortedSet<LocalizedText> st = keywords.tailSet(new LocalizedText("", l));
         TreeSet ret = new TreeSet(comp);
         for (LocalizedText localizedText : st) {
@@ -134,7 +108,7 @@ public class Keywords implements Comparable<Keywords>{
      * instance.
      * @return
      */
-    public SortedSet<LocalizedText> getKeyworkds(){
+    public SortedSet<LocalizedText> getKeywords(){
         return keywords;
     }
 
@@ -152,35 +126,9 @@ public class Keywords implements Comparable<Keywords>{
         if(type != null && !type.isEmpty()){
             CodeType ct = of.createCodeType();
             ct.setValue(type);
-            if(space != null){
-                ct.setCodeSpace(space.toString());
-            }
             ret.setType(ct);
         }
         return ret;
-    }
-
-    /**
-     * We make a comparison based on the inner URI, considering that {@code
-     * null} is inferior to any instanciated URI.
-     * @param o
-     * @return
-     */
-    @Override
-    public int compareTo(Keywords o) {
-        if(space == null){
-            if(o.space == null){
-                return 0;
-            } else {
-                return -1;
-            }
-        } else {
-            if(o.space == null){
-                return 1;
-            } else {
-                return space.compareTo(o.space);
-            }
-        }
     }
 
 }

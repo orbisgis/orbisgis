@@ -4,11 +4,10 @@
  */
 package org.orbisgis.core.renderer.se.common;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
-import net.opengis.ows._2.DescriptionType;
-import net.opengis.ows._2.KeywordsType;
-import net.opengis.ows._2.LanguageStringType;
-import net.opengis.ows._2.ObjectFactory;
+import net.opengis.ows._2.*;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 /**
@@ -18,10 +17,16 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
  * abstract per language, we use a {@code HashMap} to manage them. Keywords are
  * stored in a dedicated class.</p>
  * <p>According to 0GC 06-121r9, there shall be at most one title and/or
- * abstract per langugage. However, they may be many keywords associated to the
+ * abstract per language. However, they may be many keywords associated to the
  * same language in a {@code Keywords} instance. In a {@code Description}
  * instance, there shall be at most one {@code Keywords} instance associated
- * to an authority.
+ * to an authority.</p>
+ * <p>Authorities are defined only considering the URI contained in the {@code
+ * codeSpace} attribute of the {@code CodeType} element contained in {@code
+ * Keywords}, according to 0GC 06-121r9. As there shall not be more than one
+ * {@code Keywords} instance associated to a single authority, we map keywords
+ * on this authority, ie only on the {@code URI}. The {@code CodeType} is not
+ * considered meaningful in this mapping.
  * @author alexis
  * @see Keywords
  */
@@ -29,7 +34,7 @@ public class Description {
 
     private HashMap<Locale, String> titles;
     private HashMap<Locale, String> abstractTexts;
-    private TreeSet<Keywords> keywords;
+    private HashMap<URI,Keywords> keywords;
 
     /**
      * Builds a new, empty, {@code Description}.
@@ -37,7 +42,7 @@ public class Description {
     public Description(){
         titles = new HashMap<Locale, String>();
         abstractTexts = new HashMap<Locale, String>();
-        keywords = new TreeSet<Keywords>();
+        keywords = new  HashMap<URI,Keywords>();
     }
 
     /**
@@ -66,9 +71,28 @@ public class Description {
         List<KeywordsType> lkt = dt.getKeywords();
         if(lkt != null){
             for(KeywordsType kt : lkt){
-                keywords.add(new Keywords(kt));
+                putKeywordsType(kt);
             }
         }
+    }
+
+    private void putKeywordsType(KeywordsType kt) throws InvalidStyle {
+        CodeType ct = kt.getType();
+        if(ct!=null){
+            String sp = ct.getCodeSpace();
+            if(sp != null){
+                try{
+                    keywords.put(new URI(kt.getType().getCodeSpace()),new Keywords(kt));
+                } catch (URISyntaxException ex) {
+                    throw new InvalidStyle("The provided URI is not valid.", ex);
+                }
+            } else {
+                keywords.put(null,new Keywords(kt));
+            }
+        } else {
+            keywords.put(null,new Keywords(kt));
+        }
+
     }
 
     /**
@@ -85,8 +109,37 @@ public class Description {
      * Description}.
      * @return
      */
-    public TreeSet<Keywords> getKeywords() {
+    public HashMap<URI,Keywords> getKeywords() {
         return keywords;
+    }
+
+    /**
+     * Gets the set of keywords associated to this {@code URI}.
+     * @param uri
+     * @return
+     */
+    public Keywords getKeywords(URI uri){
+        return keywords.get(uri);
+    }
+
+    /**
+     * Sets the set of keywords associated to this {@code URI}.
+     * @param uri
+     * @param keys
+     */
+    public void putKeywords(URI uri, Keywords keys){
+        keywords.put(uri, keys);
+    }
+
+    /**
+     * Removes the set of keywords associated to this {@code URI}.
+     * @param uri
+     * @return
+     * The {@code Keywords} instance that has just been removed from the map
+     * of Keywords.
+     */
+    public Keywords removeKeywords(URI uri){
+        return keywords.remove(uri);
     }
 
     /**
@@ -163,8 +216,13 @@ public class Description {
             abs.add(lst);
         }
         List<KeywordsType> kts = dt.getKeywords();
-        for(Keywords kw : keywords){
-            kts.add(kw.getJAXBType());
+        Set<Map.Entry<URI, Keywords>> registered = keywords.entrySet();
+        for(Map.Entry<URI, Keywords> entry : registered){
+            KeywordsType kwjt = entry.getValue().getJAXBType();
+            if(entry.getKey() != null && entry.getValue().getType() != null){
+                kwjt.getType().setCodeSpace(entry.getKey().toString());
+            }
+            kts.add(kwjt);
         }
         return dt;
     }

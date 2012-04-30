@@ -15,12 +15,11 @@ import org.orbisgis.core.renderer.se.Style;
  *
  * @author alexis
  */
-public class DescriptionTest  extends AbstractTest {
+public class DescriptionTest extends AbstractTest {
 
     private String desc = "src/test/resources/org/orbisgis/core/renderer/se/colorRecodeDescription.se";
 
     public Description getDescription() throws Exception {
-        assertTrue(true);
         Style fts = new Style(null, desc);
         //We retrieve the Rule we want
         return fts.getRules().get(0).getDescription();
