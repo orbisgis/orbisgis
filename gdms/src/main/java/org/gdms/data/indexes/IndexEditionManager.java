@@ -47,6 +47,7 @@ package org.gdms.data.indexes;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.orbisgis.progress.NullProgressMonitor;
@@ -101,14 +102,14 @@ public class IndexEditionManager {
         public void commit(boolean rebuildIndexes) throws DriverException {
                 if (modifiedIndexes != null) {
                         if (rebuildIndexes) {
-                                String[] indexedFieldNames = new String[modifiedIndexes.size()];
+                                String[][] indexedFieldNames = new String[modifiedIndexes.size()][];
                                 for (int i = 0; i < modifiedIndexes.size(); i++) {
-                                        indexedFieldNames[i] = modifiedIndexes.get(i).getFieldName();
+                                        indexedFieldNames[i] = modifiedIndexes.get(i).getFieldNames();
                                 }
-                                for (String indexFieldName : indexedFieldNames) {
+                                for (String[] indexFieldNames : indexedFieldNames) {
                                         try {
-                                                im.deleteIndex(ds.getName(), indexFieldName);
-                                                im.buildIndex(ds.getName(), indexFieldName,
+                                                im.deleteIndex(ds.getName(), indexFieldNames);
+                                                im.buildIndex(ds.getName(), indexFieldNames,
                                                         new NullProgressMonitor());
                                         } catch (NoSuchTableException e) {
                                                 throw new DriverException("Cannot rebuild index", e);
@@ -174,7 +175,7 @@ public class IndexEditionManager {
                                         File copied = new File(ds.getDataSourceFactory().getTempFile());
                                         FileUtils.copy(indexFile, copied);
                                         DataSourceIndex cloned = toClone[i].getClass().newInstance();
-                                        cloned.setFieldName(toClone[i].getFieldName());
+                                        cloned.setFieldNames(toClone[i].getFieldNames());
                                         cloned.setFile(copied);
                                         cloned.load();
                                         toClone[i].load();
@@ -192,12 +193,12 @@ public class IndexEditionManager {
                         indexManagerListener = new IndexManagerListener() {
 
                                 @Override
-                                public void indexCreated(String source, String field,
+                                public void indexCreated(String source, String[] fields,
                                         String indexId, IndexManager im, ProgressMonitor pm)
                                         throws IndexException {
                                         try {
                                                 if (source.equals(ds.getDataSourceFactory().getSourceManager().getMainNameFor(ds.getName()))) {
-                                                        addIndexWithDataInEdition(field, indexId, im, pm);
+                                                        addIndexWithDataInEdition(fields, indexId, im, pm);
                                                 }
                                         } catch (NoSuchTableException e) {
                                                 throw new IndexException(e);
@@ -205,13 +206,13 @@ public class IndexEditionManager {
                                 }
 
                                 @Override
-                                public void indexDeleted(String source, String field,
+                                public void indexDeleted(String source, String[] fields,
                                         String indexId, IndexManager im) throws IndexException {
                                         try {
                                                 if (source.equals(ds.getDataSourceFactory().getSourceManager().getMainNameFor(ds.getName()))) {
                                                         DataSourceIndex toDelete = null;
                                                         for (DataSourceIndex index : modifiedIndexes) {
-                                                                if (index.getFieldName().equals(field)) {
+                                                                if (Arrays.equals(index.getFieldNames(), fields)) {
                                                                         toDelete = index;
                                                                         break;
                                                                 }
@@ -229,11 +230,11 @@ public class IndexEditionManager {
                 return modifiedIndexes.toArray(new DataSourceIndex[modifiedIndexes.size()]);
         }
 
-        private void addIndexWithDataInEdition(String fieldName, String indexId,
+        private void addIndexWithDataInEdition(String[] fieldNames, String indexId,
                 IndexManager im, ProgressMonitor pm) throws IndexException {
                 DataSourceIndex index = im.instantiateIndex(indexId);
                 index.setFile(new File(ds.getDataSourceFactory().getTempFile()));
-                index.setFieldName(fieldName);
+                index.setFieldNames(fieldNames);
                 index.buildIndex(ds.getDataSourceFactory(), ds, pm);
                 index.save();
                 modifiedIndexes.add(index);
@@ -249,7 +250,7 @@ public class IndexEditionManager {
         public int[] query(IndexQuery indexQuery) throws IndexException, IndexQueryException {
                 DataSourceIndex[] indexes = getDataSourceIndexes();
                 for (DataSourceIndex dataSourceIndex : indexes) {
-                        if (dataSourceIndex.getFieldName().equals(indexQuery.getFieldName())) {
+                        if (Arrays.equals(dataSourceIndex.getFieldNames(), indexQuery.getFieldNames())) {
                                 return dataSourceIndex.query(indexQuery);
                         }
                 }

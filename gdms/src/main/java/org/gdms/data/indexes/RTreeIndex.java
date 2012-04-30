@@ -64,25 +64,25 @@ import org.gdms.driver.DriverException;
 
 public class RTreeIndex implements DataSourceIndex<Envelope> {
 
-        private String fieldName;
+        private String[] fieldNames;
         private DiskRTree index;
         private File indexFile;
 
         @Override
-        public void setFieldName(String fieldName) {
-                this.fieldName = fieldName;
+        public void setFieldNames(String[] fieldNames) {
+                this.fieldNames = fieldNames;
         }
 
         @Override
         public void buildIndex(DataSourceFactory dsf, DataSet dataSource,
                 ProgressMonitor pm) throws IndexException {
                 try {
-                        int fieldId = dataSource.getMetadata().getFieldIndex(fieldName);
+                        int fieldId = dataSource.getMetadata().getFieldIndex(fieldNames[0]);
                         if (fieldId == -1) {
-                                throw new IndexException("Cannot find the field " + fieldName + " to index");
+                                throw new IndexException("Cannot find the field " + fieldNames + " to index");
                         }
                         if ((dataSource.getMetadata().getFieldType(fieldId).getTypeCode() & MetadataUtilities.ANYGEOMETRY) == 0) {
-                                throw new IndexException(fieldName + " is not spatial");
+                                throw new IndexException(fieldNames + " is not spatial");
                         }
                         long rowCount = dataSource.getRowCount();
                         pm.startTask("Building index", rowCount);
@@ -133,8 +133,8 @@ public class RTreeIndex implements DataSourceIndex<Envelope> {
         }
 
         @Override
-        public String getFieldName() {
-                return fieldName;
+        public String[] getFieldNames() {
+                return fieldNames;
         }
 
         @Override

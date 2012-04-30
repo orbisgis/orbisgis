@@ -55,7 +55,7 @@ import org.orbisgis.progress.ProgressMonitor
  * @author Antoine Gourlay
  * @since 0.1
  */
-class DropIndexCommand(table: String, column: String) extends Command with OutputCommand {
+class DropIndexCommand(table: String, columns: Seq[String]) extends Command with OutputCommand {
   
   override def doPrepare = {
     if (!dsf.getSourceManager.exists(table)) {
@@ -64,7 +64,7 @@ class DropIndexCommand(table: String, column: String) extends Command with Outpu
   }
 
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
-    dsf.getIndexManager.deleteIndex(table, column)
+    dsf.getIndexManager.deleteIndex(table, columns toArray)
 
     null
   }

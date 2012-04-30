@@ -55,7 +55,7 @@ import org.orbisgis.progress.ProgressMonitor
  * @author Antoine Gourlay
  * @since 0.1
  */
-class CreateIndexCommand(table: String, column: String) extends Command with OutputCommand {
+class CreateIndexCommand(table: String, columns: Seq[String]) extends Command with OutputCommand {
   
   override def doPrepare = {
     if (!dsf.getSourceManager.exists(table)) {
@@ -64,7 +64,7 @@ class CreateIndexCommand(table: String, column: String) extends Command with Out
   }
 
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
-    dsf.getIndexManager.buildIndex(table, column, null)
+    dsf.getIndexManager.buildIndex(table, columns toArray, null)
 
     null
   }

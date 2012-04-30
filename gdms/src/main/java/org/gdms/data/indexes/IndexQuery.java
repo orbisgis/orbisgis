@@ -55,7 +55,7 @@ public interface IndexQuery {
 	 *
 	 * @return the field name
 	 */
-	String getFieldName();
+	String[] getFieldNames();
 
 	/**
 	 * Returns true if the result of a query to the index return only values

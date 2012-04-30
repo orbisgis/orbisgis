@@ -171,7 +171,7 @@ case class CustomQueryScan(customQuery: String, exp: Seq[Expression],
 case class IndexQueryScan(table: String, alias: Option[String] = None, query: IndexQuery = null) extends Operation {
   val children = Nil
   override def toString = "IndexQueryScan of(" + table + ") " + alias + {if (query != null) {
-      " on " + query.getFieldName + (if (query.isStrict) " strict" else "")
+      " on " + query.getFieldNames + (if (query.isStrict) " strict" else "")
     } else ""}
 }
 
@@ -589,9 +589,9 @@ case class DropViews(names: Seq[String], ifExists: Boolean) extends Operation {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class CreateIndex(table: String, column: String) extends Operation {
+case class CreateIndex(table: String, columns: Seq[String]) extends Operation {
   def children = Nil
-  override def toString = "CreateIndex on(" + table + ", " + column + ")"
+  override def toString = "CreateIndex on(" + table + ", " + columns + ")"
 }
 
 /**
@@ -602,9 +602,9 @@ case class CreateIndex(table: String, column: String) extends Operation {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class DropIndex(table: String, column: String) extends Operation {
+case class DropIndex(table: String, columns: Seq[String]) extends Operation {
   def children = Nil
-  override def toString = "DropIndex on(" + table + ", " + column + ")"
+  override def toString = "DropIndex on(" + table + ", " + columns + ")"
 }
 
 /**

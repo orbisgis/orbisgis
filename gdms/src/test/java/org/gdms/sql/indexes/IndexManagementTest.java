@@ -62,6 +62,10 @@ import org.gdms.source.SourceManager;
 import static org.junit.Assert.*;
 
 import org.gdms.TestResourceHandler;
+import org.gdms.data.DataSource;
+import org.gdms.data.indexes.DefaultAlphaQuery;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 
 public class IndexManagementTest extends TestBase {
 
@@ -126,5 +130,33 @@ public class IndexManagementTest extends TestBase {
                 String sql = "DROP INDEX ON source2(gid);";
                 dsf.executeSQL(sql);
                 fail();
+        }
+
+        @Test
+        public void testMultipleFieldIndex() throws Exception {
+                sm.register("landc", new File(TestResourceHandler.TESTRESOURCES, "landcover2000.shp"));
+                dsf.executeSQL("CREATE INDEX ON landc(runoff_win, runoff_sum);");
+                DefaultAlphaQuery al = new DefaultAlphaQuery(new String[]{"runoff_win", "runoff_sum"}, ValueFactory.createValue(new Value[]{
+                        ValueFactory.createValue(0.05), ValueFactory.createValue(0.4)
+                }));
+                int[] i = im.queryIndex("landc", al);
+                DataSource d = dsf.getDataSourceFromSQL("SELECT COUNT(*) FROM landc WHERE runoff_win = 0.05  AND runoff_sum = 0.4 ;");
+                d.open();
+                assertEquals(i.length, d.getInt(0, 0));
+                d.close();
+        }
+        
+        @Test
+        public void testMultipleFieldIndexRangeQuery() throws Exception {
+                sm.register("landc", new File(TestResourceHandler.TESTRESOURCES, "landcover2000.shp"));
+                dsf.executeSQL("CREATE INDEX ON landc(runoff_win, runoff_sum);");
+                DefaultAlphaQuery al = new DefaultAlphaQuery(new String[]{"runoff_win", "runoff_sum"}, ValueFactory.createValue(new Value[]{
+                        ValueFactory.createValue(0.05), ValueFactory.createValue(0.4)
+                }), true, null, false);
+                int[] i = im.queryIndex("landc", al);
+                DataSource d = dsf.getDataSourceFromSQL("SELECT COUNT(*) FROM landc WHERE runoff_win > 0.05  OR (runoff_win = 0.05 AND runoff_sum >= 0.4) ;");
+                d.open();
+                assertEquals(i.length, d.getInt(0, 0));
+                d.close();
         }
 }

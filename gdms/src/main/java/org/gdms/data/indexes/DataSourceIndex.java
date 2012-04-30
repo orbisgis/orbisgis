@@ -91,18 +91,18 @@ public interface DataSourceIndex<Q> extends AdHocIndex<Q> {
                 throws IndexException;
 
         /**
-         * Gets the field this index is built on
+         * Gets the fields this index is built on
          *
          * @return
          */
-        String getFieldName();
+        String[] getFieldNames();
 
         /**
-         * Sets the name of the field to index
+         * Sets the name(s) of the field to index
          *
-         * @param fieldName
+         * @param fieldNames
          */
-        void setFieldName(String fieldName);
+        void setFieldNames(String[] fieldNames);
 
         /**
          * Indexes the specified field of the specified source

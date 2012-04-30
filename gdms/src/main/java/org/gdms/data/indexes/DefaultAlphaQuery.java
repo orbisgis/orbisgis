@@ -57,19 +57,28 @@ public class DefaultAlphaQuery implements AlphaQuery {
         private boolean minIncluded;
         private boolean maxIncluded;
         private Value max;
-        private String fieldName;
+        private String[] fieldNames;
 
+        public DefaultAlphaQuery(String[] fieldNames, Value exactValue) {
+                this(fieldNames, exactValue, true, exactValue, true);
+        }
+        
         public DefaultAlphaQuery(String fieldName, Value exactValue) {
                 this(fieldName, exactValue, true, exactValue, true);
         }
-
+        
         public DefaultAlphaQuery(String fieldName, Value min, boolean minIncluded,
+                Value max, boolean maxIncluded) {
+                this(new String[] { fieldName }, min, minIncluded, max, maxIncluded);
+        }
+
+        public DefaultAlphaQuery(String[] fieldNames, Value min, boolean minIncluded,
                 Value max, boolean maxIncluded) {
                 this.min = min;
                 this.minIncluded = minIncluded;
                 this.max = max;
                 this.maxIncluded = maxIncluded;
-                this.fieldName = fieldName;
+                this.fieldNames = fieldNames;
 
                 if (this.min == null) {
                         this.min = ValueFactory.createNullValue();
@@ -81,8 +90,8 @@ public class DefaultAlphaQuery implements AlphaQuery {
         }
 
         @Override
-        public String getFieldName() {
-                return fieldName;
+        public String[] getFieldNames() {
+                return fieldNames;
         }
 
         @Override

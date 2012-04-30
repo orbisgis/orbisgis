@@ -53,12 +53,12 @@ import com.vividsolutions.jts.geom.Envelope;
 public class DefaultSpatialIndexQuery implements SpatialIndexQuery {
 
         private Envelope area;
-        private String fieldName;
+        private String[] fieldNames;
 
         public DefaultSpatialIndexQuery(Envelope area, String fieldName) {
                 super();
                 this.area = area;
-                this.fieldName = fieldName;
+                this.fieldNames = new String[] {fieldName};
         }
 
         @Override
@@ -67,8 +67,8 @@ public class DefaultSpatialIndexQuery implements SpatialIndexQuery {
         }
 
         @Override
-        public String getFieldName() {
-                return fieldName;
+        public String[] getFieldNames() {
+                return fieldNames;
         }
 
         @Override

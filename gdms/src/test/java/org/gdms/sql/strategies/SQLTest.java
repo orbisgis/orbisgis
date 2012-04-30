@@ -1041,8 +1041,10 @@ public class SQLTest extends TestBase {
                 String resource = SHPTABLE;
                 dsf.executeSQL("create index on " + resource + " (the_geom);");
                 dsf.executeSQL("create index on " + resource + " (runoff_win);");
+                dsf.executeSQL("create index on " + resource + " (runoff_win, runoff_sum);");
                 dsf.executeSQL("drop index on " + resource + " (the_geom);");
                 dsf.executeSQL("drop index on " + resource + " (runoff_win);");
+                dsf.executeSQL("drop index on " + resource + " (runoff_win, runoff_sum);");
         }
 
         @Test

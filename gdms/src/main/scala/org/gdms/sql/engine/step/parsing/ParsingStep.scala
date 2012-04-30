@@ -46,9 +46,7 @@ import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.util.Properties
 import org.antlr.runtime.CommonTokenStream
-import org.antlr.runtime.EarlyExitException
 import org.antlr.runtime.MismatchedTokenException
-import org.antlr.runtime.NoViableAltException
 import org.antlr.runtime.RecognitionException
 import org.antlr.runtime.tree.CommonTree
 import org.gdms.sql.engine.ANTLRCaseInsensitiveInputStream

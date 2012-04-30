@@ -71,8 +71,8 @@ class IndexQueryScanCommand(table: String, alias: Option[String] = None, var que
 
   protected def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     if (query != null) {
-      if (!dsf.getIndexManager.isIndexed(ds, query.getFieldName)) {
-        dsf.getIndexManager.buildIndex(ds, query.getFieldName, pm.getOrElse(new NullProgressMonitor))
+      if (!dsf.getIndexManager.isIndexed(ds, query.getFieldNames)) {
+        dsf.getIndexManager.buildIndex(ds, query.getFieldNames, pm.getOrElse(new NullProgressMonitor))
       }
       
       val a = dsf.getIndexManager.queryIndex(ds, query)

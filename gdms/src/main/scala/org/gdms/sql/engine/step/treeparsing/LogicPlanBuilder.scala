@@ -101,13 +101,13 @@ object LogicPlanBuilder {
           // union
           var union: Operation = null
           
-          getChilds(node).foreach { t => t.getType match {
+          getChildren(node).foreach { t => t.getType match {
               // everything between SELECT and FROM
               case T_COLUMN_LIST => {
                   // AST:
                   // ^(T_COLUMN_LIST ^(T_COLUMN_ITEM ...) ^(T_COLUMN_ITEM ...) ...)
                   
-                  val exprs = getChilds(t).map { tr =>
+                  val exprs = getChildren(t).map { tr =>
                     (parseExpression(tr.getChild(0)), if (tr.getChildCount == 1) None else Some(tr.getChild(1).getText))
                   } ;
                   projexpr = exprs
@@ -122,7 +122,7 @@ object LogicPlanBuilder {
                   //    | ^(T_TABLE_VALUES multiple_insert_value_list  alias)
                   //    | ^(T_JOIN table_ref ^(INNER_JOIN/OUTER_JOIN ... )+)
                   //    )
-                  val c = getChilds(t)
+                  val c = getChildren(t)
                   
                   val (joins, normal) = c.partition(_.getType == T_JOIN)
                   
@@ -138,7 +138,7 @@ object LogicPlanBuilder {
                   
                   var ends: List[Operation] = Nil
                   joins foreach {join =>
-                    val childs = getChilds(join)
+                    val childs = getChildren(join)
                     val table = parseTableRef(childs.head)
                     val types = childs.tail
                     var lastJoin = doCrossJoin(table, types.head)
@@ -161,7 +161,7 @@ object LogicPlanBuilder {
               case T_SELECT_PARAMS => { // limit & offset parameters
                   // AST:
                   // ^(T_SELECT_PARAMS ^(T_SELECT_LIMIT ..) ^(T_SELECT OFFSET ..))
-                  val c = getChilds(t)
+                  val c = getChildren(t)
                   c foreach { t => t.getType match {
                       case T_SELECT_LIMIT => {
                           if (t.getChildCount == 1) {
@@ -176,7 +176,7 @@ object LogicPlanBuilder {
               case T_ORDER => { // order by clause
                   // AST:
                   // ^(T_ORDER ^(T_COLUMN_ITEM (T_ASC | T_DESC)? (T_FIRST | T_LAST)?)+)
-                  val c = getChilds(t)
+                  val c = getChildren(t)
                   sort = c map (item => 
                     (parseExpression(item.getChild(0)),
                      if (item.getChildCount == 1) false
@@ -192,7 +192,7 @@ object LogicPlanBuilder {
               case T_GROUP => { // group by clause
 		  // AST:
 		  // ^(T_GROUP expression_main+ )
-                  group = getChilds(t) map (c => (parseExpression(c), None))
+                  group = getChildren(t) map (c => (parseExpression(c), None))
                 }
               case T_HAVING => {
                   // AST:
@@ -265,7 +265,7 @@ object LogicPlanBuilder {
       case T_UPDATE => {
 	  // AST:
 	  // ^(T_UPDATE table_id update_set+ ^(T_WHERE expression_cond)?)
-          val c = getChilds(node)
+          val c = getChildren(node)
           // add a scan for the selected table
           var last: Operation = new Scan(getFullTableName(c.head), None, true)
 
@@ -277,8 +277,8 @@ object LogicPlanBuilder {
 		  // ^(T_UPDATE_SET ^(T_UPDATE_COLUMNS update_field+) ^(T_UPDATE_EXPRS (expression_main | T_DEFAULT)+) )
 
                   // tuples like (column_name, value)
-                  val col = getChilds(t.getChild(0)) map (_.getChild(0).getText.replace("\"", ""))
-                  val expr = getChilds(t.getChild(1)) map (parseExpression)
+                  val col = getChildren(t.getChild(0)) map (_.getChild(0).getText.replace("\"", ""))
+                  val expr = getChildren(t.getChild(1)) map (parseExpression)
 
                   e = (col zip expr) ::: e
 
@@ -291,9 +291,9 @@ object LogicPlanBuilder {
           end = Update(e reverse, last)
         }
       case T_INSERT => {
-          val c = getChilds(node)
+          val c = getChildren(node)
           val fields = if (node.getChildCount == 3) {
-            Some(getChilds(node.getChild(2)) map (_.getText.replace("\"", "")))
+            Some(getChildren(node.getChild(2)) map (_.getText.replace("\"", "")))
           } else {
             None
           }
@@ -306,8 +306,8 @@ object LogicPlanBuilder {
 		//   ^(T_COLUMN_LIST LONG_ID+)? <-- field names
 		//  )
                 var e: List[List[Expression]] = Nil
-                val ch = getChilds(c(1))
-                ch foreach { g => e = (getChilds(g) map { t => t.getType match {
+                val ch = getChildren(c(1))
+                ch foreach { g => e = (getChildren(g) map { t => t.getType match {
                         case T_DEFAULT => Expression(ValueFactory.createNullValue[Value])
                         case _ => parseExpression(t)
                       }
@@ -350,10 +350,10 @@ object LogicPlanBuilder {
 	    // ^(T_CREATE_TABLE table_id ^(T_CREATE_TABLE ^(T_TABLE_ITEM name type 
             // ^(T_TABLE_CONSTRAINT cons)*
             // )*))
-            val ch = getChilds(node.getChild(1))
+            val ch = getChildren(node.getChild(1))
             val cols = ch map {c => (c.getChild(0).getText.replace("\"", ""), c.getChild(1).getText,
                                      if (c.getChildCount ==2) { Nil } else {
-                  val cch = getChilds(c).drop(2)
+                  val cch = getChildren(c).drop(2)
                   cch flatMap {el => el.getChild(0).getType match {
                       case T_NULL => if (el.getChildCount == 2) {
                           Seq(NotNull)
@@ -380,7 +380,7 @@ object LogicPlanBuilder {
 	  // AST:
 	  // ^(T_ALTER table_id alter_action*)
 
-          val children = getChilds(node)
+          val children = getChildren(node)
           val name = getFullTableName(children.head)        
           // get all alter actions
           val elems = children.tail map { c => c.getType match {
@@ -417,10 +417,10 @@ object LogicPlanBuilder {
           // drop table statement
 	  // AST:
 	  // ^(T_DROP ^(T_TABLE table_id+) T_IF? T_PURGE?)
-          val names = getChilds(node.getChild(0)) map (getFullTableName)
+          val names = getChildren(node.getChild(0)) map (getFullTableName)
           var ifE = false
           var drop = false
-          getChilds(node).tail foreach { _.getType match {
+          getChildren(node).tail foreach { _.getType match {
               case T_IF => ifE = true
               case T_PURGE => drop = true
             }}
@@ -434,26 +434,28 @@ object LogicPlanBuilder {
           node.getChild(0).getType match {
             case T_CREATE => {
 	        // AST:
-	        // ^(T_INDEX T_CREATE table_id field)
-                val table = getFullTableName(node.getChild(1))
-                val col = node.getChild(2).getText.replace("\"", "")
-                end = CreateIndex(table, col)
+	        // ^(T_INDEX T_CREATE table_id field+ )
+                val cch = getChildren(node).tail
+                val table = getFullTableName(cch.head)
+                val cols = cch.tail.map (_.getText.replace("\"", ""))
+                end = CreateIndex(table, cols)
               }
             case T_DROP => {
 	        // AST:
-	        // ^(T_INDEX T_CREATE table_id field )
-                val table = getFullTableName(node.getChild(1))
-                val col = node.getChild(2).getText.replace("\"", "")
-                end = DropIndex(table, col)
+	        // ^(T_INDEX T_CREATE table_id field+ )
+                val cch = getChildren(node).tail
+                val table = getFullTableName(cch.head)
+                val cols = cch.tail.map (_.getText.replace("\"", ""))
+                end = DropIndex(table, cols)
               }
           }
         }
       case T_EXECUTOR => {
 	  // AST:
 	  // ^( T_EXECUTOR function_call)
-          val l = getChilds(node.getChild(0))
+          val l = getChildren(node.getChild(0))
           val name = l(0).getText
-          val li = if (l.tail.isEmpty) (Nil) else (getChilds(l(1)).map (parseExpression))
+          val li = if (l.tail.isEmpty) (Nil) else (getChildren(l(1)).map (parseExpression))
           end = ExecutorCall(name, li)
         }
       case T_SET => {
@@ -582,8 +584,8 @@ object LogicPlanBuilder {
           //  )
           val alias = if (head.getChildCount == 1) None else Some(head.getChild(1).getText)
           var e: List[List[Expression]] = Nil
-          val ch = getChilds(head.getChild(0))
-          ch foreach { g => e = (getChilds(g) map (parseExpression(_))) :: e }
+          val ch = getChildren(head.getChild(0))
+          ch foreach { g => e = (getChildren(g) map (parseExpression(_))) :: e }
           e = e reverse
                 
           val s = ValuesScan(e, alias, false)
@@ -595,7 +597,7 @@ object LogicPlanBuilder {
     // checks argument of the function
     val c: List[Tree] = ch.getChild(1) match {
       case null => Nil // no arguments
-      case a => getChilds(a) // 1 or more
+      case a => getChildren(a) // 1 or more
     }
     var exp: List[Expression] = Nil
     val d = c flatMap {i => i.getType match {
@@ -615,8 +617,8 @@ object LogicPlanBuilder {
         case T_TABLE_VALUES => {
             val alias = if (i.getChildCount == 1) None else Some(i.getChild(1).getText)
             var e: List[List[Expression]] = Nil
-            val ch = getChilds(i.getChild(0))
-            ch foreach { g => e = (getChilds(g) map (parseExpression)) :: e }
+            val ch = getChildren(i.getChild(0))
+            ch foreach { g => e = (getChildren(g) map (parseExpression)) :: e }
             e = e reverse
                 
             Right(ValuesScan(e, alias, false)) :: Nil
@@ -638,7 +640,7 @@ object LogicPlanBuilder {
     // for readability
     // enables us to use (left + right) without parseExpression() everywhere
     implicit def p(t: Tree): Expression = parseExpression(t)
-    val l = getChilds(tree)
+    val l = getChildren(tree)
     def left = l(0)
     def right = l(1)
 
@@ -724,7 +726,7 @@ object LogicPlanBuilder {
           var rev = l.reverse
           var except: Seq[String] = List.empty
           if (rev.head.getType == T_EXCEPT) {
-            except = getChilds(rev.head).map (_.getText.replace("\"", ""))
+            except = getChildren(rev.head).map (_.getText.replace("\"", ""))
             rev = rev.tail
           }
           if (rev.tail.isEmpty) {
@@ -743,7 +745,7 @@ object LogicPlanBuilder {
 
               // AST:
               // ^(T_IN expression_main ^(T_EXPR_LIST expression_main+ ))
-            case T_EXPR_LIST => left in getChilds(right).map (parseExpression)
+            case T_EXPR_LIST => left in getChildren(right).map (parseExpression)
           }
         }
       case T_BETWEEN => (l(0) >= l(1)) & (l(0) <= l(2))
@@ -751,7 +753,7 @@ object LogicPlanBuilder {
 	  // AST:
 	  // ^( T_FUNCTION_CALL name ^(T_EXPR_LIST expression_main+ )? )
           // evaluate parameters iif there is parameters (cf. grammar)
-          val li = if (l.tail.isEmpty) (Nil) else (getChilds(right).map (parseExpression))
+          val li = if (l.tail.isEmpty) (Nil) else (getChildren(right).map (parseExpression))
           Expression(left.getText, li)
         }
         
@@ -764,14 +766,14 @@ object LogicPlanBuilder {
   }
 
   private def getFullTableName(node: Tree) = {
-    getChilds(node) map(_.getText) reduceLeft (_ + "." +  _) replace("\"", "")
+    getChildren(node) map(_.getText) reduceLeft (_ + "." +  _) replace("\"", "")
   }
   
 
   /**
    * Utility method to get the children of a Tree into a Scala list
    */
-  private def getChilds(tree: Tree): List[Tree] = {
+  private def getChildren(tree: Tree): List[Tree] = {
     var c: List[Tree] = Nil
     // note: the range is built decrementing to 0 because elements are appened
     // at the beginning of the list (for performance...) which reverses the list

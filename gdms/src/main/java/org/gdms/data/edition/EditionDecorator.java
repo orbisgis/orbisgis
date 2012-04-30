@@ -81,7 +81,7 @@ import org.gdms.source.SourceManager;
 
 /**
  * Adds edition capabilities to a DataSource.
- * 
+ *
  * @author Fernando Gonzalez Cortes
  * @author Antoine Gourlay
  */
@@ -108,6 +108,7 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
 
         /**
          * Creates a new instance of the decorator on the given DataSource.
+         *
          * @param internalDataSource a DataSource
          */
         public EditionDecorator(DataSource internalDataSource) {
@@ -216,11 +217,24 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                         try {
                                 for (DataSourceIndex index : indexEditionManager.getDataSourceIndexes()) {
                                         Metadata metadata = getMetadata();
-                                        for (int i = 0; i < metadata.getFieldCount(); i++) {
-                                                if (metadata.getFieldName(i).equals(
-                                                        index.getFieldName())) {
-                                                        Value v = getFieldValue(rowIndex, i);
-                                                        index.deleteRow(v, rowIndex);
+                                        String[] idxFields = index.getFieldNames();
+                                        if (idxFields.length == 1) {
+                                                for (int i = 0; i < metadata.getFieldCount(); i++) {
+                                                        if (metadata.getFieldName(i).equals(
+                                                                idxFields[0])) {
+                                                                Value v = getFieldValue(rowIndex, i);
+                                                                index.deleteRow(v, rowIndex);
+                                                        }
+                                                }
+                                        } else {
+                                                Value[] toInsert = new Value[idxFields.length];
+                                                for (int i = 0; i < metadata.getFieldCount(); i++) {
+                                                        for (int j = 0; j < idxFields.length; j++) {
+                                                                if (metadata.getFieldName(i).equals(idxFields[j])) {
+                                                                        toInsert[j] = getFieldValue(rowIndex, i);
+                                                                }
+                                                        }
+                                                        index.deleteRow(ValueFactory.createValue(toInsert), rowIndex);
                                                 }
                                         }
                                 }
@@ -247,10 +261,23 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                         try {
                                 for (DataSourceIndex index : indexEditionManager.getDataSourceIndexes()) {
                                         Metadata metadata = getMetadata();
-                                        for (int i = 0; i < metadata.getFieldCount(); i++) {
-                                                if (metadata.getFieldName(i).equals(
-                                                        index.getFieldName())) {
-                                                        index.insertRow(values[i], rowIndex);
+                                        String[] idxFields = index.getFieldNames();
+                                        if (idxFields.length == 1) {
+                                                for (int i = 0; i < metadata.getFieldCount(); i++) {
+                                                        if (metadata.getFieldName(i).equals(
+                                                                idxFields[0])) {
+                                                                index.insertRow(values[i], rowIndex);
+                                                        }
+                                                }
+                                        } else {
+                                                Value[] toInsert = new Value[idxFields.length];
+                                                for (int i = 0; i < metadata.getFieldCount(); i++) {
+                                                        for (int j = 0; j < idxFields.length; j++) {
+                                                                if (metadata.getFieldName(i).equals(idxFields[j])) {
+                                                                        toInsert[j] = values[i];
+                                                                }
+                                                        }
+                                                        index.insertRow(ValueFactory.createValue(values), rowIndex);
                                                 }
                                         }
                                 }
@@ -278,13 +305,13 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
         /**
          * Gets the values of the original row
          *
-         * @param dir 
-         *            address of the row to be retrieved
+         * @param dir
+         * address of the row to be retrieved
          *
          * @return Row values
          *
          * @throws DriverException
-         *             if the operation fails
+         * if the operation fails
          */
         private Value[] getOriginalRow(PhysicalRowAddress dir)
                 throws DriverException {
@@ -380,9 +407,27 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                 if (indexEditionManager != null) {
                         try {
                                 for (DataSourceIndex index : indexEditionManager.getDataSourceIndexes()) {
-                                        if (index.getFieldName().equals(
-                                                getMetadata().getFieldName(fieldId))) {
-                                                index.setFieldValue(oldValue, value, rowIndex);
+                                        String[] idxFields = index.getFieldNames();
+                                        if (idxFields.length == 1) {
+                                                if (idxFields[0].equals(getMetadata().getFieldName(fieldId))) {
+                                                        index.setFieldValue(oldValue, value, rowIndex);
+                                                }
+                                        } else {
+                                                Value[] oldSet = new Value[idxFields.length];
+                                                Value[] newSet = new Value[idxFields.length];
+                                                String fieldName = getFieldName(fieldId);
+                                                for (int i = 0; i < idxFields.length; i++) {
+                                                        if (idxFields[i].equals(fieldName)) {
+                                                                oldSet[i] = oldValue;
+                                                                newSet[i] = value;
+                                                        } else {
+                                                                oldSet[i] = getFieldValue(rowIndex, getFieldIndexByName(idxFields[i]));
+                                                                newSet[i] = oldSet[i];
+                                                        }
+                                                }
+                                                index.setFieldValue(ValueFactory.createValue(oldSet), 
+                                                        ValueFactory.createValue(newSet), rowIndex);
+                                                
                                         }
                                 }
                         } catch (IndexException e) {

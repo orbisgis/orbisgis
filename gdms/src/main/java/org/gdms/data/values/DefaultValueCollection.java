@@ -69,7 +69,7 @@ class DefaultValueCollection extends AbstractValue implements ValueCollection {
         @Override
         public BooleanValue equals(Value value) {
                 if (value instanceof NullValue) {
-                        return ValueFactory.createValue(false);
+                        return ValueFactory.createNullValue();
                 }
 
                 if (!(value instanceof ValueCollection)) {
@@ -81,13 +81,191 @@ class DefaultValueCollection extends AbstractValue implements ValueCollection {
                 for (int i = 0; i < values.size(); i++) {
                         Value res = values.get(i).equals(arrayValue.get(i));
 
-                        if (!res.getAsBoolean()) {
+                        if (res.isNull()) {
+                                return ValueFactory.createNullValue();
+                        } else if (!res.getAsBoolean()) {
                                 return ValueFactory.createValue(false);
                         }
                 }
 
                 return ValueFactory.createValue(true);
         }
+
+        @Override
+        public BooleanValue greater(Value value) {
+                if (value.isNull()) {
+                        return ValueFactory.createNullValue();
+                }
+
+                // check for type
+                if (!(value instanceof ValueCollection)) {
+                        return super.greater(value);
+                }
+
+                ValueCollection v = (ValueCollection) value;
+                Value[] vt = v.getValues();
+
+                // check for equal sizes
+                if (vt.length != values.size()) {
+                        return super.greater(value);
+                }
+
+                // check starting from left
+                for (int i = 0; i < vt.length; i++) {
+                        BooleanValue ret = values.get(i).greater(vt[i]);
+                        if (ret.isNull()) {
+                                // one of the two is NULL
+                                return ValueFactory.createNullValue();
+                        } else if (ret.getAsBoolean()) {
+                                // v > vt
+                                return ValueFactory.createValue(true);
+                        } else if (!values.get(i).equals(vt[i]).getAsBoolean()) {
+                                // v != vt => v < vt
+                                // no need the check the other values
+                                return ValueFactory.createValue(false);
+                        }
+                        // v == vt
+                        // we need the check the rest
+
+                }
+
+                // all inner values are equal
+                return ValueFactory.createValue(false);
+        }
+
+        @Override
+        public BooleanValue greaterEqual(Value value) {
+                if (value.isNull()) {
+                        return ValueFactory.createNullValue();
+                }
+
+                // check for type
+                if (!(value instanceof ValueCollection)) {
+                        return super.greater(value);
+                }
+
+                ValueCollection v = (ValueCollection) value;
+                Value[] vt = v.getValues();
+
+                // check for equal sizes
+                if (vt.length != values.size()) {
+                        return super.greater(value);
+                }
+
+                // check starting from left
+                for (int i = 0; i < vt.length; i++) {
+                        // we check for strict comparison
+                        // because the equality is a special case: we need to look deeper
+                        // in the array.
+                        BooleanValue ret = values.get(i).greater(vt[i]);
+                        if (ret.isNull()) {
+                                // one of the two is NULL
+                                return ValueFactory.createNullValue();
+                        } else if (ret.getAsBoolean()) {
+                                // v > vt
+                                return ValueFactory.createValue(true);
+                        } else if (!values.get(i).equals(vt[i]).getAsBoolean()) {
+                                // v != vt => v < vt
+                                // no need the check the other values
+                                return ValueFactory.createValue(false);
+                        }
+                        // v == vt
+                        // we need the check the rest
+
+                }
+
+                // all inner values are equal
+                return ValueFactory.createValue(true);
+        }
+
+        @Override
+        public BooleanValue less(Value value) {
+                if (value.isNull()) {
+                        return ValueFactory.createNullValue();
+                }
+
+                // check for type
+                if (!(value instanceof ValueCollection)) {
+                        return super.greater(value);
+                }
+
+                ValueCollection v = (ValueCollection) value;
+                Value[] vt = v.getValues();
+
+                // check for equal sizes
+                if (vt.length != values.size()) {
+                        return super.greater(value);
+                }
+
+                // check starting from left
+                for (int i = 0; i < vt.length; i++) {
+                        BooleanValue ret = values.get(i).less(vt[i]);
+                        if (ret.isNull()) {
+                                // one of the two is NULL
+                                return ValueFactory.createNullValue();
+                        } else if (ret.getAsBoolean()) {
+                                // v < vt
+                                return ValueFactory.createValue(true);
+                        } else if (!values.get(i).equals(vt[i]).getAsBoolean()) {
+                                // v != vt => v > vt
+                                // no need the check the other values
+                                return ValueFactory.createValue(false);
+                        }
+                        // v == vt
+                        // we need the check the rest
+
+                }
+
+                // all inner values are equal
+                return ValueFactory.createValue(false);
+        }
+
+        @Override
+        public BooleanValue lessEqual(Value value) {
+                if (value.isNull()) {
+                        return ValueFactory.createNullValue();
+                }
+
+                // check for type
+                if (!(value instanceof ValueCollection)) {
+                        return super.greater(value);
+                }
+
+                ValueCollection v = (ValueCollection) value;
+                Value[] vt = v.getValues();
+
+                // check for equal sizes
+                if (vt.length != values.size()) {
+                        return super.greater(value);
+                }
+
+                // check starting from left
+                for (int i = 0; i < vt.length; i++) {
+                        // we check for strict comparison
+                        // because the equality is a special case: we need to look deeper
+                        // in the array.
+                        BooleanValue ret = values.get(i).less(vt[i]);
+                        if (ret.isNull()) {
+                                // one of the two is NULL
+                                return ValueFactory.createNullValue();
+                        } else if (ret.getAsBoolean()) {
+                                // v < vt
+                                return ValueFactory.createValue(true);
+                        } else if (!values.get(i).equals(vt[i]).getAsBoolean()) {
+                                // v != vt => v > vt
+                                // no need the check the other values
+                                return ValueFactory.createValue(false);
+                        }
+                        // v == vt
+                        // we need the check the rest
+
+                }
+
+                // all inner values are equal
+                return ValueFactory.createValue(true);
+        }
+        
+        
 
         /**
          * Gets the ith value of the array
@@ -113,7 +291,7 @@ class DefaultValueCollection extends AbstractValue implements ValueCollection {
          * Adds a value to the end of the array
          *
          * @param value
-         *            value to add
+         * value to add
          */
         public void add(Value value) {
                 values.add(value);

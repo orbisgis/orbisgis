@@ -48,9 +48,9 @@ import org.orbisgis.progress.ProgressMonitor;
 
 public interface IndexManagerListener {
 
-	void indexCreated(String source, String field, String indexId,
+	void indexCreated(String source, String[] fields, String indexId,
 			IndexManager im, ProgressMonitor pm) throws IndexException;
 
-	void indexDeleted(String source, String field, String indexId,
+	void indexDeleted(String source, String[] field, String indexId,
 			IndexManager im) throws IndexException;
 }

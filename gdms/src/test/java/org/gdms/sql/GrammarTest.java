@@ -303,6 +303,15 @@ public class GrammarTest {
                 parse("CALL unregister ('alias');");
                 parse("CALL unregister();");
         }
+        
+        @Test
+        public void testCreateIndex() throws Exception {
+                parse("CREATE INDEX ON toto (field);");
+                parse("CREATE INDEX ON toto (field, field2, field3);");
+                notParse("CREATE INDEX ON toto ();");
+                notParse("CREATE INDEX ON (tutu);");
+                notParse("CREATE INDEX tata ON toto (tutu);");
+        }
 
         @Test
         public void testCreateTable() throws Exception {

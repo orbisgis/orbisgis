@@ -44,38 +44,34 @@
  */
 package org.gdms.data.indexes;
 
-
 import com.vividsolutions.jts.geom.Envelope;
 
 import org.gdms.sql.evaluator.Expression;
 
-public class ExpressionBasedSpatialIndexQuery implements
-		ExpressionBasedIndexQuery, SpatialIndexQuery {
+public class ExpressionBasedSpatialIndexQuery implements SpatialIndexQuery {
 
-	private Expression area;
+        private Expression area;
+        private String[] fieldName;
 
-	private String fieldName;
-
-	public ExpressionBasedSpatialIndexQuery(Expression exp, String fieldName) {
-		this.area = exp;
-		this.fieldName = fieldName;
-	}
+        public ExpressionBasedSpatialIndexQuery(Expression exp, String fieldName) {
+                this.area = exp;
+                this.fieldName = new String[]{fieldName};
+        }
 
         @Override
-	public Envelope getArea() throws IndexQueryException {
-                        return area.evaluate(null).getAsGeometry().getEnvelopeInternal();
-	}
+        public Envelope getArea() throws IndexQueryException {
+                return area.evaluate(null).getAsGeometry().getEnvelopeInternal();
+        }
 
         @Override
-	public String getFieldName() {
-		return fieldName;
-	}
+        public String[] getFieldNames() {
+                return fieldName;
+        }
 
         @Override
-	public boolean isStrict() {
-		return false;
-	}
-
+        public boolean isStrict() {
+                return false;
+        }
 //	public Field[] getFields() {
 //		ArrayList<Field> ret = new ArrayList<Field>();
 //		Field[] fields = area.getFieldReferences();
@@ -85,5 +81,4 @@ public class ExpressionBasedSpatialIndexQuery implements
 //
 //		return ret.toArray(new Field[ret.size()]);
 //	}
-
 }

@@ -63,11 +63,10 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
 
-
 public class FailedEditionTest extends TestBase {
 
         private static final String SPATIAL_FIELD_NAME = "the_geom";
-        
+
         private void failedCommit(DataSource ds, IndexQuery query)
                 throws DriverException, NonEditableDataSourceException {
                 ds.deleteRow(2);
@@ -167,11 +166,11 @@ public class FailedEditionTest extends TestBase {
                 sm.register("closeDB", new FakeDBTableSourceDefinition(
                         new ReadAndWriteDriver(), "jdbc:closefailing"));
         }
-        
+
         private class FooQuery implements IndexQuery {
 
-                public String getFieldName() {
-                        return "";
+                public String[] getFieldNames() {
+                        return new String[]{""};
                 }
 
                 public String getIndexId() {

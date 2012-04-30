@@ -55,18 +55,19 @@ import org.gdms.data.indexes.btree.DiskBTree;
 import org.gdms.data.indexes.tree.IndexVisitor;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 
 public class BTreeIndex implements DataSourceIndex<Value> {
 
-        private String fieldName;
+        private String[] fieldNames;
         private DiskBTree index;
         private File indexFile;
 
         @Override
-        public void setFieldName(String fieldName) {
-                this.fieldName = fieldName;
+        public void setFieldNames(String[] fieldNames) {
+                this.fieldNames = fieldNames;
         }
 
         @Override
@@ -75,21 +76,42 @@ public class BTreeIndex implements DataSourceIndex<Value> {
                 try {
                         long rowCount = dataSource.getRowCount();
                         pm.startTask("Building index", rowCount);
-                        int fieldId = dataSource.getMetadata().getFieldIndex(fieldName);
+                        int[] fieldIds = new int[fieldNames.length];
+                        for (int i = 0; i < fieldNames.length; i++) {
+                                fieldIds[i] = dataSource.getMetadata().getFieldIndex(fieldNames[i]);
+                        }
                         index = new DiskBTree(255, 1024);
                         if (indexFile != null) {
                                 index.newIndex(indexFile);
                         }
-                        for (int i = 0; i < rowCount; i++) {
-                                if (i >= 1000 && i % 1000 == 0) {
-                                        if (pm.isCancelled()) {
-                                                return;
+                        if (fieldIds.length == 1) {
+                                for (int i = 0; i < rowCount; i++) {
+                                        if (i >= 1000 && i % 1000 == 0) {
+                                                if (pm.isCancelled()) {
+                                                        return;
+                                                }
+                                                pm.progressTo(i);
                                         }
-                                        pm.progressTo(i);
+                                        Value fieldValue = dataSource.getFieldValue(i, fieldIds[0]);
+                                        if (fieldValue.getType() != Type.NULL) {
+                                                index.insert(fieldValue, Integer.valueOf(i));
+                                        }
                                 }
-                                Value fieldValue = dataSource.getFieldValue(i, fieldId);
-                                if (fieldValue.getType() != Type.NULL) {
+                        } else {
+                                for (int i = 0; i < rowCount; i++) {
+                                        if (i >= 1000 && i % 1000 == 0) {
+                                                if (pm.isCancelled()) {
+                                                        return;
+                                                }
+                                                pm.progressTo(i);
+                                        }
+                                        Value[] fieldValues = new Value[fieldIds.length];
+                                        for (int j = 0; j < fieldIds.length; j++) {
+                                                fieldValues[j] = dataSource.getFieldValue(i, fieldIds[j]);
+                                        }
+                                        Value fieldValue = ValueFactory.createValue(fieldValues);
                                         index.insert(fieldValue, Integer.valueOf(i));
+
                                 }
                         }
                         pm.progressTo(rowCount);
@@ -116,8 +138,8 @@ public class BTreeIndex implements DataSourceIndex<Value> {
         }
 
         @Override
-        public String getFieldName() {
-                return fieldName;
+        public String[] getFieldNames() {
+                return fieldNames;
         }
 
         @Override

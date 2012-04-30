@@ -44,31 +44,38 @@
  */
 package org.gdms.data.indexes;
 
-
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.evaluator.Expression;
 
-public class ExpressionBasedAlphaQuery implements ExpressionBasedIndexQuery,
-        AlphaQuery {
+public class ExpressionBasedAlphaQuery implements AlphaQuery {
 
         private Expression min;
         private boolean minIncluded;
         private boolean maxIncluded;
         private Expression max;
-        private String fieldName;
+        private String[] fieldNames;
 
         public ExpressionBasedAlphaQuery(String fieldName, Expression exp) {
                 this(fieldName, exp, true, exp, true);
         }
 
+        public ExpressionBasedAlphaQuery(String[] fieldNames, Expression exp) {
+                this(fieldNames, exp, true, exp, true);
+        }
+
         public ExpressionBasedAlphaQuery(String fieldName, Expression min,
+                boolean minIncluded, Expression max, boolean maxIncluded) {
+                this(new String[]{fieldName}, min, minIncluded, max, maxIncluded);
+        }
+
+        public ExpressionBasedAlphaQuery(String[] fieldNames, Expression min,
                 boolean minIncluded, Expression max, boolean maxIncluded) {
                 this.min = min;
                 this.minIncluded = minIncluded;
                 this.max = max;
                 this.maxIncluded = maxIncluded;
-                this.fieldName = fieldName;
+                this.fieldNames = fieldNames;
 
                 if (this.min == null) {
                         this.min = Expression.apply(ValueFactory.createNullValue());
@@ -80,8 +87,8 @@ public class ExpressionBasedAlphaQuery implements ExpressionBasedIndexQuery,
         }
 
         @Override
-        public String getFieldName() {
-                return fieldName;
+        public String[] getFieldNames() {
+                return fieldNames;
         }
 
         @Override
@@ -91,7 +98,7 @@ public class ExpressionBasedAlphaQuery implements ExpressionBasedIndexQuery,
 
         @Override
         public Value getMin() throws IndexQueryException {
-                        return min.evaluate(null);
+                return min.evaluate(null);
         }
 
         @Override
@@ -106,9 +113,8 @@ public class ExpressionBasedAlphaQuery implements ExpressionBasedIndexQuery,
 
         @Override
         public Value getMax() throws IndexQueryException {
-                        return max.evaluate(null);
+                return max.evaluate(null);
         }
-
 //        public Field[] getFields() {
 //                ArrayList<Field> ret = new ArrayList<Field>();
 //                addFields(ret, min);
