@@ -138,4 +138,9 @@ public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUni
     public List<USParameter<?>> getParameters() {
         return USParameterFactory.getParameters(this);
     }
+
+    @Override
+    public List<USParameter<?>> getParametersLine() {
+        return USParameterFactory.getParametersLine(this);
+    }
 }

@@ -9,28 +9,41 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- *
+ * This factory provides useful methods to retrieve the {@code USParamter}
+ * associated to {@code UniqueSymbol} instances.
  * @author alexis
  */
 public final class USParameterFactory {
 
     private USParameterFactory(){}
 
+    /**
+     * Gets all the parameters that can be associated to this
+     * {@code UniqueSymbol}.
+     * @param us
+     * @return
+     */
     public static List<USParameter<?>> getParameters(UniqueSymbol us){
         List<USParameter<?>> ret = new LinkedList<USParameter<?>>();
         if(us instanceof IUniqueSymbolLine){
-            ret.addAll(getParameters((IUniqueSymbolLine)us));
+            ret.addAll(getParametersLine((IUniqueSymbolLine)us));
         }
         if(us instanceof IUniqueSymbolArea){
-            ret.addAll(getParameters((IUniqueSymbolArea)us));
+            ret.addAll(getParametersArea((IUniqueSymbolArea)us));
         }
         if(us instanceof UniqueSymbolPoint){
-            ret.addAll(getParameters((UniqueSymbolPoint)us));
+            ret.addAll(getParametersPoint((UniqueSymbolPoint)us));
         }
         return ret;
     }
 
-    private static List<USParameter<?>> getParameters(final IUniqueSymbolLine us){
+    /**
+     * Gets all the parameters that can be associated to this
+     * {@code IUniqueSymbolLine}.
+     * @param us
+     * @return
+     */
+    public static List<USParameter<?>> getParametersLine(final IUniqueSymbolLine us){
         LinkedList<USParameter<?>> ll = new LinkedList<USParameter<?>>();
         //The line width
         ll.add(new USNumericParameter<Double>("Line Width") {
@@ -66,7 +79,13 @@ public final class USParameterFactory {
         return ll;
     }
 
-    private static List<USParameter<?>> getParameters(final IUniqueSymbolArea us){
+    /**
+     * Gets all the parameters that can be associated to this
+     * {@code IUniqueSymbolArea}.
+     * @param us
+     * @return
+     */
+    public static List<USParameter<?>> getParametersArea(final IUniqueSymbolArea us){
         LinkedList<USParameter<?>> ll = new LinkedList<USParameter<?>>();
         //The Fill color
         ll.add(new USParameter<Color>("Fill Color") {
@@ -78,8 +97,13 @@ public final class USParameterFactory {
         return ll;
     }
 
-
-    private static List<USParameter<?>> getParameters(final UniqueSymbolPoint us){
+    /**
+     * Gets all the parameters that can be associated to this
+     * {@code UniqueSymbolPoint}.
+     * @param us
+     * @return
+     */
+    public static List<USParameter<?>> getParametersPoint(final UniqueSymbolPoint us){
         LinkedList<USParameter<?>> ll = new LinkedList<USParameter<?>>();
         //The symbol width
         ll.add(new USNumericParameter<Double>("Symbol width") {

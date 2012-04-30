@@ -5,7 +5,6 @@
 package org.orbisgis.legend.thematic.constant;
 
 import java.awt.Color;
-import java.util.LinkedList;
 import java.util.List;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.fill.Fill;
@@ -94,6 +93,16 @@ public class UniqueSymbolArea extends  ConstantStrokeArea implements IUniqueSymb
     @Override
     public List<USParameter<?>> getParameters() {
         return USParameterFactory.getParameters(this);
+    }
+    
+    @Override
+    public List<USParameter<?>> getParametersLine() {
+        return USParameterFactory.getParametersLine(this);
+    }
+
+    @Override
+    public List<USParameter<?>> getParametersArea() {
+        return USParameterFactory.getParametersArea(this);
     }
 
     @Override

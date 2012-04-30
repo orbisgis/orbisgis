@@ -4,7 +4,6 @@
  */
 package org.orbisgis.legend.thematic.constant;
 
-import java.util.LinkedList;
 import java.util.List;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
@@ -145,6 +144,20 @@ public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbo
     @Override
     public List<USParameter<?>> getParameters() {
         return USParameterFactory.getParameters(this);
+    }
+
+    @Override
+    public List<USParameter<?>> getParametersArea() {
+        return USParameterFactory.getParametersArea(this);
+    }
+
+    @Override
+    public List<USParameter<?>> getParametersLine() {
+        return USParameterFactory.getParametersLine(this);
+    }
+    
+    public List<USParameter<?>> getParametersPoint() {
+        return USParameterFactory.getParametersPoint(this);
     }
 
 }
