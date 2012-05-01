@@ -48,8 +48,7 @@ import org.gdms.data.schema.Metadata
 import org.gdms.driver.DataSet
 import org.gdms.driver.DriverException
 import org.gdms.sql.engine.commands.OutputCommand
-import org.gdms.sql.engine.operations.Operation
-import org.gdms.sql.engine.operations.Scan
+import org.gdms.sql.engine.operations._
 import org.gdms.sql.engine.step.builder.BuilderStep
 import org.gdms.sql.engine.step.functions.FunctionsStep
 import org.gdms.sql.engine.step.physicalJoin.PhysicalJoinOptimStep
@@ -63,8 +62,10 @@ class SQLStatement(sql: String, var op: Operation)(implicit p: Properties) {
   private var dsf: Option[DataSourceFactory] = None
   private var pm: Option[ProgressMonitor] = None
   private var preparedButNotCleaned: Boolean = false
+  
   private lazy val refs: Array[String] = { op.allChildren flatMap {_ match {
         case s: Scan => s.table :: Nil
+        case c: CustomQueryScan => c.tables.flatMap (_.fold(_ :: Nil, _ => Nil))
         case _ => Nil
       }    
     } toArray   

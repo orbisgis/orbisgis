@@ -639,8 +639,8 @@ public class SourceManagementTest extends TestBase {
                 }
                 dsf.register("sum", "select * from sumquery(" + SOURCE + ", 'id');");
                 String[] deps = sm.getSource("sum").getReferencedSources();
-                assertEquals(deps.length, 1);
-                assertEquals(deps[0], SOURCE);
+                assertEquals(1, deps.length);
+                assertEquals(SOURCE, deps[0]);
         }
 
         @Test
