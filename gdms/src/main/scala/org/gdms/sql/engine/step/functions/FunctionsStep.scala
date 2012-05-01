@@ -125,7 +125,7 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
                 val func = e._1.evaluator
                 i = i + 1
                 val name = e._2.getOrElse(f.getName + (if (i == -1) "" else i))
-                e._1.evaluator = FieldEvaluator("$" + name)
+                e._1.evaluator = FieldEvaluator(name)
                 (Expression(func), Some(name)) :: Nil}
             case e => e.children flatMap (ex => replaceAggregateFunctions((ex, None)))
           }
@@ -200,14 +200,13 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
           // replaces with fields in the Projection
           // there is some AggregateEvaluator expressions
           
-          // we get all projected fields. If they stayed this far, it means they are indeed referenced in the GROUP BY
+          // we process projected fields. If they stayed this far, it means they are indeed referenced in the GROUP BY
           // and they may need to be kept by the aggregate.
-          val projFields = p.exp flatMap { e => e._1 match {
+          p.exp flatMap (_._1.allChildren) foreach { e => e match {
               case field(s, _) => if (s.startsWith("$")) {
-                  e._1.evaluator = FieldEvaluator(s.substring(1))
-                  None
-                } else Some(e)
-              case _ => None
+                  e.evaluator = FieldEvaluator(s.substring(1))
+                }
+              case _ =>
             }
           }
           
