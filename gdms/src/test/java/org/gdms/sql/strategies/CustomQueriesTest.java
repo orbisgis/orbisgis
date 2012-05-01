@@ -93,11 +93,11 @@ public class CustomQueriesTest extends TestBase {
         public void testFieldTypesAndValues() throws Exception {
                 dsf.getSourceManager().register("ds2", new File(TestResourceHandler.TESTRESOURCES,
                         "multilinestring2d.shp"));
-                dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, 15, 'the_geom');");
+                dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, 'field', 'the_geom');");
 
                 try {
                         dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, 'the_geom',"
-                                + " 'the_geom');");
+                                + " 15);");
                         fail();
                 } catch (IncompatibleTypesException e) {
                 }
