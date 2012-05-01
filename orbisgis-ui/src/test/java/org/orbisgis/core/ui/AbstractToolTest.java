@@ -36,7 +36,9 @@
  */
 package org.orbisgis.core.ui;
 
+import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
 import javax.swing.JLabel;
 
@@ -53,8 +55,24 @@ import org.orbisgis.core.ui.editors.map.tool.ToolManager;
 import org.orbisgis.core.ui.editors.map.tools.SelectionTool;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.junit.Assume;
 import org.gdms.data.DataSourceFactory;
 import org.junit.Before;
+import org.orbisgis.core.ApplicationInfo;
+import org.orbisgis.core.OrbisGISApplicationInfo;
+import org.orbisgis.core.background.BackgroundManager;
+import org.orbisgis.core.background.JobQueue;
+import org.orbisgis.core.errorManager.DefaultErrorManager;
+import org.orbisgis.core.errorManager.ErrorManager;
+import org.orbisgis.core.geocognition.DefaultGeocognition;
+import org.orbisgis.core.geocognition.Geocognition;
+import org.orbisgis.core.ui.pluginSystem.workbench.OrbisWorkbench;
+import org.orbisgis.core.ui.pluginSystem.workbench.OrbisWorkbenchContext;
+import org.orbisgis.core.ui.plugins.views.geocognition.GeocognitionView;
+import org.orbisgis.core.ui.plugins.views.sqlConsole.language.SQLMetadataManager;
+import org.orbisgis.core.ui.windows.mainFrame.OrbisGISFrame;
+import org.orbisgis.core.workspace.DefaultWorkspace;
+import org.orbisgis.core.workspace.Workspace;
 import org.orbisgis.progress.NullProgressMonitor;
 
 public abstract class AbstractToolTest {
@@ -67,15 +85,47 @@ public abstract class AbstractToolTest {
 
         @Before
         public void setUp() throws Exception {
-
+                // 05/01/2012 AG
+                
+                // WARNING: this will make your eyes bleed!
+                // Nicolas, if you ever read this: all this MUST NOT make it into
+                // the OrbisGIS 4.0 UI. Do not bring the Tool tests in the new UI branch.
+                // Let them rest in peace... and write new ones ;-)
+                // I only fixed this to let the tests pass (as expected) until orbisgis-ui is scrapped.
+                
+                // all the crap below needs Swing all over the place...
+                Assume.assumeTrue(!GraphicsEnvironment.isHeadless());
+                
+                
                 DataSourceFactory dsf = new DataSourceFactory(
                         "src/test/resources/backup", "src/test/resources/backup");
-
+                
                 dataManager = new DefaultDataManager(dsf);
                 Services.registerService(DataManager.class, "", dataManager);
-
+                DefaultWorkspace wk = new DefaultWorkspace();
+                File d = File.createTempFile("og-ui", ".d");
+                d.delete();
+                d.mkdir();
+                wk.setWorkspaceFolder(d.getAbsolutePath());
+                d.deleteOnExit();
+                
+                // This is the modern version of GOTOs and spaghetti code:
+                // tightly coupled blocs faking to be separated into "services"
+                // that are supposed to work on their own. Obviously they don't.
+                // The order of initialization below is somewhat arbitrary: 
+                // at least it works for me...
+                
+                Services.registerService(Workspace.class, "", wk);
                 createSource("mixed", TypeFactory.createType(Type.GEOMETRY));
-
+                Services.registerService(ApplicationInfo.class, "", new OrbisGISApplicationInfo());
+                Services.registerService(ErrorManager.class, "", new DefaultErrorManager());
+                Services.registerService(BackgroundManager.class, "", new JobQueue());
+                Services.registerService(Geocognition.class, "", new DefaultGeocognition());
+                Services.registerService(SQLMetadataManager.class, "", new SQLMetadataManager());
+                OrbisWorkbench wb = new OrbisWorkbench(new OrbisGISFrame());
+                OrbisWorkbenchContext wbc = new OrbisWorkbenchContext(wb);
+                Services.registerService(OrbisWorkbenchContext.class, "", wbc);
+                
                 mapContext = new DefaultMapContext();
                 mapContext.open(new NullProgressMonitor());
                 mapContext.getLayerModel().addLayer(dataManager.createLayer("mixed"));
