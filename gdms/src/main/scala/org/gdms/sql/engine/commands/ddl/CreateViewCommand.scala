@@ -53,7 +53,7 @@ import org.gdms.sql.engine.operations.Operation
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.orbisgis.progress.ProgressMonitor
 
-class CreateViewCommand(table: String, op: Operation, orReplace: Boolean) extends Command with OutputCommand {
+class CreateViewCommand(table: String, sql: String, op: Operation, orReplace: Boolean) extends Command with OutputCommand {
   
   override def doPrepare = {
     if (!orReplace && dsf.getSourceManager.exists(table)) {
@@ -62,7 +62,7 @@ class CreateViewCommand(table: String, op: Operation, orReplace: Boolean) extend
   }
 
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
-    val s = new SQLStatement(op)(dsf.getProperties)
+    val s = new SQLStatement(sql, op)(dsf.getProperties)
     
     if (orReplace) {
       dsf.getSourceManager.remove(table)

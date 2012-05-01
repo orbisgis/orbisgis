@@ -1282,9 +1282,6 @@ public class SQLTest extends TestBase {
                 dsf.executeSQL("SET custom.myproperty TO 'some value';");
                 dsf.executeSQL("RESET ALL;");
 
-                // put back explain to true (this is the right value for tests...
-                dsf.executeSQL("SET \"output.explain\" TO 'true';");
-
                 assertFalse(dsf.getProperties().containsKey("custom.myproperty"));
 
                 dsf.executeSQL("SET custom.myproperty TO 'some value';");

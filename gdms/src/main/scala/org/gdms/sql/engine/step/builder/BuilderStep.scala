@@ -165,7 +165,7 @@ case object BuilderStep extends AbstractEngineStep[(Operation, DataSourceFactory
           new CustomQueryScanCommand(e,tables.reverse, a.function, alias)
         }
       case CreateTableAs(n, ch) => new CreateTableCommand(n) withChild(ch)
-      case a @ CreateView(n, o, ch) => new CreateViewCommand(n, ch, o)
+      case CreateView(n, s, o, ch) => new CreateViewCommand(n, s, ch, o)
       case CreateTable(n, cols) => new TableCreationCommand(n, cols)
       case DropTables(n, i ,p) => new DropTablesCommand(n, i, p)
       case DropSchemas(n, i, p) => new DropSchemasCommand(n, i, p)

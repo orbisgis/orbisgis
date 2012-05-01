@@ -492,10 +492,10 @@ case class CreateTableAs(name: String,var child: Operation) extends Operation {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class CreateView(name: String, orReplace: Boolean,var child: Operation) extends Operation {
+case class CreateView(name: String, sql: String, orReplace: Boolean,var child: Operation) extends Operation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def toString = "CreateViewAs name(" + name + ") as(" + children + ")" +
+  override def toString = "CreateViewAs name(" + name + ", '" + sql + "') as(" + children + ")" +
   (if (orReplace) " replace" else "")
 }
 

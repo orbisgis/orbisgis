@@ -66,7 +66,7 @@ object LogicPlanBuilder {
   /**
    * Builds an abstract operation tree from an abstract syntactic tree.
    */
-  def buildOperationTree(node: Tree): Operation = {
+  def buildOperationTree(sql: String, node: Tree): Operation = {
     // output
     var end: Operation = null
 
@@ -204,7 +204,7 @@ object LogicPlanBuilder {
                   // ^(T_UNION select_command)
                   
                   // we step over the output, getting the first child instead
-                  union = buildOperationTree(t.getChild(0)).children.head
+                  union = buildOperationTree("", t.getChild(0)).children.head
                   
                 }
               case T_DISTINCT => {
@@ -320,7 +320,7 @@ object LogicPlanBuilder {
                 end = Insert(getFullTableName(c(0)), fields, valscan)
               }
             case T_SELECT => {
-                val s = buildOperationTree(c(1))
+                val s = buildOperationTree(sql, c(1))
                 // step over the Output
                 end = Insert(getFullTableName(c(0)), fields, s.children.head)
               }
@@ -343,7 +343,7 @@ object LogicPlanBuilder {
           if (node.getChild(1).getType == T_SELECT) {
 	    // AST:
 	    // ^(T_CREATE_TABLE table_id select_statement)
-            val o = buildOperationTree(node.getChild(1).asInstanceOf[CommonTree])
+            val o = buildOperationTree("", node.getChild(1).asInstanceOf[CommonTree])
             end = CreateTableAs(getFullTableName(node.getChild(0)), o)
           } else {
 	    // AST:
@@ -372,8 +372,8 @@ object LogicPlanBuilder {
 	  // ^(T_CREATE_VIEW table_id select_statement T_OR?)
 
           // building the select statement, resulting in an Output o
-          val o = buildOperationTree(node.getChild(1).asInstanceOf[CommonTree])
-          end = CreateView(getFullTableName(node.getChild(0)), node.getChildCount == 3, o)
+          val o = buildOperationTree("", node.getChild(1).asInstanceOf[CommonTree])
+          end = CreateView(getFullTableName(node.getChild(0)), sql, node.getChildCount == 3, o)
         }
       case T_ALTER => {
           // alter table statement
@@ -573,7 +573,7 @@ object LogicPlanBuilder {
       case T_TABLE_QUERY => {
           // AST:
           // ^( T_TABLE_QUERY select_statement )
-          SubQuery(head.getChild(1).getText, buildOperationTree(head.getChild(0)))
+          SubQuery(head.getChild(1).getText, buildOperationTree("", head.getChild(0)))
         }
     
       case T_TABLE_VALUES => {
@@ -611,7 +611,7 @@ object LogicPlanBuilder {
             Right(o) :: Nil
           }
         case T_TABLE_QUERY => {
-            val s = SubQuery("",  buildOperationTree(i.getChild(0)))
+            val s = SubQuery("",  buildOperationTree("", i.getChild(0)))
             Right(s) :: Nil
           }
         case T_TABLE_VALUES => {
@@ -741,7 +741,7 @@ object LogicPlanBuilder {
           right.getType match {
             // AST:
             // ^(T_IN expression_main ^(T_SELECT ... ))
-            case T_SELECT => left in buildOperationTree(right)
+            case T_SELECT => left in buildOperationTree("", right)
 
               // AST:
               // ^(T_IN expression_main ^(T_EXPR_LIST expression_main+ ))
@@ -758,7 +758,7 @@ object LogicPlanBuilder {
         }
         
       case T_EXISTS => {
-          Expression(ExistsEvaluator(buildOperationTree(left)))
+          Expression(ExistsEvaluator(buildOperationTree("", left)))
         }
         // constant values are built from String by SQLValueFactory
       case a => Expression(SQLValueFactory.createValue(tree.getText, a))

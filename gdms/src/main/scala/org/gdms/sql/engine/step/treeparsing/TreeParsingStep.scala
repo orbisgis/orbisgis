@@ -53,19 +53,31 @@ import org.gdms.sql.engine.operations.Operation
 /**
  * Step 1: parsing the AST returned from ANTLR into one or several operations.
  */
-case object TreeParsingStep extends AbstractEngineStep[CommonTree, Seq[Operation]]("AST Parsing") {
+case object TreeParsingStep extends AbstractEngineStep[(CommonTree, String), Seq[(Operation, String)]]("AST Parsing") {
   
-  def doOperation(tree: CommonTree)(implicit p: Properties) = {
+  private val spl = """;""".r
+  
+  def doOperation(ts: (CommonTree, String))(implicit p: Properties) = {
+    val tree = ts._1
     if (isPropertyTurnedOn(Flags.EXPLAIN)) {
       LOG.info("Parsing tree: " + tree.toStringTree)
     }
     
-    val a = (0 until tree.getChildCount) map (tree.getChild) map (LogicPlanBuilder.buildOperationTree);
+    val sts = spl.split(ts._2)
+    val a = (0 until tree.getChildCount) map (tree.getChild);
+    
+    val b = (if (sts.length != tree.getChildCount) {
+      LOG.warn("SQL instruction and tree count do not match!")
+      a.zipAll(sts, null, "").filterNot(_._1 == null)
+    } else {
+      a.zip(sts)
+    }) map (t => (LogicPlanBuilder.buildOperationTree(t._2, t._1), t._2))
+    
     if (isPropertyTurnedOn(Flags.EXPLAIN)) {
       LOG.info("Parsed logical execution tree.")
-      a foreach (LOG.debug)
+      b foreach (LOG.debug)
     }
     
-    a
+    b
   }
 }

@@ -55,8 +55,9 @@ import org.gdms.sql.engine.step.functions.FunctionsStep
 import org.gdms.sql.engine.step.physicalJoin.PhysicalJoinOptimStep
 import org.orbisgis.progress.ProgressMonitor
 
-class SQLStatement(var op: Operation)(implicit p: Properties) {
+class SQLStatement(sql: String, var op: Operation)(implicit p: Properties) {
   
+  private val finalSql = sql + ';'
   private var com: OutputCommand = _
   private var r: DataSet = _
   private var dsf: Option[DataSourceFactory] = None
@@ -127,5 +128,5 @@ class SQLStatement(var op: Operation)(implicit p: Properties) {
   
   def getReferencedSources(): Array[String] = refs
   
-  def getSQL(): String = ""
+  def getSQL(): String = finalSql
 }

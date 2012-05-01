@@ -99,7 +99,7 @@ public class InstructionTest extends TestBase {
                         null);
                 assertEquals((ds.getSource().getType() & SourceManager.SQL), SourceManager.SQL);
                 String sql = ((SQLSourceDefinition) ds.getSource().getDataSourceDefinition()).getSQL();
-                assertEquals(sql, "select * from alltypes;");
+                assertEquals("select * from alltypes;", sql);
         }
 
         @Test

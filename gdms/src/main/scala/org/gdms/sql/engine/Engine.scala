@@ -63,12 +63,13 @@ object Engine {
       sql          >=: // original string
       ParsingStep  >=: // parsing into AST
       TreeParsingStep  // parsing into Seq[Operation]
-    } map {
-      _                    >=:
+    } map { c =>
+      (c._1                    >=:
       LogicalJoinOptimStep >=: // joins
       FiltersStep          >=: // filters
       ValidationStep           // validation
-    } map (new SQLStatement(_)) toArray
+     , c._2)
+    } map (c => new SQLStatement(c._2, c._1)) toArray
   }
   
   @throws(classOf[ParseException])

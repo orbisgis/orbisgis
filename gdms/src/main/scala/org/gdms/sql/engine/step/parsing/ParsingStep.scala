@@ -55,7 +55,7 @@ import org.gdms.sql.engine.ParseException
 import org.gdms.sql.parser.GdmSQLLexer
 import org.gdms.sql.parser.GdmSQLParser
 
-case object ParsingStep extends AbstractEngineStep[String, CommonTree]("Parsing") {
+case object ParsingStep extends AbstractEngineStep[String, (CommonTree, String)]("Parsing") {
   def doOperation(sql: String)(implicit p: Properties) = {
     
     val input = getInput(sql)
@@ -63,7 +63,7 @@ case object ParsingStep extends AbstractEngineStep[String, CommonTree]("Parsing"
     
     try {
       // entry point of the parser
-      parser.start_rule.getTree.asInstanceOf[CommonTree]
+      (parser.start_rule.getTree.asInstanceOf[CommonTree], sql)
     } catch {
       case e: RecognitionException => throw new ParseException(getErrorMessage(e), e)
       case e if e.getCause.isInstanceOf[RecognitionException] => 
