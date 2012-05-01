@@ -158,15 +158,18 @@ public class CustomQueriesTest extends TestBase {
         @Test
         public void testRegisterValidation() throws Exception {
                 // from clause
-                String path = TestResourceHandler.TESTRESOURCES + "points.shp";
+                String path = TestResourceHandler.TESTRESOURCES + "/points.shp";
                 executeSuccess("CALL register('" + path + "', 'name');");
                 executeFail("CALL register('toto', '') from ds;");
 
                 // // parameters
                 executeFail("CALL register();");
-                path = TestResourceHandler.TESTRESOURCES + "toto.shp";
+                path = TestResourceHandler.TESTRESOURCES + "/toto.shp";
+                // non existing file
                 executeFail("CALL register('" + path + "');");
-                dsf.getSourceManager().remove("toto");
+                
+                dsf.getSourceManager().remove("name");
+                path = TestResourceHandler.TESTRESOURCES + "/points.shp";
                 executeSuccess("CALL register('" + path + "', 'file');");
                 executeSuccess("CALL register('postgresql', 'file', '23' , 'file', 'as', 'file', 'as', 'file2');");
                 executeFail("CALL register('as', 'file', 'as');");

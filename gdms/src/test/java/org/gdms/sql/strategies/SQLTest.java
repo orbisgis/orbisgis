@@ -109,7 +109,8 @@ public class SQLTest extends TestBase {
         @Test
         public void testCaseInsensitiveness() throws Exception {
                 dsf.executeSQL("seLECt st_BuffER(the_geom, 20) From " + SHPTABLE + ";");
-                dsf.executeSQL("CaLL REGisteR('memory.shp');");
+                String path = TestResourceHandler.TESTRESOURCES + "/points.shp";
+                dsf.executeSQL("CaLL REGisteR('" + path + "');");
         }
 
         @Test

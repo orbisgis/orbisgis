@@ -76,14 +76,21 @@ public final class RegisterCall extends AbstractExecutorFunction {
                 try {
                         final SourceManager sourceManager = dsf.getSourceManager();
                         if (values.length == 1) {
-                                String file = values[0].toString();
-                                final FileSourceCreation fsc = new FileSourceCreation(new File(file), null);
-                                String name = FileUtils.getFileNameWithoutExtensionU(fsc.getFile());
-                                sourceManager.register(name, fsc);
+                                File file = new File(values[0].toString());
+                                if (!file.exists()) {
+                                        throw new FunctionException("The specified file does not exist! "
+                                                + "Path: " + file.getAbsolutePath());
+                                }
+                                String name = FileUtils.getFileNameWithoutExtensionU(file);
+                                sourceManager.register(name, file);
                         } else if (values.length == 2) {
-                                final String file = values[0].toString();
                                 final String name = values[1].toString();
-                                sourceManager.register(name, new FileSourceCreation(new File(file), null));
+                                final File file = new File(values[0].toString());
+                                if (!file.exists()) {
+                                        throw new FunctionException("The specified file does not exist! "
+                                                + "Path: " + file.getAbsolutePath());
+                                }
+                                sourceManager.register(name, file);
                         } else if ((values.length == 8) || (values.length == 9)) {
                                 final String vendor = values[0].toString();
                                 final String host = values[1].toString();
@@ -137,7 +144,7 @@ public final class RegisterCall extends AbstractExecutorFunction {
         @Override
         public String getSqlOrder() {
                 return "Usage: \n"
-                        + "1) EXECUTE register ('name');\n"
+                        + "1) EXECUTE register ('path_to_file');\n"
                         + "2) EXECUTE register ('path_to_file', 'name');\n"
                         + "3) EXECUTE register ('vendor', 'host', port, "
                         + "dbName, user, password, tableName, dsEntryName);\n"
