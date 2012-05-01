@@ -117,5 +117,5 @@ class AggregateCommand(expression: Seq[(Expression, Option[String])], grouping: 
 
   val exp = (expression ++ grouping) map (_._1)
 
-  override def getMetadata = SQLMetadata(children.head.getMetadata.table, Expression.metadataFor(grouping ++ expression))
+  override def getMetadata = SQLMetadata("", Expression.metadataFor(grouping ++ expression))
 }
