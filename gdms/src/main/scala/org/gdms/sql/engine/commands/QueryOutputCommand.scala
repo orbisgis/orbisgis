@@ -45,6 +45,7 @@
 package org.gdms.sql.engine.commands
 
 import java.io.File
+import org.gdms.data.DataSourceFactory
 import org.gdms.data.schema.DefaultMetadata
 import org.gdms.driver.DiskBufferDriver
 import org.gdms.sql.engine.GdmSQLPredef._
@@ -81,6 +82,16 @@ class QueryOutputCommand extends Command with OutputCommand {
     null
   }
   
+  def materialize(dsf: DataSourceFactory) {
+    this.dsf = dsf
+    doPrepare
+  }
+  
+  def iterate() = {
+    for (i <- (0l until driver.getRowCount).par.view.toIterator) yield {
+      Row(i, driver.getRow(i))
+    }
+  }
   override def getMetadata = {
     val m = super.getMetadata
     

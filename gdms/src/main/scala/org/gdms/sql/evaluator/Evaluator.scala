@@ -52,7 +52,6 @@ import org.gdms.data.values.ValueFactory
 import org.gdms.sql.engine.UnknownFieldException
 import org.gdms.sql.function.AggregateFunction
 import org.gdms.sql.function.FunctionException
-import org.gdms.sql.function.FunctionManager
 import org.gdms.sql.function.FunctionValidator
 import org.gdms.sql.function.ScalarFunction
 import org.gdms.sql.engine.commands.Row
@@ -87,9 +86,16 @@ abstract class Evaluator {
     doPreValidate
   }
   
+  final def cleanUp {
+    childExpressions map (_ cleanUp)
+    doCleanUp
+  }
+  
   protected def doPreValidate: Unit = {}
 
   protected def doValidate: Unit = {}
+  
+  protected def doCleanUp: Unit = {}
   
   protected def doCopy: Evaluator
   
@@ -121,6 +127,8 @@ trait DsfEvaluator extends Evaluator {
       n.asInstanceOf[DsfEvaluator].dsf = dsf
     }
   }
+  
+  override def doCleanUp = dsf = null
 }
 
 object cons {
@@ -153,6 +161,10 @@ case class FunctionEvaluator(name: String, l: List[Expression]) extends Evaluato
   
   def doCopy = {
     FunctionEvaluator(name, l)
+  }  
+  override def doCleanUp = {
+    super.doCleanUp
+    f == null
   }
 }
 
@@ -225,6 +237,11 @@ case class FieldEvaluator(name: String, table: Option[String] = None) extends Ev
     f.index = index
   }
   def doCopy = copy()
+  
+  override def doCleanUp = {
+    sqlType = -1
+    index = -1
+  }
 }
  
 object field {
@@ -259,6 +276,12 @@ case class OuterFieldEvaluator(name: String, table: Option[String]) extends Eval
     f.index = index
   }
   override def toString = "OuterField(" + (if (table.isDefined) table.get + "." else "") + name + ")"
+  
+  override def doCleanUp = {
+    sqlType = -1
+    index = -1
+    value = null
+  }
 }
 
 object outerField {
@@ -278,8 +301,7 @@ object outerField {
  */
 case class StarFieldEvaluator(except: Seq[String], table: Option[String]) extends Evaluator {
   def eval = throw new UnsupportedOperationException
-  var sqlType = -1
-  var index: Int = -1
+  val sqlType = -1
   override def toString = "StarField(except=" + except + ")"
   def doCopy = copy()
 }

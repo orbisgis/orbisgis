@@ -49,11 +49,6 @@ import org.gdms.data.schema.Metadata
 import org.gdms.data.values.Value
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.operations.Operation
-import org.gdms.sql.function.AggregateFunction
-import org.gdms.sql.function.FunctionManager
-import org.gdms.sql.function.ScalarFunction
-import org.gdms.sql.function.executor.ExecutorFunction
-import org.gdms.sql.function.table.TableFunction
 import org.gdms.sql.engine.commands.Row
 import org.gdms.sql.engine.GdmSQLPredef._
 
@@ -210,6 +205,14 @@ sealed class Expression(var evaluator: Evaluator) extends Iterable[Expression] {
   def validate: Unit = evaluator.validate
   
   def preValidate: Unit = evaluator.preValidate
+  
+  def cleanUp = {
+    evaluator.cleanUp
+    evaluator match {
+      case OuterFieldEvaluator(n, t) => evaluator = FieldEvaluator(n ,t)
+      case _ =>
+    }
+  }
 
   override def toString = "Ex(" + evaluator.toString + ")"
   

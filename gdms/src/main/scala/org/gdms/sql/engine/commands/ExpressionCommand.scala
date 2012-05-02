@@ -249,27 +249,7 @@ trait ExpressionCommand extends Command {
   
   override def doCleanUp {
     // reset state of expressions
-    def clean(e: Expression) {
-      e.children map (clean)
-      e.evaluator match {
-        case f: FieldEvaluator => {
-            f.index = -1
-            f.sqlType = -1
-          }
-        case ex: ExistsEvaluator => {
-            ex.command.cleanUp
-            ex.dsf = null
-          }
-        case in: InEvaluator => {
-            in.command.cleanUp
-            in.dsf = null
-          }
-        case d: DsfEvaluator => d.dsf = null
-        case _ =>
-      }
-    }
-    
-    exp map clean
+    exp foreach (_ cleanUp)
     
     // reset state
     outerReference = Nil

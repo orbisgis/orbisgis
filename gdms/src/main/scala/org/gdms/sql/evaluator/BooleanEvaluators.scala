@@ -53,6 +53,7 @@ import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands.Command
 import org.gdms.sql.engine.commands.ExpressionCommand
+import org.gdms.sql.engine.commands.QueryOutputCommand
 import org.gdms.sql.engine.operations.Operation
 import org.orbisgis.progress.ProgressMonitor
 
@@ -239,12 +240,27 @@ case class ExistsEvaluator(var o: Operation) extends BooleanEvaluator with DsfEv
   
   var command: Command = null
   var pm: Option[ProgressMonitor] = None
+  var materialized = false
+  var matOut: QueryOutputCommand = null
   
   override val childExpressions = Nil
   
   private def evalInner(s: Array[Value]) = {
-    evals foreach (_.setValue(s))
-    command.execute(pm)
+    // independant inner query
+    if (evals.isEmpty) {
+      // materialize once
+      if (materialized == false) {
+        matOut.execute(pm)
+        materialized = true
+      }
+      
+      // iterate the result
+      matOut.iterate()
+    } else {
+      // set outer field references and execute
+      evals foreach (_.setValue(s))
+      command.execute(pm)
+    }
   }
   
   def eval = s => ValueFactory.createValue(!evalInner(s).isEmpty)
@@ -253,6 +269,28 @@ case class ExistsEvaluator(var o: Operation) extends BooleanEvaluator with DsfEv
     command.prepare(dsf)
     
     findOuterFieldEvals(command)
+    
+    if (evals.isEmpty) {
+      // subquery result can be cached: it does not depend on the outer query
+      matOut = new QueryOutputCommand
+      matOut.children = List(command)
+      matOut.materialize(dsf)
+    }
+  }
+  override def doCleanUp = {
+    super.doCleanUp
+    
+    if (matOut != null) {
+      matOut.cleanUp
+      matOut = null
+    } else {
+      command.cleanUp
+    }
+    
+    command = null
+    pm = None
+    materialized = false
+    evals = Nil
   }
   
   private var evals: List[OuterFieldEvaluator]= Nil
@@ -286,12 +324,27 @@ object exists {
 case class InEvaluator(e: Expression, var o: Operation) extends BooleanEvaluator with DsfEvaluator {
   var command: Command = null
   var pm: Option[ProgressMonitor] = None
+  var materialized = false
+  var matOut: QueryOutputCommand = null
   
   override val childExpressions = e :: Nil
   
   private def evalInner(s: Array[Value]) = {
-    evals foreach (_.setValue(s))
-    command.execute(pm)
+    // independant inner query
+    if (evals.isEmpty) {
+      // materialize once
+      if (materialized == false) {
+        matOut.execute(pm)
+        materialized = true
+      }
+      
+      // iterate the result
+      matOut.iterate()
+    } else {
+      // set outer field references and execute
+      evals foreach (_.setValue(s))
+      command.execute(pm)
+    }
   }
   
   def eval = s => {
@@ -324,6 +377,28 @@ case class InEvaluator(e: Expression, var o: Operation) extends BooleanEvaluator
     }
     
     findOuterFieldEvals(command)
+    
+    if (evals.isEmpty) {
+      // subquery result can be cached: it does not depend on the outer query
+      matOut = new QueryOutputCommand
+      matOut.children = List(command)
+      matOut.materialize(dsf)
+    }
+  }
+  override def doCleanUp = {
+    super.doCleanUp
+    
+    if (matOut != null) {
+      matOut.cleanUp
+      matOut = null
+    } else {
+      command.cleanUp
+    }
+    
+    command = null
+    pm = None
+    materialized = false
+    evals = Nil
   }
   
   private var evals: List[OuterFieldEvaluator]= Nil

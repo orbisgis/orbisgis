@@ -343,6 +343,23 @@ public class SQLTest extends TestBase {
                 dsf.getSourceManager().delete("testIn");
                 dsf.getSourceManager().delete("testIn2");
         }
+        
+        @Test
+        public void testCorrelatedInClause() throws Exception {
+                dsf.executeSQL("CREATE TABLE testIn AS SELECT * FROM VALUES (1), (3), (5) as toto;");
+                dsf.executeSQL("CREATE TABLE testIn2 AS SELECT * FROM VALUES (1), (2), (3), (4), (5) as toto;");
+                DataSource d = dsf.getDataSourceFromSQL("SELECT * FROM testIn2 WHERE EXISTS ("
+                        + "SELECT 1 FROM testIn WHERE testIn.exp0 = testIn2.exp0);");
+                d.open();
+                assertEquals(3, d.getRowCount());
+                assertEquals(1, d.getInt(0, 0));
+                assertEquals(3, d.getInt(1, 0));
+                assertEquals(5, d.getInt(2, 0));
+                d.close();
+
+                dsf.getSourceManager().delete("testIn");
+                dsf.getSourceManager().delete("testIn2");
+        }
 
         @Test
         public void testInClauseWithNull() throws Exception {

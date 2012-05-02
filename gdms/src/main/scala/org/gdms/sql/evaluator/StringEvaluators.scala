@@ -116,6 +116,10 @@ case class LikeEvaluator(e1: Expression, e2: Expression, caseInsensitive: Boolea
       case false => throw new IncompatibleTypesException
     }
   }
+  override def doCleanUp = {
+    pattern = null
+    loaded = false
+  }
   override def toString = "(" + e1 + " LIKE " + e2 + ")"
   def doCopy = copy()
 }
@@ -161,6 +165,10 @@ case class SimilarToEvaluator(e1: Expression, e2: Expression) extends Evaluator 
       case true =>
       case false => throw new IncompatibleTypesException
     }
+  }
+  override def doCleanUp = {
+    pattern = null
+    loaded = false
   }
   override def toString = "(" + e1 + " LIKE " + e2 + ")"
   def doCopy = copy()
@@ -210,6 +218,10 @@ case class POSIXEvaluator(e1: Expression, e2: Expression, caseInsensitive: Boole
       case true =>
       case false => throw new IncompatibleTypesException
     }
+  }
+  override def doCleanUp = {
+    pattern = null
+    loaded = false
   }
   override def toString = "(" + e1 + " LIKE " + e2 + ")"
   def doCopy = copy()
