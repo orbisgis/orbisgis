@@ -53,32 +53,33 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import org.orbisgis.progress.ProgressMonitor;
+
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Constraint;
+import org.gdms.data.types.ConstraintFactory;
+import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DBDriver;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.MemoryDriver;
-import org.gdms.driver.DataSet;
 import org.gdms.driver.TableDescription;
 import org.gdms.driver.jdbc.ConversionRule;
 import org.gdms.driver.jdbc.DefaultDBDriver;
-import org.orbisgis.progress.ProgressMonitor;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import org.gdms.data.schema.DefaultSchema;
-import org.gdms.data.types.PrimaryKeyConstraint;
-import org.gdms.driver.AbstractDataSet;
 
 public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
         FileDriver, DBDriver {
@@ -91,7 +92,6 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
         private GeometryFactory gf = new GeometryFactory();
         private static ArrayList<String> newValues;
         private static DataSource currentDataSource;
-        public static boolean pk = true;
         
         private boolean open = false;
 
@@ -262,9 +262,22 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
         public String getReferenceInSQL(String fieldName) {
                 return null;
         }
+        
+        
+
+        @Override
+        public void open(Connection con, String tableName, String schemaName) throws DriverException {
+                this.schema = new DefaultSchema("test");
+                final Type[] fieldsTypes = new Type[]{
+                        TypeFactory.createType(Type.GEOMETRY),
+                        TypeFactory.createType(Type.STRING, ConstraintFactory.createConstraint(Constraint.PK))};
+                final String[] fieldsNames = new String[]{"geom", "alpha"};
+                this.schema.addTable("main", new DefaultMetadata(fieldsTypes, fieldsNames));
+                open = true;
+        }
 
         public void open(Connection con, String tableName) throws DriverException {
-                open();
+                open(null, null, null);
         }
 
         public void beginTrans(Connection con) throws SQLException {
@@ -364,16 +377,13 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
         public void setFile(File file) {
                 this.schema = new DefaultSchema("test");
                 Constraint[] constraints = new Constraint[0];
-                if (pk) {
-                        constraints = new Constraint[]{new PrimaryKeyConstraint()};
-                }
                 final Type[] fieldsTypes = new Type[]{
                         TypeFactory.createType(Type.GEOMETRY),
                         TypeFactory.createType(Type.STRING, constraints)};
                 final String[] fieldsNames = new String[]{"geom", "alpha"};
                 this.schema.addTable("main", new DefaultMetadata(fieldsTypes, fieldsNames));
         }
-
+        
         @Override
         public Schema getSchema() throws DriverException {
                 return schema;

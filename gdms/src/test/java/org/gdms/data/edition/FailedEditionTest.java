@@ -60,6 +60,7 @@ import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
 
@@ -140,7 +141,6 @@ public class FailedEditionTest extends TestBase {
         public void setUp() throws Exception {
                 ReadDriver.initialize();
                 ReadDriver.isEditable = true;
-                ReadDriver.pk = true;
 
                 super.setUpTestsWithEdition(false);
                 DriverManager dm = new DriverManager();

@@ -298,7 +298,6 @@ public class ListenerTest extends TestBase {
         public void setUp() throws Exception {
                 ReadDriver.initialize();
                 ReadDriver.isEditable = true;
-                ReadDriver.pk = false;
 
                 DriverManager dm = new DriverManager();
                 dm.registerDriver(ReadAndWriteDriver.class);
