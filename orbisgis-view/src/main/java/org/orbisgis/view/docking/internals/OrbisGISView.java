@@ -31,15 +31,9 @@ package org.orbisgis.view.docking.internals;
 
 import bibliothek.gui.dock.common.DefaultSingleCDockable;
 import bibliothek.gui.dock.common.action.CAction;
-import bibliothek.gui.dock.common.action.CButton;
-import java.awt.Component;
-import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
 import java.util.List;
-import javax.swing.AbstractButton;
-import javax.swing.JButton;
 import javax.swing.JToolBar;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
@@ -53,7 +47,7 @@ import org.orbisgis.view.docking.DockingPanelParameters;
  */
 public class OrbisGISView  extends DefaultSingleCDockable {
     private DockingPanelParameters dockableParameters;
-    private List<CAction> customActions = new ArrayList<CAction>();
+    private ToolBarActions customActions;
     /**
      * Give access to the panel parameters
      * @return DockingPanelParameters instance
@@ -62,6 +56,18 @@ public class OrbisGISView  extends DefaultSingleCDockable {
         return dockableParameters;
     }
 
+    
+    /**
+     * Clear custom actions list
+     */
+    private void clearCustomActions() {
+        if(customActions != null) {
+            for(CAction customAction : customActions.getCustomActions()) {
+                this.removeAction(customAction);
+            }
+        }
+        customActions = new ToolBarActions();
+    }
     /**
      * Constructor of the OrbisGISView
      * @param dockingPanel The dockingPanel instance
@@ -77,48 +83,23 @@ public class OrbisGISView  extends DefaultSingleCDockable {
         setMinimizable(dockableParameters.isMinimizable());
         setExternalizable(dockableParameters.isExternalizable());
         setCloseable(dockableParameters.isCloseable());
-        convertToolBarToActions(dockableParameters.getToolBar());
-    }
-    
-    /**
-     * Copy action listener to docking frames button
-     * @param from
-     * @param to 
-     */
-    private void transferActionsListeners(AbstractButton from , CButton to) {
-        ActionListener[] listeners = from.getActionListeners();
-        for(ActionListener listener : listeners) {
-            to.addActionListener(listener);
-        }
-    }
-    
-    private void clearCustomActions() {
-        for(CAction customAction : customActions) {
-            this.removeAction(customAction);
-        }
-        customActions.clear();
+        onSetToolBar(dockableParameters.getToolBar());
+        
     }
     /**
-     * Convert the swing toolbar into docking frames CAction
+     * Copy CAction list into this View Action
+     * @param actions 
      */
-    private void convertToolBarToActions(JToolBar viewToolBar) {
-        if(viewToolBar!=null) {
+    private void copyActions(List<CAction> actions) {
+        for(CAction action : actions) {
+            this.addAction(action);
+        }
+    }
+    public final void onSetToolBar(JToolBar toolbar) {
+        if(toolbar !=null) {
             clearCustomActions();
-            Component[] components = viewToolBar.getComponents();
-            for(Component component : components) {
-                CAction action=null;
-                if(component instanceof AbstractButton) {
-                    AbstractButton button = (AbstractButton) component;
-                    CButton dockingFramesButton = new CButton(button.getText(), button.getIcon());
-                    dockingFramesButton.setTooltip(button.getToolTipText());
-                    transferActionsListeners(button,dockingFramesButton);
-                    action = dockingFramesButton;
-                }
-                if(action!=null) {
-                    customActions.add(action);
-                    this.addAction(action);
-                }
-            }
+            customActions.convertToolBarToActions(toolbar);
+            copyActions(customActions.getCustomActions());
         }
     }
     
@@ -161,12 +142,12 @@ public class OrbisGISView  extends DefaultSingleCDockable {
                                                 this,
                                                 "setCloseable",
                                                 "newValue"));
-        //Link closeable state change
+        //Link JToolBar state change
         dockableParameters.addPropertyChangeListener(
                             DockingPanelParameters.PROP_TOOLBAR,
                             EventHandler.create(PropertyChangeListener.class,
                                                 this,
-                                                "convertToolBarToActions",
+                                                "onSetToolBar",
                                                 "newValue"));
   
     }

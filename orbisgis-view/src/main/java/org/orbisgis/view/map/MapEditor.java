@@ -29,17 +29,16 @@
 package org.orbisgis.view.map;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import javax.swing.*;
+import org.apache.log4j.Logger;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tools.ZoomInTool;
+import org.orbisgis.view.map.tools.ZoomOutTool;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -48,7 +47,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class MapEditor extends JPanel implements DockingPanel   {
     protected final static I18n I18N = I18nFactory.getI18n(MapEditor.class);
-    
+    private static final Logger GUILOGGER = Logger.getLogger("gui."+MapEditor.class);
     //The UID must be incremented when the serialization is not compatible with the new version of this class
     private static final long serialVersionUID = 1L; 
     private MapControl mapControl;
@@ -67,11 +66,10 @@ public class MapEditor extends JPanel implements DockingPanel   {
         dockingPanelParameters.setExternalizable(false);
         dockingPanelParameters.setCloseable(false);
         //Declare Tools of Map Editors
-        JToolBar toolBar = createToolBar();
         //For debug purpose, also add the toolbar in the frame
-        add(toolBar, BorderLayout.PAGE_START);
+        add(createToolBar(false), BorderLayout.PAGE_START);
         //Add the tools in the docking Panel title
-        dockingPanelParameters.setToolBar(toolBar);
+        dockingPanelParameters.setToolBar(createToolBar(true));
         mapControl = new MapControl();
         this.add(mapControl, BorderLayout.CENTER);
     }
@@ -80,18 +78,34 @@ public class MapEditor extends JPanel implements DockingPanel   {
      * Create a toolbar corresponding to the current state of the Editor
      * @return 
      */
-    private JToolBar createToolBar() {
+    private JToolBar createToolBar(boolean useButtonText) {
         JToolBar toolBar = new JToolBar();
+        ButtonGroup autoSelection = new ButtonGroup();
         //Navigation Tools
-        addButton(toolBar,I18N.tr("Zoom in"),new ZoomInTool());
+        autoSelection.add(addButton(toolBar,I18N.tr("Zoom in"),new ZoomInTool(),useButtonText));
+        autoSelection.add(addButton(toolBar,I18N.tr("Zoom out"), new ZoomOutTool(),useButtonText));
+        toolBar.addSeparator();
         return toolBar;
     }
-    
-    private void addButton(JToolBar toolBar,String name,Automaton automaton) {
-        JToggleButton button = new JToggleButton(name,automaton.getImageIcon());
+
+    /**
+     * Add the automaton on the toolBar
+     * @param toolBar
+     * @param text
+     * @param automaton
+     * @param useButtonText Show a text inside the ToolBar button.
+     * With DockingFrames, this text appear only on popup menu list
+     * @return 
+     */
+    private AbstractButton addButton(JToolBar toolBar,String text,Automaton automaton,boolean useButtonText) {
+        if(!useButtonText) {
+           text = "";
+        }
+        JToggleButton button = new JToggleButton(text,automaton.getImageIcon());;
         button.setToolTipText(automaton.getTooltip());
-        button.addActionListener(new AutomatonActionListener(automaton));
+        button.addItemListener(new AutomatonItemListener(automaton));
         toolBar.add(button);
+        return button;
     }
     /**
      * Give information on the behaviour of this panel related to the current
@@ -109,20 +123,23 @@ public class MapEditor extends JPanel implements DockingPanel   {
      * The user click on a Map Tool
      * @param automaton 
      */
-    public void onToolClick(Automaton automaton) {
+    public void onToolSelected(Automaton automaton) {
+        GUILOGGER.info(I18N.tr("Choose the tool named {0}",automaton.getTooltip()));
         mapControl.setDefaultTool(automaton);
     }
     
     /**
      * Internal Listener that store an automaton
      */
-    private class AutomatonActionListener implements ActionListener {
+    private class AutomatonItemListener implements ItemListener {
         private Automaton automaton;
-        AutomatonActionListener(Automaton automaton) {
+        AutomatonItemListener(Automaton automaton) {
             this.automaton = automaton;
         }
-        public void actionPerformed(ActionEvent ae) {
-            onToolClick(automaton);
-        }        
+        public void itemStateChanged(ItemEvent ie) {
+            if(ie.getStateChange() == ItemEvent.SELECTED) {
+                onToolSelected(automaton);
+            }
+        }
     }
 }
