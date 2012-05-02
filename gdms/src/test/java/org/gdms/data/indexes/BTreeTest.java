@@ -165,17 +165,6 @@ public class BTreeTest extends TestBase {
                 testIndexRealData(new DiskBTree(32, 64, false), dsf.getDataSource(file), "type", 100.0);
         }
         
-        @Test
-        public void testIndexRealDataFromSQL() throws Exception {
-                File file = new File(TestResourceHandler.TESTRESOURCES, "hedgerow.shp");
-                dsf.getSourceManager().register("hedges", file);
-                DataSource ds = dsf.getDataSourceFromSQL("select * from hedges order by \"type\" ;");
-                setUp();
-                testIndexRealData(new DiskBTree(255, 512, false), ds, "type", 100.0);
-                setUp();
-                testIndexRealData(new DiskBTree(3, 256, false), ds, "type", 1000.0);
-        }
-
         private void testIndexRealData(BTree tree, DataSource ds, String fieldName,
                 double checkPeriod) throws Exception {
                 ds.open();

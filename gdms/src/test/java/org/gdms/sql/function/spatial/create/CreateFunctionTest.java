@@ -235,8 +235,6 @@ public class CreateFunctionTest extends FunctionTest {
                                 assertEquals((minX + 0.5) + (id_col - 1), geom.getCentroid().getCoordinate().x, 0);
                                 assertEquals((maxY - 0.5) - (id_row - 1), geom.getCentroid().getCoordinate().y, 0);
                         }
-                        
-                        System.out.println();
                 }
         }
 }
