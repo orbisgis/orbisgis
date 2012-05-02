@@ -69,9 +69,9 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
                 } catch (IllegalArgumentException e) {
                 }
                 gc.addFolder("myfolder");
-                gc.addElement("/myfolder/org.wont.add/ST_Buffer", ST_Buffer.class);
+                gc.addElement("/myfolder/org.wont.add/ST_Buffer", SymbolFactory.createPolygonSymbol());
                 try {
-                        gc.addElement("/myfolder/org.wont.add/ST_Buffer", ST_Buffer.class);
+                        gc.addElement("/myfolder/org.wont.add/ST_Buffer", SymbolFactory.createPolygonSymbol());
                         fail();
                 } catch (IllegalArgumentException e) {
                 }
@@ -84,24 +84,8 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
 
         @Test
         public void testAddParentDoesNotExist() throws Exception {
-                gc.addElement("/it.will.be.created/ST_Buffer", ST_Buffer.class);
+                gc.addElement("/it.will.be.created/ST_Buffer", SymbolFactory.createPolygonSymbol());
                 assertNotNull(gc.getGeocognitionElement("it.will.be.created"));
-        }
-
-        @Test
-        public void testFunctionPersistence() throws Exception {
-                gc.addElement("/ST_Buffer", ST_Buffer.class);
-                saveAndLoad();
-                Class<?> classFunction = gc.getElement("/ST_Buffer", Class.class);
-                assertEquals(classFunction.getName(), ST_Buffer.class.getName());
-        }
-
-        @Test
-        public void testCustomQueryPersistence() throws Exception {
-                gc.addElement("/Register", RegisterCall.class);
-                saveAndLoad();
-                Class<?> classCQ = gc.getElement("/Register", Class.class);
-                assertEquals(classCQ.getName(), RegisterCall.class.getName());
         }
 
         @Test
@@ -197,7 +181,7 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
         public void testRemovalCancellation() throws Exception {
                 TestListener listener = new TestListener();
                 gc.addGeocognitionListener(listener);
-                gc.addElement("/ST_Buffer", ST_Buffer.class);
+                gc.addElement("/ST_Buffer", SymbolFactory.createPolygonSymbol());
                 listener.cancel = true;
                 assertNull(gc.removeElement("/ST_Buffer"));
         }
@@ -238,35 +222,6 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
                 gc.addFolder("org.folder");
                 gc.clear();
                 assertEquals(gc.getRoot().getElementCount(), 0);
-        }
-
-        @Test
-        public void testOpenSaveCloseBuiltinSQL() throws Exception {
-                Class<?> buffer = ST_Buffer.class;
-                gc.addElement("/ST_Buffer", buffer);
-                unsupportedBuiltInSQLEdition("/ST_Buffer");
-                Class<?> register = RegisterCall.class;
-                gc.addElement("/register", register);
-                unsupportedBuiltInSQLEdition("/register");
-        }
-
-        private void unsupportedBuiltInSQLEdition(String id) throws Exception {
-                GeocognitionElement element = gc.getGeocognitionElement(id);
-                try {
-                        element.open(new NullProgressMonitor());
-                        fail();
-                } catch (UnsupportedOperationException e) {
-                }
-                try {
-                        element.save();
-                        fail();
-                } catch (UnsupportedOperationException e) {
-                }
-                try {
-                        element.close(new NullProgressMonitor());
-                        fail();
-                } catch (UnsupportedOperationException e) {
-                }
         }
 
         @Test
@@ -378,21 +333,6 @@ public class GeoCognitionTest extends AbstractGeocognitionTest {
                 gc.addElement("B", new DefaultMapContext());
                 try {
                         gc.getGeocognitionElement("A").setId("B");
-                        fail();
-                } catch (IllegalArgumentException e) {
-                }
-        }
-
-        @Test
-        public void testFixedName() throws Exception {
-                gc.addElement("ST_Buffer", ST_Buffer.class);
-                try {
-                        gc.addElement("SuperBuffer", ST_Buffer.class);
-                        fail();
-                } catch (IllegalArgumentException e) {
-                }
-                try {
-                        gc.getGeocognitionElement("ST_Buffer").setId("fails");
                         fail();
                 } catch (IllegalArgumentException e) {
                 }
