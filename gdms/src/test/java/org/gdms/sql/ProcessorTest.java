@@ -311,7 +311,7 @@ public class ProcessorTest extends TestBase {
                         }
                 }
         }
-
+        
         private void failPreparedWithUnknownFieldException(String sql) throws Exception {
                 try {
                         getFullyValidatedStatement(sql);
@@ -760,9 +760,23 @@ public class ProcessorTest extends TestBase {
                 getValidatedStatement("create index on alltypes (\"int\");");
                 getValidatedStatement("drop index on alltypes (\"int\");");
                 failWithNoSuchTableException("create index on allTypes (\"int\");");
-                failPreparedWithSemanticException("create index on alltypes (rint);");
+                
+                SQLStatement st = getFullyValidatedStatement("create index on alltypes (rint);");
+                
+                // index creation can only fail during execution
+                // this is a limitation of the current SourceManager
+                try {
+                        getFullyValidatedStatement("create index on alltypes (rint);").execute();
+                        fail();
+                } catch (DriverException e) {
+                        if (!(e.getCause() instanceof UnknownFieldException)) {
+                                fail();
+                        }
+                } finally {
+                        st.cleanUp();
+                }
+                
                 failWithNoSuchTableException("drop index on allTypes (\"int\");");
-                failPreparedWithSemanticException("drop index on alltypes (rint);");
         }
 
         @Test

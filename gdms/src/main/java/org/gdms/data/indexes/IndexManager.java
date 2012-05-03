@@ -75,6 +75,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
+import org.gdms.sql.engine.UnknownFieldException;
 
 /**
  * This class manages all indexes linked to a {@code DataSourceFactory}.
@@ -163,6 +164,13 @@ public class IndexManager {
                 try {
                         ds = dsf.getDataSource(dsName, DataSourceFactory.NORMAL);
                         ds.open();
+                        // field names check
+                        for (int i = 0; i < fieldNames.length; i++) {
+                                if (ds.getFieldIndexByName(fieldNames[i]) < 0) {
+                                        throw new UnknownFieldException(fieldNames[i]);
+                                }
+                        }
+
                         if (indexId == null) {
                                 int code = ds.getFieldType(ds.getFieldIndexByName(fieldNames[0])).getTypeCode();
                                 if ((code & Type.GEOMETRY) != 0 && fieldNames.length == 1) {
@@ -260,7 +268,7 @@ public class IndexManager {
          * Saves the index in a file.
          *
          * @param tableName name of the source
-         * @param fieldName name of the field to index
+         * @param fieldNames names of the field to index
          * @param pm a progress monitor; can be null.
          * @throws NoSuchTableException
          * @throws IndexException
@@ -311,6 +319,12 @@ public class IndexManager {
 
                         // Get index id if null
                         try {
+                                // field names check
+                                for (int i = 0; i < fieldNames.length; i++) {
+                                        if (src.getMetadata().getFieldIndex(fieldNames[i]) < 0) {
+                                                throw new UnknownFieldException(fieldNames[i]);
+                                        }
+                                }
                                 if (indexId == null) {
                                         int code = src.getMetadata().getFieldType(src.getMetadata().getFieldIndex(fieldNames[0])).getTypeCode();
                                         if ((code & MetadataUtilities.ANYGEOMETRY) != 0 && fieldNames.length == 1) {
@@ -360,7 +374,7 @@ public class IndexManager {
          * Saves the index in a file.
          *
          * @param src the source
-         * @param fieldNames name of the field to index
+         * @param fieldName name of the field to index
          * @param pm a progress monitor; can be null.
          * @throws NoSuchTableException
          * @throws IndexException
@@ -912,7 +926,7 @@ public class IndexManager {
          *
          * @param rightSource a MemoryDriver
          * @param tableName the name of the table of the driver
-         * @param fieldName the name of the field to index
+         * @param fieldNames the names of the field to index
          * @param indexId the id (type) of the index
          * @param pm an optional ProgressMonitor
          * @return the index
@@ -930,6 +944,12 @@ public class IndexManager {
                                 DataSourceFactory.NORMAL);
                         index.setFieldNames(fieldNames);
                         ds.open();
+                        // field names check
+                        for (int i = 0; i < fieldNames.length; i++) {
+                                if (ds.getFieldIndexByName(fieldNames[i]) < 0) {
+                                        throw new UnknownFieldException(fieldNames[i]);
+                                }
+                        }
                         index.buildIndex(dsf, ds, pm);
                         ds.close();
                         return index;
@@ -969,7 +989,7 @@ public class IndexManager {
          * Returns true if there is an index on the specified field.
          *
          * @param sourceName the name of the source
-         * @param fieldName the name of the field
+         * @param fieldNames the names of the field
          * @return true if there is an index, false otherwise.
          * @throws NoSuchTableException
          */
@@ -1016,7 +1036,7 @@ public class IndexManager {
          * Returns true if there is an index of the specified field of this readable source.
          *
          * @param src a data set
-         * @param fieldName a field name
+         * @param fieldNames a field names
          * @return true if there is an index on the data set.
          */
         public boolean isIndexed(DataSet src, String[] fieldNames) {
