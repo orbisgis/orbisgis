@@ -55,7 +55,7 @@
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  * Previous computer developer : Pierre-Yves FADET, computer engineer,
-Thomas LEDUC, scientific researcher, Fernando GONZALEZ
+ Thomas LEDUC, scientific researcher, Fernando GONZALEZ
  * CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
@@ -91,7 +91,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -222,85 +224,104 @@ public final class DiskRTree implements Tree<Envelope> {
         }
 
         /**
-         * @param position
-         * @param nodeBytes
-         * @param blockEnd
-         *            the latest available byte in this node
+         * @param inputPosition
+         * @param inputNodeBytes
+         * @param inputBlockEnd
+         * the latest available byte in this node
          * @throws IOException
          */
         private void writeNodeBytes(long position, byte[] nodeBytes, long blockEnd)
                 throws IOException {
-                long nodeBytesStartPosition = position + 12;
+                long inputPosition = position;
+                long inputBlockEnd = blockEnd;
+                byte[] inputNodeBytes = nodeBytes;
 
-                byte[] remaining = new byte[0];
-                byte[] bytesInThisBlock = nodeBytes;
-                if (nodeBytesStartPosition + nodeBytes.length > blockEnd) {
-                        long size = blockEnd - nodeBytesStartPosition + 1;
-                        if (size < Integer.MAX_VALUE) {
-                                bytesInThisBlock = new byte[(int) size];
-                                System.arraycopy(nodeBytes, 0, bytesInThisBlock, 0,
-                                        bytesInThisBlock.length);
-                                remaining = new byte[nodeBytes.length - bytesInThisBlock.length];
-                                System.arraycopy(nodeBytes, bytesInThisBlock.length, remaining, 0,
-                                        nodeBytes.length - bytesInThisBlock.length);
+                while (true) {
+                        long nodeBytesStartPosition = inputPosition + 12;
+                        byte[] remaining = new byte[0];
+                        byte[] bytesInThisBlock = inputNodeBytes;
+                        if (nodeBytesStartPosition + inputNodeBytes.length > inputBlockEnd) {
+                                long size = inputBlockEnd - nodeBytesStartPosition + 1;
+                                if (size < Integer.MAX_VALUE) {
+                                        bytesInThisBlock = new byte[(int) size];
+                                        System.arraycopy(inputNodeBytes, 0, bytesInThisBlock, 0,
+                                                bytesInThisBlock.length);
+                                        remaining = new byte[inputNodeBytes.length - bytesInThisBlock.length];
+                                        System.arraycopy(inputNodeBytes, bytesInThisBlock.length, remaining, 0,
+                                                inputNodeBytes.length - bytesInThisBlock.length);
+                                } else {
+                                        throw new IOException("this array is quite long, I think.");
+                                }
+                        }
+
+                        buffer.position(inputPosition);
+                        // Write the direction of the extension node. -1 is written now but it's
+                        // fixed at the end of the method
+                        buffer.putLong(-1);
+
+                        // Write the size of the node bytes in this block
+                        buffer.putInt(bytesInThisBlock.length);
+
+                        // Write the bytes
+                        buffer.put(bytesInThisBlock);
+
+                        // Fill the rest of the block
+                        long sizebis = inputBlockEnd - buffer.getPosition() + 1;
+                        if (sizebis < Integer.MAX_VALUE) {
+                                byte[] fillBytes = new byte[(int) sizebis];
+                                buffer.put(fillBytes);
+
+                                // Loop to write the extension nodes
+                                // This was refactored to prevent Stack overflows when writing many bytes
+                                // into small blocks
+                                if (remaining.length > 0) {
+                                        long extensionBlock = getEmptyBlock(inputPosition);
+                                        buffer.position(inputPosition);
+                                        buffer.putLong(extensionBlock);
+                                        inputPosition = extensionBlock;
+                                        inputNodeBytes = remaining;
+                                        inputBlockEnd = extensionBlock + nodeBlockSize - 1;
+                                } else {
+                                        break;
+                                }
                         } else {
-                                throw new IOException("this array is quite long, I think.");
+                                throw new IOException("This array is way too long");
                         }
-                }
-
-                buffer.position(position);
-                // Write the direction of the extension node. -1 is written now but it's
-                // fixed at the end of the method
-                buffer.putLong(-1);
-
-                // Write the size of the node bytes in this block
-                buffer.putInt(bytesInThisBlock.length);
-
-                // Write the bytes
-                buffer.put(bytesInThisBlock);
-
-                // Fill the rest of the block
-                long sizebis = blockEnd - buffer.getPosition() + 1;
-                if (sizebis < Integer.MAX_VALUE) {
-                        byte[] fillBytes = new byte[(int) sizebis];
-                        buffer.put(fillBytes);
-
-                        // Write the extension node
-                        if (remaining.length > 0) {
-                                long extensionBlock = getEmptyBlock(position);
-                                buffer.position(position);
-                                buffer.putLong(extensionBlock);
-                                writeNodeBytes(extensionBlock, remaining, extensionBlock
-                                        + nodeBlockSize - 1);
-                        }
-                } else {
-                        throw new IOException("This array is way too long");
                 }
         }
 
         private byte[] readNodeBytes(long position) throws IOException {
-                buffer.position(position);
-                // Read the direction of the extension node
-                long nextNode = buffer.getLong();
-                if (nextNode == position) {
-                        throw new IllegalStateException("Next node equals this: " + position);
+                long inputPosition = position;
+                List<byte[]> allByteArrays = new ArrayList<byte[]>();
+                int concatSize = 0;
+                
+                while (true) {
+                        buffer.position(inputPosition);
+                        // Read the address of the extension node
+                        long nextNode = buffer.getLong();
+                        // Read the size of the node bytes in this block
+                        int blockBytesLength = buffer.getInt();
+                        concatSize += blockBytesLength;
+                        // Read all the bytes
+                        byte[] thisBlockBytes = new byte[blockBytesLength];
+                        buffer.get(thisBlockBytes);
+                        allByteArrays.add(thisBlockBytes);
+                        
+                        if (nextNode == -1) {
+                                // no extension node
+                                break;
+                        } else {
+                                inputPosition = nextNode;
+                        }
                 }
-                // Read the size of the node bytes in this block
-                int blockBytesLength = buffer.getInt();
-                // Read all the bytes
-                byte[] thisBlockBytes = new byte[blockBytesLength];
-                buffer.get(thisBlockBytes);
-                byte[] extensionBytes = new byte[0];
-                if (nextNode != -1) {
-                        extensionBytes = readNodeBytes(nextNode);
+
+                byte[] concatBytes = new byte[concatSize];
+                int desPos = 0;
+                for (byte[] b : allByteArrays) {
+                        System.arraycopy(b, 0, concatBytes, desPos, b.length);
+                        desPos += b.length;
                 }
-                byte[] nodeBytes = new byte[thisBlockBytes.length
-                        + extensionBytes.length];
-                System.arraycopy(thisBlockBytes, 0, nodeBytes, 0,
-                        thisBlockBytes.length);
-                System.arraycopy(extensionBytes, 0, nodeBytes, thisBlockBytes.length,
-                        extensionBytes.length);
-                return nodeBytes;
+                return concatBytes;
         }
 
         public void writeNodeAt(long position, RTreeNode node) throws IOException {
@@ -547,7 +568,7 @@ public final class DiskRTree implements Tree<Envelope> {
         public int[] query(Envelope value) throws IOException {
                 return root.query(value);
         }
-        
+
         @Override
         public void query(Envelope value, IndexVisitor<Envelope> visitor) throws IOException {
                 if (visitor != null) {

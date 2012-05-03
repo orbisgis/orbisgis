@@ -55,7 +55,7 @@
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  * Previous computer developer : Pierre-Yves FADET, computer engineer,
-Thomas LEDUC, scientific researcher, Fernando GONZALEZ
+ Thomas LEDUC, scientific researcher, Fernando GONZALEZ
  * CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
@@ -91,7 +91,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -210,6 +212,7 @@ public final class DiskBTree implements BTree {
         /**
          * Gets the address of an empty block. It is the lowest address greater than
          * baseAddressection
+         *
          * @param baseAddress
          * @return
          * @throws IOException
@@ -233,89 +236,115 @@ public final class DiskBTree implements BTree {
 
         /**
          * Try to write the array nodeBytes at the position position in the output.
-         * @param position
-         * @param nodeBytes
-         * @param blockEnd
-         *            the latest available byte in this node
+         *
+         * @param inputPosition
+         * @param inputNodeBytes
+         * @param inputBlockEnd
+         * the latest available byte in this node
          * @throws IOException
          */
         private void writeNodeBytes(long position, byte[] nodeBytes, long blockEnd)
                 throws IOException {
-                long nodeBytesStartPosition = position + 12;
-                byte[] remaining = new byte[0];
-                byte[] bytesInThisBlock = nodeBytes;
-                if (nodeBytesStartPosition + nodeBytes.length > blockEnd) {
-                        long size = blockEnd - nodeBytesStartPosition + 1;
-                        if (size < (long) Integer.MAX_VALUE) {
-                                bytesInThisBlock = new byte[(int) size];
+                long inputPosition = position;
+                long inputBlockEnd = blockEnd;
+                byte[] inputNodeBytes = nodeBytes;
+
+                while (true) {
+                        long nodeBytesStartPosition = inputPosition + 12;
+                        byte[] remaining = new byte[0];
+                        byte[] bytesInThisBlock = inputNodeBytes;
+                        if (nodeBytesStartPosition + inputNodeBytes.length > inputBlockEnd) {
+                                long size = inputBlockEnd - nodeBytesStartPosition + 1;
+                                if (size < (long) Integer.MAX_VALUE) {
+                                        bytesInThisBlock = new byte[(int) size];
+                                } else {
+                                        throw new IOException("this buffer is too large, isn't it ?");
+                                }
+                                System.arraycopy(inputNodeBytes, 0, bytesInThisBlock, 0,
+                                        bytesInThisBlock.length);
+                                remaining = new byte[inputNodeBytes.length - bytesInThisBlock.length];
+                                System.arraycopy(inputNodeBytes, bytesInThisBlock.length, remaining, 0,
+                                        inputNodeBytes.length - bytesInThisBlock.length);
+                        }
+
+                        buffer.position(inputPosition);
+                        // Write the address of the extension node. -1 is written now but it's
+                        // fixed at the end of the method
+                        buffer.putLong(-1);
+                        // Write the size of the node bytes in this block
+                        buffer.putInt(bytesInThisBlock.length);
+                        // Write the bytes
+                        buffer.put(bytesInThisBlock);
+
+                        // Fill the rest of the block
+                        long sizebis = inputBlockEnd - buffer.getPosition() + 1;
+                        if (sizebis < (long) Integer.MAX_VALUE) {
+                                byte[] fillBytes = new byte[(int) sizebis];
+                                buffer.put(fillBytes);
+
+                                // Loop to write the extension nodes
+                                // This was refactored to prevent Stack overflows when writing many bytes
+                                // into small blocks
+                                if (remaining.length > 0) {
+                                        long extensionBlock = getEmptyBlock(inputPosition);
+                                        buffer.position(inputPosition);
+                                        buffer.putLong(extensionBlock);
+                                        inputPosition = extensionBlock;
+                                        inputNodeBytes = remaining;
+                                        inputBlockEnd = extensionBlock + nodeBlockSize - 1;
+                                } else {
+                                        break;
+                                }
                         } else {
-                                throw new IOException("this buffer is too large, isn't it ?");
+                                throw new IOException("this buffer is too large, isn't it?");
                         }
-                        System.arraycopy(nodeBytes, 0, bytesInThisBlock, 0,
-                                bytesInThisBlock.length);
-                        remaining = new byte[nodeBytes.length - bytesInThisBlock.length];
-                        System.arraycopy(nodeBytes, bytesInThisBlock.length, remaining, 0,
-                                nodeBytes.length - bytesInThisBlock.length);
-                }
-
-                buffer.position(position);
-                // Write the address of the extension node. -1 is written now but it's
-                // fixed at the end of the method
-                buffer.putLong(-1);
-                // Write the size of the node bytes in this block
-                buffer.putInt(bytesInThisBlock.length);
-                // Write the bytes
-                buffer.put(bytesInThisBlock);
-
-                // Fill the rest of the block
-                long sizebis = blockEnd - buffer.getPosition() + 1;
-                if (sizebis < (long) Integer.MAX_VALUE) {
-                        byte[] fillBytes = new byte[(int) sizebis];
-                        buffer.put(fillBytes);
-
-                        // Write the extension node
-                        if (remaining.length > 0) {
-                                long extensionBlock = getEmptyBlock(position);
-                                buffer.position(position);
-                                buffer.putLong(extensionBlock);
-                                writeNodeBytes(extensionBlock, remaining, extensionBlock
-                                        + nodeBlockSize - 1);
-                        }
-                } else {
-                        throw new IOException("this buffer is too large, isn't it?");
                 }
         }
 
         /**
          * Read the bytes that are associated to the node at the address dir.
-         * @param position
+         *
+         * @param inputPosition
          * @return
          * @throws IOException
          */
         private byte[] readNodeBytes(long position) throws IOException {
-                buffer.position(position);
-                // Read the address of the extension node
-                long nextNode = buffer.getLong();
-                // Read the size of the node bytes in this block
-                int blockBytesLength = buffer.getInt();
-                // Read all the bytes
-                byte[] thisBlockBytes = new byte[blockBytesLength];
-                buffer.get(thisBlockBytes);
-                byte[] extensionBytes = new byte[0];
-                if (nextNode != -1) {
-                        extensionBytes = readNodeBytes(nextNode);
+                long inputPosition = position;
+                List<byte[]> allByteArrays = new ArrayList<byte[]>();
+                int concatSize = 0;
+                
+                while (true) {
+                        buffer.position(inputPosition);
+                        // Read the address of the extension node
+                        long nextNode = buffer.getLong();
+                        // Read the size of the node bytes in this block
+                        int blockBytesLength = buffer.getInt();
+                        concatSize += blockBytesLength;
+                        // Read all the bytes
+                        byte[] thisBlockBytes = new byte[blockBytesLength];
+                        buffer.get(thisBlockBytes);
+                        allByteArrays.add(thisBlockBytes);
+                        
+                        if (nextNode == -1) {
+                                // no extension node
+                                break;
+                        } else {
+                                inputPosition = nextNode;
+                        }
                 }
-                byte[] nodeBytes = new byte[thisBlockBytes.length
-                        + extensionBytes.length];
-                System.arraycopy(thisBlockBytes, 0, nodeBytes, 0,
-                        thisBlockBytes.length);
-                System.arraycopy(extensionBytes, 0, nodeBytes, thisBlockBytes.length,
-                        extensionBytes.length);
-                return nodeBytes;
+
+                byte[] concatBytes = new byte[concatSize];
+                int desPos = 0;
+                for (byte[] b : allByteArrays) {
+                        System.arraycopy(b, 0, concatBytes, desPos, b.length);
+                        desPos += b.length;
+                }
+                return concatBytes;
         }
 
         /**
          * Writes the node node at the address dir.
+         *
          * @param position
          * @param node
          * @throws IOException
@@ -345,6 +374,7 @@ public final class DiskBTree implements BTree {
 
         /**
          * Read the node stored at the adress nodeDir
+         *
          * @param parentAddress
          * @return
          * @throws IOException
@@ -395,6 +425,7 @@ public final class DiskBTree implements BTree {
 
         /**
          * Get the element at the address emptyBlockDir as an empty block
+         *
          * @param emptyBlockAddress
          * @throws IOException
          */
@@ -416,6 +447,7 @@ public final class DiskBTree implements BTree {
 
         /**
          * Write the list of empty blocks
+         *
          * @param emptyBlockAddress
          * @throws IOException
          */
@@ -445,6 +477,7 @@ public final class DiskBTree implements BTree {
 
         /**
          * Write the header of this tree at the address emptyBLockDir
+         *
          * @param emptyBlockAddress
          * @throws IOException
          */
@@ -525,6 +558,7 @@ public final class DiskBTree implements BTree {
 
         /**
          * Retrieve all the values contained in this tree
+         *
          * @return
          * @throws IOException
          */
@@ -564,6 +598,7 @@ public final class DiskBTree implements BTree {
 
         /**
          * Return the number of empty blocks
+         *
          * @return
          */
         public int getEmptyBlocks() {
@@ -576,6 +611,7 @@ public final class DiskBTree implements BTree {
          *
          * If there are some blocks that can be considered as extensions of this one, they
          * are deleted to.
+         *
          * @param nodeAddress
          * @throws IOException
          */
