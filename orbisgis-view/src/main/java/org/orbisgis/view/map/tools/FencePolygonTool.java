@@ -76,17 +76,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
         private ILayer layer;
         private String fenceFile = "fence.gdms";
         private final String fenceLayerName = "fence";
-        AbstractButton button;
-
-        @Override
-        public AbstractButton getButton() {
-                return button;
-        }
-
-        public void setButton(AbstractButton button) {
-                this.button = button;
-        }
-
+ 
         @Override
         public void update(Observable o, Object arg) {
                 //PlugInContext.checkTool(this);

@@ -63,18 +63,6 @@ import org.orbisgis.view.map.tool.TransitionException;
 
 public class CutPolygonTool extends AbstractPolygonTool {
 
-        AbstractButton button;
-
-        @Override
-        public AbstractButton getButton() {
-                return button;
-        }
-
-        @Override
-        public void setButton(AbstractButton button) {
-                this.button = button;
-        }
-
         @Override
         public void update(Observable o, Object arg) {
                 //PlugInContext.checkTool(this);

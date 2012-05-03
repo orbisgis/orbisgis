@@ -81,18 +81,8 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  */
 public class ZoomInTool extends AbstractRectangleTool {
 
-	AbstractButton button;
-
+	
 	public ZoomInTool() {
-	}
-
-	@Override
-	public AbstractButton getButton() {
-		return button;
-	}
-
-	public void setButton(AbstractButton button) {
-		this.button = button;
 	}
 
 	@Override

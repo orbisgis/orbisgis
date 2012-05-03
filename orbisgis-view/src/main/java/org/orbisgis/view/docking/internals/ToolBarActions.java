@@ -28,10 +28,7 @@
  */
 package org.orbisgis.view.docking.internals;
 
-import bibliothek.gui.dock.common.action.CAction;
-import bibliothek.gui.dock.common.action.CButton;
-import bibliothek.gui.dock.common.action.CRadioGroup;
-import bibliothek.gui.dock.common.action.CSeparator;
+import bibliothek.gui.dock.common.action.*;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
@@ -41,7 +38,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.*;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.events.Listener;
+import org.orbisgis.view.components.button.DropDownButton;
 import org.orbisgis.view.docking.actions.CToggleButton;
 
 /**
@@ -50,7 +49,7 @@ import org.orbisgis.view.docking.actions.CToggleButton;
 
 
 public class ToolBarActions {
-    
+    private static final Logger GUILOGGER = Logger.getLogger("gui."+ToolBarActions.class);
     private List<CAction> customActions = new ArrayList<CAction>();
     //Map with key the hashCode of ButtonGroup and value the corresponding CRadioGroup
     private Map<Integer,CRadioGroup> radioGroups = new HashMap<Integer,CRadioGroup>();
@@ -73,6 +72,87 @@ public class ToolBarActions {
     public List<CAction> getCustomActions() {
         return customActions;
     }
+    
+    /**
+     * Docking Frames does't provide the "Container" interface,
+     * this method help to add item into multiple CAction container
+     * @param citem 
+     */
+    private boolean addSubItem(CAction container,CAction item) {
+        if(container instanceof CDropDownButton) {
+            ((CDropDownButton)container).add(item);
+        }else if(container instanceof CMenu) {
+            ((CMenu)container).add(item);
+        }else{
+            return false;
+        }
+        return true;
+    }
+    /**
+     * Copy Swing Menu Item into Docking Frames menu item
+     * and select the selected item
+     * @param jitem Java menu
+     * @param citem Dockings Frames Menu
+     */
+    private void CopyJMenuIntoCMenu(MenuElement me,CAction citem,CDropDownButton dbutton,JMenuItem selectedItem) {
+        if(me instanceof JMenuItem) {
+            JMenuItem jMenuItem = (JMenuItem)me;
+            CButton cButton = new CButton(jMenuItem.getText(),jMenuItem.getIcon());
+            cButton.setTooltip(jMenuItem.getToolTipText());
+            addSubItem(citem,cButton);
+            //If this is the selected item
+            if(jMenuItem.equals(selectedItem)) {
+                dbutton.setSelection(citem);
+                dbutton.setIcon(jMenuItem.getIcon());
+            }
+            transferActionsListeners(jMenuItem,cButton);
+        } else if(me instanceof JMenu || me instanceof JPopupMenu){
+            CAction cmenu = citem;
+            if(me instanceof JMenu) {
+                JMenu jMenu = (JMenu)me;
+                cmenu = new CMenu(jMenu.getText(), jMenu.getIcon());
+                addSubItem(citem,cmenu);
+            }
+            for(MenuElement sme : me.getSubElements()) {
+                CopyJMenuIntoCMenu(sme,cmenu,dbutton,selectedItem);
+            }
+        }
+    }
+    
+    /**
+     * Retrieve swing button group and apply to DockingFrames button group
+     * @param dropButton
+     * @param dockingDropButton 
+     */
+    private void applyButtonGroup(DropDownButton dropButton,CDropDownButton dockingDropButton) {
+        if(dropButton.getModel() instanceof DefaultButtonModel) {
+            ButtonGroup bgroup = ((DefaultButtonModel)dropButton.getModel()).getGroup();
+            //Find if there is an existing Docking Frames button group
+            CRadioGroup radio = radioGroups.get(bgroup.hashCode());
+            if(radio==null) {
+                radio = new CRadioGroup();
+                radioGroups.put(bgroup.hashCode(), radio);
+            }   
+            dockingDropButton.intern().addDropDownActionListener(new ButtonGroupActionListener(radio));
+        }
+    }
+    /**
+     * Retrieve swing button group and apply to DockingFrames button group
+     * @param button
+     * @param dbutton 
+     */
+    private void applyButtonGroup(JToggleButton button,CRadioButton dbutton) {
+        if(button.getModel() instanceof DefaultButtonModel) {
+            ButtonGroup bgroup = ((DefaultButtonModel)button.getModel()).getGroup();
+            //Find if there is an existing Docking Frames button group
+            CRadioGroup radio = radioGroups.get(bgroup.hashCode());
+            if(radio==null) {
+                radio = new CRadioGroup();
+                radioGroups.put(bgroup.hashCode(), radio);
+            }
+            radio.add(dbutton);
+        }        
+    }
     /**
      * Convert the swing toolbar into docking frames CAction
      */
@@ -83,25 +163,24 @@ public class ToolBarActions {
             //For each toolbar components
             for(Component component : components) {
                 CAction action=null;
-                if(component instanceof JToggleButton) {
+                if(component instanceof DropDownButton) {
+                    final DropDownButton button = (DropDownButton) component;
+                    CDropDownButton dbutton = new CDropDownButton();
+                    dbutton.setText(button.getName());
+                    CopyJMenuIntoCMenu(button.getComponentPopupMenu(),dbutton,dbutton,button.getSelectedItem());
+                    applyButtonGroup(button,dbutton);
+                    action = dbutton;
+                } else if(component instanceof JToggleButton) {
                     final JToggleButton button = (JToggleButton) component;
                     CToggleButton dbutton = new CToggleButton(button.getText(), button.getIcon());
+                    dbutton.setSelected(button.isSelected());
                     dbutton.setTooltip(button.getToolTipText());
                     ItemListener[] listeners = button.getItemListeners();
                     for(ItemListener listener : listeners) {
                         dbutton.getStateChanged().addListener(listener, EventHandler.create(Listener.class, listener, "itemStateChanged",""));
                     }
                     //Retrieve and apply button group
-                    if(button.getModel() instanceof DefaultButtonModel) {
-                        ButtonGroup bgroup = ((DefaultButtonModel)button.getModel()).getGroup();
-                        //Find if there is an existing Docking Frames button group
-                        CRadioGroup radio = radioGroups.get(bgroup.hashCode());
-                        if(radio==null) {
-                            radio = new CRadioGroup();
-                            radioGroups.put(bgroup.hashCode(), radio);
-                        }
-                        radio.add(dbutton);
-                    }
+                    applyButtonGroup(button,dbutton);
                     action = dbutton;
                 } else if(component instanceof AbstractButton) {
                     AbstractButton button = (AbstractButton) component;

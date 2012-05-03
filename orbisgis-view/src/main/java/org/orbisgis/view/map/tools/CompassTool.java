@@ -22,7 +22,9 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
+import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
+import org.orbisgis.view.icons.OrbisGISIcon;
 
 public class CompassTool extends Compass {
         private static Logger GUILOGGER = Logger.getLogger("gui."+CompassTool.class);
@@ -32,7 +34,6 @@ public class CompassTool extends Compass {
 	private Coordinate c2;
 	private Coordinate c3;
 	private GeometryFactory gf = new GeometryFactory();
-	private AbstractButton button;
 
 	private void showAngle() {
             GUILOGGER.info(I18N.tr("Angle : {0}",getFormatedAngle(c1, c2, c3)));
@@ -175,25 +176,22 @@ public class CompassTool extends Compass {
 		c2 = new Coordinate(tm.getValues()[0], tm.getValues()[1]);
 	}
 
-	@Override
-	public AbstractButton getButton() {
-		return button;
-	}
 
-	@Override
-	public void setButton(AbstractButton button) {
-		this.button = button;
-
-	}
-
-	@Override
-	public void update(Observable arg0, Object arg1) {
-		//PlugInContext.checkTool(this);
-	}
+        @Override
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("angle");
+        }
 
         @Override
 	public String getName() {
-		return I18N.tr("orbisgis.core.ui.editors.map.tool.mesure.angle");
+		return I18N.tr("Mesure angle");
 	}
+        @Override
+        public String getTooltip() {
+            return I18N.tr("This tool mesure the angle");
+        }
+
+        public void update(Observable o, Object o1) {
+        }
 
 }

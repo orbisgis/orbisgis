@@ -79,15 +79,6 @@ public class SelectionTool extends AbstractSelectionTool {
 	AbstractButton button;
 
 	@Override
-	public AbstractButton getButton() {
-		return button;
-	}
-
-	public void setButton(AbstractButton button) {
-		this.button = button;
-	}
-
-	@Override
 	public void update(Observable o, Object arg) {
 		//PlugInContext.checkTool(this);
 	}

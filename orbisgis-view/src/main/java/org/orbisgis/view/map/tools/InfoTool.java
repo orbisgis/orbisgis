@@ -63,17 +63,6 @@ import org.orbisgis.view.map.tool.TransitionException;
 
 public class InfoTool extends AbstractRectangleTool {
         private static Logger UILOGGER = Logger.getLogger("gui."+InfoTool.class);
-	AbstractButton button;
-
-	@Override
-	public AbstractButton getButton() {
-		return button;
-	}
-
-        @Override
-	public void setButton(AbstractButton button) {
-		this.button = button;
-	}
 
 	@Override
 	public void update(Observable o, Object arg) {

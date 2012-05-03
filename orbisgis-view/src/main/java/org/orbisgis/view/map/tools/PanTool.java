@@ -72,6 +72,8 @@ import org.orbisgis.view.map.tool.TransitionException;
 
 
 import com.vividsolutions.jts.geom.Envelope;
+import javax.swing.ImageIcon;
+import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  * Tool to move the map extent
@@ -79,17 +81,12 @@ import com.vividsolutions.jts.geom.Envelope;
  */
 public class PanTool extends AbstractDragTool {
 
-	AbstractButton button;
-
         @Override
-	public AbstractButton getButton() {
-		return button;
-	}
-
-        @Override
-	public void setButton(AbstractButton button) {
-		this.button = button;
-	}
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("pan");
+        }
+        
+        
 
 	@Override
 	public void transitionTo_MouseReleased(MapContext vc, ToolManager tm)
@@ -140,6 +137,12 @@ public class PanTool extends AbstractDragTool {
 
         @Override
 	public String getName() {
-		return I18N.tr("orbisgis.core.ui.editors.map.tool.pan_tooltip");
+		return I18N.tr("Pan");
 	}
+
+        @Override
+        public String getTooltip() {
+            return I18N.tr("The Pan Tool");
+        }
+        
 }

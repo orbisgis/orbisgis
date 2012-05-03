@@ -81,8 +81,15 @@ public interface Automaton extends Observer {
 
 	public void draw(Graphics g) throws DrawingException;
 
+        /**
+         * The translated message of the ToolTip
+         * @return 
+         */
 	public String getTooltip();
-
+        /**
+         * Short translate name of the Tool
+         * @return 
+         */
 	public String getName();
 
 	/**
@@ -101,8 +108,4 @@ public interface Automaton extends Observer {
 	public Point getHotSpotOffset();
 
 	public void setMouseCursor(ImageIcon mouseCursor);
-
-	public AbstractButton getButton();
-
-	public void setButton(AbstractButton button);
 }

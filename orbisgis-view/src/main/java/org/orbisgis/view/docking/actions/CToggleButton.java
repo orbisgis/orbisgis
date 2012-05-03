@@ -48,6 +48,9 @@ public class CToggleButton extends CRadioButton implements ItemSelectable {
         super(text, icon);
     }
 
+    public CToggleButton() {
+    }
+
    
     @Override
     protected void changed() {

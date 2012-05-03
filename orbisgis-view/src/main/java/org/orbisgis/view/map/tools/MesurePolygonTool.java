@@ -53,19 +53,11 @@ import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
+import javax.swing.ImageIcon;
+import org.orbisgis.view.icons.OrbisGISIcon;
 
 public class MesurePolygonTool extends AbstractPolygonTool {
 
-	AbstractButton button;
-
-	@Override
-	public AbstractButton getButton() {
-		return button;
-	}
-
-	public void setButton(AbstractButton button) {
-		this.button = button;
-	}
 
 	@Override
 	public void update(Observable o, Object arg) {
@@ -106,7 +98,17 @@ public class MesurePolygonTool extends AbstractPolygonTool {
 		tm.addTextToDraw("Perimeter: " + getPerimeter(geom));
 	}
 
+        @Override
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("mesurearea");
+        }
+
 	public String getName() {
-		return I18N.tr("orbisgis.core.ui.editors.map.tool.mesure.area");
+		return I18N.tr("Mesure area");
 	}
+        
+        @Override
+        public String getTooltip() {
+            return I18N.tr("This tool mesure the area");
+        }
 }

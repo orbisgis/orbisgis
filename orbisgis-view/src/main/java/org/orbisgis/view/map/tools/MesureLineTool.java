@@ -53,6 +53,8 @@ import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.LineString;
+import javax.swing.ImageIcon;
+import org.orbisgis.view.icons.OrbisGISIcon;
 
 public class MesureLineTool extends AbstractLineTool {
 
@@ -97,7 +99,17 @@ public class MesureLineTool extends AbstractLineTool {
 		tm.addTextToDraw(getLength(geom) + "");
 	}
 
+        @Override
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("mesurelength");
+        }
+
+        @Override
+        public String getTooltip() {
+            return I18N.tr("This tool mesure the length on the map");
+        }
+
 	public String getName() {
-		return I18N.tr("orbisgis.core.ui.editors.map.tool.mesure.length");
+		return I18N.tr("Mesure length");
 	}
 }

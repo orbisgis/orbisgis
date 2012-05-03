@@ -68,18 +68,7 @@ import org.orbisgis.view.map.tool.Handler;
 
 public class SplitPolygonTool extends AbstractLineTool {
 
-        AbstractButton button;
         GeometryFactory gf = new GeometryFactory();
-
-        @Override
-        public AbstractButton getButton() {
-                return button;
-        }
-
-        @Override
-        public void setButton(AbstractButton button) {
-                this.button = button;
-        }
 
         @Override
         public void update(Observable o, Object arg) {

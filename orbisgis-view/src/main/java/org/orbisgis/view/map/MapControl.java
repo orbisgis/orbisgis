@@ -62,6 +62,7 @@ import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.ToolListener;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
+import org.orbisgis.view.map.tools.ZoomInTool;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -104,8 +105,9 @@ public class MapControl extends JComponent implements ComponentListener,
 	Automaton defaultTool;
 
 	public MapControl() {
+            defaultTool = new ZoomInTool();
 	}
-
+        
 	/**
 	 * Creates a new NewMapControl.
 	 * 
@@ -458,9 +460,16 @@ public class MapControl extends JComponent implements ComponentListener,
 	public ToolManager getToolManager() {
 		return toolManager;
 	}
-
+        /**
+         * 
+         * @return The current used tool
+         */
 	public Automaton getTool() {
-		return toolManager.getTool();
+            if(toolManager!=null) {
+                return toolManager.getTool();
+            }else{
+                return defaultTool;
+            }
 	}
 
 	private class RefreshLayerListener implements LayerListener,

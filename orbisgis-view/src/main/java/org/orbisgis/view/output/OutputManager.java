@@ -56,6 +56,7 @@ public class OutputManager {
         private static final Logger ROOT_LOGGER = Logger.getRootLogger();
         private static final Logger GUI_LOGGER = Logger.getLogger("gui");
         private PatternLayout loggingLayout = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
+        private PatternLayout infoLayout = new PatternLayout("%m%n");
 
         public OutputManager() {
                 mainPanel = new MainOutputPanel();
@@ -117,7 +118,7 @@ public class OutputManager {
          */
         private void makeOutputInfo() {
                 PanelAppender app = makePanel();
-                app.setLayout(loggingLayout);
+                app.setLayout(infoLayout);
                 LevelMatchFilter filter = new LevelMatchFilter();
                 filter.setLevelToMatch(Level.INFO.toString());
                 app.addFilter(filter);

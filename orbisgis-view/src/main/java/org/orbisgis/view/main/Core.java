@@ -34,7 +34,6 @@ import java.beans.EventHandler;
 import java.io.File;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.docking.DockingManager;
@@ -143,6 +142,8 @@ public class Core {
         //Add the views as a new Docking Panel
         dockManager.show(mapEditor);
         dockManager.show(toc);
+        
+        mapEditor.loadMap();
     }
     
     /**
