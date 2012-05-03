@@ -33,8 +33,13 @@ import org.apache.log4j.*;
 import org.apache.log4j.varia.LevelRangeFilter;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DataSourceFinalizationException;
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.DefaultDataManager;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.context.SourceContext.SourceContext;
 import org.orbisgis.core.workspace.CoreWorkspace;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 /**
  * @class MainContext
  * @brief The larger surrounding part of OrbisGis base 
@@ -45,9 +50,11 @@ import org.orbisgis.core.workspace.CoreWorkspace;
 
 public class MainContext {
     private static final Logger LOGGER = Logger.getLogger(MainContext.class);
+    private final static I18n I18N = I18nFactory.getI18n(MainContext.class);
     private DataSourceFactory dataSourceFactory;
     private CoreWorkspace coreWorkspace;
     private SourceContext sourceContext;
+    private DataManager dataManager;
     /**
      * Constructor of the workspace
      */
@@ -58,8 +65,17 @@ public class MainContext {
         initFileLogger(coreWorkspace);
         dataSourceFactory = new DataSourceFactory(coreWorkspace.getSourceFolder(), coreWorkspace.getTempFolder(), coreWorkspace.getPluginFolder());
         sourceContext = new SourceContext(dataSourceFactory.getSourceManager());
+        dataManager = new DefaultDataManager(dataSourceFactory);
+        registerServices();
     }
-    
+    /**
+     * Register Services
+     */
+    private void registerServices() {
+        Services.registerService(DataManager.class,
+                        I18N.tr("Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial"),
+                        dataManager);
+    }
     /**
      * Free resources
      */

@@ -12,6 +12,38 @@
   <version>4.0-SNAPSHOT</version>
   <name>orbisgis-base</name>
   <url>http://maven.apache.org</url>
+<build>
+      
+      <pluginManagement>
+          <plugins>
+            <plugin>
+            <groupId>org.xnap.commons</groupId>
+            <artifactId>maven-gettext-plugin</artifactId>
+            <version>1.2.3</version>
+            </plugin>
+      </plugins>
+      </pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.xnap.commons</groupId>
+            <executions>
+                <execution>
+                    <id>convert-po-class</id>
+                    <phase>compile</phase>
+                    <goals>
+                        <goal>dist</goal>
+                    </goals>
+                </execution>
+            </executions>
+          <artifactId>maven-gettext-plugin</artifactId>
+            <configuration>
+            <poDirectory>${project.build.sourceDirectory}/../resources/org/orbisgis/core/translation/language/</poDirectory>
+            <targetBundle>OrbisGISCore.i18n.Messages</targetBundle>
+            <keywords>-ktr</keywords>
+            </configuration>
+        </plugin>
+      </plugins>
+  </build>  
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
@@ -27,5 +59,27 @@
       <artifactId>gdms</artifactId>
       <version>2.0-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>orbisgis-core-se</artifactId>
+      <version>3.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.xnap.commons</groupId>
+      <artifactId>gettext-commons</artifactId>
+      <version>0.9.6</version>
+    </dependency>
   </dependencies>
+  <pluginRepositories>
+    <pluginRepository>
+    <id>gettext-commons-site</id>
+    <url>http://gettext-commons.googlecode.com/svn/maven-repository</url>
+    </pluginRepository>
+  </pluginRepositories>
+  <repositories>
+    <repository>
+      <id>gettext-commons-site</id>
+      <url>http://gettext-commons.googlecode.com/svn/maven-repository/</url>
+    </repository>
+  </repositories>
 </project>
