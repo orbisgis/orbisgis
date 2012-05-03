@@ -74,15 +74,12 @@ public class DefaultDataManager implements DataManager {
 
         @Override
 	public ILayer createLayer(String sourceName) throws LayerException {
-		Source src = ((DataManager) Services.getService(DataManager.class))
-				.getDataSourceFactory().getSourceManager().getSource(sourceName);
+		Source src = dsf.getSourceManager().getSource(sourceName);
 		if (src != null) {
 			int type = src.getType();
 			if ((type & (SourceManager.RASTER | SourceManager.VECTORIAL | SourceManager.WMS)) != 0) {
 				try {
-					DataSource ds = ((DataManager) Services
-							.getService(DataManager.class)).getDataSourceFactory()
-							.getDataSource(sourceName);
+					DataSource ds = dsf.getDataSource(sourceName);
 					return createLayer(ds);
 				} catch (DriverLoadException e) {
 					throw new LayerException("Cannot instantiate layer", e);
@@ -139,8 +136,6 @@ public class DefaultDataManager implements DataManager {
 
         @Override
 	public ILayer createLayer(String name, File file) throws LayerException {
-		DataSourceFactory dsf = ((DataManager) Services
-				.getService(DataManager.class)).getDataSourceFactory();
 		dsf.getSourceManager().register(name, file);
 		try {
 			DataSource dataSource = dsf.getDataSource(name);
@@ -157,8 +152,6 @@ public class DefaultDataManager implements DataManager {
 
         @Override
 	public ILayer createLayer(File file) throws LayerException {
-		DataSourceFactory dsf = ((DataManager) Services
-				.getService(DataManager.class)).getDataSourceFactory();
 		String name = dsf.getSourceManager().nameAndRegister(file);
 		try {
 			DataSource dataSource = dsf.getDataSource(name);
