@@ -285,6 +285,8 @@ public final class DefaultSourceManager implements SourceManager {
                 nameSource.clear();
                 nameMapping.clear();
                 sources.getSource().clear();
+                
+                loadSystemTables();
         }
 
         @Override
