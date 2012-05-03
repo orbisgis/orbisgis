@@ -192,7 +192,7 @@ public final class CSVDriver extends AbstractDataSet implements FileReadWriteDri
                 try {
                         final long rowCount = dataSource.getRowCount();
                         pm.startTask("Writing file", rowCount);
-                        writer = new CSVWriter(new FileWriter(file), FIELD_SEPARATOR);
+                        writer = new CSVWriter(new FileWriter(file), FIELD_SEPARATOR, CSVWriter.DEFAULT_QUOTE_CHARACTER, '\\');
                         Metadata dMetadata = dataSource.getMetadata();
                         String[] row = getHeaderRow(dMetadata);
                         writer.writeNext(row);

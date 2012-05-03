@@ -44,21 +44,19 @@
  */
 package org.gdms.drivers;
 
-import org.junit.Test;
-import org.junit.Before;
 import java.io.File;
-import java.io.IOException;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 import org.gdms.TestBase;
-
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.ValueFactory;
-
-import static org.junit.Assert.*;
 
 public class CSVDriverTest extends TestBase {
 
@@ -90,8 +88,8 @@ public class CSVDriverTest extends TestBase {
                 ds.close();
 
                 ds.open();
-                assertEquals(ds.getString(0, 0), "a;b");
-                assertEquals(ds.getString(0, 1), "c\\d");
+                assertEquals("a;b", ds.getString(0, 0));
+                assertEquals("c\\d", ds.getString(0, 1));
                 ds.close();
         }
 
