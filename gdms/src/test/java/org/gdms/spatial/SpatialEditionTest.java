@@ -156,12 +156,6 @@ public class SpatialEditionTest extends TestBase {
                         d.deleteRow(rc + i);
                 }
 
-                for (int i = 0; i < geometries.length; i++) {
-                        assertFalse(contains(d, d.queryIndex(new DefaultSpatialIndexQuery(
-                                bounds[i], spatialField)),
-                                geometries[i]));
-                }
-
                 d.close();
         }
 
