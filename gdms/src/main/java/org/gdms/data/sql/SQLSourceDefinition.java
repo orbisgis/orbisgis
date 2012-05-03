@@ -80,7 +80,6 @@ import org.gdms.sql.engine.SQLStatement;
 public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
 
         private SQLStatement statement;
-        private File file = null;
         private Schema schema;
         private DefaultMetadata metadata;
         private static final Logger LOG = Logger.getLogger(SQLSourceDefinition.class);
@@ -107,7 +106,7 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
          * @return
          */
         public File getFile() {
-                return file;
+                return null;
         }
 
         private DataSource execute(String tableName, ProgressMonitor pm) throws DriverException,
@@ -226,11 +225,7 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
                 if (obj instanceof SQLSourceDefinition) {
                         SQLSourceDefinition dsd = (SQLSourceDefinition) obj;
                         final String sql = getSQL();
-                        if (statement == null && sql != null) {
-                                return sql.equals(dsd.getSQL());
-                        } else {
-                                return statement.equals(dsd.statement);
-                        }
+                        return sql.equals(dsd.getSQL());
                 } else {
                         return false;
                 }
@@ -243,7 +238,7 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
 
         @Override
         public int hashCode() {
-                return 751 + statement.hashCode();
+                return 751 + getSQL().hashCode();
         }
 
         /**
@@ -251,7 +246,6 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
          */
         @Override
         public void delete() {
-                FileUtils.deleteFile(file);
         }
 
         @Override

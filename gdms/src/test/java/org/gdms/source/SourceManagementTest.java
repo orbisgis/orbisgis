@@ -198,8 +198,8 @@ public class SourceManagementTest extends TestBase {
 
                 sm.saveStatus();
 
-                sm.removeAll();
-                sm.register(SOURCE, testFile);
+                sm.shutdown();
+                sm.init();
 
                 assertEquals(sm.getSource(SOURCE).getFilePropertyNames().length, 1);
 
@@ -243,8 +243,8 @@ public class SourceManagementTest extends TestBase {
 
                 sm.saveStatus();
 
-                sm.removeAll();
-                sm.register(SOURCE, testFile);
+                sm.shutdown();
+                sm.init();
 
                 assertEquals(sm.getSource(SOURCE).getStringPropertyNames().length, 1);
 
@@ -295,16 +295,15 @@ public class SourceManagementTest extends TestBase {
         @Test
         public void testMoveAndChangeSourceDirectory() throws Exception {
                 sm.register(SOURCE, testFile);
-
                 String statistics = "statistics";
                 Source source = sm.getSource(SOURCE);
                 associateFile(source, statistics);
                 associateString(source, statistics);
                 String memento = sm.getMemento();
-
                 String newSourceInfoDir = TestResourceHandler.getNewSandBox(false).getAbsolutePath();
                 sm.setSourceInfoDirectory(newSourceInfoDir);
 
+                assertEquals(memento, sm.getMemento());
                 memento = sm.getMemento();
                 sm.changeSourceInfoDirectory(newSourceInfoDir);
                 assertEquals(memento, sm.getMemento());
