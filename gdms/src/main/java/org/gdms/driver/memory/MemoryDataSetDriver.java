@@ -116,7 +116,7 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
                         columnsTypes[i] = metadata.getFieldType(i);
                 }
                 this.schema = new DefaultSchema(DRIVER_NAME + this.hashCode());
-                schema.addTable("main", new DefaultMetadata(columnsTypes, columnsNames));
+                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, new DefaultMetadata(columnsTypes, columnsNames));
         }
 
         public MemoryDataSetDriver(final DataSource dataSource)
@@ -127,7 +127,7 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
                 write(dataSource, new NullProgressMonitor());
                 dataSource.close();
                 this.schema = new DefaultSchema(DRIVER_NAME + this.hashCode());
-                schema.addTable("main", new DefaultMetadata(columnsTypes, columnsNames));
+                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, new DefaultMetadata(columnsTypes, columnsNames));
         }
 
         public MemoryDataSetDriver(final DataSet set, boolean noCopy) throws DriverException {
@@ -144,7 +144,7 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
                         columnsTypes[i] = metadata.getFieldType(i);
                 }
                 this.schema = new DefaultSchema(DRIVER_NAME + this.hashCode());
-                schema.addTable("main", new DefaultMetadata(this.columnsTypes, this.columnsNames));
+                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, new DefaultMetadata(this.columnsTypes, this.columnsNames));
 
                 if (set != null) {
                         if (noCopy) {
@@ -251,7 +251,7 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
         public int getType() {
                 int type = SourceManager.MEMORY;
                 try {
-                        Metadata m = schema.getTableByName("main");
+                        Metadata m = schema.getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
                         for (int i = 0; i < m.getFieldCount(); i++) {
                                 Type fieldType = m.getFieldType(i);
                                 if ((fieldType.getTypeCode() & Type.GEOMETRY) != 0) {
@@ -287,7 +287,7 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
 
         @Override
         public DataSet getTable(String name) {
-                if (!name.equals("main")) {
+                if (!name.equals(DriverManager.DEFAULT_SINGLE_TABLE_NAME)) {
                         return null;
                 }
                 if (realSource == null) {
@@ -331,7 +331,7 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
 
         @Override
         public Metadata getMetadata() throws DriverException {
-                return schema.getTableByName("main");
+                return schema.getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
         }
 
         @Override

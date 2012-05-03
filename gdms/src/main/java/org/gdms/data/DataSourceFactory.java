@@ -98,7 +98,7 @@ import org.gdms.sql.function.FunctionManager;
  *
  *
  */
-public class DataSourceFactory {
+public final class DataSourceFactory {
 
         /**
          * No editing capabilities, no status check

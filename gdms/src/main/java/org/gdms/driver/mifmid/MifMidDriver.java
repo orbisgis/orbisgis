@@ -58,6 +58,7 @@ import org.gdms.data.types.TypeDefinition;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 
 public final class MifMidDriver implements FileDriver {
@@ -86,7 +87,7 @@ public final class MifMidDriver implements FileDriver {
                 LOG.trace("Opening");
                 try {
                         mm = new MifMidReader(file, false, metadata);
-                        driver = mm.read().getTable("main");
+                        driver = mm.read().getTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
                 } catch (IOException e) {
                         throw new DriverException(e);
                 }
@@ -143,7 +144,7 @@ public final class MifMidDriver implements FileDriver {
 
         @Override
         public DataSet getTable(String name) {
-                if (name.equals("main")) {
+                if (name.equals(DriverManager.DEFAULT_SINGLE_TABLE_NAME)) {
                         return driver;
                 } else {
                         return null;
@@ -154,7 +155,7 @@ public final class MifMidDriver implements FileDriver {
         public void setFile(File file) {
                 this.file = file;
                 schema = new DefaultSchema("MifMid" + file.getAbsolutePath().hashCode());
-                schema.addTable("main", metadata);
+                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
         }
 
         @Override

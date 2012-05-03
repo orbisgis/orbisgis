@@ -66,6 +66,7 @@ import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.engine.ParseException;
 import org.gdms.sql.engine.SemanticException;
@@ -194,7 +195,7 @@ public class ST_KMeans extends AbstractTableFunction {
                                 driver.addValues(new Value[]{keyValue, clusterIndexValue});
                         }
                 }
-                return driver.getTable("main");
+                return driver;
         }
 
         private void check() throws DriverException, FunctionException {
@@ -233,7 +234,7 @@ public class ST_KMeans extends AbstractTableFunction {
                 }
 
                 MemoryDriver d = new MemoryDataSetDriver(inDs, true);
-                String name = dsf.getSourceManager().nameAndRegister(d, "main");
+                String name = dsf.getSourceManager().nameAndRegister(d, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
 
                 final String query = "select " + queryAvgSb.toString() + ", "
                         + queryStdDevSb.toString() + " from \"" + name + "\"";

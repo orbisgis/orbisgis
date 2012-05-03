@@ -103,11 +103,10 @@ public final class ReadBufferManager {
                                 throw new IOException("this buffer is quite large...");
                         }
                 } else {
-                        int bufferCapacity = Math.max(bufferSize, length);
+                        long bufferCapacity = Math.max(bufferSize, length);
                         long size = channel.size();
-                        
-                        bufferCapacity = (int) Math.min(bufferCapacity, size
-                                - bytePos);
+
+                        bufferCapacity = Math.min(bufferCapacity, size - bytePos);
                         if (bufferCapacity > Integer.MAX_VALUE) {
                                 throw new IOException("Woaw ! You want to have a REALLY LARGE buffer !");
                         }
@@ -116,7 +115,7 @@ public final class ReadBufferManager {
                         channel.position(windowStart);
                         if (buffer.capacity() != bufferCapacity) {
                                 ByteOrder order = buffer.order();
-                                buffer = ByteBuffer.allocate(bufferCapacity);
+                                buffer = ByteBuffer.allocate((int)bufferCapacity);
                                 buffer.order(order);
                         } else {
                                 buffer.clear();
@@ -269,6 +268,7 @@ public final class ReadBufferManager {
 
         /**
          * Gets the positionf of this buffer in the file it's reading.
+         *
          * @return
          */
         public long getPosition() {
@@ -313,6 +313,7 @@ public final class ReadBufferManager {
         /**
          * Gets the number of remaining bytes in the current file, starting from the
          * current position
+         *
          * @return a number of bytes >=0
          * @throws IOException
          */

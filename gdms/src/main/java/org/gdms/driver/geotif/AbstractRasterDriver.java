@@ -74,6 +74,7 @@ import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 
 public abstract class AbstractRasterDriver extends AbstractDataSet implements FileReadWriteDriver {
@@ -167,7 +168,7 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
                 this.file = file;
                 schema = new DefaultSchema(getTypeName() + file.getAbsolutePath().hashCode());
                 gdmsMetadata = new DefaultMetadata();
-                schema.addTable("main", gdmsMetadata);
+                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, gdmsMetadata);
         }
 
         @Override
@@ -222,7 +223,7 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
 
         @Override
         public DataSet getTable(String name) {
-                if (!name.equals("main")) {
+                if (!name.equals(DriverManager.DEFAULT_SINGLE_TABLE_NAME)) {
                         return null;
                 }
                 return this;
@@ -264,6 +265,6 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
 
         @Override
         public Metadata getMetadata() throws DriverException {
-                return schema.getTableByName("main");
+                return schema.getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
         }
 }

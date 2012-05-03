@@ -159,7 +159,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         dbfDriver.open();
 
                         // registering DataSet
-                        driver = dbfDriver.getTable("main");
+                        driver = dbfDriver.getTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
 
                         Constraint dc;
                         //We can force the type of the data in the GDMS table according to the type
@@ -714,7 +714,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
 
         @Override
         public DataSet getTable(String name) {
-                if (!name.equals("main")) {
+                if (!name.equals(DriverManager.DEFAULT_SINGLE_TABLE_NAME)) {
                         return null;
                 }
                 return this;
@@ -753,7 +753,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
 
         @Override
         public Metadata getMetadata() throws DriverException {
-                return schema.getTableByName("main");
+                return schema.getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
         }
 
         @Override

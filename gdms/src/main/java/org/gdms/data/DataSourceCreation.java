@@ -73,7 +73,7 @@ public interface DataSourceCreation {
 	void setDataSourceFactory(DataSourceFactory dsf);
         
         /**
-         * Gets the tables available in the file. If there is only one, the table MUST be named "main".
+         * Gets the tables available in the file. If there is only one, the table MUST be named DriverManager.DEFAULT_SINGLE_TABLE_NAME.
          * @return
          * @throws DriverException 
          */

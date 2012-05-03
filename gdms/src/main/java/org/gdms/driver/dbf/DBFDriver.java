@@ -72,6 +72,7 @@ import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 
 public final class DBFDriver extends AbstractDataSet implements FileReadWriteDriver {
@@ -173,7 +174,7 @@ public final class DBFDriver extends AbstractDataSet implements FileReadWriteDri
 
         @Override
         public DataSet getTable(String name) {
-                if (!name.equals("main")) {
+                if (!name.equals(DriverManager.DEFAULT_SINGLE_TABLE_NAME)) {
                         return null;
                 }
                 return this;
@@ -202,7 +203,7 @@ public final class DBFDriver extends AbstractDataSet implements FileReadWriteDri
 
         @Override
         public Metadata getMetadata() throws DriverException {
-                return schema.getTableByName("main");
+                return schema.getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
         }
 
         @Override
@@ -212,7 +213,7 @@ public final class DBFDriver extends AbstractDataSet implements FileReadWriteDri
                 // building schema and metadata
                 schema = new DefaultSchema("DBF" + file.getAbsolutePath().hashCode());
                 metadata = new DefaultMetadata();
-                schema.addTable("main", metadata);
+                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
         }
 
         @Override

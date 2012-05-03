@@ -69,6 +69,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
@@ -146,7 +147,7 @@ public final class ST_Extrude extends AbstractTableFunction {
                         }
                         pm.progressTo(rowCount);
                         pm.endTask();
-                        return driver.getTable("main");
+                        return driver;
                 } catch (DriverException e) {
                         throw new FunctionException(e);
                 } catch (DriverLoadException e) {

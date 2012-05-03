@@ -99,7 +99,7 @@ public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
         public DiskBufferDriver(File file, Metadata metadata)
                 throws DriverException {
                 this.schema = new DefaultSchema("buffer" + this.hashCode());
-                schema.addTable("main", metadata);
+                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
                 this.file = file;
                 try {
                         writer = new GdmsWriter(file);
@@ -230,7 +230,7 @@ public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
                 checkIsWriting();
                 if (firstRow) {
                         try {
-                                writer.writeMetadata(0, schema.getTableByName("main"));
+                                writer.writeMetadata(0, schema.getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME));
                                 firstRow = false;
                         } catch (IOException e) {
                                 throw new DriverException("Cannot write metadata", e);
@@ -272,7 +272,7 @@ public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
 
         @Override
         public Metadata getMetadata() throws DriverException {
-                return schema.getTableByName("main");
+                return schema.getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
         }
 
         @Override

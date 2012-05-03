@@ -123,7 +123,7 @@ public final class ST_RandomGeometry extends AbstractTableFunction {
 				throw new FunctionException(
 						"Given type must be misc, point, linestring, linearring or polygon !");
 			}
-			return driver.getTable("main");
+			return driver;
 		} catch (DriverException e) {
 			throw new FunctionException(e);
 		}

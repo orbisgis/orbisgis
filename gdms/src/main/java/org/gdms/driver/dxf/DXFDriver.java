@@ -59,6 +59,7 @@ import org.gdms.driver.AbstractDataSet;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 
 public final class DXFDriver extends AbstractDataSet implements FileDriver {
@@ -84,7 +85,7 @@ public final class DXFDriver extends AbstractDataSet implements FileDriver {
                 LOG.trace("Opening");
                 try {
                         DxfFile dxfFile = DxfFile.createFromFile(file);
-                        result = dxfFile.read().getTable("main");
+                        result = dxfFile.read().getTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
                         System.gc();
                 } catch (IOException e) {
                         throw new DriverException(e);
@@ -142,7 +143,7 @@ public final class DXFDriver extends AbstractDataSet implements FileDriver {
 
         @Override
         public DataSet getTable(String name) {
-                if (!name.equals("main")) {
+                if (!name.equals(DriverManager.DEFAULT_SINGLE_TABLE_NAME)) {
                         return null;
                 }
                 return this;
@@ -165,7 +166,7 @@ public final class DXFDriver extends AbstractDataSet implements FileDriver {
 
         @Override
         public Metadata getMetadata() throws DriverException {
-                return schema.getTableByName("main");
+                return schema.getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
         }
 
         @Override
@@ -173,7 +174,7 @@ public final class DXFDriver extends AbstractDataSet implements FileDriver {
                 this.file = file;
                 schema = new DefaultSchema("DXF" + file.getAbsolutePath().hashCode());
                 DxfFile.initializeDXF_SCHEMA();
-                schema.addTable("main", DxfFile.DXF_SCHEMA);
+                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, DxfFile.DXF_SCHEMA);
         }
 
         @Override
