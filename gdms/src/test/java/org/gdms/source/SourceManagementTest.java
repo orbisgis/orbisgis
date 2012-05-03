@@ -146,7 +146,8 @@ public class SourceManagementTest extends TestBase {
                                 return !name.startsWith(".");
                         }
                 });
-                assertEquals(content.length, 1);
+                // 2 files : spatial_ref + directory.xml
+                assertEquals(2, content.length);
                 assertEquals(content[0].getName(), "directory.xml");
         }
 
@@ -171,7 +172,7 @@ public class SourceManagementTest extends TestBase {
                                 return !name.startsWith(".");
                         }
                 });
-                assertEquals(content.length, 1);
+                assertEquals(2, content.length);
                 assertEquals(content[0].getName(), "directory.xml");
         }
 
@@ -278,10 +279,8 @@ public class SourceManagementTest extends TestBase {
 
                 sm.rename(SOURCE, SOURCEMOD);
 
-                assertTrue(memento.length() > SOURCE.length() + 2);
-                assertEquals(memento.substring(SOURCE.length() + 2),
-                        sm.getMemento().substring(SOURCEMOD.length() + 2));
-
+                String newmem = sm.getMemento().replace(SOURCEMOD, SOURCE);
+                assertEquals(memento, newmem);
         }
 
         @Test
