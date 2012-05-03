@@ -51,6 +51,7 @@ import java.io.FileOutputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.Assume;
 import org.junit.Before;
@@ -148,7 +149,10 @@ public class SourceManagementTest extends TestBase {
                 });
                 // 2 files : spatial_ref + directory.xml
                 assertEquals(2, content.length);
-                assertEquals(content[0].getName(), "directory.xml");
+                String[] res = new String[]{content[0].getName(), content[1].getName()};
+                Arrays.sort(res);
+                String[] comp = new String[]{"directory.xml", "spatial_ref_sys_extended.gdms"};
+                assertArrayEquals(res, comp);
         }
 
         @Test
@@ -173,7 +177,10 @@ public class SourceManagementTest extends TestBase {
                         }
                 });
                 assertEquals(2, content.length);
-                assertEquals(content[0].getName(), "directory.xml");
+                String[] res = new String[]{content[0].getName(), content[1].getName()};
+                Arrays.sort(res);
+                String[] comp = new String[]{"directory.xml", "spatial_ref_sys_extended.gdms"};
+                assertArrayEquals(res, comp);
         }
 
         @Test
@@ -456,7 +463,7 @@ public class SourceManagementTest extends TestBase {
         @Test
         public void testCannotDeleteDependedSource() throws Exception {
                 Assume.assumeTrue(hsqlDbAvailable);
-                
+
                 sm.register("db", testDB);
                 sm.register("file", testFile);
                 String sql = "select 2*StringToInt(file.id) from db, file "
@@ -487,7 +494,7 @@ public class SourceManagementTest extends TestBase {
         @Test
         public void testCanDeleteIfDependentSourceIsNotWellKnown() throws Exception {
                 Assume.assumeTrue(hsqlDbAvailable);
-                
+
                 sm.register("db", testDB);
                 sm.register("file", testFile);
                 dsf.executeSQL("select 2*StringToInt(file.id) from db, file "
@@ -499,7 +506,7 @@ public class SourceManagementTest extends TestBase {
         @Test
         public void testDependentDependingSync() throws Exception {
                 Assume.assumeTrue(hsqlDbAvailable);
-                
+
                 sm.removeAll();
                 sm.register("db", testDB);
                 sm.register("file", testFile);
@@ -555,7 +562,7 @@ public class SourceManagementTest extends TestBase {
         @Test
         public void testCannotRegisterTwice() throws Exception {
                 Assume.assumeTrue(hsqlDbAvailable);
-                
+
                 sm.removeAll();
 
                 sm.register("myfile", testFile);
@@ -655,7 +662,7 @@ public class SourceManagementTest extends TestBase {
         @Test
         public void testSaveWithAnOpenHSQLDBDataSource() throws Exception {
                 Assume.assumeTrue(hsqlDbAvailable);
-                
+
                 sm.register("db", testDB);
                 DataSource ds = dsf.getDataSource("db");
                 ds.open();
@@ -677,7 +684,7 @@ public class SourceManagementTest extends TestBase {
         public void testListenCommits() throws Exception {
                 DriverManager dm = new DriverManager();
                 dm.registerDriver(ReadAndWriteDriver.class);
-                
+
                 sm.setDriverManager(dm);
                 sm.register("object", new MemorySourceDefinition(
                         new ReadAndWriteDriver(), "main"));
