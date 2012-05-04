@@ -118,11 +118,13 @@ public class MultiLineHandler implements ShapeHandler {
 	 * Get the type of shape stored
 	 * (ShapeType.ARC,ShapeType.ARCM,ShapeType.ARCZ)
 	 */
+        @Override
 	public ShapeType getShapeType() {
 		return shapeType;
 	}
 
 	/** */
+        @Override
 	public int getLength(Object geometry) {
 		MultiLineString multi = (MultiLineString) geometry;
 
@@ -149,6 +151,7 @@ public class MultiLineHandler implements ShapeHandler {
 		return length;
 	}
 
+        @Override
 	public Geometry read(ReadBufferManager buffer, ShapeType type)
 			throws IOException {
 		if (type == ShapeType.NULL) {
@@ -251,6 +254,7 @@ public class MultiLineHandler implements ShapeHandler {
 		return geometryFactory.createMultiLineString(lineStrings);
 	}
 
+        @Override
 	public void write(WriteBufferManager buffer, Object geometry)
 			throws IOException {
 		MultiLineString multi = (MultiLineString) geometry;
@@ -273,7 +277,7 @@ public class MultiLineHandler implements ShapeHandler {
 		for (int i = 0; i < numParts; i++) {
 			lines[i] = (LineString) multi.getGeometryN(i);
 			buffer.putInt(idx);
-			idx = idx + lines[i].getNumPoints();
+			idx += lines[i].getNumPoints();
 		}
 
 		Coordinate[] coords = multi.getCoordinates();

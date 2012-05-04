@@ -79,6 +79,7 @@ public final class ST_GeometryType extends AbstractSpatialPropertyFunction {
                 return "Return the type of geometry : POINT, LINESTRING, POLYGON... ";
         }
 
+        @Override
         public String getSqlOrder() {
                 return "select ST_GeometryType(the_geom) from myTable;";
         }

@@ -56,6 +56,7 @@ import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.DeleteEditionInfo;
 import org.gdms.data.edition.EditionInfo;
 import org.gdms.data.edition.PhysicalRowAddress;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.EditableMemoryDriver;
 import org.gdms.driver.MemoryDriver;
@@ -105,11 +106,9 @@ public class MemoryDataSourceAdapter extends DriverDataSource implements
         }
 
         @Override
-        public void saveData(DataSource ds) throws DriverException {
+        public void saveData(DataSet ds) throws DriverException {
                 LOG.trace("Saving data");
-                ds.open();
                 ((EditableMemoryDriver) driver).write(ds, new NullProgressMonitor());
-                ds.close();
         }
 
         @Override

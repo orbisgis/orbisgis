@@ -50,10 +50,12 @@ import org.gdms.driver.DriverException;
 
 public class RasterTableDefinition implements TableDefinition {
 
+        @Override
 	public boolean isValid(Metadata metadata) throws DriverException {
 		return MetadataUtilities.isRaster(metadata);
 	}
 
+        @Override
 	public String getDescription() {
 		return "A raster table is needed";
 	}

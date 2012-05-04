@@ -63,14 +63,14 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DBReadWriteDriver;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.source.CommitListener;
 import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.Source;
 
 /**
- * Adapter to the DataSource interface for database drivers
- * 
+ * Adapter for database drivers.
  */
 public class DBTableDataSourceAdapter extends DriverDataSource implements
         Commiter, CommitListener {
@@ -83,12 +83,11 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
         private static final Logger LOG = Logger.getLogger(DBTableDataSourceAdapter.class);
 
         /**
-         * Creates a new DBTableDataSourceAdapter
+         * Creates a new adapter.
          *
-         *
-         * @param src
-         * @param def
-         * @param driver
+         * @param src the corresponding Source object
+         * @param def the DB connection information
+         * @param driver the DB driver
          */
         public DBTableDataSourceAdapter(Source src, DBSource def, DBDriver driver) {
                 super(src);
@@ -119,12 +118,10 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
         }
 
         /**
-         * Gets a connection to the driver
+         * Gets a connection to the DB driver
          *
-         * @return Connection
-         *
-         * @throws SQLException
-         *             if the connection cannot be established
+         * @return a connection
+         * @throws SQLException if the connection cannot be established
          */
         private Connection getConnection() throws SQLException {
                 LOG.trace("Getting connection");
@@ -149,10 +146,6 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
                 sm.addCommitListener(this);
         }
 
-        /**
-         * @throws DriverException
-         * @see org.gdms.data.DataSource#getPKNames()
-         */
         private String[] getPKNames() throws DriverException {
                 final String[] ret = new String[getPKCardinality()];
 
@@ -163,15 +156,9 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
                 return ret;
         }
 
-        /**
-         * @param dataSource
-         * @see org.gdms.data.DataSource#saveData(org.gdms.data.DataSource)
-         */
         @Override
-        public void saveData(DataSource dataSource) throws DriverException {
+        public void saveData(DataSet dataSource) throws DriverException {
                 LOG.trace("Saving data");
-                dataSource.open();
-
                 DBReadWriteDriver readWriteDriver = ((DBReadWriteDriver) driver);
                 if (driver instanceof DBReadWriteDriver) {
                         Connection localCon;
@@ -184,14 +171,14 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
                 }
 
                 for (int i = 0; i < dataSource.getRowCount(); i++) {
-                        Value[] row = new Value[dataSource.getFieldNames().length];
+                        Value[] row = new Value[dataSource.getMetadata().getFieldNames().length];
                         for (int j = 0; j < row.length; j++) {
                                 row[j] = dataSource.getFieldValue(i, j);
                         }
 
                         try {
                                 Type[] fieldTypes = MetadataUtilities.getFieldTypes(dataSource.getMetadata());
-                                String sql = readWriteDriver.getInsertSQL(dataSource.getFieldNames(), fieldTypes, row);
+                                String sql = readWriteDriver.getInsertSQL(dataSource.getMetadata().getFieldNames(), fieldTypes, row);
 
                                 readWriteDriver.execute(con, sql);
                         } catch (SQLException e) {
@@ -218,8 +205,6 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
                                 throw new DriverException(I18N.getString(GDMS_DRIVER_ERROR_CONNECTION_OPEN), e);
                         }
                 }
-
-                dataSource.close();
         }
 
         public long[] getWhereFilter() throws IOException {

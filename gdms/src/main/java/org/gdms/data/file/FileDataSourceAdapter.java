@@ -58,6 +58,7 @@ import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.DeleteEditionInfo;
 import org.gdms.data.edition.EditionInfo;
 import org.gdms.data.edition.PhysicalRowAddress;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileReadWriteDriver;
@@ -66,9 +67,7 @@ import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.Source;
 
 /**
- * Adapter to the DataSource interface for file drivers
- * 
- * @author Fernando Gonzalez Cortes
+ * Adapter for file drivers.
  */
 public class FileDataSourceAdapter extends DriverDataSource implements
 		Commiter, CommitListener {
@@ -86,9 +85,7 @@ public class FileDataSourceAdapter extends DriverDataSource implements
 	 * @param src a source
 	 * @param file a file
 	 * @param driver a FileDriver for the file
-	 * @param commitable
-	 *            If the file is the source itself or it's the result of a SQL
-	 *            query for example
+	 * @param commitable if the file is the source itself
 	 */
 	public FileDataSourceAdapter(Source src, File file, FileDriver driver,
 			boolean commitable) {
@@ -105,12 +102,10 @@ public class FileDataSourceAdapter extends DriverDataSource implements
 	}
 
 	@Override
-	public void saveData(DataSource ds) throws DriverException {
+	public void saveData(DataSet ds) throws DriverException {
             LOG.trace("Saving Data");
-		ds.open();
 		((FileReadWriteDriver) driver).writeFile(file, ds,
 				new NullProgressMonitor());
-		ds.close();
 	}
 
         @Override
@@ -178,22 +173,6 @@ public class FileDataSourceAdapter extends DriverDataSource implements
 	public void commitDone(String name) throws DriverException {
 		if (realSource) {
 			sync();
-//		} else {
-			// reexecute query
-//			driver.close();
-//			Source src = getSource();
-//			SQLSourceDefinition dsd = (SQLSourceDefinition) src
-//					.getDataSourceDefinition();
-//			try {
-//				this.file = dsd.execute(name, new NullProgressMonitor());
-//			} catch (ExecutionException e) {
-//				throw new DriverException("Cannot update view. "
-//						+ "Using last result", e);
-//			} catch (SemanticException e) {
-//				throw new DriverException("Cannot update view. "
-//						+ "Using last result", e);
-//			}
-//			driver.open(file);
 		}
 	}
 

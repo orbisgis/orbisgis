@@ -46,10 +46,12 @@ package org.gdms.driver.geotif;
 
 public final class TifDriver extends AbstractRasterDriver {
 
+        @Override
         public String getDriverId() {
                 return "tif with world file driver";
         }
 
+        @Override
         public boolean isCommitable() {
                 return true;
         }

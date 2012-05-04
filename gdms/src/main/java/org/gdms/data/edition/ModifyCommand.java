@@ -62,10 +62,12 @@ public class ModifyCommand extends AbstractCommand implements Command {
 		this.newValue = newValue;
 	}
 
+        @Override
 	public void redo() throws DriverException {
 		info = dataSource.doSetFieldValue(index, fieldIndex, newValue);
 	}
 
+        @Override
 	public void undo() throws DriverException {
 		dataSource.undoSetFieldValue(info.previousDir, info.previousInfo,
 				info.ibDir, info.previousValue, info.fieldId, info.row);

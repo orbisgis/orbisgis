@@ -128,6 +128,7 @@ public final class HSQLDBDriver extends DefaultDBDriver {
 		return new String[] { "jdbc:hsqldb:file" };
 	}
 
+        @Override
 	public Number[] getScope(int dimension) throws DriverException {
 		return null;
 	}

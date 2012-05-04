@@ -107,7 +107,7 @@ public class PlugInManager {
                                                 if (!entry.getName().endsWith(".class")) {
                                                         continue;
                                                 }
-                                                if (entry.getName().indexOf("$") != -1) {
+                                                if (entry.getName().indexOf('$') != -1) {
                                                         // I assume it's not necessary to load inner classes explicitly.
                                                         continue;
                                                 }

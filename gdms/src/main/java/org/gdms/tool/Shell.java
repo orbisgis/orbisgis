@@ -111,7 +111,7 @@ public final class Shell {
                         writer.write("> ");
                         String line = bu.readLine();
                         if (line.startsWith("sql")) {
-                                int idx = line.indexOf(" ");
+                                int idx = line.indexOf(' ');
                                 if (idx == -1 || idx == line.length() - 1) {
                                         writer.println("Error with command 'sql': there"
                                                 + " must be some SQL statement after 'sql'.");

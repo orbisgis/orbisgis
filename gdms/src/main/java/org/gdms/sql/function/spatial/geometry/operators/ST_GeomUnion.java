@@ -81,6 +81,7 @@ public final class ST_GeomUnion extends AbstractAggregateSpatialFunction {
                 }
         }
 
+        @Override
         public Value getAggregateResult() {
 	                return ValueFactory.createValue(UnaryUnionOp.union(toUnite));
 	        }

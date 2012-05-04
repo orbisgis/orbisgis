@@ -88,14 +88,36 @@ import org.gdms.sql.engine.SemanticException;
 import org.gdms.sql.function.FunctionManager;
 
 /**
- * Factory of DataSource implementations. It has method to register
- * DataSourceDefinitions and to create DataSource from this associations.
+ * Main Factory and entry point for Gdms.
  *
- * It's also possible to execute SQL statements with the executeSQL method.
+ * An instance of this class represents an instance of Gdms. It can receive paths to
+ * folders that will store internal data, temporary files and data sources.
  *
- * After using the DataSourceFactory it's strongly recommended to call
- * freeResources method.
+ * All features of Gdms can be accessed through this instance or one of the topic-related
+ * instances below:
+ * <ul>
+ * <li>{@link SourceManager}: manages all the data sources registered with this Gdms instance.</li>
+ * <li>{@link org.gdms.driver.driverManager.DriverManager}: manages all drivers that handle the I/O of
+ * every source type. Can be obtained through the <tt>SourceManager</tt></li>
+ * <li>{@link PlugInManager}: loads/unloads Gdms plug-ins.</li>
+ * <li>{@link IndexManager}: creates, deletes, updates and queries indexes on registered sources.</li>
+ * <li>{@link CRSFactory}: creates Coordinate Reference System objects for reprojection of geospatial
+ * data.</li>
+ * <li>{@link FunctionManager}: manages all functions available for use via SQL.</li>
+ * </ul>.
  *
+ * The <tt>DataSourceFactory</tt> itself gives shorthands to:
+ * <ul>
+ * <li>register data sources and get a {@link DataSource} object from it.
+ * For example, see {@link #getDataSource(java.io.File)}.</li>
+ * <li>get a data source from an already registered source. See {@link #getDataSource(java.lang.String)}.
+ * </li>
+ * <li>get a data source from an SQL query. See {@link #getDataSourceFromSQL(java.lang.String)}.</li>
+ * <li>execute an SQL script against any loaded source. See {@link #executeSQL(java.lang.String)}.</li>
+ * </ul>
+ *
+ * After using the <tt>DataSourceFactory</tt>, the method {@link #freeResources()} MUST be called in order
+ * to properly save the state of Gdms and free any associated resources (file handles, for example).
  *
  */
 public final class DataSourceFactory {
@@ -125,8 +147,8 @@ public final class DataSourceFactory {
         private PlugInManager plugInManager;
         private CRSFactory crsFactory;
         private static final Logger LOG = Logger.getLogger(DataSourceFactory.class);
-        protected FunctionManager functionManager = new FunctionManager();
-        protected final List<DataSourceFactoryListener> listeners = new ArrayList<DataSourceFactoryListener>();
+        private FunctionManager functionManager = new FunctionManager();
+        private final List<DataSourceFactoryListener> listeners = new ArrayList<DataSourceFactoryListener>();
         private Properties properties = new Properties(defaultProperties);
         private static final Properties defaultProperties;
 
@@ -368,17 +390,36 @@ public final class DataSourceFactory {
                         new NullProgressMonitor());
         }
 
+        /**
+         * Gets a <tt>DataSource</tt> instance to access a specific table of a multiple table file.
+         *
+         * @param file the file to access
+         * @param tableName the name of the table to load
+         * @return a data source
+         * @throws DataSourceCreationException if the instance creation fail
+         * @throws DriverException
+         */
         public DataSource getDataSource(File file, String tableName) throws DataSourceCreationException, DriverException {
                 return getDataSource(new FileSourceDefinition(file, tableName), DEFAULT,
                         new NullProgressMonitor());
         }
 
+        /**
+         * Gets a <tt>DataSource</tt> instance to access a specific table of a multiple table file.
+         *
+         * @param file file to access
+         * @param tableName the name of the table to load
+         * @param mode the opening mode of the table.
+         * @return a data source
+         * @throws DataSourceCreationException if the instance creation fail
+         * @throws DriverException
+         */
         public DataSource getDataSource(File file, String tableName, int mode) throws DataSourceCreationException, DriverException {
                 return getDataSource(new FileSourceDefinition(file, tableName), mode,
                         new NullProgressMonitor());
         }
 
-        protected final DataSource getDataSource(DataSourceDefinition def, int mode, ProgressMonitor pm) throws DataSourceCreationException {
+        private DataSource getDataSource(DataSourceDefinition def, int mode, ProgressMonitor pm) throws DataSourceCreationException {
                 try {
                         String name = sourceManager.nameAndRegister(def);
                         return getDataSource(name, mode, pm);
@@ -595,7 +636,7 @@ public final class DataSourceFactory {
          * @param e a DataSourceFactoryListener
          * @return true if the add succeeded
          */
-        public final boolean addDataSourceFactoryListener(DataSourceFactoryListener e) {
+        public boolean addDataSourceFactoryListener(DataSourceFactoryListener e) {
                 return listeners.add(e);
         }
 
@@ -607,7 +648,7 @@ public final class DataSourceFactory {
          * @throws DriverException
          * @throws SemanticException if something wrong happens during query validation
          */
-        public final void executeSQL(String sql) throws ParseException, DriverException {
+        public void executeSQL(String sql) throws ParseException, DriverException {
                 executeSQL(sql, new NullProgressMonitor(), DEFAULT);
         }
 
@@ -619,7 +660,7 @@ public final class DataSourceFactory {
          * @throws ParseException
          * @throws DriverException
          */
-        public final void executeSQL(String sql, ProgressMonitor pm) throws ParseException, DriverException {
+        public void executeSQL(String sql, ProgressMonitor pm) throws ParseException, DriverException {
                 executeSQL(sql, pm, DEFAULT);
         }
 
@@ -636,14 +677,14 @@ public final class DataSourceFactory {
          * @throws DriverException
          * If there is a problem accessing the sources
          */
-        public final void executeSQL(String sql, ProgressMonitor pm, int mode) throws ParseException, DriverException {
+        public void executeSQL(String sql, ProgressMonitor pm, int mode) throws ParseException, DriverException {
                 LOG.trace("Execute SQL Statement" + '\n' + sql);
-                
+
                 Engine.execute(sql, this, properties);
                 fireInstructionExecuted(sql);
         }
 
-        public final void fireInstructionExecuted(String sql) {
+        public void fireInstructionExecuted(String sql) {
                 for (DataSourceFactoryListener listener : listeners) {
                         listener.sqlExecuted(new SQLEvent(sql, this));
                 }
@@ -663,7 +704,7 @@ public final class DataSourceFactory {
          * @return
          * @throws DataSourceCreationException
          */
-        public final DataSource getDataSource(SQLStatement instruction, int mode, ProgressMonitor pm) throws DataSourceCreationException {
+        public DataSource getDataSource(SQLStatement instruction, int mode, ProgressMonitor pm) throws DataSourceCreationException {
                 return getDataSource(new SQLSourceDefinition(instruction), mode, pm);
         }
 
@@ -681,7 +722,7 @@ public final class DataSourceFactory {
          * @throws ParseException
          * @throws NoSuchTableException
          */
-        public final DataSource getDataSourceFromSQL(String sql) throws DataSourceCreationException, DriverException, ParseException, NoSuchTableException {
+        public DataSource getDataSourceFromSQL(String sql) throws DataSourceCreationException, DriverException, ParseException, NoSuchTableException {
                 return getDataSourceFromSQL(sql, DEFAULT, new NullProgressMonitor());
         }
 
@@ -700,7 +741,7 @@ public final class DataSourceFactory {
          * @throws DriverException
          * @throws ParseException
          */
-        public final DataSource getDataSourceFromSQL(String sql, ProgressMonitor pm) throws DataSourceCreationException, DriverException, ParseException {
+        public DataSource getDataSourceFromSQL(String sql, ProgressMonitor pm) throws DataSourceCreationException, DriverException, ParseException {
                 return getDataSourceFromSQL(sql, DEFAULT, pm);
         }
 
@@ -718,7 +759,7 @@ public final class DataSourceFactory {
          * @throws DriverException
          * @throws ParseException
          */
-        public final DataSource getDataSourceFromSQL(String sql, int mode) throws DataSourceCreationException, DriverException, ParseException {
+        public DataSource getDataSourceFromSQL(String sql, int mode) throws DataSourceCreationException, DriverException, ParseException {
                 return getDataSourceFromSQL(sql, mode, new NullProgressMonitor());
         }
 
@@ -740,12 +781,12 @@ public final class DataSourceFactory {
          * @throws DriverException
          * @throws ParseException
          */
-        public final DataSource getDataSourceFromSQL(String sql, int mode, ProgressMonitor pm) throws DataSourceCreationException, DriverException, ParseException {
+        public DataSource getDataSourceFromSQL(String sql, int mode, ProgressMonitor pm) throws DataSourceCreationException, DriverException, ParseException {
                 LOG.trace("Getting datasource from SQL :\n" + sql);
                 if (pm == null) {
                         pm = new NullProgressMonitor();
                 }
-                
+
                 SQLStatement[] s = Engine.parse(sql, properties);
                 if (s.length > 1) {
                         throw new ParseException("Cannot create a DataSource from multiple SQL instructions!");
@@ -753,7 +794,11 @@ public final class DataSourceFactory {
                 return getDataSource(s[0], mode, pm);
         }
 
-        public final FunctionManager getFunctionManager() {
+        /**
+         * Gets the {@link FunctionManager} for this instance.
+         * @return 
+         */
+        public FunctionManager getFunctionManager() {
                 return functionManager;
         }
 
@@ -762,17 +807,18 @@ public final class DataSourceFactory {
          *
          * @return a (possibly empty) list of listeners
          */
-        public final List<DataSourceFactoryListener> getListeners() {
+        public List<DataSourceFactoryListener> getListeners() {
                 return listeners;
         }
 
         /**
-         * @param sql
-         * @return
+         * Names and registers an SQL view from the query <tt>sql</tt>.
+         * @param sql a SELECT query
+         * @return the name of the registered view
          * @throws DriverException
          * @throws ParseException
          */
-        public final String nameAndRegister(String sql) throws ParseException, DriverException {
+        public String nameAndRegister(String sql) throws ParseException, DriverException {
                 SQLStatement[] s = Engine.parse(sql, properties);
                 if (s.length > 1) {
                         throw new ParseException("Cannot create a DataSource from multiple SQL instructions!");
@@ -781,13 +827,14 @@ public final class DataSourceFactory {
         }
 
         /**
-         * @param name
-         * @param sql
+         * Registers an SQL view from the query <tt>sql</tt> under some name.
+         * @param name the name of the registered view
+         * @param sql a SELECT query
          * @throws DriverException
          * @throws SourceAlreadyExistsException
          * @throws ParseException
          */
-        public final void register(String name, String sql) throws ParseException, DriverException {
+        public void register(String name, String sql) throws ParseException, DriverException {
                 SQLStatement[] s = Engine.parse(sql, properties);
                 if (s.length > 1) {
                         throw new ParseException("Cannot create a DataSource from multiple SQL instructions!");
@@ -801,7 +848,7 @@ public final class DataSourceFactory {
          * @param o a DataSourceFactoryListener
          * @return true if the removal succeeded
          */
-        public final boolean removeDataSourceFactoryListener(DataSourceFactoryListener o) {
+        public boolean removeDataSourceFactoryListener(DataSourceFactoryListener o) {
                 return listeners.remove(o);
         }
 
@@ -813,10 +860,18 @@ public final class DataSourceFactory {
                 }
         }
 
+        /**
+         * Gets the I18N local string for this instance.
+         * @return 
+         */
         public String getI18nLocale() {
                 return I18NLocale;
         }
 
+        /**
+         * Sets the I18N local string for this instance.
+         * @param locale 
+         */
         public void setI18nLocale(String locale) {
                 this.I18NLocale = locale;
         }
@@ -1090,10 +1145,28 @@ public final class DataSourceFactory {
                 return crsFactory;
         }
 
+        /**
+         * Gets the properties associated with this instance.
+         * 
+         * Properties control various internal behaviors of Gdms.
+         * 
+         * Note that these properties inherit from the default properties available at
+         * {@link DataSourceFactory#getDefaultProperties() }.
+         * 
+         * @return 
+         */
         public Properties getProperties() {
                 return properties;
         }
 
+        /**
+         * Gets the default properties of Gdms.
+         * 
+         * Changes to these apply to all running <tt>DataSourceFactory</tt> instances inside the same
+         * ClassLoader. Use with caution.
+         * 
+         * @return 
+         */
         public static Properties getDefaultProperties() {
                 return defaultProperties;
         }

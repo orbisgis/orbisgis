@@ -101,11 +101,13 @@ public class PointHandler implements ShapeHandler {
    * Returns the shapefile shape type value for a point
    * @return int Shapefile.POINT
    */
+        @Override
   public ShapeType getShapeType() {
     return shapeType;
   }
 
 
+        @Override
   public int getLength(Object geometry) {
     int length;
     if (shapeType == ShapeType.POINT) {
@@ -120,6 +122,7 @@ public class PointHandler implements ShapeHandler {
     return length;
   }
 
+        @Override
   public Geometry read(ReadBufferManager buffer, ShapeType type) throws IOException {
     if (type == ShapeType.NULL) {
       return null;
@@ -140,6 +143,7 @@ public class PointHandler implements ShapeHandler {
     return geometryFactory.createPoint(new Coordinate(x, y, z));
   }
 
+        @Override
   public void write(WriteBufferManager buffer, Object geometry) throws IOException {
     Coordinate c = ((Point) geometry).getCoordinate();
 

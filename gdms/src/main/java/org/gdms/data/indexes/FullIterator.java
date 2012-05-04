@@ -67,16 +67,19 @@ public class FullIterator implements Iterator<Integer> {
                 LOG.trace("Constructor");
 	}
 
+        @Override
 	public boolean hasNext() {
 		return index < rowCount;
 	}
 
+        @Override
 	public Integer next() {
 		Integer ret = index;
 		index++;
 		return ret;
 	}
 
+        @Override
 	public void remove() {
 		throw new UnsupportedOperationException();
 	}

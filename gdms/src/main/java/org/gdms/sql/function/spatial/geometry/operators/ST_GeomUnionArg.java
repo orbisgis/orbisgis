@@ -64,6 +64,7 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
  */
 public final class ST_GeomUnionArg extends AbstractScalarSpatialFunction {
 
+        @Override
         public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 if (!args[0].isNull() && !args[1].isNull()) {
                         ArrayList<Geometry> toUnite = new ArrayList<Geometry>();

@@ -170,7 +170,7 @@ public final class GeometryEdit {
                 private int seqSize = 0;
                 private double sumLenght = 0;
 
-                public LinearZInterpolationFilter(double startZ, double endZ, double length) {
+                LinearZInterpolationFilter(double startZ, double endZ, double length) {
                         this.startZ = startZ;
                         this.endZ = endZ;
                         this.length = length;

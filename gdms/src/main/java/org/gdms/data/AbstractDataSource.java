@@ -321,7 +321,7 @@ public abstract class AbstractDataSource extends AbstractDataSet implements Data
         }
 
         @Override
-        public final ValueCollection getPK(int rowIndex) throws DriverException {
+        public final ValueCollection getPK(long rowIndex) throws DriverException {
                 /*
                  * TODO Caching fieldsId will speed up the open if edition is enabled
                  */

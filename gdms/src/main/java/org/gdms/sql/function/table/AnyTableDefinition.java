@@ -49,10 +49,12 @@ import org.gdms.driver.DriverException;
 
 public class AnyTableDefinition implements TableDefinition {
 
+        @Override
 	public boolean isValid(Metadata metadata) throws DriverException {
 		return true;
 	}
 
+        @Override
 	public String getDescription() {
 		return "Any table is valid";
 	}

@@ -50,10 +50,12 @@ import org.gdms.driver.DriverException;
 
 public class GeometryTableDefinition implements TableDefinition {
 
+        @Override
 	public boolean isValid(Metadata metadata) throws DriverException {
 		return MetadataUtilities.isGeometry(metadata);
 	}
 
+        @Override
 	public String getDescription() {
 		return "A geometry table is needed";
 	}

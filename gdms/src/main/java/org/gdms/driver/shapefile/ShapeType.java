@@ -116,6 +116,7 @@ public final class ShapeType {
   /** Get the name of this ShapeType.
    * @return The name.
    */  
+        @Override
   public String toString() { return name; }
   
   /** Is this a multipoint shape? Hint- all shapes are multipoint except NULL,

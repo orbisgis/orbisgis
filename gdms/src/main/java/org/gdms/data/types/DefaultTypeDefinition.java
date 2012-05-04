@@ -60,18 +60,22 @@ public class DefaultTypeDefinition implements TypeDefinition {
                 this.typeCode = typeCode;
         }
 
+        @Override
         public String getTypeName() {
                 return typeName;
         }
 
+        @Override
         public int[] getValidConstraints() {
                 return constraints;
         }
 
+        @Override
         public Type createType() {
                 return new DefaultType(new Constraint[0], typeCode);
         }
 
+        @Override
         public Type createType(Constraint[] constraints) {
                 return new DefaultType(constraints, typeCode);
         }

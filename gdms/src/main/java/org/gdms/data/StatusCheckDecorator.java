@@ -47,11 +47,13 @@ package org.gdms.data;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 
 /**
- * Decorator designed to perform the necessary check on the underlying DataSource before
- * doing any action.
+ * Performs the necessary check on the underlying DataSource before doing any action.
+ * 
+ * This mostly checks that the DataSource is actually open before doing the action.
  */
 public class StatusCheckDecorator extends AbstractDataSourceDecorator {
         private static final String MUST_BE_OPEN = "The data source must be open to call this method";
@@ -227,7 +229,7 @@ public class StatusCheckDecorator extends AbstractDataSourceDecorator {
 	}
 
         @Override
-	public void saveData(DataSource ds) throws DriverException {
+	public void saveData(DataSet ds) throws DriverException {
 		if (isOpen()) {
 			throw new IllegalStateException(
 					"The data source must be closed to call this method");

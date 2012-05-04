@@ -74,6 +74,7 @@ public final class Random extends AbstractScalarMathFunction {
                 return "Returns a double value with a positive sign, greater than or equal to 0.0 and less than 1.0.";
         }
 
+        @Override
         public String getSqlOrder() {
                 return "select Random() from myTable;";
         }

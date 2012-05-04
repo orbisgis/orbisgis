@@ -61,40 +61,33 @@ import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
 
 /**
- * This is the base class for any DataSourceDecorator.
- *
+ * A base class for any DataSource decorator.
  */
 public abstract class AbstractDataSourceDecorator extends AbstractDataSource {
 
         private DataSource internalDataSource;
 
+        /**
+         * Creates a new decorator on the specified DataSource instance.
+         *
+         * @param internalDataSource a DataSource to decorate
+         */
         public AbstractDataSourceDecorator(final DataSource internalDataSource) {
                 this.internalDataSource = internalDataSource;
         }
 
         /**
-         * @return the internalDataSource
+         * @return the internal DataSource object
          */
         public final DataSource getDataSource() {
                 return internalDataSource;
         }
 
-        /**
-         * @param listener
-         * @see org.gdms.data.DataSource#addEditionListener(org.gdms.data.edition.EditionListener)
-         */
         @Override
         public void addEditionListener(EditionListener listener) {
                 internalDataSource.addEditionListener(listener);
         }
 
-        /**
-         * @param name
-         * @param driverType
-         * @throws DriverException
-         * @see org.gdms.data.DataSource#addField(java.lang.String,
-         *      java.lang.String)
-         */
         @Override
         public void addField(String name, Type driverType) throws DriverException {
                 if (internalDataSource.getFieldIndexByName(name) == -1) {
@@ -104,305 +97,158 @@ public abstract class AbstractDataSourceDecorator extends AbstractDataSource {
                 }
         }
 
-        /**
-         * @param listener
-         * @see org.gdms.data.DataSource#addMetadataEditionListener(org.gdms.data.edition.MetadataEditionListener)
-         */
         @Override
         public void addMetadataEditionListener(MetadataEditionListener listener) {
                 internalDataSource.addMetadataEditionListener(listener);
         }
 
-        /**
-         * @throws DriverException
-         * @throws AlreadyClosedException
-         * @see org.gdms.data.DataSource#close()
-         */
         @Override
         public void close() throws DriverException {
                 internalDataSource.close();
         }
 
-        /**
-         * @return
-         * @see org.gdms.data.DataSource#canRedo()
-         */
         @Override
         public boolean canRedo() {
                 return internalDataSource.canRedo();
         }
 
-        /**
-         * @return
-         * @see org.gdms.data.DataSource#canUndo()
-         */
         @Override
         public boolean canUndo() {
                 return internalDataSource.canUndo();
         }
 
-        /**
-         * @param fieldId
-         * @param value
-         * @return
-         * @throws DriverException
-         * @see org.gdms.data.DataSource#check(int, org.gdms.data.values.Value)
-         */
         @Override
         public String check(int fieldId, Value value) throws DriverException {
                 return internalDataSource.check(fieldId, value);
         }
 
-        /**
-         * @throws DriverException
-         * @throws NonEditableDataSourceException
-         * @see org.gdms.data.DataSource#commit()
-         */
         @Override
         public void commit() throws DriverException, NonEditableDataSourceException {
                 internalDataSource.commit();
         }
 
-        /**
-         * @param rowId
-         * @throws DriverException
-         * @see org.gdms.data.DataSource#deleteRow(long)
-         */
         @Override
         public void deleteRow(long rowId) throws DriverException {
                 internalDataSource.deleteRow(rowId);
         }
 
-        /**
-         * @return
-         * @see org.gdms.data.DataSource#getDataSourceFactory()
-         */
         @Override
         public DataSourceFactory getDataSourceFactory() {
                 return internalDataSource.getDataSourceFactory();
         }
 
-        /**
-         * @return
-         * @throws DriverException
-         * @see org.gdms.data.DataSource#getMetadata()
-         */
         @Override
         public Metadata getMetadata() throws DriverException {
                 return internalDataSource.getMetadata();
         }
 
-        /**
-         * @return
-         * @see org.gdms.data.DataSource#getDispatchingMode()
-         */
         @Override
         public int getDispatchingMode() {
                 return internalDataSource.getDispatchingMode();
         }
 
-        /**
-         * @return
-         * @see org.gdms.data.DataSource#getDriver()
-         */
         @Override
         public Driver getDriver() {
                 return internalDataSource.getDriver();
         }
 
-        /**
-         * @param rowIndex
-         * @param fieldId
-         * @return
-         * @throws DriverException
-         * @see org.gdms.driver.DataSet#getFieldValue(long, int)
-         */
         @Override
         public Value getFieldValue(long rowIndex, int fieldId)
                 throws DriverException {
                 return internalDataSource.getFieldValue(rowIndex, fieldId);
         }
 
-        /**
-         * @return
-         * @see org.gdms.data.DataSource#getName()
-         */
         @Override
         public String getName() {
                 return internalDataSource.getName();
         }
 
-        /**
-         * @return
-         * @throws DriverException
-         * @see org.gdms.driver.DataSet#getRowCount()
-         */
         @Override
         public long getRowCount() throws DriverException {
                 return internalDataSource.getRowCount();
         }
 
-        /**
-         * @param dimension
-         * @return
-         * @throws DriverException
-         * @see org.gdms.driver.DataSet#getScope(int)
-         */
         @Override
         public Number[] getScope(int dimension) throws DriverException {
                 return internalDataSource.getScope(dimension);
         }
 
-        /**
-         * @throws DriverException
-         * @see org.gdms.data.DataSource#insertEmptyRow()
-         */
         @Override
         public void insertEmptyRow() throws DriverException {
                 internalDataSource.insertEmptyRow();
         }
 
-        /**
-         * @param index
-         * @throws DriverException
-         * @see org.gdms.data.DataSource#insertEmptyRowAt(long)
-         */
         @Override
         public void insertEmptyRowAt(long index) throws DriverException {
                 internalDataSource.insertEmptyRowAt(index);
         }
 
-        /**
-         * @param values
-         * @throws DriverException
-         * @see org.gdms.data.DataSource#insertFilledRow(org.gdms.data.values.Value[])
-         */
         @Override
         public void insertFilledRow(Value[] values) throws DriverException {
                 internalDataSource.insertFilledRow(values);
         }
 
-        /**
-         * @param index
-         * @param values
-         * @throws DriverException
-         * @see org.gdms.data.DataSource#insertFilledRowAt(long,
-         *      org.gdms.data.values.Value[])
-         */
         @Override
         public void insertFilledRowAt(long index, Value[] values)
                 throws DriverException {
                 internalDataSource.insertFilledRowAt(index, values);
         }
 
-        /**
-         * @return
-         * @see org.gdms.data.DataSource#isEditable()
-         */
         @Override
         public boolean isEditable() {
                 return internalDataSource.isEditable();
         }
 
-        /**
-         * @return
-         * @see org.gdms.data.DataSource#isModified()
-         */
         @Override
         public boolean isModified() {
                 return internalDataSource.isModified();
         }
 
-        /**
-         * @return
-         * @see org.gdms.data.DataSource#isOpen()
-         */
         @Override
         public boolean isOpen() {
                 return internalDataSource.isOpen();
         }
 
-        /**
-         * @throws DriverException
-         * @see org.gdms.data.DataSource#open()
-         */
         @Override
         public void open() throws DriverException {
                 internalDataSource.open();
         }
 
-        /**
-         * @throws DriverException
-         * @see org.gdms.data.DataSource#redo()
-         */
         @Override
         public void redo() throws DriverException {
                 internalDataSource.redo();
         }
 
-        /**
-         * @param listener
-         * @see org.gdms.data.DataSource#removeEditionListener(org.gdms.data.edition.EditionListener)
-         */
         @Override
         public void removeEditionListener(EditionListener listener) {
                 internalDataSource.removeEditionListener(listener);
         }
 
-        /**
-         * @param index
-         * @throws DriverException
-         * @see org.gdms.data.DataSource#removeField(int)
-         */
         @Override
         public void removeField(int index) throws DriverException {
                 internalDataSource.removeField(index);
         }
 
-        /**
-         * @param listener
-         * @see org.gdms.data.DataSource#removeMetadataEditionListener(org.gdms.data.edition.MetadataEditionListener)
-         */
         @Override
         public void removeMetadataEditionListener(MetadataEditionListener listener) {
                 internalDataSource.removeMetadataEditionListener(listener);
         }
 
-        /**
-         * @param ds
-         * @throws IllegalStateException
-         * @throws DriverException
-         * @see org.gdms.data.DataSource#saveData(org.gdms.data.DataSource)
-         */
         @Override
-        public void saveData(DataSource ds) throws DriverException {
+        public void saveData(DataSet ds) throws DriverException {
                 internalDataSource.saveData(ds);
         }
 
-        /**
-         * @param dsf
-         * @see org.gdms.data.DataSource#setDataSourceFactory(org.gdms.data.DataSourceFactory)
-         */
         @Override
         public final void setDataSourceFactory(DataSourceFactory dsf) {
                 internalDataSource.setDataSourceFactory(dsf);
         }
 
-        /**
-         * @param dispatchingMode
-         * @see org.gdms.data.DataSource#setDispatchingMode(int)
-         */
         @Override
         public void setDispatchingMode(int dispatchingMode) {
                 internalDataSource.setDispatchingMode(dispatchingMode);
         }
 
-        /**
-         * @param index
-         * @param name
-         * @throws DriverException
-         * @see org.gdms.data.DataSource#setFieldName(int, java.lang.String)
-         */
         @Override
         public void setFieldName(int index, String name) throws DriverException {
                 if (internalDataSource.getFieldIndexByName(name) == -1) {
@@ -412,43 +258,23 @@ public abstract class AbstractDataSourceDecorator extends AbstractDataSource {
                 }
         }
 
-        /**
-         * @param row
-         * @param fieldId
-         * @param value
-         * @throws DriverException
-         * @see org.gdms.data.DataSource#setFieldValue(long, int,
-         *      org.gdms.data.values.Value)
-         */
         @Override
         public void setFieldValue(long row, int fieldId, Value value)
                 throws DriverException {
                 internalDataSource.setFieldValue(row, fieldId, value);
         }
 
-        /**
-         * @throws DriverException
-         * @see org.gdms.data.DataSource#undo()
-         */
         @Override
         public void undo() throws DriverException {
                 internalDataSource.undo();
         }
 
-        /**
-         * @param indexQuery
-         * @throws DriverException
-         * @see org.gdms.data.DataSource#queryIndex(java.lang.String, IndexQuery)
-         */
         @Override
         public Iterator<Integer> queryIndex(IndexQuery indexQuery)
                 throws DriverException {
                 return internalDataSource.queryIndex(indexQuery);
         }
 
-        /**
-         * @see org.gdms.data.DataSource#getCommiter()
-         */
         @Override
         public Commiter getCommiter() {
                 return internalDataSource.getCommiter();

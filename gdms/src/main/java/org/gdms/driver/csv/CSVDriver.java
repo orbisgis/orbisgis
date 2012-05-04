@@ -477,7 +477,7 @@ public final class CSVDriver extends AbstractDataSet implements FileReadWriteDri
                 private boolean nextLoaded = false;
                 private CSVReader reader;
 
-                public CSVIterator() throws DriverException {
+                CSVIterator() throws DriverException {
                         try {
                                 reader = getReader();
                                 reader.readNext();
