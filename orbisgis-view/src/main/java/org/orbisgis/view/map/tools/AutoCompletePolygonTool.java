@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.types.Constraint;
@@ -55,6 +56,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.Handler;
 import org.orbisgis.view.map.tool.MultiPolygonHandler;
 import org.orbisgis.view.map.tool.PolygonHandler;
@@ -67,10 +69,7 @@ import org.orbisgis.view.map.tool.TransitionException;
  */
 public class AutoCompletePolygonTool extends AbstractPolygonTool {
 
-        @Override
-        public void update(Observable o, Object arg) {
-                //PlugInContext.checkTool(this);
-        }
+        
 
         @Override
         protected void polygonDone(Polygon pol,
@@ -202,4 +201,12 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
                 return I18N.tr("orbisgis.core.ui.editors.map.tool.polygon.autocomplete");
 
         }
+
+    public ImageIcon getImageIcon() {
+        return OrbisGISIcon.getIcon("autocompletepolygon");
+    }
+
+    public void update(Observable o, Object o1) {
+        
+    }
 }

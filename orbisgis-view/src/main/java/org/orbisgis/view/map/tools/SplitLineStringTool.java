@@ -42,7 +42,6 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import java.util.Observable;
 
-import javax.swing.AbstractButton;
 
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.ToolManager;
@@ -50,6 +49,7 @@ import org.orbisgis.view.map.tool.TransitionException;
 
 
 import com.vividsolutions.jts.geom.Point;
+import javax.swing.ImageIcon;
 import org.gdms.data.DataSource; 
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -57,6 +57,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.geometryUtils.GeometryEdit;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.Handler;
 
 public class SplitLineStringTool extends AbstractPointTool {
@@ -107,7 +108,13 @@ public class SplitLineStringTool extends AbstractPointTool {
 
         }
 
+        @Override
         public String getName() {
                 return I18N.tr("orbisgis.core.ui.editors.map.tool.line.splitLine");
+        }
+
+        @Override
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("splitlinestring");
         }
 }

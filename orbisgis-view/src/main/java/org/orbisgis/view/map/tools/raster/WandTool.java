@@ -77,7 +77,9 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
+import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 
 public class WandTool extends AbstractPointTool {
@@ -203,13 +205,17 @@ public class WandTool extends AbstractPointTool {
 		return dsResult;
 	}
 
-	@Override
 	public void update(Observable o, Object arg) {
-		//PlugInContext.checkTool(this);
 	}
 
         @Override
 	public String getName() {
 		return I18N.tr("orbisgis.org.orbisgis.ui.tools.WandTool.vectorizeSetPixels"); //$NON-NLS-1$
 	}
+
+        @Override
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("watershed");
+        }
+
 }

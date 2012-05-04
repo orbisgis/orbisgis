@@ -92,10 +92,16 @@ public interface Automaton extends Observer {
          */
 	public String getName();
 
+        /**
+         * Automaton Icon representation
+         * @return 
+         */
+	public ImageIcon getImageIcon();
+        
 	/**
 	 * Null to use the cross cursor
 	 */
-	public ImageIcon getImageIcon();
+        public ImageIcon getCursor();
 
 	public boolean isEnabled(MapContext vc, ToolManager tm);
 
@@ -107,5 +113,4 @@ public interface Automaton extends Observer {
 
 	public Point getHotSpotOffset();
 
-	public void setMouseCursor(ImageIcon mouseCursor);
 }

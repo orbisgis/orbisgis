@@ -144,5 +144,9 @@ public class PanTool extends AbstractDragTool {
         public String getTooltip() {
             return I18N.tr("The Pan Tool");
         }
+
+        public ImageIcon getCursor() {
+            return OrbisGISIcon.getIcon("pan");
+        }
         
 }

@@ -38,7 +38,6 @@ package org.orbisgis.view.map.tools;
 
 import java.util.Observable;
 
-import javax.swing.AbstractButton;
 
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;

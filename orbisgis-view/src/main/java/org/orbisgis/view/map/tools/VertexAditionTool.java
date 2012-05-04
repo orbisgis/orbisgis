@@ -40,7 +40,6 @@ import com.vividsolutions.jts.geom.Coordinate;
 import java.awt.Graphics;
 import java.util.Observable;
 
-import javax.swing.AbstractButton;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;

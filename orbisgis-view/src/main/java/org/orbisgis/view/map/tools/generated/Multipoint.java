@@ -64,6 +64,10 @@ public abstract class Multipoint implements Automaton {
 
 	private ToolManager tm;
 
+        public ImageIcon getCursor() {
+            return null;
+        }
+
 	public String[] getTransitionLabels() {
 		ArrayList<String> ret = new ArrayList<String>();
 

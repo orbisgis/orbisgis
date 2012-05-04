@@ -66,10 +66,12 @@ import org.orbisgis.view.map.tool.TransitionException;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 import java.io.File;
+import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata; 
 import org.gdms.driver.gdms.GdmsWriter;
+import org.orbisgis.view.icons.OrbisGISIcon;
 
 public class FencePolygonTool extends AbstractPolygonTool {
         private static Logger UILOGGER = Logger.getLogger("gui."+FencePolygonTool.class);
@@ -157,5 +159,9 @@ public class FencePolygonTool extends AbstractPolygonTool {
 
         public String getName() {
                 return I18N.tr("Draw a fence");
+        }
+
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("shape_polygon_edit");
         }
 }

@@ -34,6 +34,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.util.logging.Level;
 import javax.swing.*;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.DefaultMapContext;
@@ -89,7 +90,9 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
         try {
             mapContext = new DefaultMapContext();
             mapContext.open(new NullProgressMonitor());
-            mapControl = new MapControl(mapContext,this,new ZoomInTool());
+            mapControl.setMapContext(mapContext);
+            mapControl.setDefaultTool(new ZoomInTool());
+            mapControl.initMapControl();
         } catch (LayerException ex) {            
             GUILOGGER.error(ex);
         } catch (IllegalStateException ex) {
@@ -178,7 +181,11 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
      */
     public void onToolSelected(Automaton automaton) {
         GUILOGGER.info(I18N.tr("Choose the tool named {0}",automaton.getName()));
-        mapControl.setDefaultTool(automaton);
+        try {
+            mapControl.setTool(automaton);
+        } catch (TransitionException ex) {
+            GUILOGGER.error(I18N.tr("Unable to choose this tool"),ex);
+        }
     }
 
     public void extentChanged(Envelope oldExtent, MapTransform mapTransform) {

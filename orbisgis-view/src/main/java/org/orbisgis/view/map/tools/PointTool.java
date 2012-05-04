@@ -73,9 +73,11 @@ import org.orbisgis.view.map.tool.TransitionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
+import javax.swing.ImageIcon;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.orbisgis.view.icons.OrbisGISIcon;
 
 public class PointTool extends AbstractPointTool {
 
@@ -125,4 +127,9 @@ public class PointTool extends AbstractPointTool {
 	public String getName() {
 		return I18N.tr("orbisgis.core.ui.editors.map.tool.point_tooltip");
 	}
+
+        @Override
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("point");
+        }
 }

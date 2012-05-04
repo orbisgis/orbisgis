@@ -26,31 +26,13 @@ public abstract class Compass implements Automaton {
 
 	private ToolManager tm;
 
+        public ImageIcon getCursor() {
+            return null;
+        }
+
 	public String[] getTransitionLabels() {
 		ArrayList<String> ret = new ArrayList<String>();
-
-		if ("Standby".equals(status)) {
-
-		}
-
-		if ("OnePoint".equals(status)) {
-
-		}
-
-		if ("TwoPoints".equals(status)) {
-
-		}
-
-		if ("ThreePoints".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
-		ret.add(I18N.tr("Cancel"));
-
+                ret.add(I18N.tr("Cancel"));
 		return ret.toArray(new String[0]);
 	}
 

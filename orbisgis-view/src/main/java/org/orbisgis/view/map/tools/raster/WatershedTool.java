@@ -65,7 +65,9 @@ import org.orbisgis.view.map.tools.AbstractPointTool;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Point;
+import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
+import org.orbisgis.view.icons.OrbisGISIcon;
 
 public class WatershedTool extends AbstractPointTool {
         private static Logger UILOGGER = Logger.getLogger("gui."+WatershedTool.class);
@@ -162,4 +164,9 @@ public class WatershedTool extends AbstractPointTool {
 	public String getName() {
 		return I18N.tr("orbisgis.org.orbisgis.ui.watershedTool.computeWatershed"); //$NON-NLS-1$
 	}
+
+        @Override
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("wizard");
+        }
 }

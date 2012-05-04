@@ -39,9 +39,13 @@ package org.orbisgis.view.map;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
 import java.awt.image.BufferedImage;
 import javax.swing.JComponent;
+import javax.swing.JPanel;
 import javax.swing.Timer;
 import org.apache.log4j.Logger;
 import org.gdms.data.ClosedDataSourceException;
@@ -71,8 +75,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * 
  */
 
-public class MapControl extends JComponent implements ComponentListener,
-		ContainerListener {
+public class MapControl extends JPanel implements ContainerListener {
         private static final Logger LOGGER = Logger.getLogger(MapControl.class);
         protected final static I18n I18N = I18nFactory.getI18n(MapControl.class);
 	private static int lastProcessId = 0;
@@ -108,24 +111,6 @@ public class MapControl extends JComponent implements ComponentListener,
             defaultTool = new ZoomInTool();
 	}
         
-	/**
-	 * Creates a new NewMapControl.
-	 * 
-	 * @param mapContext
-	 * @param defaultTool
-	 * 
-	 * @param ec
-	 * @throws TransitionException
-	 */
-	public MapControl(final MapContext mapContext, TransformListener element,
-			Automaton defaultTool) throws TransitionException {
-		this.mapContext = mapContext;
-		this.element = element;
-		this.defaultTool = defaultTool;
-
-		initMapControl();
-	}
-
 	final public void initMapControl() throws TransitionException {
 		synchronized (this) {
 			this.processId = lastProcessId++;
@@ -168,11 +153,7 @@ public class MapControl extends JComponent implements ComponentListener,
 					ToolManager toolManager) {
 			}
 		});
-		this.addMouseListener(toolManager);
-		this.addMouseWheelListener(toolManager);
-		this.addMouseMotionListener(toolManager);
-
-		this.addComponentListener(this);
+		addMouseListener(toolManager);
 
 		mapTransform.addTransformListener(new TransformListener() {
 
@@ -310,32 +291,6 @@ public class MapControl extends JComponent implements ComponentListener,
 	 */
 	public BufferedImage getImage() {
 		return mapTransform.getImage();
-	}
-
-	/**
-	 * @see java.awt.event.ComponentListener#componentHidden(java.awt.event.ComponentEvent)
-	 */
-	public void componentHidden(ComponentEvent e) {
-	}
-
-	/**
-	 * @see java.awt.event.ComponentListener#componentMoved(java.awt.event.ComponentEvent)
-	 */
-	public void componentMoved(ComponentEvent e) {
-	}
-
-	/**
-	 * @see java.awt.event.ComponentListener#componentResized(java.awt.event.ComponentEvent)
-	 */
-	public void componentResized(ComponentEvent e) {
-		mapTransform.resizeImage(getWidth(), getHeight());
-	}
-
-	/**
-	 * @see java.awt.event.ComponentListener#componentShown(java.awt.event.ComponentEvent)
-	 */
-	public void componentShown(ComponentEvent e) {
-		repaint();
 	}
 
 	public Color getBackColor() {

@@ -38,7 +38,6 @@ package org.orbisgis.view.map.tools;
 
 import java.util.Observable;
 
-import javax.swing.AbstractButton;
  
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -50,9 +49,11 @@ import org.orbisgis.view.map.tool.TransitionException;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
+import javax.swing.ImageIcon;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.orbisgis.view.icons.OrbisGISIcon;
 
 public class PolygonTool extends AbstractPolygonTool {
 
@@ -100,5 +101,10 @@ public class PolygonTool extends AbstractPolygonTool {
 	public String getName() {
 		return I18N.tr("orbisgis.core.ui.editors.map.tool.polygon_tooltip");
 	}
+
+        @Override
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("polygon");
+        }
 
 }

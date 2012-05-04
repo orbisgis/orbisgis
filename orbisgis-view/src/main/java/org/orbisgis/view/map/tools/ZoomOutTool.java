@@ -162,5 +162,10 @@ public class ZoomOutTool extends ZoomOut {
         public String getTooltip() {
             return I18N.tr("This tool zoom out on click");
         }
+
+        @Override
+        public ImageIcon getCursor() {
+            return OrbisGISIcon.getIcon("zoom_out");
+        }
         
 }

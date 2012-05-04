@@ -62,10 +62,12 @@ package org.orbisgis.view.map.tools;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
 
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.ToolManager;
 
 
@@ -107,7 +109,13 @@ public class SelectionTool extends AbstractSelectionTool {
 		return true;
 	}
 
+        @Override
 	public String getName() {
-		return I18N.tr("orbisgis.core.ui.editors.map.tool.selection_tooltip");
+		return I18N.tr("Select a geometry");
 	}
+
+        @Override
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("select");
+        }
 }

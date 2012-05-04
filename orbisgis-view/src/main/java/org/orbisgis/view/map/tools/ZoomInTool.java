@@ -72,7 +72,7 @@ import org.orbisgis.view.map.tool.TransitionException;
 
 
 import com.vividsolutions.jts.geom.Envelope;
-import org.orbisgis.view.icons.OrbisGISIcon;
+        import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  * Tool to zoom in
@@ -125,10 +125,15 @@ public class ZoomInTool extends AbstractRectangleTool {
 		return true;
 	}
 
+        @Override
 	public ImageIcon getImageIcon() {
 		return OrbisGISIcon.getIcon("zoom_in");
 	}
 
+        @Override
+        public ImageIcon getCursor() {
+            return OrbisGISIcon.getIcon("zoom_in");
+        }
         @Override
 	public String getName() {
 		return I18N.tr("Zoom in");

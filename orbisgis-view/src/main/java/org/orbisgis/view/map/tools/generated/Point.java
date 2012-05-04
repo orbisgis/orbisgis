@@ -273,21 +273,11 @@ public abstract class Point implements Automaton {
 	public String getTooltip() {
 		return I18N.tr("orbisgis.core.ui.editors.map.tool.point_tooltip");
 	}
-
-	private ImageIcon mouseCursor;
-
-	public ImageIcon getImageIcon() {
-		if (mouseCursor != null) {
-			return mouseCursor;
-		} else {
-			return null;
-		}
-	}
-
-	public void setMouseCursor(ImageIcon mouseCursor) {
-		this.mouseCursor = mouseCursor;
-	}
-
+        
+        public ImageIcon getCursor() {
+            return null;
+        }
+        
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {

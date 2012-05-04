@@ -84,6 +84,10 @@ public abstract class Polygon implements Automaton {
 		return ret.toArray(new String[0]);
 	}
 
+        public ImageIcon getCursor() {
+            return null;
+        }
+
 	public String[] getTransitionCodes() {
 		ArrayList<String> ret = new ArrayList<String>();
 
@@ -347,20 +351,6 @@ public abstract class Polygon implements Automaton {
 
 	public String getTooltip() {
 		return I18N.tr("Draw a polygon");
-	}
-
-	private ImageIcon mouseCursor;
-
-	public ImageIcon getImageIcon() {
-		if (mouseCursor != null) {
-			return mouseCursor;
-		} else {
-			return null;
-		}
-	}
-
-	public void setMouseCursor(ImageIcon mouseCursor) {
-		this.mouseCursor = mouseCursor;
 	}
 
 	public void toolFinished(MapContext vc, ToolManager tm)

@@ -626,55 +626,14 @@ public abstract class Selection implements Automaton {
 		return I18N.tr("orbisgis.core.ui.editors.map.tool.selection_tooltip");
 	}
 
-	private ImageIcon mouseCursor;
-
-	public ImageIcon getImageIcon() {
-		if (mouseCursor != null) {
-			return mouseCursor;
-		} else {
-			return null;
-		}
-	}
-
-	public void setMouseCursor(ImageIcon mouseCursor) {
-		this.mouseCursor = mouseCursor;
+	public ImageIcon getCursor() {
+        	return null;
 	}
 
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
 
-		if ("Standby".equals(status)) {
-
-		}
-
-		if ("OnePoint".equals(status)) {
-
-		}
-
-		if ("OnePointLeft".equals(status)) {
-
-		}
-
-		if ("TwoPoints".equals(status)) {
-
-		}
-
-		if ("Selection".equals(status)) {
-
-		}
-
-		if ("PointWithSelection".equals(status)) {
-
-		}
-
-		if ("Movement".equals(status)) {
-
-		}
-
-		if ("MakeMove".equals(status)) {
-
-		}
 
 	}
 

@@ -260,7 +260,7 @@ public abstract class Drag implements Automaton {
 		return I18N.tr("orbisgis.core.ui.editors.map.tool.pan_tooltip");
 	}
 
-	private ImageIcon mouseCursor;
+	protected ImageIcon mouseCursor;
 
         @Override
 	public ImageIcon getImageIcon() {
@@ -269,11 +269,6 @@ public abstract class Drag implements Automaton {
 		} else {
 			return null;
 		}
-	}
-
-        @Override
-	public void setMouseCursor(ImageIcon mouseCursor) {
-		this.mouseCursor = mouseCursor;
 	}
 
         @Override

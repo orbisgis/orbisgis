@@ -6,11 +6,13 @@ import java.awt.geom.Point2D;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.CannotChangeGeometryException;
 import org.orbisgis.view.map.tool.DrawingException;
 import org.orbisgis.view.map.tool.FinishedAutomatonException;
@@ -102,7 +104,13 @@ public class EditionSelectionTool extends AbstractSelectionTool {
                 }
         }
 
-         public String getName() {
-                return I18N.tr("orbisgis.core.ui.editors.map.tool.moveVertex");
+        @Override
+        public String getName() {
+                return I18N.tr("Move vertex");
         }
+
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("moveVertex");
+        }
+
 }

@@ -110,8 +110,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * the EditionContext of the system.
  * 
  */
-public class ToolManager extends MouseAdapter implements MouseMotionListener,
-        MouseWheelListener {
+public class ToolManager extends MouseAdapter {
 
         public static final String TERMINATE = "t"; //$NON-NLS-1$
         public static final String RELEASE = "release"; //$NON-NLS-1$
@@ -360,6 +359,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
                         if (p.distance(lastMouseX, lastMouseY) < uiTolerance) {
                                 adjustedPoint = new Point((int) p.getX(), (int) p.getY());
                                 worldAdjustedPoint = currentHandlers.get(i).getPoint();
+                                UILOGGER.info(worldAdjustedPoint);
                                 break;
                         }
                 }
@@ -485,7 +485,7 @@ public class ToolManager extends MouseAdapter implements MouseMotionListener,
 
         private void updateCursor() {
                 Cursor c;
-                ImageIcon cursor = getTool().getImageIcon();
+                ImageIcon cursor = getTool().getCursor();
                 if (cursor == null) {
                         BufferedImage image = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration().createCompatibleImage(32, 32,
                                 Transparency.BITMASK);

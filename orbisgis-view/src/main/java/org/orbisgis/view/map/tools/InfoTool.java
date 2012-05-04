@@ -45,6 +45,7 @@ import com.vividsolutions.jts.io.WKTWriter;
 import java.awt.geom.Rectangle2D;
 import java.util.Observable;
 import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
@@ -58,6 +59,7 @@ import org.orbisgis.core.background.DefaultJobId;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 
@@ -161,4 +163,8 @@ public class InfoTool extends AbstractRectangleTool {
 		return I18N.tr("orbisgis.core.ui.editors.map.tool.information");
 	}
 
+        @Override
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("information");
+        }
 }

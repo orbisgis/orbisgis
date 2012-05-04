@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Observable;
 
 import javax.swing.AbstractButton;
+import javax.swing.ImageIcon;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.types.GeometryDimensionConstraint;
@@ -54,6 +55,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.geometryUtils.GeometryEdit;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.Handler;
 import org.orbisgis.view.map.tool.MultiPolygonHandler;
 import org.orbisgis.view.map.tool.PolygonHandler;
@@ -127,5 +129,9 @@ public class CutPolygonTool extends AbstractPolygonTool {
         @Override
         public String getName() {
                 return I18N.tr("orbisgis.core.ui.editors.map.tool.polygon.cut");
+        }
+
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("cutpolygon");
         }
 }
