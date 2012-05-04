@@ -129,7 +129,17 @@ public class Catalog extends JPanel implements DockingPanel {
                         "source.getFilters" //target method argument
                         ));
                 //Add the filter list at the top of the geocatalog
-                add(filterFactoryManager.makeFilterPanel(), BorderLayout.NORTH);
+                add(filterFactoryManager.makeFilterPanel(false), BorderLayout.NORTH);
+                //Create a toolbar to add a new filter
+                JToolBar toolBar = new JToolBar();
+                JButton button = new JButton(I18N.tr("Add filter"),OrbisGISIcon.getIcon("add_filter"));
+                button.setToolTipText(I18N.tr("Add a new data source filter"));
+                button.addActionListener(EventHandler.create(ActionListener.class,filterFactoryManager,"onAddFilter"));
+                toolBar.add(button);
+                toolBar.addSeparator();
+                dockingParameters.setToolBar(toolBar);
+                
+                //Add the geocatalog specific filters
                 registerFilterFactories();
         }
 

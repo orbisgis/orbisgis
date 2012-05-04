@@ -346,7 +346,7 @@ public class FilterFactoryManager<FilterInterface> {
         addFilterButton.setContentAreaFilled(false);
         buttonAlignement.add(addFilterButton,BorderLayout.NORTH);
         //Toottip
-        addFilterButton.setToolTipText(i18n.tr("orbisgis.view.geocatalog.addfilter"));
+        addFilterButton.setToolTipText(i18n.tr("Add a new filter"));
         //Apply action listener
         addFilterButton.addActionListener( 
                 EventHandler.create(ActionListener.class, this, "onAddFilter")                
@@ -356,13 +356,16 @@ public class FilterFactoryManager<FilterInterface> {
     
     /**
      * Create the filter panel
+     * @param createAddButton The manager will insert a button that will call the method onAddFilter
      * @return The builded panel
      */
-    public JPanel makeFilterPanel() {
+    public JPanel makeFilterPanel(boolean createAddButton) {
         //This panel contain the button panel and the filter list panel
         JPanel buttonAndFilterList = new JPanel(new BorderLayout());
-        //Add the toggle button
-        buttonAndFilterList.add(makeAddFilterButton(), BorderLayout.LINE_START);
+        if(createAddButton) {
+            //Add the toggle button
+            buttonAndFilterList.add(makeAddFilterButton(), BorderLayout.LINE_START);
+        }
         //GridLayout with 1 column (vertical stack) and n(0) rows
         filterListPanel = new JPanel(new GridLayout(0,1));
         //Filter List must take all horizontal space

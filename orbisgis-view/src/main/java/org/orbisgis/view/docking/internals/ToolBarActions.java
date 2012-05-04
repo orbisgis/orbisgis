@@ -38,7 +38,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.*;
-import javax.swing.plaf.basic.BasicOptionPaneUI;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.view.components.button.DropDownButton;

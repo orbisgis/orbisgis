@@ -129,8 +129,15 @@ public class ZoomInTool extends AbstractRectangleTool {
 		return OrbisGISIcon.getIcon("zoom_in");
 	}
 
+        @Override
 	public String getName() {
-		return I18N.tr("orbisgis.core.ui.editors.map.tool.zoomin_tooltip");
+		return I18N.tr("Zoom in");
 	}
+
+        @Override
+        public String getTooltip() {
+                return I18N.tr("Click on the map to zoom in");
+        }
+        
 
 }

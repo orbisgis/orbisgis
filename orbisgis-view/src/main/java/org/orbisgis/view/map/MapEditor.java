@@ -79,7 +79,7 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
         this.add(mapControl, BorderLayout.CENTER);
         //Declare Tools of Map Editors
         //For debug purpose, also add the toolbar in the frame
-        add(createToolBar(false), BorderLayout.SOUTH);
+        //add(createToolBar(false), BorderLayout.SOUTH);
         //Add the tools in the docking Panel title
         dockingPanelParameters.setToolBar(createToolBar(true));
     }
@@ -109,7 +109,6 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
         autoSelection.add(addButton(toolBar,new ZoomInTool(),useButtonText));
         autoSelection.add(addButton(toolBar,new ZoomOutTool(),useButtonText));
         autoSelection.add(addButton(toolBar,new PanTool(),useButtonText));
-        toolBar.addSeparator();
         //Mesure Tools
         JPopupMenu mesureMenu = new JPopupMenu();
         JMenuItem defaultMenu = createMenuItem(new MesureLineTool(),autoSelection);
