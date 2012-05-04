@@ -63,7 +63,11 @@ public class CommandStack {
 
 	private boolean useLimit = true;
 
-	private int limit = 40;
+	private int limit;
+
+        public CommandStack(int limit) {
+                this.limit = limit;
+        }
 
         /**
          *Do the <code>Command</code> c and add it to the Stack

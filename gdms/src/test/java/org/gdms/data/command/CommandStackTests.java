@@ -56,7 +56,7 @@ import static org.junit.Assert.*;
 public class CommandStackTests {
         @Test
 	public void testNormal() throws Exception {
-		CommandStack cs = new CommandStack();
+		CommandStack cs = new CommandStack(40);
 		cs.setLimit(3);
 		cs.setUseLimit(true);
 
@@ -85,7 +85,7 @@ public class CommandStackTests {
 
 	@Test
 	public void testLimit() throws Exception {
-		CommandStack cs = new CommandStack();
+		CommandStack cs = new CommandStack(40);
 		cs.setLimit(2);
 		cs.setUseLimit(true);
 
@@ -100,7 +100,7 @@ public class CommandStackTests {
 
 	@Test
 	public void testPutUndoPut() throws Exception {
-		CommandStack cs = new CommandStack();
+		CommandStack cs = new CommandStack(40);
 		cs.setUseLimit(false);
 
 		cs.put(new C(1));

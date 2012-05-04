@@ -86,7 +86,9 @@ public class RTreeIndex implements DataSourceIndex<Envelope> {
                         }
                         long rowCount = dataSource.getRowCount();
                         pm.startTask("Building index", rowCount);
-                        index = new DiskRTree(255, 1024);
+                        Integer n = dsf.getProperties().getIntProperty("indexes.rtree.leafCount");
+                        Integer s = dsf.getProperties().getIntProperty("indexes.rtree.blockSize");
+                        index = new DiskRTree(n == null ? 255 : n, s == null ? 1024 : s);
                         if (indexFile != null) {
                                 index.newIndex(indexFile);
                         }

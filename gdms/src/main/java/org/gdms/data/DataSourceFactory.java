@@ -50,7 +50,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.jproj.CRSFactory;
@@ -149,11 +148,11 @@ public final class DataSourceFactory {
         private static final Logger LOG = Logger.getLogger(DataSourceFactory.class);
         private FunctionManager functionManager = new FunctionManager();
         private final List<DataSourceFactoryListener> listeners = new ArrayList<DataSourceFactoryListener>();
-        private Properties properties = new Properties(defaultProperties);
-        private static final Properties defaultProperties;
+        private GdmsProperties properties = new GdmsProperties(defaultProperties);
+        private static final GdmsProperties defaultProperties;
 
         static {
-                defaultProperties = new Properties();
+                defaultProperties = new GdmsProperties();
                 try {
                         final InputStream flags = DataSourceFactory.class.getResourceAsStream("flags.properties");
                         defaultProperties.load(flags);
@@ -1155,7 +1154,7 @@ public final class DataSourceFactory {
          * 
          * @return 
          */
-        public Properties getProperties() {
+        public GdmsProperties getProperties() {
                 return properties;
         }
 
@@ -1167,7 +1166,7 @@ public final class DataSourceFactory {
          * 
          * @return 
          */
-        public static Properties getDefaultProperties() {
+        public static GdmsProperties getDefaultProperties() {
                 return defaultProperties;
         }
 }

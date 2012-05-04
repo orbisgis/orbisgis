@@ -552,7 +552,8 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                 fieldsToDelete = new ArrayList<String>();
                 deletedPKs = new ArrayList<DeleteEditionInfo>();
                 editionActions = new ArrayList<EditionInfo>();
-                cs = new CommandStack();
+                Integer csSize = getDataSourceFactory().getProperties().getIntProperty("edition.commandStack.length");
+                cs = new CommandStack(csSize == null ? 40 : csSize);
         }
 
         private void initializeEdition() throws DriverException {

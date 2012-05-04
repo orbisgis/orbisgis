@@ -80,7 +80,9 @@ public class BTreeIndex implements DataSourceIndex<Value> {
                         for (int i = 0; i < fieldNames.length; i++) {
                                 fieldIds[i] = dataSource.getMetadata().getFieldIndex(fieldNames[i]);
                         }
-                        index = new DiskBTree(255, 1024);
+                        Integer n = dsf.getProperties().getIntProperty("indexes.btree.leafCount");
+                        Integer s = dsf.getProperties().getIntProperty("indexes.btree.blockSize");
+                        index = new DiskBTree(n == null ? 255 : n, s == null ? 1024 : s);
                         if (indexFile != null) {
                                 index.newIndex(indexFile);
                         }
