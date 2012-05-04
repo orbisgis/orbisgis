@@ -148,16 +148,18 @@ public class UIFactory {
 	}
 
 	public static void setPersistencyDirectory(File baseDir) {
-		if (!baseDir.exists()) {
-			throw new IllegalArgumentException(baseDir + i18n.tr("sif.uIFactory.doesntExist")); //$NON-NLS-1$
-		}
+                //Create directories if not exists
+                if(!baseDir.exists()) {
+                    baseDir.mkdirs();
+                }
 		UIFactory.baseDir = baseDir;
 	}
 
 	public static void setTempDirectory(File tempDir) {
-		if (!tempDir.exists()) {
-			throw new IllegalArgumentException(tempDir + i18n.tr("sif.uIFactory.doesntExist")); //$NON-NLS-1$
-		}
+                //Create directories if not exists
+                if(!tempDir.exists()) {
+                    tempDir.mkdirs();
+                }
 		dsf.setTempDir(tempDir.getAbsolutePath());
 	}
 
