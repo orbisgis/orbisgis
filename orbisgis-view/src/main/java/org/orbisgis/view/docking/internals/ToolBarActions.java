@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicOptionPaneUI;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.view.components.button.DropDownButton;
@@ -94,7 +95,17 @@ public class ToolBarActions {
      * @param jitem Java menu
      * @param citem Dockings Frames Menu
      */
-    private void CopyJMenuIntoCMenu(MenuElement me,CAction citem,CDropDownButton dbutton,JMenuItem selectedItem) {
+    
+    /**
+     * Copy Swing Menu Item into Docking Frames menu item
+     * and select the selected item
+     * @param me The menu to copy
+     * @param citem Destination of copy
+     * @param dbutton The docking frames dropdownbutton
+     * @param selectedItem The item to select in destination
+     * @param radio The button group to disable when an action is done in a menu, can be null
+     */
+    private void CopyJMenuIntoCMenu(MenuElement me,CAction citem,CDropDownButton dbutton,JMenuItem selectedItem,CRadioGroup buttonGroup) {
         if(me instanceof JMenuItem) {
             JMenuItem jMenuItem = (JMenuItem)me;
             CButton cButton = new CButton(jMenuItem.getText(),jMenuItem.getIcon());
@@ -105,6 +116,10 @@ public class ToolBarActions {
                 dbutton.setSelection(citem);
                 dbutton.setIcon(jMenuItem.getIcon());
             }
+            //Deselect actions first
+            if(buttonGroup!=null) {
+                cButton.addActionListener(new ButtonGroupActionListener(buttonGroup));
+            }
             transferActionsListeners(jMenuItem,cButton);
         } else if(me instanceof JMenu || me instanceof JPopupMenu){
             CAction cmenu = citem;
@@ -114,17 +129,16 @@ public class ToolBarActions {
                 addSubItem(citem,cmenu);
             }
             for(MenuElement sme : me.getSubElements()) {
-                CopyJMenuIntoCMenu(sme,cmenu,dbutton,selectedItem);
+                CopyJMenuIntoCMenu(sme,cmenu,dbutton,selectedItem,buttonGroup);
             }
         }
     }
     
     /**
-     * Retrieve swing button group and apply to DockingFrames button group
-     * @param dropButton
-     * @param dockingDropButton 
+     * Retrieve the swing button group
+     * @param dropButton Can be null
      */
-    private void applyButtonGroup(DropDownButton dropButton,CDropDownButton dockingDropButton) {
+    private CRadioGroup getButtonGroup(DropDownButton dropButton) {
         if(dropButton.getModel() instanceof DefaultButtonModel) {
             ButtonGroup bgroup = ((DefaultButtonModel)dropButton.getModel()).getGroup();
             //Find if there is an existing Docking Frames button group
@@ -132,9 +146,10 @@ public class ToolBarActions {
             if(radio==null) {
                 radio = new CRadioGroup();
                 radioGroups.put(bgroup.hashCode(), radio);
-            }   
-            dockingDropButton.intern().addDropDownActionListener(new ButtonGroupActionListener(radio));
+            }
+            return radio;
         }
+        return null;
     }
     /**
      * Retrieve swing button group and apply to DockingFrames button group
@@ -167,8 +182,7 @@ public class ToolBarActions {
                     final DropDownButton button = (DropDownButton) component;
                     CDropDownButton dbutton = new CDropDownButton();
                     dbutton.setText(button.getName());
-                    CopyJMenuIntoCMenu(button.getComponentPopupMenu(),dbutton,dbutton,button.getSelectedItem());
-                    applyButtonGroup(button,dbutton);
+                    CopyJMenuIntoCMenu(button.getComponentPopupMenu(),dbutton,dbutton,button.getSelectedItem(),getButtonGroup(button));
                     action = dbutton;
                 } else if(component instanceof JToggleButton) {
                     final JToggleButton button = (JToggleButton) component;

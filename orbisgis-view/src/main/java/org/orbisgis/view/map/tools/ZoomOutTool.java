@@ -62,7 +62,6 @@ package org.orbisgis.view.map.tools;
 import java.awt.Graphics;
 import java.util.Observable;
 
-import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 
 import org.orbisgis.core.layerModel.MapContext;
@@ -149,11 +148,19 @@ public class ZoomOutTool extends ZoomOut {
 		return true;
 	}
 
+        @Override
 	public ImageIcon getImageIcon() {
 		return OrbisGISIcon.getIcon("zoom_out");
 	}
 
+        @Override
 	public String getName() {
-		return I18N.tr("orbisgis.core.ui.editors.map.tool.zoomout_tooltip");
+		return I18N.tr("Zoom out");
 	}
+
+        @Override
+        public String getTooltip() {
+            return I18N.tr("This tool zoom out on click");
+        }
+        
 }
