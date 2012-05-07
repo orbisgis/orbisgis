@@ -182,7 +182,9 @@ public abstract class TestBase {
                         sm.removeAll();
                         dsf.freeResources();
 
-                        FileUtils.deleteDir(dsf.getResultDir().getParentFile());
+                        if (!FileUtils.deleteDir(dsf.getResultDir().getParentFile())) {
+                                LOG.warn("Failed to cleanup after test");
+                        }
 
                 }
         }

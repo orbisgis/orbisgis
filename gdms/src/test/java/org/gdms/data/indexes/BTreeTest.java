@@ -48,6 +48,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -103,6 +104,11 @@ public class BTreeTest extends TestBase {
                                 assertTrue("value: " + keys[i], v.get(index).equals(keys[i]).getAsBoolean());
                         }
                 }
+        }
+        
+        @After
+        public void after() {
+                indexFile.delete();
         }
 
         @Test

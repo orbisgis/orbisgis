@@ -46,6 +46,7 @@ package org.gdms.drivers;
 
 import java.io.File;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -75,6 +76,11 @@ public class CSVDriverTest extends TestBase {
                 metadata.addField("f2", Type.STRING);
                 FileSourceCreation fsc = new FileSourceCreation(file, metadata);
                 dsf.createDataSource(fsc);
+        }
+        
+        @After
+        public void after() {
+                file.delete();
         }
 
         @Test

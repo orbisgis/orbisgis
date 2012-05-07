@@ -47,23 +47,22 @@ package org.gdms.data.indexes;
 import java.io.File;
 import java.io.IOException;
 
+import com.vividsolutions.jts.geom.Envelope;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
 import org.gdms.TestBase;
+import org.gdms.TestResourceHandler;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.rtree.DiskRTree;
 import org.gdms.data.indexes.tree.IndexVisitor;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.source.SourceManager;
-import static org.junit.Assert.*;
-import org.junit.Before;
-import org.junit.Test;
-
-import com.vividsolutions.jts.geom.Envelope;
-
-import org.gdms.TestResourceHandler;
 
 public class RTreeTest extends TestBase {
 
@@ -200,5 +199,10 @@ public class RTreeTest extends TestBase {
                 sm.register("points", new File(TestResourceHandler.TESTRESOURCES, "points.shp"));
                 sm.register("lines", new File(TestResourceHandler.TESTRESOURCES, "hedgerow.shp"));
                 sm.register("pols", new File(TestResourceHandler.TESTRESOURCES, "landcover2000.shp"));
+        }
+        
+        @After
+        public void after() {
+                indexFile.delete();
         }
 }

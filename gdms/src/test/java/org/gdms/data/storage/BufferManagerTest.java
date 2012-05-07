@@ -87,6 +87,7 @@ public class BufferManagerTest {
 
                 Block bl2 = bf2.getBlock(bl.getId());
 
+                f.delete();
                 assertEquals(ByteUtils.bytesToLong(Arrays.copyOfRange(bl2.getContent(), 0, 8)), 123456789);
         }
 }

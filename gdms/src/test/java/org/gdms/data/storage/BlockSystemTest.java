@@ -44,123 +44,135 @@
  */
 package org.gdms.data.storage;
 
-import org.junit.Test;
 import java.io.File;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Arrays;
-import junit.framework.TestCase;
-import org.gdms.driver.ReadWriteBufferManager;
+
+import org.junit.Before;
+import org.junit.Test;
 import org.orbisgis.utils.ByteUtils;
 
 import static org.junit.Assert.*;
+
+import org.gdms.driver.ReadWriteBufferManager;
 
 /**
  *
  * @author Antoine Gourlay
  */
 public class BlockSystemTest {
-    
-    @Test
-    public void testCreateNewFile() throws Exception {
-            File f = File.createTempFile("blocktest", null);
-            f.delete();
 
-            BlockProvider b = new FileBlockProvider(45, f);
-            b.close();
+        private File f;
 
-            assertTrue(f.exists());
+        @Before
+        public void before() throws IOException {
+                f = File.createTempFile("blocktest", null);
+        }
+        
+        public void after() {
+                if (f != null) {
+                        f.delete();
+                }
+        }
 
-            RandomAccessFile raf = new RandomAccessFile(f, "r");
-            ReadWriteBufferManager m = new ReadWriteBufferManager(raf.getChannel(), 1000);
+        @Test
+        public void testCreateNewFile() throws Exception {
+                BlockProvider b = new FileBlockProvider(45, f);
+                b.close();
 
-            m.position(0);
-            // version number
-            assertEquals(m.getInt(),1);
+                assertTrue(f.exists());
 
-            // default block size
-            assertEquals(m.getInt(),FileBlockProvider.DEFAULT_BLOCK_SIZE);
+                RandomAccessFile raf = new RandomAccessFile(f, "r");
+                ReadWriteBufferManager m = new ReadWriteBufferManager(raf.getChannel(), 1000);
 
-            // last block id
-            long count = m.getLong();
-            assertEquals(count,-1);
-    }
+                m.position(0);
+                // version number
+                assertEquals(m.getInt(), 1);
 
-    @Test
-    public void testReadWriteBlock() throws Exception {
-            File f = File.createTempFile("blocktest", null);
-            f.delete();
+                // default block size
+                assertEquals(m.getInt(), FileBlockProvider.DEFAULT_BLOCK_SIZE);
 
-            BlockProvider b = new FileBlockProvider(45, f);
+                // last block id
+                long count = m.getLong();
+                assertEquals(count, -1);
 
-            // add 1 block and write into it
+                f.delete();
+        }
 
-            Block bl = b.newBlock();
-            long id = bl.getId().getBlockId();
+        @Test
+        public void testReadWriteBlock() throws Exception {
+                BlockProvider b = new FileBlockProvider(45, f);
 
-            bl.setContent(ByteUtils.longToBytes(123456789));
-            b.writeBlock(bl);
-            b.close();
+                // add 1 block and write into it
 
-            b = new FileBlockProvider(45, f);
-            bl = b.readBlock(id);
-            assertEquals(ByteUtils.bytesToLong(Arrays.copyOfRange(bl.getContent(), 0, 8)),123456789);
+                Block bl = b.newBlock();
+                long id = bl.getId().getBlockId();
 
-            // add a second block and check there is now 2 blocks
+                bl.setContent(ByteUtils.longToBytes(123456789));
+                b.writeBlock(bl);
+                b.close();
 
-            bl = b.newBlock();
-            id = bl.getId().getBlockId();
-            bl.setContent(ByteUtils.longToBytes(987654321));
-            b.writeBlock(bl);
-            b.close();
+                b = new FileBlockProvider(45, f);
+                bl = b.readBlock(id);
+                assertEquals(ByteUtils.bytesToLong(Arrays.copyOfRange(bl.getContent(), 0, 8)), 123456789);
 
-            RandomAccessFile raf = new RandomAccessFile(f, "r");
-            ReadWriteBufferManager m = new ReadWriteBufferManager(raf.getChannel(), 1000);
+                // add a second block and check there is now 2 blocks
 
-            m.position(8);
-            // block count - 1
-            long count = m.getLong();
-            assertEquals(count,1);
+                bl = b.newBlock();
+                id = bl.getId().getBlockId();
+                bl.setContent(ByteUtils.longToBytes(987654321));
+                b.writeBlock(bl);
+                b.close();
 
-            raf.close();
+                RandomAccessFile raf = new RandomAccessFile(f, "r");
+                ReadWriteBufferManager m = new ReadWriteBufferManager(raf.getChannel(), 1000);
 
-            // open bock blocks and read content
-            b = new FileBlockProvider(45, f);
-            bl = b.readBlock(0);
-            assertEquals(ByteUtils.bytesToLong(Arrays.copyOfRange(bl.getContent(), 0, 8)),123456789);
+                m.position(8);
+                // block count - 1
+                long count = m.getLong();
+                assertEquals(count, 1);
 
-            bl = b.readBlock(1);
-            assertEquals(ByteUtils.bytesToLong(Arrays.copyOfRange(bl.getContent(), 0, 8)),987654321);
+                raf.close();
 
-            // truncate to 1 block
-            b.truncateToBlock(0);
-            assertEquals(b.getNumberOfBlocks(),1);
-            b.close();
+                // open bock blocks and read content
+                b = new FileBlockProvider(45, f);
+                bl = b.readBlock(0);
+                assertEquals(ByteUtils.bytesToLong(Arrays.copyOfRange(bl.getContent(), 0, 8)), 123456789);
 
-            b = new FileBlockProvider(45, f);
-            assertEquals(b.getNumberOfBlocks(),1);
+                bl = b.readBlock(1);
+                assertEquals(ByteUtils.bytesToLong(Arrays.copyOfRange(bl.getContent(), 0, 8)), 987654321);
 
-            bl = b.readBlock(0);
-            assertEquals(ByteUtils.bytesToLong(Arrays.copyOfRange(bl.getContent(), 0, 8)),123456789);
+                // truncate to 1 block
+                b.truncateToBlock(0);
+                assertEquals(b.getNumberOfBlocks(), 1);
+                b.close();
 
-            b.close();
-    }
+                b = new FileBlockProvider(45, f);
+                assertEquals(b.getNumberOfBlocks(), 1);
 
-    @Test
-    public void testOtherBlockSize() throws Exception {
-            File f = File.createTempFile("blocktest", null);
-            f.delete();
+                bl = b.readBlock(0);
+                assertEquals(ByteUtils.bytesToLong(Arrays.copyOfRange(bl.getContent(), 0, 8)), 123456789);
 
-            BlockProvider b = new FileBlockProvider(45, f, 2 * FileBlockProvider.DEFAULT_BLOCK_SIZE);
-            b.close();
+                b.close();
 
-            RandomAccessFile raf = new RandomAccessFile(f, "r");
-            ReadWriteBufferManager m = new ReadWriteBufferManager(raf.getChannel(), 1000);
+                f.delete();
+        }
 
-            m.position(4);
-            // default block size
-            assertEquals(m.getInt(),2 * FileBlockProvider.DEFAULT_BLOCK_SIZE);
+        @Test
+        public void testOtherBlockSize() throws Exception {
+                BlockProvider b = new FileBlockProvider(45, f, 2 * FileBlockProvider.DEFAULT_BLOCK_SIZE);
+                b.close();
 
-            raf.close();
-    }
+                RandomAccessFile raf = new RandomAccessFile(f, "r");
+                ReadWriteBufferManager m = new ReadWriteBufferManager(raf.getChannel(), 1000);
 
+                m.position(4);
+                // default block size
+                assertEquals(m.getInt(), 2 * FileBlockProvider.DEFAULT_BLOCK_SIZE);
+
+                raf.close();
+
+                f.delete();
+        }
 }

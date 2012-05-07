@@ -62,6 +62,7 @@ import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.MemoryDataSetDriver;
@@ -92,7 +93,7 @@ public class DataSourceFactoryTests extends TestBase {
         @Test
         public void testRemoveWithSecondaryName() throws Exception {
                 sm.register("temp", super.getAnyNonSpatialResource());
-                
+
                 sm.addName("temp", "newName");
                 sm.remove("newName");
                 assertNull(sm.getSource("temp"));
@@ -101,9 +102,9 @@ public class DataSourceFactoryTests extends TestBase {
         @Test
         public void testRemoveAllDataSources() throws Exception {
                 sm.register("temp", super.getAnyNonSpatialResource());
-                
+
                 sm.removeAll();
-                assertTrue(dsf.getSourceManager().isEmpty());
+                assertArrayEquals(new String[]{"spatial_ref_table"}, dsf.getSourceManager().getSourceNames());
         }
 
         @Test
@@ -133,7 +134,7 @@ public class DataSourceFactoryTests extends TestBase {
                         fail();
                 } catch (NoSuchTableException ex) {
                 }
-
+                sm.removeName(secondName);
         }
 
         private void checkNames(String dsName, String secondName)
@@ -144,11 +145,12 @@ public class DataSourceFactoryTests extends TestBase {
                 DataSource ds1 = dsf.getDataSource(dsName);
                 DataSource ds2 = dsf.getDataSource(secondName);
                 ds1.open();
-                ds2.open();
-                assertTrue(equals(getDataSourceContents(ds1),
-                        getDataSourceContents(ds2)));
+                Value[][] ds1c = getDataSourceContents(ds1);
                 ds1.close();
+                ds2.open();
+                Value[][] ds2c = getDataSourceContents(ds2);
                 ds2.close();
+                assertTrue(equals(ds1c, ds2c));
         }
 
         @Test
@@ -162,7 +164,7 @@ public class DataSourceFactoryTests extends TestBase {
 
         @Test
         public void testSQLSources() throws Exception {
-                dsf.getSourceManager().register("file", super.getAnyNonSpatialResource());
+                dsf.getSourceManager().register("testH", super.getAnyNonSpatialResource());
                 dsf.register("sql", "select * from testH;");
                 DataSource ds = dsf.getDataSource("sql");
                 assertEquals((ds.getSource().getType() & SourceManager.SQL), SourceManager.SQL);
@@ -200,15 +202,15 @@ public class DataSourceFactoryTests extends TestBase {
         public void testRenameSecondName() throws Exception {
                 sm.register("test", super.getAnyNonSpatialResource());
                 String newName = "test2";
-                sm.addName("test4", newName);
-                String otherName = "test";
+                sm.addName("test", newName);
+                String otherName = "test4";
                 sm.rename(newName, otherName);
                 try {
                         dsf.getDataSource(newName);
                         fail();
                 } catch (NoSuchTableException e) {
                 }
-                checkNames(otherName, "test4");
+                checkNames(otherName, "test");
         }
 
         @Test(expected = SourceAlreadyExistsException.class)
@@ -241,7 +243,7 @@ public class DataSourceFactoryTests extends TestBase {
         @Test
         public void testSecondNameWorksWithIndexes() throws Exception {
                 String dsName = "test8";
-                sm.register(dsName, super.getAnyNonSpatialResource());
+                sm.register(dsName, super.getAnySpatialResource());
                 String secondName = "secondName";
                 DataSource ds = dsf.getDataSource(dsName);
                 ds.open();
