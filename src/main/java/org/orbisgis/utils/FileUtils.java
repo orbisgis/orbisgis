@@ -135,7 +135,9 @@ public final class FileUtils {
                                 // we try to delete the inner files/dirs
                                 if (deleteFileInDir(file)) {
                                         // then we try to delete the file/folder
-                                        if (!file.delete()) {
+                                        // it it was a file, it does not exist anymore
+                                        // else (directory) we delete it
+                                        if (file.exists() && !file.delete()) {
                                                 // failed to delete the file/folder
                                                 return false;
                                         }
