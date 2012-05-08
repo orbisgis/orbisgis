@@ -231,7 +231,7 @@ public class CanvasSE extends JPanel {
                 }
 
                 @Override
-                public void saveData(DataSource ds) throws DriverException {
+                public void saveData(DataSet ds) throws DriverException {
                         throw new UnsupportedOperationException("Not supported yet.");
                 }
 
