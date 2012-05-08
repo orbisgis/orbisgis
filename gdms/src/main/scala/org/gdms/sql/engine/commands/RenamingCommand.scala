@@ -51,6 +51,7 @@ import org.orbisgis.progress.ProgressMonitor
  * This command only forwards its first child's content but with a different table name. This is use when
  * aliases are given to inner-queries or custom query calls.
  *
+ * @param name the new name to give to this subquery
  * @author Antoine Gourlay
  * @since 0.1
  */

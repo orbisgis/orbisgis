@@ -65,60 +65,75 @@ trait ExpressionCommand extends Command {
   protected def exp: Seq[Expression]
   
   protected override def doPrepare = {
-    // prevent ambiguous field names
-    
+    // all child metadata
     val allM = children map (_.getMetadata)
     
-    // set the index of every field in the expressions
+    // sets the index & DSF of every field in the expressions
     exp.foreach { e =>
+      // sets the DSF everywhere, this is rather straight-forward
       setDsf(e)
       
       // indexes are offseted so as to be the index in the row resulting of the concatenation
-      // in order of the rows of the child metadata objects.
+      // of the rows of the child metadata objects (in the same order)
       var offset = 0
       for (m <- allM) {
-        setFields(e, m, offset, false)
+        // sets actual field references (not from an outer query)
+        setFields(e, m, offset, outer = false)
         offset = offset + m.getFieldCount
       }
     }
     
     // at this point, all valid but not referenced fields come from an outer query
-    // let's set them
     if (!outerReference.isEmpty) {
       exp.foreach { e =>
         var offset = 0
         for (m <- outerReference) {
-          setFields(e, m, offset, true)
+          // sets field references from outer references
+          setFields(e, m, offset, outer = true)
           offset = offset + m.getFieldCount
         }
       }
     }
     
-    // now we find the inner queries and give the outer metadatas
+    // at this point all valid fields have been initialized.
+    
+    // now we find the inner queries and give them the outer metadatas
     exp foreach (pushIntoSubQuery(_, allM))
 
     // validation
     // this will fail if any field is left un-initialized
+    // this will also validate subqueries
     exp foreach (_ validate)
   }
   
+  // holds references to the metadata of the outer query
+  // this is set during prepare() of the outer query, by pushIntoSubQuery.
   private var outerReference: List[SQLMetadata] = Nil
   
+  // holds references to the actual fields in this query that reference things from
+  // the outer query. This is set during prepare() of the inner query (this), by SetFields
   var outerFieldEval: List[OuterFieldEvaluator] = Nil
   
+  /**
+   * Push available metadata of this (the outer query) to any inner query
+   * so that they can validate themselves
+   */
   private def pushIntoSubQuery(exp: Expression, allM: List[SQLMetadata]) {
+    // process children first
     exp.children foreach (pushIntoSubQuery(_, allM))
     
     exp.evaluator match {
       case i: InEvaluator => {
           if (i.command == null) {
+            // the command was not initialized by the engine, which means it does not expect it here
             throw new IllegalStateException("Error: there cannot be a IN operator in this clause.")
           }
           processSubCommand(i.command, allM)
         }
       case i: ExistsEvaluator => {
           if (i.command == null) {
-            throw new IllegalStateException("Error: there cannot be a IN operator in this clause.")
+            // the command was not initialized by the engine, which means it does not expect it here
+            throw new IllegalStateException("Error: there cannot be a EXISTS operator in this clause.")
           }
           processSubCommand(i.command, allM)
         }
@@ -126,7 +141,9 @@ trait ExpressionCommand extends Command {
     }
   }
   
+  // sets the outerReference field of any ExpressionCommand in the inner query
   private def processSubCommand(c: Command, allM: List[SQLMetadata]) {
+    // process children first
     c.children foreach (processSubCommand(_, allM))
     
     c match {
@@ -139,7 +156,8 @@ trait ExpressionCommand extends Command {
   
    
   /**
-   * Resolves fields against metadata objects of child commands
+   * Resolves fields against metadata objects of child commands (or outer metadata if outer is 
+   * set to true).
    */
   private def setFields(e: Expression, m: SQLMetadata, offset: Int, outer: Boolean): Unit = {
     e.evaluator match {
@@ -151,6 +169,7 @@ trait ExpressionCommand extends Command {
                   case -1 => {
                       // the field is not directly referenced (maybe through a join?)
                       
+                      // if it is indirectly referenced, it has the form "fieldName$tableName"
                       val pot = m.getFieldNames filter(_.startsWith(f.name))
                       pot.size match {
                         case 1 => {
@@ -168,17 +187,19 @@ trait ExpressionCommand extends Command {
                             }
                           }
                         case 0 => // there is no field with that name, maybe it will be resolved later.
+                          // if not, it will fail at validation
                           
-                          // there is too many fields with that name. Failure (ambiguous).
+                          // there are too many fields with that name. Failure (ambiguous).
                         case i => throw new SemanticException("Field name '" + f.name + "' is ambiguous.")
                       }
                     }
                   case i =>
                     // the field is directly referenced.
                     if (f.index != -1) {
-                      // this was already intialized: ambiguous field!
+                      // this was already intialized by a previous call to setFields: ambiguous field!
                       throw new SemanticException("Field name '" + f.name + "' is ambiguous.")
                     }
+                    
                     // Success
                     if (!outer) {
                       f.index = i + offset
@@ -212,6 +233,7 @@ trait ExpressionCommand extends Command {
               }
               
               // a table is referenced, but indirectly, we look for an internal field name for it
+              // the internal field name has the form "fieldName$tableName"
             case Some(t) => m.getFieldIndex(f.name + "$" + t) match {
                 // there is none. Do nothing, it will be referenced later or will fail with validation.
                 case -1 => 
@@ -233,6 +255,7 @@ trait ExpressionCommand extends Command {
         }
       case _ => // not a field, do nothing
     }
+    // process sub expressions
     e.foreach { setFields(_, m, offset, outer) }
   }
 
@@ -251,7 +274,7 @@ trait ExpressionCommand extends Command {
     // reset state of expressions
     exp foreach (_ cleanUp)
     
-    // reset state
+    // reset state of this command
     outerReference = Nil
     outerFieldEval = Nil
   }

@@ -46,6 +46,7 @@ package org.gdms.sql.engine.commands.ddl
 
 import org.gdms.data.file.FileSourceCreation
 import org.gdms.data.schema.DefaultMetadata
+import org.gdms.data.types.Constraint
 import org.gdms.data.values.SQLValueFactory
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands._
@@ -56,23 +57,27 @@ import org.orbisgis.progress.ProgressMonitor
 /**
  * Command for creating an empty table by specifying its column names and types.
  * 
+ * @param name name of the new table
+ * @param cols column names, types and constraints
  * @author Antoine Gourlay
  * @since 0.1
  */
 class TableCreationCommand(name: String, cols: Seq[(String, String, Seq[ConstraintType])]) extends Command with OutputCommand {
 
-  var initcols : Seq[(String, Int, Seq[ConstraintType])] = Nil
+  // holds the column names, gdms type code and constraints to create
+  private var initcols : Seq[(String, Int, Array[Constraint])] = Nil
   
   override def doPrepare {
     initcols = cols map (c =>
       (c._1,
+       // maps a type name to a gdms type code
        try {
           SQLValueFactory.getTypeCodeFromSqlIdentifier(c._2)
         } catch {
           case i: IllegalArgumentException => throw new SemanticException("Unknown type: '" +
                                                                           c._2 + "'.")
         }
-       , c._3))
+       , c._3.map(_.constraint) toArray))
     
   }
   
@@ -83,7 +88,7 @@ class TableCreationCommand(name: String, cols: Seq[(String, String, Seq[Constrai
       if (c._3.isEmpty) {
         m.addField(c._1, c._2)
       } else {
-        m.addField(c._1, c._2, c._3.map(_.constraint).toArray: _*)
+        m.addField(c._1, c._2, c._3: _*)
       }
     }
     
@@ -91,12 +96,10 @@ class TableCreationCommand(name: String, cols: Seq[(String, String, Seq[Constrai
     val dsd = dsf.createDataSource(f)
     dsf.getSourceManager.register(name, dsd)
 
-    null
+    Iterator.empty
   }
   
-  override def doCleanUp = {
-    initcols = Nil
-  }
+  override def doCleanUp = initcols = Nil
   
   val getResult = null
 

@@ -58,16 +58,19 @@ import org.orbisgis.progress.ProgressMonitor
  * @since 0.1
  */
 class ScanCommand(table: String, alias: Option[String] = None, edition: Boolean = false) extends Command {
-  var ds: DataSource = null
+  // holds the DataSource to scan
+  var ds: DataSource = _
 
-  var metadata: Metadata = null
+  // the result set metadata
+  var metadata: Metadata = _
   
   override protected def doCleanUp = {
-    // close the DataSource
+    // closes the DataSource
     if (ds != null) ds.close
   }
 
   override protected def doPrepare = {
+    // the datasource can be used for edition (UPDATE command for example)
     ds = if (edition) dsf.getDataSource(table, DataSourceFactory.EDITABLE)
     else dsf.getDataSource(table, DataSourceFactory.NORMAL)
     ds.open
@@ -75,12 +78,7 @@ class ScanCommand(table: String, alias: Option[String] = None, edition: Boolean 
   }
 
   protected def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
-    // 1. iterate until ds.getRowCount
-    // 2. iterate lazily
-    // 4. return the (lazy) iterator for this collection
-    for (i <- (0l until ds.getRowCount).par.view.toIterator) yield {
-      Row(i, ds.getRow(i))
-    }
+    for (i <- (0l until ds.getRowCount).par.view.toIterator) yield Row(i, ds.getRow(i))
   }
 
   def commit = ds.commit

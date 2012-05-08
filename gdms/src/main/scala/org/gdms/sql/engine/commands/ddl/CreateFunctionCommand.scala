@@ -49,17 +49,33 @@ import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands._
 import org.orbisgis.progress.ProgressMonitor
 
+/**
+ * Creates (register) a function.
+ * 
+ * The <tt>language</tt> parameter is completely ignored for now. It is checked to be 'java' during
+ * validation of the logical query plan.
+ * 
+ * @param name name of the function
+ * @param as content of the function definition
+ * @param language language name
+ * @param replace true if any existing function must be silently replaced
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 class CreateFunctionCommand(name: String, as: String, language: String, replace: Boolean) 
 extends Command with OutputCommand {
-  private var cc: Class[_ <: org.gdms.sql.function.Function] = null
+  // will hold the class object of the function
+  private var cc: Class[_ <: org.gdms.sql.function.Function] = _
   
   override def doPrepare = {
+    // checks if the function already exists
     if (!replace && dsf.getFunctionManager.contains(name)) {
       throw new SemanticException("There already is a function named '" + name + "' registered.")
     }
     
     val c = classOf[CreateFunctionCommand].getClassLoader.loadClass(as)
 
+    // checks it is indeed a Function child
     if (!classOf[org.gdms.sql.function.Function].isAssignableFrom(c)) {
       throw new SemanticException("Class '" + as + "' is not a valid Gdms function.")
     }
@@ -68,8 +84,10 @@ extends Command with OutputCommand {
   }
   
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
+    // registers the function
     dsf.getFunctionManager.addFunction(name, cc, replace)
-    null
+    
+    Iterator.empty
   }
   
   override def doCleanUp = cc = null

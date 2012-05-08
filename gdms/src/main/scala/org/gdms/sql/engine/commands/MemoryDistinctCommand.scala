@@ -60,8 +60,14 @@ class MemoryDistinctCommand extends Command {
     r.next flatMap keepOrDrop
   }
   
+  /**
+   * Checks if the row already exists, if not, returns it
+   * 
+   * TODO: maybe this can be refactored into a filter function...
+   */
   private def keepOrDrop(r: Row) = {
     val ha = r.hashCode
+    // add returns true if the element is 'new'
     if (h.add(ha)) {
       r :: Nil
     } else {
@@ -73,5 +79,6 @@ class MemoryDistinctCommand extends Command {
     h.clear
   }
   
+  // holds hashcodes of rows
   private val h = new HashSet[Int]
 }

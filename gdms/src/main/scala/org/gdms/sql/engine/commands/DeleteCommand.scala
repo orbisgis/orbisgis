@@ -67,29 +67,36 @@ import scala.collection.JavaConversions._
 class DeleteCommand extends Command with OutputCommand {
 
   // ds from the ScanCommand
-  var ds: DataSource = null
+  var ds: DataSource = _
 
   // number of deleted rows
   var ro: Long = 0
   
+  // holds the rowIndexes of the rows to delete
+  // they are deleted during execute() but the DataSource
+  // is actually committed during preDoCleanUp (the query could be aborded)
   var indexes: TreeSet[Long] = new TreeSet
   
-  var res: MemoryDataSetDriver = null
+  // holds the result set that will containt the number of deleted rows
+  var res: MemoryDataSetDriver = _
 
   protected def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     pm.map(_.startTask("Deleting", 0))
     val m = children.head.getMetadata
     
+    // mark rows to delete
     r.next foreach (markRow)
     
+    // delete them
     indexes.descendingIterator foreach (deleteRow)
     indexes.clear
     
+    // return the number of rows that were deleted
     res.addValues(ValueFactory.createValue(ro))
     ro = 0
     
     pm.map(_.endTask)
-    null
+    Iterator.empty
   }
 
   override def doPrepare = {
@@ -97,8 +104,7 @@ class DeleteCommand extends Command with OutputCommand {
     super.doPrepare
 
     // then we find it and get the DataSource
-    def find(ch: Seq[Command]): Option[Command] = ch.filter {
-      _.isInstanceOf[ScanCommand] } headOption
+    def find(ch: Seq[Command]): Option[Command] = ch.filter (_.isInstanceOf[ScanCommand]) headOption
     def recfind(ch: Seq[Command]): Option[Command] = find(ch) match {
       case a @ Some(x) => a
       case None => recfind(ch flatMap(_.children))
@@ -109,20 +115,25 @@ class DeleteCommand extends Command with OutputCommand {
     res = new MemoryDataSetDriver(new DefaultMetadata(Array(TypeFactory.createType(Type.LONG)), Array("Deleted")))
   }
 
-  // commit before the close() from ScanCommand
   override def preDoCleanUp = {
+    // commit before the close() from ScanCommand
     ds.commit
   }
-
+  
   def getResult = res
 
-  // no output
   override lazy val getMetadata = SQLMetadata("",getResult.getMetadata)
   
+  /**
+   * Marks a row to be deleted.
+   */
   private def markRow(r: Row) {
     indexes.add(r.rowId.get)
   }
   
+  /**
+   * Deletes a row from the DataSource.
+   */
   private def deleteRow(l: Long) {
     ds.deleteRow(l)
     ro = ro + 1

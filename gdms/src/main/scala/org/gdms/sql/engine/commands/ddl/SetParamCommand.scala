@@ -48,6 +48,14 @@ import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.commands._
 import org.orbisgis.progress.ProgressMonitor
 
+/**
+ * Sets a runtime parameter to  some string value.
+ * 
+ * @param parameter name of parameter; if None, all params are reset to default
+ * @param value the value; if None, the parameter is reset to default
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 class SetParamCommand(parameter: Option[String], value: Option[String]) extends Command with OutputCommand {
   
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
@@ -65,7 +73,7 @@ class SetParamCommand(parameter: Option[String], value: Option[String]) extends 
       case None => dsf.getProperties.clear
     }
     
-    null
+    Iterator.empty
   }
   
   def getResult = null

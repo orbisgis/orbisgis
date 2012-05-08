@@ -59,6 +59,16 @@ import org.gdms.sql.engine.commands.SQLMetadata
 import org.gdms.sql.evaluator.Expression
 import org.orbisgis.progress.ProgressMonitor
 
+/**
+ * Performs a index-based join. This is only used for non-spatial indexes.
+ * 
+ * @param queryExpr expression to query the index for
+ * @param expr the whole filtering expression
+ * @param field field name to query
+ * @param strict if there is no need for filtering after querying the index
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 class IndexedJoinCommand(queryExpr: Expression, expr: Expression, field: String, strict: Boolean) extends Command with ExpressionCommand {
   
   // command that will be looped upon
@@ -78,8 +88,11 @@ class IndexedJoinCommand(queryExpr: Expression, expr: Expression, field: String,
   }
   
   private def queryIndex(r: Row)(implicit pm: Option[ProgressMonitor]) = {
+    // builds a query on 'field' with a lookup expression of queryExpr
+    // for the current row
     big.query = new ExpressionBasedAlphaQuery(field, queryExpr.prepared(r))
     
+    // queries the index
     big.execute
   }
   
@@ -92,6 +105,7 @@ class IndexedJoinCommand(queryExpr: Expression, expr: Expression, field: String,
     }
   }
   
+  // all expressions to initialize
   val exp = queryExpr :: expr :: Nil
   
   override def getMetadata = {
@@ -107,7 +121,7 @@ class IndexedJoinCommand(queryExpr: Expression, expr: Expression, field: String,
   }
   
   override def doPrepare = {
-    // identifiated the small and big
+    // identify the small and big commands
     // small: IndexQueryScanCommand
     // big: the other one
     children.head match {
@@ -122,16 +136,21 @@ class IndexedJoinCommand(queryExpr: Expression, expr: Expression, field: String,
     }
     
     // reorder children in the iteration order (small then big)
+    // this is import for ExpressionCommand.doPrepare() to do its work correctly
     children = List(small, big)
     
     super.doPrepare
     
+    // check the filter expression is indeed a boolean predicate
     expr.evaluator.sqlType match {
       case Type.BOOLEAN =>
       case i =>throw new SemanticException("The join expression does not return a Boolean. Type: " +
                                            TypeFactory.getTypeName(i))
     }
     
+    // we do not want this command to have any direct children when executed
+    // it takes care by itself of calling its children.
+    // TODO: this could be refactored now that Command.execute() is not final...
     children = Nil
     
     d.clear

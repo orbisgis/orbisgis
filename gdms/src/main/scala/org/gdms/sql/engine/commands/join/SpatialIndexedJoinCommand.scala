@@ -63,6 +63,7 @@ import org.orbisgis.progress.ProgressMonitor
 /**
  * Performs a spatial indexed join between two spatial tables.
  *
+ * @param joining expression
  * @author Antoine Gourlay
  * @since 0.3
  */
@@ -92,12 +93,17 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
   }
   
   private def drop(r: Row) = {
+    // drops columns indexes contained in 'dropped'
     Row(r.indices filterNot(i => dropped.contains(i)) map(i => r(i)))
   }
   
   private def queryIndex(r: Row)(implicit pm: Option[ProgressMonitor]) = {
+    // gets the envelope of the current geometry value
     val env = r(smallSpatialField).getAsGeometry.getEnvelopeInternal
+    // creates a query for that envelope
     big.query = new DefaultSpatialIndexQuery(env, bigSpatialFieldName)
+    
+    // runs the query
     big.execute
   }
   
@@ -110,11 +116,9 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
     }
   }
   
-  val exp = expr :: Nil
+  val exp = Seq(expr)
   
-  override def getMetadata = {
-    SQLMetadata("", d)
-  }
+  override def getMetadata = SQLMetadata("", d)
   
   private def addAndRename(d: DefaultMetadata, m: SQLMetadata) {
     // fields are given an internal name 'field$table'
@@ -130,7 +134,7 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
   }
   
   override def doPrepare = {
-    // identifiated the small and big
+    // identifiated the small and big commands
     // small: IndexQueryScanCommand
     // big: the other one
     children.head match {
@@ -144,22 +148,28 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
         }
     }
     
+    // get useful field indexes and names
     smallSpatialField = MetadataUtilities.getGeometryFieldIndex(small.getMetadata)
     bigSpatialFieldName  = big.getMetadata.getFieldName(MetadataUtilities.getGeometryFieldIndex(big.getMetadata))
     
     // reorder children in the iteration order (small then big)
+    // this is important for ExpressionCommand.doPrepare() to do its work correctly
     children = List(small, big)
     
     super.doPrepare
     
+    // check the filter expression is indeed a boolean predicate
     expr.evaluator.sqlType match {
       case Type.BOOLEAN =>
       case i =>throw new SemanticException("The join expression does not return a Boolean. Type: " +
                                            TypeFactory.getTypeName(i))
     }
     
+    // looks for the query expression (the SpatialIndexedFunction)
     findQueryExpression(expr)
     if (queryExpression == null) {
+      // this should never happen: this query plan would not have been selected when compiling the query
+      // if there was no query expression found in there...
       throw new IllegalStateException("Internal error: Could not find any expression to query the index.")
     }
     
@@ -172,6 +182,7 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
   private def findQueryExpression(e: Expression) {
     var done = false
     e match {
+      // a spatial indexed function, perfect, we look for the spatial field that matters to us
       case func(_, f: SpatialIndexedFunction, li) => {
           li foreach {el =>
             if (!done && matchSmallSpatialField(el)) {
@@ -180,6 +191,7 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
             }
           }
         }
+        // and AND condition, we look on both sides
       case _ & _ => e map (findQueryExpression)
       case _ =>
     }
@@ -188,6 +200,7 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
   private def matchSmallSpatialField(e: Expression): Boolean = {
     if (e.evaluator.isInstanceOf[FieldEvaluator]) {
       val f = e.evaluator.asInstanceOf[FieldEvaluator]
+      // checks if this field is indeed the smallSpatialField of the right table
       f.table match {
         case Some(t) if t == small.getMetadata.table => {
             f.name == small.getMetadata.getFieldName(smallSpatialField)
@@ -195,7 +208,8 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
         case _ => false
       }
     } else {
-      e.map(matchSmallSpatialField).fold(false)( _ || _)
+      // else we look deeper
+      e.map(matchSmallSpatialField).fold(false)(_ || _)
     }
   }
   

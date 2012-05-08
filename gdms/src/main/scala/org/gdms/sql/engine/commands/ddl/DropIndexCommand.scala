@@ -52,12 +52,15 @@ import org.orbisgis.progress.ProgressMonitor
 /**
  * Command for dropping an index on specific column of a table.
  * 
+ * @param table name of the table that holds the index
+ * @param columns columns the index is bound to
  * @author Antoine Gourlay
  * @since 0.1
  */
 class DropIndexCommand(table: String, columns: Seq[String]) extends Command with OutputCommand {
   
   override def doPrepare = {
+    // checks that the table exists
     if (!dsf.getSourceManager.exists(table)) {
       throw new NoSuchTableException(table)
     }
@@ -66,7 +69,7 @@ class DropIndexCommand(table: String, columns: Seq[String]) extends Command with
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     dsf.getIndexManager.deleteIndex(table, columns toArray)
 
-    null
+    Iterator.empty
   }
   
   val getResult = null

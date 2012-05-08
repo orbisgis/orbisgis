@@ -57,17 +57,25 @@ import org.orbisgis.progress.ProgressMonitor
 /**
  * Command for altering the actual schema of a table (columns and types).
  * 
+ * @param name a table to alter
+ * @param elems some altering elements
  * @author Antoine Gourlay
  * @since 0.1
  */
 class AlterTableCommand(name: String, elems: Seq[AlterElement]) extends Command with OutputCommand {
 
   override def doPrepare = {
+    // checks that the table actually exists
     if (!dsf.getSourceManager.exists(name)) {
       throw new NoSuchTableException(name)
     }
   }
   
+  /**
+   * Builds a gdms Type object from an SQL type name.
+   * 
+   * @param str an SQL type name
+   */
   private def buildType(str: String) = {
     TypeFactory.createType(SQLValueFactory.getTypeCodeFromSqlIdentifier(str))
   }
@@ -88,13 +96,7 @@ class AlterTableCommand(name: String, elems: Seq[AlterElement]) extends Command 
             }
           }
         case AlterTypeOfColumn(n, newType, exp) => {
-            throw new UnsupportedOperationException("This is not supported yet because of lack of support from GDMS.")
-//            // rename old column
-//            val tempName = n
-//            ds.setFieldName(ds.getFieldIndexByName(n), tempName)
-//            
-//            // create new column
-//            ds.addField(n, buildType(newType))
+            throw new UnsupportedOperationException("Not supported yet.")
         }
         case RenameColumn(n, newName) => {
             ds.setFieldName(ds.getFieldIndexByName(n), newName)
@@ -104,7 +106,7 @@ class AlterTableCommand(name: String, elems: Seq[AlterElement]) extends Command 
     ds.commit
     ds.close
 
-    null
+    Iterator.empty
   }
 
   val getResult = null

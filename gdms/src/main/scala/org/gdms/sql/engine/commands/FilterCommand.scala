@@ -71,13 +71,17 @@ abstract class FilterCommand extends Command {
 }
 
 /**
- * Filter command for use in Where statements
+ * Filter command for use in Where/Having statements.
+ * 
+ * @param e filtering expression
+ * @author Antoine Gourlay
+ * @since 0.1
  */
 class ExpressionFilterCommand(e: Expression) extends FilterCommand with ExpressionCommand {
 
-  protected val exp: Seq[Expression] = List(e)
+  protected val exp = Seq(e)
 
-  protected def filterExecute: Row => Boolean = { r => e.evaluate(r).getAsBoolean.booleanValue }
+  protected def filterExecute: Row => Boolean = { e.evaluate(_).getAsBoolean.booleanValue }
   
   override def doPrepare {
     // no aggregate function is allowed in a WHERE / HAVING clause
@@ -86,17 +90,19 @@ class ExpressionFilterCommand(e: Expression) extends FilterCommand with Expressi
       ex match {
         case agg(f,_) => throw new SemanticException("No aggregate function is allowed in a WHERE / HAVING clause."
                                                      + " Found function '" + f.getName + "'.")
-        case _ => ex.children map (check)
+        case _ => ex.children map check
       }
     }
     
     check(e)
     
+    // prepares the expression
     super.doPrepare
     
+    // checks that the expression is indeed a predicate
     e.evaluator.sqlType match {
       case Type.BOOLEAN =>
-      case i =>throw new SemanticException("The filtering expression does not return a Boolean. Type: " +
+      case i => throw new SemanticException("The filtering expression does not return a Boolean. Type: " +
                                            TypeFactory.getTypeName(i))
     }
   }

@@ -49,7 +49,7 @@ import org.gdms.sql.engine.GdmSQLPredef._
 import org.orbisgis.progress.ProgressMonitor
 
 /**
- * Base class for all commands
+ * Base class for all commands.
  *
  * @author Antoine Gourlay
  * @since 0.1
@@ -61,8 +61,18 @@ abstract class Command() {
    */
   var children: List[Command] = List.empty
 
+  /**
+   * The current DSF. It is set up during prepare(), *before* doPrepare() is called.
+   */
   protected var dsf: DataSourceFactory = null
 
+  /**
+   * Executes this command.
+   * 
+   * All child command are executed (lazily) and given to the doWork() method for processing.
+   * 
+   * @param pm an optional ProgressMonitor for reporting status
+   */
   def execute(implicit pm: Option[ProgressMonitor]): RowStream = {
     
     // start this one and return the promise of its result
@@ -70,17 +80,22 @@ abstract class Command() {
   }
 
   /**
-   * Main method that commands need to implement
+   * Main method that commands need to implement.
+   * 
+   * @param r the result of execute being called on the children of this command
+   * @param pm an optional ProgressMonitor for reporting statuc
    */
   protected def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) : RowStream
 
   /**
    * Override this method to do something specific when the query has finished executing, after all children
+   * are cleaned up.
    */
   protected def doCleanUp : Unit = {}
 
   /**
    * Override this method to do something specific when the query has finised executing, before all children
+   * are cleaned up.
    */
   protected def preDoCleanUp: Unit = {}
 
@@ -95,8 +110,7 @@ abstract class Command() {
   }
 
   /**
-   * Gets the query ready for treatement with the given DataSourceFactory. Also performs
-   * some final query validations
+   * Gets the query ready for treatement with the given DataSourceFactory.
    */
   final def prepare(dsf: DataSourceFactory): Unit = {
     this.dsf = dsf
@@ -107,32 +121,44 @@ abstract class Command() {
 
   /**
    * Override this method to do something specific right before the query starts, after all children
+   * have been prepared.
    *
-   * This DataSourceFactory is set at this point and can be used to validate table names, etc.
+   * The DataSourceFactory is set at this point and can be used to validate table names, etc.
    */
   protected def doPrepare : Unit = {}
   
   /**
    * Override this method to do something specific right before the query starts, before all children
+   * have been prepared.
    *
    * This DataSourceFactory is set at this point and can be used to validate table names, etc.
    */
   protected def preDoPrepare : Unit = {}
 
-  protected def validate : Unit = {}
-
   /**
    * Returns the resulting metadata. Override this method to provide a specific metadata.
+   * 
+   * By default it returns the Metadata of the first child of this command.
    */
   def getMetadata: SQLMetadata = children.head.getMetadata
 
+  /**
+   * Adds c as a child command and returns this.
+   * 
+   * @param c a command to add as child
+   */
   def withChild(c: Command) = {
     children = c :: children
     this
   }
   
+  /**
+   * Adds cc as children of this command and returns this.
+   * 
+   * @param cc commands to add as children
+   */
   def withChildren(cc: Seq[Command]) = {
-    cc foreach (c => children = c :: children)
+    children = cc ++: children
     this
   }
 

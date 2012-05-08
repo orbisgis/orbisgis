@@ -53,15 +53,19 @@ import org.gdms.sql.engine.SemanticException
 import org.orbisgis.progress.ProgressMonitor
 
 /**
- * Output command that caches to disk the result and sets it available.
+ * Output command that caches to disk the result.
  *
  * @author Antoine Gourlay
  * @since 0.1
  */
 class QueryOutputCommand extends Command with OutputCommand {
 
-  private var driver: DiskBufferDriver = null
-  var resultFile: File = null
+  // driver for writing to disk
+  private var driver: DiskBufferDriver = _
+  // file on disk
+  // TODO: maybe this could be refactored out of here
+  // into a caching service in Gdms
+  var resultFile: File = _
 
   protected override def doPrepare = {
     if (resultFile == null) {
@@ -72,21 +76,35 @@ class QueryOutputCommand extends Command with OutputCommand {
 
   protected def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {    
     pm.map(_.startTask("Writing", 0))
+    // write line by line
     for (s <- r; a <- s) {
       driver.addValues(a.array:_*)
     }
     driver.writingFinished
+    
+    // open is important: the result can be read at any time after a call to execute()
     driver.open
     
     pm.map(_.endTask)
-    null
+    Iterator.empty
   }
   
+  /**
+   * To be called as a prepare() call when this is used as a materialization intermediate.
+   * 
+   * Calling this does the same as calling prepare() except that sub commands are not prepared
+   * (they are assumed to be already prepared).
+   */
   def materialize(dsf: DataSourceFactory) {
     this.dsf = dsf
     doPrepare
   }
   
+  /**
+   * To be called after execute to get back a RowStream from a materialized intermediate.
+   * 
+   * TODO: maybe this could be refactored out of here...
+   */
   def iterate() = {
     for (i <- (0l until driver.getRowCount).par.view.toIterator) yield {
       Row(i, driver.getRow(i))
@@ -97,11 +115,13 @@ class QueryOutputCommand extends Command with OutputCommand {
     
     val d = new DefaultMetadata()
     
+    // cleanes up the internal field names: table references are dropped.
     (0 until m.getFieldCount) foreach {i =>
       val f = m.getFieldName(i).takeWhile(_ != '$')
       if (d.getFieldIndex(f) == -1) {
         d.addField(f, m.getFieldType(i).getTypeCode)
       } else {
+        // ambiguous implicit field reference.
         throw new SemanticException("There already is a field or alias '" + f + "'.")
       }
     }

@@ -53,9 +53,20 @@ import org.gdms.sql.engine.operations.Operation
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.orbisgis.progress.ProgressMonitor
 
+/**
+ * Creates a view from some query.
+ * 
+ * @param table name of the view
+ * @param sql sql string corresponding to the view query
+ * @param op operation tree of the view query
+ * @param orReplace true if any existing table with the same name has to be silently replaced
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
 class CreateViewCommand(table: String, sql: String, op: Operation, orReplace: Boolean) extends Command with OutputCommand {
   
   override def doPrepare = {
+    // checks that there is no table with this name
     if (!orReplace && dsf.getSourceManager.exists(table)) {
       throw new SemanticException("There already is a registered table named '" + table + "'.")
     }
@@ -70,7 +81,7 @@ class CreateViewCommand(table: String, sql: String, op: Operation, orReplace: Bo
     
     dsf.getSourceManager.register(table, new SQLSourceDefinition(s))
 
-    null
+    Iterator.empty
   }
   
   val getResult = null

@@ -69,44 +69,57 @@ import org.orbisgis.progress.ProgressMonitor
  * on top of it to feed it to an operator that needs DataSet objects. Having
  * a QueryOutputCommand on top adds one unnecessary level of caching which consume
  * more disk space and slows down the execution.
- *
+ * 
+ * @param e expressions to give to the function
+ * @param tables tables to give to the function
+ * @param f the table function
+ * @param alias an alias for the result set of the function
  * @author Antoine Gourlay
  * @since 0.1
  */
 class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, OutputCommand]], f: TableFunction, alias: Option[String] = None) extends Command with ExpressionCommand with OutputCommand {
 
+  // finds the actual child commands
   children = tables flatMap (_.right toSeq) toList
 
   protected def exp = e
 
-  private var metadata: Metadata = null
+  private var metadata: Metadata = _
 
+  // holds all tables opened before given to the function
   private var openedTables: List[Either[DataSource, OutputCommand]] = Nil
 
-  private var ds: DataSet = null;
+  // holds the result set of the function
+  private var ds: DataSet = _
 
   override def doPrepare = {
+    // initialize expressions
     super.doPrepare
 
-    val forDs: String => Metadata = { s =>
+    // functions to open the inputs and get their metadata
+    def forDs: String => Metadata = { s =>
       val ds = dsf.getDataSource(s)
       ds.open
       openedTables = Left(ds) :: openedTables
       ds.getMetadata
     }
-    val forOut: OutputCommand => Metadata = {  o =>
+    def forOut: OutputCommand => Metadata = {  o =>
       openedTables = Right(o) :: openedTables
       o.getMetadata
     }
 
+    // opens everything and gets all metadata
     val dss = tables map (_ fold(forDs, forOut))
     
+    // reverse: they were added in reverse order above
     openedTables = openedTables reverse
     
+    // validation of table & type signatures
     FunctionValidator.failIfTablesDoNotMatchSignature(dss toArray, f.getFunctionSignatures)
     val types = e map (ev => TypeFactory.createType(ev.evaluator.sqlType))
     FunctionValidator.failIfTypesDoNotMatchSignature(types toArray, f.getFunctionSignatures)
     
+    // result metadata of teh function
     metadata = f.getMetadata(dss toArray)
   }
 

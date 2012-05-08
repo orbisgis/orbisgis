@@ -47,11 +47,19 @@ package org.gdms.sql.engine.commands.ddl
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands._
-import org.gdms.sql.function.FunctionManager
 import org.orbisgis.progress.ProgressMonitor
 
+/**
+ * Drops (unregisters) a function.
+ * 
+ * @param name name of the function
+ * @param ifExists true if no error should be thrown if the function does not exist
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 class DropFunctionCommand(name: String, ifExists: Boolean) extends Command with OutputCommand {
   override def doPrepare = {
+    // checks the function exists
     if (!ifExists && !dsf.getFunctionManager.contains(name)) {
       throw new SemanticException("The function '" + name + "' does not exist.")
     }
@@ -60,7 +68,7 @@ class DropFunctionCommand(name: String, ifExists: Boolean) extends Command with 
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     dsf.getFunctionManager.remove(name)
     
-    null
+    Iterator.empty
   }
   
   val getResult = null

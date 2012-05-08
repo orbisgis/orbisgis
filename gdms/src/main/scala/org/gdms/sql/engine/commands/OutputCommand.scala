@@ -48,7 +48,7 @@ import org.gdms.driver.DataSet
 
 /**
  * Implementations of this trait designate "terminal" commands, i.e. the ones that can be at the top
- * of a Physical Query Plan.
+ * of a Physical Query Plan, or that can materialize their output as a DataSet.
  *
  * @author Antoine Gourlay
  * @since 0.1

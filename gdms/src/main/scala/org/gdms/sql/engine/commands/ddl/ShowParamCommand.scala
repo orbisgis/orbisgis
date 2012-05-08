@@ -54,9 +54,18 @@ import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.commands._
 import org.orbisgis.progress.ProgressMonitor
 
+/**
+ * Returs the value of a runtime parameter.
+ * 
+ * @param parameter name of parameter; if None, all params are returned
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 class ShowParamCommand(parameter: Option[String]) extends Command with OutputCommand {
 
-  var res: MemoryDataSetDriver = null
+  // data set that will hold the parameter values
+  var res: MemoryDataSetDriver = _
+  // just two columns: Name and Value
   val m = new DefaultMetadata(Array(TypeFactory.createType(Type.STRING), TypeFactory.createType(Type.STRING)), Array("Name", "Value"))
   
   override def doPrepare = {
@@ -75,7 +84,7 @@ class ShowParamCommand(parameter: Option[String]) extends Command with OutputCom
         }
     }
     
-    null
+    Iterator.empty
   }
   
   def getResult = res

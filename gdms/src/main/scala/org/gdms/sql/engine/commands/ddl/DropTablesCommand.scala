@@ -53,6 +53,9 @@ import org.orbisgis.progress.ProgressMonitor
  * Command for dropping one or several tables. If <code>purge</code> is specified, the actual resource behind
  * the Source is actually deleted.
  * 
+ * @param names names of the tables to drop
+ * @param ifExists throws no error if a table does not exist
+ * @param purge true if the source have to be deleted
  * @author Antoine Gourlay
  * @since 0.1
  */
@@ -60,6 +63,7 @@ class DropTablesCommand(names: Seq[String], ifExists: Boolean, purge: Boolean) e
 
   override def doPrepare = {
     if (!ifExists) {
+      // checks that tables do exist
       names foreach { n =>
         if (!dsf.getSourceManager.exists(n)) {
           throw new NoSuchTableException(n)
@@ -70,11 +74,11 @@ class DropTablesCommand(names: Seq[String], ifExists: Boolean, purge: Boolean) e
   
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     if (purge) {
-      names foreach (dsf.getSourceManager.delete(_))}
+      names foreach dsf.getSourceManager.delete}
     else {
-      names foreach (dsf.getSourceManager.remove(_))}
+      names foreach dsf.getSourceManager.remove}
 
-    null
+    Iterator.empty
   }
 
   val getResult = null

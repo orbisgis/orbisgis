@@ -50,18 +50,24 @@ import org.orbisgis.progress.ProgressMonitor
 /**
  * Main command for artificially limiting/offseting some dataset.
  *
+ * @param lim max number of rows to return
+ * @param off number of rows to skip
  * @author Antoine Gourlay
  * @since 0.1
  */
 class LimitOffsetCommand(lim: Int, off: Int) extends Command {
   
   protected def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
+    // first drops 'off' rows (off is 0 by default)
     val res = r.next drop(off)
     
+    // then if there is a limit, take those only
     if (lim != -1) {
       res take(lim)
     } else {
       res
     }
+    
+    // remember that all this happens on views
   }
 }

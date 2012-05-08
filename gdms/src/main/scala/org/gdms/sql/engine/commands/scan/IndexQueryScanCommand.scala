@@ -53,13 +53,24 @@ import org.gdms.sql.engine.GdmSQLPredef._
 import org.orbisgis.progress.NullProgressMonitor
 import org.orbisgis.progress.ProgressMonitor
 
+/**
+ * Scan command based on an index query.
+ * 
+ * @param table table to scan
+ * @param alias optional alias for the result set
+ * @param query the index query
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 class IndexQueryScanCommand(table: String, alias: Option[String] = None, var query: IndexQuery) extends Command {
-  var ds: DataSource = null
+  // holds the DataSource to scan
+  var ds: DataSource = _
 
-  var metadata: Metadata = null
+  // the result set metadata
+  var metadata: Metadata = _
   
   override protected def doCleanUp = {
-    // close the DataSource
+    // closes the DataSource
     if (ds != null) ds.close
   }
 
@@ -71,18 +82,20 @@ class IndexQueryScanCommand(table: String, alias: Option[String] = None, var que
 
   protected def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     if (query != null) {
+      // builds the index if it does not exist
       if (!dsf.getIndexManager.isIndexed(ds, query.getFieldNames)) {
         dsf.getIndexManager.buildIndex(ds, query.getFieldNames, pm.getOrElse(new NullProgressMonitor))
       }
       
+      // queries the index
       val a = dsf.getIndexManager.queryIndex(ds, query)
+      // returns the result
       for (i <- a.par.view.toIterator) yield Row(i, ds.getRow(i))
     } else {
-      null
+      // there is no query... this is weird
+      Iterator.empty
     }
   }
-
-  def commit = ds.commit
 
   override def getMetadata = SQLMetadata(alias.getOrElse(table), metadata)
 }

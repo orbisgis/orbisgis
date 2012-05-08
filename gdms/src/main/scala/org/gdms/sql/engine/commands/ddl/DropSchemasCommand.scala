@@ -50,9 +50,19 @@ import org.gdms.sql.engine.commands.Command
 import org.gdms.sql.engine.commands.OutputCommand
 import org.orbisgis.progress.ProgressMonitor
 
+/**
+ * Drops some schemas.
+ * 
+ * @param names names of the schemas to drop
+ * @param ifExists throw no error if any schema does not exist
+ * @param purge true 
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 class DropSchemasCommand(names: Seq[String], ifExists: Boolean, purge: Boolean) extends Command with OutputCommand {
   override def doPrepare = {
     if (!ifExists) {
+      // checks that the schema actually exists
       names foreach { n =>
         if (!dsf.getSourceManager.schemaExists(n)) {
           throw new SemanticException("The schema '" + n + "' does not exist.")
@@ -64,7 +74,7 @@ class DropSchemasCommand(names: Seq[String], ifExists: Boolean, purge: Boolean) 
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     names foreach (dsf.getSourceManager.removeSchema(_, purge))
 
-    null
+    Iterator.empty
   }
 
   val getResult = null

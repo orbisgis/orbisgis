@@ -60,26 +60,34 @@ import org.orbisgis.progress.ProgressMonitor
 /**
  * Main command for static multi-row insert of expressions.
  *
+ * @param table to insert into
+ * @param names of the fields (if fields are specified)
  * @author Antoine Gourlay
  * @since 0.1
  */
-class InsertCommand(table: String, fields: Option[Seq[String]])
-extends Command with OutputCommand {
+class InsertCommand(table: String, fields: Option[Seq[String]]) extends Command with OutputCommand {
 
-  private var rightOrder: Array[(Int, Int)] = null
+  // mapping between index in the column index in the input rows and column index in the table
+  private var rightOrder: Array[(Int, Int)] = _
   
-  var ds: DataSource = null
+  // holds the DataSource to insert into
+  var ds: DataSource = _
   
-  var res: MemoryDataSetDriver = null
+  // holds the result set that will containt the number of inserted rows
+  var res: MemoryDataSetDriver = _
+  
   // number of inserted rows
   var ro: Long = 0
 
   override def doPrepare = {
+    // opens the DataSource in edition
     ds = dsf.getDataSource(table, DataSourceFactory.EDITABLE)
     ds.open
 
     val m = ds.getMetadata
     
+    // checks that all fields (if specified) exist
+    // if so, populates the mapping between the input and the table indexes
     fields match {
       case Some(f) => {
           val r = f map (s => (s, m.getFieldIndex(s)))
@@ -92,23 +100,34 @@ extends Command with OutputCommand {
       case _ =>
     }
     
-    val types = (0 until m.getFieldCount) map (m.getFieldType(_).getTypeCode)
     val chm = children.head.getMetadata
     
+    // checks that the input has the expected number of fields
     val expCount = if (rightOrder == null) {
+      // either the number of fields of the table...
       m.getFieldCount
     } else {
+      // ... or the number of specified fields
       rightOrder.length
     }
     if (chm.getFieldCount != expCount) {
       throw new SemanticException("There are " + chm.getFieldCount + " fields specified. Expected " + expCount + "fields to insert.")
     }
     
+    
+    // expected types
+    val types = (0 until m.getFieldCount) map (m.getFieldType(_).getTypeCode)
+    
+    // types of the input
     val inTypes = if (rightOrder == null) {
+      // either directly the types of the input...
       (0 until chm.getFieldCount) map (chm.getFieldType(_).getTypeCode)
     } else {
+      // ... or the ones of the input remapped in the right order
       rightOrder map(r => chm.getFieldType(r._1).getTypeCode) toSeq
     }
+    
+    // checks that input types can be implicitly cast into the table types
     (types zip inTypes) foreach { _ match {
         case (a, b) if !TypeFactory.canBeCastTo(b, a) =>{
             ds.close
@@ -119,9 +138,15 @@ extends Command with OutputCommand {
       }
     }
     
+    // creates the result set that will containt the number of inserted rows
     res = new MemoryDataSetDriver(new DefaultMetadata(Array(TypeFactory.createType(Type.LONG)), Array("Inserted")))
   }
   
+  /**
+   * Reorders some input values according to the insertion order.
+   * 
+   * TODO: Maybe this could be improved, it currently allocates a new array...
+   */
   private def order(a: Array[Value]): Array[Value] = {
     if (rightOrder == null) a else {
       val out = new Array[Value](rightOrder.length)
@@ -133,16 +158,18 @@ extends Command with OutputCommand {
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     pm.map(_.startTask("Inserting", 0))
     
+    // insert (reordered) rows
     r.next foreach { e =>
       ro = ro + 1
       ds.insertFilledRow(order(e))
     }
     
+    // returns the number of inserted rows
     res.addValues(ValueFactory.createValue(ro))
     ro = 0
     
     pm.map(_.endTask)
-    null
+    Iterator.empty
   }
 
   override def doCleanUp = {

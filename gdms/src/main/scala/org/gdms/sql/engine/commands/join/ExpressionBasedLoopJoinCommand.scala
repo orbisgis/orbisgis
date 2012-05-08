@@ -56,17 +56,26 @@ import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.Field
 import org.orbisgis.progress.ProgressMonitor
 
+/**
+ * Performs a basic loop join command.
+ * 
+ * @param expr expression to join on, if there is one
+ * @param natural if it is a natural join
+ * @param if it is an outerLeft join
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
 class ExpressionBasedLoopJoinCommand(private var expr: Option[Expression], natural: Boolean = false, outerLeft: Boolean = false)
 extends Command with ExpressionCommand with JoinCommand {
   
   override def doPrepare() {
     
-    // support for NATURAL joins
+    // special support for NATURAL joins
     if (natural) {
       val m1 = children.head.getMetadata
       val m2 = children(1).getMetadata
       
-      // finds fields in common
+      // finds fields in common between the two tables
       val idxs = (0 until m1.getFieldCount).toSeq flatMap {j =>
         val n = m1.getFieldName(j)
         m2.getFieldIndex(n) match {
@@ -82,7 +91,7 @@ extends Command with ExpressionCommand with JoinCommand {
       }
       
       if (!idxs.isEmpty) {
-        // creates the filter expression
+        // creates the join expression for all fields in common
         val f = Field(idxs.head, m1.table) sqlEquals Field(idxs.head, m2.table)
         if (!idxs.tail.isEmpty) {
           expr = Some(f & buildExpression(idxs.tail, m1, m2))
@@ -96,6 +105,7 @@ extends Command with ExpressionCommand with JoinCommand {
     if (expr.isDefined) {
       super.doPrepare
       
+      // check the expression is a boolean predicate
       expr.get.evaluator.sqlType match {
         case Type.BOOLEAN =>
         case i =>throw new SemanticException("The join expression does not return a Boolean. Type: " +
@@ -140,6 +150,7 @@ extends Command with ExpressionCommand with JoinCommand {
     
   }
   
+  // this one does nothing and is not used in this case
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]): RowStream = null
   
   def exp = expr.toSeq

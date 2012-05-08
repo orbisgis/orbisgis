@@ -80,7 +80,7 @@ extends Command with ExpressionCommand {
   override def doPrepare = {
     super.doPrepare
     
-    // check for type of elements in rows
+    // check for compatible types of elements in rows
     val types = exps.head map (_.evaluator.sqlType)
     exps.tail foreach {e =>
       val tt = e map (_.evaluator.sqlType)
@@ -92,6 +92,7 @@ extends Command with ExpressionCommand {
       }
     }
     
+    // give names to the fields (either internal and external names)
     var k = -1;
     m.clear
     val prefix = if (internal) "$exp" else "exp"

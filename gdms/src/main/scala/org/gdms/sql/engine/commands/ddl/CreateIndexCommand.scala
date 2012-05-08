@@ -52,21 +52,26 @@ import org.orbisgis.progress.ProgressMonitor
 /**
  * Command for building an index on a specific column of a table.
  * 
+ * @param table name of the table
+ * @param columns columns to index
  * @author Antoine Gourlay
  * @since 0.1
  */
 class CreateIndexCommand(table: String, columns: Seq[String]) extends Command with OutputCommand {
   
   override def doPrepare = {
+    // checks that the table exists
     if (!dsf.getSourceManager.exists(table)) {
       throw new NoSuchTableException(table)
     }
   }
 
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
+    // builds the index
+    // this will fail if the columns do not exist
     dsf.getIndexManager.buildIndex(table, columns toArray, null)
 
-    null
+    Iterator.empty
   }
   
   val getResult = null

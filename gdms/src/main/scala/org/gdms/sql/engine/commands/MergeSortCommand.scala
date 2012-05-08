@@ -64,27 +64,30 @@ class MergeSortCommand(names: Seq[(Expression, Boolean)]) extends Command with E
   val exp = names map (_._1)
   
   protected override final def doPrepare = {
+    // init sorting expressions
     super.doPrepare
+    
     exp foreach { e =>
-      // maybe the field cannot be sorted
+      // checks if the expressions can be sorted
       val code = e.evaluator.sqlType
-      if (code == Type.GEOMETRY || code == Type.RASTER) {
+      if ((code & Type.GEOMETRY) != 0 || code == Type.RASTER) {
         throw new IncompatibleTypesException("Cannot sort using the expression '" + e.evaluator + "' because it is of type " +
                                              TypeFactory.getTypeName(code))
       }
     }
   }
 
-  // dumps into an array and sorts the array using the usual java modified mergesort
-  // guaranteed O(n*log(n))
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     pm.map(_.startTask("Sorting", 0))
+    // dumps into an array and sorts the array using the usual java modified mergesort
+    // guaranteed O(n*log(n))
     val res = r.next.toList.sorted.toIterator
     
     pm.map(_.endTask)
     res
   }
   
+  // this is used by .sorted on the list of rows
   private implicit val order: Ordering[Row] = new Ordering[Row] {
     def compare(x: Row, y: Row): Int = {
       // we drop indexes which leads to equality between the two rows

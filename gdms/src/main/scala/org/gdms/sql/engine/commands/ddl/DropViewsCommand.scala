@@ -55,6 +55,8 @@ import org.orbisgis.progress.ProgressMonitor
  * Command for dropping one or several tables. If <code>purge</code> is specified, the actual resource behind
  * the Source is actually deleted.
  * 
+ * @param names names of the views to drop
+ * @param ifExists throws no error if a view does not exist
  * @author Antoine Gourlay
  * @since 0.1
  */
@@ -63,9 +65,11 @@ class DropViewsCommand(var names: Seq[String], ifExists: Boolean) extends Comman
   override def doPrepare = {
     if (!ifExists) {
       names foreach { n =>
+        // check that the views do exist
         if (!dsf.getSourceManager.exists(n)) {
           throw new NoSuchTableException(n)
         }
+        // check that they are indeed views
         if ((dsf.getSourceManager.getSource(n).getType & SourceManager.SQL) == 0) {
           throw new SemanticException("Cannot drop '" + n + "'. It is a table, not a view.")
         }
@@ -75,9 +79,9 @@ class DropViewsCommand(var names: Seq[String], ifExists: Boolean) extends Comman
   }
   
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
-    names foreach (dsf.getSourceManager.delete)
+    names foreach dsf.getSourceManager.delete
     
-    null
+    Iterator.empty
   }
 
   val getResult = null

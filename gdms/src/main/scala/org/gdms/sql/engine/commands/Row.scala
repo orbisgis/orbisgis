@@ -53,20 +53,20 @@ import org.gdms.sql.engine.GdmSQLPredef._
  *
  * A Row contains both the values and the original rowId if still present.
  *
+ * @param rowId an optional row id
+ * @param array an array of Value objects (the actual content of the row)
  * @author Antoine Gourlay
  * @since 0.1
  */
 final class Row(val rowId: Option[Long], var array: Array[Value]) {
   
-  def map(f: Array[Value] => Array[Value]): Row = {
-    new Row(rowId, f(array))
-  }
-  
   override def hashCode = {
+    // used to group & filter duplicates of rows
     12 + Arrays.deepHashCode(array.asInstanceOf[Array[Object]])
   }
   
   override def equals(o: Any) = {
+    // used to group & filter duplicates of rows
     if (o.isInstanceOf[Array[Value]]) {
       val a = o.asInstanceOf[Array[Object]]
       Arrays.deepEquals(a, array.asInstanceOf[Array[Object]])
@@ -75,10 +75,20 @@ final class Row(val rowId: Option[Long], var array: Array[Value]) {
     }
   }
   
+  /**
+   * Concatenates two rows. Drops any row id present.
+   * 
+   * @param r another row to add at the end of this one
+   */
   def ++(r: Row) = {
     new Row(None, array ++ r)
   }
   
+  /**
+   * Concatenates two rows. Drops any row id present.
+   * 
+   * @param r another row to add at the end of this one
+   */
   def ++(a: Array[Value]) = {
     new Row(None, array ++ a)
   }

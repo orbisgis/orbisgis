@@ -58,7 +58,7 @@ import org.gdms.sql.evaluator._
 class ProjectionCommand(var expression: Array[(Expression, Option[String])]) extends ScalarCommand with ExpressionCommand {
 
   override def doPrepare = {
-    // replace STAR by fields
+    // finds star expressions
     val stars = expression.filter(_._1 match {
         case star(_, _) => true
         case _ => false
@@ -66,29 +66,35 @@ class ProjectionCommand(var expression: Array[(Expression, Option[String])]) ext
     
     val metadata = children map (_.getMetadata)
     
+    // replaces start expressions by the fields
     stars foreach { s =>
       val ev = s._1.evaluator.asInstanceOf[StarFieldEvaluator]
       val optName = ev.table
       optName match {
         case None => {
+            // no table names, add all fields, except the ones 
             metadata map (addAllFields(_, s._1, ev.except))
           }
         case Some(name) => {
+            // there is a table name...
             val table = optName.get
             val m = metadata.find(_.table == table)
             if (!m.isDefined) {
-              // check forwarded fields
+              // ... but it is not in the input tables
+              // checks forwarded fields (internal field names)
               val beg = '$' + table
-              var newexp = metadata flatMap {me => 
+              val newexp = metadata flatMap {me => 
                 val n = me.getFieldNames map (_.split('$'))
                 n filter(t => t.length > 1 && t(1).endsWith(table) && !ev.except.contains(t(0))) map {t =>
                   (Field(t(0), table), Some(t(0)))
                 }}
               if (newexp.isEmpty) {
+                // no internal field with this table name was found: problem!
                 throw new NoSuchTableException(table)
               }
               insertFields(s._1, newexp)
             } else {
+              // ... and it is an input table. Let's just add it.
               addAllFields(m.get, s._1, ev.except)
             }
           }
@@ -106,8 +112,8 @@ class ProjectionCommand(var expression: Array[(Expression, Option[String])]) ext
   }
   
   private def addAllFields(m: SQLMetadata, s: Expression, except: Seq[String]) {
-    // new fields
-    var newexp = m.getFieldNames flatMap {n => 
+    // builds the new fields
+    val newexp = m.getFieldNames flatMap {n => 
       if (except.contains(n)) {
         List.empty
       } else {
@@ -119,19 +125,19 @@ class ProjectionCommand(var expression: Array[(Expression, Option[String])]) ext
   }
   
   private def insertFields(s: Expression, newexp: Seq[(Expression, Option[String])]) {
-    // split expression list
+    // split expression list at the star expression
     var before = expression takeWhile(_._1.evaluator != s.evaluator)
     var after = expression drop(before.length +1)
+    // insert the new exps at this position
     expression = before ++ newexp ++ after
   }
   
   protected override def exp: Seq[Expression] = expression map ( _._1)
 
   protected def scalarExecute = a => {
+    // just evaluate the projected expressions
     Row(expression map( _._1.evaluate(a)))
   }
-
-  private implicit def inM = children.head.getMetadata
 
   override def getMetadata = SQLMetadata(children.head.getMetadata.table,Expression.metadataFor(expression))
 }

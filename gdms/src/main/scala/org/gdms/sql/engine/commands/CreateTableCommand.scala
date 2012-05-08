@@ -54,12 +54,13 @@ import org.orbisgis.progress.ProgressMonitor
  * This command creates a table with the name <tt>name</tt> from the result
  * of its first child (which has to be an OutputCommand).
  *
+ *@param name the name of the table to create
  * @author Antoine Gourlay
  * @since 0.1
  */
 class CreateTableCommand(name: String) extends Command with OutputCommand {
   
-  private var resultFile: File = null
+  private var resultFile: File = _
 
   override def preDoPrepare = {
     // register the new source
@@ -70,7 +71,9 @@ class CreateTableCommand(name: String) extends Command with OutputCommand {
      
     resultFile = dsf.getResultFile
     
-    val o = children.head.asInstanceOf[OutputCommand]
+    // this checks if the underlying command is already materializing the results
+    // if yes, then we do need to write ourselves.
+    val o = children.head
     o match {
       case q: QueryOutputCommand => {
           // the output will write for us
@@ -84,18 +87,18 @@ class CreateTableCommand(name: String) extends Command with OutputCommand {
   
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     dsf.getSourceManager.register(name, resultFile)
-    val o = children.head.asInstanceOf[OutputCommand]
+    val o = children.head
     o match {
       case q: QueryOutputCommand => {
           // the output has written for us already          
         }
-      case _ => {
+      case q: OutputCommand => {
           // gdms is writing for us
-          dsf.saveContents(name, o.getResult)
+          dsf.saveContents(name, q.getResult)
         }
     }
     
-    null
+    Iterator.empty
   }
   
   val getResult = null

@@ -47,12 +47,9 @@ package org.gdms.sql.engine.operations
 import org.gdms.sql.function.table.TableFunction
 import util.control.Breaks._
 import org.gdms.data.indexes.IndexQuery
-import org.gdms.data.types.TypeFactory
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.evaluator.Expression
-import org.gdms.sql.evaluator.agg
 import org.gdms.sql.evaluator.field
-import org.gdms.sql.function.FunctionException
 
 /**
  * Abstract query operation.
@@ -671,7 +668,7 @@ case class CreateFunction(name: String, as: String, language: String, replace: B
 }
 
 /**
- * Removes as function from the Gdms function manager.
+ * Removes a function from the Gdms function manager.
  * 
  * @param name name of the function
  * @param ifExists true if no error should be thrown when there is no function with that name

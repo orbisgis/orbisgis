@@ -51,12 +51,22 @@ import org.gdms.sql.engine.commands.OutputCommand
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.orbisgis.progress.ProgressMonitor
 
+/**
+ * Renames a table.
+ * 
+ * @param name current name of the table
+ * @param new name of the table
+ * @author Antoine Gourlay
+ * @since 0.1
+ */
 class RenameTableCommand(name: String, newname: String) extends Command with OutputCommand {
 
   override def doPrepare = {
+    // checks the table exists
     if (!dsf.getSourceManager.exists(name)) {
       throw new NoSuchTableException(name)
     }
+    // check the name is available
     if (dsf.getSourceManager.exists(newname)) {
       throw new SemanticException("There already is a table named '" + newname + "' registered.")
     }
@@ -66,7 +76,7 @@ class RenameTableCommand(name: String, newname: String) extends Command with Out
     
     dsf.getSourceManager.rename(name, newname)
     
-    null
+    Iterator.empty
   }
 
   val getResult = null

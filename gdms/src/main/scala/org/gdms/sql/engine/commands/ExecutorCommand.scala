@@ -61,20 +61,27 @@ import org.gdms.sql.engine.GdmSQLPredef._
 import org.orbisgis.progress.ProgressMonitor
 
 /**
- * Command dedicated to running {@link ExecutorFunction} functions
+ * Command dedicated to running {@link ExecutorFunction} functions.
+ * 
+ * @param name name of the function
+ * @param params parameters
  * @author Antoine Gourlay
  * @since 0.1
  */
 class ExecutorCommand(name: String, params: List[Expression]) extends Command with OutputCommand with ExpressionCommand {
+  // splits params into tables and scalar
+  // tables are resolved as direct field references by the parser, which does not really matter
   val (tableParams, scalarParams) = params.partition(_.evaluator.isInstanceOf[FieldEvaluator])
   val exp = scalarParams
   
-  var tables: List[DataSource] = null
+  // holds the tables to give the the ExecutorFunction
+  var tables: List[DataSource] = _
 
-  private var function: ExecutorFunction = null
+  // holds the actual function instance
+  private var function: ExecutorFunction = _
 
   override def doPrepare = {
-    // check is the function exists and is of correct type
+    // check if the function exists and is of correct type
     val f = dsf.getFunctionManager.getFunction(name)
     if (f == null) {
       throw new FunctionException("The function " + name + " does not exist.")
@@ -90,24 +97,25 @@ class ExecutorCommand(name: String, params: List[Expression]) extends Command wi
           }
     }
     
-    // validates params
+    // validates parameterss
     FunctionValidator.failIfTypesDoNotMatchSignature(
       scalarParams.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray,
       function.getFunctionSignatures)
     
     // get sources and open then
+    // TODO: what happens here with a fully qualified table name??
     tables = tableParams map (ex => dsf.getDataSource(ex.evaluator.asInstanceOf[FieldEvaluator].name))
     tables map (_.open)
   }
 
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     pm.map(_.startTask("Executing", 0))
-    val dss = tables map (_.asInstanceOf[DataSet])
     
-    function.evaluate(dsf, dss toArray, scalarParams map (_.evaluate(emptyRow)) toArray, new NullProgressMonitor)
+    // evaluates the function
+    function.evaluate(dsf, tables toArray, scalarParams map (_.evaluate(emptyRow)) toArray, new NullProgressMonitor)
 
     pm.map(_.endTask)
-    null
+    Iterator.empty
   }
   
   override def doCleanUp {

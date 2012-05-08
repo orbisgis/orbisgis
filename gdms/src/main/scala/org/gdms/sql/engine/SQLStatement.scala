@@ -54,25 +54,42 @@ import org.gdms.sql.engine.step.functions.FunctionsStep
 import org.gdms.sql.engine.step.physicalJoin.PhysicalJoinOptimStep
 import org.orbisgis.progress.ProgressMonitor
 
-class SQLStatement(sql: String, var op: Operation)(implicit p: Properties) {
+/**
+ * An executable SQL Statement.
+ * 
+ * @param op the operation tree of this statement
+ * @param sql the original SQL string
+ * @param p some flags and properties
+ * @author AntoineGourlay
+ * @since 0.4
+ */
+class SQLStatement(sql: String, op: Operation)(implicit p: Properties) {
   
+  // sql string for display and serialization
   private val finalSql = sql + ';'
+  
+  // holds the actual command that will be executed
   private var com: OutputCommand = _
+  
+  // the result data set
   private var r: DataSet = _
+  
   private var dsf: Option[DataSourceFactory] = None
   private var pm: Option[ProgressMonitor] = None
+  
+  // true if this statement in a 'dirty' state
   private var preparedButNotCleaned: Boolean = false
   
-  private lazy val refs: Array[String] = { op.allChildren flatMap {_ match {
+  // tables that this statement references
+  private lazy val refs: Array[String] = { op.allChildren flatMap {
         case s: Scan => s.table :: Nil
         case c: CustomQueryScan => c.tables.flatMap (_.fold(_ :: Nil, _ => Nil))
         case _ => Nil
-      }    
     } toArray   
   }
   
   def setDataSourceFactory(dsf: DataSourceFactory) {
-    this.dsf = if (dsf == null) {None} else Some(dsf)
+    this.dsf = if (dsf == null) None else Some(dsf)
   }
   
   def setProgressMonitor(p: ProgressMonitor) {
@@ -82,7 +99,7 @@ class SQLStatement(sql: String, var op: Operation)(implicit p: Properties) {
   def prepare() { 
     if (!preparedButNotCleaned) {
       if (dsf.isEmpty) {
-        throw new DriverException("The SQLCommand should be initialized with a DSF")
+        throw new DriverException("The SQLCommand should be initialized with a DSF.")
       }
     
       com = (op, dsf.get)   >=: 
@@ -90,8 +107,12 @@ class SQLStatement(sql: String, var op: Operation)(implicit p: Properties) {
       PhysicalJoinOptimStep >=: // choose join methods (indexes)
       BuilderStep               // build Command tree
           
+      // final validation, reference checking, type checking, etc.
       com.prepare(dsf.get)
+      
+      // gets a reference to the ouput (the command has not been executed yet)
       r = com.getResult
+      
       preparedButNotCleaned = true
     }
   }

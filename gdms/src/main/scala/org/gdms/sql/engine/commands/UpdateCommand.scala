@@ -69,12 +69,13 @@ import org.orbisgis.progress.ProgressMonitor
  */
 class UpdateCommand(e: Seq[(String, Expression)]) extends Command with ExpressionCommand with OutputCommand {
 
-  // ds from the ScanCommand
+  // DataSource from the ScanCommand
   var ds: DataSource = null
 
   // number of updated rows
   var ro: Long = 0
   
+  // holds the result set that will containt the number of updated rows
   var res: MemoryDataSetDriver = null
 
   // for ExpressionCommand to properly init the expressions
@@ -87,25 +88,27 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
     // function that will update a row
     val set = setRow(ds, e map { t => (m.getFieldIndex(t._1),t._2) }) _
 
-    // gets the promises and apply "set" on them
-    r.next foreach(set)
+    // update all input rows
+    r.next foreach set
     
+    // return the number of updated rows
     res.addValues(ValueFactory.createValue(ro))
     ro = 0
     
     pm.map(_.endTask)
-    null
+    Iterator.empty
   }
 
+  /**
+   * Changes the value of an input row.
+   */
   private def setRow(ds: DataSource, e: Seq[(Int, Expression)])(r: Row) = {
     ro = ro + 1
     e foreach { exp => ds.setFieldValue(r.rowId.get, exp._1, exp._2.evaluate(r)) }
   }
 
   override def doPrepare = {
-    expr = expr ++ (e.map(r => Field(r._1)))
-    
-    // we find the scan and get the DataSource
+    // finds the scan and get the DataSource
     def find(ch: Seq[Command]): Option[Command] = ch.filter {
       _.isInstanceOf[ScanCommand] }.headOption
     def recfind(ch: Seq[Command]): Option[Command] = find(ch) match {
@@ -126,6 +129,7 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
     // this inits the expressions
     super.doPrepare
     
+    // checks that the updated expressions can be implicitely cast to the column type.
     e foreach {ee =>
       val t = m.getFieldType(m.getFieldIndex(ee._1)).getTypeCode
       val s = ee._2.evaluator.sqlType
@@ -138,8 +142,8 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
     res = new MemoryDataSetDriver(new DefaultMetadata(Array(TypeFactory.createType(Type.LONG)), Array("Updated")))
   }
 
-  // commit before the close() from ScanCommand
   override def preDoCleanUp = {
+    // commit before the close() from ScanCommand
     ds.commit
   }
 

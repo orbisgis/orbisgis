@@ -51,8 +51,15 @@ import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.SemanticException
 import org.orbisgis.progress.ProgressMonitor
 
+/**
+ * Merges together the result sets of two commands.
+ *  
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 class UnionCommand extends Command {
 
+  // a flatten is all it takes, provided that doPrepare checks for any problems
   def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = r flatten
   
   private val metadata: DefaultMetadata = new DefaultMetadata
@@ -60,7 +67,7 @@ class UnionCommand extends Command {
   override def doPrepare {
     val me = children map(_.getMetadata)
     
-    // validate field number
+    // checks that they all have the same number of fields
     val c = me.head.getFieldCount
     me.tail.find(_.getFieldCount != c) match {
       case Some(m) => throw new SemanticException("Cannot create the union of two tables with a different number" +
@@ -68,7 +75,7 @@ class UnionCommand extends Command {
       case None =>
     }
     
-    // validate field type compatibility
+    // checks that all types are compatible: implicit widening is allowed.
     val types = (0 until c) map (i => me map(_.getFieldType(i).getTypeCode))
     val finaltypes = types map {t =>
       var wider = t.head
@@ -87,6 +94,7 @@ class UnionCommand extends Command {
     }
     
     metadata.clear
+    // keep the field names of the first command (this is completely arbitrary)
     finaltypes.zipWithIndex foreach {t =>
       metadata.addField(me.head.getFieldName(t._2), t._1)
     }
