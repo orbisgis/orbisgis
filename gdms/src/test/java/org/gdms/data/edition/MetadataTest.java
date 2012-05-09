@@ -244,7 +244,7 @@ public class MetadataTest extends TestBase {
                 d.open();
                 d.addField("extra", TypeFactory.createType(Type.STRING));
                 int fi = d.getFieldIndexByName("extra");
-                new UndoRedoTests().testAlphanumericEditionUndoRedo(d);
+                new UndoRedoTest().testAlphanumericEditionUndoRedo(d);
                 Value newValue = ValueFactory.createValue("hi");
                 d.setFieldValue(0, fi, newValue);
                 d.undo();
@@ -265,7 +265,7 @@ public class MetadataTest extends TestBase {
                 Value testValue = d.getFieldValue(0, 2);
                 d.removeField(1);
                 assertTrue(equals(testValue, d.getFieldValue(0, 1)));
-                new UndoRedoTests().testAlphanumericEditionUndoRedo(d);
+                new UndoRedoTest().testAlphanumericEditionUndoRedo(d);
                 d.commit();
                 d.close();
 

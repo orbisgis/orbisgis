@@ -57,12 +57,14 @@ import org.gdms.data.values.Value;
 
 import static org.junit.Assert.*;
 
+import org.gdms.TestResourceHandler;
+
 /**
  * DOCUMENT ME!
  *
  * @author Fernando Gonzalez Cortes
  */
-public class UndoRedoTests extends TestBase {
+public class UndoRedoTest extends TestBase {
 
         @Before
         public void setUp() throws Exception {
@@ -88,7 +90,7 @@ public class UndoRedoTests extends TestBase {
 
         @Test
         public void testAlphanumericModifyUndoRedo() throws Exception {
-                dsf.getSourceManager().register("big", getTempCopyOf(super.getAnySpatialResource()));
+                dsf.getSourceManager().register("big", getTempCopyOf(super.getAnyNonSpatialResource()));
                 DataSource d = dsf.getDataSource("big", DataSourceFactory.EDITABLE);
 
                 d.open();
@@ -108,7 +110,7 @@ public class UndoRedoTests extends TestBase {
 
         @Test
         public void testAlphanumericDeleteUndoRedo() throws Exception {
-                dsf.getSourceManager().register("big", getTempCopyOf(super.getAnySpatialResource()));
+                dsf.getSourceManager().register("big", getTempCopyOf(super.getAnyNonSpatialResource()));
                 DataSource d = dsf.getDataSource("big", DataSourceFactory.EDITABLE);
 
                 d.open();
@@ -128,7 +130,7 @@ public class UndoRedoTests extends TestBase {
 
         @Test
         public void testAlphanumericInsertUndoRedo() throws Exception {
-                dsf.getSourceManager().register("big", getTempCopyOf(super.getAnySpatialResource()));
+                dsf.getSourceManager().register("big", getTempCopyOf(super.getAnyNonSpatialResource()));
                 DataSource d = dsf.getDataSource("big", DataSourceFactory.EDITABLE);
 
                 d.open();
@@ -160,7 +162,7 @@ public class UndoRedoTests extends TestBase {
 
         @Test
         public void testSpatialModifyUndoRedo() throws Exception {
-                dsf.getSourceManager().register("big", getTempCopyOf(super.getAnySpatialResource()));
+                dsf.getSourceManager().register("big", getTempCopyOf(super.getAnyNonSpatialResource()));
                 DataSource d = dsf.getDataSource("big", DataSourceFactory.EDITABLE);
 
                 d.open();
@@ -187,7 +189,7 @@ public class UndoRedoTests extends TestBase {
 
         @Test
         public void testSpatialDeleteUndoRedo() throws Exception {
-                dsf.getSourceManager().register("big", getTempCopyOf(super.getAnySpatialResource()));
+                dsf.getSourceManager().register("big", getTempCopyOf(super.getAnyNonSpatialResource()));
                 DataSource d = dsf.getDataSource("big", DataSourceFactory.EDITABLE);
 
                 d.open();
@@ -260,7 +262,7 @@ public class UndoRedoTests extends TestBase {
 
         @Test
         public void testAlphanumericEditionUndoRedo() throws Exception {
-                dsf.getSourceManager().register("big", getTempCopyOf(super.getAnySpatialResource()));
+                dsf.getSourceManager().register("big", getTempCopyOf(super.getAnyNonSpatialResource()));
                 DataSource d = dsf.getDataSource("big", DataSourceFactory.EDITABLE);
 
                 d.open();
@@ -271,7 +273,8 @@ public class UndoRedoTests extends TestBase {
 
         @Test
         public void testSpatialEditionUndoRedo() throws Exception {
-                dsf.getSourceManager().register("big", getTempCopyOf(super.getAnySpatialResource()));
+                dsf.getSourceManager().register("big", getTempCopyOf(new File(TestResourceHandler.TESTRESOURCES,
+                        "landcover2000.shp")));
                 DataSource d = dsf.getDataSource("big", DataSourceFactory.EDITABLE);
 
                 d.open();
@@ -298,7 +301,7 @@ public class UndoRedoTests extends TestBase {
 
         @Test
         public void testInsertModify() throws Exception {
-                dsf.getSourceManager().register("big", getTempCopyOf(super.getAnySpatialResource()));
+                dsf.getSourceManager().register("big", getTempCopyOf(super.getAnyNonSpatialResource()));
                 DataSource d = dsf.getDataSource("big", DataSourceFactory.EDITABLE);
 
                 d.open();

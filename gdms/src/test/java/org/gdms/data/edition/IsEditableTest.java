@@ -54,7 +54,7 @@ import org.gdms.driver.driverManager.DriverManager;
 
 import static org.junit.Assert.*;
 
-public class IsEditableTests extends TestBase {
+public class IsEditableTest extends TestBase {
 
 	@Test
         public void testObject() throws Exception {

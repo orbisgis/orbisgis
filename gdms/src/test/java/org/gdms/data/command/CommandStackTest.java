@@ -45,15 +45,14 @@
 package org.gdms.data.command;
 
 import org.junit.Test;
-import junit.framework.TestCase;
+
+import static org.junit.Assert.*;
 
 import org.gdms.data.edition.Command;
 import org.gdms.data.edition.CommandStack;
 import org.gdms.driver.DriverException;
 
-import static org.junit.Assert.*;
-
-public class CommandStackTests {
+public class CommandStackTest {
         @Test
 	public void testNormal() throws Exception {
 		CommandStack cs = new CommandStack(40);

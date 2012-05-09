@@ -68,7 +68,7 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
 
-public class DataSourceFactoryTests extends TestBase {
+public class DataSourceFactoryTest extends TestBase {
 
         @Before
         public void setUp() throws Exception {
