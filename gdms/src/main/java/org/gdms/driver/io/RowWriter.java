@@ -45,9 +45,17 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
 /**
+ * A writer for rows in Gdms.
  *
  * @author Antoine Gourlay
  */
 public interface RowWriter {
+
+        /**
+         * Ads a new row to the result.
+         *
+         * @param row a row as an array of values
+         * @throws DriverException
+         */
         void addValues(Value[] row) throws DriverException;
 }

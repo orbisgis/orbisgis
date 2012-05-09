@@ -61,6 +61,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
 import org.apache.log4j.Logger;
+import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
@@ -76,6 +77,8 @@ import org.gdms.data.OCCounterDecorator;
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
+import org.gdms.data.exporter.ExportSourceDefinition;
+import org.gdms.data.exporter.FileExportDefinition;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.importer.FileImportDefinition;
@@ -1099,8 +1102,23 @@ public final class DefaultSourceManager implements SourceManager {
         @Override
         public void importFrom(String name, ImportSourceDefinition def) throws DriverException {
                 def.setDataSourceFactory(dsf);
-                DataSourceDefinition dsd = def.createSource(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+                DataSourceDefinition dsd = def.importSource(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
                 
                 register(name, dsd);
+        }
+
+        @Override
+        public void exportTo(String name, File file) throws DriverException, NoSuchTableException, DataSourceCreationException {
+                exportTo(name, new FileExportDefinition(file));
+        }
+
+        @Override
+        public void exportTo(String name, ExportSourceDefinition def) throws DriverException, NoSuchTableException, DataSourceCreationException {
+                DataSource d = getDataSource(name, new NullProgressMonitor());
+                
+                d.open();
+                def.setDataSourceFactory(dsf);
+                def.export(d, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+                d.close();
         }
 }

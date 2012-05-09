@@ -39,31 +39,70 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.driver.io;
+package org.gdms.data.exporter;
 
-import java.io.File;
-
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.schema.Schema;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.io.Exporter;
 
 /**
- * An importer for a file.
- * 
+ * A definition for a way to export a data source.
+ *
  * @author Antoine Gourlay
  */
-public interface FileImporter extends Importer {
+public interface ExportSourceDefinition {
 
         /**
-         * Get the valid extension a file accessed by this importer can have.
+         * Gets the type of the source accessed by this definition.
          *
          * @return
          */
-        String[] getFileExtensions();
+        int getType();
 
         /**
-         * Sets the file associated with this importer.
+         * Get the source type description of the source accessed by this definition.
          *
-         * @param file a valid file.
+         * @return
+         */
+        String getTypeName();
+
+        /**
+         * Get the id of the exporter used to access this source definition.
+         *
+         * @return the id of the driver
+         */
+        String getExporterId();
+
+        /**
+         * Gets the exporter associated with this source.
+         *
+         * @return the driver
+         */
+        Exporter getExporter();
+
+        /**
+         * Gets the schema of underlying source.
+         *
+         * @return a never-empty schema
          * @throws DriverException
          */
-        void setFile(File file) throws DriverException;
+        Schema getSchema() throws DriverException;
+
+        /**
+         * Gives to the DataSourceDefinition a reference of the DataSourceFactory
+         * where the DataSourceDefinition is registered
+         *
+         * @param dsf
+         */
+        void setDataSourceFactory(DataSourceFactory dsf);
+
+        /**
+         * Exports the content of the given data set to this source, in the specified table
+         * @param dataSet the data set to export
+         * @param table the table in the schema of this source
+         * @throws DriverException 
+         */
+        void export(DataSet dataSet, String table) throws DriverException;
 }

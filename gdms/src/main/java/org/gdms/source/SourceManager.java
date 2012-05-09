@@ -48,10 +48,12 @@ import java.io.File;
 import java.io.IOException;
 
 import org.gdms.data.DataSourceCreation;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFinalizationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.db.DBSource;
+import org.gdms.data.exporter.ExportSourceDefinition;
 import org.gdms.data.importer.ImportSourceDefinition;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.wms.WMSSource;
@@ -551,6 +553,41 @@ public interface SourceManager {
          */
         boolean schemaExists(String name);
         
+        /**
+         * Imports and register with the given name the content of the file.
+         * @param name a new name
+         * @param file a file to import
+         * @throws DriverException 
+         */
         void importFrom(String name, File file) throws DriverException;
+        
+        /**
+         * Imports and register with the given name the content of an import source definition.
+         * @param name a new name
+         * @param def a source to import
+         * @throws DriverException 
+         */
         void importFrom(String name, ImportSourceDefinition def) throws DriverException;
+        
+        /**
+         * Exports the content of a table to the specified file.
+         * @param name an existing table name
+         * @param file a new file to export to
+         * @throws DriverException
+         * @throws NoSuchTableException
+         * @throws DataSourceCreationException 
+         */
+        void exportTo(String name, File file) throws DriverException, NoSuchTableException
+                , DataSourceCreationException;
+        
+        /**
+         * Exports the content of a table to the specified export source definition.
+         * @param name an existing table name
+         * @param def a source to export to
+         * @throws DriverException
+         * @throws NoSuchTableException
+         * @throws DataSourceCreationException 
+         */
+        void exportTo(String name, ExportSourceDefinition def) throws DriverException, NoSuchTableException
+                , DataSourceCreationException;
 }

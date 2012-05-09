@@ -48,34 +48,35 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.io.Importer;
 
 /**
- *
+ * A definition for a way to import some data set from a source.
+ * 
  * @author Antoine Gourlay
  */
 public interface ImportSourceDefinition {
 
         /**
-         * Gets the type of the source accessed by this definition
+         * Gets the type of the source accessed by this definition.
          *
          * @return
          */
         int getType();
 
         /**
-         * Get the source type description of the source accessed by this definition
+         * Get the source type description of the source accessed by this definition.
          *
          * @return
          */
         String getTypeName();
 
         /**
-         * Get the id of the driver used to access this source definition
+         * Get the id of the driver used to access this source definition.
          *
          * @return the id of the driver
          */
         String getImporterId();
 
         /**
-         * Gets the driver associated with this source.
+         * Gets the importer associated with this source.
          *
          * @return the driver
          */
@@ -91,11 +92,17 @@ public interface ImportSourceDefinition {
 
         /**
          * Gives to the DataSourceDefinition a reference of the DataSourceFactory
-         * where the DataSourceDefinition is registered
+         * where the DataSourceDefinition is registered.
          *
-         * @param dsf
+         * @param dsf a DSF
          */
         void setDataSourceFactory(DataSourceFactory dsf);
         
-        DataSourceDefinition createSource(String tableName) throws DriverException;
+        /**
+         * Imports a table from this source and gets a {@link DataSourceDefinition} for the result.
+         * @param tableName a table in the schema of this source
+         * @return a DSD for the imported table
+         * @throws DriverException 
+         */
+        DataSourceDefinition importSource(String tableName) throws DriverException;
 }

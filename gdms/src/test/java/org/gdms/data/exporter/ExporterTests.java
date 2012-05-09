@@ -39,7 +39,7 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.data.importer;
+package org.gdms.data.exporter;
 
 import java.io.File;
 
@@ -49,29 +49,24 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.gdms.TestBase;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SourceAlreadyExistsException;
-import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.driver.io.FileImporter;
-import org.gdms.driver.io.Importer;
-import org.gdms.driver.io.RowWriter;
+import org.gdms.driver.io.FileExporter;
 
 /**
  *
  * @author Antoine Gourlay
  */
-public class ImporterTests extends TestBase {
+public class ExporterTests extends TestBase {
+
+        private static boolean flag = false;
 
         @Before
         public void setUp() throws Exception {
@@ -79,90 +74,18 @@ public class ImporterTests extends TestBase {
         }
 
         @Test
-        public void importingShouldProduceADataSourceDefinition() throws Exception {
-                File res = super.getAnyNonSpatialResource();
-                dsf.getSourceManager().importFrom("toto", new DummyImportSourceDefinition(res));
+        public void testFileExporter() throws Exception {
+                dsf.executeSQL("CREATE TABLE toto AS SELECT * FROM VALUES (42), (16), (7), (-42) AS t;");
 
-                assertTrue(sm.exists("toto"));
+                sm.getDriverManager().registerExporter(DummyExporter.class);
 
-                try {
-                        dsf.getSourceManager().importFrom("toto", new DummyImportSourceDefinition(res));
-                        fail();
-                } catch (SourceAlreadyExistsException e) {
-                }
+                flag = false;
+                sm.exportTo("toto", new File("someFile.toto"));
+
+                assertTrue(flag);
         }
 
-        private class DummyImportSourceDefinition implements ImportSourceDefinition {
-
-                private File res;
-
-                public DummyImportSourceDefinition(File res) {
-                        this.res = res;
-                }
-
-                @Override
-                public int getType() {
-                        throw new UnsupportedOperationException();
-                }
-
-                @Override
-                public String getTypeName() {
-                        throw new UnsupportedOperationException();
-                }
-
-                @Override
-                public String getImporterId() {
-                        throw new UnsupportedOperationException();
-                }
-
-                @Override
-                public Importer getImporter() {
-                        throw new UnsupportedOperationException();
-                }
-
-                @Override
-                public Schema getSchema() throws DriverException {
-                        throw new UnsupportedOperationException();
-                }
-
-                @Override
-                public void setDataSourceFactory(DataSourceFactory dsf) {
-                }
-
-                @Override
-                public DataSourceDefinition importSource(String tableName) throws DriverException {
-                        return new FileSourceDefinition(res, tableName);
-                }
-        }
-
-        @Test
-        public void testFileImporters() throws Exception {
-                File f = new File("test.toto");
-                sm.getDriverManager().registerImporter(DummyImporter.class);
-                sm.importFrom("target", f);
-                
-                assertTrue(sm.exists("target"));
-                
-                DataSource d = dsf.getDataSource("target");
-                d.open();
-                assertEquals(1, d.getFieldCount());
-                assertEquals("someField", d.getFieldName(0));
-                assertEquals(Type.INT, d.getFieldType(0).getTypeCode());
-                
-                assertEquals(5, d.getRowCount());
-                
-                assertEquals(5, d.getInt(0, 0));
-                assertEquals(12, d.getInt(1, 0));
-                assertEquals(42, d.getInt(2, 0));
-                assertEquals(7, d.getInt(3, 0));
-                assertEquals(-42, d.getInt(4, 0));
-                d.close();
-        }
-
-        public static class DummyImporter implements FileImporter {
-
-                public DummyImporter() {
-                }
+        public static class DummyExporter implements FileExporter {
 
                 @Override
                 public String[] getFileExtensions() {
@@ -208,8 +131,8 @@ public class ImporterTests extends TestBase {
                 }
 
                 @Override
-                public String getImporterId() {
-                        return "toto file format importer";
+                public String getExporterId() {
+                        return "toto file format exporter";
                 }
 
                 @Override
@@ -221,12 +144,16 @@ public class ImporterTests extends TestBase {
                 }
 
                 @Override
-                public void convertTable(String name, RowWriter v) throws DriverException {
-                        v.addValues(new Value[]{ValueFactory.createValue(5)});
-                        v.addValues(new Value[]{ValueFactory.createValue(12)});
-                        v.addValues(new Value[]{ValueFactory.createValue(42)});
-                        v.addValues(new Value[]{ValueFactory.createValue(7)});
-                        v.addValues(new Value[]{ValueFactory.createValue(-42)});
+                public void export(DataSet d, String table) throws DriverException {
+                        assertEquals(4, d.getRowCount());
+                        assertEquals(1, d.getMetadata().getFieldCount());
+
+                        assertEquals(42, d.getInt(0, 0));
+                        assertEquals(16, d.getInt(1, 0));
+                        assertEquals(7, d.getInt(2, 0));
+                        assertEquals(-42, d.getInt(3, 0));
+
+                        flag = true;
                 }
         }
 }

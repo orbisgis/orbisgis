@@ -56,6 +56,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import org.gdms.driver.io.Exporter;
 import org.gdms.driver.io.Importer;
 
 /**
@@ -146,6 +147,16 @@ public class DriverManagerTest extends TestBase {
 
                 @Override
                 public void importerRemoved(String driverId, Class<? extends Importer> importerClass) {
+                        
+                }
+
+                @Override
+                public void exporterAdded(String driverId, Class<? extends Exporter> exporterClass) {
+                        
+                }
+
+                @Override
+                public void exporterRemoved(String driverId, Class<? extends Exporter> exporterClass) {
                         
                 }
         }

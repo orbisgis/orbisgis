@@ -45,18 +45,25 @@
 package org.gdms.driver.driverManager;
 
 import org.gdms.driver.Driver;
+import org.gdms.driver.io.Exporter;
 import org.gdms.driver.io.Importer;
 
 /**
  * An interface for listeners for the {@link DriverManager } class operations.
+ *
  * @author Antoine Gourlay
  */
 public interface DriverManagerListener {
+
         void driverAdded(String driverId, Class<? extends Driver> driverClass);
-        
+
         void driverRemoved(String driverId, Class<? extends Driver> driverClass);
-        
+
         void importerAdded(String driverId, Class<? extends Importer> importerClass);
-        
+
         void importerRemoved(String driverId, Class<? extends Importer> importerClass);
+
+        void exporterAdded(String driverId, Class<? extends Exporter> exporterClass);
+
+        void exporterRemoved(String driverId, Class<? extends Exporter> exporterClass);
 }

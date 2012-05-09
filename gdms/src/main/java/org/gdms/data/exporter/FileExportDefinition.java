@@ -39,73 +39,70 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.data.importer;
+package org.gdms.data.exporter;
 
 import java.io.File;
 
-import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.schema.Schema;
-import org.gdms.driver.DiskBufferDriver;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.io.FileImporter;
-import org.gdms.driver.io.Importer;
+import org.gdms.driver.io.Exporter;
+import org.gdms.driver.io.FileExporter;
 
 /**
- * A definition for importing the content of a table from a file.
+ * A definition for exporting a data set to a file.
  *
  * @author Antoine Gourlay
  */
-public class FileImportDefinition implements ImportSourceDefinition {
+public class FileExportDefinition implements ExportSourceDefinition {
 
         private File file;
-        private FileImporter importer;
         private DataSourceFactory dsf;
+        private FileExporter exporter;
 
         /**
-         * Creates a new definition for the specified file.
-         *
-         * @param file an existing file
+         * Creates a new definition for the specified file
+         * @param file a (non-existing) file
          */
-        public FileImportDefinition(File file) {
+        public FileExportDefinition(File file) {
                 this.file = file;
         }
 
-        private void loadImporter() {
-                if (importer == null) {
-                        importer = dsf.getSourceManager().getDriverManager().getFileImporter(file);
+        private void loadExporter() {
+                if (exporter == null) {
+                        exporter = dsf.getSourceManager().getDriverManager().getFileExporter(file);
                 }
         }
 
         @Override
         public int getType() {
-                loadImporter();
-                return importer.getType();
+                loadExporter();
+                return exporter.getType();
         }
 
         @Override
         public String getTypeName() {
-                loadImporter();
-                return importer.getTypeName();
+                loadExporter();
+                return exporter.getTypeName();
         }
 
         @Override
-        public String getImporterId() {
-                loadImporter();
-                return importer.getImporterId();
+        public String getExporterId() {
+                loadExporter();
+                return exporter.getExporterId();
         }
 
         @Override
-        public Importer getImporter() {
-                loadImporter();
-                return importer;
+        public Exporter getExporter() {
+                loadExporter();
+                return exporter;
         }
 
         @Override
         public Schema getSchema() throws DriverException {
-                loadImporter();
-                return importer.getSchema();
+                loadExporter();
+                return exporter.getSchema();
         }
 
         @Override
@@ -114,20 +111,11 @@ public class FileImportDefinition implements ImportSourceDefinition {
         }
 
         @Override
-        public DataSourceDefinition importSource(String tableName) throws DriverException {
-                // a new file for the converted table
-                File newFile = dsf.getResultFile();
+        public void export(DataSet dataSource, String table) throws DriverException {
+                loadExporter();
 
-                loadImporter();
-                // we let the importer write
-                importer.open();
-                DiskBufferDriver dbuf = new DiskBufferDriver(newFile, importer.getSchema().getTableByName(tableName));
-                importer.setDataSourceFactory(dsf);
-                importer.convertTable(tableName, dbuf);
-                importer.close();
-                dbuf.writingFinished();
-
-                // we register the new file
-                return new FileSourceDefinition(newFile, tableName);
+                exporter.open();
+                exporter.export(dataSource, table);
+                exporter.close();
         }
 }

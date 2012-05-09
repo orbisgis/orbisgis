@@ -43,7 +43,6 @@ package org.gdms.driver.io;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.Schema;
-import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 
 /**
@@ -53,7 +52,7 @@ import org.gdms.driver.DriverException;
 public interface Importer {
 
         /**
-         * Gets the driver specific Schema.
+         * Gets the importer specific Schema.
          *
          * Important: this Schema must have a unique name. It should at least be
          * dependant on the Driver kind and the specific resource being accessed.
@@ -64,9 +63,9 @@ public interface Importer {
         Schema getSchema() throws DriverException;
 
         /**
-         * Method to pass references to the driver
+         * Sets the DSF for this importer.
          *
-         * @param dsf
+         * @param dsf a DSF
          */
         void setDataSourceFactory(DataSourceFactory dsf);
 
@@ -111,7 +110,7 @@ public interface Importer {
         String getTypeDescription();
 
         /**
-         * Get a description of the importer
+         * Get a description of the importer.
          *
          * @return
          */
@@ -125,11 +124,18 @@ public interface Importer {
         void open() throws DriverException;
 
         /**
-         * Closes the source being accessed
+         * Closes the source being accessed.
          *
          * @throws DriverException
          */
         void close() throws DriverException;
         
+        /**
+         * Converts the table with the specified name using the given row writer
+         * 
+         * @param name a table in the schema of this importer
+         * @param v an object to write the content of the table to
+         * @throws DriverException 
+         */
         void convertTable(String name, RowWriter v) throws DriverException;
 }

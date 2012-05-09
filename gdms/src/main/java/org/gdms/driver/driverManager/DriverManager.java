@@ -59,6 +59,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileDriverRegister;
 import org.gdms.driver.io.Exporter;
+import org.gdms.driver.io.FileExporter;
 import org.gdms.driver.io.FileImporter;
 import org.gdms.driver.io.Importer;
 
@@ -100,6 +101,26 @@ public final class DriverManager {
                 }
                 
                 throw new DriverLoadException("No suitable importer for " + file.getAbsolutePath());
+        }
+        
+         public FileExporter getFileExporter(File file) {
+                for (Entry<String, Class<? extends Exporter>> e : exportClasses.entrySet()) {
+                        if (FileExporter.class.isAssignableFrom(e.getValue())) {
+                                FileExporter i = (FileExporter) getExporter(e.getKey());
+                                for (String ex : i.getFileExtensions()) {
+                                        if (file.getAbsolutePath().toLowerCase().endsWith(ex.toLowerCase())) {
+                                                try {
+                                                        i.setFile(file);
+                                                } catch (DriverException exc) {
+                                                        throw new DriverLoadException(exc);
+                                                }
+                                                return i;
+                                        }
+                                }
+                        }
+                }
+                
+                throw new DriverLoadException("No suitable exporter for " + file.getAbsolutePath());
         }
 
         /**
@@ -174,6 +195,20 @@ public final class DriverManager {
                         throw new DriverLoadException(e);
                 }
         }
+        
+        public Exporter getExporter(String name) {
+                try {
+                        Class<? extends Exporter> exportClass = exportClasses.get(name);
+                        if (exportClass == null) {
+                                throw new DriverLoadException("Importer not found: " + name);
+                        }
+                        return exportClass.newInstance();
+                } catch (InstantiationException e) {
+                        throw new DriverLoadException(e);
+                } catch (IllegalAccessException e) {
+                        throw new DriverLoadException(e);
+                }
+        }
 
         /**
          * Get a new instance of a driver class registered with the name {@code name}
@@ -240,6 +275,21 @@ public final class DriverManager {
                                 "The importer cannot be instantiated", e);
                 }
         }
+        
+        public void registerExporter(Class<? extends Exporter> exporterClass) {
+                logger.trace("Registering driver " + exporterClass.getName());
+                try {
+                        Exporter driver = exporterClass.newInstance();
+                        exportClasses.put(driver.getExporterId(), exporterClass);
+                        fireExporterAdded(driver.getExporterId(), exporterClass);
+                } catch (InstantiationException e) {
+                        throw new IllegalArgumentException(
+                                "The exporter cannot be instantiated", e);
+                } catch (IllegalAccessException e) {
+                        throw new IllegalArgumentException(
+                                "The exporter cannot be instantiated", e);
+                }
+        }
 
         /**
          * Unregisters a driver class from this DriverManager.
@@ -257,6 +307,13 @@ public final class DriverManager {
                 Class<? extends Importer> r = importClasses.remove(importerId);
                 if (r != null) {
                         fireImporterRemoved(importerId, r);
+                }
+        }
+        
+        public void unregisterExporter(String exporterId) {
+                Class<? extends Exporter> r = exportClasses.remove(exporterId);
+                if (r != null) {
+                        fireExporterRemoved(exporterId, r);
                 }
         }
 
@@ -329,6 +386,18 @@ public final class DriverManager {
         private void fireImporterRemoved(String i, Class<? extends Importer> d) {
                 for (DriverManagerListener l : listeners) {
                         l.importerRemoved(i, d);
+                }
+        }
+        
+        private void fireExporterAdded(String i, Class<? extends Exporter> d) {
+                for (DriverManagerListener l : listeners) {
+                        l.exporterAdded(i, d);
+                }
+        }
+
+        private void fireExporterRemoved(String i, Class<? extends Exporter> d) {
+                for (DriverManagerListener l : listeners) {
+                        l.exporterRemoved(i, d);
                 }
         }
 

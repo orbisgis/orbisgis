@@ -50,16 +50,17 @@ import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
 
 /**
- *
+ * An object that can export the content of a data set.
+ * 
  * @author Antoine Gourlay
  */
 public interface Exporter {
 
         /**
-         * Gets the driver specific Schema.
+         * Gets the exporter specific Schema.
          *
          * Important: this Schema must have a unique name. It should at least be
-         * dependant on the Driver kind and the specific resource being accessed.
+         * dependant on the Exporter kind and the specific resource being accessed.
          *
          * @return
          * @throws DriverException
@@ -67,30 +68,30 @@ public interface Exporter {
         Schema getSchema() throws DriverException;
 
         /**
-         * Method to pass references to the driver
+         * Sets the DSF used by this exporter.
          *
-         * @param dsf
+         * @param dsf a DSF
          */
         void setDataSourceFactory(DataSourceFactory dsf);
 
         /**
-         * Gets the type of the sources this importer can write. It can be one of the
+         * Gets the type of the sources this exporter can write. It can be one of the
          * constants in {@link SourceManager} or a new value that will be meaningful
          * for the client of this method.</p>
          * <p>This method is different from {@code getType()}, because it is meaningful
-         * even if the importer is not associated to any source.
+         * even if the exporter is not associated to any source.
          *
          * @return
          */
         int getSupportedType();
 
         /**
-         * Gets the type of the sources this importer can write. It can be one of the
+         * Gets the type of the sources this exporter can write. It can be one of the
          * constants in {@link SourceManager} or a new value that will be meaningful
          * for the client of this method.</p>
-         * <p>Note that if the importer is not associated to any source, the correct behaviour
+         * <p>Note that if the exporter is not associated to any source, the correct behaviour
          * of this method can't be guaranteed. If you need to know the general capabilities
-         * of a exporter (to give a list of exporters that have a particular capability, for instance),
+         * of an exporter (to give a list of exporters that have a particular capability, for instance),
          * you should prefer the use of {@code getSupportedType}.
          *
          * @return
@@ -114,7 +115,7 @@ public interface Exporter {
         String getTypeDescription();
 
         /**
-         * Get a description of the exporter
+         * Gets a description of the exporter.
          *
          * @return
          */
@@ -128,7 +129,7 @@ public interface Exporter {
         void open() throws DriverException;
 
         /**
-         * Closes the source being accessed
+         * Closes the source being accessed.
          *
          * @throws DriverException
          */
@@ -137,10 +138,9 @@ public interface Exporter {
         /**
          * Writes the content of the DataSet to this exporter's specified table.
          *
-         * @param dataSource
-         * @param table 
-         * @param pm
+         * @param dataSource an input dataset ready to be read
+         * @param table the table to write to in this file
          * @throws DriverException
          */
-        void write(DataSet dataSource, String table, ProgressMonitor pm) throws DriverException;
+        void export(DataSet dataSource, String table) throws DriverException;
 }

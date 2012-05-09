@@ -46,21 +46,21 @@ import java.io.File;
 import org.gdms.driver.DriverException;
 
 /**
- * An importer for a file.
+ * An exporter to a file.
  * 
  * @author Antoine Gourlay
  */
-public interface FileImporter extends Importer {
+public interface FileExporter extends Exporter {
 
         /**
-         * Get the valid extension a file accessed by this importer can have.
+         * Get the valid extension a file accessed by this exporter can have.
          *
          * @return
          */
         String[] getFileExtensions();
 
         /**
-         * Sets the file associated with this importer.
+         * Sets the file associated with this exporter.
          *
          * @param file a valid file.
          * @throws DriverException
