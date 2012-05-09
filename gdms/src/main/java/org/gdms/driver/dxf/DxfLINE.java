@@ -32,7 +32,7 @@ import com.vividsolutions.jts.geom.LineString;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.memory.MemoryDataSetDriver;
+import org.gdms.driver.io.RowWriter;
 
 /**
  * LINE DXF entity. This class has a static method reading a DXF LINE and adding
@@ -49,7 +49,7 @@ public class DxfLINE extends DxfENTITY {
         }
 
         public static DxfGroup readEntity(RandomAccessFile raf,
-                MemoryDataSetDriver driver) throws IOException, DriverException {
+                RowWriter v) throws IOException, DriverException {
 
                 Value[] values = new Value[DxfFile.DXF_SCHEMACount];
 
@@ -96,7 +96,7 @@ public class DxfLINE extends DxfENTITY {
                                 values[0] = ValueFactory.createValue(new LineString(
                                         new Coordinate[]{new Coordinate(x1, y1, z1),
                                                 new Coordinate(x2, y2, z2)}, DPM, 0));
-                                driver.addValues(values);
+                                v.addValues(values);
                         }
                         // System.out.println("\t" +
                         // feature.getAttribute("LAYER").toString() +

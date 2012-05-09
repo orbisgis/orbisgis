@@ -56,6 +56,8 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import org.gdms.driver.io.Importer;
+
 /**
  * Some tests about the DriverManager.
  * @author alexis
@@ -135,6 +137,16 @@ public class DriverManagerTest extends TestBase {
                         assertEquals(ShapefileDriver.class, driverClass);
                         assertNull(dm.getDriverClassByName(ShapefileDriver.DRIVER_NAME));
                         fired = true;
+                }
+
+                @Override
+                public void importerAdded(String driverId, Class<? extends Importer> importerClass) {
+                        
+                }
+
+                @Override
+                public void importerRemoved(String driverId, Class<? extends Importer> importerClass) {
+                        
                 }
         }
 }

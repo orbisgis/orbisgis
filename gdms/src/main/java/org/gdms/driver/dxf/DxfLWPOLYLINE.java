@@ -35,7 +35,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.memory.MemoryDataSetDriver;
+import org.gdms.driver.io.RowWriter;
 
 /**
  * LWPOLYLINE DXF entity. This class has a static method reading a DXF
@@ -52,7 +52,7 @@ public final class DxfLWPOLYLINE extends DxfENTITY {
         }
 
         public static DxfGroup readEntity(RandomAccessFile raf,
-                MemoryDataSetDriver driver) throws IOException, DriverException {
+                RowWriter v) throws IOException, DriverException {
                 Value[] values = new Value[DxfFile.DXF_SCHEMACount];
                 String geomType = "LineString";
                 CoordinateList coordList = new CoordinateList();
@@ -112,13 +112,13 @@ public final class DxfLWPOLYLINE extends DxfENTITY {
                         }
                         if (geomType.equals("LineString")) {
                                 values[0] = ValueFactory.createValue(new LineString(coordList.toCoordinateArray(), DPM, 0));
-                                driver.addValues(values);
+                                v.addValues(values);
                         } else if (geomType.equals("Polygon")) {
                                 coordList.closeRing();
                                 values[0] = ValueFactory.createValue(new Polygon(
                                         new LinearRing(coordList.toCoordinateArray(), DPM, 0),
                                         DPM, 0));
-                                driver.addValues(values);
+                                v.addValues(values);
                         } else {
                         }
                         // System.out.println("\t" +

@@ -50,6 +50,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.log4j.Logger;
 
@@ -57,14 +58,17 @@ import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.FileDriverRegister;
+import org.gdms.driver.io.Exporter;
+import org.gdms.driver.io.FileImporter;
+import org.gdms.driver.io.Importer;
 
 /**
  * This class is responsible for storing all the available drivers.</p><p>
- * 
+ *
  * It does not have any driver registered by default, it is up to the calling code to
  * register the drivers.</p>
  * <p>As this class is the entry point to retrieve drivers of any kind, it is the best place
- * to manage drivers associated to files. Consequently, it is up to instances of this 
+ * to manage drivers associated to files. Consequently, it is up to instances of this
  * class to ensure that a file has only one driver associated to it. To do that,
  * It relies on an inner {@code FileDriverRegister}.
  */
@@ -73,24 +77,45 @@ public final class DriverManager {
         private Map<String, Class<? extends Driver>> driverClasses = new HashMap<String, Class<? extends Driver>>();
         private static final Logger logger = Logger.getLogger(DriverManager.class);
         private List<DriverManagerListener> listeners = new ArrayList<DriverManagerListener>();
-
+        private Map<String, Class<? extends Importer>> importClasses = new HashMap<String, Class<? extends Importer>>();
+        private Map<String, Class<? extends Exporter>> exportClasses = new HashMap<String, Class<? extends Exporter>>();
         public static final String DEFAULT_SINGLE_TABLE_NAME = "main";
         private FileDriverRegister fdr = new FileDriverRegister();
-        
+
+        public FileImporter getFileImporter(File file) {
+                for (Entry<String, Class<? extends Importer>> e : importClasses.entrySet()) {
+                        if (FileImporter.class.isAssignableFrom(e.getValue())) {
+                                FileImporter i = (FileImporter) getImporter(e.getKey());
+                                for (String ex : i.getFileExtensions()) {
+                                        if (file.getAbsolutePath().toLowerCase().endsWith(ex.toLowerCase())) {
+                                                try {
+                                                        i.setFile(file);
+                                                } catch (DriverException exc) {
+                                                        throw new DriverLoadException(exc);
+                                                }
+                                                return i;
+                                        }
+                                }
+                        }
+                }
+                
+                throw new DriverLoadException("No suitable importer for " + file.getAbsolutePath());
+        }
+
         /**
          * Get a driver suitable for the {@code File} file. If the {@code File} has already
-         * been treated by this manager, and if it has not been removed, the same 
-         * {@code Driver} instance is returned. If it's the first time we meet 
+         * been treated by this manager, and if it has not been removed, the same
+         * {@code Driver} instance is returned. If it's the first time we meet
          * {@code file}, or if it has been removed since the last time we've seen
-         * it, a brand new instance, associated to the {@code File} instance, is 
+         * it, a brand new instance, associated to the {@code File} instance, is
          * returned.
-         * 
+         *
          * @param file
-         * @return 
+         * @return
          * @throw DriverLoadException if we can't find a Driver able to manage our file.
          */
-        public FileDriver getDriver(File file){
-                if(fdr.contains(file)){
+        public FileDriver getDriver(File file) {
+                if (fdr.contains(file)) {
                         return fdr.getDriver(file);
                 } else {
                         //we must try to retrieve a ew suitable driver.
@@ -114,23 +139,40 @@ public final class DriverManager {
                                         }
                                 }
                         }
-                        throw new DriverLoadException("No suitable driver for "+ file.getAbsolutePath());
+                        throw new DriverLoadException("No suitable driver for " + file.getAbsolutePath());
                 }
         }
-        
+
         /**
          * Remove the entry associating {@code file} with {@code driver}.
+         *
+         * @param file a file
          */
-        public void removeFile(File file){
+        public void removeFile(File file) {
                 fdr.removeFile(file);
         }
-        
+
         /**
          * Give access to the underlying {@code FileDriverRegister} instance.
-         * @return 
+         *
+         * @return
          */
-        public FileDriverRegister getFileDriverRegister(){
+        public FileDriverRegister getFileDriverRegister() {
                 return fdr;
+        }
+
+        public Importer getImporter(String name) {
+                try {
+                        Class<? extends Importer> importClass = importClasses.get(name);
+                        if (importClass == null) {
+                                throw new DriverLoadException("Importer not found: " + name);
+                        }
+                        return importClass.newInstance();
+                } catch (InstantiationException e) {
+                        throw new DriverLoadException(e);
+                } catch (IllegalAccessException e) {
+                        throw new DriverLoadException(e);
+                }
         }
 
         /**
@@ -138,15 +180,15 @@ public final class DriverManager {
          * with the method {@link DriverManager#registerDriver(java.lang.Class) registerDriver}
          *
          * @param name
-         *            name of the desired driver
+         * name of the desired driver
          *
          * @return
          *
          * @throws DriverLoadException
-         *             if the driver class represents an abstract class, an
-         *             interface, an array class, a primitive type, or void; or if
-         *             the class has no nullary constructor; or if the instantiation
-         *             fails for some other reason
+         * if the driver class represents an abstract class, an
+         * interface, an array class, a primitive type, or void; or if
+         * the class has no nullary constructor; or if the instantiation
+         * fails for some other reason
          */
         public Driver getDriver(String name) {
                 logger.trace("Instantiating driver " + name);
@@ -162,35 +204,59 @@ public final class DriverManager {
                         throw new DriverLoadException(e);
                 }
         }
-        
+
         /**
          * Registers a driver class into this DriverManager.
+         *
          * @param driverClass a class extending Driver
          */
         public void registerDriver(Class<? extends Driver> driverClass) {
                 logger.trace("Registering driver " + driverClass.getName());
-                        Driver driver;
-                        try {
-                                driver = driverClass.newInstance();
-                                driverClasses.put(driver.getDriverId(), driverClass);
-                                fireDriverAdded(driver.getDriverId(), driverClass);
-                        } catch (InstantiationException e) {
-                                throw new IllegalArgumentException(
-                                        "The driver cannot be instantiated", e);
-                        } catch (IllegalAccessException e) {
-                                throw new IllegalArgumentException(
-                                        "The driver cannot be instantiated", e);
-                        }
+                Driver driver;
+                try {
+                        driver = driverClass.newInstance();
+                        driverClasses.put(driver.getDriverId(), driverClass);
+                        fireDriverAdded(driver.getDriverId(), driverClass);
+                } catch (InstantiationException e) {
+                        throw new IllegalArgumentException(
+                                "The driver cannot be instantiated", e);
+                } catch (IllegalAccessException e) {
+                        throw new IllegalArgumentException(
+                                "The driver cannot be instantiated", e);
+                }
         }
         
+        public void registerImporter(Class<? extends Importer> importerClass) {
+                logger.trace("Registering driver " + importerClass.getName());
+                try {
+                        Importer driver = importerClass.newInstance();
+                        importClasses.put(driver.getImporterId(), importerClass);
+                        fireImporterAdded(driver.getImporterId(), importerClass);
+                } catch (InstantiationException e) {
+                        throw new IllegalArgumentException(
+                                "The importer cannot be instantiated", e);
+                } catch (IllegalAccessException e) {
+                        throw new IllegalArgumentException(
+                                "The importer cannot be instantiated", e);
+                }
+        }
+
         /**
          * Unregisters a driver class from this DriverManager.
+         *
          * @param driverId the driver id (result of myDriver.getDriverId()) of the driver to remove
          */
         public void unregisterDriver(String driverId) {
                 Class<? extends Driver> r = driverClasses.remove(driverId);
                 if (r != null) {
                         fireDriverRemoved(driverId, r);
+                }
+        }
+        
+        public void unregisterImporter(String importerId) {
+                Class<? extends Importer> r = importClasses.remove(importerId);
+                if (r != null) {
+                        fireImporterRemoved(importerId, r);
                 }
         }
 
@@ -207,7 +273,7 @@ public final class DriverManager {
          * Gets the Driver Class which as been registered with the specified name.
          *
          * @param driverName
-         *            the name of a registered driver
+         * the name of a registered driver
          *
          * @return the Driver Class, or null if there is none by that name
          */
@@ -217,6 +283,7 @@ public final class DriverManager {
 
         /**
          * Gets all the registered drivers that comply with the specified DriverFilter
+         *
          * @param driverFilter
          * @return
          */
@@ -240,21 +307,34 @@ public final class DriverManager {
 
                 return drivers.toArray(new Driver[drivers.size()]);
         }
-        
+
         private void fireDriverAdded(String i, Class<? extends Driver> d) {
                 for (DriverManagerListener l : listeners) {
                         l.driverAdded(i, d);
                 }
         }
-        
+
         private void fireDriverRemoved(String i, Class<? extends Driver> d) {
                 for (DriverManagerListener l : listeners) {
                         l.driverRemoved(i, d);
                 }
         }
         
+        private void fireImporterAdded(String i, Class<? extends Importer> d) {
+                for (DriverManagerListener l : listeners) {
+                        l.importerAdded(i, d);
+                }
+        }
+
+        private void fireImporterRemoved(String i, Class<? extends Importer> d) {
+                for (DriverManagerListener l : listeners) {
+                        l.importerRemoved(i, d);
+                }
+        }
+
         /**
          * Registers a DriverManagerListener with this DriverManager.
+         *
          * @param l a listener
          * @throws NullPointerException if a null listener if given
          */
@@ -265,9 +345,10 @@ public final class DriverManager {
                         throw new NullPointerException("listener cannot be null");
                 }
         }
-        
+
         /**
          * Unregisters a DriverManagerListener from this DriverManager.
+         *
          * @param l a listener
          * @return true if the listener was actually removed
          */

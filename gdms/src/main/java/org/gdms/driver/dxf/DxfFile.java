@@ -31,7 +31,7 @@ import java.io.RandomAccessFile;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.memory.MemoryDataSetDriver;
+import org.gdms.driver.io.RowWriter;
 
 /**
  * A whole dataset contained in a DXF file, and main methods to read from and to
@@ -64,7 +64,6 @@ public class DxfFile {
 	public final static DefaultMetadata DXF_SCHEMA = new DefaultMetadata();
 	static int DXF_SCHEMACount = 9;
 	private int coordinatePrecision = 2;;
-	MemoryDataSetDriver driver;
 
 	public DxfFile() throws DriverException {
 		initializeDXF_SCHEMA();
@@ -99,17 +98,16 @@ public class DxfFile {
 		this.coordinatePrecision = coordinatePrecision;
 	}
 
-	public static DxfFile createFromFile(File file) throws IOException,
+	public static DxfFile createFromFile(File file, RowWriter v) throws IOException,
 			DriverException {
 		RandomAccessFile raf = new RandomAccessFile(file, "r");
-		return createFromFile(raf);
+		return createFromFile(raf, v);
 	}
 
-	public static DxfFile createFromFile(RandomAccessFile raf)
+	public static DxfFile createFromFile(RandomAccessFile raf, RowWriter v)
 			throws IOException, DriverException {
 		DxfFile dxfFile = new DxfFile();
 		initializeDXF_SCHEMA();
-		dxfFile.driver = new MemoryDataSetDriver(DXF_SCHEMA);
 		// BufferedReader br = new BufferedReader(new InputStreamReader(is));
 		DxfGroup group = null;
 		while (null != (group = DxfGroup.readGroup(raf))) {
@@ -123,9 +121,9 @@ public class DxfFile {
 //				} else if (group.equals(TABLES)) {
 //					dxfFile.tables = DxfTABLES.readTables(raf);
 				if (group.equals(BLOCKS)) {
-					DxfBLOCKS.readEntities(raf, dxfFile.driver);
+					DxfBLOCKS.readEntities(raf, v);
 				} else if (group.equals(ENTITIES)) {
-					DxfENTITIES.readEntities(raf, dxfFile.driver);
+					DxfENTITIES.readEntities(raf, v);
 //				} else if (group.equals(OBJECTS)) {
 //					// objects = DxfOBJECTS.readObjects(br);
 //				} else if (group.getCode() == 999) {
@@ -145,10 +143,6 @@ public class DxfFile {
 		}
 		raf.close();
 		return dxfFile;
-	}
-
-	public MemoryDataSetDriver read() {
-		return driver;
 	}
 
 	/*

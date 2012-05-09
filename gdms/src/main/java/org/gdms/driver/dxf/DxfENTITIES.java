@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import org.gdms.driver.DriverException;
-import org.gdms.driver.memory.MemoryDataSetDriver;
+import org.gdms.driver.io.RowWriter;
 
 /**
  * The ENTITIES section of a DXF file containing all data itself
@@ -44,22 +44,22 @@ public final class DxfENTITIES {
 	}
 
 	public static DxfENTITIES readEntities(RandomAccessFile raf,
-			MemoryDataSetDriver driver) throws IOException, DriverException {
+			RowWriter v) throws IOException, DriverException {
 		DxfENTITIES dxfEntities = new DxfENTITIES();
 		try {
 			DxfGroup group = new DxfGroup(2, "ENTITIES");
 			while (!group.equals(DxfFile.ENDSEC)) {
 				if (group.getCode() == 0) {
 					if (group.getValue().equals("POINT")) {
-						group = DxfPOINT.readEntity(raf, driver);
+						group = DxfPOINT.readEntity(raf, v);
 					} else if (group.getValue().equals("TEXT")) {
-						group = DxfTEXT.readEntity(raf, driver);
+						group = DxfTEXT.readEntity(raf, v);
 					} else if (group.getValue().equals("LINE")) {
-						group = DxfLINE.readEntity(raf, driver);
+						group = DxfLINE.readEntity(raf, v);
 					} else if (group.getValue().equals("POLYLINE")) {
-						group = DxfPOLYLINE.readEntity(raf, driver);
+						group = DxfPOLYLINE.readEntity(raf, v);
 					} else if (group.getValue().equals("LWPOLYLINE")) {
-						group = DxfLWPOLYLINE.readEntity(raf, driver);
+						group = DxfLWPOLYLINE.readEntity(raf, v);
 					} else {
 						group = DxfGroup.readGroup(raf);
 					}

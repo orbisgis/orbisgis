@@ -78,6 +78,8 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.file.FileSourceDefinition;
+import org.gdms.data.importer.FileImportDefinition;
+import org.gdms.data.importer.ImportSourceDefinition;
 import org.gdms.data.memory.MemorySourceCreation;
 import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.data.schema.DefaultSchema;
@@ -135,7 +137,7 @@ public final class DefaultSourceManager implements SourceManager {
                 dm.registerDriver(AscDriver.class);
                 dm.registerDriver(JPGDriver.class);
                 dm.registerDriver(PngDriver.class);
-                dm.registerDriver(DXFDriver.class);
+                dm.registerImporter(DXFDriver.class);
                 dm.registerDriver(MifMidDriver.class);
                 this.dsf = dsf;
                 this.baseDir = baseDir;
@@ -1087,5 +1089,18 @@ public final class DefaultSourceManager implements SourceManager {
                 }
 
                 return true;
+        }
+
+        @Override
+        public void importFrom(String name, File file) throws DriverException {
+                importFrom(name, new FileImportDefinition(file));
+        }
+
+        @Override
+        public void importFrom(String name, ImportSourceDefinition def) throws DriverException {
+                def.setDataSourceFactory(dsf);
+                DataSourceDefinition dsd = def.createSource(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+                
+                register(name, dsd);
         }
 }

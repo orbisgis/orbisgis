@@ -33,7 +33,7 @@ import com.vividsolutions.jts.geom.Point;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.memory.MemoryDataSetDriver;
+import org.gdms.driver.io.RowWriter;
 
 /**
  * POINT DXF entity. This class has a static method reading a DXF POINT and
@@ -50,7 +50,7 @@ public final class DxfPOINT extends DxfENTITY {
 	}
 
 	public static DxfGroup readEntity(RandomAccessFile raf,
-			MemoryDataSetDriver driver) throws IOException, DriverException {
+			RowWriter v) throws IOException, DriverException {
 
 		Value[] values = new Value[DxfFile.DXF_SCHEMACount];
 		/*
@@ -98,7 +98,7 @@ public final class DxfPOINT extends DxfENTITY {
 			if (Double.isNaN(x) && Double.isNaN(y)) {
 				values[0] = ValueFactory.createValue(new Point(new Coordinate(
 						x, y, z), DPM, 0));
-				driver.addValues(values);
+				v.addValues(values);
 			}
 			// System.out.println("\t" +
 			// feature.getAttribute("LAYER").toString() +

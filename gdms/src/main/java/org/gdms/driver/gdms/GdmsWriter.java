@@ -59,13 +59,14 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.ReadWriteBufferManager;
+import org.gdms.driver.io.RowWriter;
 
 /**
  * Class to write gdms files.
  *
  * @author Fernando Gonzalez Cortes
  */
-public class GdmsWriter {
+public class GdmsWriter implements RowWriter {
 
         private long[] rowindexes = new long[1024];
         private RandomAccessFile raf;

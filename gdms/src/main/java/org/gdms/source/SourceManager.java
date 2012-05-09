@@ -52,6 +52,7 @@ import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFinalizationException;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.db.DBSource;
+import org.gdms.data.importer.ImportSourceDefinition;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.wms.WMSSource;
 import org.gdms.driver.DriverException;
@@ -549,4 +550,7 @@ public interface SourceManager {
          * @return true if found
          */
         boolean schemaExists(String name);
+        
+        void importFrom(String name, File file) throws DriverException;
+        void importFrom(String name, ImportSourceDefinition def) throws DriverException;
 }

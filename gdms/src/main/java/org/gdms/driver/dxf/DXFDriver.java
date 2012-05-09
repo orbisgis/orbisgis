@@ -51,28 +51,21 @@ import org.apache.log4j.Logger;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.DefaultSchema;
-import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
-import org.gdms.data.types.TypeDefinition;
-import org.gdms.data.values.Value;
-import org.gdms.driver.AbstractDataSet;
-import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.driver.io.FileImporter;
+import org.gdms.driver.io.RowWriter;
 import org.gdms.source.SourceManager;
 
-public final class DXFDriver extends AbstractDataSet implements FileDriver {
+public final class DXFDriver implements FileImporter {
 
-        private DataSet result;
         private static final Logger LOG = Logger.getLogger(DXFDriver.class);
         private Schema schema;
         private File file;
 
         @Override
         public void close() throws DriverException {
-                LOG.trace("Closing");
-                result = null;
         }
 
         @Override
@@ -83,16 +76,13 @@ public final class DXFDriver extends AbstractDataSet implements FileDriver {
         @Override
         public void open() throws DriverException {
                 LOG.trace("Opening");
-                try {
-                        DxfFile dxfFile = DxfFile.createFromFile(file);
-                        result = dxfFile.read().getTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
-                        System.gc();
-                } catch (IOException e) {
-                        throw new DriverException(e);
-                }
+                schema = new DefaultSchema("DXF" + file.getAbsolutePath().hashCode());
+                DxfFile.initializeDXF_SCHEMA();
+                schema.removeTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, DxfFile.DXF_SCHEMA);
         }
-        
-       @Override
+
+        @Override
         public int getSupportedType() {
                 return SourceManager.FILE | SourceManager.VECTORIAL;
         }
@@ -117,23 +107,8 @@ public final class DXFDriver extends AbstractDataSet implements FileDriver {
         }
 
         @Override
-        public String getDriverId() {
-                return "DXF driver";
-        }
-
-        @Override
-        public boolean isCommitable() {
-                return false;
-        }
-
-        @Override
-        public TypeDefinition[] getTypesDefinitions() {
-                return new TypeDefinition[0];
-        }
-
-        @Override
-        public String validateMetadata(Metadata metadata) throws DriverException {
-                return null;
+        public String getImporterId() {
+                return "DXF importer";
         }
 
         @Override
@@ -142,43 +117,19 @@ public final class DXFDriver extends AbstractDataSet implements FileDriver {
         }
 
         @Override
-        public DataSet getTable(String name) {
-                if (!name.equals(DriverManager.DEFAULT_SINGLE_TABLE_NAME)) {
-                        return null;
-                }
-                return this;
-        }
-
-        @Override
-        public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
-                return result.getFieldValue(rowIndex, fieldId);
-        }
-
-        @Override
-        public long getRowCount() throws DriverException {
-                return result.getRowCount();
-        }
-
-        @Override
-        public Number[] getScope(int dimension) throws DriverException {
-                return result.getScope(dimension);
-        }
-
-        @Override
-        public Metadata getMetadata() throws DriverException {
-                return schema.getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
-        }
-
-        @Override
         public void setFile(File file) throws DriverException {
                 this.file = file;
-                schema = new DefaultSchema("DXF" + file.getAbsolutePath().hashCode());
-                DxfFile.initializeDXF_SCHEMA();
-                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, DxfFile.DXF_SCHEMA);
         }
 
         @Override
-        public boolean isOpen() {
-                return result != null;
+        public void convertTable(String name, RowWriter v) throws DriverException {
+                if (!name.equals(DriverManager.DEFAULT_SINGLE_TABLE_NAME)) {
+                        throw new DriverException("Wrong table name: " + name);
+                }
+                try {
+                        DxfFile.createFromFile(file, v);
+                } catch (IOException ex) {
+                        throw new DriverException(ex);
+                }
         }
 }

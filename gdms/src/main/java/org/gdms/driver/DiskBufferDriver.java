@@ -60,6 +60,7 @@ import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.gdms.GdmsDriver;
 import org.gdms.driver.gdms.GdmsReader;
 import org.gdms.driver.gdms.GdmsWriter;
+import org.gdms.driver.io.RowWriter;
 import org.gdms.source.SourceManager;
 
 /**
@@ -69,7 +70,7 @@ import org.gdms.source.SourceManager;
  * must be called.
  * 
  */
-public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
+public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver, RowWriter {
 
         private Schema schema;
         private GdmsWriter writer;
@@ -208,6 +209,7 @@ public class DiskBufferDriver extends AbstractDataSet implements MemoryDriver {
          * @param row an array of Value objects.
          * @throws DriverException
          */
+        @Override
         public void addValues(Value... row) throws DriverException {
                 checkIsWriting();
                 writeMetadataOnce();

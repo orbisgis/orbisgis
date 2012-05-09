@@ -28,7 +28,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 
 import org.gdms.driver.DriverException;
-import org.gdms.driver.memory.MemoryDataSetDriver;
+import org.gdms.driver.io.RowWriter;
 
 /**
  * A DXF block contains a block of geometries. The dxf driver can read entities
@@ -62,21 +62,21 @@ public final class DxfBLOCKS {
 	 */
 
 	public static DxfBLOCKS readEntities(RandomAccessFile raf,
-			MemoryDataSetDriver driver) throws IOException, DriverException {
+			RowWriter v) throws IOException, DriverException {
 		DxfBLOCKS dxfEntities = new DxfBLOCKS();
 			DxfGroup group = new DxfGroup(2, "BLOCKS");
 			while (!group.equals(DxfFile.ENDSEC)) {
 				if (group.getCode() == 0) {
 					if (group.getValue().equals("POINT")) {
-						group = DxfPOINT.readEntity(raf, driver);
+						group = DxfPOINT.readEntity(raf, v);
 					} else if (group.getValue().equals("TEXT")) {
-						group = DxfTEXT.readEntity(raf, driver);
+						group = DxfTEXT.readEntity(raf, v);
 					} else if (group.getValue().equals("LINE")) {
-						group = DxfLINE.readEntity(raf, driver);
+						group = DxfLINE.readEntity(raf, v);
 					} else if (group.getValue().equals("POLYLINE")) {
-						group = DxfPOLYLINE.readEntity(raf, driver);
+						group = DxfPOLYLINE.readEntity(raf, v);
 					} else if (group.getValue().equals("TEXT")) {
-						group = DxfTEXT.readEntity(raf, driver);
+						group = DxfTEXT.readEntity(raf, v);
 					} else {
 						group = DxfGroup.readGroup(raf);
 					}
