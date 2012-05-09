@@ -178,6 +178,39 @@ public final class MetadataUtilities {
         }
         return null;
     }
+    
+    /**
+     * Checks that the input metadata is compatible with the output metadata.
+     * 
+     * Compatible in this context means:
+     *  - same number of fields
+     *  - field types can be implicitly cast from one to the other
+     * 
+     * @param input input metadata
+     * @param target output metadata
+     * @return null if there is no problem, else an error message
+     * @throws DriverException 
+     */
+    public static String check(Metadata input, Metadata target) throws DriverException {
+            // check same field count
+            if (input.getFieldCount() != target.getFieldCount()) {
+                    return "The number of fields is different! Input: " + input.getFieldCount() + ", output: "
+                            + target.getFieldCount();
+            }
+            
+            for (int i = 0; i < input.getFieldCount(); i++) {
+                        int it = input.getFieldType(i).getTypeCode();
+                        int tt = target.getFieldType(i).getTypeCode();
+                        if (!TypeFactory.canBeCastTo(it, tt)) {
+                                return "Incompatible types for field " + target.getFieldName(i) + "! Input: "
+                                        + TypeFactory.getTypeName(it) + ", ouput: " +
+                                        TypeFactory.getTypeName(tt);
+                        }
+                        
+            }
+            
+            return null;
+    }
 
     /**
      * Gets an array with the field types

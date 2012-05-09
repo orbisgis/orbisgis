@@ -122,7 +122,12 @@ public class ImporterTests extends TestBase {
 
                 @Override
                 public Schema getSchema() throws DriverException {
-                        throw new UnsupportedOperationException();
+                        Schema s = new DefaultSchema("test");
+                        s.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, new DefaultMetadata(new Type[]{
+                                        TypeFactory.createType(Type.INT)
+                                }, new String[]{"someField"}));
+
+                        return s;
                 }
 
                 @Override
@@ -132,6 +137,11 @@ public class ImporterTests extends TestBase {
                 @Override
                 public DataSourceDefinition importSource(String tableName) throws DriverException {
                         return new FileSourceDefinition(res, tableName);
+                }
+
+                @Override
+                public DataSourceDefinition[] importAllSources() throws DriverException {
+                        throw new UnsupportedOperationException();
                 }
         }
 

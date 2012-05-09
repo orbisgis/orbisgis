@@ -49,7 +49,9 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 import org.gdms.TestBase;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Schema;
@@ -66,11 +68,21 @@ import org.gdms.driver.io.FileExporter;
  */
 public class ExporterTests extends TestBase {
 
-        private static boolean flag = false;
+        private static boolean flag1 = false;
+        private static boolean flag2 = false;
 
         @Before
         public void setUp() throws Exception {
                 super.setUpTestsWithoutEdition();
+        }
+        
+        @Test
+        public void exportingUnknownTableShouldFail() throws Exception {
+                try {
+                        sm.exportTo("toto", new File("someFile.toto"));
+                        fail();
+                } catch (NoSuchTableException noSuchTableException) {
+                }
         }
 
         @Test
@@ -79,10 +91,10 @@ public class ExporterTests extends TestBase {
 
                 sm.getDriverManager().registerExporter(DummyExporter.class);
 
-                flag = false;
+                flag1 = false;
                 sm.exportTo("toto", new File("someFile.toto"));
 
-                assertTrue(flag);
+                assertTrue(flag1);
         }
 
         public static class DummyExporter implements FileExporter {
@@ -153,7 +165,109 @@ public class ExporterTests extends TestBase {
                         assertEquals(7, d.getInt(2, 0));
                         assertEquals(-42, d.getInt(3, 0));
 
-                        flag = true;
+                        flag1 = true;
+                }
+        }
+
+        @Test
+        public void testFileExporterMultipleTables() throws Exception {
+                dsf.executeSQL("CREATE TABLE totos.toto1 AS SELECT * FROM VALUES (42), (16), (7), (-42) AS t;");
+                dsf.executeSQL("CREATE TABLE totos.toto2 AS SELECT * FROM VALUES ('hello'), ('hi') AS t;");
+
+                sm.getDriverManager().registerExporter(DummyMTExporter.class);
+
+                flag1 = false;
+                flag2 = false;
+                sm.exportTo("totos", new File("someFile.toto"));
+
+                assertTrue(flag1);
+                assertTrue(flag2);
+        }
+
+        public static class DummyMTExporter implements FileExporter {
+
+                @Override
+                public String[] getFileExtensions() {
+                        return new String[]{".toto"};
+                }
+
+                @Override
+                public void setFile(File file) throws DriverException {
+                }
+
+                @Override
+                public Schema getSchema() throws DriverException {
+                        Schema s = new DefaultSchema("test");
+                        s.addTable("toto1", new DefaultMetadata(new Type[]{
+                                        TypeFactory.createType(Type.INT)
+                                }, new String[]{"someField"}));
+                        s.addTable("toto2", new DefaultMetadata(new Type[]{
+                                        TypeFactory.createType(Type.STRING)
+                                }, new String[]{"someStringField"}));
+
+                        return s;
+                }
+
+                @Override
+                public void setDataSourceFactory(DataSourceFactory dsf) {
+                }
+
+                @Override
+                public int getSupportedType() {
+                        throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public int getType() {
+                        throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public String getTypeName() {
+                        throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public String getTypeDescription() {
+                        throw new UnsupportedOperationException();
+                }
+
+                @Override
+                public String getExporterId() {
+                        return "toto file format exporter";
+                }
+
+                @Override
+                public void open() throws DriverException {
+                }
+
+                @Override
+                public void close() throws DriverException {
+                }
+
+                @Override
+                public void export(DataSet d, String table) throws DriverException {
+                        if ("toto1".equals(table)) {
+                                assertEquals(4, d.getRowCount());
+                                assertEquals(1, d.getMetadata().getFieldCount());
+
+                                assertEquals(42, d.getInt(0, 0));
+                                assertEquals(16, d.getInt(1, 0));
+                                assertEquals(7, d.getInt(2, 0));
+                                assertEquals(-42, d.getInt(3, 0));
+
+                                flag1 = true;
+                        } else if ("toto2".equals(table)) {
+                                assertEquals(2, d.getRowCount());
+                                assertEquals(1, d.getMetadata().getFieldCount());
+                                
+                                assertEquals("hello", d.getString(0, 0));
+                                assertEquals("hi", d.getString(1, 0));
+                                
+                                flag2 = true;
+                        } else {
+                                fail("Found table " + table);
+                        }
                 }
         }
 }

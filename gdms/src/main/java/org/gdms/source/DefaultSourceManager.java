@@ -51,6 +51,7 @@ import java.io.InputStream;
 import java.io.PrintWriter;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -86,6 +87,8 @@ import org.gdms.data.importer.ImportSourceDefinition;
 import org.gdms.data.memory.MemorySourceCreation;
 import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.data.schema.DefaultSchema;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.schema.RootSchema;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.system.SystemSource;
@@ -290,7 +293,7 @@ public final class DefaultSourceManager implements SourceManager {
                 nameSource.clear();
                 nameMapping.clear();
                 sources.getSource().clear();
-                
+
                 loadSystemTables();
         }
 
@@ -516,7 +519,7 @@ public final class DefaultSourceManager implements SourceManager {
                                         n = new DefaultSchema(l[i]);
                                         s.addSubSchema(n);
                                 }
-                                        s = n;
+                                s = n;
                         }
                         s.addTable(l[l.length - 1], dsd.getSchema().getTableByName(l[l.length - 1]));
                 }
@@ -1069,7 +1072,7 @@ public final class DefaultSourceManager implements SourceManager {
         @Override
         public boolean schemaExists(String name) {
                 if (name.isEmpty()) {
-                        throw new IllegalArgumentException("Entpy schema name!");
+                        throw new IllegalArgumentException("Empty schema name!");
                 }
 
                 String[] s = name.split("\\.");
@@ -1102,9 +1105,18 @@ public final class DefaultSourceManager implements SourceManager {
         @Override
         public void importFrom(String name, ImportSourceDefinition def) throws DriverException {
                 def.setDataSourceFactory(dsf);
-                DataSourceDefinition dsd = def.importSource(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
-                
-                register(name, dsd);
+                String[] tableNames = def.getSchema().getTableNames();
+
+                if (tableNames.length == 1) {
+                        DataSourceDefinition dsd = def.importSource(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+                        register(name, dsd);
+                } else {
+                        DataSourceDefinition[] dsds = def.importAllSources();
+
+                        for (int i = 0; i < dsds.length; i++) {
+                                register(name + "." + tableNames[i], dsds[i]);
+                        }
+                }
         }
 
         @Override
@@ -1114,11 +1126,58 @@ public final class DefaultSourceManager implements SourceManager {
 
         @Override
         public void exportTo(String name, ExportSourceDefinition def) throws DriverException, NoSuchTableException, DataSourceCreationException {
-                DataSource d = getDataSource(name, new NullProgressMonitor());
-                
-                d.open();
-                def.setDataSourceFactory(dsf);
-                def.export(d, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
-                d.close();
+                // differentiate between schema names and table names
+                if (exists(name)) {
+                        DataSource d = getDataSource(name, new NullProgressMonitor());
+
+                        def.setDataSourceFactory(dsf);
+                        if (def.getSchema().getTableCount() > 1) {
+                                throw new DriverException("This export definition expects a schema with "
+                                        + def.getSchema().getTableCount() + " table, not a single table.");
+                        }
+                        final Metadata met = def.getSchema().getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+                        d.open();
+
+                        // checks metadata are compatible
+                        String error = MetadataUtilities.check(met, d.getMetadata());
+                        if (error != null) {
+                                throw new DriverException("Cannot export '" + name + "': "
+                                        + error);
+                        }
+                        def.export(d, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+                        d.close();
+                } else if (schemaExists(name)) {
+                        String[] names = getSourceNames();
+                        for (int i = 0; i < names.length; i++) {
+                                if (names[i].startsWith(name + ".")) {
+                                        // table is in the schema
+                                        DataSource d = getDataSource(names[i], new NullProgressMonitor());
+
+                                        def.setDataSourceFactory(dsf);
+                                        String intName = names[i].substring(names[i].lastIndexOf(".") + 1);
+                                        final Metadata met = def.getSchema().getTableByName(intName);
+
+                                        // checks the table is allowed
+                                        if (met == null) {
+                                                throw new DriverException("This export definition does not expect"
+                                                        + " a table named '" + intName + "'. Expected tables are: "
+                                                        + Arrays.toString(def.getSchema().getTableNames()));
+                                        }
+
+                                        d.open();
+                                        // checks metadata are compatible
+                                        String error = MetadataUtilities.check(met, d.getMetadata());
+                                        if (error != null) {
+                                                throw new DriverException("Cannot export '" + names[i] + "': "
+                                                        + error);
+                                        }
+
+                                        def.export(d, intName);
+                                        d.close();
+                                }
+                        }
+                } else {
+                        throw new NoSuchTableException(name);
+                }
         }
 }

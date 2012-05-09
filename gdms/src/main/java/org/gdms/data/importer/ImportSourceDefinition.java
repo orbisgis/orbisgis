@@ -105,4 +105,11 @@ public interface ImportSourceDefinition {
          * @throws DriverException 
          */
         DataSourceDefinition importSource(String tableName) throws DriverException;
+        
+        /**
+         * Imports all tables from this source and gets some {@link DataSourceDefinition} objects for the results.
+         * @return an non-empty array of DSD
+         * @throws DriverException 
+         */
+        DataSourceDefinition[] importAllSources() throws DriverException;
 }

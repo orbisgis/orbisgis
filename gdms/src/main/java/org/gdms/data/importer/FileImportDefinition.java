@@ -130,4 +130,29 @@ public class FileImportDefinition implements ImportSourceDefinition {
                 // we register the new file
                 return new FileSourceDefinition(newFile, tableName);
         }
+
+        @Override
+        public DataSourceDefinition[] importAllSources() throws DriverException {
+
+                importer.open();
+                importer.setDataSourceFactory(dsf);
+                
+                final Schema schema = importer.getSchema();
+                
+                DataSourceDefinition[] sources = new DataSourceDefinition[schema.getTableCount()];
+                
+                final String[] tableNames = schema.getTableNames();
+                for (int i = 0; i < tableNames.length; i++) {
+                        String tableName = tableNames[i];
+                        File newFile = dsf.getResultFile();
+                        DiskBufferDriver dbuf = new DiskBufferDriver(newFile, schema.getTableByName(tableName));
+                        importer.convertTable(tableName, dbuf);
+                        dbuf.writingFinished();
+                        sources[i] = new FileSourceDefinition(file, tableName);
+                }
+                
+                importer.close();
+
+                return sources;
+        }
 }
