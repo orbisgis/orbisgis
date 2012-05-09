@@ -144,7 +144,7 @@ public final class DefaultSourceManager implements SourceManager {
                 dm.registerDriver(JPGDriver.class);
                 dm.registerDriver(PngDriver.class);
                 dm.registerImporter(DXFDriver.class);
-                dm.registerDriver(MifMidDriver.class);
+                dm.registerImporter(MifMidDriver.class);
                 this.dsf = dsf;
                 this.baseDir = baseDir;
                 contextPaths.add("org.gdms.source.directory");

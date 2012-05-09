@@ -51,21 +51,17 @@ import org.apache.log4j.Logger;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.DefaultSchema;
-import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.schema.SchemaMetadata;
-import org.gdms.data.types.TypeDefinition;
-import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
-import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.driver.io.FileImporter;
+import org.gdms.driver.io.RowWriter;
 import org.gdms.source.SourceManager;
 
-public final class MifMidDriver implements FileDriver {
+public final class MifMidDriver implements FileImporter {
 
-        private static final String NOT_SUPPORTED = "This driver is readonly.";
         private MifMidReader mm;
-        private DataSet driver;
         private Schema schema;
         private SchemaMetadata metadata;
         private File file;
@@ -75,6 +71,7 @@ public final class MifMidDriver implements FileDriver {
         public void close() throws DriverException {
                 LOG.trace("Closing");
                 mm.close();
+                mm = null;
         }
 
         @Override
@@ -87,13 +84,12 @@ public final class MifMidDriver implements FileDriver {
                 LOG.trace("Opening");
                 try {
                         mm = new MifMidReader(file, false, metadata);
-                        driver = mm.read().getTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
                 } catch (IOException e) {
                         throw new DriverException(e);
                 }
         }
-        
-       @Override
+
+        @Override
         public int getSupportedType() {
                 return SourceManager.FILE | SourceManager.VECTORIAL;
         }
@@ -118,37 +114,13 @@ public final class MifMidDriver implements FileDriver {
         }
 
         @Override
-        public String getDriverId() {
+        public String getImporterId() {
                 return "MIF/MID driver";
-        }
-
-        @Override
-        public boolean isCommitable() {
-                return false;
-        }
-
-        @Override
-        public TypeDefinition[] getTypesDefinitions() {
-                return new TypeDefinition[0];
-        }
-
-        @Override
-        public String validateMetadata(Metadata metadata) throws DriverException {
-                throw new UnsupportedOperationException(NOT_SUPPORTED);
         }
 
         @Override
         public Schema getSchema() throws DriverException {
                 return schema;
-        }
-
-        @Override
-        public DataSet getTable(String name) {
-                if (name.equals(DriverManager.DEFAULT_SINGLE_TABLE_NAME)) {
-                        return driver;
-                } else {
-                        return null;
-                }
         }
 
         @Override
@@ -159,7 +131,17 @@ public final class MifMidDriver implements FileDriver {
         }
 
         @Override
-        public boolean isOpen() {
-                return driver != null;
+        public void convertTable(String name, RowWriter v) throws DriverException {
+                if (!name.equals(DriverManager.DEFAULT_SINGLE_TABLE_NAME)) {
+                        throw new DriverException("Wrong table name: " + name);
+                }
+                if (mm == null) {
+                        throw new DriverException("This importer has to be opened before calling this method.");
+                }
+                try {
+                        mm.read(v);
+                } catch (IOException ex) {
+                        throw new DriverException(ex);
+                }
         }
 }

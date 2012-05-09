@@ -81,6 +81,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.io.RowWriter;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 
 /**
@@ -980,7 +981,7 @@ public final class MifMidReader {
                 }
         }
 
-        public MemoryDataSetDriver read() throws IOException, DriverException {
+        public void read(RowWriter v) throws IOException, DriverException {
 
                 setLogFile("MifMid.log", Level.FINEST);
                 readMMFileProperties();
@@ -989,15 +990,11 @@ public final class MifMidReader {
                 
                 populateMMFileFeatureSchema();
 
-                MemoryDataSetDriver driver = new MemoryDataSetDriver(
-                        schema);
                 for (int i = 0; i < rowC; i++) {
-                        driver.addValues(getValue(i));
+                        v.addValues(getValue(i));
                 }
 
                 close();
-
-                return driver;
         }
 
         /**
