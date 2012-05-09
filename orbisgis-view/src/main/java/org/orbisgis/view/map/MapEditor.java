@@ -34,9 +34,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.util.logging.Level;
 import javax.swing.*;
 import org.apache.log4j.Logger;
+import org.orbisgis.core.edition.EditableElement;
 import org.orbisgis.core.layerModel.DefaultMapContext;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
@@ -78,6 +78,7 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
         dockingPanelParameters.setExternalizable(false);
         dockingPanelParameters.setCloseable(false);
         this.add(mapControl, BorderLayout.CENTER);
+        mapControl.setDefaultTool(new ZoomInTool());
         //Declare Tools of Map Editors
         //For debug purpose, also add the toolbar in the frame
         //add(createToolBar(false), BorderLayout.SOUTH);
@@ -86,12 +87,12 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
     }
 
     
-    public void loadMap() {
-        try {
-            mapContext = new DefaultMapContext();
+    public void loadMap(MapElement element) {
+        try {            
+            mapContext = (MapContext) element.getObject();
             mapContext.open(new NullProgressMonitor());
             mapControl.setMapContext(mapContext);
-            mapControl.setDefaultTool(new ZoomInTool());
+            mapControl.setElement(element);
             mapControl.initMapControl();
         } catch (LayerException ex) {            
             GUILOGGER.error(ex);

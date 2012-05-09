@@ -50,7 +50,7 @@ import javax.swing.JToolBar;
  * @warning New properties must be linked with the current docking system {@link OrbisGISView} 
  */
 public class DockingPanelParameters implements Serializable {
-    private static final long serialVersionUID = 6L; /*<! Update this integer while adding properties (1 for each new property)*/
+    private static final long serialVersionUID = 9L; /*<! Update this integer while adding properties (1 for each new property)*/
     
     private PropertyChangeSupport propertySupport;
     private DockingAreaParameters dockingAreaParameters = null;
@@ -83,6 +83,9 @@ public class DockingPanelParameters implements Serializable {
         this.toolBar = toolBar;
         propertySupport.firePropertyChange(PROP_TOOLBAR, oldToolBar, toolBar);
     }
+    //persistentLayout is an optional collection of panel specific parameters.
+    private DockingPanelLayout persistentLayout = null;
+    public static final String PROP_PERSISTENTLAYOUT = "persistentLayout";
 
     /**
      * Get the value of closeable

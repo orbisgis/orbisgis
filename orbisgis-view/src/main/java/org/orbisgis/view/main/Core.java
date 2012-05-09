@@ -35,12 +35,14 @@ import java.io.File;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.context.main.MainContext;
+import org.orbisgis.core.layerModel.DefaultMapContext;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditor;
+import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.output.OutputManager;
 import org.orbisgis.view.toc.Toc;
 import org.orbisgis.view.workspace.ViewWorkspace;
@@ -95,12 +97,7 @@ public class Core {
         UIFactory.setTempDirectory(new File(mainContext.getCoreWorkspace().getTempFolder()));
         UIFactory.setDefaultImageIcon(OrbisGISIcon.getIcon("mini_orbisgis"));
     }
-    /**
-     * Register Services 
-     */
-    private void initServices() {
-        
-    }
+    
     /**
      * 
      * @return Instance of main context
@@ -142,8 +139,8 @@ public class Core {
         //Add the views as a new Docking Panel
         dockManager.show(mapEditor);
         dockManager.show(toc);
-        
-        mapEditor.loadMap();
+        MapElement testMap = new MapElement(new DefaultMapContext());
+        mapEditor.loadMap(testMap);
     }
     
     /**

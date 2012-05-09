@@ -33,6 +33,9 @@ import bibliothek.extension.gui.dock.preference.PreferenceTreeModel;
 import bibliothek.gui.DockStation;
 import bibliothek.gui.dock.FlapDockStation;
 import bibliothek.gui.dock.common.CControl;
+import bibliothek.gui.dock.common.DefaultSingleCDockable;
+import bibliothek.gui.dock.common.SingleCDockable;
+import bibliothek.gui.dock.common.intern.CDockable;
 import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import bibliothek.gui.dock.common.menu.CLookAndFeelMenuPiece;
 import bibliothek.gui.dock.common.menu.SingleCDockableListMenuPiece;
@@ -50,6 +53,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import org.apache.log4j.Logger;
 import org.orbisgis.view.docking.internals.DockingArea;
+import org.orbisgis.view.docking.internals.InternalCommonFactory;
 import org.orbisgis.view.docking.internals.OrbisGISView;
 import org.orbisgis.view.docking.preferences.OrbisGISPreferenceTreeModel;
 import org.orbisgis.view.docking.preferences.editors.UserInformationEditor;
@@ -70,17 +74,14 @@ public final class DockingManager {
         private CControl commonControl; /*!< link to the docking-frames */
         //Docking Area (DockingFrames feature named WorkingArea)
         private Map<String,DockingArea> dockingAreas = new HashMap<String,DockingArea>();
-        private Map<DockingPanel,OrbisGISView> views = new HashMap<DockingPanel,OrbisGISView>();
+        
+        //Correspondance between docking panel and CDocking instance
+        private Map<DockingPanel,String> views = new HashMap<DockingPanel,String>();
         
 	/** the available preferences for docking frames */
         private PreferenceTreeModel preferences;
-        /**
-         * Return the docked panels
-         * @return The set of panels managed by this docking manager.
-         */
-	public Set<DockingPanel> getPanels() {
-            return views.keySet();
-        }
+
+        
         /**
          * 
          * @return The look and feel menu
@@ -139,8 +140,9 @@ public final class DockingManager {
          * if their factory is registered 
          * before loading the layout {@link setDockingStateFile}
          */
-        public void registerPanelFactory() {
-            
+        public void registerPanelFactory(String factoryName,DockingPanelFactory factory) {
+            InternalCommonFactory dockingFramesFactory = new InternalCommonFactory(factory);
+            commonControl.addMultipleDockableFactory(factoryName, dockingFramesFactory);
         }
         
         /**
@@ -155,8 +157,8 @@ public final class DockingManager {
          * For UnitTest purpose
          * @return DefaultCDockable instance, null if not exists
          */
-        public DefaultCDockable getDockable(DockingPanel panel) {
-            return views.get(panel);
+        public CDockable getDockable(DockingPanel panel) {
+            return commonControl.getSingleDockable(views.get(panel));
         }
         
 	/**
@@ -203,6 +205,7 @@ public final class DockingManager {
 
 	/**
 	 * Shows a view at the given location as child
+         * This view can only be hidden by the user, and is not adapted to multiple instance editors
 	 * of <code>root</code>.
 	 * @param frame the <code>DockingPanel</code> for which a view should be opened
 	 */
@@ -219,33 +222,28 @@ public final class DockingManager {
 	 * be <code>null</code>.
 	 */
 	public void show( DockingPanel frame, DockStation root, DockableProperty location ){
-            OrbisGISView dockItem;
-            if( !views.containsKey( frame ) ) {
-                //Create the DockingFrame item
-                if(frame.getDockingParameters().getName().isEmpty()) {
-                    //If the dev doesn't define a name on the panel
-                    //We set the name as the name of the class
-                    frame.getDockingParameters().setName(frame.getClass().getCanonicalName());
-                }
-                dockItem = new OrbisGISView( frame );
-                //Place the item in a dockstation
-                String restrictedAreaName = frame.getDockingParameters().getDockingArea();
-                if(!restrictedAreaName.isEmpty()) {
-                    //This item is restricted to an area
-                    DockingArea dockArea = dockingAreas.get(restrictedAreaName);
-                    if(dockArea==null) {
-                        dockArea = new DockingArea(commonControl.createWorkingArea(restrictedAreaName));
-                        dockArea.getWorkingArea().setVisible(true);
-                        dockingAreas.put(restrictedAreaName,dockArea);                        
-                    }
-                    dockItem.setWorkingArea(dockArea.getWorkingArea());
-                    dockArea.getWorkingArea().add(dockItem);
-                }                
-                commonControl.addDockable(dockItem);
-                views.put( frame, dockItem);
-            } else {
-                dockItem = views.get(frame);
+            //Create the DockingFrame item
+            if(frame.getDockingParameters().getName().isEmpty()) {
+                //If the dev doesn't define a name on the panel
+                //We set the name as the name of the class
+                frame.getDockingParameters().setName(frame.getClass().getCanonicalName());
             }
-            dockItem.setVisible(true);
+            SingleCDockable dockItem = OrbisGISView.createSingle( frame );
+            //Place the item in a dockstation
+            String restrictedAreaName = frame.getDockingParameters().getDockingArea();
+            if(!restrictedAreaName.isEmpty()) {
+                //This item is restricted to an area
+                DockingArea dockArea = dockingAreas.get(restrictedAreaName);
+                if(dockArea==null) {
+                    dockArea = new DockingArea(commonControl.createWorkingArea(restrictedAreaName));
+                    dockArea.getWorkingArea().setVisible(true);
+                    dockingAreas.put(restrictedAreaName,dockArea);                        
+                }
+                dockItem.setWorkingArea(dockArea.getWorkingArea());
+                dockArea.getWorkingArea().add(dockItem);
+            }                
+            commonControl.addDockable(dockItem);
+            views.put( frame, dockItem.getUniqueId());
+
 	}
 }

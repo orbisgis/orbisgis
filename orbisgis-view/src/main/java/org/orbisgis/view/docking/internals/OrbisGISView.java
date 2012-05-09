@@ -29,8 +29,12 @@
 
 package org.orbisgis.view.docking.internals;
 
+import bibliothek.gui.dock.common.DefaultMultipleCDockable;
 import bibliothek.gui.dock.common.DefaultSingleCDockable;
+import bibliothek.gui.dock.common.MultipleCDockable;
+import bibliothek.gui.dock.common.SingleCDockable;
 import bibliothek.gui.dock.common.action.CAction;
+import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -38,16 +42,53 @@ import javax.swing.JToolBar;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 /**
- * @brief The OrbisGis form of Docking Frames dockable
+ * @brief This is the link between the DockingPanel and DockingFrames
  * 
  * Listen to DockingPanelParameters to change the behaviour of this dockable.
  * 
  * This class help to add OrbisGis specific actions ( Reduce, close view ..)
  * and custom compenents like custom titles.
  */
-public class OrbisGISView  extends DefaultSingleCDockable {
+public class OrbisGISView {
+    private DefaultCDockable internalDock;
     private DockingPanelParameters dockableParameters;
     private ToolBarActions customActions;
+    
+    /**
+     * Constructor of the OrbisGISView
+     * @param dockingPanel The dockingPanel instance
+     */
+    private OrbisGISView(DockingPanel dockingPanel,DefaultCDockable internalDock) {
+        this.dockableParameters = dockingPanel.getDockingParameters();
+        this.internalDock = internalDock;
+    }
+    public static SingleCDockable createSingle(DockingPanel dockingPanel) {
+        DefaultSingleCDockable dockItem = new DefaultSingleCDockable(dockingPanel.getDockingParameters().getName(),dockingPanel.getComponent());
+        new OrbisGISView(dockingPanel,dockItem).init(dockItem);
+        return dockItem;
+    }
+    public static CustomMultipleCDockable createMultiple(DockingPanel dockingPanel,InternalCommonFactory factory) {
+        CustomMultipleCDockable dockItem = new CustomMultipleCDockable(dockingPanel,factory);
+        //Feed and link the CDockable
+        new OrbisGISView(dockingPanel,dockItem).init(dockItem);
+        return dockItem;        
+    }
+    
+    /**
+     * Add listeners 
+     * @param internalDock 
+     */
+    private void init(DefaultCDockable internalDock) {
+        internalDock.setTitleText(dockableParameters.getTitle());
+        if(dockableParameters.getTitleIcon()!=null) {
+            internalDock.setTitleIcon(dockableParameters.getTitleIcon());
+        }
+        setPropertyListeners();
+        internalDock.setMinimizable(dockableParameters.isMinimizable());
+        internalDock.setExternalizable(dockableParameters.isExternalizable());
+        internalDock.setCloseable(dockableParameters.isCloseable());
+        onSetToolBar(dockableParameters.getToolBar());        
+    }
     /**
      * Give access to the panel parameters
      * @return DockingPanelParameters instance
@@ -63,28 +104,10 @@ public class OrbisGISView  extends DefaultSingleCDockable {
     private void clearCustomActions() {
         if(customActions != null) {
             for(CAction customAction : customActions.getCustomActions()) {
-                this.removeAction(customAction);
+                internalDock.removeAction(customAction);
             }
         }
         customActions = new ToolBarActions();
-    }
-    /**
-     * Constructor of the OrbisGISView
-     * @param dockingPanel The dockingPanel instance
-     */
-    public OrbisGISView(DockingPanel dockingPanel) {
-        super(dockingPanel.getDockingParameters().getName(),dockingPanel.getComponent());
-        this.dockableParameters = dockingPanel.getDockingParameters();
-        this.setTitleText(dockableParameters.getTitle());
-        if(dockableParameters.getTitleIcon()!=null) {
-            this.setTitleIcon(dockableParameters.getTitleIcon());
-        }
-        setPropertyListeners();
-        setMinimizable(dockableParameters.isMinimizable());
-        setExternalizable(dockableParameters.isExternalizable());
-        setCloseable(dockableParameters.isCloseable());
-        onSetToolBar(dockableParameters.getToolBar());
-        
     }
     /**
      * Copy CAction list into this View Action
@@ -92,7 +115,7 @@ public class OrbisGISView  extends DefaultSingleCDockable {
      */
     private void copyActions(List<CAction> actions) {
         for(CAction action : actions) {
-            this.addAction(action);
+            internalDock.addAction(action);
         }
     }
     public final void onSetToolBar(JToolBar toolbar) {
@@ -111,35 +134,35 @@ public class OrbisGISView  extends DefaultSingleCDockable {
         dockableParameters.addPropertyChangeListener(
                             DockingPanelParameters.PROP_TITLE,
                             EventHandler.create(PropertyChangeListener.class,
-                                                this,
+                                                internalDock,
                                                 "setTitleText",
                                                 "newValue"));
         //Link title icon change
         dockableParameters.addPropertyChangeListener(
                             DockingPanelParameters.PROP_TITLEICON,
                             EventHandler.create(PropertyChangeListener.class,
-                                                this,
+                                                internalDock,
                                                 "setTitleIcon",
                                                 "newValue"));
         //Link minimizable state change
         dockableParameters.addPropertyChangeListener(
                             DockingPanelParameters.PROP_MINIMIZABLE,
                             EventHandler.create(PropertyChangeListener.class,
-                                                this,
+                                                internalDock,
                                                 "setMinimizable",
                                                 "newValue"));
         //Link externalizable state change
         dockableParameters.addPropertyChangeListener(
                             DockingPanelParameters.PROP_EXTERNALIZABLE,
                             EventHandler.create(PropertyChangeListener.class,
-                                                this,
+                                                internalDock,
                                                 "setExternalizable",
                                                 "newValue"));
         //Link closeable state change
         dockableParameters.addPropertyChangeListener(
                             DockingPanelParameters.PROP_CLOSEABLE,
                             EventHandler.create(PropertyChangeListener.class,
-                                                this,
+                                                internalDock,
                                                 "setCloseable",
                                                 "newValue"));
         //Link JToolBar state change

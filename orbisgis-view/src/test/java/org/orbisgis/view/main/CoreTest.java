@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.main;
 
+import bibliothek.gui.dock.common.intern.CDockable;
 import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import java.awt.GraphicsEnvironment;
 import java.lang.reflect.InvocationTargetException;
@@ -149,16 +150,16 @@ public class CoreTest {
         //Show the panel has a new docking item
         instance.getDockManager().show(dummyPanel);
         //Retrieve the DockingFrame dock instance for the dummy instance
-        DefaultCDockable dockedDummy = instance.getDockManager().getDockable(dummyPanel);
+        CDockable dockedDummy = instance.getDockManager().getDockable(dummyPanel);
 
         //Test if the original title is shown
-        org.junit.Assert.assertTrue(dockedDummy.getTitleText().equals(DummyViewPanel.OLD_TITLE));
+        org.junit.Assert.assertTrue(dockedDummy.intern().getTitleText().equals(DummyViewPanel.OLD_TITLE));
 
         //Change the docking title from the panel
         dummyPanel.setTitle(newTitle);
 
         //Test if the new title is shown on the DockingFrames
-        org.junit.Assert.assertTrue(dockedDummy.getTitleText().equals(newTitle));
+        org.junit.Assert.assertTrue(dockedDummy.intern().getTitleText().equals(newTitle));
     }
     /**
      * Test of shutdown method, of class Core.
