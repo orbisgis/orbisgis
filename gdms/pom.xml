@@ -80,7 +80,7 @@
                 <dependency>
                         <groupId>org.antlr</groupId>
                         <artifactId>antlr</artifactId>
-                        <version>3.3</version>
+                        <version>3.4</version>
                 </dependency>
         </dependencies>
         <build>
@@ -88,7 +88,7 @@
                         <plugin>
                                 <groupId>org.antlr</groupId>
                                 <artifactId>antlr3-maven-plugin</artifactId>
-                                <version>3.3</version>
+                                <version>3.4</version>
                                 <executions>
                                         <execution>
                                                 <goals>
