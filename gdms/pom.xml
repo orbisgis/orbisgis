@@ -152,8 +152,8 @@
                                 <configuration>
                                         <parallel>both</parallel>
                                         <threadCount>2</threadCount>
-                                        <includes>  
-                                                <include>**/*Test.java</include>  
+                                        <includes>
+                                                <include>**/*Test.java</include>
                                         </includes>
                                 </configuration>
                         </plugin>
