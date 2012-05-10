@@ -107,16 +107,24 @@ public class CoreWorkspace implements Serializable {
         
         File currentWK = new File(applicationFolder + File.separator + CURRENT_WORKSPACE_FILENAME);
         if(currentWK.exists()) {
+            BufferedReader fileReader=null;
             try {
-                    BufferedReader fileReader = new BufferedReader(new FileReader(
+                    fileReader = new BufferedReader(new FileReader(
                                    currentWK));
                     String currentDir = fileReader.readLine();
                     workspaceFolder = currentDir;
-                    fileReader.close();
             } catch (FileNotFoundException e) {
                     throw new RuntimeException("Cannot find the workspace location", e);
             } catch (IOException e) {
                     throw new RuntimeException("Cannot read the workspace location", e);
+            } finally{
+                try {
+                    if(fileReader!=null) {
+                        fileReader.close();
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException("Cannot read the workspace location", e);
+                }
             }
         } else {
             //Load Default workspace Folder

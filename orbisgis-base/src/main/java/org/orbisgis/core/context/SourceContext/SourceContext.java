@@ -37,6 +37,8 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.driverManager.DriverManagerListener;
+import org.gdms.driver.io.Exporter;
+import org.gdms.driver.io.Importer;
 import org.gdms.source.SourceManager;
 
 
@@ -72,14 +74,7 @@ public class SourceContext {
         this.sourceManager = sourceManager;
         readSupportedFileExtensions();
         //Register driver listener, to update supported file extensions
-        registeredListener = new DriverManagerListener() {
-                public void driverAdded(String driverId, Class<? extends Driver> driverClass) {
-                    readSupportedFileExtensions();
-                }
-                public void driverRemoved(String driverId, Class<? extends Driver> driverClass) {
-                    readSupportedFileExtensions();
-                }
-            };
+        registeredListener = new SourceContextDriverListener();
         sourceManager.getDriverManager().registerListener(registeredListener);
     }
     /**
@@ -132,5 +127,28 @@ public class SourceContext {
             }
         }
         return true;
+    }
+    
+    private class SourceContextDriverListener implements DriverManagerListener {
+
+        public void driverAdded(String driverId, Class<? extends Driver> driverClass) {
+            readSupportedFileExtensions();
+        }
+
+        public void driverRemoved(String driverId, Class<? extends Driver> driverClass) {
+            readSupportedFileExtensions();
+        }
+
+        public void importerAdded(String driverId, Class<? extends Importer> importerClass) {
+        }
+
+        public void importerRemoved(String driverId, Class<? extends Importer> importerClass) {
+        }
+
+        public void exporterAdded(String driverId, Class<? extends Exporter> exporterClass) {
+        }
+
+        public void exporterRemoved(String driverId, Class<? extends Exporter> exporterClass) {
+        }
     }
 }

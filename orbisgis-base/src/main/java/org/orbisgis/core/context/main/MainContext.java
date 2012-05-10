@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.context.main;
 
+import java.awt.Color;
 import java.io.IOException;
 import org.apache.log4j.*;
 import org.apache.log4j.varia.LevelRangeFilter;
@@ -37,6 +38,8 @@ import org.orbisgis.core.DataManager;
 import org.orbisgis.core.DefaultDataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.SourceContext.SourceContext;
+import org.orbisgis.core.errorManager.ErrorListener;
+import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -55,10 +58,14 @@ public class MainContext {
     private CoreWorkspace coreWorkspace;
     private SourceContext sourceContext;
     private DataManager dataManager;
+    private boolean debugMode;
+    private LevelRangeFilter consoleFilter;
     /**
      * Constructor of the workspace
+     * @param debugMode Use the Debug logging on console output
      */
-    public MainContext() {
+    public MainContext(boolean debugMode) {
+        this.debugMode = debugMode;
         //Redirect root logging to console
         initConsoleLogger();      
         coreWorkspace = new CoreWorkspace();
@@ -72,6 +79,15 @@ public class MainContext {
      * Register Services
      */
     private void registerServices() {
+        //TODO remove this service
+        Services.registerService(org.orbisgis.core.ui.plugins.views.output.OutputManager.class,
+                "Temporary output manager",
+                new temporaryLogger());
+        Services.registerService(ErrorManager.class,
+                "Temporary error manager",
+                new temporaryErrorLogger());
+        
+        
         Services.registerService(DataManager.class,
                         I18N.tr("Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial"),
                         dataManager);
@@ -111,7 +127,41 @@ public class MainContext {
     public DataSourceFactory getDataSourceFactory() {
         return dataSourceFactory;
     }
-    
+    /**
+     * 
+     * @return The data manager
+     */
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+    /**
+     * Application is running in a verbose mode
+     * @return 
+     */
+    public boolean isDebugMode() {
+        return debugMode;
+    }
+
+    /**
+     * Set Application running in a verbose mode
+     * @param debugMode The new mode
+     */
+    public void setDebugMode(boolean debugMode) {
+        this.debugMode = debugMode;
+        if(consoleFilter!=null) {
+            setFilterLevel();
+        }
+    }
+    /**
+     * Set the output filter corresponding to the verbose mode
+     */
+    private void setFilterLevel() {
+        if(debugMode) {
+            consoleFilter.setLevelMin(Level.DEBUG);
+        }else{
+            consoleFilter.setLevelMin(Level.INFO);
+        }        
+    }
     /**
      * Console output to info level min
      */
@@ -119,10 +169,10 @@ public class MainContext {
         Logger root = Logger.getRootLogger();
         ConsoleAppender appender = new ConsoleAppender(
         new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN));
-        LevelRangeFilter filter = new LevelRangeFilter();
-        filter.setLevelMax(Level.FATAL);
-        filter.setLevelMin(Level.INFO);
-        appender.addFilter(filter);
+        consoleFilter = new LevelRangeFilter();
+        setFilterLevel();
+        consoleFilter.setLevelMax(Level.FATAL);
+        appender.addFilter(consoleFilter);
         root.addAppender(appender);
     }
     /**
@@ -144,5 +194,64 @@ public class MainContext {
                 System.err.println("Init logger failed!");
                 e.printStackTrace(System.err);
         }
+    }
+    
+    /**
+     * 
+     * @deprecated This class must be removed when old OutputManager will not be used
+     */
+    @Deprecated
+    private class temporaryLogger implements org.orbisgis.core.ui.plugins.views.output.OutputManager {
+        private Logger logger = Logger.getLogger("gui."+temporaryLogger.class);
+        public void print(String out) {
+            logger.info(out);
+        }
+
+        public void print(String text, Color color) {
+            logger.info(text);
+        }
+
+        public void println(String out) {
+            logger.info(out);
+        }
+
+        public void println(String text, Color color) {
+            logger.info(text);
+        }
+        
+    }
+    /**
+     * 
+     * @deprecated This class must be removed when old ErrorManager will not be used anymore
+     */
+    @Deprecated
+    private class temporaryErrorLogger implements ErrorManager {
+        private Logger logger = Logger.getLogger("gui."+temporaryLogger.class);
+
+        public void addErrorListener(ErrorListener listener) {
+            
+        }
+
+        public void removeErrorListener(ErrorListener listener) {
+            
+        }
+
+        public void warning(String userMsg) {
+            logger.warn(userMsg);
+        }
+
+        public void error(String userMsg) {
+            logger.error(userMsg);
+        }
+
+        public void warning(String userMsg, Throwable exception) {
+            logger.warn(userMsg, exception);
+        }
+
+        public void error(String userMsg, Throwable exception) {
+            logger.error(userMsg, exception);
+        }
+        
+        
     }
 }
