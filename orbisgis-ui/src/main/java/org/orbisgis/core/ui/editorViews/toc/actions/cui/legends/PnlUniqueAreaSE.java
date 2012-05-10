@@ -4,8 +4,7 @@
  */
 package org.orbisgis.core.ui.editorViews.toc.actions.cui.legends;
 
-import java.awt.Component;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.net.URL;
 import javax.swing.JPanel;
 import org.gdms.data.types.Type;
@@ -126,13 +125,25 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
         private void initializeLegendFields(){
                 this.removeAll();
                 JPanel glob = new JPanel();
-                GridLayout grid = new GridLayout(3,1);
+                GridBagLayout grid = new GridBagLayout();
                 glob.setLayout(grid);
+                GridBagConstraints gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = 0;
+                gbc.fill = GridBagConstraints.HORIZONTAL;
                 JPanel p1 = getLegendBlock(uniqueArea.getParametersLine(), "Line configuration");
+                glob.add(p1, gbc);
+                gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = 1;
+                gbc.fill = GridBagConstraints.HORIZONTAL;
+                gbc.insets = new Insets(5, 0, 5, 0);
                 JPanel p2 = getLegendBlock(uniqueArea.getParametersArea(), "Fill configuration");
-                glob.add(p1);
-                glob.add(p2);
-                glob.add(getPreview());
+                glob.add(p2, gbc);
+                gbc = new GridBagConstraints();
+                gbc.gridx = 0;
+                gbc.gridy = 2;
+                glob.add(getPreview(), gbc);
                 this.add(glob);
         }
 }
