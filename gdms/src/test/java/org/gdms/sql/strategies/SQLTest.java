@@ -862,6 +862,28 @@ public class SQLTest extends TestBase {
                 ds.getRow(0);
                 ds.close();
         }
+        
+        @Test
+        public void testGroupByInsideExpression() throws Exception {
+                dsf.getSourceManager().register("groupcsv",
+                        new File(TestResourceHandler.TESTRESOURCES, "groupby.csv"));
+                DataSource ds = dsf.getDataSourceFromSQL("select 'toto ' || category || ' '"
+                        + " from groupcsv g group by g.category;");
+                ds.open();
+                ds.getRow(0);
+                ds.close();
+        }
+        
+        @Test
+        public void testGroupByAlias() throws Exception {
+                dsf.getSourceManager().register("groupcsv",
+                        new File(TestResourceHandler.TESTRESOURCES, "groupby.csv"));
+                DataSource ds = dsf.getDataSourceFromSQL("select (category || ' ') AS groupp"
+                        + " from groupcsv group by groupp;");
+                ds.open();
+                ds.getRow(0);
+                ds.close();
+        }
 
         @Test
         public void testLimitOffset() throws Exception {

@@ -72,124 +72,122 @@ case object PhysicalJoinOptimStep extends AbstractEngineStep[(Operation, DataSou
   }
   
   private def optimizeJoins(dsf: DataSourceFactory ,op: Operation) {
-    op.allChildren foreach ( _ match {
-        
-        // optimize spatial joins
-        case j @ Join(Inner(_, true, _), a @ Scan(t, al, _), b @ Scan(t2, al2, _)) => {
-            if (t == t2) {
-              j.children = IndexQueryScan(t, al) :: b :: Nil
-            } else {
-              // gets the sizes of the tables
-              val sizes = Seq(t, t2) map { table =>
-                val d = dsf.getDataSource(table)
-                d.open
-                val count = d.getRowCount
-                d.close
-                (count, table)
-              }
-            
-              // gets the best candidate for index scan
-              // in this case the table with the most rows
-              val best = sizes.reduceLeft {(a, b) => 
-                if (a._1 >= b._1) a else b
-              }
-              
-              if (best._2 == t) {
-                j.children = IndexQueryScan(t, al) :: b :: Nil
-              } else {
-                j.children = a :: IndexQueryScan(t2, al2) :: Nil
-              }
-            }
+    op.allChildren foreach {
+      // optimize spatial joins
+      case j @ Join(Inner(_, true, _), a @ Scan(t, al, _), b @ Scan(t2, al2, _)) => 
+        if (t == t2) {
+          j.children = List(IndexQueryScan(t, al), b)
+        } else {
+          // gets the sizes of the tables
+          val sizes = Seq(t, t2) map { table =>
+            val d = dsf.getDataSource(table)
+            d.open
+            val count = d.getRowCount
+            d.close
+            (count, table)
           }
+            
+          // gets the best candidate for index scan
+          // in this case the table with the most rows
+          val best = sizes.reduceLeft {(a, b) => 
+            if (a._1 >= b._1) a else b
+          }
+              
+          if (best._2 == t) {
+            j.children = List(IndexQueryScan(t, al), b)
+          } else {
+            j.children = List(a, IndexQueryScan(t2, al2))
+          }
+        }
           
-          // optimize basic equi-joins
-        case j @ Join(jt @ Inner(field(fn1,ft1) === field(fn2,ft2), false, _), a @ Scan(t, al, _), b @ Scan(t2, al2, _)) => {
-            if (t == t2) {
-              j.children = IndexQueryScan(t, al) :: b :: Nil
+        // optimize basic equi-joins
+      case j @ Join(jt @ Inner(field(fn1,ft1) === field(fn2,ft2), false, _), a @ Scan(t, al, _), b @ Scan(t2, al2, _)) => {
+          if (t == t2) {
+            j.children = List(IndexQueryScan(t, al), b)
+          } else {
+            // gets the sizes of the tables
+            val sizes = Seq(t, t2) map { table =>
+              val d = dsf.getDataSource(table)
+              d.open
+              val m = d.getMetadata
+              val count = d.getRowCount
+              d.close
+              (count, table, m)
+            }
+              
+            
+            // gets the best candidate for index scan
+            // in this case the table with the most rows
+            val best = sizes.reduceLeft {(a, b) => 
+              if (a._1 >= b._1) a else b
+            }
+              
+            if (best._2 == t) {
+              if (ft1.map(_ == al.getOrElse(t)).getOrElse(best._3.getFieldIndex(fn1) != -1)) {
+                jt.withIndexOn = Some((fn1, Field(fn2, al2.getOrElse(t2)), true))
+                j.children = List(IndexQueryScan(t, al), b)
+              }
             } else {
-              // gets the sizes of the tables
-              val sizes = Seq(t, t2) map { table =>
-                val d = dsf.getDataSource(table)
-                d.open
-                val m = d.getMetadata
-                val count = d.getRowCount
-                d.close
-                (count, table, m)
+              if (ft2.map(_ == al2.getOrElse(t2)).getOrElse(best._3.getFieldIndex(fn2) != -1)) {
+                jt.withIndexOn = Some((fn2, Field(fn1, al.getOrElse(t)), true))
+                j.children = List(a, IndexQueryScan(t2, al2))
               }
-              
+            }
+          }
+        }
+        // optimize joins ANDed to anything else
+      case j @ Join(jt @ Inner(exp & exp2, false, _), a @ Scan(t, al, _), b @ Scan(t2, al2, _)) =>
             
-              // gets the best candidate for index scan
-              // in this case the table with the most rows
-              val best = sizes.reduceLeft {(a, b) => 
-                if (a._1 >= b._1) a else b
-              }
-              
-              if (best._2 == t) {
-                if (ft1.map(_ == al.getOrElse(t)).getOrElse(best._3.getFieldIndex(fn1) != -1)) {
-                  jt.withIndexOn = Some((fn1, Field(fn2, al2.getOrElse(t2)), true))
-                  j.children = IndexQueryScan(t, al) :: b :: Nil
-                }
+        def doMatch(ex: Expression, comp: Expression) {
+          ex match {
+            // equi-joins
+            case field(fn1,ft1) === field(fn2,ft2) => 
+              if (t == t2) {
+                j.children = List(IndexQueryScan(t, al), b)
               } else {
-                if (ft2.map(_ == al2.getOrElse(t2)).getOrElse(best._3.getFieldIndex(fn2) != -1)) {
-                  jt.withIndexOn = Some((fn2, Field(fn1, al.getOrElse(t)), true))
-                  j.children = a :: IndexQueryScan(t2, al2) :: Nil
+                // gets the sizes of the tables
+                val sizes = Seq(t, t2) map { table =>
+                  val d = dsf.getDataSource(table)
+                  d.open
+                  val m = d.getMetadata
+                  val count = d.getRowCount
+                  d.close
+                  (count, table, m)
                 }
-              }
-            }
-          }
-          // optimize joins ANDed to anything else
-        case j @ Join(jt @ Inner(exp & exp2, false, _), a @ Scan(t, al, _), b @ Scan(t2, al2, _)) => {
-            
-            def doMatch(ex: Expression, comp: Expression) {
-              ex match {
-                // equi-joins
-                case field(fn1,ft1) === field(fn2,ft2) => {
-                    if (t == t2) {
-                      j.children = IndexQueryScan(t, al) :: b :: Nil
-                    } else {
-                      // gets the sizes of the tables
-                      val sizes = Seq(t, t2) map { table =>
-                        val d = dsf.getDataSource(table)
-                        d.open
-                        val m = d.getMetadata
-                        val count = d.getRowCount
-                        d.close
-                        (count, table, m)
-                      }
               
             
-                      // gets the best candidate for index scan
-                      // in this case the table with the most rows
-                      val best = sizes.reduceLeft {(a, b) => 
-                        if (a._1 >= b._1) a else b
-                      }
+                // gets the best candidate for index scan
+                // in this case the table with the most rows
+                val best = sizes.reduceLeft {(a, b) => 
+                  if (a._1 >= b._1) a else b
+                }
               
-                      if (best._2 == t) {
-                        if (ft1.map(_ == al.getOrElse(t)).getOrElse(best._3.getFieldIndex(fn1) != -1)) {
-                          jt.withIndexOn = Some((fn1, Field(fn2, al2.getOrElse(t2)), false))
-                          j.children = IndexQueryScan(t, al) :: b :: Nil
-                        }
-                      } else {
-                        if (ft2.map(_ == al2.getOrElse(t2)).getOrElse(best._3.getFieldIndex(fn2) != -1)) {
-                          jt.withIndexOn = Some((fn2, Field(fn1, al.getOrElse(t)), false))
-                          j.children = a :: IndexQueryScan(t2, al2) :: Nil
-                        }
-                      }
-                      jt.cond = comp
-                    }
+                if (best._2 == t) {
+                  if (ft1.map(_ == al.getOrElse(t)).getOrElse(best._3.getFieldIndex(fn1) != -1)) {
+                    jt.withIndexOn = Some((fn1, Field(fn2, al2.getOrElse(t2)), false))
+                    j.children = List(IndexQueryScan(t, al), b)
                   }
-                case a & b => {
-                    doMatch(a, comp & b)
-                    doMatch(b ,comp & a)
+                } else {
+                  if (ft2.map(_ == al2.getOrElse(t2)).getOrElse(best._3.getFieldIndex(fn2) != -1)) {
+                    jt.withIndexOn = Some((fn2, Field(fn1, al.getOrElse(t)), false))
+                    j.children = List(a, IndexQueryScan(t2, al2))
                   }
-                case _ =>
+                }
+                jt.cond = comp
               }
-            }
-            
-            doMatch(exp, exp2)
-            doMatch(exp2, exp)
+              
+            case a & b => {
+                doMatch(a, comp & b)
+                doMatch(b ,comp & a)
+              }
+            case _ =>
           }
-        case _ =>
-      })
+        }
+            
+        doMatch(exp, exp2)
+        doMatch(exp2, exp)
+        
+      case _ =>
+    }
   }
 }

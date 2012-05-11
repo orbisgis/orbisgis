@@ -96,18 +96,16 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
   
   def markFunctions(e: Expression, dsf: DataSourceFactory) {
     e.evaluator match {
-      case fe @ FunctionEvaluator(name, l) => {
-          val f = dsf.getFunctionManager.getFunction(name)
-          f  match {
-            case s: ScalarFunction => fe.f = s
-            case a: AggregateFunction => e.evaluator = AggregateEvaluator(a, l)
-            case e: ExecutorFunction => throw new SemanticException("The function '" + name
-                                                                    + "' cannot be used here. Syntax is: EXECUTE " +
-                                                                    name + "(...);")
-            case t: TableFunction => throw new SemanticException("The function '" + name + "' cannot be used here." +
-                                                                 "Syntax is: SELECT ... FROM " + name + "(...);")
-            case _ => throw new SemanticException("Unknown function: '" + name + "'.")
-          }
+      case fe @ FunctionEvaluator(name, l) => 
+        dsf.getFunctionManager.getFunction(name)  match {
+          case s: ScalarFunction => fe.f = s
+          case a: AggregateFunction => e.evaluator = AggregateEvaluator(a, l)
+          case e: ExecutorFunction => throw new SemanticException("The function '" + name
+                                                                  + "' cannot be used here. Syntax is: EXECUTE " +
+                                                                  name + "(...);")
+          case t: TableFunction => throw new SemanticException("The function '" + name + "' cannot be used here." +
+                                                               "Syntax is: SELECT ... FROM " + name + "(...);")
+          case _ => throw new SemanticException("Unknown function: '" + name + "'.")
         }
       case _ => 
     }
@@ -121,12 +119,12 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
         var i = -2
         def replaceAggregateFunctions(e: (Expression, Option[String])): Seq[(Expression, Option[String])] = {
           e._1 match {
-            case agg(f, li) => {
-                val func = e._1.evaluator
-                i = i + 1
-                val name = e._2.getOrElse(f.getName + (if (i == -1) "" else i))
-                e._1.evaluator = FieldEvaluator(name)
-                (Expression(func), Some(name)) :: Nil}
+            case agg(f, li) => 
+              val func = e._1.evaluator
+              i = i + 1
+              val name = e._2.getOrElse(f.getName + (if (i == -1) "" else i))
+              e._1.evaluator = FieldEvaluator(name)
+              (Expression(func), Some(name)) :: Nil
             case e => e.children flatMap (ex => replaceAggregateFunctions((ex, None)))
           }
         }
@@ -147,49 +145,50 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
         find(ch)
         
         // process grouping
-        if (gr.isDefined) {
-          // there is a Grouping
-          val group = gr.get
+        gr match {
+          case Some(group) =>
+            // there is a Grouping
+            
+            // finds directly referenced fields/aliases in GROUP BY
+            val aliases = group.exp flatMap (a =>
+              a._2 orElse {
+                a._1 match {
+                  case field(name, _) => Some(name)
+                  case _ => None
+                }
+              }
+            )
           
-          // directly referenced fields/aliases in GROUP BY
-          val aliases = group.exp flatMap (_._1 match {
-              case field(name,_) => Some(name)
-              case _ => None
-            })
-          
-          // selected items with aliases
-          val fieldsAl = exp filter (_._2.isDefined)
+            // finds selected items with aliases
+            val fieldsAl = exp filter (_._2.isDefined)
                     
-          // converts SELECT toto + 12 as titi FROM ... GROUP BY titi
-          // into something like (pseudo-SQL): SELECT titi FROM ... GROUP BY toto + 12 as titi
-          fieldsAl foreach {f =>
-            val al = f._2.get
-            if (aliases.contains(al)) {
-              val t = f._1.evaluator
-              // we replace the evaluator with a FieldEvaluator with the alias name
-              f._1.evaluator = FieldEvaluator(al)
+            // converts SELECT toto + 12 as titi FROM ... GROUP BY titi
+            // into something like (pseudo-SQL): SELECT titi FROM ... GROUP BY toto + 12 as titi
+            fieldsAl foreach {f =>
+              val al = f._2.get
+              if (aliases.contains(al)) {
+                val t = f._1.evaluator
+                // we replace the evaluator with a FieldEvaluator with the alias name
+                f._1.evaluator = FieldEvaluator(al)
               
-              // we replace the Field in the GROUP BY clause by the actual expression
-              group.exp = group.exp map {g => g._1 match {
-                  case field(name,_) if name == al => (Expression(t), Some(al))
-                  case _ => g
-                }}
+                // we replace the Field in the GROUP BY clause by the actual expression
+                group.exp = group.exp map {g => g._1 match {
+                    case field(name,_) if name == al => (Expression(t), Some(al))
+                    case _ => g
+                  }}
+              }
             }
-          }
           
-          // directly selected fields
-          val selFields = exp flatMap (_._1 match {
-              case field(name, _) => Some(name)
-              case star(_,_) => throw new SemanticException("Selected alls field using the STAR '*' is not allowed with a GROUP BY clause.")
-              case _ => None
-            })
-          
-          // check directly selected fields are referenced in GROUP BY clause
-          selFields foreach {n => 
-            if (!aliases.contains(n)) {
-              throw new SemanticException("field " + n + " cannot be selected because it is not present in the GROUP BY clause.")
-            }
-          }
+            // checks directly selected fields are referenced in GROUP BY clause
+            exp foreach (_._1 match {
+                case field(name, _) => 
+                  if (!aliases.contains(name)) {
+                    throw new SemanticException("field " + name + " cannot be selected because it is not present in the GROUP BY clause.")
+                  }
+                case star(_,_) => throw new SemanticException("Selected alls field using the STAR '*' is not allowed with a GROUP BY clause.")
+                case _ =>
+              })
+          case None =>
         }
         
         val aggF = p.exp flatMap (replaceAggregateFunctions)
@@ -215,7 +214,6 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
           top.children = List(c)
         }
       case _ =>
-        
     }
   }
 }

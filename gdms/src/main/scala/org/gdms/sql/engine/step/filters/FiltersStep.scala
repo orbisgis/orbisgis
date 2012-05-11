@@ -89,7 +89,7 @@ case object FiltersStep extends AbstractEngineStep[Operation, Operation]("filter
   }
   
   private def processExp(f: Expression)(implicit p: Properties) {
-    (f :: f.allChildren) foreach { e => e.evaluator match {
+    (f :: f.allChildren) foreach { _.evaluator match {
         case e @ ExistsEvaluator(op) => e.o = processOp(op)
         case e @ InEvaluator(_, op) => e.o = processOp(op)
         case _ =>
@@ -117,51 +117,41 @@ case object FiltersStep extends AbstractEngineStep[Operation, Operation]("filter
     o.children foreach optimizeSpatialIndexedFilterExpressions
     
     o match {
-      case f @ Filter(e, sc @ Scan(_,_,_), false) => {
-          var ok = false
-          matchExpressionAndAny(e, {ex => ex match {
-                case func(_, _: SpatialIndexedFunction,_) => true
-                case _ => false
-              }}, {e => ok = true})
-          if (ok) {
-            // an index query scan on the table
-            val isc = IndexQueryScan(sc.table, sc.alias)
-            var va: ValuesScan = null
-            
-            replaceEvaluatorAndAny(f.e, {ex => ex match {
-                  case func(_, _: SpatialIndexedFunction,_) => true
-                  case _ => false
-                }}, {ex=>
-                // we have a spatial indexed filter that is not a join
-                // Filter <- Scan
-                // will become
-                // Join(inner, spatial) <- IndexScan
-                //                      <- ValuesScan
-                var inc = -1;
-                // we keep fields and replace the rest with new fields on constant expressions
-                val se: Seq[Evaluator] = ex.childExpressions flatMap {c =>
-                  c match {
-                    case field(_,_) => None
-                    case _ => {
-                        inc = inc + 1
-                        val oldeval = c.evaluator
-                        c.evaluator = FieldEvaluator("$exp" + inc, Some("$$"))
-                        Some(oldeval)
+      case f @ Filter(e, sc: Scan, false) => {
+          // checks if it is a optimizable spatial filter
+          
+          matchExpressionAndAny(e, {
+              case fun @ func(_, _: SpatialIndexedFunction,_) => {
+                  
+                  matchExpressionAndAny(f.e, {ex => ex match {
+                        case func(_, _: SpatialIndexedFunction,_) => 
+                          // we have a spatial indexed filter that is not a join
+                          // Filter <- Scan
+                          // will become
+                          // Join(inner, spatial) <- IndexScan
+                          //                      <- ValuesScan
+                          var inc = -1;
+                          // we keep fields and replace the rest with new fields on constant expressions
+                          val se: Seq[Evaluator] = ex.children flatMap {c => c match {
+                              case field(_,_) => None
+                              case _ => 
+                                inc = inc + 1
+                                val oldeval = c.evaluator
+                                c.evaluator = FieldEvaluator("$exp" + inc, Some("$$"))
+                                Some(oldeval)
+                                
+                            }}
+                            
+                          val va = ValuesScan(Seq(se map (new Expression(_))), Some("$$"))
+                          val isc = IndexQueryScan(sc.table, sc.alias)
+                          val j = Join(Inner(e, true), isc, va)
+                          f.children = List(j)
+                        case _ =>
                       }
-                  }
-                } 
-              
-                // a constant expression value scan on the expressions created above
-                va = ValuesScan((se map (new Expression(_))) :: Nil, Some("$$"))
-                //j.children = v :: j.children
-            
-                ex 
-              })
-            
-            // a spatial join on the filter expression
-            val j = Join(Inner(e, true), isc, va)
-            f.children = List(j)
-          }
+                    })
+                }
+              case _ =>
+            })
         }
       case _ =>
     }

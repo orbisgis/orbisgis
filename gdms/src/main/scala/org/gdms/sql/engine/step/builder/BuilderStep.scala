@@ -84,87 +84,61 @@ case object BuilderStep extends AbstractEngineStep[(Operation, DataSourceFactory
     implicit val opToCo = buildCommandTree _
     
     op match {
-      case Output(ch) => new QueryOutputCommand withChild(ch)
-      case LimitOffset(l, o, ch) => new LimitOffsetCommand(l, o) withChild(ch)
-      case SubQuery(s, Output(ch)) => {
-          // jumping over Output in the subquery
-          if (s != "") {
-            // renaming if there is an alias
-            new RenamingCommand(s) withChild(ch)
-          } else {
-            // unnamed call, in a customQuery for example
-            buildCommandTree(ch)
-          }
+      case Output(ch) => new QueryOutputCommand withChild ch
+      case LimitOffset(l, o, ch) => new LimitOffsetCommand(l, o) withChild ch
+      case SubQuery(s, Output(ch)) => 
+        // jumping over Output in the subquery
+        if (s != "") {
+          // renaming if there is an alias
+          new RenamingCommand(s) withChild ch
+        } else {
+          // unnamed call, in a customQuery for example
+          buildCommandTree(ch)
         }
       case Scan(table, alias, edit) => new ScanCommand(table, alias, edit)
       case IndexQueryScan(table, alias, query) => new IndexQueryScanCommand(table, alias, query)
       case Join(jType, l, r) => (jType match {
-            case Cross() => {
-                new ExpressionBasedLoopJoinCommand(None)
-              }
-            case Inner(ex, false, None) => {
-                processExp(ex)
-                new ExpressionBasedLoopJoinCommand(Some(ex))
-              }
-            case Inner(ex, false, Some((field, expr, strict))) => {
-                processExp(ex)
-                new IndexedJoinCommand(expr, ex, field, strict)
-              }
-            case Inner(ex, true, _) => {
-                processExp(ex)
-                new SpatialIndexedJoinCommand(ex)
-              }
-            case Natural() => {
-                new ExpressionBasedLoopJoinCommand(None, true)
-              }
-            case OuterLeft(ex) => {
-                new ExpressionBasedLoopJoinCommand(ex, false, true)
-              }
+            case Cross() => new ExpressionBasedLoopJoinCommand(None)
+            case Inner(ex, false, None) => 
+              processExp(ex)
+              new ExpressionBasedLoopJoinCommand(Some(ex))
+            case Inner(ex, false, Some((field, expr, strict))) => 
+              processExp(ex)
+              new IndexedJoinCommand(expr, ex, field, strict)
+            case Inner(ex, true, _) => 
+              processExp(ex)
+              new SpatialIndexedJoinCommand(ex)
+            case Natural() => new ExpressionBasedLoopJoinCommand(None, true)
+            case OuterLeft(ex) => new ExpressionBasedLoopJoinCommand(ex, false, true)
             case _ => throw new IllegalStateException("Internal error: problem building PQP for joins.")
           })  withChildren(Seq(l, r))
-      case ValuesScan(ex, alias, internal) => {
-          ex foreach (_ foreach processExp)
-          new ValuesScanCommand(ex, alias, internal)
-        }
-      case Projection(exp, ch) => {
-          exp foreach (a => processExp(a._1))
-          new ProjectionCommand(exp toArray) withChild(ch)
-        }
-      case Aggregate(exp, Grouping(e, ch)) => {
-          new AggregateCommand(exp, e) withChild(ch)
-        }
-      case Aggregate(exp, ch) => {
-          new AggregateCommand(exp, Nil) withChild(ch)
-        }
-      case Distinct(ch) => new MemoryDistinctCommand() withChild(ch)
-      case Grouping(e, ch) =>  new AggregateCommand(Nil, e) withChild(ch)
-      case Filter(exp, ch, _) => {
-          processExp(exp)
-          new ExpressionFilterCommand(exp) withChild(ch)
-        }
-      case Sort(exprs, ch) => new MergeSortCommand(exprs) withChild(ch)
+      case ValuesScan(ex, alias, internal) => 
+        ex foreach (_ foreach processExp)
+        new ValuesScanCommand(ex, alias, internal)
+      case Projection(exp, ch) => 
+        exp foreach (a => processExp(a._1))
+        new ProjectionCommand(exp toArray) withChild ch
+      case Aggregate(exp, Grouping(e, ch)) => new AggregateCommand(exp, e) withChild ch
+      case Aggregate(exp, ch) => new AggregateCommand(exp, Nil) withChild ch
+      case Distinct(ch) => new MemoryDistinctCommand() withChild ch
+      case Grouping(e, ch) =>  new AggregateCommand(Nil, e) withChild ch
+      case Filter(exp, ch, _) => 
+        processExp(exp)
+        new ExpressionFilterCommand(exp) withChild ch
+      case Sort(exprs, ch) => new MergeSortCommand(exprs) withChild ch
       case Union(a,b) => new UnionCommand() withChildren(Seq(a,b))
-      case Update(e, ch) => new UpdateCommand(e) withChild(ch)
-      case Insert(t, f, ch) => new InsertCommand(t, f) withChild(ch)
-      case Delete(ch) => new DeleteCommand() withChild(ch)
-      case a @ CustomQueryScan(_,e, t, alias) => {
-          var tables = t map { 
-            case Left(s) => Left(s)
-            case Right(o) => { 
-                val ot = buildCommandTree(o)
-                ot match {
-                  case out: OutputCommand => Right(out)
-                  case other => {
-                      val out = new QueryOutputCommand
-                      out withChild(other)
-                      Right(out)
-                    }
-                }
-              }
-          }
-          new CustomQueryScanCommand(e,tables.reverse, a.function, alias)
-        }
-      case CreateTableAs(n, ch) => new CreateTableCommand(n) withChild(ch)
+      case Update(e, ch) => new UpdateCommand(e) withChild ch
+      case Insert(t, f, ch) => new InsertCommand(t, f) withChild ch
+      case Delete(ch) => new DeleteCommand() withChild ch
+      case a @ CustomQueryScan(_,e, t, alias) => 
+        var tables = t map { 
+          case Left(s) => Left(s)
+          case Right(o) => buildCommandTree(o) match {
+              case out: OutputCommand => Right(out)
+              case other => Right(new QueryOutputCommand withChild other)
+            }}
+        new CustomQueryScanCommand(e,tables.reverse, a.function, alias)
+      case CreateTableAs(n, ch) => new CreateTableCommand(n) withChild ch
       case CreateView(n, s, o, ch) => new CreateViewCommand(n, s, ch, o)
       case CreateTable(n, cols) => new TableCreationCommand(n, cols)
       case DropTables(n, i ,p) => new DropTablesCommand(n, i, p)
@@ -184,7 +158,7 @@ case object BuilderStep extends AbstractEngineStep[(Operation, DataSourceFactory
   }
   
   private def processExp(f: Expression)(implicit dsf: DataSourceFactory, p: Properties) {
-    (f :: f.allChildren) foreach { e => e.evaluator match {
+    (f :: f.allChildren) foreach { _.evaluator match {
         case e @ ExistsEvaluator(op) => e.command = processOp(op)
         case e @ InEvaluator(_, op) => e.command = processOp(op)
         case _ =>

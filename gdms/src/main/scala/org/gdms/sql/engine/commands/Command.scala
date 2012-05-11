@@ -147,7 +147,7 @@ abstract class Command() {
    * 
    * @param c a command to add as child
    */
-  def withChild(c: Command) = {
+  def withChild(c: Command): Command.this.type = {
     children = c :: children
     this
   }
@@ -157,7 +157,7 @@ abstract class Command() {
    * 
    * @param cc commands to add as children
    */
-  def withChildren(cc: Seq[Command]) = {
+  def withChildren(cc: Seq[Command]): Command.this.type  = {
     children = cc ++: children
     this
   }

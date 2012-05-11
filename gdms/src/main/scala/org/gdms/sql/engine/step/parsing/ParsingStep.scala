@@ -55,6 +55,16 @@ import org.gdms.sql.engine.ParseException
 import org.gdms.sql.parser.GdmSQLLexer
 import org.gdms.sql.parser.GdmSQLParser
 
+/**
+ * Step 1: The very first step of the SQL interpreter.
+ * 
+ * This step turns a string with some SQL commands in it into a tuple with
+ *  - the root AST (commands are its children)
+ *  - the input SQL string
+ *  
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
 case object ParsingStep extends AbstractEngineStep[String, (CommonTree, String)]("Parsing") {
   def doOperation(sql: String)(implicit p: Properties) = {
     
@@ -74,7 +84,8 @@ case object ParsingStep extends AbstractEngineStep[String, (CommonTree, String)]
   
   private def getInput(sql: String) = {
     try {
-    new ANTLRCaseInsensitiveInputStream(new ByteArrayInputStream(sql.getBytes()));
+      // creates a special case insensitive stream
+      new ANTLRCaseInsensitiveInputStream(new ByteArrayInputStream(sql.getBytes()));
     } catch {
       // never happens
       case e: IOException => throw new ParseException("Internal error: failed to open a stream on input string.", e)

@@ -49,7 +49,7 @@ import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.AbstractEngineStep
 import org.gdms.sql.engine.logical.LogicPlanOptimizer
 import org.gdms.sql.engine.operations._
-import org.gdms.sql.evaluator.FunctionEvaluator
+import org.gdms.sql.evaluator.func
 import org.gdms.sql.function.SpatialIndexedFunction
 
 /**
@@ -60,7 +60,7 @@ import org.gdms.sql.function.SpatialIndexedFunction
  * 
  */
 case object LogicalJoinOptimStep extends AbstractEngineStep[Operation, Operation]("Basic join replacement optimization")
-   with LogicPlanOptimizer {
+                                    with LogicPlanOptimizer {
   
   def doOperation(op: Operation)(implicit p: Properties): Operation = {
     if (!isPropertyTurnedOff(Flags.OPTIMIZEJOINS)) {
@@ -81,22 +81,20 @@ case object LogicalJoinOptimStep extends AbstractEngineStep[Operation, Operation
    * Translates a ^(Filter CrossJoin) into an InnerJoin on the filtering expression.
    */
   private def optimizeCrossJoins(o: Operation): Unit = {
-    replaceOperationFromBottom(o, {ch =>
-        // gets Filter -> Join
-        ch.isInstanceOf[Filter] && ch.children.find(_.isInstanceOf[Join]).isDefined
-      }, {ch =>
+    replaceOperationFromBottom(o, {
         // replace Cross Join with a Filter above to a Inner Join on the filtering expression
-        
-        val join = ch.children.find(_.isInstanceOf[Join]).get.asInstanceOf[Join]
-        val filter = ch.asInstanceOf[Filter]
-        join.joinType = join.joinType match {
-          case Cross() => Inner(filter.e)
-          case Inner(ex, s, a) => Inner(ex & filter.e, s, a)
-          case OuterLeft(cond) => OuterLeft(cond.map(_ & filter.e))
-          case OuterFull(cond) => OuterLeft(cond.map(_ & filter.e))
-          case a @ Natural() => a
-        }
-        join
+        case Filter(c,j @ Join(joinType,_,_),_) => {
+            j.joinType = joinType match {
+              case Cross() => Inner(c)
+              case Inner(ex, s, a) => Inner(ex & c, s, a)
+              case OuterLeft(cond) => OuterLeft(cond.map(_ & c))
+              case OuterFull(cond) => OuterLeft(cond.map(_ & c))
+              case a @ Natural() => a
+            }
+            
+            j
+          }
+        case a => a
       })
   }
   
@@ -104,28 +102,17 @@ case object LogicalJoinOptimStep extends AbstractEngineStep[Operation, Operation
    * Tags an InnerJoin with a SpatialIndexedFunction in its expression as spatial.
    */
   private def optimizeSpatialIndexedJoins(o: Operation) {
-    matchOperationFromBottom(o, {ch =>
-        // gets Join(Inner(_))
-        ch.isInstanceOf[Join] && (ch.asInstanceOf[Join].joinType match {
-            case Inner(_, _, None) => {
-                ch.children.filter(_.isInstanceOf[Join]).isEmpty
-              }
-            case _ => false
-          })
-      }, {ch =>
+    matchOperationFromBottom(o, {
         // finds if there is a SpatialIndexedFunction in the Expression
-        val join = ch.asInstanceOf[Join]
-        join.joinType match {
-          case a @ Inner(ex, false, None) => {
-              matchExpressionAndAny(ex, {e =>
-                  e.isInstanceOf[FunctionEvaluator] && e.asInstanceOf[FunctionEvaluator].f.isInstanceOf[SpatialIndexedFunction]
-                }, {e=>
+        case Join(i @ Inner(ex,false,None), c, _) => c match {
+            case _: Join =>
+            case _ => matchExpressionAndAny(ex, {
                   // we have a spatial indexed join
-                  a.spatial = true
+                  case func(_,_: SpatialIndexedFunction,_) => i.spatial = true
+                  case _ =>
                 })
-            }
-          case _ => 
-        }
+          }
+        case _ =>
       })
   }
 }

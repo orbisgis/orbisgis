@@ -64,6 +64,13 @@ trait LogicPlanOptimizer {
     }
   }
   
+  final def matchExpressionAndAny(e: Expression, f: Expression => Unit): Unit = {
+    f(e)
+    if (e.evaluator.isInstanceOf[AndEvaluator]) {
+      e foreach (matchExpressionAndAny(_, f))
+    }
+  }
+  
   final def replaceEvaluatorAndAny(e: Expression, c: Evaluator => Boolean, f: Evaluator => Evaluator): Unit = {
     if (c(e.evaluator)) {
       e.evaluator = f(e.evaluator)
@@ -87,8 +94,18 @@ trait LogicPlanOptimizer {
   }
   
   final def matchOperationFromBottom(o: Operation, c: Operation => Boolean, f: Operation => Unit): Unit = {
-    o.children foreach (matchOperation(_, c, f))
+    o.children foreach (matchOperationFromBottom(_, c, f))
     if (c(o)) f(o)
+  }
+  
+  final def matchOperationFromBottom(o: Operation, f: Operation => Unit): Unit = {
+    o.children foreach (matchOperationFromBottom(_, f))
+    f(o)
+  }
+  
+  final def processOperationFromBottom(o: Operation, f: Operation => Unit): Unit = {
+    o.children foreach (processOperationFromBottom(_, f))
+    f(o)
   }
   
   final def replaceOperation(o: Operation, c: Operation => Boolean, f: Operation => Operation): Unit = {
@@ -106,6 +123,11 @@ trait LogicPlanOptimizer {
   final def replaceOperationFromBottom(o: Operation, c: Operation => Boolean, f: Operation => Operation): Unit = {
     o.children foreach (replaceOperationFromBottom(_, c, f))
     o.children = o.children map { ch => if (c(ch)) f(ch) else ch }
+  }
+  
+  final def replaceOperationFromBottom(o: Operation, f: Operation => Operation): Unit = {
+    o.children foreach (replaceOperationFromBottom(_, f))
+    o.children = o.children map f
   }
   
   final def replaceOperationFromBottomAndStop(o: Operation, c: Operation => Boolean, f: Operation => Operation): Boolean = {

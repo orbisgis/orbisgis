@@ -51,10 +51,18 @@ import org.gdms.sql.engine.AbstractEngineStep
 import org.gdms.sql.engine.operations.Operation
 
 /**
- * Step 1: parsing the AST returned from ANTLR into one or several operations.
+ * Step 2: The AST Parsing.
+ * 
+ * This step parses the AST into a sequence of:
+ *  - an operation describing the command
+ *  - the SQL string corresponding to the command.
+ *  
+ * @author Antoine Gourlay
+ * @since 0.3
  */
 case object TreeParsingStep extends AbstractEngineStep[(CommonTree, String), Seq[(Operation, String)]]("AST Parsing") {
   
+  // regexp for splitting the SQL String
   private val spl = """;""".r
   
   def doOperation(ts: (CommonTree, String))(implicit p: Properties) = {
@@ -63,11 +71,16 @@ case object TreeParsingStep extends AbstractEngineStep[(CommonTree, String), Seq
       LOG.info("Parsing tree: " + tree.toStringTree)
     }
     
+    // splits the SQL String
     val sts = spl.split(ts._2)
+    
+    // all commands
     val a = (0 until tree.getChildCount) map (tree.getChild);
     
+    // builds the final sequence of tuples
     val b = (if (sts.length != tree.getChildCount) {
       LOG.warn("SQL instruction and tree count do not match!")
+      // we discard sql strings but never discard operations
       a.zipAll(sts, null, "").filterNot(_._1 == null)
     } else {
       a.zip(sts)
