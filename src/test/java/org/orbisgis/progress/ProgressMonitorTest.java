@@ -36,9 +36,8 @@
  */
 package org.orbisgis.progress;
 
-
-
 import org.junit.Test;
+
 import static org.junit.Assert.*;
 
 public class ProgressMonitorTest {
@@ -47,13 +46,19 @@ public class ProgressMonitorTest {
 	public void testUsage() throws Exception {
 		ProgressMonitor pm = new DefaultProgressMonitor("open file", 100);
 		pm.startTask("read header", 200);
-		assertTrue(pm.getOverallProgress() == 0);
+		assertEquals(0, pm.getOverallProgress());
 		for (int i = 0; i < 200; i++) {
 			pm.progressTo(i);
-			assertTrue(pm.getCurrentProgress() == i / 2);
+			assertEquals(i / 2, pm.getCurrentProgress());
 		}
 		pm.endTask();
 		pm.progressTo(100);
 	}
 
+        @Test
+        public void regressionTest698() {
+                ProgressMonitor pm = new DefaultProgressMonitor("open file", 0);
+                // this should be throw any error
+                pm.progressTo(100);
+        }
 }

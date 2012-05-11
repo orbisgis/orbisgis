@@ -74,7 +74,7 @@ public final class DefaultProgressMonitor implements ProgressMonitor {
                 Task(String taskName, long end) {
                         this.taskName = taskName;
                         this.percentage = 0;
-                        this.end = end;
+                        this.end = end > 0 ? end : 1;
                 }
         }
 
