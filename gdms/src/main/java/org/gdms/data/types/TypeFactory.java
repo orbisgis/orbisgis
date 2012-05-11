@@ -48,7 +48,7 @@ import java.util.HashMap;
 
 /**
  * Factory to create data type instances.
- * 
+ *
  * @author Fernando Gonzalez Cortes
  */
 public final class TypeFactory {
@@ -90,7 +90,7 @@ public final class TypeFactory {
          * @param constraints
          * @return
          * @throws InvalidTypeException
-         *             If the constraints are not valid for this type
+         * If the constraints are not valid for this type
          */
         public static Type createType(final int typeCode,
                 final Constraint... constraints) {
@@ -106,11 +106,11 @@ public final class TypeFactory {
          * and name. The code must be one of the constants in Type interface
          *
          * @param typeCode
-         * @param typeName 
+         * @param typeName
          * @param constraints
          * @return
          * @throws InvalidTypeException
-         *             If the constraints are not valid for this type
+         * If the constraints are not valid for this type
          */
         public static Type createType(final int typeCode, final String typeName,
                 final Constraint... constraints) {
@@ -130,6 +130,7 @@ public final class TypeFactory {
 
         /**
          * Gets the name of given type.
+         *
          * @param typeCode a valid type code.
          * @return a name
          * @throws IllegalArgumentException if the type code is not valid
@@ -168,9 +169,9 @@ public final class TypeFactory {
                                 return "time";
                         case Type.TIMESTAMP:
                                 return "timestamp";
-                        case Type.GEOMETRYCOLLECTION :
+                        case Type.GEOMETRYCOLLECTION:
                                 return "geometrycollection";
-                        case Type.POINT: 
+                        case Type.POINT:
                                 return "point";
                         case Type.MULTIPOINT:
                                 return "multipoint";
@@ -189,6 +190,7 @@ public final class TypeFactory {
 
         /**
          * Checks if the type code is that of a numeric type.
+         *
          * @param typeCode a valid type code.
          * @return true if it is a numeric type
          */
@@ -200,6 +202,7 @@ public final class TypeFactory {
 
         /**
          * Gets all type codes.
+         *
          * @return a array of all type codes
          */
         public static int[] getTypes() {
@@ -212,36 +215,33 @@ public final class TypeFactory {
 
         /**
          * Checks if the type code if that of a spatial type.
+         *
          * @param typeCode a valid type code
          * @return true if it is a spatial type
          */
         public static boolean isSpatial(int typeCode) {
                 return (typeCode & Type.GEOMETRY) != 0 || (typeCode == Type.RASTER);
         }
-        
+
         /**
          * Get an integer array containing all the vectorial type codes.
+         *
          * @return a array of type codes.
          */
-        public static int[] getVectorialTypes(){
+        public static int[] getVectorialTypes() {
                 return new int[]{Type.GEOMETRY, Type.POINT, Type.MULTIPOINT, Type.LINESTRING,
-                        Type.MULTILINESTRING, Type.POLYGON, Type.MULTIPOLYGON, Type.GEOMETRYCOLLECTION};
+                                Type.MULTILINESTRING, Type.POLYGON, Type.MULTIPOLYGON, Type.GEOMETRYCOLLECTION};
         }
-        
+
         /**
-         * Check whether typeCode represents a valid vectorial code, ie if it is a 
+         * Check whether typeCode represents a valid vectorial code, ie if it is a
          * geometry or geometry collection of any authorized kind.
+         *
          * @param typeCode
-         * @return 
+         * @return
          */
         public static boolean isVectorial(int typeCode) {
-                int[] types = getVectorialTypes();
-                for(int i : types){
-                        if ((typeCode & i) != 0 ){
-                                return true;
-                        }
-                }
-                return false;             
+                return (typeCode & Type.GEOMETRY) != 0;
         }
 
         /**
@@ -287,6 +287,13 @@ public final class TypeFactory {
                         Integer sort2 = typeSort.get(type2);
                         int sort = Math.max(sort1, sort2);
                         return sortType.get(sort);
+                } else if (isVectorial(type1) && isVectorial(type2)) {
+                        if ((type1 & Type.GEOMETRYCOLLECTION) == Type.GEOMETRYCOLLECTION 
+                                && (type2 & Type.GEOMETRYCOLLECTION) == Type.GEOMETRYCOLLECTION) {
+                                return Type.GEOMETRYCOLLECTION;
+                        } else {
+                                return Type.GEOMETRY;
+                        }
                 } else {
                         if (type1 == type2) {
                                 return type1;
@@ -298,6 +305,7 @@ public final class TypeFactory {
 
         /**
          * Checks if the type code is that of a date/time-related type code.
+         *
          * @param typeCode
          * @return true if it is a date/time-related type code
          */
@@ -308,6 +316,7 @@ public final class TypeFactory {
 
         /**
          * Checks if the first type can be casted to the second.
+         *
          * @param fromTypeCode a type code
          * @param toTypeCode another type code
          * @return true if the cast if possible

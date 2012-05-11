@@ -76,6 +76,8 @@ import java.util.Locale;
 
 import static org.junit.Assert.*;
 
+import org.gdms.data.types.TypeFactory;
+
 public class ValuesTest {
 
         private java.sql.Date d;
@@ -932,12 +934,12 @@ public class ValuesTest {
                                 ValueFactory.createValue("abc")});
                 ValueCollection v4 = ValueFactory.createValue(new Value[]{ValueFactory.createValue(-12),
                                 ValueFactory.createValue("abc")});
-                
+
                 assertEquals(0, v1.compareTo(v1));
                 assertEquals(1, v2.compareTo(v1));
                 assertEquals(-1, v1.compareTo(v3));
                 assertEquals(1, v1.compareTo(v4));
-                
+
                 assertTrue(v1.less(v2).getAsBoolean());
                 assertTrue(v2.lessEqual(v2).getAsBoolean());
                 assertTrue(v3.greater(v2).getAsBoolean());
@@ -1176,5 +1178,16 @@ public class ValuesTest {
                 assertTrue(val2 instanceof DefaultGeometryCollectionValue);
                 //Let's be sure it's not a GeometryCollection just thanks to the inheritance
                 assertFalse(val2 instanceof DefaultMultiPointValue);
+        }
+
+        @Test
+        public void testImplicitGeometryCasts() {
+                assertTrue(TypeFactory.canBeCastTo(Type.GEOMETRYCOLLECTION, Type.GEOMETRY));
+                assertTrue(TypeFactory.canBeCastTo(Type.LINESTRING, Type.GEOMETRY));
+                assertTrue(TypeFactory.canBeCastTo(Type.MULTILINESTRING, Type.GEOMETRY));
+                assertTrue(TypeFactory.canBeCastTo(Type.MULTILINESTRING, Type.GEOMETRYCOLLECTION));
+                
+                assertFalse(TypeFactory.canBeCastTo(Type.MULTILINESTRING, Type.LINESTRING));
+                assertFalse(TypeFactory.canBeCastTo(Type.POINT, Type.POLYGON));
         }
 }
