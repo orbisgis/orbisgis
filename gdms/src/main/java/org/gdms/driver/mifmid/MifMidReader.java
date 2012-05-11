@@ -54,12 +54,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.logging.FileHandler;
-import java.util.logging.Formatter;
-import java.util.logging.Level;
-import java.util.logging.LogRecord;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,6 +69,7 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.PrecisionModel;
 import com.vividsolutions.jts.util.GeometricShapeFactory;
+import org.apache.log4j.Logger;
 
 import org.gdms.data.schema.SchemaMetadata;
 import org.gdms.data.types.Type;
@@ -82,7 +77,6 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.io.RowWriter;
-import org.gdms.driver.memory.MemoryDataSetDriver;
 
 /**
  * Classe permettant de lire et d'�crire un fichier mif et un fichier mid. Cette
@@ -106,21 +100,12 @@ import org.gdms.driver.memory.MemoryDataSetDriver;
 // version 0.5 (2010-12-14) : tried to clean up this mess; changed to use the new SchemaMetadata
 public final class MifMidReader {
 
-        private static final Logger LOG = Logger.getLogger("drivers.mifmid.MifMid");
-        private FileHandler logFileHandler = null;
+        private static final Logger LOG = Logger.getLogger(MifMidReader.class);
         private static final DateFormat DATE_PARSER = new SimpleDateFormat("yyyyMMdd");
         private final File mifFile;
         private final File midFile;
         private final RandomAccessFile mifRaf;
         private final RandomAccessFile midRaf;
-        private static final Formatter onlyMessage = new Formatter() {
-
-                @Override
-                public String format(LogRecord record) {
-                        return record.getMessage() + "\n";
-                }
-        };
-        private final Formatter simpleFormatter = new SimpleFormatter();
         private long fileLength = 0L;
         private int nbFeatures = 0;
         private String version = "300";
@@ -177,8 +162,7 @@ public final class MifMidReader {
                 mifRaf = new RandomAccessFile(mifFile, "rw");
                 midRaf = new RandomAccessFile(midFile, "rw");
                 // setLogFile("MifMid.log", Level.FINEST);
-                LOG.setLevel(Level.INFO);
-                LOG.log(Level.INFO, "Ouverture du fichier {0}", mifFile.toString());
+                LOG.info("Ouverture du fichier");
         }
 
         @Override
@@ -196,15 +180,8 @@ public final class MifMidReader {
                 try {
                         mifRaf.close();
                         midRaf.close();
-                        if (logFileHandler != null) {
-                                logFileHandler.close();
-                        }
                 } catch (IOException ioe) {
-                        LOG.warning("Impossible de fermer le fichier");
-                        if (logFileHandler != null) {
-                                logFileHandler.close();
-                        }
-                        LOG.log(Level.FINE, null, ioe);
+                        LOG.warn("Impossible de fermer le fichier", ioe);
                 }
         }
 
@@ -213,24 +190,8 @@ public final class MifMidReader {
                         mifRaf.setLength(0L);
                         midRaf.setLength(0L);
                 } catch (IOException ioe) {
-                        LOG.warning("Impossible de vider le fichier");
-                        LOG.log(Level.FINE, null, ioe);
+                        LOG.warn("Impossible de vider le fichier", ioe);
                 }
-        }
-
-        /**
-         * Crée un fichier de log.
-         *
-         * @param logFileName
-         * @param level
-         * @throws IOException
-         */
-        public void setLogFile(String logFileName, Level level) throws IOException {
-                logFileHandler = new FileHandler(logFileName);
-                logFileHandler.setFormatter(simpleFormatter);
-                logFileHandler.setLevel(level);
-                LOG.setLevel(level);
-                LOG.addHandler(logFileHandler);
         }
 
         /**
@@ -242,9 +203,6 @@ public final class MifMidReader {
          * @throws FileNotFoundException
          */
         public void readMMFileProperties() throws IOException {
-                if (logFileHandler != null) {
-                        logFileHandler.setFormatter(onlyMessage);
-                }
                 // properties = new Properties();
                 String line;
                 mifRaf.seek(0);
@@ -256,46 +214,39 @@ public final class MifMidReader {
                                 String[] versionP = line.split(" ");
                                 if (versionP.length > 1) {
                                         version = versionP[1];
-                                        LOG.log(Level.FINE, "   - Version MapInfo = {0}", versionP[1]);
                                 }
                         } else if (lineU.startsWith("CHARSET")) {
                                 headerLines.add(line);
                                 String[] charsetP = line.split(" ");
                                 if (charsetP.length > 1) {
                                         charset = charsetP[1];
-                                        LOG.log(Level.FINE, "   - Jeu de caract\ufffdres = {0}", charset);
                                 }
                         } else if (lineU.startsWith("DELIMITER")) {
                                 headerLines.add(line);
                                 StringTokenizer st = new StringTokenizer(line);
                                 st.nextToken();
                                 delimiter = st.nextToken().substring(1, 2);
-                                LOG.log(Level.FINE, "   - D\ufffdlimiteur = {0} (0x{1})", new Object[]{delimiter, Integer.toHexString((int) delimiter.getBytes()[0])});
                                 setDelimiter(delimiter);
                         } else if (lineU.startsWith("UNIQUE")) {
                                 headerLines.add(line);
                                 String[] uniqueP = line.split(" ", 2);
                                 if (uniqueP.length > 1) {
                                         unique = uniqueP[1];
-                                        LOG.log(Level.FINE, "   - Unique = {0}", unique);
                                 }
                         } else if (lineU.startsWith("INDEX")) {
                                 headerLines.add(line);
                                 String[] uniqueP = line.split(" ", 2);
                                 if (uniqueP.length > 1) {
                                         unique = uniqueP[1];
-                                        LOG.log(Level.FINE, "   - Indexes = {0}", unique);
                                 }
                         } else if (lineU.startsWith("COORDSYS")) {
                                 headerLines.add(line);
                                 CoordSys coordS = new CoordSys(line);
-                                LOG.log(Level.FINE, "   - CoordSys = {0}", coordS.toString());
                         } else if (lineU.startsWith("TRANSFORM")) {
                                 headerLines.add(line);
                                 String[] transformP = line.split(" ", 2);
                                 if (transformP.length > 1) {
                                         transform = transformP[1];
-                                        LOG.log(Level.FINE, "   - Transform = {0}", transform);
                                 }
                         } else if (lineU.startsWith("DATA")) {
                                 break;
@@ -311,10 +262,6 @@ public final class MifMidReader {
 
         public File getMidFile() {
                 return midFile;
-        }
-
-        public void setLogLevel(Level level) {
-                LOG.setLevel(level);
         }
 
         public PrecisionModel getPrecisionModel() {
@@ -417,9 +364,6 @@ public final class MifMidReader {
         public void populateMMFileFeatureSchema() throws IOException,
                 FileNotFoundException,
                 DriverException {
-                if (logFileHandler != null) {
-                        logFileHandler.setFormatter(onlyMessage);
-                }
                 String line;
                 mifRaf.seek(0);
                 while (null != (line = mifRaf.readLine())) {
@@ -435,7 +379,6 @@ public final class MifMidReader {
                                 if (st.hasMoreTokens()) {
                                         nbColumns = Integer.parseInt(st.nextToken());
                                 }
-                                LOG.log(Level.INFO, "Number of attributes = {0}", nbColumns);
                                 rowCount = nbColumns + 2;
                                 for (int i = 0; i < nbColumns; i++) {
                                         line = mifRaf.readLine();
@@ -504,9 +447,6 @@ public final class MifMidReader {
          * @throws FileNotFoundException
          */
         public int createIndexes() throws IOException, FileNotFoundException {
-                if (logFileHandler != null) {
-                        logFileHandler.setFormatter(onlyMessage);
-                }
                 if (mifAdresses != null || midAdresses != null) {
                         nbFeatures = 0;
                         return mifAdresses.size();
@@ -562,10 +502,8 @@ public final class MifMidReader {
          * @throws DriverException
          */
         public Value[] getValue(int index) throws IOException, DriverException {
-                if (logFileHandler != null) {
-                        logFileHandler.setFormatter(onlyMessage);
-                }
                 Value[] values = new Value[rowCount];
+                values[1] = ValueFactory.createNullValue();
                 long addressAttributes = midAdresses.get(index).longValue();
                 // System.out.print(index + ".");
                 int attType = -1;
@@ -574,7 +512,6 @@ public final class MifMidReader {
                         midRaf.seek(addressAttributes);
                         String[] attributes = parseMidLine(midRaf.readLine());
                         for (int i = 0; i < attributes.length; i++) {
-                                LOG.finer(attributes[i]);
                                 attType = getSchema().getFieldType(i + 2).getTypeCode();
                                 attribute = attributes[i];
                                 // if (attType == AttributeType.STRING || attType instanceof
@@ -983,7 +920,6 @@ public final class MifMidReader {
 
         public void read(RowWriter v) throws IOException, DriverException {
 
-                setLogFile("MifMid.log", Level.FINEST);
                 readMMFileProperties();
 
                 int rowC = createIndexes();

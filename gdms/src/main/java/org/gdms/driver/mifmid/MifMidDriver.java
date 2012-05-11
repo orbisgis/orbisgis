@@ -127,6 +127,7 @@ public final class MifMidDriver implements FileImporter {
         public void setFile(File file) {
                 this.file = file;
                 schema = new DefaultSchema("MifMid" + file.getAbsolutePath().hashCode());
+                metadata = new SchemaMetadata(schema);
                 schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
         }
 
