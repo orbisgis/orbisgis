@@ -28,10 +28,6 @@
  */
 package org.orbisgis.view.geocatalog;
 
-import java.awt.datatransfer.Transferable;
-import javax.swing.JComponent;
-import javax.swing.JList;
-import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
 
 /**
@@ -39,11 +35,6 @@ import javax.swing.TransferHandler;
  */
 
 public class SourceListTransferHandler extends TransferHandler{
-    @Override
-    protected Transferable createTransferable(JComponent c) {
-        JList list = (JList)c;
-        Object[] values = list.getSelectedValues();
 
-        return new EditableSource(null);
-    }
+
 }
