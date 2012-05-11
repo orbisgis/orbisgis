@@ -42,6 +42,10 @@
 
 package org.gdms.sql.engine
 
+import java.io.InputStream
+import java.io.ObjectInputStream
+import java.io.ObjectOutputStream
+import java.io.OutputStream
 import java.util.Properties
 import org.gdms.data.DataSourceFactory
 import org.gdms.data.schema.Metadata
@@ -82,9 +86,9 @@ class SQLStatement(sql: String, op: Operation)(implicit p: Properties) {
   
   // tables that this statement references
   private lazy val refs: Array[String] = { op.allChildren flatMap {
-        case s: Scan => s.table :: Nil
-        case c: CustomQueryScan => c.tables.flatMap (_.fold(_ :: Nil, _ => Nil))
-        case _ => Nil
+      case s: Scan => s.table :: Nil
+      case c: CustomQueryScan => c.tables.flatMap (_.fold(_ :: Nil, _ => Nil))
+      case _ => Nil
     } toArray   
   }
   
@@ -151,4 +155,40 @@ class SQLStatement(sql: String, op: Operation)(implicit p: Properties) {
   def getReferencedSources(): Array[String] = refs
   
   def getSQL(): String = finalSql
+  
+  def save(out: OutputStream) {
+    var o: ObjectOutputStream = null
+    var o2: ObjectOutputStream = null
+    
+    try {
+      o = new ObjectOutputStream(out)
+      o.writeObject(sql)
+      o.flush
+      o2 = new ObjectOutputStream(out)
+      o2.writeObject(op)
+      o2.flush
+    } finally {
+      if (o != null) o.close
+      if (o2 != null) o2.close
+    }
+  }
+}
+
+object SQLStatement {
+  def load(i: InputStream, p: Properties): SQLStatement = {
+    var o: ObjectInputStream = null
+    var o2: ObjectInputStream = null
+    
+    try {
+      o = new ObjectInputStream(i)
+      val sql = o.readObject.asInstanceOf[String]
+      o2 = new ObjectInputStream(i)
+      val ope = o2.readObject.asInstanceOf[Operation]
+      
+      new SQLStatement(sql, ope)(p)
+    } finally {
+      if (o != null) o.close
+      if (o2 != null) o2.close
+    }
+  }
 }

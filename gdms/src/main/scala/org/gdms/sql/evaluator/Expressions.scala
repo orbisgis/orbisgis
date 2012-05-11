@@ -61,7 +61,7 @@ import org.gdms.sql.engine.GdmSQLPredef._
  * @author Antoine Gourlay
  * @since 0.1
  */
-sealed class Expression(var evaluator: Evaluator) extends Iterable[Expression] {
+sealed class Expression(var evaluator: Evaluator) extends Iterable[Expression] with Serializable {
 
   /**
    * Evaluates this expression
