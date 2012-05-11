@@ -75,7 +75,7 @@ public final class DockingManager {
         //Docking Area (DockingFrames feature named WorkingArea)
         private Map<String,DockingArea> dockingAreas = new HashMap<String,DockingArea>();
         
-        //Correspondance between docking panel and CDocking instance
+        //Correspondance between single docking panel and CDocking instance
         private Map<DockingPanel,String> views = new HashMap<DockingPanel,String>();
         
 	/** the available preferences for docking frames */

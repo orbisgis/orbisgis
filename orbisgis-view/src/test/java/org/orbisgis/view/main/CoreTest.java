@@ -62,7 +62,7 @@ public class CoreTest {
     public static void setUp() {
         System.out.println("startup");
         if(!GraphicsEnvironment.isHeadless()) {
-            instance = new Core();
+            instance = new Core(true);
             instance.startup();
         }
     }

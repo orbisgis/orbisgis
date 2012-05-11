@@ -36,7 +36,27 @@ import org.apache.log4j.spi.LoggingEvent;
  * Filter for the logging panel All
  */
 public class AllFilter extends Filter {
+    private Level uIMinLevel = Level.INFO;
+    private Level rootMinLevel = Level.WARN;
 
+    public Level getRootMinLevel() {
+        return rootMinLevel;
+    }
+
+    public void setRootMinLevel(Level rootMinLevel) {
+        this.rootMinLevel = rootMinLevel;
+    }
+
+    public Level getuIMinLevel() {
+        return uIMinLevel;
+    }
+
+    public void setuIMinLevel(Level uIMinLevel) {
+        this.uIMinLevel = uIMinLevel;
+    }
+
+
+    
     /**
     * accept root     <= Warning   >
     *        root.gui <= Info      >
@@ -45,14 +65,14 @@ public class AllFilter extends Filter {
     public int decide(LoggingEvent le) {
         if(le.getLoggerName().toLowerCase().startsWith("gui.")) {
             //Gui accept level >= Info
-            if(le.getLevel().isGreaterOrEqual(Level.INFO)) {
+            if(le.getLevel().isGreaterOrEqual(uIMinLevel)) {
                 return Filter.ACCEPT;
             } else {
                 return Filter.DENY;
             }
         } else {
             //root accept only >= Warning
-            if(le.getLevel().isGreaterOrEqual(Level.WARN)) {
+            if(le.getLevel().isGreaterOrEqual(rootMinLevel)) {
                 return Filter.ACCEPT;
             } else {
                 return Filter.DENY;

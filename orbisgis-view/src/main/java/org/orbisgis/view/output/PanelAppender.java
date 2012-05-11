@@ -123,24 +123,26 @@ public class PanelAppender extends AppenderSkeleton {
             try {
                 while(!leQueue.isEmpty()) {
                     LoggingEvent le = leQueue.poll();
-                    int messageHash = le.getMessage().hashCode();
-                    if(messageHash!=lastMessageHash ||
-                        le.getTimeStamp()-lastMessageTime>SAME_MESSAGE_IGNORE_INTERVAL) {
-                        lastMessageHash = messageHash;
-                        lastMessageTime = le.getTimeStamp();
-                        //Update the color if the level change
-                        if(!le.getLevel().equals(lastLevel)) {
-                            lastLevel = le.getLevel();
-                            lastLevelColor = getLevelColor(lastLevel);
-                            guiPanel.setDefaultColor(lastLevelColor);
-                        }
-                        guiPanel.print(layout.format(le));
-                        if(layout.ignoresThrowable()) {
-                            String[] s = le.getThrowableStrRep();
-                            if (s != null) {
-                                int len = s.length;
-                                for(int i = 0; i < len; i++) {
-                                    guiPanel.println(s[i]);
+                    if(le.getMessage()!=null) {
+                        int messageHash = le.getMessage().hashCode();
+                        if(messageHash!=lastMessageHash ||
+                            le.getTimeStamp()-lastMessageTime>SAME_MESSAGE_IGNORE_INTERVAL) {
+                            lastMessageHash = messageHash;
+                            lastMessageTime = le.getTimeStamp();
+                            //Update the color if the level change
+                            if(!le.getLevel().equals(lastLevel)) {
+                                lastLevel = le.getLevel();
+                                lastLevelColor = getLevelColor(lastLevel);
+                                guiPanel.setDefaultColor(lastLevelColor);
+                            }
+                            guiPanel.print(layout.format(le));
+                            if(layout.ignoresThrowable()) {
+                                String[] s = le.getThrowableStrRep();
+                                if (s != null) {
+                                    int len = s.length;
+                                    for(int i = 0; i < len; i++) {
+                                        guiPanel.println(s[i]);
+                                    }
                                 }
                             }
                         }

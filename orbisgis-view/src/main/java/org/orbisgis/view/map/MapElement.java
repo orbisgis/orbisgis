@@ -113,6 +113,7 @@ public final class MapElement extends AbstractEditableElement implements
 		if(oldExtent!=null) {
                         if(!mapTransform.getExtent().equals(oldExtent)){		
 				//Extent update change the Map content
+                                LOGGER.debug("Map move !"+mapTransform.getExtent());
 				modified = true;
 			}
 		}

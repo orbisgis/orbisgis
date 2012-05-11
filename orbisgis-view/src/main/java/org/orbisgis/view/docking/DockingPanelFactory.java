@@ -47,7 +47,7 @@ public interface DockingPanelFactory {
      */
     public boolean match(DockingPanelLayout layout);
     /**
-     * Return a new or existing DockingPanel for this panel informations
+     * Return a new DockingPanel for this panel informations
      * @param layout
      * @return 
      */

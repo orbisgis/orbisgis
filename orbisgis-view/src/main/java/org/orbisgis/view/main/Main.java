@@ -28,23 +28,41 @@
  */
 package org.orbisgis.view.main;
 
+import java.util.Stack;
+
 /**
  * Entry point of User Interface
  */
 final class Main 
 {
+    private static boolean DEBUG_MODE=false;
     /**
      * Utility class
      */
     private Main() {
         
     }
+    
+    private static void parseCommandLine(String[] args) {
+        //Read parameters
+        Stack<String> sargs=new Stack<String>();
+        for(String arg : args) {
+            sargs.insertElementAt(arg, 0);
+        }
+        while(!sargs.empty()) {
+            String argument=sargs.pop();
+            if(argument.contentEquals("-debug")) {
+                DEBUG_MODE=true;
+            }
+        }
+    }
     /**
     * Entry point of User Interface
     */
     public static void main( String[] args )
     {
-        Core viewCore = new Core();
+        parseCommandLine(args);
+        Core viewCore = new Core(DEBUG_MODE);
         viewCore.startup();
     }
 }

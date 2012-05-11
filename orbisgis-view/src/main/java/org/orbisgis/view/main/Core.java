@@ -34,9 +34,19 @@ import java.beans.EventHandler;
 import java.io.File;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.NoSuchTableException;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
 import org.orbisgis.core.layerModel.DefaultMapContext;
+import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.layerModel.LayerException;
+import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.background.JobQueue;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -54,7 +64,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * This is the main UIContext
  */
 public class Core {
-    protected final static I18n i18n = I18nFactory.getI18n(Core.class);        
+    protected final static I18n I18N = I18nFactory.getI18n(Core.class);        
     private static final Logger LOGGER = Logger.getLogger(Core.class);
     /////////////////////
     //view package
@@ -75,11 +85,13 @@ public class Core {
     private MainContext mainContext; /*!< The larger surrounding part of OrbisGis base */
     /**
      * Core constructor, init Model instances
+     * @param debugMode Show additional information for debugging purposes
      * @note Call startup() to init Swing
      */
-    public Core() {
-        this.mainContext = new MainContext();
+    public Core(boolean debugMode) {
+        this.mainContext = new MainContext(debugMode);
         this.viewWorkspace = new ViewWorkspace(this.mainContext.getCoreWorkspace());
+        initSwingJobs();
         initSIF();
     }
     /**
@@ -139,8 +151,6 @@ public class Core {
         //Add the views as a new Docking Panel
         dockManager.show(mapEditor);
         dockManager.show(toc);
-        MapElement testMap = new MapElement(new DefaultMapContext());
-        mapEditor.loadMap(testMap);
     }
     
     /**
@@ -148,7 +158,7 @@ public class Core {
      * All,Info,Warning,Error
      */
     private void makeLoggingPanels() {
-        loggerCollection = new OutputManager();
+        loggerCollection = new OutputManager(mainContext.isDebugMode());
         //Show Panel
         dockManager.show(loggerCollection.getPanel());
     }
@@ -160,6 +170,16 @@ public class Core {
         geoCatalog = new Catalog(mainContext.getSourceContext());
         //Add the view as a new Docking Panel
         dockManager.show(geoCatalog);
+    }
+    /**
+     * Init the BackGroundManager Service
+     */
+    private void initSwingJobs() {   
+        
+        Services.registerService(
+                BackgroundManager.class,
+                I18N.tr("Execute tasks in background processes, showing progress bars. Gives access to the job queue"),
+                new JobQueue());
     }
     /**
      * The user want to close the main window
@@ -266,4 +286,5 @@ public class Core {
             //} );
         }        
     }
+    
 }

@@ -26,12 +26,24 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.view.edition;
+package org.orbisgis.view.geocatalog;
 
-public class EditableElementException extends Exception {
+import java.awt.datatransfer.Transferable;
+import javax.swing.JComponent;
+import javax.swing.JList;
+import javax.swing.ListSelectionModel;
+import javax.swing.TransferHandler;
 
-    public EditableElementException(String string, Throwable thrwbl) {
-        super(string, thrwbl);
+/**
+ * Transfer of DataSource Editable
+ */
+
+public class SourceListTransferHandler extends TransferHandler{
+    @Override
+    protected Transferable createTransferable(JComponent c) {
+        JList list = (JList)c;
+        Object[] values = list.getSelectedValues();
+
+        return new EditableSource(null);
     }
-
 }

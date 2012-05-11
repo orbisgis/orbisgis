@@ -34,10 +34,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.EventHandler;
+import java.util.logging.Level;
 import javax.swing.*;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.edition.EditableElement;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.NoSuchTableException;
 import org.orbisgis.core.layerModel.DefaultMapContext;
+import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
@@ -84,15 +89,30 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
         //add(createToolBar(false), BorderLayout.SOUTH);
         //Add the tools in the docking Panel title
         dockingPanelParameters.setToolBar(createToolBar(true));
-    }
 
+      
+        //Test
+        MapContext mc = new DefaultMapContext();
+        try {
+            //Load MapContext In MapEditor
+            mc.open(new NullProgressMonitor());
+            MapElement testMap = new MapElement(mc);
+            loadMap(testMap);            
+        } catch (LayerException ex) {
+            GUILOGGER.error(ex);
+        }
+        
+    }
     
-    public void loadMap(MapElement element) {
+    public final void loadMap(MapElement element) {
         try {            
             mapContext = (MapContext) element.getObject();
-            mapContext.open(new NullProgressMonitor());
+            if(!mapContext.isOpen()) {
+                mapContext.open(new NullProgressMonitor());
+            }
             mapControl.setMapContext(mapContext);
             mapControl.setElement(element);
+            mapControl.getMapTransform().setExtent(mapContext.getLayerModel().getEnvelope());
             mapControl.initMapControl();
         } catch (LayerException ex) {            
             GUILOGGER.error(ex);
@@ -113,12 +133,15 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
         autoSelection.add(addButton(toolBar,new ZoomInTool(),useButtonText));
         autoSelection.add(addButton(toolBar,new ZoomOutTool(),useButtonText));
         autoSelection.add(addButton(toolBar,new PanTool(),useButtonText));
+        //Full extent button
+        toolBar.add(addButton(OrbisGISIcon.getIcon("world"), I18N.tr("Full extent"), I18N.tr("Zoom to show all geometries"), useButtonText,"onFullExtent"));
+
         //Mesure Tools
         JPopupMenu mesureMenu = new JPopupMenu();
-        JMenuItem defaultMenu = createMenuItem(new MesureLineTool(),autoSelection);
-        mesureMenu.add(createMenuItem(new MesurePolygonTool(),autoSelection));
+        JMenuItem defaultMenu = createMenuItem(new MesureLineTool());
+        mesureMenu.add(createMenuItem(new MesurePolygonTool()));
         mesureMenu.add(defaultMenu);
-        mesureMenu.add(createMenuItem(new CompassTool(),autoSelection));
+        mesureMenu.add(createMenuItem(new CompassTool()));
         //Create the Mesure Tools Popup Button
         DropDownButton mesureButton = new DropDownButton();
         if(useButtonText) {
@@ -134,11 +157,36 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
         return toolBar;
     }
 
-    private JMenuItem createMenuItem(Automaton automaton,ButtonGroup autoSelection) {
+    /**
+     * Add the automaton tool to a Menu
+     * @param automaton
+     * @return 
+     */
+    private JMenuItem createMenuItem(Automaton automaton) {
         JMenuItem automatonMenuItem = new JMenuItem(automaton.getName(), automaton.getImageIcon());
         automatonMenuItem.setToolTipText(automaton.getTooltip());
         automatonMenuItem.addActionListener(new AutomatonItemListener(automaton));        
         return automatonMenuItem;
+    }
+    
+    /**
+     * Create a simple button
+     * @param icon
+     * @param buttonText
+     * @param buttonToolTip
+     * @param useButtonText
+     * @param localMethodName The name of the method to call on this
+     * @return The button
+     */
+    private AbstractButton addButton(ImageIcon icon, String buttonText,String buttonToolTip,boolean useButtonText,String localMethodName) {
+        String text="";
+        if(useButtonText) {
+           text = buttonText;
+        }
+        JButton newButton = new JButton(text,icon);
+        newButton.setToolTipText(buttonToolTip);
+        newButton.addActionListener(EventHandler.create(ActionListener.class,this,localMethodName));
+        return newButton;
     }
     /**
      * Add the automaton on the toolBar
@@ -165,6 +213,12 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
         return button;
     }
     /**
+     * The user click on the button Full Extent
+     */
+    public void onFullExtent() {
+        mapControl.getMapTransform().setExtent(mapContext.getLayerModel().getEnvelope());
+    }
+    /**
      * Give information on the behaviour of this panel related to the current
      * docking system
      * @return The panel parameter instance
@@ -181,7 +235,7 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
      * @param automaton 
      */
     public void onToolSelected(Automaton automaton) {
-        GUILOGGER.info(I18N.tr("Choose the tool named {0}",automaton.getName()));
+        GUILOGGER.debug("Choose the tool named "+automaton.getName());
         try {
             mapControl.setTool(automaton);
         } catch (TransitionException ex) {

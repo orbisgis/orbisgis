@@ -39,14 +39,13 @@ package org.orbisgis.view.map;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.ComponentListener;
 import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
 import java.awt.image.BufferedImage;
+import java.beans.EventHandler;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.Timer;
 import org.apache.log4j.Logger;
 import org.gdms.data.ClosedDataSourceException;
 import org.gdms.data.DataSource;
@@ -55,13 +54,13 @@ import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.background.BackgroundJob;
-import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.background.DefaultJobId;
 import org.orbisgis.core.layerModel.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.view.background.BackgroundJob;
+import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.background.DefaultJobId;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.ToolListener;
 import org.orbisgis.view.map.tool.ToolManager;
@@ -75,11 +74,11 @@ import org.xnap.commons.i18n.I18nFactory;
  * 
  */
 
-public class MapControl extends JPanel implements ContainerListener {
+public class MapControl extends JComponent implements ContainerListener {
         private static final Logger LOGGER = Logger.getLogger(MapControl.class);
         protected final static I18n I18N = I18nFactory.getI18n(MapControl.class);
 	private static int lastProcessId = 0;
-
+        private AtomicBoolean awaitingDrawing=new AtomicBoolean(false); /*!< A drawing process is currently requested, it is useless to request another */
 	private int processId;
 
 	/** The map will draw the last generated image without querying the data. */
@@ -110,14 +109,18 @@ public class MapControl extends JPanel implements ContainerListener {
 	public MapControl() {
             defaultTool = new ZoomInTool();
 	}
-        
+        private void setStatus(int newStatus) {
+            if(newStatus==UPDATED || !awaitingDrawing.get()) {
+                status = newStatus;
+            }
+        }
 	final public void initMapControl() throws TransitionException {
 		synchronized (this) {
 			this.processId = lastProcessId++;
 		}
 		setDoubleBuffered(true);
 		setOpaque(true);
-		status = DIRTY;
+		setStatus(DIRTY);
 
                 // creating objects
 		toolManager = new ToolManager(defaultTool, mapContext, mapTransform,
@@ -154,23 +157,13 @@ public class MapControl extends JPanel implements ContainerListener {
 			}
 		});
 		addMouseListener(toolManager);
-
-		mapTransform.addTransformListener(new TransformListener() {
-
-			public void imageSizeChanged(int oldWidth, int oldHeight,
-					MapTransform mapTransform) {
-				invalidateImage();
-			}
-
-			public void extentChanged(Envelope oldExtent,
-					MapTransform mapTransform) {
-				invalidateImage();
-				// Record new BoundingBox value for map context
-				mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
-			}
-
-		});
-
+                addMouseMotionListener(toolManager);
+                addMouseWheelListener(toolManager);
+                
+		mapTransform.addTransformListener(new MapControlTransformListener());
+                
+                //Component event invalidate the picture
+                this.addComponentListener(EventHandler.create(ComponentListener.class, this,"invalidateImage"));
 		// Add editable element listen transform event
                 mapTransform.addTransformListener(element);
 
@@ -207,7 +200,7 @@ public class MapControl extends JPanel implements ContainerListener {
 					refreshLayerListener);
 		}
 	}
-
+        
 	/**
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
@@ -222,18 +215,18 @@ public class MapControl extends JPanel implements ContainerListener {
 
 		// then we render on top the already computed image
 		// if it exists
-		if (mapTransformImage != null) {
+		if (mapTransformImage != null && !awaitingDrawing.get()) {
 			g.drawImage(mapTransformImage, 0, 0, null);
 			toolManager.paintEdition(g);
 		}
 
 		// if the image itself is dirty
-		if (status == DIRTY) {
-			status = UPDATED;
+		if (status == DIRTY && mapContext!=null) {
+                    if(!awaitingDrawing.getAndSet(true))
+			setStatus(UPDATED);
 
 			// is never null, except at first loading with no layer
 			// in that case we do not draw anything
-			if (mapTransform.getAdjustedExtent() != null) {
 				int width = this.getWidth();
 				int height = this.getHeight();
 
@@ -255,34 +248,17 @@ public class MapControl extends JPanel implements ContainerListener {
 				// mapTransform will update the AffineTransform
 				mapTransform.setImage(inProcessImage);
 
-				// let's show the rendering while it is being made
-				Timer timer = new Timer(200, new ActionListener() {
-
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						repaint();
-					}
-				});
-				timer.start();
 				// now we start the actual drawer
-				drawer = new Drawer(timer);
+				drawer = new Drawer();
 				BackgroundManager bm = Services
 						.getService(BackgroundManager.class);
 				bm.nonBlockingBackgroundOperation(new DefaultJobId(
 						"org.orbisgis.jobs.MapControl-" + processId), drawer); //$NON-NLS-1$
-				// bm.addBackgroundListener( Services.getService(
-				// WorkbenchContext.class ) );
-			}
+
+
 		}
 
 	}
-
-	/*
-	 * public int getTimerToDraw() { return timerToDraw; }
-	 * 
-	 * public void setTimerToDraw(int timerToDraw) { this.timerToDraw =
-	 * timerToDraw; }
-	 */
 
 	/**
 	 * Returns the drawn image
@@ -305,8 +281,8 @@ public class MapControl extends JPanel implements ContainerListener {
 		toolManager.setTool(tool);
 	}
 
-	private void invalidateImage() {
-		status = DIRTY;
+	public void invalidateImage() {
+		setStatus(DIRTY);
 		repaint();
 	}
 
@@ -314,10 +290,8 @@ public class MapControl extends JPanel implements ContainerListener {
 
 		private boolean cancel = false;
 		private CancellablePM pm;
-		private Timer timer;
 
-		public Drawer(Timer timer) {
-			this.timer = timer;
+		public Drawer() {
 		}
 
 		public String getTaskName() {
@@ -338,12 +312,10 @@ public class MapControl extends JPanel implements ContainerListener {
 				}
 			} finally {
 				mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
-				timer.stop();
+                                awaitingDrawing.set(false);
 				MapControl.this.repaint();
 				mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
-//				WorkbenchContext wbContext = Services
-//						.getService(WorkbenchContext.class);
-//				wbContext.setLastAction("Update toolbar"); //$NON-NLS-1$
+                                
 			}
 		}
 
@@ -542,4 +514,18 @@ public class MapControl extends JPanel implements ContainerListener {
 		return mapContext;
 	}
 
+        private class MapControlTransformListener implements TransformListener {
+            
+            public void imageSizeChanged(int oldWidth, int oldHeight,
+                            MapTransform mapTransform) {
+                    invalidateImage();
+            }
+
+            public void extentChanged(Envelope oldExtent,
+                            MapTransform mapTransform) {
+                    invalidateImage();
+                    // Record new BoundingBox value for map context
+                    mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
+            }            
+        }
 }

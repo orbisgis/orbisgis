@@ -40,7 +40,6 @@ package org.orbisgis.view.map.tools;
 
 import java.awt.Graphics;
 import java.util.Observable;
-import javax.swing.AbstractButton;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.DrawingException;
 import org.orbisgis.view.map.tool.FinishedAutomatonException;

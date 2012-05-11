@@ -50,6 +50,7 @@ public class OutputManager {
         public final static String LOG_ALL = "output_all";
         public final static String LOG_ERROR = "output_error";
         public final static String LOG_WARNING = "output_warning";
+        public final static String LOG_DEBUG = "output_debug";
         
         private Map<String, PanelAppender> outputPanels = new HashMap<String, PanelAppender>();
         private MainOutputPanel mainPanel;
@@ -58,12 +59,15 @@ public class OutputManager {
         private PatternLayout loggingLayout = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
         private PatternLayout infoLayout = new PatternLayout("%m%n");
 
-        public OutputManager() {
+        public OutputManager(boolean debugConsole) {
                 mainPanel = new MainOutputPanel();
-                makeOutputAll();
+                makeOutputAll(debugConsole);
+                if(debugConsole) {
+                    makeOutputDebug();
+                }
                 makeOutputInfo();
-                makeOutputError();
                 makeOutputWarning();
+                makeOutputError();
         }
 
         /**
@@ -80,10 +84,15 @@ public class OutputManager {
          * This panel accept root     <= Warning   >
          *                   root.gui <= Info      >
          */
-        private void makeOutputAll() {
+        private void makeOutputAll(boolean showDebug) {
                 PanelAppender app = makePanel();
                 app.setLayout(loggingLayout);
-                app.addFilter(new AllFilter());
+                AllFilter allFilter = new AllFilter();
+                if(showDebug) {
+                    allFilter.setRootMinLevel(Level.DEBUG);
+                    allFilter.setuIMinLevel(Level.DEBUG);
+                }
+                app.addFilter(allFilter);      
                 outputPanels.put(LOG_ALL, app);
                 ROOT_LOGGER.addAppender(app);
                 mainPanel.addSubPanel(i18n.tr("orbisgis.view.log_all_title"), app.getGuiPanel());
@@ -143,6 +152,21 @@ public class OutputManager {
                 outputPanels.put(LOG_WARNING, app);
                 ROOT_LOGGER.addAppender(app);
                 mainPanel.addSubPanel(i18n.tr("orbisgis.view.log_warning_title"), app.getGuiPanel());
+        }
+        /**
+         * Make the debug Output panel
+         * This panel accept root == Debug      >
+         */
+        private void makeOutputDebug() {
+                PanelAppender app = makePanel();
+                app.setLayout(loggingLayout);
+                LevelMatchFilter filter = new LevelMatchFilter();
+                filter.setLevelToMatch(Level.DEBUG.toString());
+                app.addFilter(filter);
+                app.addFilter(new DenyAllFilter());
+                outputPanels.put(LOG_DEBUG, app);
+                ROOT_LOGGER.addAppender(app);
+                mainPanel.addSubPanel(i18n.tr("Debug"), app.getGuiPanel());
         }
 
         /**

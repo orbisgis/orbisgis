@@ -102,6 +102,7 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
+import java.awt.event.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -110,7 +111,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * the EditionContext of the system.
  * 
  */
-public class ToolManager extends MouseAdapter {
+public class ToolManager implements MouseListener,MouseWheelListener,MouseMotionListener {
 
         public static final String TERMINATE = "t"; //$NON-NLS-1$
         public static final String RELEASE = "release"; //$NON-NLS-1$
@@ -626,9 +627,8 @@ public class ToolManager extends MouseAdapter {
          * @throws FinishedAutomatonException
          * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#setEditionTool(org.orbisgis.plugins.core.ui.editors.map.tool.ag.Automaton)
          */
-        public void setTool(Automaton tool) throws TransitionException {
+        public final void setTool(Automaton tool) throws TransitionException {
                 Automaton lastTool = currentTool;
-                UILOGGER.info("setting tool " + tool.getClass().getName()); //$NON-NLS-1$
                 try {
                         if ((currentTool != null) && (activeLayer != null)) {
                                 try {
@@ -783,6 +783,12 @@ public class ToolManager extends MouseAdapter {
         public GeometryFactory getToolsFactory() {
                 return toolsGeometryFactory;
         }
+
+    public void mouseEntered(MouseEvent me) {
+    }
+
+    public void mouseExited(MouseEvent me) {
+    }
 
         private class ToolLayerListener extends LayerListenerAdapter implements
                 LayerListener, EditionListener, DataSourceListener {
