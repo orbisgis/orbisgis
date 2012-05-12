@@ -58,7 +58,7 @@ public class ProgressMonitorTest {
         @Test
         public void regressionTest698() {
                 ProgressMonitor pm = new DefaultProgressMonitor("open file", 0);
-                // this should be throw any error
+                // this should not throw any error (used to produce a /0 exception)
                 pm.progressTo(100);
         }
 }
