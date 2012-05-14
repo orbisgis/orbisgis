@@ -343,7 +343,7 @@ public class SQLTest extends TestBase {
                 dsf.getSourceManager().delete("testIn");
                 dsf.getSourceManager().delete("testIn2");
         }
-        
+
         @Test
         public void testCorrelatedInClause() throws Exception {
                 dsf.executeSQL("CREATE TABLE testIn AS SELECT * FROM VALUES (1), (3), (5) as toto;");
@@ -862,7 +862,7 @@ public class SQLTest extends TestBase {
                 ds.getRow(0);
                 ds.close();
         }
-        
+
         @Test
         public void testGroupByInsideExpression() throws Exception {
                 dsf.getSourceManager().register("groupcsv",
@@ -873,7 +873,7 @@ public class SQLTest extends TestBase {
                 ds.getRow(0);
                 ds.close();
         }
-        
+
         @Test
         public void testGroupByAlias() throws Exception {
                 dsf.getSourceManager().register("groupcsv",
@@ -883,6 +883,11 @@ public class SQLTest extends TestBase {
                 ds.open();
                 ds.getRow(0);
                 ds.close();
+        }
+
+        @Test
+        public void regressionTest699() throws Exception {
+                dsf.executeSQL("create table test as SELECT MAX(abs(runoff_win)) as mrun FROM " + SHPTABLE + ";");
         }
 
         @Test

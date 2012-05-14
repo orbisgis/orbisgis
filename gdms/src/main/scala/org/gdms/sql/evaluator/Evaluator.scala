@@ -160,7 +160,12 @@ case class FunctionEvaluator(name: String, l: List[Expression]) extends Evaluato
   override def toString = if (f == null) name else f.getName + "(" + l + ")"
   
   def doCopy = {
-    FunctionEvaluator(name, l)
+    val ret = FunctionEvaluator(name, l)
+    // if initialized, set a new the function instance on duplication - #699
+    if (f != null) {
+      ret.f = dsf.getFunctionManager.getFunction(name).asInstanceOf[ScalarFunction]
+    }
+    ret
   }  
   override def doCleanUp = {
     super.doCleanUp
