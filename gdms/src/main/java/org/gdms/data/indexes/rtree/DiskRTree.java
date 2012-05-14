@@ -406,10 +406,11 @@ public final class DiskRTree implements Tree<Envelope> {
                 byte[] bytes = readNodeBytes(emptyBlockAddress);
                 ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
                 DataInputStream dis = new DataInputStream(bis);
-
-                long emptyBlock = dis.readLong();
-                emptyBlocks.add(emptyBlock);
-
+                try {
+                        long emptyBlock = dis.readLong();
+                        emptyBlocks.add(emptyBlock);
+                } catch (IOException e) {
+                }
                 dis.close();
         }
 
