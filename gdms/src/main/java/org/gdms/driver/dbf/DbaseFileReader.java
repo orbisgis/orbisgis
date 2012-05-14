@@ -72,6 +72,8 @@ import java.nio.charset.Charset;
 import java.nio.charset.CharsetDecoder;
 import java.util.Calendar;
 
+import org.apache.log4j.Logger;
+
 import org.gdms.data.WarningListener;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -117,6 +119,7 @@ public class DbaseFileReader {
         private char[] fieldTypes;
         private int[] fieldLengths;
         private int cnt = 1;
+        private static final Logger LOG = Logger.getLogger(DbaseFileReader.class);
 
         /**
          * Creates a new instance of DBaseFileReader
@@ -329,6 +332,7 @@ public class DbaseFileReader {
                                                         object = ValueFactory.createValue(cal.getTime());
                                                 } catch (NumberFormatException nfe) {
                                                         // todo: use progresslistener, this isn't a grave error.
+                                                        LOG.warn("There was an error parsing a date. Ignoring it.", nfe);
                                                 }
                                         }
                                         break;
@@ -358,6 +362,9 @@ public class DbaseFileReader {
                                                         // parsing successful --> exit
                                                         break;
                                                 } catch (NumberFormatException e2) {
+                                                        // it is not a long either
+                                                        // so we do nothing.
+                                                        // this whole method screams for refactoring...
                                                 }
                                         }
                                         // no break!!

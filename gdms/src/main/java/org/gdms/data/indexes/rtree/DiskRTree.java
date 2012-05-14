@@ -294,7 +294,7 @@ public final class DiskRTree implements Tree<Envelope> {
                 long inputPosition = position;
                 List<byte[]> allByteArrays = new ArrayList<byte[]>();
                 int concatSize = 0;
-                
+
                 while (true) {
                         buffer.position(inputPosition);
                         // Read the address of the extension node
@@ -306,7 +306,7 @@ public final class DiskRTree implements Tree<Envelope> {
                         byte[] thisBlockBytes = new byte[blockBytesLength];
                         buffer.get(thisBlockBytes);
                         allByteArrays.add(thisBlockBytes);
-                        
+
                         if (nextNode == -1) {
                                 // no extension node
                                 break;
@@ -406,11 +406,10 @@ public final class DiskRTree implements Tree<Envelope> {
                 byte[] bytes = readNodeBytes(emptyBlockAddress);
                 ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
                 DataInputStream dis = new DataInputStream(bis);
-                try {
-                        long emptyBlock = dis.readLong();
-                        emptyBlocks.add(emptyBlock);
-                } catch (IOException e) {
-                }
+
+                long emptyBlock = dis.readLong();
+                emptyBlocks.add(emptyBlock);
+
                 dis.close();
         }
 

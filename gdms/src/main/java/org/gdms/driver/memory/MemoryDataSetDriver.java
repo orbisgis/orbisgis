@@ -261,6 +261,7 @@ public class MemoryDataSetDriver extends GDMSModelDriver implements
                                 }
                         }
                 } catch (DriverException ex) {
+                        LOG.warn("Failed to get the Type of a Memory driver", ex);
                 }
                 return type;
         }

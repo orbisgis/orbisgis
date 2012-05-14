@@ -88,7 +88,7 @@ public class Bounds {
         sb.append(format.format(maxx.doubleValue()));
         sb.append(", ");
         sb.append(format.format(minx.doubleValue()));
-        sb.append(")");
+        sb.append(')');
         return sb.toString();
     }
 

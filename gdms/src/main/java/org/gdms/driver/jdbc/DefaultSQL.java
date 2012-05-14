@@ -486,7 +486,7 @@ public abstract class DefaultSQL extends AbstractDataSet implements DBReadWriteD
                         getTableAndSchemaName()).append(" WHERE ").append(names[0]).append("=").append(pks[0].getStringValue(this));
 
                 for (int i = 1; i < pks.length; i++) {
-                        sql.append(" AND ").append(names[i]).append("=").append(
+                        sql.append(" AND ").append(names[i]).append('=').append(
                                 pks[i].getStringValue(this));
                 }
 

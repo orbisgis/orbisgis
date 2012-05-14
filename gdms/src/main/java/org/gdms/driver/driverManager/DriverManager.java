@@ -76,7 +76,7 @@ import org.gdms.driver.io.Importer;
 public final class DriverManager {
 
         private Map<String, Class<? extends Driver>> driverClasses = new HashMap<String, Class<? extends Driver>>();
-        private static final Logger logger = Logger.getLogger(DriverManager.class);
+        private static final Logger LOG = Logger.getLogger(DriverManager.class);
         private List<DriverManagerListener> listeners = new ArrayList<DriverManagerListener>();
         private Map<String, Class<? extends Importer>> importClasses = new HashMap<String, Class<? extends Importer>>();
         private Map<String, Class<? extends Exporter>> exportClasses = new HashMap<String, Class<? extends Exporter>>();
@@ -99,11 +99,11 @@ public final class DriverManager {
                                 }
                         }
                 }
-                
+
                 throw new DriverLoadException("No suitable importer for " + file.getAbsolutePath());
         }
-        
-         public FileExporter getFileExporter(File file) {
+
+        public FileExporter getFileExporter(File file) {
                 for (Entry<String, Class<? extends Exporter>> e : exportClasses.entrySet()) {
                         if (FileExporter.class.isAssignableFrom(e.getValue())) {
                                 FileExporter i = (FileExporter) getExporter(e.getKey());
@@ -119,7 +119,7 @@ public final class DriverManager {
                                 }
                         }
                 }
-                
+
                 throw new DriverLoadException("No suitable exporter for " + file.getAbsolutePath());
         }
 
@@ -195,7 +195,7 @@ public final class DriverManager {
                         throw new DriverLoadException(e);
                 }
         }
-        
+
         public Exporter getExporter(String name) {
                 try {
                         Class<? extends Exporter> exportClass = exportClasses.get(name);
@@ -226,7 +226,7 @@ public final class DriverManager {
          * fails for some other reason
          */
         public Driver getDriver(String name) {
-                logger.trace("Instantiating driver " + name);
+                LOG.trace("Instantiating driver " + name);
                 try {
                         Class<? extends Driver> driverClass = driverClasses.get(name);
                         if (driverClass == null) {
@@ -246,7 +246,7 @@ public final class DriverManager {
          * @param driverClass a class extending Driver
          */
         public void registerDriver(Class<? extends Driver> driverClass) {
-                logger.trace("Registering driver " + driverClass.getName());
+                LOG.trace("Registering driver " + driverClass.getName());
                 Driver driver;
                 try {
                         driver = driverClass.newInstance();
@@ -260,9 +260,9 @@ public final class DriverManager {
                                 "The driver cannot be instantiated", e);
                 }
         }
-        
+
         public void registerImporter(Class<? extends Importer> importerClass) {
-                logger.trace("Registering driver " + importerClass.getName());
+                LOG.trace("Registering driver " + importerClass.getName());
                 try {
                         Importer driver = importerClass.newInstance();
                         importClasses.put(driver.getImporterId(), importerClass);
@@ -275,9 +275,9 @@ public final class DriverManager {
                                 "The importer cannot be instantiated", e);
                 }
         }
-        
+
         public void registerExporter(Class<? extends Exporter> exporterClass) {
-                logger.trace("Registering driver " + exporterClass.getName());
+                LOG.trace("Registering driver " + exporterClass.getName());
                 try {
                         Exporter driver = exporterClass.newInstance();
                         exportClasses.put(driver.getExporterId(), exporterClass);
@@ -302,14 +302,14 @@ public final class DriverManager {
                         fireDriverRemoved(driverId, r);
                 }
         }
-        
+
         public void unregisterImporter(String importerId) {
                 Class<? extends Importer> r = importClasses.remove(importerId);
                 if (r != null) {
                         fireImporterRemoved(importerId, r);
                 }
         }
-        
+
         public void unregisterExporter(String exporterId) {
                 Class<? extends Exporter> r = exportClasses.remove(exporterId);
                 if (r != null) {
@@ -357,8 +357,10 @@ public final class DriverManager {
                                 }
                         } catch (InstantiationException e) {
                                 // ignore
+                                LOG.warn("Failed to instanciate a driver class.", e);
                         } catch (IllegalAccessException e) {
                                 // ignore
+                                LOG.warn("Failed to instanciate a driver class.", e);
                         }
                 }
 
@@ -376,7 +378,7 @@ public final class DriverManager {
                         l.driverRemoved(i, d);
                 }
         }
-        
+
         private void fireImporterAdded(String i, Class<? extends Importer> d) {
                 for (DriverManagerListener l : listeners) {
                         l.importerAdded(i, d);
@@ -388,7 +390,7 @@ public final class DriverManager {
                         l.importerRemoved(i, d);
                 }
         }
-        
+
         private void fireExporterAdded(String i, Class<? extends Exporter> d) {
                 for (DriverManagerListener l : listeners) {
                         l.exporterAdded(i, d);

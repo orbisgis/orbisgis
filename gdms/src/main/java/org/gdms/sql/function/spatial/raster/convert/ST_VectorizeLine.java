@@ -117,7 +117,8 @@ public final class ST_VectorizeLine extends AbstractTableFunction {
                                 final int[] neighborsIndices = new int[]{1, -ncols + 1,
                                         -ncols, -ncols - 1, -1, ncols - 1, ncols, ncols + 1};
 
-                                for (int y = 0, i = 0; y < nrows; y++) {
+                                int i = 0;
+                                for (int y = 0; y < nrows; y++) {
 
                                         if (y >= 100 && y % 100 == 0) {
                                                 if (pm.isCancelled()) {

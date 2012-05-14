@@ -336,7 +336,7 @@ public class DbaseFileWriter {
 
 				if (year < 1000) {
 					if (year >= 100) {
-						buffer.append("0");
+						buffer.append('0');
 					} else if (year >= 10) {
 						buffer.append("00");
 					} else {
@@ -346,12 +346,12 @@ public class DbaseFileWriter {
 				buffer.append(year);
 
 				if (month < 10) {
-					buffer.append("0");
+					buffer.append('0');
 				}
 				buffer.append(month);
 
 				if (day < 10) {
-					buffer.append("0");
+					buffer.append('0');
 				}
 				buffer.append(day);
 			} else {

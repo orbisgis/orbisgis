@@ -52,18 +52,18 @@ import com.vividsolutions.jts.geom.Polygon;
 
 /**
  * This utility class provides some useful methods related to JTS {@link Coordinate} objects.
- * 
+ *
  * @author Erwan Bocher
  */
 public final class CoordinatesUtils {
 
-        /** 
+        /**
          * Interpolates a z value (linearly) between the two coordinates.
-        
-         * @param firstCoordinate 
-         * @param lastCoordinate 
-         * @param toBeInterpolated 
-         * @return 
+         *
+         * @param firstCoordinate
+         * @param lastCoordinate
+         * @param toBeInterpolated
+         * @return
          */
         public static double interpolate(Coordinate firstCoordinate, Coordinate lastCoordinate, Coordinate toBeInterpolated) {
                 if (Double.isNaN(firstCoordinate.z)) {
@@ -87,14 +87,14 @@ public final class CoordinatesUtils {
                 return false;
         }
 
-        /** 
-         * Checks if a coordinate array contains a specific coordinate. 
-         * 
+        /**
+         * Checks if a coordinate array contains a specific coordinate.
+         *
          * The equality is done only in 2D (z values are not checked).
-         * 
-         * @param coords 
-         * @param coord 
-         * @return 
+         *
+         * @param coords
+         * @param coord
+         * @return
          */
         public static boolean contains2D(Coordinate[] coords, Coordinate coord) {
                 for (Coordinate coordinate : coords) {
@@ -105,14 +105,14 @@ public final class CoordinatesUtils {
                 return false;
         }
 
-        /** 
-         * Check if a coordinate array contains a specific coordinate. 
-         * 
+        /**
+         * Check if a coordinate array contains a specific coordinate.
+         *
          * The equality is done in 3D (z values ARE checked).
-         * 
-         * @param coords 
-         * @param coord 
-         * @return 
+         *
+         * @param coords
+         * @param coord
+         * @return
          */
         public static boolean contains3D(Coordinate[] coords, Coordinate coord) {
                 for (Coordinate coordinate : coords) {
@@ -123,7 +123,9 @@ public final class CoordinatesUtils {
                 return false;
         }
 
-        /** Determine the min and max "z" values in an array of Coordinates.
+        /**
+         * Determine the min and max "z" values in an array of Coordinates.
+         *
          * @param cs The array to search.
          * @return An array of size 2, index 0 is min, index 1 is max.
          */
@@ -165,35 +167,35 @@ public final class CoordinatesUtils {
 
         /**
          * Find the furthest coordinate in a geometry from a base coordinate
+         *
          * @param base
          * @param coords
          * @return the base coordinate and the target coordinate
          */
         public static Coordinate[] getFurthestCoordinate(Coordinate base, Coordinate[] coords) {
-                try {
-                        double distanceMax = Double.MIN_VALUE;
-                        Coordinate farCoordinate = null;
-                        for (Coordinate coord : coords) {
-                                double distance = coord.distance(base);
-                                if (distance > distanceMax) {
-                                        distanceMax = distance;
-                                        farCoordinate = coord;
-                                }
+                double distanceMax = Double.MIN_VALUE;
+                Coordinate farCoordinate = null;
+                for (Coordinate coord : coords) {
+                        double distance = coord.distance(base);
+                        if (distance > distanceMax) {
+                                distanceMax = distance;
+                                farCoordinate = coord;
                         }
-
-                        if (farCoordinate != null) {
-                                return new Coordinate[]{base, farCoordinate};
-                        }
-                } catch (Exception e) {
                 }
-                return null;
+
+                if (farCoordinate != null) {
+                        return new Coordinate[]{base, farCoordinate};
+                } else {
+                        return null;
+                }
         }
 
         /**
          * Computes the length of a linestring specified by a sequence of points.
          * if a coordinate has a NaN z return 0.
+         *
          * @param pts
-         *          the points specifying the linestring
+         * the points specifying the linestring
          * @return the length of the linestring
          */
         public static double length3D(CoordinateSequence pts) {
@@ -237,9 +239,11 @@ public final class CoordinatesUtils {
         }
 
         /**
-         * Returns the 3D length of the geometry         *
+         * Returns the 3D length of the geometry
+         *
+         *
          * @param geom
-         * @return 
+         * @return
          */
         public static double length3D(Geometry geom) {
                 double sum = 0;
@@ -255,9 +259,10 @@ public final class CoordinatesUtils {
         }
 
         /**
-         * Returns the 3D perimeter of a linestring
-         * @param polygon
-         * @return 
+         * Returns the 3D perimeter of a line string.
+         *
+         * @param lineString
+         * @return
          */
         public static double length3D(LineString lineString) {
                 return length3D(lineString.getCoordinateSequence());
@@ -265,8 +270,9 @@ public final class CoordinatesUtils {
 
         /**
          * Returns the 3D perimeter of a polygon
+         *
          * @param polygon
-         * @return 
+         * @return
          */
         public static double length3D(Polygon polygon) {
                 double len = 0.0;

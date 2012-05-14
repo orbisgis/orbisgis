@@ -173,32 +173,11 @@ public final class DataSourceFactory {
         }
 
         /**
-         * Creates a new {@code DataSourceFactory} with a <tt>sourceInfoDir</tt>
-         * set to a sub-folder '.gdms' in the user's home.
-         *
-         * @param sourceContextPaths an array of source contexts for additional source types.
-         */
-        public DataSourceFactory(String[] sourceContextPaths) {
-                initialize(System.getProperty("user.home") + File.separator + ".gdms",
-                        ".", null);
-        }
-
-        /**
          * Creates a new {@code DataSourceFactory}.
          *
          * @param sourceInfoDir the directory where the sources are stored
          */
         public DataSourceFactory(String sourceInfoDir) {
-                initialize(sourceInfoDir, ".", null);
-        }
-
-        /**
-         * Creates a new {@code DataSourceFactory}.
-         *
-         * @param sourceInfoDir the directory where the sources are stored
-         * @param sourceContextPaths an array of source contexts for additional source types.
-         */
-        public DataSourceFactory(String sourceInfoDir, String[] sourceContextPaths) {
                 initialize(sourceInfoDir, ".", null);
         }
 
