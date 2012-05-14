@@ -69,7 +69,7 @@ public class SpatialReferenceSystem {
         private CoordinateTransform coordTransform;
 
         public SpatialReferenceSystem(DataSourceFactory dsf, int sourceCRS, int targetCRS) {
-                init(dsf.getCrsFactory().createFromName("EPSG:" + sourceCRS), dsf.getCrsFactory().createFromName("EPSG:" + sourceCRS));
+                init(dsf.getCrsFactory().createFromName("EPSG:" + sourceCRS), dsf.getCrsFactory().createFromName("EPSG:" + targetCRS));
         }
 
         public SpatialReferenceSystem(CoordinateReferenceSystem sourceCRS, CoordinateReferenceSystem targetCRS) {
