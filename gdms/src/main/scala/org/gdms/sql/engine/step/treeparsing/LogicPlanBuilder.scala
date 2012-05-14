@@ -126,16 +126,7 @@ object LogicPlanBuilder {
                   
                   val (joins, normal) = c.partition(_.getType == T_JOIN)
                   
-                  def parse(ll: List[Tree]): Operation = {
-                    ll match {
-                      case x :: Nil => parseTableRef(x)
-                      case x :: xs => Join(Cross(), parseTableRef(x), parse(xs))
-                      case Nil => throw new IllegalStateException("Internal error: this cannot happen...")
-                    }
-                  }
-                  
-                  upperjoin = parse(normal)
-                  
+                  // accumulate direct joins (if there are any)
                   var ends: List[Operation] = Nil
                   joins foreach {join =>
                     val childs = getChildren(join)
@@ -149,8 +140,23 @@ object LogicPlanBuilder {
                       
                     ends = lastJoin :: ends
                   }
-                    
-                  ends foreach {n => upperjoin = Join(Cross(), upperjoin, n) }
+                  
+                  if (normal.isEmpty) {
+                    // only joins
+                    upperjoin = ends.head
+                    ends.tail foreach {n => upperjoin = Join(Cross(), upperjoin, n) }
+                  } else {
+                    // both joins and direct table references
+                    def parse(ll: List[Tree]): Operation = {
+                      ll match {
+                        case x :: Nil => parseTableRef(x)
+                        case x :: xs => Join(Cross(), parseTableRef(x), parse(xs))
+                        case Nil => throw new IllegalStateException("Internal error: this cannot happen...")
+                      }
+                    }
+                    upperjoin = parse(normal)
+                    ends foreach {n => upperjoin = Join(Cross(), upperjoin, n) }
+                  }
                 }
                 // everything inside the WHERE clause
               case T_WHERE => {

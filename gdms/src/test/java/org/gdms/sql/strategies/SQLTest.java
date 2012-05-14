@@ -1117,6 +1117,14 @@ public class SQLTest extends TestBase {
                 assertEquals(ds.getRowCount(), 16);
                 ds.close();
         }
+        
+        @Test
+        public void regression699() throws Exception {
+                dsf.executeSQL("CREATE TABLE toto1 AS SELECT * FROM " + SHPTABLE + " LIMIT 1;");
+                sm.addName("toto1", "toto2");
+                dsf.executeSQL("CREATE TABLE toto AS SELECT toto1.the_geom FROM toto1 LEFT JOIN toto2 ON "
+                        + "toto1.runoff_win = toto2.runoff_win;");
+        }
 
         @Test
         public void testSortDoesNotIncludeField() throws Exception {
