@@ -28,10 +28,15 @@
  */
 package org.orbisgis.view.map;
 
+import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
+import java.util.logging.Level;
 import javax.swing.TransferHandler;
 import org.apache.log4j.Logger;
+import org.orbisgis.core.events.EventException;
+import org.orbisgis.core.events.Listener;
+import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.TransferableEditableElement;
 import org.orbisgis.view.geocatalog.EditableSource;
@@ -45,6 +50,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class MapTransferHandler  extends TransferHandler{
     static final private Logger GUILOGGER = Logger.getLogger("gui."+MapTransferHandler.class);
     static final private I18n I18N = I18nFactory.getI18n(MapTransferHandler.class);
+    private ListenerContainer<EditableTransferEvent> transferEditableEvent = new ListenerContainer<EditableTransferEvent>();
     /**
      * MapEditor support MapElement and EditableSource only
      * @param editableArray Array Of Editable
@@ -64,6 +70,15 @@ public class MapTransferHandler  extends TransferHandler{
         return ts.isDataFlavorSupported(TransferableEditableElement.editableElementFlavor);
     }
 
+    /**
+     * To add and remove editable transfer listener
+     * @return 
+     */
+    public ListenerContainer<EditableTransferEvent> getTransferEditableEvent() {
+        return transferEditableEvent;
+    }
+
+    
     @Override
     public boolean importData(TransferSupport ts) {
         //cancel the import if it is not a drop operation
@@ -75,10 +90,17 @@ public class MapTransferHandler  extends TransferHandler{
             //This is an Editable Element
             try {
                 //A transferable element
-                EditableElement[] editableList = (EditableElement[])ts.getTransferable().getTransferData(TransferableEditableElement.editableElementFlavor);
+                Transferable trans = ts.getTransferable();
+                EditableElement[] editableList = (EditableElement[])trans.getTransferData(TransferableEditableElement.editableElementFlavor);
                 if(canImportEditableElement(editableList)) {
-                    //All elements are compatible                
-                    
+                    try {
+                        //All elements are compatible
+                        transferEditableEvent.callListeners(new EditableTransferEvent(editableList, ts.getComponent()));
+                    } catch (EventException ex) {
+                        GUILOGGER.error(I18N.tr("Error while drop Editable"),ex);
+                        return false;
+                    }
+                    return true;
                 }else{
                     GUILOGGER.error(I18N.tr("The map editor accept only map and geometry data source."));
                 }

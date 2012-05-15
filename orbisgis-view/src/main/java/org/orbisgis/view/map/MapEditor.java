@@ -37,15 +37,24 @@ import java.awt.event.ItemListener;
 import java.beans.EventHandler;
 import javax.swing.*;
 import org.apache.log4j.Logger;
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
+import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.layerModel.DefaultMapContext;
+import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.utils.I18N;
+import org.orbisgis.view.background.BackgroundJob;
+import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.button.DropDownButton;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
+import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.TransitionException;
@@ -63,7 +72,8 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
     private static final long serialVersionUID = 1L; 
     private MapControl mapControl = new MapControl();
     private MapContext mapContext = null;
-    DockingPanelParameters dockingPanelParameters;
+    private DockingPanelParameters dockingPanelParameters;
+    private MapTransferHandler dragDropHandler;
     
     /**
      * Constructor
@@ -98,9 +108,36 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
         }
         
         //Set the Drop target
-        this.setTransferHandler(new MapTransferHandler());
+        dragDropHandler = new MapTransferHandler();        
+        this.setTransferHandler(dragDropHandler);
+    }
+    /**
+     * Notifies this component that it now has a parent component.
+     * When this method is invoked, the chain of parent 
+     * components is set up with KeyboardAction event listeners.
+     */
+    @Override
+    public void addNotify() {
+        super.addNotify();
+        //Register listener
+        dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(Listener.class, this, "onDropEditable","editableList"));
     }
     
+    
+    /**
+     * The user Drop a list of Editable
+     * @param editableList 
+     */
+    public void onDropEditable(EditableElement[] editableList) {
+        BackgroundManager bm = (BackgroundManager) Services.getService(BackgroundManager.class);
+        //Load the layers in the background
+        bm.backgroundOperation(new DropDataSourceProcess(editableList));
+    }
+    
+    /**
+     * Load a new map context
+     * @param element 
+     */
     public final void loadMap(MapElement element) {
         try {            
             mapContext = (MapContext) element.getObject();
@@ -109,7 +146,7 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
             }
             mapControl.setMapContext(mapContext);
             mapControl.setElement(element);
-            mapControl.getMapTransform().setExtent(mapContext.getLayerModel().getEnvelope());
+            mapControl.getMapTransform().setExtent(mapContext.getBoundingBox());
             mapControl.initMapControl();
         } catch (LayerException ex) {            
             GUILOGGER.error(ex);
@@ -271,5 +308,39 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
         public void actionPerformed(ActionEvent ae) {
             onToolSelected(automaton);
         }
+    }
+    /**
+     * This task is created when the user Drag Source from GeoCatalog
+     * to the map directly. The layer is created directly on the root.
+     */
+    private class DropDataSourceProcess implements BackgroundJob {
+        private EditableElement[] editableList;
+
+        public DropDataSourceProcess(EditableElement[] editableList) {
+            this.editableList = editableList;
+        }
+        
+        public void run(org.orbisgis.progress.ProgressMonitor pm) {
+            DataManager dataManager = (DataManager) Services.getService(DataManager.class);
+            ILayer dropLayer = mapContext.getLayerModel();
+            int i=0;
+            for(EditableElement eElement : editableList) {
+                pm.progressTo(100 * i++ / editableList.length);
+                if(eElement instanceof EditableSource) {
+                    String sourceName = ((EditableSource)eElement).getId();
+                    try {
+                        dropLayer.addLayer(dataManager.createLayer(sourceName));
+                    } catch (LayerException e) {
+                        //This layer can not be inserted, we continue to the next layer
+                        GUILOGGER.warn(I18N.tr("Unable to create and drop the layer"),e);
+                    }
+                }
+            }
+        }
+
+        public String getTaskName() {
+            return I18N.tr("Load the data source droped into the map editor.");
+        }    
+        
     }
 }
