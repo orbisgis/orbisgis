@@ -585,7 +585,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         }
 
         private void configureMenu() {
-                if (ToolUtilities.isResctritedPopup(currentTool)) {
+                if (ToolUtilities.isRestrictedPopup(currentTool)) {
                         showPopup = false;
                 } else {
                         showPopup = true;

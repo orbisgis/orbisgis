@@ -240,6 +240,11 @@ public class MapControl extends JComponent implements ContainerListener {
 						.getService(BackgroundManager.class);
 				bm.nonBlockingBackgroundOperation(new DefaultJobId(
 						"org.orbisgis.jobs.MapControl-" + processId), drawer); //$NON-NLS-1$
+                    } else {
+                        // Currently drawing with a mix of old and new map context !
+                        // Stop the drawing
+                        // The drawer will call paint when it will release the awaitingDrawing
+                        drawer.cancel();
                     }
 		}
 	}
@@ -303,6 +308,9 @@ public class MapControl extends JComponent implements ContainerListener {
 
 		public void cancel() {
 			synchronized (this) {
+                                if(!cancel) {
+                                    LOGGER.debug("Cancel drawing !");
+                                }
 				if (pm != null) {
 					pm.cancel = true;
 					cancel = true;

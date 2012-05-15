@@ -224,7 +224,7 @@ public class ToolUtilities {
 		return vc.getLayerModel().getLayersRecursively().length > i;
 	}
 
-	public static boolean isResctritedPopup(Automaton currentTool) {
+	public static boolean isRestrictedPopup(Automaton currentTool) {
 
 		if (currentTool instanceof ZoomInTool) {
 			return true;
