@@ -153,7 +153,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
 
                                 @Override
                                 public void caretUpdate(CaretEvent e) {
-                                        line = scriptPanel.getCaretLineNumber();
+                                        line = scriptPanel.getCaretLineNumber() + 1;
                                         character = scriptPanel.getCaretOffsetFromLineStart();
                                         setStatusMessage(message);
                                 }
