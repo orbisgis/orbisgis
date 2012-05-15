@@ -97,16 +97,7 @@ abstract class Evaluator {
   
   protected def doCleanUp: Unit = {}
   
-  protected def doCopy: Evaluator
-  
-  protected def postDuplicate(n: Evaluator): Unit = {}
-   
-  final def duplicate: Evaluator = {
-    val c = doCopy
-    c.childExpressions map (e => e.evaluator = e.evaluator.duplicate)
-    postDuplicate(c)
-    c
-  }
+  def duplicate: Evaluator
 }
 
 /**
@@ -116,19 +107,7 @@ case class StaticEvaluator(v: Value) extends Evaluator {
   def eval = s =>  v
   val sqlType = v.getType
   override def toString = v.toString
-  def doCopy = copy()
-}
-
-trait DsfEvaluator extends Evaluator {
-  var dsf: DataSourceFactory = null
-  
-  override def postDuplicate(n: Evaluator) = {
-    if (dsf != null) {
-      n.asInstanceOf[DsfEvaluator].dsf = dsf
-    }
-  }
-  
-  override def doCleanUp = dsf = null
+  def duplicate: StaticEvaluator = copy()
 }
 
 object cons {
@@ -138,6 +117,12 @@ object cons {
       case _ => None
     }
   }
+}
+
+trait DsfEvaluator extends Evaluator {
+  var dsf: DataSourceFactory = null
+  
+  override def doCleanUp = dsf = null
 }
 
 /**
@@ -159,11 +144,14 @@ case class FunctionEvaluator(name: String, l: List[Expression]) extends Evaluato
   }
   override def toString = if (f == null) name else f.getName + "(" + l + ")"
   
-  def doCopy = {
+  def duplicate: FunctionEvaluator = {
     val ret = FunctionEvaluator(name, l)
-    // if initialized, set a new the function instance on duplication - #699
-    if (f != null) {
-      ret.f = dsf.getFunctionManager.getFunction(name).asInstanceOf[ScalarFunction]
+    if (dsf != null) {
+      ret.dsf = dsf
+      // if initialized, set a new the function instance on duplication - #699
+      if (f != null) {
+        ret.f = dsf.getFunctionManager.getFunction(name).asInstanceOf[ScalarFunction]
+      }
     }
     ret
   }  
@@ -204,10 +192,14 @@ case class AggregateEvaluator(f: AggregateFunction, l: List[Expression]) extends
       l.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray,
       f.getFunctionSignatures)
   }
-  override def toString = f.getName + "(" + l + ")"
+  override def toString = "Func(" + f.getName + "(" + l + "))"
   
-  def doCopy = {
-    AggregateEvaluator(dsf.getFunctionManager.getFunction(f.getName).asInstanceOf[AggregateFunction], l)
+  def duplicate: AggregateEvaluator = {
+    if (dsf == null) {
+      throw new FunctionException("Internal Error: duplicating an uninitialized AggregateEvaluator")
+    } else {
+      AggregateEvaluator(dsf.getFunctionManager.getFunction(f.getName).asInstanceOf[AggregateFunction], l)
+    }
   }
 }
 
@@ -236,12 +228,12 @@ case class FieldEvaluator(name: String, table: Option[String] = None) extends Ev
   }
   override def toString = "Field(" + (if (table.isDefined) table.get + "." else "") + name + ")"
   
-  override def postDuplicate(n: Evaluator) = {
-    val f = n.asInstanceOf[FieldEvaluator]
-    f.sqlType = sqlType
-    f.index = index
+  def duplicate: FieldEvaluator = {
+    val c = copy()
+    c.sqlType = sqlType
+    c.index = index
+    c
   }
-  def doCopy = copy()
   
   override def doCleanUp = {
     sqlType = -1
@@ -274,12 +266,15 @@ case class OuterFieldEvaluator(name: String, table: Option[String]) extends Eval
     case -1 => throw new UnknownFieldException(name)
     case _ =>
   }
-  def doCopy = copy()
-  override def postDuplicate(n: Evaluator) = {
-    val f = n.asInstanceOf[FieldEvaluator]
-    f.sqlType = sqlType
-    f.index = index
+  
+  def duplicate: OuterFieldEvaluator = {
+    val c = copy()
+    c.sqlType = sqlType
+    c.index = index
+    c.value = value
+    c
   }
+  
   override def toString = "OuterField(" + (if (table.isDefined) table.get + "." else "") + name + ")"
   
   override def doCleanUp = {
@@ -308,7 +303,7 @@ case class StarFieldEvaluator(except: Seq[String], table: Option[String]) extend
   def eval = throw new UnsupportedOperationException
   val sqlType = -1
   override def toString = "StarField(except=" + except + ")"
-  def doCopy = copy()
+  def duplicate: StarFieldEvaluator = copy()
 }
   
 object star {
@@ -326,7 +321,7 @@ object star {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class OidEvaluator() extends Evaluator {
+case object OidEvaluator extends Evaluator {
   def eval = r => {
     if (r.rowId.isDefined) {
       ValueFactory.createValue(r.rowId.get)
@@ -334,14 +329,14 @@ case class OidEvaluator() extends Evaluator {
       ValueFactory.createNullValue[Value]
     }
   }
-  val sqlType = Type.LONG
-  def doCopy = new OidEvaluator
+  def sqlType = Type.LONG
+  def duplicate = this
 }
   
 object oid {
   def unapply(e: Expression) = {
     e.evaluator match {
-      case a: OidEvaluator => true
+      case OidEvaluator => true
       case _ => false
     }
   }
@@ -356,7 +351,7 @@ object oid {
 case class CastEvaluator(e: Expression, sqlType: Int) extends Evaluator {
   override val childExpressions = e :: Nil
   def eval = s => e.evaluate(s).toType(sqlType)
-  def doCopy = copy()
+  def duplicate: CastEvaluator = CastEvaluator(e.duplicate, sqlType)
 }
   
 object castTo {
@@ -377,6 +372,6 @@ object castTo {
 case class PreparedEvaluator(r: Row, e: Expression) extends Evaluator {
   override val childExpressions = e :: Nil
   def eval = _ => e.evaluate(r)
-  def doCopy = copy()
+  def duplicate = PreparedEvaluator(r, e.duplicate)
   def sqlType = e.evaluator.sqlType
 }

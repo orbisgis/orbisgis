@@ -70,37 +70,25 @@ sealed class Expression(var evaluator: Evaluator) extends Iterable[Expression] w
    */
   def evaluate(s: Row): Value = evaluator.eval(s)
 
-  def and(e: Expression) = {
-    new Expression(AndEvaluator(this,e))
-  }
+  def and(e: Expression) = new Expression(AndEvaluator(this,e))
 
   def &(e: Expression) = and(e)
 
-  def or(e: Expression) = {
-    new Expression(OrEvaluator(this,e))
-  }
+  def or(e: Expression) = new Expression(OrEvaluator(this,e))
 
   def |(e: Expression) = or(e)
 
-  def not() = {
-    new Expression(NotEvaluator(this))
-  }
+  def not() = new Expression(NotEvaluator(this))
 
   def unary_!() = not()
   
-  def isStatic: Boolean = {
-    evaluator.isInstanceOf[StaticEvaluator]
-  }
+  def isStatic: Boolean = evaluator.isInstanceOf[StaticEvaluator]
 
-  def opposite() = {
-    new Expression(OppositeEvaluator(this))
-  }
+  def opposite() = new Expression(OppositeEvaluator(this))
 
   def  unary_-() = opposite()
 
-  def plus(e: Expression) = {
-    new Expression(AddEvaluator(this, e))
-  }
+  def plus(e: Expression) = new Expression(AddEvaluator(this, e))
 
   def +(e: Expression) = plus(e)
 
@@ -108,53 +96,35 @@ sealed class Expression(var evaluator: Evaluator) extends Iterable[Expression] w
 
   def -(e :Expression) = minus(e)
 
-  def times(e: Expression) = {
-    new Expression(MultiplyEvaluator(this,e))
-  }
+  def times(e: Expression) = new Expression(MultiplyEvaluator(this,e))
 
   def *(e: Expression) = times(e)
 
-  def inverse() = {
-    new Expression(InverseEvaluator(this))
-  }
+  def inverse() = new Expression(InverseEvaluator(this))
 
-  def divide(e: Expression) = {
-    new Expression(DivideEvaluator(this,e))
-  }
+  def divide(e: Expression) = new Expression(DivideEvaluator(this,e))
   
   def /(e: Expression) = divide(e)
 
-  def sqlEquals(e: Expression) = {
-    new Expression(EqualsEvaluator(this,e))
-  }
+  def sqlEquals(e: Expression) = new Expression(EqualsEvaluator(this,e))
 
-  def lessThan(e: Expression) = {
-    new Expression(LessThanEvaluator(this,e))
-  }
+  def lessThan(e: Expression) = new Expression(LessThanEvaluator(this,e))
 
   def <(e: Expression) = lessThan(e)
   
-  def lessEqualsThan(e: Expression) = {
-    new Expression(LessEqualThanEvaluator(this,e))
-  }
+  def lessEqualsThan(e: Expression) = new Expression(LessEqualThanEvaluator(this,e))
 
   def <=(e: Expression) = lessEqualsThan(e)
 
-  def greaterThan(e: Expression) = {
-    new Expression(GreaterThanEvaluator(this,e))
-  }
+  def greaterThan(e: Expression) = new Expression(GreaterThanEvaluator(this,e))
 
   def >(e: Expression) = greaterThan(e)
 
-  def greaterEqualsThan(e: Expression) = {
-    new Expression(GreaterEqualThanEvaluator(this,e))
-  }
+  def greaterEqualsThan(e: Expression) = new Expression(GreaterEqualThanEvaluator(this,e))
 
   def >=(e: Expression) = greaterEqualsThan(e)
 
-  def concatWith(e: Expression) = {
-    new Expression(StringConcatEvaluator(this,e))
-  }
+  def concatWith(e: Expression) = new Expression(StringConcatEvaluator(this,e))
   
   def ||(e: Expression) = concatWith(e)
 
@@ -166,37 +136,23 @@ sealed class Expression(var evaluator: Evaluator) extends Iterable[Expression] w
     new Expression(POSIXEvaluator(this, e, caseInsensitive))
   }
   
-  def similarTo(e: Expression) = {
-    new Expression(SimilarToEvaluator(this,e))
-  }
+  def similarTo(e: Expression) = new Expression(SimilarToEvaluator(this,e))
 
-  def modulo(e: Expression) = {
-    new Expression(ModuloEvaluator(this,e))
-  }
+  def modulo(e: Expression) = new Expression(ModuloEvaluator(this,e))
 
   def %(e: Expression) = modulo(e)
 
-  def exponent(e: Expression) = {
-    new Expression(ExponentEvaluator(this,e))
-  }
+  def exponent(e: Expression) = new Expression(ExponentEvaluator(this,e))
 
   def ^(e: Expression) = exponent(e)
 
-  def isNull = {
-    new Expression(IsNullEvaluator(this))
-  }
+  def isNull = new Expression(IsNullEvaluator(this))
 
-  def in(e: Seq[Expression]) = {
-    new Expression(InListEvaluator(this,e))
-  }
+  def in(e: Seq[Expression]) = new Expression(InListEvaluator(this,e))
   
-  def in(o: Operation) = {
-    new Expression(InEvaluator(this, o))
-  }
+  def in(o: Operation) = new Expression(InEvaluator(this, o))
   
-  def toType(t: Int) = {
-    new Expression(CastEvaluator(this, t))
-  }
+  def toType(t: Int) = new Expression(CastEvaluator(this, t))
   
   def ->(t: Int) = toType(t)
 
@@ -214,7 +170,7 @@ sealed class Expression(var evaluator: Evaluator) extends Iterable[Expression] w
     }
   }
 
-  override def toString = "Ex(" + evaluator.toString + ")"
+  override def toString = "[" + evaluator.toString + "]"
   
   def prepared(r: Row) = new Expression(PreparedEvaluator(r, this))
   
@@ -252,9 +208,7 @@ object Expression {
    *
    * @param e an operator
    */
-  def apply(e: Evaluator) = {
-    new Expression(e)
-  }
+  def apply(e: Evaluator) = new Expression(e)
 
   /**
    * Utility function to get the resulting metadata from a array of expressions
@@ -298,7 +252,7 @@ object Field {
    */
   def apply(name: String) = {
     if (name == "oid") {
-      new Expression(OidEvaluator())
+      new Expression(OidEvaluator)
     } else {
       new Expression(FieldEvaluator(name))
     }

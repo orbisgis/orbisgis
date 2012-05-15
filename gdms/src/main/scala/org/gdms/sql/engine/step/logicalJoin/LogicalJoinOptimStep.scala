@@ -85,11 +85,11 @@ case object LogicalJoinOptimStep extends AbstractEngineStep[Operation, Operation
         // replace Cross Join with a Filter above to a Inner Join on the filtering expression
         case Filter(c,j @ Join(joinType,_,_),_) => {
             j.joinType = joinType match {
-              case Cross() => Inner(c)
+              case Cross => Inner(c)
               case Inner(ex, s, a) => Inner(ex & c, s, a)
               case OuterLeft(cond) => OuterLeft(cond.map(_ & c))
               case OuterFull(cond) => OuterLeft(cond.map(_ & c))
-              case a @ Natural() => a
+              case Natural => Natural
             }
             
             j

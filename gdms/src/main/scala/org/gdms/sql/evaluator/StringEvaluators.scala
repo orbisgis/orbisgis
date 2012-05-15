@@ -59,7 +59,7 @@ import org.orbisgis.utils.TextUtils
 case class StringConcatEvaluator(e1: Expression, e2: Expression) extends Evaluator { 
   val sqlType = Type.STRING
   def eval = s => e1.evaluate(s) concatWith e2.evaluate(s)
-  override val childExpressions = e1 :: e2 :: List.empty
+  override val childExpressions = List(e1, e2)
   override def doValidate = {
     childExpressions map
     {_.evaluator.sqlType == Type.STRING} reduceLeft (_ || _) match {
@@ -68,7 +68,7 @@ case class StringConcatEvaluator(e1: Expression, e2: Expression) extends Evaluat
     }
   }
   override def toString = "(" + e1 + " || " + e2 + ")"
-  def doCopy = copy()
+  def duplicate: StringConcatEvaluator = StringConcatEvaluator(e1.duplicate, e2.duplicate)
 }
 
 object || {
@@ -93,11 +93,7 @@ case class LikeEvaluator(e1: Expression, e2: Expression, caseInsensitive: Boolea
   def eval = { s => 
     if (!loaded){
       if (e2.evaluator.isInstanceOf[StaticEvaluator]) {
-        if (caseInsensitive) {
-          pattern = TextUtils.buildLikePattern(e2.evaluate(emptyRow).getAsString, true)
-        } else {
-          pattern = TextUtils.buildLikePattern(e2.evaluate(emptyRow).getAsString)
-        }
+        pattern = TextUtils.buildLikePattern(e2.evaluate(emptyRow).getAsString, caseInsensitive)
       }
       loaded = true
     }
@@ -108,7 +104,7 @@ case class LikeEvaluator(e1: Expression, e2: Expression, caseInsensitive: Boolea
       e1.evaluate(s) matches pattern
     }
   } 
-  override val childExpressions = e1 :: e2 :: List.empty
+  override val childExpressions = List(e1, e2)
   override def doValidate = {
     childExpressions map
     {_.evaluator.sqlType == Type.STRING} reduceLeft (_ && _) match {
@@ -121,7 +117,7 @@ case class LikeEvaluator(e1: Expression, e2: Expression, caseInsensitive: Boolea
     loaded = false
   }
   override def toString = "(" + e1 + " LIKE " + e2 + ")"
-  def doCopy = copy()
+  def duplicate: LikeEvaluator = LikeEvaluator(e1.duplicate, e2.duplicate, caseInsensitive)
 }
 
 object like {
@@ -158,7 +154,7 @@ case class SimilarToEvaluator(e1: Expression, e2: Expression) extends Evaluator 
       e1.evaluate(s) matches pattern
     }
   } 
-  override val childExpressions = e1 :: e2 :: List.empty
+  override val childExpressions = List(e1, e2)
   override def doValidate = {
     childExpressions map
     {_.evaluator.sqlType == Type.STRING} reduceLeft (_ && _) match {
@@ -171,7 +167,7 @@ case class SimilarToEvaluator(e1: Expression, e2: Expression) extends Evaluator 
     loaded = false
   }
   override def toString = "(" + e1 + " LIKE " + e2 + ")"
-  def doCopy = copy()
+  def duplicate: SimilarToEvaluator = SimilarToEvaluator(e1.duplicate, e2.duplicate)
 }
 
 object similarTo {
@@ -211,7 +207,7 @@ case class POSIXEvaluator(e1: Expression, e2: Expression, caseInsensitive: Boole
       e1.evaluate(s) matches pattern
     }
   } 
-  override val childExpressions = e1 :: e2 :: List.empty
+  override val childExpressions = List(e1, e2)
   override def doValidate = {
     childExpressions map
     {_.evaluator.sqlType == Type.STRING} reduceLeft (_ && _) match {
@@ -224,7 +220,7 @@ case class POSIXEvaluator(e1: Expression, e2: Expression, caseInsensitive: Boole
     loaded = false
   }
   override def toString = "(" + e1 + " LIKE " + e2 + ")"
-  def doCopy = copy()
+  def duplicate: POSIXEvaluator = POSIXEvaluator(e1.duplicate, e2.duplicate, caseInsensitive)
 }
 
 object matches {

@@ -58,8 +58,8 @@ abstract class NumericEvaluator(e1: Expression, e2: Expression) extends Evaluato
   def sqlType = TypeFactory.getBroaderType(e1.evaluator.sqlType, e2.evaluator.sqlType)
   override val childExpressions = List(e1,e2)
   override def doValidate = {
-    childExpressions map { e =>
-      TypeFactory.isNumerical(e.evaluator.sqlType) } reduceLeft(_ && _) match {
+    childExpressions map { e => TypeFactory.isNumerical(e.evaluator.sqlType) 
+    } reduceLeft(_ && _) match {
       case false => throw new IncompatibleTypesException
       case true =>
     }
@@ -75,7 +75,7 @@ abstract class NumericEvaluator(e1: Expression, e2: Expression) extends Evaluato
 case class AddEvaluator(val e1: Expression,val e2: Expression) extends NumericEvaluator(e1, e2) {
   def eval = s => e1.evaluate(s) sum e2.evaluate(s)
   override def toString = "(" + e1 + " + " + e2 + ")"
-  def doCopy = copy()
+  def duplicate: AddEvaluator = AddEvaluator(e1.duplicate, e2.duplicate)
 }
 
 object + {
@@ -96,15 +96,16 @@ object + {
 case class OppositeEvaluator(e1: Expression) extends Evaluator {
   def sqlType = e1.evaluator.sqlType
   def eval = s => e1.evaluate(s) opposite
-  override val childExpressions = e1 :: List.empty
+  override val childExpressions = List(e1)
   override def toString = "-(" + e1 + ")"
-  def doCopy = copy()
+  def duplicate: OppositeEvaluator = OppositeEvaluator(e1.duplicate)
 }
 
 object - {
   def unapply(e: Expression) = {
     e match {
-      case a + (b: OppositeEvaluator) => Some(a, b.e1)
+      case a + (b: OppositeEvaluator) => Some(Some(a), b.e1)
+      case b: OppositeEvaluator => Some((None, b.e1))
       case _ => None
     }
   }
@@ -119,7 +120,7 @@ object - {
 case class MultiplyEvaluator(val e1: Expression,val e2: Expression) extends NumericEvaluator(e1, e2) {
   def eval = s => e1.evaluate(s) multiply e2.evaluate(s)
   override def toString = "(" + e1 + " * " + e2 + ")"
-  def doCopy = copy()
+  def duplicate: MultiplyEvaluator = MultiplyEvaluator(e1.duplicate, e2.duplicate)
 }
 
 object x {
@@ -140,9 +141,9 @@ object x {
 case class InverseEvaluator(e1: Expression) extends Evaluator {
   val sqlType = Type.DOUBLE
   def eval = s => e1.evaluate(s) inverse
-  override val childExpressions = e1 :: List.empty
+  override val childExpressions = List(e1)
   override def toString = "Inverse(" + e1 + ")"
-  def doCopy = copy()
+  def duplicate: InverseEvaluator = InverseEvaluator(e1.duplicate)
 }
 
 object inv {
@@ -165,7 +166,7 @@ case class DivideEvaluator(e1: Expression, e2: Expression) extends NumericEvalua
     val t = super.sqlType
     if (t == Type.FLOAT) Type.DOUBLE else t
   }
-  def doCopy = copy()
+  def duplicate: DivideEvaluator = DivideEvaluator(e1.duplicate, e2.duplicate)
 }
 
 object / {
@@ -188,7 +189,7 @@ case class LessThanEvaluator(val e1: Expression,val e2: Expression) extends Nume
   def eval = s => e1.evaluate(s) less e2.evaluate(s)
   override val childExpressions = List(e1,e2)
   override def toString = "(" + e1 + " < " + e2 + ")"
-  def doCopy = copy()
+  def duplicate: LessThanEvaluator = LessThanEvaluator(e1.duplicate, e2.duplicate)
 }
 
 object < {
@@ -211,7 +212,7 @@ case class LessEqualThanEvaluator(val e1: Expression,val e2: Expression) extends
   def eval = s => e1.evaluate(s) lessEqual e2.evaluate(s)
   override val childExpressions = List(e1,e2)
   override def toString = "(" + e1 + " <= " + e2 + ")"
-  def doCopy = copy()
+  def duplicate: LessEqualThanEvaluator = LessEqualThanEvaluator(e1.duplicate, e2.duplicate)
 }
 
 object <= {
@@ -234,7 +235,7 @@ case class GreaterThanEvaluator(val e1: Expression,val e2: Expression) extends N
   def eval = s => e1.evaluate(s) greater e2.evaluate(s)
   override val childExpressions = List(e1,e2)
   override def toString = "(" + e1 + " > " + e2 + ")"
-  def doCopy = copy()
+  def duplicate: GreaterThanEvaluator = GreaterThanEvaluator(e1.duplicate, e2.duplicate)
 }
 
 object > {
@@ -257,7 +258,7 @@ case class GreaterEqualThanEvaluator(val e1: Expression,val e2: Expression) exte
   def eval = s => e1.evaluate(s) greaterEqual e2.evaluate(s)
   override val childExpressions = List(e1,e2)
   override def toString = "(" + e1 + " >= " + e2 + ")"
-  def doCopy = copy()
+  def duplicate: GreaterEqualThanEvaluator = GreaterEqualThanEvaluator(e1.duplicate, e2.duplicate)
 }
 
 object >= {
@@ -278,7 +279,7 @@ object >= {
 case class ModuloEvaluator(val e1: Expression,val e2: Expression) extends NumericEvaluator(e1, e2) {
   def eval = s => e1.evaluate(s) remainder e2.evaluate(s)
   override def toString = "(" + e1 + " % " + e2 + ")"
-  def doCopy = copy()
+  def duplicate: ModuloEvaluator = ModuloEvaluator(e1.duplicate, e2.duplicate)
 }
 
 object % {
@@ -299,7 +300,7 @@ object % {
 case class ExponentEvaluator(val e1: Expression,val e2: Expression) extends NumericEvaluator(e1, e2) {
   def eval = s => e1.evaluate(s) pow e2.evaluate(s)
   override def toString = "(" + e1 + " ^ " + e2 + ")"
-  def doCopy = copy()
+  def duplicate: ExponentEvaluator = ExponentEvaluator(e1.duplicate, e2.duplicate)
 }
 
 object ^ {

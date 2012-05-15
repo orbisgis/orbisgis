@@ -132,17 +132,17 @@ case object FiltersStep extends AbstractEngineStep[Operation, Operation]("filter
                           //                      <- ValuesScan
                           var inc = -1;
                           // we keep fields and replace the rest with new fields on constant expressions
-                          val se: Seq[Evaluator] = ex.children flatMap {c => c match {
+                          val se: Seq[Expression] = ex.children flatMap {c => c match {
                               case field(_,_) => None
                               case _ => 
                                 inc = inc + 1
                                 val oldeval = c.evaluator
                                 c.evaluator = FieldEvaluator("$exp" + inc, Some("$$"))
-                                Some(oldeval)
+                                Some(Expression(oldeval))
                                 
                             }}
                             
-                          val va = ValuesScan(Seq(se map (new Expression(_))), Some("$$"))
+                          val va = ValuesScan(Seq(se), Some("$$"))
                           val isc = IndexQueryScan(sc.table, sc.alias)
                           val j = Join(Inner(e, true), isc, va)
                           f.children = List(j)

@@ -74,6 +74,8 @@ abstract sealed class Operation {
   }
   
   def doValidate: Unit = {}
+  
+  def duplicate: Operation
 
   /**
    * Better toString method for debugging purposes
@@ -104,10 +106,6 @@ object ExpressionOperation {
   }
 }
 
-case object NoOp extends Operation {
-  val children = Nil
-}
-
 /**
  * Represents a table scan.
  * 
@@ -121,6 +119,7 @@ case object NoOp extends Operation {
 case class Scan(table: String, alias: Option[String] = None, var edition: Boolean = false) extends Operation {
   val children = Nil
   override def toString = "Scan of(" + table + ") " + alias + (if (edition) " in edition" else "")
+  def duplicate: Scan = copy()
 }
 
 /**
@@ -153,6 +152,16 @@ case class CustomQueryScan(customQuery: String, exp: Seq[Expression],
     exp map (check)
   }
   def expr = exp
+  def duplicate: CustomQueryScan = {
+    val c = CustomQueryScan(customQuery, exp map (_.duplicate), tables map { 
+        case Right(a) => Right(a.duplicate)
+        case b => b
+      }, alias)
+    if (function != null) {
+      c.function = function
+    }
+    c
+  }
 }
 
 
@@ -170,6 +179,7 @@ case class IndexQueryScan(table: String, alias: Option[String] = None, query: In
   override def toString = "IndexQueryScan of(" + table + ") " + alias + {if (query != null) {
       " on " + query.getFieldNames + (if (query.isStrict) " strict" else "")
     } else ""}
+  def duplicate: IndexQueryScan = copy()
 }
 
 /**
@@ -203,6 +213,7 @@ extends Operation with ExpressionOperation {
     }
   }
   def expr = exp flatten
+  def duplicate: ValuesScan = ValuesScan(exp map (_ map (_.duplicate)), alias, internal)
 }
   
 
@@ -249,6 +260,7 @@ case class Output(var child: Operation) extends Operation {
   }
   
   override def toString = "Output(" + children +")"
+  def duplicate: Output = Output(child.duplicate)
 }
 
 /**
@@ -262,6 +274,7 @@ case class Distinct(var child: Operation) extends Operation {
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
   
   override def toString = "Distinct on(" + children + ')'
+  def duplicate: Distinct = Distinct(child.duplicate)
 }
 
 /**
@@ -277,6 +290,7 @@ case class LimitOffset(limit: Int = -1, offset:Int = 0,var child: Operation) ext
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
     
   override def toString = "LimitOffset lim=" + limit + " offset=" + offset + "of(" + children + ")"
+  def duplicate: LimitOffset = LimitOffset(limit, offset, child.duplicate)
 }
 
 /**
@@ -290,6 +304,7 @@ case class SubQuery(alias: String,var child: Operation) extends Operation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
   "SubQuery called(" + alias + ") of(" + children + ")"
+  def duplicate: SubQuery = SubQuery(alias, child.duplicate)
 }
 
 /**
@@ -308,6 +323,7 @@ extends Operation with ExpressionOperation {
   override def doValidate = exp foreach (_._1 preValidate)
   override def toString = "Projection of(" + exp + ") on(" + children + ")"
   def expr = exp map (_._1)
+  def duplicate: Projection = Projection(exp map (a => (a._1.duplicate, a._2)), child.duplicate)
 }
 
 /**
@@ -327,6 +343,7 @@ extends Operation with ExpressionOperation {
   override def doValidate = exp foreach (_._1 preValidate)
   override def toString = "Aggregate exp(" + exp + ") on(" + children + ")"
   def expr = exp map (_._1)
+  def duplicate: Aggregate = Aggregate(exp map (a => (a._1.duplicate, a._2)), child.duplicate)
 }
 
 /**
@@ -344,6 +361,7 @@ case class Filter(e: Expression,var child: Operation, having: Boolean = false) e
   override def doValidate = e.preValidate
   override def toString = "Filter of(" + e + ") on(" + children + ")"
   def expr = Seq(e)
+  def duplicate: Filter = Filter(e.duplicate, child.duplicate, having)
 }
 
 /**
@@ -364,6 +382,7 @@ case class Sort(names: Seq[(Expression, Boolean)],var child: Operation) extends 
   override def doValidate = names foreach (_._1 preValidate)
   override def toString = "Sort fields(" + names + ") on(" + children + ")"
   def expr = names map (_._1)
+  def duplicate: Sort = Sort(names map (a => (a._1.duplicate, a._2)), child.duplicate)
 }
 
 /**
@@ -383,6 +402,7 @@ case class Grouping(var exp: List[(Expression, Option[String])],var child: Opera
   override def doValidate = exp foreach (_._1 preValidate)
   override def toString = "Group over(" + exp + ") on(" + children + ")"
   def expr = exp map (_._1)
+  def duplicate: Grouping = Grouping(exp map (a => (a._1.duplicate, a._2)), child.duplicate)
 }
 
 /**
@@ -408,6 +428,7 @@ with ExpressionOperation {
       case _ => Nil
     }
   }
+  def duplicate: Join = Join(joinType.duplicate, left.duplicate, right.duplicate)
 }
 
 
@@ -424,6 +445,7 @@ case class Union(var left: Operation,var right: Operation) extends Operation {
       case _ => throw new IllegalArgumentException("Needs two children extactly.")
     }}
   override def toString = "Union of (" + children + ")"
+  def duplicate: Union = Union(left.duplicate, right.duplicate)
 }
 
 /**
@@ -441,6 +463,7 @@ case class Update(exp: Seq[(String, Expression)],var child: Operation) extends O
   override def doValidate = exp foreach (_._2 preValidate)
   override def toString = "Update exp(" + exp + ") on (" + children + ")"
   def expr = exp map (_._2)
+  def duplicate: Update = Update(exp map (a => (a._1, a._2.duplicate)), child.duplicate)
 }
 
 /**
@@ -454,6 +477,7 @@ case class Insert(table: String, fields: Option[Seq[String]], var child: Operati
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
   override def toString = "Insert into(" + table + ") from (" + child + ")"
+  def duplicate: Insert = Insert(table, fields, child.duplicate)
 }
 
 /**
@@ -466,6 +490,7 @@ case class Delete(var child: Operation) extends Operation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
   override def toString = "Deletes on(" + children + ")"
+  def duplicate: Delete = Delete(child.duplicate)
 }
 
 
@@ -480,6 +505,7 @@ case class CreateTableAs(name: String,var child: Operation) extends Operation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
   override def toString = "CreateTableAs name(" + name + ") as(" + children + ")"
+  def duplicate: CreateTableAs = CreateTableAs(name, child.duplicate)
 }
 
 /**
@@ -494,6 +520,7 @@ case class CreateView(name: String, sql: String, orReplace: Boolean,var child: O
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
   override def toString = "CreateViewAs name(" + name + ", '" + sql + "') as(" + children + ")" +
   (if (orReplace) " replace" else "")
+  def duplicate: CreateView = CreateView(name, sql, orReplace, child.duplicate)
 }
 
 
@@ -508,6 +535,7 @@ case class CreateView(name: String, sql: String, orReplace: Boolean,var child: O
 case class CreateTable(name: String, cols: Seq[(String, String, Seq[ConstraintType])]) extends Operation {
   def children = Nil
   override def toString = "CreateTableAs name(" + name + ") as(" + cols + ")"
+  def duplicate: CreateTable = CreateTable(name, cols)
 }
 
 /**
@@ -521,6 +549,7 @@ case class CreateTable(name: String, cols: Seq[(String, String, Seq[ConstraintTy
 case class AlterTable(name: String, actions: Seq[AlterElement]) extends Operation {
   def children = Nil
   override def toString = "AlterTable name(" + name + ") do(" + actions + ")"
+  def duplicate: AlterTable = AlterTable(name, actions)
 }
 
 
@@ -535,6 +564,7 @@ case class AlterTable(name: String, actions: Seq[AlterElement]) extends Operatio
 case class RenameTable(name: String, newname: String) extends Operation {
   def children = Nil
   override def toString = "RenameTable name(" + name + ") newname(" + newname + ")"
+  def duplicate: RenameTable = RenameTable(name, newname)
 }
 
 /**
@@ -549,6 +579,7 @@ case class RenameTable(name: String, newname: String) extends Operation {
 case class DropTables(names: Seq[String], ifExists: Boolean, purge: Boolean) extends Operation {
   def children = Nil
   override def toString = "DropTables names(" + names + ") ifExists=" + ifExists + " purge=" + purge
+  def duplicate: DropTables = DropTables(names, ifExists, purge)
 }
   
 /**
@@ -563,6 +594,7 @@ case class DropTables(names: Seq[String], ifExists: Boolean, purge: Boolean) ext
 case class DropSchemas(names: Seq[String], ifExists: Boolean, purge: Boolean) extends Operation {
   def children = Nil
   override def toString = "DropSchemas names(" + names + ") ifExists=" + ifExists + " purge=" + purge
+  def duplicate: DropSchemas = DropSchemas(names, ifExists, purge)
 }
 
 /**
@@ -576,6 +608,7 @@ case class DropSchemas(names: Seq[String], ifExists: Boolean, purge: Boolean) ex
 case class DropViews(names: Seq[String], ifExists: Boolean) extends Operation {
   def children = Nil
   override def toString = "DropViews names(" + names + ") ifExists=" + ifExists
+  def duplicate: DropViews = DropViews(names, ifExists)
 }
 
 /**
@@ -589,6 +622,7 @@ case class DropViews(names: Seq[String], ifExists: Boolean) extends Operation {
 case class CreateIndex(table: String, columns: Seq[String]) extends Operation {
   def children = Nil
   override def toString = "CreateIndex on(" + table + ", " + columns + ")"
+  def duplicate: CreateIndex = CreateIndex(table, columns)
 }
 
 /**
@@ -602,6 +636,7 @@ case class CreateIndex(table: String, columns: Seq[String]) extends Operation {
 case class DropIndex(table: String, columns: Seq[String]) extends Operation {
   def children = Nil
   override def toString = "DropIndex on(" + table + ", " + columns + ")"
+  def duplicate: DropIndex = DropIndex(table, columns)
 }
 
 /**
@@ -620,6 +655,7 @@ case class ExecutorCall(name: String, params: List[Expression]) extends Operatio
   override def doValidate = params foreach (_ preValidate)
   override def toString = "ExecutorFunction name(" + name + ") " + " params(" + params + ")"
   def expr = params
+  def duplicate: ExecutorCall = ExecutorCall(name, params)
 }
 
 /**
@@ -633,6 +669,7 @@ case class ExecutorCall(name: String, params: List[Expression]) extends Operatio
 case class Set(parameter: Option[String], value: Option[String]) extends Operation {
   def children = Nil
   override def toString = "Set '" + parameter + "' TO " + value
+  def duplicate: Set = Set(parameter, value)
 }
 
 /**
@@ -645,6 +682,7 @@ case class Set(parameter: Option[String], value: Option[String]) extends Operati
 case class Show(parameter: Option[String]) extends Operation {
   def children = Nil
   override def toString = "Show '" + parameter + "'"
+  def duplicate: Show = Show(parameter)
 }
 
 /**
@@ -665,6 +703,7 @@ case class CreateFunction(name: String, as: String, language: String, replace: B
     }
   }
   override def toString = "CreateFunction (" + name + ", " + as + ", " + language + ", replace=" + replace + ")"
+  def duplicate: CreateFunction = CreateFunction(name, as, language, replace)
 }
 
 /**
@@ -678,4 +717,5 @@ case class CreateFunction(name: String, as: String, language: String, replace: B
 case class DropFunction(name: String, ifExists: Boolean) extends Operation {
   def children = Nil
   override def toString = "DropFunction (" + name + ", ifExists=" + ifExists + ")"
+  def duplicate: DropFunction = DropFunction(name, ifExists)
 }

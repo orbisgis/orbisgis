@@ -144,18 +144,18 @@ object LogicPlanBuilder {
                   if (normal.isEmpty) {
                     // only joins
                     upperjoin = ends.head
-                    ends.tail foreach {n => upperjoin = Join(Cross(), upperjoin, n) }
+                    ends.tail foreach {n => upperjoin = Join(Cross, upperjoin, n) }
                   } else {
                     // both joins and direct table references
                     def parse(ll: List[Tree]): Operation = {
                       ll match {
                         case x :: Nil => parseTableRef(x)
-                        case x :: xs => Join(Cross(), parseTableRef(x), parse(xs))
+                        case x :: xs => Join(Cross, parseTableRef(x), parse(xs))
                         case Nil => throw new IllegalStateException("Internal error: this cannot happen...")
                       }
                     }
                     upperjoin = parse(normal)
-                    ends foreach {n => upperjoin = Join(Cross(), upperjoin, n) }
+                    ends foreach {n => upperjoin = Join(Cross, upperjoin, n) }
                   }
                 }
                 // everything inside the WHERE clause
@@ -524,8 +524,8 @@ object LogicPlanBuilder {
     val join = content.getType match {
       case T_INNER_JOIN => {
           val inner = content.getChild(1).getType match {
-            case T_CROSS => Cross()
-            case T_NATURAL => Natural()
+            case T_CROSS => Cross
+            case T_NATURAL => Natural
             case T_ON => Inner(parseExpression(content.getChild(1).getChild(0)), false)
           }
           Join(inner, left, parseTableRef(content.getChild(0)))

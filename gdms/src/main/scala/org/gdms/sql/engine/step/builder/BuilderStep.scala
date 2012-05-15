@@ -98,7 +98,7 @@ case object BuilderStep extends AbstractEngineStep[(Operation, DataSourceFactory
       case Scan(table, alias, edit) => new ScanCommand(table, alias, edit)
       case IndexQueryScan(table, alias, query) => new IndexQueryScanCommand(table, alias, query)
       case Join(jType, l, r) => (jType match {
-            case Cross() => new ExpressionBasedLoopJoinCommand(None)
+            case Cross => new ExpressionBasedLoopJoinCommand(None)
             case Inner(ex, false, None) => 
               processExp(ex)
               new ExpressionBasedLoopJoinCommand(Some(ex))
@@ -108,7 +108,7 @@ case object BuilderStep extends AbstractEngineStep[(Operation, DataSourceFactory
             case Inner(ex, true, _) => 
               processExp(ex)
               new SpatialIndexedJoinCommand(ex)
-            case Natural() => new ExpressionBasedLoopJoinCommand(None, true)
+            case Natural => new ExpressionBasedLoopJoinCommand(None, true)
             case OuterLeft(ex) => new ExpressionBasedLoopJoinCommand(ex, false, true)
             case _ => throw new IllegalStateException("Internal error: problem building PQP for joins.")
           })  withChildren(Seq(l, r))

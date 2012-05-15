@@ -105,8 +105,9 @@ class SQLStatement(sql: String, op: Operation)(implicit p: Properties) {
       if (dsf.isEmpty) {
         throw new DriverException("The SQLCommand should be initialized with a DSF.")
       }
-    
-      com = (op, dsf.get)   >=: 
+      
+      // duplicates the Operation tree before using it
+      com = (op.duplicate, dsf.get)   >=: 
       FunctionsStep         >=: // resolve functions, process aggregates
       PhysicalJoinOptimStep >=: // choose join methods (indexes)
       BuilderStep               // build Command tree

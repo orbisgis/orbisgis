@@ -66,11 +66,10 @@ import org.orbisgis.progress.ProgressMonitor
 abstract sealed class BooleanEvaluator extends Evaluator {
   val sqlType = Type.BOOLEAN
   override def doValidate = {
-    childExpressions map ( _.evaluator.sqlType ) find
-    (_ != Type.BOOLEAN) match {
-      case Some(_) => throw new IncompatibleTypesException
-      case None =>
-    }
+    childExpressions foreach { _.evaluator.sqlType match {
+        case Type.BOOLEAN =>
+        case _ => throw new IncompatibleTypesException
+      }}
   }
 }
 
@@ -82,9 +81,9 @@ abstract sealed class BooleanEvaluator extends Evaluator {
  */
 case class AndEvaluator(e1: Expression, e2: Expression) extends BooleanEvaluator {
   def eval = s => e1.evaluate(s) and e2.evaluate(s)
-  override val childExpressions = e1 :: e2 :: List.empty
+  override val childExpressions = List(e1, e2)
   override def toString = "(" + e1 + " AND " + e2 + ")"
-  def doCopy = copy()
+  def duplicate: AndEvaluator = AndEvaluator(e1.duplicate, e2.duplicate)
 }
 
 object & {
@@ -104,9 +103,9 @@ object & {
  */
 case class OrEvaluator(e1: Expression, e2: Expression) extends BooleanEvaluator {
   def eval = s => e1.evaluate(s) or e2.evaluate(s)
-  override val childExpressions = e1 :: e2 :: List.empty
+  override val childExpressions = List(e1, e2)
   override def toString = "(" + e1 + " OR " + e2 + ")"
-  def doCopy = copy()
+  def duplicate: OrEvaluator = OrEvaluator(e1.duplicate, e2.duplicate)
 }
 
 object | {
@@ -126,9 +125,9 @@ object | {
  */
 case class NotEvaluator(e1: Expression) extends BooleanEvaluator {
   def eval = s => e1.evaluate(s) not
-  override val childExpressions = e1 :: List.empty
+  override val childExpressions = List(e1)
   override def toString = "NOT (" + e1 + ")"
-  def doCopy = copy()
+  def duplicate: NotEvaluator = NotEvaluator(e1.duplicate)
 }
 
 object ! {
@@ -148,7 +147,7 @@ object ! {
  */
 case class EqualsEvaluator(e1: Expression, e2: Expression) extends BooleanEvaluator {
   def eval = s => e1.evaluate(s) equals e2.evaluate(s)
-  override val childExpressions = e1 :: e2 :: List.empty
+  override val childExpressions = List(e1, e2)
   override val doPreValidate = {}
   override def toString = "(" + e1 + " = " + e2 + ")"
   override def doValidate = {
@@ -159,7 +158,7 @@ case class EqualsEvaluator(e1: Expression, e2: Expression) extends BooleanEvalua
                                            + TypeFactory.getTypeName(t2) + " cannot be compared.")
     }
   }
-  def doCopy = copy()
+  def duplicate: EqualsEvaluator = EqualsEvaluator(e1.duplicate, e2.duplicate)
 }
 
 object === {
@@ -179,10 +178,10 @@ object === {
  */
 case class IsNullEvaluator(e1: Expression) extends BooleanEvaluator {
   def eval = s => ValueFactory.createValue(e1.evaluate(s) isNull)
-  override val childExpressions = e1 :: List.empty
+  override val childExpressions = List(e1)
   override val doValidate = {}
   override def toString = "ISNULL (" + e1 + ")"
-  def doCopy = copy()
+  def duplicate: IsNullEvaluator = IsNullEvaluator(e1.duplicate)
 }
 
 object isNull {
@@ -217,8 +216,8 @@ case class InListEvaluator(e1: Expression, e2:Seq[Expression]) extends BooleanEv
                                              + "' cannot be cast to type '" + TypeFactory.getTypeName(t))
       })
   }
-  override def toString = "(" + e1 + " IN (" + e2 + ")"
-  def doCopy = copy()
+  override def toString = "(" + e1 + " IN (" + e2 + "))"
+  def duplicate: InListEvaluator = InListEvaluator(e1.duplicate, e2 map (_.duplicate))
 }
 
 object inList {
@@ -303,7 +302,11 @@ case class ExistsEvaluator(var o: Operation) extends BooleanEvaluator with DsfEv
     c.children foreach (findOuterFieldEvals)
   }
   
-  def doCopy = ExistsEvaluator(o)
+  def duplicate: ExistsEvaluator = {
+    val c = ExistsEvaluator(o.duplicate)
+    c.dsf = dsf
+    c
+  }
 }
 
 object exists {
@@ -327,7 +330,7 @@ case class InEvaluator(e: Expression, var o: Operation) extends BooleanEvaluator
   var materialized = false
   var matOut: QueryOutputCommand = null
   
-  override val childExpressions = e :: Nil
+  override val childExpressions = List(e)
   
   private def evalInner(s: Array[Value]) = {
     // independant inner query
@@ -411,7 +414,11 @@ case class InEvaluator(e: Expression, var o: Operation) extends BooleanEvaluator
     c.children foreach (findOuterFieldEvals)
   }
   
-  def doCopy = InEvaluator(e, o)
+  def duplicate: InEvaluator = {
+    val c = InEvaluator(e.duplicate, o.duplicate)
+    c.dsf = dsf
+    c
+  }
 }
 
 object in {

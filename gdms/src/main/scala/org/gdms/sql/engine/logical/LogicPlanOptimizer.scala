@@ -45,42 +45,19 @@
 package org.gdms.sql.engine.logical
 
 import org.gdms.sql.engine.operations._
-import org.gdms.sql.evaluator.AndEvaluator
-import org.gdms.sql.evaluator.Evaluator
+import org.gdms.sql.evaluator.&
 import org.gdms.sql.evaluator.Expression
 
 trait LogicPlanOptimizer { 
 
-  final def matchExpression(e: Expression, c: Evaluator => Boolean, f: Expression => Unit): Unit = {
-    if (c(e.evaluator)) (f(e))
-    e foreach (matchExpression(_, c, f))
-  }
-  
-  final def matchExpressionAndAny(e: Expression, c: Evaluator => Boolean, f: Expression => Unit): Unit = {
-    if (c(e.evaluator)) {
-      f(e)
-    } else if (e.evaluator.isInstanceOf[AndEvaluator]) {
-      e foreach (matchExpressionAndAny(_, c, f))
-    }
-  }
-  
   final def matchExpressionAndAny(e: Expression, f: Expression => Unit): Unit = {
-    f(e)
-    if (e.evaluator.isInstanceOf[AndEvaluator]) {
-      e foreach (matchExpressionAndAny(_, f))
+    e match { 
+      case a & b => {
+          matchExpressionAndAny(a, f)
+          matchExpressionAndAny(b, f)
+        }
+      case _ => f(e)
     }
-  }
-  
-  final def replaceEvaluatorAndAny(e: Expression, c: Evaluator => Boolean, f: Evaluator => Evaluator): Unit = {
-    if (c(e.evaluator)) {
-      e.evaluator = f(e.evaluator)
-    } else if (e.evaluator.isInstanceOf[AndEvaluator]) {
-      e foreach (replaceEvaluatorAndAny(_, c, f))
-    }
-  }
-  
-  final def replaceEvaluator(e: Expression, c: Evaluator => Boolean, f: Evaluator => Evaluator): Unit = {
-    matchExpression(e, c, i => i.evaluator = f(i.evaluator))
   }
   
   final def matchOperation(o: Operation, c: Operation => Boolean, f: Operation => Unit): Unit = {

@@ -52,7 +52,9 @@ import org.gdms.sql.evaluator.Expression
  * @author Antoine Gourlay
  * @since 0.1
  */
-sealed abstract class JoinType
+sealed abstract class JoinType {
+  def duplicate: JoinType
+}
 
 /**
  * Represents an outer left join on some expression.
@@ -63,6 +65,7 @@ sealed abstract class JoinType
  */
 case class OuterLeft(cond: Option[Expression]) extends JoinType {
   override def toString = "OuterLeft on(" + cond + ")"
+  def duplicate: OuterLeft = OuterLeft(cond map (_.duplicate))
 }
 
 /**
@@ -74,6 +77,7 @@ case class OuterLeft(cond: Option[Expression]) extends JoinType {
  */
 case class OuterFull(cond: Option[Expression]) extends JoinType {
   override def toString = "OuterFull on(" + cond + ")"
+  def duplicate: OuterFull = OuterFull(cond map (_.duplicate))
 }
 
 /**
@@ -85,6 +89,7 @@ case class OuterFull(cond: Option[Expression]) extends JoinType {
  */
 case class Inner(var cond: Expression, var spatial: Boolean = false, var withIndexOn: Option[(String, Expression, Boolean)] = None) extends JoinType {
   override def toString = "Inner on(" + cond + ") spatial=" + spatial + " withIndexOn=" + withIndexOn
+  def duplicate: Inner = Inner(cond.duplicate, spatial, withIndexOn map (a => (a._1, a._2.duplicate, a._3)))
 }
 
 /**
@@ -93,8 +98,9 @@ case class Inner(var cond: Expression, var spatial: Boolean = false, var withInd
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Cross() extends JoinType {
+case object Cross extends JoinType {
   override def toString = "Cross"
+  def duplicate = this
 }
 
 /**
@@ -103,6 +109,7 @@ case class Cross() extends JoinType {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Natural() extends JoinType {
+case object Natural extends JoinType {
   override def toString = "Natural"
+  def duplicate = this
 }
