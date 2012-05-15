@@ -363,14 +363,45 @@ public class DefaultMapContext implements MapContext {
 		return ret;
 	}
 
+        /**
+         * Implementation of public draw method
+         * @param mt Contain the extent and the image to draw on
+         * @param pm Object to report process and check the cancelled condition
+         * @param layer Draw recursively this layer
+         * @throws IllegalStateException
+	 *             If the map is closed
+         */
+        private void drawImpl(MapTransform mt, ProgressMonitor pm,ILayer layer) throws IllegalStateException {
+            checkIsOpen();
+            Renderer renderer = new ImageRenderer();
+            renderer.draw(mt, layer, pm);            
+        }
+        
+        @Override
+	public void draw(MapTransform mt, ProgressMonitor pm,ILayer layer) {
+            //Layer must be from this layer model
+            if(!isLayerFromThisLayerModel(layer)) {
+                throw new IllegalStateException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.defaultMapContext.LayerMustBeFromLayerModel"));
+            }
+            drawImpl(mt,pm,layer);
+        }
+        
 	@Override
 	public void draw(MapTransform mt,
 			ProgressMonitor pm) {
-		checkIsOpen();
-		Renderer renderer = new ImageRenderer();
-		renderer.draw(mt, getLayerModel(), pm);
+            drawImpl(mt,pm,getLayerModel());
 	}
 
+        /**
+         * Search recursively for the specified layer in the layer model
+         * @param layer Searched layer
+         * @return True if the layer is in the map context layer model
+         */
+        private boolean isLayerFromThisLayerModel(ILayer layer) {
+            ILayer[] allLayers = getLayerModel().getLayersRecursively();
+            return Arrays.asList(allLayers).contains(layer);
+        }
+        
 	private void checkIsOpen() {
 		if (!isOpen()) {
 			throw new IllegalStateException(

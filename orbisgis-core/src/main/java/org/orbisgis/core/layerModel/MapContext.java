@@ -195,19 +195,25 @@ public interface MapContext {
 	 */
 	boolean isOpen();
 
-	/**
-	 * Draws an image of the layers in the specified image.
-	 * 
-	 * @param inProcessImage
-	 *            Image where the drawing will take place
-	 * @param mt
-	 *            Contain the extent and the image to draw on
-	 * @param pm
-	 *            Object to report process and check the cancelled condition
-	 * @throws IllegalStateException
+        /**
+         * Draws an image of the layers in the specified MapTransform.
+         * @param mt Contain the extent and the image to draw on
+         * @param pm Object to report process and check the cancelled condition
+         * @throws IllegalStateException
 	 *             If the map is closed
-	 */
+         */
 	void draw(MapTransform mt, ProgressMonitor pm)
+			throws IllegalStateException;
+        
+        /**
+         * Draws an image of the specified layer in the specified MapTransform.
+         * @param mt Contain the extent and the image to draw on
+         * @param pm Object to report process and check the cancelled condition
+         * @param layer Draw recursively this layer
+         * @throws IllegalStateException
+	 *             If the map is closed
+         */
+	void draw(MapTransform mt, ProgressMonitor pm,ILayer layer)
 			throws IllegalStateException;
 
 	/**
