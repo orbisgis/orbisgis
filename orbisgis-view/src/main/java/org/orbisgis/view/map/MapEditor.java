@@ -47,7 +47,6 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
 import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.utils.I18N;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.button.DropDownButton;

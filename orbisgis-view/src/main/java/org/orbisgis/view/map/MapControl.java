@@ -105,14 +105,14 @@ public class MapControl extends JComponent implements ContainerListener {
 	TransformListener element;
 
 	Automaton defaultTool;
+        
+        BufferedImage updatedImage=null; /*!< The last drawn image paint, shown when the status of the mapTransform is dirty */
 
 	public MapControl() {
             defaultTool = new ZoomInTool();
 	}
         private void setStatus(int newStatus) {
-            if(newStatus==UPDATED || !awaitingDrawing.get()) {
-                status = newStatus;
-            }
+            status = newStatus;
         }
 	final public void initMapControl() throws TransitionException {
 		synchronized (this) {
@@ -137,25 +137,9 @@ public class MapControl extends JComponent implements ContainerListener {
 
                 setLayout(new BorderLayout());
                 
-                // adding listeners at the end
+                // adding listeners at the endupdatedImage
                 // to prevent multiple useless repaint
-		toolManager.addToolListener(new ToolListener() {
-
-			@Override
-			public void transitionException(ToolManager toolManager,
-					TransitionException e) {
-				LOGGER.error(I18N.tr("Tool error"), e); //$NON-NLS-1$
-			}
-
-			@Override
-			public void stateChanged(ToolManager toolManager) {
-			}
-
-			@Override
-			public void currentToolChanged(Automaton previous,
-					ToolManager toolManager) {
-			}
-		});
+		toolManager.addToolListener(new MapToolListener());
 		addMouseListener(toolManager);
                 addMouseMotionListener(toolManager);
                 addMouseWheelListener(toolManager);
@@ -208,23 +192,25 @@ public class MapControl extends JComponent implements ContainerListener {
 	protected void paintComponent(Graphics g) {
 		BufferedImage mapTransformImage = mapTransform.getImage();
 
-		// we always fill the Graphics with an opaque color
-		// before drawing anything.
-		g.setColor(backColor);
-		g.fillRect(0, 0, getWidth(), getHeight());
-
+                // we always fill the Graphics with an opaque color
+                // before drawing anything.
+                g.setColor(backColor);
+                g.fillRect(0, 0, getWidth(), getHeight());
 		// then we render on top the already computed image
 		// if it exists
-		if (mapTransformImage != null && !awaitingDrawing.get()) {
-			g.drawImage(mapTransformImage, 0, 0, null);
-			toolManager.paintEdition(g);
-		}
+		if (mapTransformImage != null && status == UPDATED) {
+                    updatedImage = mapTransformImage;
+                    g.drawImage(mapTransformImage, 0, 0, null);
+                    toolManager.paintEdition(g);
+		} else if(updatedImage!=null){
+                    g.drawImage(updatedImage, 0, 0, null);
+                    toolManager.paintEdition(g);
+                }
 
 		// if the image itself is dirty
 		if (status == DIRTY && mapContext!=null) {
-                    if(!awaitingDrawing.getAndSet(true))
-			setStatus(UPDATED);
-
+                    if(!awaitingDrawing.getAndSet(true)) {
+                        setStatus(UPDATED);
 			// is never null, except at first loading with no layer
 			// in that case we do not draw anything
 				int width = this.getWidth();
@@ -254,10 +240,8 @@ public class MapControl extends JComponent implements ContainerListener {
 						.getService(BackgroundManager.class);
 				bm.nonBlockingBackgroundOperation(new DefaultJobId(
 						"org.orbisgis.jobs.MapControl-" + processId), drawer); //$NON-NLS-1$
-
-
+                    }
 		}
-
 	}
 
 	/**
@@ -305,7 +289,6 @@ public class MapControl extends JComponent implements ContainerListener {
 			}
 			try {
 				mapContext.draw( mapTransform, pm);
-
 			} catch (ClosedDataSourceException e) {
 				if (!cancel) {
 					throw e;
@@ -315,7 +298,6 @@ public class MapControl extends JComponent implements ContainerListener {
                                 awaitingDrawing.set(false);
 				MapControl.this.repaint();
 				mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
-                                
 			}
 		}
 
@@ -527,5 +509,22 @@ public class MapControl extends JComponent implements ContainerListener {
                     // Record new BoundingBox value for map context
                     mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
             }            
+        }
+        
+        private class MapToolListener implements ToolListener {
+                @Override
+                public void transitionException(ToolManager toolManager,
+                                TransitionException e) {
+                        LOGGER.error(I18N.tr("Tool error"), e); //$NON-NLS-1$
+                }
+
+                @Override
+                public void stateChanged(ToolManager toolManager) {
+                }
+
+                @Override
+                public void currentToolChanged(Automaton previous,
+                                ToolManager toolManager) {
+                }
         }
 }
