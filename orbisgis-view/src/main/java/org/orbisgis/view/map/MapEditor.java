@@ -35,14 +35,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.EventHandler;
-import java.util.logging.Level;
 import javax.swing.*;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.NoSuchTableException;
 import org.orbisgis.core.layerModel.DefaultMapContext;
-import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
@@ -102,6 +97,8 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
             GUILOGGER.error(ex);
         }
         
+        //Set the Drop target
+        this.setTransferHandler(new MapTransferHandler());
     }
     
     public final void loadMap(MapElement element) {

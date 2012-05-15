@@ -28,13 +28,34 @@
  */
 package org.orbisgis.view.geocatalog;
 
+import java.awt.datatransfer.Transferable;
+import javax.swing.JComponent;
+import javax.swing.JList;
 import javax.swing.TransferHandler;
 
 /**
- * Transfer of DataSource Editable
+ * Swing Handler for dragging data source list items
  */
 
 public class SourceListTransferHandler extends TransferHandler{
+
+    @Override
+    public int getSourceActions(JComponent jc) {
+        return COPY;
+    }
+
+    @Override
+    protected Transferable createTransferable(JComponent jc) {
+        JList list = (JList) jc;
+        int[] selectedItems = list.getSelectedIndices();
+        String[] selectedSources = new String[selectedItems.length];
+        int transfCpt=0;
+        for(int idItem : selectedItems) {
+            CatalogSourceItem sItem = (CatalogSourceItem) list.getModel().getElementAt(idItem);
+            selectedSources[transfCpt++]= sItem.getKey(); //The DataSource unique ID
+        }        
+        return new TransferableSource(selectedSources);
+    }
 
 
 }

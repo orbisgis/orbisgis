@@ -365,6 +365,8 @@ public class Catalog extends JPanel implements DockingPanel {
                 sourceListContent = new SourceListModel(sourceContext);
                 //Replace the default model by the GeoCatalog model
                 sourceList.setModel(sourceListContent);
+                sourceList.setTransferHandler(new SourceListTransferHandler());
+                sourceList.setDragEnabled(true);
                 //Attach the content to the DataSource instance
                 sourceListContent.setListeners();
                 return sourceList;
