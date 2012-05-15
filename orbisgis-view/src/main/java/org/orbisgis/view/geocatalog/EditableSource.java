@@ -38,11 +38,7 @@
 
 package org.orbisgis.view.geocatalog;
 
-import org.gdms.data.AlreadyClosedException;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.NoSuchTableException;
+import org.gdms.data.*;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.SourceEvent;
@@ -50,17 +46,17 @@ import org.gdms.source.SourceListener;
 import org.gdms.source.SourceRemovalEvent;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.view.edition.EditableElementException;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.view.toc.AbstractTableEditableElement;
+import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.view.edition.EditableElementException;
 import org.orbisgis.view.table.Selection;
 import org.orbisgis.view.table.TableEditableElement;
-import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.view.toc.AbstractTableEditableElement;
 
 public class EditableSource extends AbstractTableEditableElement implements
 		TableEditableElement {
 
-	public static final String EDITABLE_RESOURCE_TYPE = "org.orbisgis.core.ui.geocatalog.EditableResource";
+	public static final String EDITABLE_RESOURCE_TYPE = "EditableSource";
 
 	private String sourceName;
         private boolean editing = false;

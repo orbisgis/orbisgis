@@ -75,6 +75,9 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 
 public class MapControl extends JComponent implements ContainerListener {
+        //Minimal Time in ms between two intermediate paint of drawing process
+        private static final long IntermediateDrawPaintInterval = 200;
+    
         private static final Logger LOGGER = Logger.getLogger(MapControl.class);
         protected final static I18n I18N = I18nFactory.getI18n(MapControl.class);
 	private static int lastProcessId = 0;
@@ -200,9 +203,9 @@ public class MapControl extends JComponent implements ContainerListener {
 		// if it exists
 		if (mapTransformImage != null && status == UPDATED) {
                     updatedImage = mapTransformImage;
-                    g.drawImage(mapTransformImage, 0, 0, null);
-                    toolManager.paintEdition(g);
-		} else if(updatedImage!=null){
+		}
+                    
+                if(updatedImage!=null){
                     g.drawImage(updatedImage, 0, 0, null);
                     toolManager.paintEdition(g);
                 }
@@ -269,7 +272,7 @@ public class MapControl extends JComponent implements ContainerListener {
 	public void setTool(Automaton tool) throws TransitionException {
 		toolManager.setTool(tool);
 	}
-
+        
 	public void invalidateImage() {
 		setStatus(DIRTY);
 		repaint();
@@ -325,6 +328,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
 		private ProgressMonitor decoratedPM;
 		private boolean cancel;
+                private long lastIntermediateDrawPaint = System.currentTimeMillis();
 
 		public CancellablePM(boolean cancel, ProgressMonitor pm) {
 			this.decoratedPM = pm;
@@ -361,6 +365,13 @@ public class MapControl extends JComponent implements ContainerListener {
 
 		public void startTask(String taskName, long i) {
 			decoratedPM.startTask(taskName, i);
+                        //Show the current state of the drawing on new task
+                        long curTime = System.currentTimeMillis();
+                        if(!cancel && status != DIRTY && curTime-lastIntermediateDrawPaint > IntermediateDrawPaintInterval) {
+                            lastIntermediateDrawPaint=curTime;
+                            LOGGER.debug("Task "+taskName+" paint the drawing");
+                            MapControl.this.repaint();
+                        }
 		}
 
                 @Override
