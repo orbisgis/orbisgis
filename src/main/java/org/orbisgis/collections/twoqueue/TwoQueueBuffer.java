@@ -87,6 +87,9 @@ public abstract class TwoQueueBuffer<I, B> implements Iterable<DoubleQueueValue<
          * @param maxSize the maximum number of loaded blocks
          */
         public TwoQueueBuffer(int maxSize) {
+                if (maxSize < 8) {
+                        throw new IllegalArgumentException("");
+                }
                 final int inBuffer = Math.round(maxSize / 4.0f);
                 a1in = new TwoQueueA1in<I, B>(inBuffer);
                 a1out = new TwoQueueA1out<I, B>(inBuffer * 2);
@@ -120,6 +123,8 @@ public abstract class TwoQueueBuffer<I, B> implements Iterable<DoubleQueueValue<
                                 // save q to disk
                                 unload(q.val);
                         }
+                        
+                        return b;
                 }
 
                 // check A1in
@@ -156,10 +161,10 @@ public abstract class TwoQueueBuffer<I, B> implements Iterable<DoubleQueueValue<
                 DoubleQueueValue<I, B> v = a1in.put(i, b);
                 if (v != null) {
                         // save v out to disk
-                        unload(b);
+                        unload(v.val);
 
                         // and insert it in Aiout
-                        a1out.put(i);
+                        a1out.put(v.key);
                 }
         }
 

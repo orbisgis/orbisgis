@@ -117,7 +117,7 @@ final class TwoQueueA1in<I, B> implements Iterable<Entry<I, DoubleQueueValue<I, 
         }
 
         private DoubleQueueValue<I, B> trimOldest() {
-                if (map.size() == maxSize) {
+                if (map.size() == maxSize + 1) {
                         DoubleQueueValue<I, B> v = newest.previous;
                         map.remove(v.key);
                         newest.previous = v.previous;
