@@ -84,7 +84,7 @@ public class DataSourceFactoryTest extends TestBase {
                 sm.remove(d.getName());
 
                 try {
-                        d = dsf.getDataSource("temp");
+                        dsf.getDataSource("temp");
                         fail();
                 } catch (NoSuchTableException e) {
                 }
@@ -104,7 +104,7 @@ public class DataSourceFactoryTest extends TestBase {
                 sm.register("temp", super.getAnyNonSpatialResource());
 
                 sm.removeAll();
-                assertArrayEquals(new String[]{"spatial_ref_table"}, dsf.getSourceManager().getSourceNames());
+                assertArrayEquals(new String[]{"spatial_ref_table"}, sm.getSourceNames());
         }
 
         @Test
@@ -141,7 +141,7 @@ public class DataSourceFactoryTest extends TestBase {
                 throws DriverLoadException, NoSuchTableException,
                 DataSourceCreationException, DriverException,
                 AlreadyClosedException {
-                assertEquals(dsf.getSourceManager().getSource(dsName), dsf.getSourceManager().getSource(secondName));
+                assertEquals(sm.getSource(dsName), sm.getSource(secondName));
                 DataSource ds1 = dsf.getDataSource(dsName);
                 DataSource ds2 = dsf.getDataSource(secondName);
                 ds1.open();
@@ -155,17 +155,17 @@ public class DataSourceFactoryTest extends TestBase {
 
         @Test
         public void testChangeNameOnExistingDataSources() throws Exception {
-                dsf.getSourceManager().register("file", super.getAnyNonSpatialResource());
+                sm.register("file", super.getAnyNonSpatialResource());
                 DataSource ds = dsf.getDataSourceFromSQL("select * from file;");
-                dsf.getSourceManager().rename(ds.getName(), "sql");
+                sm.rename(ds.getName(), "sql");
                 DataSource ds2 = dsf.getDataSource("sql");
                 assertEquals(ds.getName(), ds2.getName());
         }
 
         @Test
         public void testSQLSources() throws Exception {
-                dsf.getSourceManager().register("testH", super.getAnyNonSpatialResource());
-                dsf.register("sql", "select * from testH;");
+                sm.register("testH", super.getAnyNonSpatialResource());
+                sm.register("sql", "select * from testH;");
                 DataSource ds = dsf.getDataSource("sql");
                 assertEquals((ds.getSource().getType() & SourceManager.SQL), SourceManager.SQL);
                 assertFalse(ds.isEditable());
@@ -173,8 +173,8 @@ public class DataSourceFactoryTest extends TestBase {
 
         @Test(expected = SourceAlreadyExistsException.class)
         public void testSecondNameCollidesWithName() throws Exception {
-                dsf.getSourceManager().register("file", super.getAnyNonSpatialResource());
-                dsf.getSourceManager().register("shp", super.getAnySpatialResource());
+                sm.register("file", super.getAnyNonSpatialResource());
+                sm.register("shp", super.getAnySpatialResource());
 
                 sm.addName("file", "shp");
         }

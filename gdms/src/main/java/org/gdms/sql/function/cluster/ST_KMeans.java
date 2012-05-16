@@ -242,7 +242,7 @@ public class ST_KMeans extends AbstractTableFunction {
                 // execute the query (CollectiveAvg + CollectiveStandardDeviation
                 // computations) and retrieve the averages and the standard deviations
                 // ValueCollection and arrays of double
-                final String tmpDsName = dsf.nameAndRegister(query);
+                final String tmpDsName = dsf.getSourceManager().nameAndRegister(query);
                 final DataSource tmpDs = dsf.getDataSource(tmpDsName);
                 tmpDs.open();
                 final Value[] resultingValues = tmpDs.getRow(0);

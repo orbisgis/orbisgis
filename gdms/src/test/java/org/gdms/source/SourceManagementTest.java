@@ -349,7 +349,7 @@ public class SourceManagementTest extends TestBase {
 
                 sm.removeAll();
                 sm.register("myfile", super.getAnyNonSpatialResource());
-                dsf.register("sql", sql);
+                sm.register("sql", sql);
 
                 String sqlContent = getContent("sql");
 
@@ -372,7 +372,7 @@ public class SourceManagementTest extends TestBase {
                 sm.register("file", testFile);
                 String sql = "select 2*(file.id :: int) from file "
                         + "where (file.id :: int) <> 234;";
-                dsf.register("sql", sql);
+                sm.register("sql", sql);
                 DataSource ds = dsf.getDataSource("sql");
                 assertTrue(setIs(ds.getReferencedSources(),
                         new String[]{"file"}));
@@ -380,7 +380,7 @@ public class SourceManagementTest extends TestBase {
                 assertTrue(setIs(ds.getReferencedSources(),
                         new String[]{"file"}));
                 sql = "select * from file union select * from file;";
-                dsf.register("sql2", sql);
+                sm.register("sql2", sql);
                 ds = dsf.getDataSource("sql2");
                 assertTrue(setIs(ds.getReferencedSources(), new String[]{"file"}));
                 ds = dsf.getDataSourceFromSQL(sql);
@@ -395,9 +395,7 @@ public class SourceManagementTest extends TestBase {
                         return false;
                 } else {
                         ArrayList<String> set = new ArrayList<String>();
-                        for (String string : referencingSources) {
-                                set.add(string);
-                        }
+                        set.addAll(Arrays.asList(referencingSources));
                         for (String string : test) {
                                 set.remove(string);
                         }
@@ -448,7 +446,7 @@ public class SourceManagementTest extends TestBase {
 
                 sm.removeAll();
                 sm.register("myfile", super.getAnySpatialResource());
-                dsf.register("mySQL", sql);
+                sm.register("mySQL", sql);
 
 
                 ds = dsf.getDataSourceFromSQL(sql);
@@ -463,7 +461,7 @@ public class SourceManagementTest extends TestBase {
                 sm.remove("file");
                 
                 sm.register("file", testFile);
-                dsf.register("sql", sql);
+                sm.register("sql", sql);
 
                 try {
                         sm.remove("file");
@@ -486,9 +484,9 @@ public class SourceManagementTest extends TestBase {
                 sm.register("file", testFile);
                 String sql = "select 2*(file.id :: int) from file "
                         + "where file.id <> '234';";
-                dsf.register("sql", sql);
+                sm.register("sql", sql);
                 sql = "select * from \"sql\", file;";
-                dsf.register("sql2", sql);
+                sm.register("sql2", sql);
                 // Anonimous ds should not been taken into account for dependencies
                 dsf.executeSQL(sql);
                 Source src = sm.getSource("file");
@@ -556,10 +554,10 @@ public class SourceManagementTest extends TestBase {
                 } catch (SourceAlreadyExistsException e) {
                 }
 
-                dsf.register("mySQL", sql);
+                sm.register("mySQL", sql);
 
                 try {
-                        dsf.register("d", sql);
+                        sm.register("d", sql);
                         fail();
                 } catch (SourceAlreadyExistsException e) {
                 }
@@ -568,7 +566,7 @@ public class SourceManagementTest extends TestBase {
         @Test
         public void testSQLSourceType() throws Exception {
                 sm.register(SOURCE, testFile);
-                dsf.register("alphasql", "select * from " + SOURCE + ";");
+                sm.register("alphasql", "select * from " + SOURCE + ";");
                 assertEquals((sm.getSource("alphasql").getType() & SourceManager.SQL), SourceManager.SQL);
         }
 
@@ -579,7 +577,7 @@ public class SourceManagementTest extends TestBase {
                 if (dsf.getFunctionManager().getFunction(sq.getName()) == null) {
                         dsf.getFunctionManager().addFunction(SumQuery.class);
                 }
-                dsf.register("sum", "select * from sumquery(" + SOURCE + ", 'id');");
+                sm.register("sum", "select * from sumquery(" + SOURCE + ", 'id');");
                 String[] deps = sm.getSource("sum").getReferencedSources();
                 assertEquals(1, deps.length);
                 assertEquals(SOURCE, deps[0]);
