@@ -1217,7 +1217,7 @@ public class SQLTest extends TestBase {
                 dsf.getSourceManager().register("geography", geography);
 
                 String query = "SELECT SUM(sales) FROM town " + "WHERE EXISTS "
-                        + "(SELECT * FROM geography WHERE region_name = 'bretagne');";
+                        + "(SELECT 1 FROM geography WHERE region_name = 'bretagne');";
 
                 DataSource ds = dsf.getDataSourceFromSQL(query);
                 ds.open();

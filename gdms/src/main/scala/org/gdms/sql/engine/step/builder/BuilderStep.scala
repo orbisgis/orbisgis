@@ -58,7 +58,7 @@ import org.gdms.sql.engine.step.physicalJoin.PhysicalJoinOptimStep
 import org.gdms.sql.evaluator.ExistsEvaluator
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.InEvaluator
-import org.gdms.sql.evaluator.QueryToScalarEvaluator
+import org.gdms.sql.evaluator.QueryEvaluator
 
 /**
  * Step P2: Building of the command tree
@@ -160,9 +160,7 @@ case object BuilderStep extends AbstractEngineStep[(Operation, DataSourceFactory
   
   private def processExp(f: Expression)(implicit dsf: DataSourceFactory, p: Properties) {
     (f :: f.allChildren) foreach { _.evaluator match {
-        case e @ ExistsEvaluator(op) => e.command = processOp(op)
-        case e @ InEvaluator(_, op) => e.command = processOp(op)
-        case e @ QueryToScalarEvaluator(op) => e.command = processOp(op)
+        case e : QueryEvaluator => e.command = processOp(e.op)
         case _ =>
       }
     }

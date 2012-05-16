@@ -123,24 +123,10 @@ trait ExpressionCommand extends Command {
     exp.children foreach (pushIntoSubQuery(_, allM))
     
     exp.evaluator match {
-      case i: InEvaluator => {
+      case i: QueryEvaluator => {
           if (i.command == null) {
             // the command was not initialized by the engine, which means it does not expect it here
-            throw new IllegalStateException("Error: there cannot be a IN operator in this clause.")
-          }
-          processSubCommand(i.command, allM)
-        }
-      case i: ExistsEvaluator => {
-          if (i.command == null) {
-            // the command was not initialized by the engine, which means it does not expect it here
-            throw new IllegalStateException("Error: there cannot be a EXISTS operator in this clause.")
-          }
-          processSubCommand(i.command, allM)
-        }
-      case i: QueryToScalarEvaluator => {
-          if (i.command == null) {
-            // the command was not initialized by the engine, which means it does not expect it here
-            throw new IllegalStateException("Error: there cannot be a scalar subquery in this clause.")
+            throw new IllegalStateException("Error: there cannot be a subquery in this clause.")
           }
           processSubCommand(i.command, allM)
         }

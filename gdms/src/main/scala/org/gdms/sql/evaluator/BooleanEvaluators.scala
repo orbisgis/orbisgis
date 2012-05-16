@@ -50,12 +50,7 @@ import org.gdms.data.types.TypeFactory
 import org.gdms.data.values.Value
 import org.gdms.data.values.ValueFactory
 import org.gdms.sql.engine.GdmSQLPredef._
-import org.gdms.sql.engine.SemanticException
-import org.gdms.sql.engine.commands.Command
-import org.gdms.sql.engine.commands.ExpressionCommand
-import org.gdms.sql.engine.commands.QueryOutputCommand
 import org.gdms.sql.engine.operations.Operation
-import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Base evaluator for boolean comparisons.
@@ -235,75 +230,14 @@ object inList {
  * @author Antoine Gourlay
  * @since 0.3
  */
-case class ExistsEvaluator(var o: Operation) extends BooleanEvaluator with DsfEvaluator {
-  
-  var command: Command = null
-  var pm: Option[ProgressMonitor] = None
-  var materialized = false
-  var matOut: QueryOutputCommand = null
+case class ExistsEvaluator(var op: Operation) extends BooleanEvaluator with QueryEvaluator {
   
   override val childExpressions = Nil
   
-  private def evalInner(s: Array[Value]) = {
-    // independant inner query
-    if (evals.isEmpty) {
-      // materialize once
-      if (materialized == false) {
-        matOut.execute(pm)
-        materialized = true
-      }
-      
-      // iterate the result
-      matOut.iterate()
-    } else {
-      // set outer field references and execute
-      evals foreach (_.setValue(s))
-      command.execute(pm)
-    }
-  }
-  
   def eval = s => ValueFactory.createValue(!evalInner(s).isEmpty)
-  override def doPreValidate = o.validate
-  override def doValidate = {
-    command.prepare(dsf)
-    
-    findOuterFieldEvals(command)
-    
-    if (evals.isEmpty) {
-      // subquery result can be cached: it does not depend on the outer query
-      matOut = new QueryOutputCommand
-      matOut.children = List(command)
-      matOut.materialize(dsf)
-    }
-  }
-  override def doCleanUp = {
-    super.doCleanUp
-    
-    if (matOut != null) {
-      matOut.cleanUp
-      matOut = null
-    } else {
-      command.cleanUp
-    }
-    
-    command = null
-    pm = None
-    materialized = false
-    evals = Nil
-  }
-  
-  private var evals: List[OuterFieldEvaluator]= Nil
-  
-  private def findOuterFieldEvals(c: Command) { 
-    c match {
-      case e: ExpressionCommand => evals = e.outerFieldEval ::: evals
-      case _ =>
-    }
-    c.children foreach (findOuterFieldEvals)
-  }
   
   def duplicate: ExistsEvaluator = {
-    val c = ExistsEvaluator(o.duplicate)
+    val c = ExistsEvaluator(op.duplicate)
     c.dsf = dsf
     c
   }
@@ -312,7 +246,7 @@ case class ExistsEvaluator(var o: Operation) extends BooleanEvaluator with DsfEv
 object exists {
   def unapply(e: Expression) = {
     e.evaluator match {
-      case a: ExistsEvaluator => Some(a.o)
+      case a: ExistsEvaluator => Some(a.op)
       case _ => None
     }
   }
@@ -324,108 +258,44 @@ object exists {
  * @author Antoine Gourlay
  * @since 0.3
  */
-case class InEvaluator(e: Expression, var o: Operation) extends BooleanEvaluator with DsfEvaluator {
-  var command: Command = null
-  var pm: Option[ProgressMonitor] = None
-  var materialized = false
-  var matOut: QueryOutputCommand = null
+ case class InEvaluator(e: Expression, var op: Operation) extends BooleanEvaluator with QueryEvaluator {
   
-  override val childExpressions = List(e)
+    override val childExpressions = List(e)
   
-  private def evalInner(s: Array[Value]) = {
-    // independant inner query
-    if (evals.isEmpty) {
-      // materialize once
-      if (materialized == false) {
-        matOut.execute(pm)
-        materialized = true
-      }
-      
-      // iterate the result
-      matOut.iterate()
-    } else {
-      // set outer field references and execute
-      evals foreach (_.setValue(s))
-      command.execute(pm)
-    }
-  }
-  
-  def eval = s => {
-    val b = e.evaluate(s)
-    var ret: Value = ValueFactory.FALSE
+    def eval = s => {
+      val b = e.evaluate(s)
+      var ret: Value = ValueFactory.FALSE
     
-    if (b.isNull) {
-      ret = b
-    } else {
-      var break: Boolean = false
-      val ex = evalInner(s)
-      while (!break && ex.hasNext) {
-        val next = ex.next.array(0).equals(b)
-        if (next.isNull) {
-          ret = ValueFactory.createNullValue[Value]
-        } else if (next.getAsBoolean) {
-          ret = ValueFactory.TRUE
-          break = true
+      if (b.isNull) {
+        ret = b
+      } else {
+        var break: Boolean = false
+        val ex = evalInner(s)
+        while (!break && ex.hasNext) {
+          val next = ex.next.array(0).equals(b)
+          if (next.isNull) {
+            ret = ValueFactory.createNullValue[Value]
+          } else if (next.getAsBoolean) {
+            ret = ValueFactory.TRUE
+            break = true
+          }
         }
       }
-    }
-    ret
-  }
-  override def doPreValidate = o.validate
-  override def doValidate = {
-    command.prepare(dsf)
-    
-    if (command.getMetadata.getFieldCount > 1) {
-      throw new SemanticException("There can only be one selected field in an IN subquery.")
+      ret
     }
     
-    findOuterFieldEvals(command)
-    
-    if (evals.isEmpty) {
-      // subquery result can be cached: it does not depend on the outer query
-      matOut = new QueryOutputCommand
-      matOut.children = List(command)
-      matOut.materialize(dsf)
-    }
-  }
-  override def doCleanUp = {
-    super.doCleanUp
-    
-    if (matOut != null) {
-      matOut.cleanUp
-      matOut = null
-    } else {
-      command.cleanUp
-    }
-    
-    command = null
-    pm = None
-    materialized = false
-    evals = Nil
-  }
-  
-  private var evals: List[OuterFieldEvaluator]= Nil
-  
-  private def findOuterFieldEvals(c: Command) { 
-    c match {
-      case e: ExpressionCommand => evals = e.outerFieldEval ::: evals
-      case _ =>
-    }
-    c.children foreach (findOuterFieldEvals)
-  }
-  
   def duplicate: InEvaluator = {
-    val c = InEvaluator(e.duplicate, o.duplicate)
-    c.dsf = dsf
-    c
-  }
-}
-
-object in {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case InEvaluator(ex, o) => Some((ex, o))
-      case _ => None
+      val c = InEvaluator(e.duplicate, op.duplicate)
+      c.dsf = dsf
+      c
     }
   }
-}
+
+ object in {
+    def unapply(e: Expression) = {
+      e.evaluator match {
+        case i : InEvaluator => Some((i.e, i.op))
+        case _ => None
+      }
+    }
+  }

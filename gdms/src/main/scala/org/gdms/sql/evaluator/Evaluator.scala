@@ -382,24 +382,18 @@ case class PreparedEvaluator(r: Row, e: Expression) extends Evaluator {
   def sqlType = e.evaluator.sqlType
 }
 
-/**
- * Evaluator for scalar subquery values.
- * 
- * @author Antoine Gourlay
- * @since 2.0
- */
-case class QueryToScalarEvaluator(var o: Operation) extends Evaluator with DsfEvaluator {
-  private var returnType: Int = -1
-  def sqlType = returnType
+trait QueryEvaluator extends Evaluator with DsfEvaluator {
+  
+  var op: Operation
+  
   var command: Command = null
   var pm: Option[ProgressMonitor] = None
-  private var materialized = false
-  private var matOut: QueryOutputCommand = null
-    
-  private var evals: List[OuterFieldEvaluator]= Nil
-    
-  override val childExpressions = Nil
-    
+  protected var materialized = false
+  protected var matOut: QueryOutputCommand = null
+  protected var evals: List[OuterFieldEvaluator]= Nil
+  
+  override def doPreValidate = op.validate
+  
   override def doValidate = {
     command.prepare(dsf)
     
@@ -415,8 +409,6 @@ case class QueryToScalarEvaluator(var o: Operation) extends Evaluator with DsfEv
       matOut.children = List(command)
       matOut.materialize(dsf)
     }
-    
-    returnType = command.getMetadata.getFieldType(0).getTypeCode
   }
   override def doCleanUp = {
     super.doCleanUp
@@ -433,8 +425,8 @@ case class QueryToScalarEvaluator(var o: Operation) extends Evaluator with DsfEv
     materialized = false
     evals = Nil
   }
-    
-  private def evalInner(s: Array[Value]) = {
+  
+  protected def evalInner(s: Array[Value]) = {
     // independent inner query
     if (evals.isEmpty) {
       // materialize once
@@ -451,6 +443,28 @@ case class QueryToScalarEvaluator(var o: Operation) extends Evaluator with DsfEv
       command.execute(pm)
     }
   }
+  
+  protected def findOuterFieldEvals(c: Command) { 
+    c match {
+      case e: ExpressionCommand => evals = e.outerFieldEval ::: evals
+      case _ =>
+    }
+    c.children foreach (findOuterFieldEvals)
+  }
+}
+
+/**
+ * Evaluator for scalar subquery values.
+ * 
+ * @author Antoine Gourlay
+ * @since 2.0
+ */
+case class QueryToScalarEvaluator(var op: Operation) extends QueryEvaluator {
+  
+  private var returnType: Int = -1
+  def sqlType = returnType
+
+  override val childExpressions = Nil
     
   def eval = s => {
     val ex = evalInner(s)
@@ -461,16 +475,19 @@ case class QueryToScalarEvaluator(var o: Operation) extends Evaluator with DsfEv
     }
   }
   
-  private def findOuterFieldEvals(c: Command) { 
-    c match {
-      case e: ExpressionCommand => evals = e.outerFieldEval ::: evals
-      case _ =>
-    }
-    c.children foreach (findOuterFieldEvals)
-  }
+  override def doValidate = {
+    super.doValidate
     
+    returnType = command.getMetadata.getFieldType(0).getTypeCode
+  }
+  
+  override def doCleanUp = {
+    super.doCleanUp
+    returnType = -1
+  }
+  
   def duplicate: QueryToScalarEvaluator = {
-    val c = QueryToScalarEvaluator(o.duplicate)
+    val c = QueryToScalarEvaluator(op.duplicate)
     c.dsf = dsf
     c
   }

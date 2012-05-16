@@ -90,8 +90,7 @@ case object FiltersStep extends AbstractEngineStep[Operation, Operation]("filter
   
   private def processExp(f: Expression)(implicit p: Properties) {
     (f :: f.allChildren) foreach { _.evaluator match {
-        case e @ ExistsEvaluator(op) => e.o = processOp(op)
-        case e @ InEvaluator(_, op) => e.o = processOp(op)
+        case e : QueryEvaluator => e.op = processOp(e.op)
         case _ =>
       }
     }
