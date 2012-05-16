@@ -49,7 +49,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -59,7 +58,6 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-import org.gdms.DBTestSource;
 import org.gdms.TestBase;
 import org.gdms.TestResourceHandler;
 import org.gdms.data.DataSource;
@@ -371,20 +369,17 @@ public class SourceManagementTest extends TestBase {
 
         @Test
         public void testSelectDependencies() throws Exception {
-                Assume.assumeTrue(hsqlDbAvailable);
-
-                sm.register("db", testDB);
                 sm.register("file", testFile);
-                String sql = "select 2*(file.id :: int) from db, file "
+                String sql = "select 2*(file.id :: int) from file "
                         + "where (file.id :: int) <> 234;";
                 dsf.register("sql", sql);
                 DataSource ds = dsf.getDataSource("sql");
                 assertTrue(setIs(ds.getReferencedSources(),
-                        new String[]{"db", "file"}));
+                        new String[]{"file"}));
                 ds = dsf.getDataSourceFromSQL(sql);
                 assertTrue(setIs(ds.getReferencedSources(),
-                        new String[]{"db", "file"}));
-                sql = "file union file;";
+                        new String[]{"file"}));
+                sql = "select * from file union select * from file;";
                 dsf.register("sql2", sql);
                 ds = dsf.getDataSource("sql2");
                 assertTrue(setIs(ds.getReferencedSources(), new String[]{"file"}));
@@ -392,7 +387,7 @@ public class SourceManagementTest extends TestBase {
                 assertTrue(setIs(ds.getReferencedSources(), new String[]{"file"}));
 
                 String[] srcDeps = dsf.getDataSource("file").getReferencedSources();
-                assertEquals(srcDeps.length, 0);
+                assertEquals(0, srcDeps.length);
         }
 
         private boolean setIs(String[] referencingSources, String[] test) {
@@ -462,16 +457,12 @@ public class SourceManagementTest extends TestBase {
 
         @Test
         public void testCannotDeleteDependedSource() throws Exception {
-                Assume.assumeTrue(hsqlDbAvailable);
-
-                sm.register("db", testDB);
                 sm.register("file", testFile);
-                String sql = "select 2*StringToInt(file.id) from db, file "
+                String sql = "select 2*(file.id :: int) from file "
                         + "where file.id <> '234';";
                 sm.remove("file");
                 sm.remove("db");
 
-                sm.register("db", testDB);
                 sm.register("file", testFile);
                 dsf.register("sql", sql);
 
@@ -480,78 +471,49 @@ public class SourceManagementTest extends TestBase {
                         fail();
                 } catch (IllegalStateException e) {
                 }
-                try {
-                        sm.remove("db");
-                        fail();
-                } catch (IllegalStateException e) {
-                }
-
-                sm.remove("sql");
                 sm.remove("file");
-                sm.remove("db");
         }
 
         @Test
         public void testCanDeleteIfDependentSourceIsNotWellKnown() throws Exception {
-                Assume.assumeTrue(hsqlDbAvailable);
-
-                sm.register("db", testDB);
                 sm.register("file", testFile);
-                dsf.executeSQL("select 2*StringToInt(file.id) from db, file "
+                dsf.executeSQL("select 2*(file.id :: int) from file "
                         + "where file.id <> '234';");
                 sm.remove("file");
-                sm.remove("db");
         }
 
         @Test
         public void testDependentDependingSync() throws Exception {
-                Assume.assumeTrue(hsqlDbAvailable);
-
                 sm.removeAll();
-                sm.register("db", testDB);
                 sm.register("file", testFile);
-                String sql = "select 2*StringToInt(file.id) from db, file "
+                String sql = "select 2*(file.id :: int) from file "
                         + "where file.id <> '234';";
                 dsf.register("sql", sql);
-                sql = "select * from sql, file;";
+                sql = "select * from \"sql\", file;";
                 dsf.register("sql2", sql);
                 // Anonimous ds should not been taken into account for dependencies
                 dsf.executeSQL(sql);
-                Source src = sm.getSource("db");
-                assertTrue(setIs(src.getReferencingSources(), new String[]{"sql",
-                                "sql2"}));
-                assertTrue(setIs(src.getReferencedSources(), new String[]{}));
-                src = sm.getSource("file");
+                Source src = sm.getSource("file");
                 assertTrue(setIs(src.getReferencingSources(), new String[]{"sql",
                                 "sql2"}));
                 assertTrue(setIs(src.getReferencedSources(), new String[]{}));
                 src = sm.getSource("sql");
                 assertTrue(setIs(src.getReferencingSources(), new String[]{"sql2"}));
-                assertTrue(setIs(src.getReferencedSources(), new String[]{"file",
-                                "db"}));
                 src = sm.getSource("sql2");
                 assertTrue(setIs(src.getReferencingSources(), new String[]{}));
                 assertTrue(setIs(src.getReferencedSources(), new String[]{"file",
-                                "db", "sql"}));
+                                "sql"}));
 
                 sm.remove("sql2");
-                src = sm.getSource("db");
-                assertTrue(setIs(src.getReferencingSources(), new String[]{"sql"}));
-                assertTrue(setIs(src.getReferencedSources(), new String[]{}));
                 src = sm.getSource("file");
                 assertTrue(setIs(src.getReferencingSources(), new String[]{"sql"}));
                 assertTrue(setIs(src.getReferencedSources(), new String[]{}));
                 src = sm.getSource("sql");
                 assertTrue(setIs(src.getReferencingSources(), new String[]{}));
-                assertTrue(setIs(src.getReferencedSources(), new String[]{"file",
-                                "db"}));
                 src = sm.getSource("sql2");
                 assertNull(src);
 
                 sm.remove("sql");
-                src = sm.getSource("db");
-                assertTrue(setIs(src.getReferencingSources(), new String[]{}));
-                assertTrue(setIs(src.getReferencedSources(), new String[]{}));
                 src = sm.getSource("file");
                 assertTrue(setIs(src.getReferencingSources(), new String[]{}));
                 assertTrue(setIs(src.getReferencedSources(), new String[]{}));
@@ -561,22 +523,12 @@ public class SourceManagementTest extends TestBase {
 
         @Test
         public void testCannotRegisterTwice() throws Exception {
-                Assume.assumeTrue(hsqlDbAvailable);
-
-                sm.removeAll();
-
                 sm.register("myfile", testFile);
-                sm.register("myDB", testDB);
                 sm.register("myWMS", testWMS);
                 sm.register("myObj", obj);
 
                 try {
                         sm.register("a", testFile);
-                        fail();
-                } catch (SourceAlreadyExistsException e) {
-                }
-                try {
-                        sm.register("b", testDB);
                         fail();
                 } catch (SourceAlreadyExistsException e) {
                 }
@@ -596,11 +548,6 @@ public class SourceManagementTest extends TestBase {
                 } catch (SourceAlreadyExistsException e) {
                 }
                 try {
-                        sm.nameAndRegister(testDB);
-                        fail();
-                } catch (SourceAlreadyExistsException e) {
-                }
-                try {
                         sm.nameAndRegister(testWMS);
                         fail();
                 } catch (SourceAlreadyExistsException e) {
@@ -611,18 +558,10 @@ public class SourceManagementTest extends TestBase {
                 } catch (SourceAlreadyExistsException e) {
                 }
 
-                sm.removeAll();
-                sm.register("myfile", super.getAnySpatialResource());
                 dsf.register("mySQL", sql);
 
                 try {
                         dsf.register("d", sql);
-                        fail();
-                } catch (SourceAlreadyExistsException e) {
-                }
-
-                try {
-                        dsf.nameAndRegister(sql);
                         fail();
                 } catch (SourceAlreadyExistsException e) {
                 }
