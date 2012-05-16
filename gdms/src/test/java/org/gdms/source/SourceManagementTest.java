@@ -461,8 +461,7 @@ public class SourceManagementTest extends TestBase {
                 String sql = "select 2*(file.id :: int) from file "
                         + "where file.id <> '234';";
                 sm.remove("file");
-                sm.remove("db");
-
+                
                 sm.register("file", testFile);
                 dsf.register("sql", sql);
 
@@ -471,7 +470,6 @@ public class SourceManagementTest extends TestBase {
                         fail();
                 } catch (IllegalStateException e) {
                 }
-                sm.remove("file");
         }
 
         @Test
