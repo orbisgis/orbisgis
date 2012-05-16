@@ -795,13 +795,12 @@ public final class DataSourceFactory {
          * @return the name of the registered view
          * @throws DriverException
          * @throws ParseException
+         * @deprecated use {@link SourceManager#nameAndRegister(java.lang.String) }
+         *   instead of this method.
          */
+        @Deprecated
         public String nameAndRegister(String sql) throws ParseException, DriverException {
-                SQLStatement[] s = Engine.parse(sql, properties);
-                if (s.length > 1) {
-                        throw new ParseException("Cannot create a DataSource from multiple SQL instructions!");
-                }
-                return getSourceManager().nameAndRegister(new SQLSourceDefinition(s[0]));
+                return sourceManager.nameAndRegister(sql);
         }
 
         /**
@@ -811,13 +810,12 @@ public final class DataSourceFactory {
          * @throws DriverException
          * @throws SourceAlreadyExistsException
          * @throws ParseException
+         * @deprecated use {@link SourceManager#register(java.lang.String, java.lang.String) }
+         *   instead of this method.
          */
+        @Deprecated
         public void register(String name, String sql) throws ParseException, DriverException {
-                SQLStatement[] s = Engine.parse(sql, properties);
-                if (s.length > 1) {
-                        throw new ParseException("Cannot create a DataSource from multiple SQL instructions!");
-                }
-                getSourceManager().register(name, new SQLSourceDefinition(s[0]));
+                sourceManager.register(name, sql);
         }
 
         /**

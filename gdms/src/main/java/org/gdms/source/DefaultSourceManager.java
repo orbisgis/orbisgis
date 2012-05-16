@@ -91,6 +91,7 @@ import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.schema.RootSchema;
 import org.gdms.data.schema.Schema;
+import org.gdms.data.sql.SQLSourceDefinition;
 import org.gdms.data.system.SystemSource;
 import org.gdms.data.system.SystemSourceDefinition;
 import org.gdms.data.wms.WMSSource;
@@ -113,6 +114,9 @@ import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
 import org.gdms.source.directory.Source;
 import org.gdms.source.directory.Sources;
+import org.gdms.sql.engine.Engine;
+import org.gdms.sql.engine.ParseException;
+import org.gdms.sql.engine.SQLStatement;
 
 public final class DefaultSourceManager implements SourceManager {
 
@@ -419,6 +423,15 @@ public final class DefaultSourceManager implements SourceManager {
         public void register(String name, File file) {
                 register(name, new FileSourceCreation(file, null));
         }
+        
+        @Override
+        public void register(String name, String sql) throws ParseException {
+                SQLStatement[] s = Engine.parse(sql, dsf.getProperties());
+                if (s.length > 1) {
+                        throw new ParseException("Cannot create a DataSource from multiple SQL instructions!");
+                }
+                register(name, new SQLSourceDefinition(s[0]));
+        }
 
         @Override
         public void register(String name, DBSource dbTable) {
@@ -605,6 +618,15 @@ public final class DefaultSourceManager implements SourceManager {
                 String name = getUID();
                 register(name, false, new FileSourceDefinition(file, DriverManager.DEFAULT_SINGLE_TABLE_NAME));
                 return name;
+        }
+        
+        @Override
+        public String nameAndRegister(String sql) throws ParseException {
+                SQLStatement[] s = Engine.parse(sql, dsf.getProperties());
+                if (s.length > 1) {
+                        throw new ParseException("Cannot create a DataSource from multiple SQL instructions!");
+                }
+                return nameAndRegister(new SQLSourceDefinition(s[0]));
         }
 
         @Override

@@ -60,6 +60,7 @@ import org.gdms.data.wms.WMSSource;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.sql.engine.ParseException;
 
 /**
  * Manages all registered sources.
@@ -175,6 +176,16 @@ public interface SourceManager {
          * @throws org.gdms.data.SourceAlreadyExistsException
          */
         void register(String name, File file);
+        
+        /**
+         * Registers a SQL view with the specified name.
+         *
+         * @param name name to register with
+         * @param sql SQL query to register
+         * @throws ParseException 
+         * @throws org.gdms.data.SourceAlreadyExistsException
+         */
+        void register(String name, String sql) throws ParseException;
 
         /**
          * Registers a database table with the specified name.
@@ -242,6 +253,15 @@ public interface SourceManager {
          * @return the name of the registered source
          */
         String nameAndRegister(File file);
+        
+        /**
+         * Registers a view generating the name automatically.
+         *
+         * @param sql a SQL query
+         * @return the name of the registered source
+         * @throws ParseException  
+         */
+        String nameAndRegister(String sql) throws ParseException;
 
         /**
          * Registers generating the name automatically.
