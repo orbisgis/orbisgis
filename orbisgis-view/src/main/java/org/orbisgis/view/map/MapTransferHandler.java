@@ -31,11 +31,9 @@ package org.orbisgis.view.map;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import java.util.logging.Level;
 import javax.swing.TransferHandler;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.events.EventException;
-import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.TransferableEditableElement;
@@ -95,7 +93,7 @@ public class MapTransferHandler  extends TransferHandler{
                 if(canImportEditableElement(editableList)) {
                     try {
                         //All elements are compatible
-                        transferEditableEvent.callListeners(new EditableTransferEvent(editableList, ts.getComponent()));
+                        transferEditableEvent.callListeners(new EditableTransferEvent(editableList, ts.getDropLocation() ,ts.getComponent()));
                     } catch (EventException ex) {
                         GUILOGGER.error(I18N.tr("Error while drop Editable"),ex);
                         return false;

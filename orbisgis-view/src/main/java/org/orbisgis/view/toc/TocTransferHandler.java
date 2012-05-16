@@ -28,68 +28,18 @@
  */
 package org.orbisgis.view.toc;
 
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.event.InputEvent;
-import javax.swing.Icon;
-import javax.swing.JComponent;
-import javax.swing.TransferHandler;
+import org.orbisgis.view.map.MapTransferHandler;
 
 
 /**
- * Toc Drag&Drop operation
+ * Tree Toc Drag&Drop operation
+ * Swing Handler for dragging EditableElement
+ * Import MapElement(MapContext), EditableSource(Register a layer),
+ * EditableLayer (move layer)
+ * 
+ * Export EditableLayer
  */
-public class TocTransferHandler extends TransferHandler {
+public class TocTransferHandler extends MapTransferHandler {
 
-    @Override
-    public boolean canImport(TransferSupport ts) {
-        return super.canImport(ts);
-    }
 
-    @Override
-    public boolean canImport(JComponent jc, DataFlavor[] dfs) {
-        return super.canImport(jc, dfs);
-    }
-
-    @Override
-    protected Transferable createTransferable(JComponent jc) {
-        return super.createTransferable(jc);
-    }
-
-    @Override
-    public void exportAsDrag(JComponent jc, InputEvent ie, int i) {
-        super.exportAsDrag(jc, ie, i);
-    }
-
-    @Override
-    protected void exportDone(JComponent jc, Transferable t, int i) {
-        super.exportDone(jc, t, i);
-    }
-
-    @Override
-    public void exportToClipboard(JComponent jc, Clipboard clpbrd, int i) throws IllegalStateException {
-        super.exportToClipboard(jc, clpbrd, i);
-    }
-
-    @Override
-    public int getSourceActions(JComponent jc) {
-        return super.getSourceActions(jc);
-    }
-
-    @Override
-    public Icon getVisualRepresentation(Transferable t) {
-        return super.getVisualRepresentation(t);
-    }
-
-    @Override
-    public boolean importData(TransferSupport ts) {
-        return super.importData(ts);
-    }
-
-    @Override
-    public boolean importData(JComponent jc, Transferable t) {
-        return super.importData(jc, t);
-    }
-    
 }

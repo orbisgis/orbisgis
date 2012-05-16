@@ -29,25 +29,36 @@
 package org.orbisgis.view.map;
 
 import java.util.EventObject;
+import javax.swing.TransferHandler;
+import javax.swing.TransferHandler.DropLocation;
 import org.orbisgis.view.edition.EditableElement;
 
 /**
  * Transfer of Editable event
+ * @info source Drop Component
  */
 
 public class EditableTransferEvent extends EventObject {
     private EditableElement[] editableList;
+    private TransferHandler.DropLocation dropLocation;
 
-    public EditableTransferEvent(EditableElement[] editableList, Object o) {
-        super(o);
-        this.editableList = editableList;
+    public EditableTransferEvent(EditableElement[] editableList, DropLocation dropLocation, Object o) {
+            super(o);
+            this.editableList = editableList;
+            this.dropLocation = dropLocation;
     }
+    
+
     /**
      * 
      * @return The list of transfered editable
      */
     public EditableElement[] getEditableList() {
         return editableList;
+    }
+
+    public DropLocation getDropLocation() {
+            return dropLocation;
     }
     
     
