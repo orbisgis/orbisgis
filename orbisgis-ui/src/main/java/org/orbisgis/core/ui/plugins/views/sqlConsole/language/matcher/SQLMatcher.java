@@ -6,9 +6,9 @@
  * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
  *
  *
- *  Team leader Erwan BOCHER, scientific researcher,
+ * Team leader Erwan BOCHER, scientific researcher,
  *
- *  User support leader : Gwendall Petit, geomatic engineer.
+ * User support leader : Gwendall Petit, geomatic engineer.
  *
  * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, scientific researcher, Fernando GONZALEZ
  * CORTES, computer engineer.
@@ -35,16 +35,19 @@
  *
  * or contact directly:
  * info@orbisgis.org
- **/
+ *
+ */
 package org.orbisgis.core.ui.plugins.views.sqlConsole.language.matcher;
 
 import java.util.Arrays;
 import java.util.Iterator;
+
 import org.fife.ui.autocomplete.ShorthandCompletion;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.language.SQLCompletionProvider;
 
 /**
  * This is a hand written SQL pattern matcher that triggers the correct completion actions.
+ *
  * @author Antoine Gourlay
  * @since 4.0
  */
@@ -61,8 +64,9 @@ public class SQLMatcher {
         }
 
         /**
-         * Creates a new SQLMatcher that will register its completions to the 
+         * Creates a new SQLMatcher that will register its completions to the
          * given SQLCompletionProvider.
+         *
          * @param pr
          */
         public SQLMatcher(SQLCompletionProvider pr) {
@@ -71,6 +75,7 @@ public class SQLMatcher {
 
         /**
          * Main entry point for matching a SQL String.
+         *
          * @param str a string
          */
         public void match(String str) {
@@ -105,8 +110,12 @@ public class SQLMatcher {
                         matchAfterComma();
                         return;
                 } else if (a.endsWith("(")) {
-                        // comma; we have to look deeper to understand what to do.
+                        // open par; we have to look deeper to understand what to do.
                         matchAfterOpenPar();
+                        return;
+                } else if (a.endsWith(")")) {
+                        // close par; we do nothing for now
+                        // that's better than displaying rubbish
                         return;
                 }
 
@@ -117,11 +126,12 @@ public class SQLMatcher {
                         // FROM tablename
                         addTables(false);
                         addTableFunctions();
+                        addKeyWord("(SELECT");
                 } else if ("TABLE".equalsIgnoreCase(a)) {
                         // DROP TABLE and others ending in TABLE
                         matchSourceNames1();
                 } else if ("SELECT".equalsIgnoreCase(a) || "WHERE".equalsIgnoreCase(a) || "ON".equalsIgnoreCase(a)
-                        || "(SELECT".equalsIgnoreCase(a) ||"AND".equalsIgnoreCase(a) || "OR".equalsIgnoreCase(a)) {
+                        || "(SELECT".equalsIgnoreCase(a) || "AND".equalsIgnoreCase(a) || "OR".equalsIgnoreCase(a)) {
                         // SELECT table.field
                         addScalarFunctions();
                         addTables(true);
@@ -183,7 +193,7 @@ public class SQLMatcher {
                 } else if ("ORDER".equalsIgnoreCase(a)) {
                         // ORDER BY
                         addKeyWord("BY");
-                } else if ("*".equals(a)) {
+                } else if (a.endsWith("*")) {
                         matchAfterStar();
                 } else if (isOperator(a) || "LIKE".equals(a) || "ILIKE".equals(a)) {
                         // Operator = + - / ...
@@ -211,6 +221,7 @@ public class SQLMatcher {
 
         /**
          * Decides what to do after "By identifier"
+         *
          * @param start true if we are directly after BY or after a comma
          */
         private void matchIdAfterBy() {
@@ -295,7 +306,7 @@ public class SQLMatcher {
                                 addTables(false);
                                 addTableFunctions();
                                 return;
-                        } else if ("SELECT".equalsIgnoreCase(a) ||"(SELECT".equalsIgnoreCase(a) || "WHERE".equalsIgnoreCase(a)
+                        } else if ("SELECT".equalsIgnoreCase(a) || "(SELECT".equalsIgnoreCase(a) || "WHERE".equalsIgnoreCase(a)
                                 || "SET".equalsIgnoreCase(a) || "ON".equalsIgnoreCase(a)) {
                                 // after SELECT, WHERE or the sert part of an update
                                 addScalarFunctions();
@@ -372,7 +383,6 @@ public class SQLMatcher {
                         addKeyWord("PURGE");
                 } else if ("ALTER".equalsIgnoreCase(a)) {
                         addKeyWords("DROP", "ADD", "RENAME");
-                        return;
                 }
         }
 
@@ -382,7 +392,7 @@ public class SQLMatcher {
                 }
                 String a = it.next();
 
-                if ("SELECT".equalsIgnoreCase(a) ||"(SELECT".equalsIgnoreCase(a) || ",".equalsIgnoreCase(a)) {
+                if ("SELECT".equalsIgnoreCase(a) || "(SELECT".equalsIgnoreCase(a) || a.endsWith(",")) {
                         addKeyWords("EXCEPT", "FROM");
                 } else {
                         addScalarFunctions();
@@ -394,7 +404,7 @@ public class SQLMatcher {
                 addKeyWord("SELECT");
                 while (it.hasNext()) {
                         String b = it.next();
-                        if ("SELECT".equalsIgnoreCase(b) ||"(SELECT".equalsIgnoreCase(b) || "WHERE".equalsIgnoreCase(b) || "HAVING".equalsIgnoreCase(b)) {
+                        if ("SELECT".equalsIgnoreCase(b) || "(SELECT".equalsIgnoreCase(b) || "WHERE".equalsIgnoreCase(b) || "HAVING".equalsIgnoreCase(b)) {
                                 addScalarFunctions();
                                 addTables(true);
                                 return;
