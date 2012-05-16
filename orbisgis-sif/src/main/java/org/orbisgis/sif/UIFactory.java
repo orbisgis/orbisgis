@@ -129,7 +129,7 @@ public class UIFactory {
 		}
 		dlg.setModal(true);
 		dlg.pack();
-		dlg.setLocationRelativeTo(null);
+		dlg.setLocationRelativeTo(mainFrame);
 		dlg.setVisible(true);
 
 		return dlg.isAccepted();

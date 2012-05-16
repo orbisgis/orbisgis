@@ -565,7 +565,7 @@ public class SimplePanel extends JPanel {
             // no message, just cancel the action!
             return false;
         } else {
-            JOptionPane.showMessageDialog(null, ret);
+            JOptionPane.showMessageDialog(UIFactory.getMainFrame(), ret);
             return false;
         }
     }

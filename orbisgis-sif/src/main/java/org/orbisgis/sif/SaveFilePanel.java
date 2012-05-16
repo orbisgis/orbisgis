@@ -104,7 +104,7 @@ public class SaveFilePanel extends OpenFilePanel {
 	@Override
 	public String postProcess() {
 		if (getSelectedFile().exists()) {
-			int ret = JOptionPane.showConfirmDialog(null, i18n
+			int ret = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(), i18n
 					.tr("sif.file.fileAlreadyExists")
 					+ " " + i18n.tr("sif.file.overwrite"), i18n
 					.tr("sif.file.existing"),
