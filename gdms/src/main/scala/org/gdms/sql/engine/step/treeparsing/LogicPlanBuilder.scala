@@ -766,6 +766,9 @@ object LogicPlanBuilder {
       case T_EXISTS => {
           Expression(ExistsEvaluator(buildOperationTree("", left)))
         }
+      case T_TABLE_QUERY => {
+          Expression(QueryToScalarEvaluator(buildOperationTree("", left)))
+      }
         // constant values are built from String by SQLValueFactory
       case a => Expression(SQLValueFactory.createValue(tree.getText, a))
     }

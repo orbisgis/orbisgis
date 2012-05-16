@@ -49,13 +49,19 @@ import org.gdms.data.types.Type
 import org.gdms.data.types.TypeFactory
 import org.gdms.data.values.Value
 import org.gdms.data.values.ValueFactory
+import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.UnknownFieldException
+import org.gdms.sql.engine.operations.Operation
 import org.gdms.sql.function.AggregateFunction
 import org.gdms.sql.function.FunctionException
 import org.gdms.sql.function.FunctionValidator
 import org.gdms.sql.function.ScalarFunction
+import org.gdms.sql.engine.commands.Command
+import org.gdms.sql.engine.commands.ExpressionCommand
+import org.gdms.sql.engine.commands.QueryOutputCommand
 import org.gdms.sql.engine.commands.Row
 import org.gdms.sql.engine.GdmSQLPredef._
+import org.orbisgis.progress.ProgressMonitor
 
 /**
  * Base class for all expression evaluators.
@@ -374,4 +380,98 @@ case class PreparedEvaluator(r: Row, e: Expression) extends Evaluator {
   def eval = _ => e.evaluate(r)
   def duplicate = PreparedEvaluator(r, e.duplicate)
   def sqlType = e.evaluator.sqlType
+}
+
+/**
+ * Evaluator for scalar subquery values.
+ * 
+ * @author Antoine Gourlay
+ * @since 2.0
+ */
+case class QueryToScalarEvaluator(var o: Operation) extends Evaluator with DsfEvaluator {
+  private var returnType: Int = -1
+  def sqlType = returnType
+  var command: Command = null
+  var pm: Option[ProgressMonitor] = None
+  private var materialized = false
+  private var matOut: QueryOutputCommand = null
+    
+  private var evals: List[OuterFieldEvaluator]= Nil
+    
+  override val childExpressions = Nil
+    
+  override def doValidate = {
+    command.prepare(dsf)
+    
+    if (command.getMetadata.getFieldCount > 1) {
+      throw new SemanticException("There can only be one selected field in an scalar subquery.")
+    }
+    
+    findOuterFieldEvals(command)
+    
+    if (evals.isEmpty) {
+      // subquery result can be cached: it does not depend on the outer query
+      matOut = new QueryOutputCommand
+      matOut.children = List(command)
+      matOut.materialize(dsf)
+    }
+    
+    returnType = command.getMetadata.getFieldType(0).getTypeCode
+  }
+  override def doCleanUp = {
+    super.doCleanUp
+    
+    if (matOut != null) {
+      matOut.cleanUp
+      matOut = null
+    } else {
+      command.cleanUp
+    }
+    
+    command = null
+    pm = None
+    materialized = false
+    evals = Nil
+  }
+    
+  private def evalInner(s: Array[Value]) = {
+    // independent inner query
+    if (evals.isEmpty) {
+      // materialize once
+      if (materialized == false) {
+        matOut.execute(pm)
+        materialized = true
+      }
+      
+      // iterate the result
+      matOut.iterate()
+    } else {
+      // set outer field references and execute
+      evals foreach (_.setValue(s))
+      command.execute(pm)
+    }
+  }
+    
+  def eval = s => {
+    val ex = evalInner(s)
+    if (ex.hasNext) {
+      ex.next.array(0)
+    } else {
+      ValueFactory.createNullValue[Value]
+    }
+  }
+  
+  private def findOuterFieldEvals(c: Command) { 
+    c match {
+      case e: ExpressionCommand => evals = e.outerFieldEval ::: evals
+      case _ =>
+    }
+    c.children foreach (findOuterFieldEvals)
+  }
+    
+  def duplicate: QueryToScalarEvaluator = {
+    val c = QueryToScalarEvaluator(o.duplicate)
+    c.dsf = dsf
+    c
+  }
 }

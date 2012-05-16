@@ -837,6 +837,7 @@ expression_final
         | QUOTED_STRING -> QUOTED_STRING
         | bool_const -> bool_const
         | expression_cast -> expression_cast
+        | LPAREN subquery RPAREN -> subquery
         ) (CASTCOLON type=LONG_ID -> ^(T_CAST $expression_final $type) )?
         ;
 

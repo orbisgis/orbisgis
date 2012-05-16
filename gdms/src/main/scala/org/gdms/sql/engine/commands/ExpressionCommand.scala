@@ -137,6 +137,13 @@ trait ExpressionCommand extends Command {
           }
           processSubCommand(i.command, allM)
         }
+      case i: QueryToScalarEvaluator => {
+          if (i.command == null) {
+            // the command was not initialized by the engine, which means it does not expect it here
+            throw new IllegalStateException("Error: there cannot be a scalar subquery in this clause.")
+          }
+          processSubCommand(i.command, allM)
+        }
       case _ =>
     }
   }

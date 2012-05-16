@@ -360,6 +360,14 @@ public class GrammarTest {
                 notParse("SELECT * FROM myTable WHERE myField in (UPDATE toto SET tata = 1);");
 
         }
+        
+        @Test
+        public void testScalarSubQuery() throws Exception {
+                parse("SELECT (SELECT count(toto) FROM titi);");
+                parse("SELECT (SELECT count(toto) FROM titi) FROM tata;");
+                parse("SELECT * FROM tata WHERE tata.id = (SELECT max(id) FROM tutu);");
+                notParse("SELECT * FROM tata WHERE tata.id = SELECT max(id) FROM tutu;");
+        }
 
         @Test
         public void testSet() throws Exception {

@@ -382,6 +382,61 @@ public class SQLTest extends TestBase {
         }
 
         @Test
+        public void testSimpleScalarSubQuery() throws Exception {
+                DataSource d = dsf.getDataSourceFromSQL(" SELECT (SELECT * FROM VALUES (1) as toto);");
+                d.open();
+                assertEquals(1, d.getFieldCount());
+                assertEquals(1, d.getRowCount());
+                assertEquals(1, d.getInt(0, 0));
+                d.close();
+        }
+
+        @Test
+        public void testScalarSubquery() throws Exception {
+                dsf.executeSQL("CREATE TABLE testIn AS SELECT * FROM VALUES (1), (3), (5) as toto;");
+                dsf.executeSQL("CREATE TABLE testIn2 AS SELECT * FROM VALUES (1), (2), (3), (4), (5) as toto;");
+                DataSource d = dsf.getDataSourceFromSQL("SELECT * FROM testIn WHERE exp0 = ("
+                        + "SELECT testIn2.exp0 FROM testIn2 ORDER BY testIn2.exp0 DESC LIMIT 1);");
+                d.open();
+                assertEquals(1, d.getRowCount());
+                assertEquals(1, d.getFieldCount());
+                assertEquals(5, d.getInt(0, 0));
+                d.close();
+        }
+
+        @Test
+        public void testCorrelatedScalarSubquery() throws Exception {
+                dsf.executeSQL("CREATE TABLE testIn AS SELECT * FROM VALUES (1, 'hi'), (3, 'hi2'), (5, 'hi3') as toto;");
+                dsf.executeSQL("CREATE TABLE testIn2 AS SELECT * FROM VALUES (1, 'hi'), (2, 'hi2'), (3, 'hi'), (4, 'hi3'"
+                        + "), (5, 'hi4') as toto;");
+                DataSource d = dsf.getDataSourceFromSQL("SELECT exp0 FROM testIn WHERE exp0 >= ("
+                        + "SELECT testIn2.exp0 FROM testIn2 WHERE testIn2.exp1 = testIn.exp1 "
+                        + "ORDER BY testIn2.exp0 DESC LIMIT 1);");
+                // result shoud be:
+                // 3
+                // 5
+                d.open();
+                assertEquals(2, d.getRowCount());
+                assertEquals(1, d.getFieldCount());
+                assertEquals(3, d.getInt(0, 0));
+                assertEquals(5, d.getInt(1, 0));
+                d.close();
+        }
+        
+        @Test
+        public void testCorrelatedScalarSubqueryInUpdate() throws Exception {
+                dsf.executeSQL("CREATE TABLE testIn AS SELECT * FROM VALUES (1, 'hi'), (3, 'hi2'), (5, 'hi3') as toto;");
+                dsf.executeSQL("UPDATE testIn SET exp1 = 'hello' WHERE "
+                        + "exp0 = (SELECT max(a.exp0) FROM testIn AS a);");
+                DataSource d = dsf.getDataSource("testIn");
+                d.open();
+                assertEquals("hi", d.getString(0, 1));
+                assertEquals("hi2", d.getString(1, 1));
+                assertEquals("hello", d.getString(2, 1));
+                d.close();
+        }
+
+        @Test
         public void testAggregate() throws Exception {
                 String ds = SHPTABLE;
                 DataSource d = dsf.getDataSourceFromSQL("SELECT MIN(runoff_win), MAX(runoff_win) FROM " + SHPTABLE + ";");
@@ -1117,7 +1172,7 @@ public class SQLTest extends TestBase {
                 assertEquals(ds.getRowCount(), 16);
                 ds.close();
         }
-        
+
         @Test
         public void regression699() throws Exception {
                 dsf.executeSQL("CREATE TABLE toto1 AS SELECT * FROM " + SHPTABLE + " LIMIT 1;");

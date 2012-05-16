@@ -58,6 +58,7 @@ import org.gdms.sql.engine.step.physicalJoin.PhysicalJoinOptimStep
 import org.gdms.sql.evaluator.ExistsEvaluator
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.InEvaluator
+import org.gdms.sql.evaluator.QueryToScalarEvaluator
 
 /**
  * Step P2: Building of the command tree
@@ -75,7 +76,7 @@ case object BuilderStep extends AbstractEngineStep[(Operation, DataSourceFactory
   }
   
   /**
-   * Builds a command tree from a operation tree.
+   * Builds a command tree from an operation tree.
    * This method chooses between the different available joins methods
    * index/full scans, etc.
    */
@@ -161,6 +162,7 @@ case object BuilderStep extends AbstractEngineStep[(Operation, DataSourceFactory
     (f :: f.allChildren) foreach { _.evaluator match {
         case e @ ExistsEvaluator(op) => e.command = processOp(op)
         case e @ InEvaluator(_, op) => e.command = processOp(op)
+        case e @ QueryToScalarEvaluator(op) => e.command = processOp(op)
         case _ =>
       }
     }
