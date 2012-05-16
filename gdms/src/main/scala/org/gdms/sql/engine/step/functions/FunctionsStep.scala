@@ -115,6 +115,8 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
   
   def processAggregates(op: Operation) {
     op.allChildren foreach { case p @ Projection(exp, ch) =>
+        var aliases: List[String] = Nil
+        
         // replaces aggregate functions by fields and returns the aggregates
         var i = -2
         def replaceAggregateFunctions(e: (Expression, Option[String])): Seq[(Expression, Option[String])] = {
@@ -123,6 +125,7 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
               val func = e._1.evaluator
               i = i + 1
               val name = e._2.getOrElse(f.getName + (if (i == -1) "" else i))
+              aliases = name :: aliases
               e._1.evaluator = FieldEvaluator(name)
               (Expression(func), Some(name)) :: Nil
             case e => e.children flatMap (ex => replaceAggregateFunctions((ex, None)))
@@ -150,7 +153,7 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
             // there is a Grouping
             
             // finds directly referenced fields/aliases in GROUP BY
-            val aliases = group.exp flatMap (a =>
+            aliases = group.exp flatMap (a =>
               a._2 orElse {
                 a._1 match {
                   case field(name, _) => Some(name)
@@ -178,16 +181,6 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
                   }}
               }
             }
-          
-            // checks directly selected fields are referenced in GROUP BY clause
-            exp foreach (_._1 match {
-                case field(name, _) => 
-                  if (!aliases.contains(name)) {
-                    throw new SemanticException("field " + name + " cannot be selected because it is not present in the GROUP BY clause.")
-                  }
-                case star(_,_) => throw new SemanticException("Selected alls field using the STAR '*' is not allowed with a GROUP BY clause.")
-                case _ =>
-              })
           case None =>
         }
         
@@ -198,7 +191,7 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
           // an Aggregate is inserted afterwards, and the functions are
           // replaces with fields in the Projection
           // there is some AggregateEvaluator expressions
-          
+           
           // we process projected fields. If they stayed this far, it means they are indeed referenced in the GROUP BY
           // and they may need to be kept by the aggregate.
           p.exp flatMap (_._1.allChildren) foreach { e => e match {
@@ -213,6 +206,18 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
           
           top.children = List(c)
         }
+        
+        if (gr.isDefined || !aggF.isEmpty) {
+          // checks directly selected fields are referenced in GROUP BY clause
+          exp foreach (_._1 match {
+              case field(name, _) => 
+                if (!aliases.contains(name)) {
+                  throw new SemanticException("field " + name + " cannot be selected because it is not present in the GROUP BY clause.")
+                }
+              case star(_,_) => throw new SemanticException("Selected alls field using the STAR '*' is not allowed with" + 
+                                                            " a GROUP BY clause and/or an aggregate function.")
+              case _ =>
+            })}
       case _ =>
     }
   }

@@ -422,7 +422,7 @@ public class SQLTest extends TestBase {
                 assertEquals(5, d.getInt(1, 0));
                 d.close();
         }
-        
+
         @Test
         public void testCorrelatedScalarSubqueryInUpdate() throws Exception {
                 dsf.executeSQL("CREATE TABLE testIn AS SELECT * FROM VALUES (1, 'hi'), (3, 'hi2'), (5, 'hi3') as toto;");
@@ -1174,11 +1174,27 @@ public class SQLTest extends TestBase {
         }
 
         @Test
-        public void regression699() throws Exception {
+        public void regressionTest700() throws Exception {
                 dsf.executeSQL("CREATE TABLE toto1 AS SELECT * FROM " + SHPTABLE + " LIMIT 1;");
                 sm.addName("toto1", "toto2");
                 dsf.executeSQL("CREATE TABLE toto AS SELECT toto1.the_geom FROM toto1 LEFT JOIN toto2 ON "
                         + "toto1.runoff_win = toto2.runoff_win;");
+        }
+
+        @Test
+        public void regressionTest702() throws Exception {
+                sm.addName(SHPTABLE, "toto");
+                try {
+                        dsf.executeSQL("CREATE TABLE test AS SELECT *, count(*) as toto FROM toto;");
+                        fail();
+                } catch (SemanticException e) {
+                }
+                
+                try {
+                        dsf.executeSQL("CREATE TABLE test AS SELECT the_geom, count(*) as toto FROM toto;");
+                        fail();
+                } catch (SemanticException e) {
+                }
         }
 
         @Test
