@@ -42,7 +42,6 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import java.util.HashSet;
-import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LineSymbolizerType;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -76,157 +75,153 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
  */
 public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode {
 
-    private RealParameter perpendicularOffset;
-    private Stroke stroke;
+        private RealParameter perpendicularOffset;
+        private Stroke stroke;
 
-    /**
-     * Instanciate a new default {@code LineSymbolizer}. It's named {@code 
-     * Line Symbolizer"}, is defined in {@link Uom#MM}, and is drawn using a 
-     * default {@link PenStroke}
-     */
-    public LineSymbolizer() {
-        super();
-        this.name = "Line Symbolizer";
-        setStroke(new PenStroke());
-    }
-
-    /**
-     * Build a new {@code LineSymbolizer} using the {@code JAXBElement} given in
-     * argument
-     * @param st
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
-     */
-    public LineSymbolizer(JAXBElement<LineSymbolizerType> st) throws InvalidStyle {
-        super(st);
-        LineSymbolizerType ast = st.getValue();
-
-
-        if (ast.getGeometry() != null) {
-            this.setGeometryAttribute(new GeometryAttribute(ast.getGeometry()));
+        /**
+         * Instanciate a new default {@code LineSymbolizer}. It's named {@code 
+         * Line Symbolizer"}, is defined in {@link Uom#MM}, and is drawn using a 
+         * default {@link PenStroke}
+         */
+        public LineSymbolizer() {
+                super();
+                this.name = "Line Symbolizer";
+                setStroke(new PenStroke());
         }
 
-        if (ast.getUom() != null) {
-            setUom(Uom.fromOgcURN(ast.getUom()));
-        }
-
-        if (ast.getPerpendicularOffset() != null) {
-            this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
-        }
-
-        /*if (ast.getTranslate() != null) {
-            this.setTranslate(new Translate(ast.getTranslate()));
-        }*/
-
-        if (ast.getStroke() != null) {
-            this.setStroke(Stroke.createFromJAXBElement(ast.getStroke()));
-        }
-    }
-
-    @Override
-    public Stroke getStroke() {
-        return stroke;
-    }
-
-    @Override
-    public void setStroke(Stroke stroke) {
-        this.stroke = stroke;
-        stroke.setParent(this);
-    }
-
-    /**
-     * Get the current perpendicular offset. If null, considered to be set to 0.
-     * @return 
-     */
-    public RealParameter getPerpendicularOffset() {
-        return perpendicularOffset;
-    }
-
-    /**
-     * Set the perpendicular offset. If a {@code null} value is given, the offset
-     * will be considered as equal to 0.
-     * @param perpendicularOffset 
-     */
-    public void setPerpendicularOffset(RealParameter perpendicularOffset) {
-        this.perpendicularOffset = perpendicularOffset;
-        if (this.perpendicularOffset != null) {
-            this.perpendicularOffset.setContext(RealParameterContext.REAL_CONTEXT);
-        }
-    }
-
-    /**
-     *
-     * @param g2
-     * @param sds
-     * @param fid
-     * @throws ParameterException
-     * @throws IOException
-     * @todo make sure the geom is a line or an area; implement p_offset
-     */
-    @Override
-    public void draw(Graphics2D g2, DataSource sds, long fid,
-            boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
-            throws ParameterException, IOException, DriverException {
-        if (stroke != null) {
-            List<Shape> shapes = this.getLines(sds, fid, mt, the_geom);
+        /**
+         * Build a new {@code LineSymbolizer} using the {@code JAXBElement} given in
+         * argument
+         * @param st
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
+        public LineSymbolizer(JAXBElement<LineSymbolizerType> st) throws InvalidStyle {
+                super(st);
+                LineSymbolizerType ast = st.getValue();
 
 
-            double offset = 0.0;
-            if (perpendicularOffset != null) {
-                offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
-                        getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-            }
-
-            if (shapes != null) {
-                for (Shape shp : shapes) {
-                    if (shp != null) {
-                        stroke.draw(g2, sds, fid, shp, selected, mt, offset);
-                    }
+                if (ast.getGeometry() != null) {
+                        this.setGeometryAttribute(new GeometryAttribute(ast.getGeometry()));
                 }
-            }
-        }
-    }
 
-    @Override
-    public JAXBElement<LineSymbolizerType> getJAXBElement() {
-        ObjectFactory of = new ObjectFactory();
-        LineSymbolizerType s = of.createLineSymbolizerType();
+                if (ast.getUom() != null) {
+                        setUom(Uom.fromOgcURN(ast.getUom()));
+                }
 
-        this.setJAXBProperty(s);
+                if (ast.getPerpendicularOffset() != null) {
+                        this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
+                }
 
-        if (this.getGeometryAttribute() != null){
-            s.setGeometry(getGeometryAttribute().getJAXBGeometryType());
-        }
+                /*if (ast.getTranslate() != null) {
+                this.setTranslate(new Translate(ast.getTranslate()));
+                }*/
 
-        if (this.getUom() != null) {
-            s.setUom(this.getUom().toURN());
-        }
-
-        /*if (translate != null) {
-            s.setTranslate(translate.getJAXBType());
-        }*/
-
-        if (this.perpendicularOffset != null) {
-            s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());
+                if (ast.getStroke() != null) {
+                        this.setStroke(Stroke.createFromJAXBElement(ast.getStroke()));
+                }
         }
 
-        if (stroke != null) {
-            s.setStroke(stroke.getJAXBElement());
+        @Override
+        public Stroke getStroke() {
+                return stroke;
         }
 
-
-        return of.createLineSymbolizer(s);
-    }
-
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> ret = new HashSet<String>();
-        if(perpendicularOffset != null){
-            ret.addAll(perpendicularOffset.dependsOnFeature());
+        @Override
+        public void setStroke(Stroke stroke) {
+                this.stroke = stroke;
+                stroke.setParent(this);
         }
-        if(stroke != null){
-            ret.addAll(stroke.dependsOnFeature());
+
+        /**
+         * Get the current perpendicular offset. If null, considered to be set to 0.
+         * @return 
+         */
+        public RealParameter getPerpendicularOffset() {
+                return perpendicularOffset;
         }
-        return ret;
-    }
-    
+
+        /**
+         * Set the perpendicular offset. If a {@code null} value is given, the offset
+         * will be considered as equal to 0.
+         * @param perpendicularOffset 
+         */
+        public void setPerpendicularOffset(RealParameter perpendicularOffset) {
+                this.perpendicularOffset = perpendicularOffset;
+                if (this.perpendicularOffset != null) {
+                        this.perpendicularOffset.setContext(RealParameterContext.REAL_CONTEXT);
+                }
+        }
+
+        /**
+         *
+         * @param g2
+         * @param sds
+         * @param fid
+         * @throws ParameterException
+         * @throws IOException
+         * @todo make sure the geom is a line or an area; implement p_offset
+         */
+        @Override
+        public void draw(Graphics2D g2, DataSource sds, long fid,
+                boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
+                throws ParameterException, IOException, DriverException {
+                if (stroke != null) {
+                        Shape shp = mt.getShape(the_geom, true);
+
+                        double offset = 0.0;
+                        if (perpendicularOffset != null) {
+                                offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
+                                        getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                        }
+
+
+                        if (shp != null) {
+                                stroke.draw(g2, sds, fid, shp, selected, mt, offset);
+
+                        }
+                }
+        }
+
+        @Override
+        public JAXBElement<LineSymbolizerType> getJAXBElement() {
+                ObjectFactory of = new ObjectFactory();
+                LineSymbolizerType s = of.createLineSymbolizerType();
+
+                this.setJAXBProperty(s);
+
+                if (this.getGeometryAttribute() != null) {
+                        s.setGeometry(getGeometryAttribute().getJAXBGeometryType());
+                }
+
+                if (this.getUom() != null) {
+                        s.setUom(this.getUom().toURN());
+                }
+
+                /*if (translate != null) {
+                s.setTranslate(translate.getJAXBType());
+                }*/
+
+                if (this.perpendicularOffset != null) {
+                        s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());
+                }
+
+                if (stroke != null) {
+                        s.setStroke(stroke.getJAXBElement());
+                }
+
+
+                return of.createLineSymbolizer(s);
+        }
+
+        @Override
+        public HashSet<String> dependsOnFeature() {
+                HashSet<String> ret = new HashSet<String>();
+                if (perpendicularOffset != null) {
+                        ret.addAll(perpendicularOffset.dependsOnFeature());
+                }
+                if (stroke != null) {
+                        ret.addAll(stroke.dependsOnFeature());
+                }
+                return ret;
+        }
 }

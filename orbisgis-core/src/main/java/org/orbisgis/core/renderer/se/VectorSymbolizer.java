@@ -42,7 +42,7 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.SymbolizerType;
@@ -69,284 +69,285 @@ import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
  */
 public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
-    private Uom uom;
-    private GeometryAttribute theGeom;
+        private Uom uom;
+        private GeometryAttribute theGeom;
 
-    /**
-     * Default constructor for this abstract class. Only set the inner unit of
-     * measure to {@code Uom.MM}.
-     */
-    protected VectorSymbolizer() {
-        setUom(Uom.MM);
-    }
-
-    /**
-     * Build a VectorSymbolizer from the inpur JAXB type.
-     * @param st
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
-     */
-    protected VectorSymbolizer(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
-        super(st);
-    }
-
-    /**
-     * Get the name of the column where the geometry data will be retrieved.
-     * @return 
-     */
-    public final GeometryAttribute getGeometryAttribute() {
-        return theGeom;
-    }
-
-
-    /**
-     * Set the name of the column where the geometry data will be retrieved.
-     * @param theGeom 
-     */
-    public final void setGeometryAttribute(GeometryAttribute theGeom) {
-        this.theGeom = theGeom;
-    }
-
-    /**
-     * Get the {@code Geometry} stored in {@code sds} at index {@code fid}.
-     * @param sds
-     * @param fid
-     * @return
-     * @throws ParameterException
-     * @throws DriverException 
-     */
-    public Geometry getGeometry(DataSource sds, Long fid) throws ParameterException, DriverException {
-        if (theGeom != null) {
-            return theGeom.getTheGeom(sds, fid);
-        } else {
-            int fieldId = ShapeHelper.getGeometryFieldId(sds);
-            return sds.getFieldValue(fid, fieldId).getAsGeometry();
+        /**
+         * Default constructor for this abstract class. Only set the inner unit of
+         * measure to {@code Uom.MM}.
+         */
+        protected VectorSymbolizer() {
+                setUom(Uom.MM);
         }
-    }
 
-    /**
-     * If {@code theGeom} is null, get the {@code Geometry} stored in 
-     * {@code sds} at index {@code fid}. Otherwise, return {@code theGeom}.
-     * @param sds
-     * @param fid
-     * @return
-     * @throws ParameterException
-     * @throws DriverException 
-     */
-    public Geometry getGeometry(DataSource sds, Long fid, Geometry theGeom) throws ParameterException, DriverException{
-        if (theGeom == null){
-            return this.getGeometry(sds, fid);
-        } else {
-            return theGeom;
+        /**
+         * Build a VectorSymbolizer from the inpur JAXB type.
+         * @param st
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
+        protected VectorSymbolizer(JAXBElement<? extends SymbolizerType> st) throws InvalidStyle {
+                super(st);
         }
-    }
 
-    /**
-     * Convert a spatial feature into a LiteShape, should add parameters to handle
-     * the scale and to perform a scale dependent generalization !
-     *
-     * @param sds the data source
-     * @param fid the feature id
-     * @throws ParameterException
-     * @throws IOException
-     * @throws DriverException
-     */
-    public List<Shape> getShapes(DataSource sds, long fid,
-            MapTransform mt, Geometry theGeom, boolean  generalize) throws ParameterException, IOException, DriverException {
+        /**
+         * Get the name of the column where the geometry data will be retrieved.
+         * @return 
+         */
+        public final GeometryAttribute getGeometryAttribute() {
+                return theGeom;
+        }
 
-        Geometry geom = getGeometry(sds, fid, theGeom);
-        ArrayList<Shape> shapes = new ArrayList<Shape>();
+        /**
+         * Set the name of the column where the geometry data will be retrieved.
+         * @param theGeom 
+         */
+        public final void setGeometryAttribute(GeometryAttribute theGeom) {
+                this.theGeom = theGeom;
+        }
 
-        ArrayList<Geometry> geom2Process = new ArrayList<Geometry>();
-
-        geom2Process.add(geom);
-
-        while (!geom2Process.isEmpty()) {
-            geom = geom2Process.remove(0);
-            if (geom != null) {
-                if (geom instanceof GeometryCollection) {
-                    int numGeom = geom.getNumGeometries();
-                    for (int i = 0; i < numGeom; i++) {
-                        geom2Process.add(geom.getGeometryN(i));
-                    }
+        /**
+         * Get the {@code Geometry} stored in {@code sds} at index {@code fid}.
+         * @param sds
+         * @param fid
+         * @return
+         * @throws ParameterException
+         * @throws DriverException 
+         */
+        public Geometry getGeometry(DataSource sds, Long fid) throws ParameterException, DriverException {
+                if (theGeom != null) {
+                        return theGeom.getTheGeom(sds, fid);
                 } else {
-                    Shape shape = mt.getShape(geom,generalize);
-                    if (shape != null) {
-                        shapes.add(shape);
-                    }
+                        int fieldId = ShapeHelper.getGeometryFieldId(sds);
+                        return sds.getFieldValue(fid, fieldId).getAsGeometry();
                 }
-            }
         }
 
-        return shapes;
-    }
-
-    /**
-     * Convert a spatial feature into a set of linear shape
-     *
-     * @param sds the data source
-     * @param fid the feature id
-     * @throws ParameterException
-     * @throws IOException
-     * @throws DriverException
-     */
-    public List<Shape> getLines(DataSource sds, long fid,
-            MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
-
-        Geometry geom = getGeometry(sds, fid, the_geom);
-        ArrayList<Shape> shapes = new ArrayList<Shape>();
-
-        ArrayList<Geometry> geom2Process = new ArrayList<Geometry>();
-
-        geom2Process.add(geom);
-
-
-        AffineTransform at = null;
-
-        while (!geom2Process.isEmpty()) {
-            geom = geom2Process.remove(0);
-
-            if (geom != null) {
-
-                if (geom instanceof GeometryCollection) {
-                    // Uncollectionize
-                    int numGeom = geom.getNumGeometries();
-                    for (int i = 0; i < numGeom; i++) {
-                        geom2Process.add(geom.getGeometryN(i));
-                    }
-                } else if (geom instanceof Polygon) {
-                    // Separate exterior and interior holes
-                    Polygon p = (Polygon) geom;
-                    Shape shape = mt.getShape(p.getExteriorRing(), true);
-                    if (shape != null) {
-                        if (at != null) {
-                            shape = at.createTransformedShape(shape);
-                        }
-                        shapes.add(shape);
-                    }
-                    int i;
-                    // Be aware of polygon holes !
-                    int numRing = p.getNumInteriorRing();
-                    for (i = 0; i < numRing; i++) {
-                        shape = mt.getShape(p.getInteriorRingN(i),true);
-                        if (shape != null) {
-                            if (at != null) {
-                                shape = at.createTransformedShape(shape);
-                            }
-                            shapes.add(shape);
-                        }
-                    }
+        /**
+         * If {@code theGeom} is null, get the {@code Geometry} stored in 
+         * {@code sds} at index {@code fid}. Otherwise, return {@code theGeom}.
+         * @param sds
+         * @param fid
+         * @return
+         * @throws ParameterException
+         * @throws DriverException 
+         */
+        public Geometry getGeometry(DataSource sds, Long fid, Geometry theGeom) throws ParameterException, DriverException {
+                if (theGeom == null) {
+                        return this.getGeometry(sds, fid);
                 } else {
-                    Shape shape = mt.getShape(geom,false);
-
-                    if (shape != null) {
-                        if (at != null) {
-                            shape = at.createTransformedShape(shape);
-                        }
-                        shapes.add(shape);
-                    }
+                        return theGeom;
                 }
-            }
         }
 
-        return shapes;
-    }
+        /**
+         * Convert a spatial feature into a LiteShape, should add parameters to handle
+         * the scale and to perform a scale dependent generalization !
+         *
+         * @param sds the data source
+         * @param fid the feature id
+         * @throws ParameterException
+         * @throws IOException
+         * @throws DriverException
+         */
+        public Shape getShape(DataSource sds, long fid,
+                MapTransform mt, Geometry theGeom, boolean generalize) throws ParameterException, IOException, DriverException {
 
-    /**
-     * Return one point for each geometry
-     *
-     * @param sds
-     * @param fid
-     * @param mt
-     * @return
-     * @throws ParameterException
-     * @throws IOException
-     * @throws DriverException
-     */
-    public Point2D getPointShape(DataSource sds, long fid, MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
+                Geometry geom = getGeometry(sds, fid, theGeom);
+                //ArrayList<Shape> shapes = new ArrayList<Shape>();
 
-        Geometry geom = getGeometry(sds, fid, theGeom);
-        AffineTransform at = mt.getAffineTransform();
-        Point point;
+                //shapes.add();
+                /* ArrayList<Geometry> geom2Process = new ArrayList<Geometry>();
+                
+                geom2Process.add(geom);
+                
+                while (!geom2Process.isEmpty()) {
+                geom = geom2Process.remove(0);
+                if (geom != null) {
+                if (geom instanceof GeometryCollection) {
+                int numGeom = geom.getNumGeometries();
+                for (int i = 0; i < numGeom; i++) {
+                geom2Process.add(geom.getGeometryN(i));
+                }
+                } else {
+                Shape shape = mt.getShape(geom,generalize);
+                if (shape != null) {
+                shapes.add(shape);
+                }
+                }
+                }
+                }*/
 
-        try {
-            point = geom.getInteriorPoint();
-        } catch (TopologyException ex) {
-            Services.getOutputManager().println("getPointShape :: TopologyException: " + ex);
-            point = geom.getCentroid();
-        }
-        return at.transform(new Point2D.Double(point.getX(), point.getY()), null);
-    }
-
-    /**
-     * Return only the first point
-     * @param sds
-     * @param fid
-     * @param mt
-     * @return
-     * @throws ParameterException
-     * @throws IOException
-     * @throws DriverException
-     */
-    public Point2D getFirstPointShape(DataSource sds, long fid, MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
-
-        Geometry geom = getGeometry(sds, fid, theGeom);
-        AffineTransform at = mt.getAffineTransform();
-
-        Coordinate[] coordinates = geom.getCoordinates();
-
-        return at.transform(new Point2D.Double(coordinates[0].x, coordinates[0].y), null);
-    }
-
-    /**
-     * Return all vertices of the geometry
-     *
-     * @param sds
-     * @param fid
-     * @param mt
-     * @param theGeom
-     * @return
-     * @throws ParameterException
-     * @throws IOException
-     * @throws DriverException
-     */
-    public List<Point2D> getPoints(DataSource sds, long fid,
-            MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
-
-        Geometry geom = getGeometry(sds, fid, theGeom);
-        //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
-
-        ArrayList<Point2D> points = new ArrayList<Point2D>();
-
-        AffineTransform at = mt.getAffineTransform();
-
-        Coordinate[] coordinates = geom.getCoordinates();
-
-        int i;
-        int size = coordinates.length;
-        for (i = 0; i < size; i++) {
-            Coordinate coord = coordinates[i];
-            points.add(at.transform(new Point2D.Double(coord.x, coord.y), null));
+                return mt.getShape(geom, generalize);
         }
 
-        return points;
-    }
+        /**
+         * Convert a spatial feature into a set of linear shape
+         *
+         * @param sds the data source
+         * @param fid the feature id
+         * @throws ParameterException
+         * @throws IOException
+         * @throws DriverException
+         */
+        public List<Shape> getLines(DataSource sds, long fid,
+                MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
 
-    @Override
-    public final Uom getUom() {
-        return uom;
-    }
+                Geometry geom = getGeometry(sds, fid, the_geom);
+                LinkedList<Shape> shapes = new LinkedList<Shape>();
 
-    @Override
-    public final Uom getOwnUom() {
-        return uom;
-    }
+                LinkedList<Geometry> geom2Process = new LinkedList<Geometry>();
 
-    @Override
-    public final void setUom(Uom uom) {
-        if (uom != null) {
-            this.uom = uom;
-        } else {
-            this.uom = Uom.MM;
+                geom2Process.add(geom);
+
+
+                AffineTransform at = null;
+
+                while (!geom2Process.isEmpty()) {
+                        geom = geom2Process.remove(0);
+
+                        if (geom != null) {
+
+                                if (geom instanceof GeometryCollection) {
+                                        // Uncollectionize
+                                        int numGeom = geom.getNumGeometries();
+                                        for (int i = 0; i < numGeom; i++) {
+                                                geom2Process.add(geom.getGeometryN(i));
+                                        }
+                                } else if (geom instanceof Polygon) {
+                                        // Separate exterior and interior holes
+                                        Polygon p = (Polygon) geom;
+
+                                        shapes.add(mt.getShape(geom, true));
+
+                                        Shape shape = mt.getShape(p.getExteriorRing(), true);
+                                        if (shape != null) {
+                                                if (at != null) {
+                                                        shape = at.createTransformedShape(shape);
+                                                }
+                                                shapes.add(shape);
+                                        }
+                                        int i;
+                                        // Be aware of polygon holes !
+                                        int numRing = p.getNumInteriorRing();
+                                        for (i = 0; i < numRing; i++) {
+                                                shape = mt.getShape(p.getInteriorRingN(i), true);
+                                                if (shape != null) {
+                                                        if (at != null) {
+                                                                shape = at.createTransformedShape(shape);
+                                                        }
+                                                        shapes.add(shape);
+                                                }
+                                        }
+                                } else {
+                                        Shape shape = mt.getShape(geom, false);
+
+                                        if (shape != null) {
+                                                if (at != null) {
+                                                        shape = at.createTransformedShape(shape);
+                                                }
+                                                shapes.add(shape);
+                                        }
+                                }
+                        }
+                }
+
+                return shapes;
         }
-    }
+
+        /**
+         * Return one point for each geometry
+         *
+         * @param sds
+         * @param fid
+         * @param mt
+         * @return
+         * @throws ParameterException
+         * @throws IOException
+         * @throws DriverException
+         */
+        public Point2D getPointShape(DataSource sds, long fid, MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
+
+                Geometry geom = getGeometry(sds, fid, theGeom);
+                AffineTransform at = mt.getAffineTransform();
+                Point point;
+
+                try {
+                        point = geom.getInteriorPoint();
+                } catch (TopologyException ex) {
+                        Services.getOutputManager().println("getPointShape :: TopologyException: " + ex);
+                        point = geom.getCentroid();
+                }
+                return at.transform(new Point2D.Double(point.getX(), point.getY()), null);
+        }
+
+        /**
+         * Return only the first point
+         * @param sds
+         * @param fid
+         * @param mt
+         * @return
+         * @throws ParameterException
+         * @throws IOException
+         * @throws DriverException
+         */
+        public Point2D getFirstPointShape(DataSource sds, long fid, MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
+
+                Geometry geom = getGeometry(sds, fid, theGeom);
+                AffineTransform at = mt.getAffineTransform();
+
+                Coordinate[] coordinates = geom.getCoordinates();
+
+                return at.transform(new Point2D.Double(coordinates[0].x, coordinates[0].y), null);
+        }
+
+        /**
+         * Return all vertices of the geometry
+         *
+         * @param sds
+         * @param fid
+         * @param mt
+         * @param theGeom
+         * @return
+         * @throws ParameterException
+         * @throws IOException
+         * @throws DriverException
+         */
+        public List<Point2D> getPoints(DataSource sds, long fid,
+                MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
+
+                Geometry geom = getGeometry(sds, fid, theGeom);
+                //geom = ShapeHelper.clipToExtent(geom, mt.getAdjustedExtent());
+
+                LinkedList<Point2D> points = new LinkedList<Point2D>();
+
+                AffineTransform at = mt.getAffineTransform();
+
+                Coordinate[] coordinates = geom.getCoordinates();
+
+
+                for (Coordinate coord : coordinates) {
+                        points.add(at.transform(new Point2D.Double(coord.x, coord.y), null));
+                }
+
+                return points;
+        }
+
+        @Override
+        public final Uom getUom() {
+                return uom;
+        }
+
+        @Override
+        public final Uom getOwnUom() {
+                return uom;
+        }
+
+        @Override
+        public final void setUom(Uom uom) {
+                if (uom != null) {
+                        this.uom = uom;
+                } else {
+                        this.uom = Uom.MM;
+                }
+        }
 }

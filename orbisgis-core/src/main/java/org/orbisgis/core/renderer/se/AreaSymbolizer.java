@@ -42,6 +42,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.AreaSymbolizerType;
@@ -74,224 +75,222 @@ import org.orbisgis.core.renderer.se.transform.Translate;
  */
 public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, StrokeNode {
 
-    private Translate translate;
-    
-    private RealParameter perpendicularOffset;
-    private Stroke stroke;
-    private Fill fill;
+        private Translate translate;
+        private RealParameter perpendicularOffset;
+        private Stroke stroke;
+        private Fill fill;
 
-    /**
-     * Build a new AreaSymbolizer, named "Area Symbolizer". It is defined with a 
-     * <code>SolidFill</code> and a <code>PenStroke</code>
-     */
-    public AreaSymbolizer() {
-        super();
-        name = "Area symbolizer";
-        this.setFill(new SolidFill());
-        this.setStroke(new PenStroke());
-    }
-
-    /**
-     * Build a new <code>AreaSymbolizer</code>, using a JAXB element to fill its properties.
-     * @param st
-     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
-     */
-    public AreaSymbolizer(JAXBElement<AreaSymbolizerType> st) throws InvalidStyle {
-        super(st);
-
-        AreaSymbolizerType ast = st.getValue();
-
-
-        if (ast.getGeometry() != null) {
-            this.setGeometryAttribute(new GeometryAttribute(ast.getGeometry()));
+        /**
+         * Build a new AreaSymbolizer, named "Area Symbolizer". It is defined with a 
+         * <code>SolidFill</code> and a <code>PenStroke</code>
+         */
+        public AreaSymbolizer() {
+                super();
+                name = "Area symbolizer";
+                this.setFill(new SolidFill());
+                this.setStroke(new PenStroke());
         }
 
-        if (ast.getUom() != null) {
-            setUom(Uom.fromOgcURN(ast.getUom()));
-        }
+        /**
+         * Build a new <code>AreaSymbolizer</code>, using a JAXB element to fill its properties.
+         * @param st
+         * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
+         */
+        public AreaSymbolizer(JAXBElement<AreaSymbolizerType> st) throws InvalidStyle {
+                super(st);
 
-        if (ast.getPerpendicularOffset() != null) {
-            this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
-        }
-
-        if (ast.getDisplacement() != null){
-            this.setTranslate(new Translate(ast.getDisplacement()));
-        }
-        
-        if (ast.getFill() != null) {
-            this.setFill(Fill.createFromJAXBElement(ast.getFill()));
-        }
-
-        if (ast.getStroke() != null) {
-            this.setStroke(Stroke.createFromJAXBElement(ast.getStroke()));
-        }
-    }
-
-    @Override
-    public void setStroke(Stroke stroke) {
-        if (stroke != null) {
-            stroke.setParent(this);
-        }
-        this.stroke = stroke;
-    }
-
-    @Override
-    public Stroke getStroke() {
-        return stroke;
-    }
-
-    @Override
-    public void setFill(Fill fill) {
-        if (fill != null) {
-            fill.setParent(this);
-        }
-        this.fill = fill;
-    }
-
-    @Override
-    public Fill getFill() {
-        return fill;
-    }
+                AreaSymbolizerType ast = st.getValue();
 
 
-    /**
-     * Retrieve the geometric transformation that must be applied to the geometries.
-     * @return 
-     *  The transformation associated to this Symbolizer.
-     */
-    public Translate getTranslate() {
-        return translate;
-    }
-
-    /**
-     * Get the geometric transformation that must be applied to the geometries.
-     * @param transform 
-     */
-    public void setTranslate(Translate translate) {
-        this.translate = translate;
-        //translate.setParent(this);
-    }
-
-    /**
-     * Get the current perpendicular offset associated to this Symbolizer. It allows to
-     * draw polygons larger or smaller than their actual geometry. The meaning of the 
-     * value is dependant of the <code>Uom</code> instance associated to this <code>Symbolizer</code>.
-     * 
-     * @return 
-     *          The offset as a <code>RealParameter</code>. A positive value will cause the
-     *          polygons to be drawn larger than their original size, while a negative value
-     *          will cause the drawing of smaller polygons.
-     */
-    public RealParameter getPerpendicularOffset() {
-        return perpendicularOffset;
-    }
-
-    /**
-     * Set the current perpendicular offset associated to this Symbolizer. It allows to
-     * draw polygons larger or smaller than their actual geometry. The meaning of the 
-     * value is dependant of the <code>Uom</code> instance associated to this <code>Symbolizer</code>.
-     * @param perpendicularOffset 
-     *          The offset as a <code>RealParameter</code>. A positive value will cause the
-     *          polygons to be drawn larger than their original size, while a negative value
-     *          will cause the drawing of smaller polygons.
-     */
-    public void setPerpendicularOffset(RealParameter perpendicularOffset) {
-        this.perpendicularOffset = perpendicularOffset;
-        if (this.perpendicularOffset != null) {
-            this.perpendicularOffset.setContext(RealParameterContext.REAL_CONTEXT);
-        }
-    }
-
-    /**
-     *
-     * @param g2
-     * @param sds
-     * @param fid
-     * @throws ParameterException
-     * @throws IOException error while accessing external resource
-     * @throws DriverException
-     */
-    @Override
-    public void draw(Graphics2D g2, DataSource sds, long fid,
-            boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
-            throws ParameterException, IOException, DriverException {
-
-        List<Shape> shapes = this.getShapes(sds, fid, mt, the_geom,true);
-
-        if (shapes != null) {
-            for (Shape shp : shapes) {
-                if (this.getTranslate() != null){
-                    shp = getTranslate().getAffineTransform(sds, fid, getUom(), mt, 
-                            (double)mt.getWidth(), (double)mt.getHeight()).createTransformedShape(shp);
+                if (ast.getGeometry() != null) {
+                        this.setGeometryAttribute(new GeometryAttribute(ast.getGeometry()));
                 }
-                if (shp != null) {
-                    if (fill != null) {
-                        fill.draw(g2, sds, fid, shp, selected, mt);
-                    }
 
-                    if (stroke != null) {
-                        double offset = 0.0;
-                        if (perpendicularOffset != null) {
-                            offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
-                                    getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                if (ast.getUom() != null) {
+                        setUom(Uom.fromOgcURN(ast.getUom()));
+                }
+
+                if (ast.getPerpendicularOffset() != null) {
+                        this.setPerpendicularOffset(SeParameterFactory.createRealParameter(ast.getPerpendicularOffset()));
+                }
+
+                if (ast.getDisplacement() != null) {
+                        this.setTranslate(new Translate(ast.getDisplacement()));
+                }
+
+                if (ast.getFill() != null) {
+                        this.setFill(Fill.createFromJAXBElement(ast.getFill()));
+                }
+
+                if (ast.getStroke() != null) {
+                        this.setStroke(Stroke.createFromJAXBElement(ast.getStroke()));
+                }
+        }
+
+        @Override
+        public void setStroke(Stroke stroke) {
+                if (stroke != null) {
+                        stroke.setParent(this);
+                }
+                this.stroke = stroke;
+        }
+
+        @Override
+        public Stroke getStroke() {
+                return stroke;
+        }
+
+        @Override
+        public void setFill(Fill fill) {
+                if (fill != null) {
+                        fill.setParent(this);
+                }
+                this.fill = fill;
+        }
+
+        @Override
+        public Fill getFill() {
+                return fill;
+        }
+
+        /**
+         * Retrieve the geometric transformation that must be applied to the geometries.
+         * @return 
+         *  The transformation associated to this Symbolizer.
+         */
+        public Translate getTranslate() {
+                return translate;
+        }
+
+        /**
+         * Get the geometric transformation that must be applied to the geometries.
+         * @param transform 
+         */
+        public void setTranslate(Translate translate) {
+                this.translate = translate;
+                //translate.setParent(this);
+        }
+
+        /**
+         * Get the current perpendicular offset associated to this Symbolizer. It allows to
+         * draw polygons larger or smaller than their actual geometry. The meaning of the 
+         * value is dependant of the <code>Uom</code> instance associated to this <code>Symbolizer</code>.
+         * 
+         * @return 
+         *          The offset as a <code>RealParameter</code>. A positive value will cause the
+         *          polygons to be drawn larger than their original size, while a negative value
+         *          will cause the drawing of smaller polygons.
+         */
+        public RealParameter getPerpendicularOffset() {
+                return perpendicularOffset;
+        }
+
+        /**
+         * Set the current perpendicular offset associated to this Symbolizer. It allows to
+         * draw polygons larger or smaller than their actual geometry. The meaning of the 
+         * value is dependant of the <code>Uom</code> instance associated to this <code>Symbolizer</code>.
+         * @param perpendicularOffset 
+         *          The offset as a <code>RealParameter</code>. A positive value will cause the
+         *          polygons to be drawn larger than their original size, while a negative value
+         *          will cause the drawing of smaller polygons.
+         */
+        public void setPerpendicularOffset(RealParameter perpendicularOffset) {
+                this.perpendicularOffset = perpendicularOffset;
+                if (this.perpendicularOffset != null) {
+                        this.perpendicularOffset.setContext(RealParameterContext.REAL_CONTEXT);
+                }
+        }
+
+        /**
+         *
+         * @param g2
+         * @param sds
+         * @param fid
+         * @throws ParameterException
+         * @throws IOException error while accessing external resource
+         * @throws DriverException
+         */
+        @Override
+        public void draw(Graphics2D g2, DataSource sds, long fid,
+                boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
+                throws ParameterException, IOException, DriverException {
+
+                List<Shape> shapes = new LinkedList<Shape>();
+                shapes.add(mt.getShape(the_geom, true));
+
+                if (shapes != null) {
+                        for (Shape shp : shapes) {
+                                if (this.getTranslate() != null) {
+                                        shp = getTranslate().getAffineTransform(sds, fid, getUom(), mt,
+                                                (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shp);
+                                }
+                                if (shp != null) {
+                                        if (fill != null) {
+                                                fill.draw(g2, sds, fid, shp, selected, mt);
+                                        }
+
+                                        if (stroke != null) {
+                                                double offset = 0.0;
+                                                if (perpendicularOffset != null) {
+                                                        offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
+                                                                getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                                                }
+                                                stroke.draw(g2, sds, fid, shp, selected, mt, offset);
+                                        }
+                                }
                         }
-                        stroke.draw(g2, sds, fid, shp, selected, mt, offset);
-                    }
                 }
-            }
-        }
-    }
-
-    @Override
-    public JAXBElement<AreaSymbolizerType> getJAXBElement() {
-        ObjectFactory of = new ObjectFactory();
-        AreaSymbolizerType s = of.createAreaSymbolizerType();
-
-        this.setJAXBProperty(s);
-
-        if (this.getGeometryAttribute() != null){
-            s.setGeometry(getGeometryAttribute().getJAXBGeometryType());
         }
 
-        if (getUom() != null) {
-            s.setUom(this.getUom().toURN());
+        @Override
+        public JAXBElement<AreaSymbolizerType> getJAXBElement() {
+                ObjectFactory of = new ObjectFactory();
+                AreaSymbolizerType s = of.createAreaSymbolizerType();
+
+                this.setJAXBProperty(s);
+
+                if (this.getGeometryAttribute() != null) {
+                        s.setGeometry(getGeometryAttribute().getJAXBGeometryType());
+                }
+
+                if (getUom() != null) {
+                        s.setUom(this.getUom().toURN());
+                }
+
+                if (getTranslate() != null) {
+                        s.setDisplacement(getTranslate().getJAXBType());
+                }
+
+                if (this.perpendicularOffset != null) {
+                        s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());
+                }
+
+                if (fill != null) {
+                        s.setFill(fill.getJAXBElement());
+                }
+
+                if (stroke != null) {
+                        s.setStroke(stroke.getJAXBElement());
+                }
+
+                return of.createAreaSymbolizer(s);
         }
 
-        if (getTranslate() != null) {
-            s.setDisplacement(getTranslate().getJAXBType());
+        @Override
+        public HashSet<String> dependsOnFeature() {
+                HashSet<String> ret = new HashSet<String>();
+                if (translate != null) {
+                        ret.addAll(translate.dependsOnFeature());
+                }
+                if (fill != null) {
+                        ret.addAll(fill.dependsOnFeature());
+                }
+                if (stroke != null) {
+                        ret.addAll(stroke.dependsOnFeature());
+                }
+                if (perpendicularOffset != null) {
+                        ret.addAll(perpendicularOffset.dependsOnFeature());
+                }
+                return ret;
         }
-
-        if (this.perpendicularOffset != null) {
-            s.setPerpendicularOffset(perpendicularOffset.getJAXBParameterValueType());
-        }
-
-        if (fill != null) {
-            s.setFill(fill.getJAXBElement());
-        }
-
-        if (stroke != null) {
-            s.setStroke(stroke.getJAXBElement());
-        }
-
-        return of.createAreaSymbolizer(s);
-    }
-
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> ret = new HashSet<String>();
-        if(translate != null){
-            ret.addAll(translate.dependsOnFeature());
-        }
-        if(fill != null){
-            ret.addAll(fill.dependsOnFeature());
-        }
-        if(stroke != null){
-            ret.addAll(stroke.dependsOnFeature());
-        }
-        if(perpendicularOffset != null){
-            ret.addAll(perpendicularOffset.dependsOnFeature());
-        }
-        return ret;
-    }
-
 }

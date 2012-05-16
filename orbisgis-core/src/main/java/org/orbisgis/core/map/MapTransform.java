@@ -442,12 +442,19 @@ public class MapTransform implements PointTransformation {
          * @param geom
          * @return
          */
-        public Shape getShape(Geometry geom, boolean generalize) {
-                if (generalize) {
+        public Shape getShape(Geometry geom, boolean generalize) {                
+                if (generalize) {                        
                         Rectangle2DDouble rectangle2dDouble = toPixel(geom.getEnvelopeInternal());
                         if ((rectangle2dDouble.getHeight() <= MAXPIXEL_DISPLAY)
                                 && (rectangle2dDouble.getWidth() <= MAXPIXEL_DISPLAY)) {
+                                if(geom.getDimension()==1){
+                                     Coordinate[] coords = geom.getCoordinates();
+                                     return getShapeWriter().toShape(geom.getFactory().createLineString(
+                                             new Coordinate[]{coords[0], coords[coords.length-1]})); 
+                                }
+                                else{
                                 return rectangle2dDouble;
+                                }
                         }
                 }
                 return getShapeWriter().toShape(geom);

@@ -51,9 +51,9 @@ import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
@@ -187,13 +187,13 @@ public abstract class Renderer {
         private int drawStyle(Style style, DataSource sds,Graphics2D g2,MapTransform mt, ILayer layer,
                         ProgressMonitor pm, RenderContext perm, long rowCount, Envelope extent) throws DriverException {
                 int layerCount = 0;
-                ArrayList<Symbolizer> symbs = new ArrayList<Symbolizer>();
+                LinkedList<Symbolizer> symbs = new LinkedList<Symbolizer>();
                 try {
                         // i.e. TextSymbolizer are always drawn above all other layer !! Should now be handle with symbolizer level
                         // Standard rules (with filter or no filter but not with elsefilter)
-                        ArrayList<Rule> rList = new ArrayList<Rule>();
+                        LinkedList<Rule> rList = new LinkedList<Rule>();
                         // Rule with ElseFilter
-                        ArrayList<Rule> fRList = new ArrayList<Rule>();
+                        LinkedList<Rule> fRList = new LinkedList<Rule>();
                         // fetch symbolizers and rules
                         style.getSymbolizers(mt, symbs, rList, fRList);
                         // Create new dataSource with only feature in current extent

@@ -169,7 +169,6 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
                 } else {
                     Point2D pt = getPointShape(sds, fid, mt, the_geom);
 
-
                     x = pt.getX();
                     y = pt.getY();
 
