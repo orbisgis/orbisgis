@@ -48,6 +48,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.sql.engine.Engine;
 import org.gdms.sql.engine.ParseException;
 import org.gdms.sql.engine.SQLStatement;
+import org.gdms.sql.engine.SemanticException;
 
 public class ExecuteScriptProcess implements BackgroundJob {
 
@@ -181,6 +182,8 @@ public class ExecuteScriptProcess implements BackgroundJob {
 
                 } catch (DriverException e) {
                         Services.getErrorManager().error("Data access error:", e);
+                } catch (SemanticException e) {
+                        Services.getErrorManager().error("SQL Semantic Error", e);
                 }
 
                 long t2 = System.currentTimeMillis();
