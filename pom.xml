@@ -26,16 +26,4 @@
                         <scope>compile</scope>
                 </dependency>
         </dependencies>
-        <build>
-                <plugins>
-                        <plugin>
-                                <groupId>com.google.code.maven-license-plugin</groupId>
-                                <artifactId>maven-license-plugin </artifactId>
-                                <version>1.4.0</version>
-                                <configuration>
-                                        <header>../Licenses/license-GPL-OrbisGIS.txt</header>
-                                </configuration>
-                        </plugin>
-                </plugins>
-        </build>
 </project>
