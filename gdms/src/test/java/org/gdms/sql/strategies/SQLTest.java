@@ -1060,11 +1060,7 @@ public class SQLTest extends TestBase {
         }
 
         @Test
-        @Ignore
-        public void testFunctionsExecutedTwice() throws Exception {
-                // Test broken, but one could argue that the test wasn't
-                // very well thought
-                // TODO: needs to be rewritten - 12/09/2010
+        public void testSourceOnlyReadOnce() throws Exception {
                 final StringBuffer tics = new StringBuffer("");
                 MemoryDataSetDriver omd = new MemoryDataSetDriver(
                         new String[]{"the_geom"}, new Type[]{TypeFactory.createType(Type.GEOMETRY)}) {
@@ -1078,9 +1074,8 @@ public class SQLTest extends TestBase {
                 };
                 omd.addValues(new Value[]{ValueFactory.createValue(Geometries.getPoint())});
                 dsf.getSourceManager().register("oneline", omd);
-                dsf.getDataSourceFromSQL("select st_buffer(the_geom, 10) from oneline",
-                        DataSourceFactory.NORMAL);
-                assertEquals(tics.length(), 1);
+                dsf.executeSQL("create table tata as select st_buffer(the_geom, 10) from oneline;");
+                assertEquals(1, tics.length());
         }
 
         @Test
