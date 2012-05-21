@@ -96,7 +96,8 @@ public class ExecuteScriptProcess implements BackgroundJob {
 
                                 SQLStatement st = statements[i];
                                 boolean spatial;
-                                logger.info("Running instruction " + (i + 1) + " / " + statements.length + ".");
+                                logger.info("Running instruction " + (i + 1) + " / " + statements.length + ":");
+                                logger.info(st.getSQL());
                                 try {
                                         st.setDataSourceFactory(dsf);
                                         st.setProgressMonitor(pm);
