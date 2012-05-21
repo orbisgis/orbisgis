@@ -28,6 +28,12 @@
  */
 package org.orbisgis.view.toc;
 
+import java.awt.datatransfer.Transferable;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JComponent;
+import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.map.MapTransferHandler;
 
 
@@ -40,6 +46,39 @@ import org.orbisgis.view.map.MapTransferHandler;
  * Export EditableLayer
  */
 public class TocTransferHandler extends MapTransferHandler {
+
+    Toc toc;
+
+    public TocTransferHandler(Toc toc) {
+        this.toc = toc;
+    }
+
+    @Override
+    protected boolean canImportEditableElement(EditableElement editableElement) {
+        return editableElement.getTypeId().equals(EditableLayer.EDITABLE_LAYER_TYPE) ||
+                super.canImportEditableElement(editableElement);
+    }
+
+    @Override
+    public int getSourceActions(JComponent jc) {
+        return COPY_OR_MOVE;
+    }  
+    
+    /**
+     * Move layers inside the toc
+     * @param jc
+     * @return A drag&drop content
+     */
+    @Override
+    protected Transferable createTransferable(JComponent jc) {
+        //Copy the selection into a TransferableLayer
+        List<ILayer> selectedLayers = toc.getSelectedLayers();
+        List<EditableLayer> selectedEditableLayer = new ArrayList<EditableLayer>(selectedLayers.size());
+        for(ILayer layer : selectedLayers) {
+            selectedEditableLayer.add(new EditableLayer(toc.getMapElement(), layer));
+        }
+        return new TransferableLayer(toc.getMapElement(),selectedEditableLayer );
+    }
 
 
 }

@@ -33,6 +33,7 @@ import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -101,6 +102,16 @@ public class Toc extends JPanel implements DockingPanel  {
         add(new JScrollPane( makeTree()));
 
     }
+
+    /**
+     * 
+     * @return The editable map
+     */
+    public MapElement getMapElement() {
+        return mapElement;
+    }
+    
+    
     
     private void setTocSelection(MapContext mapContext) {
         ILayer[] selected = mapContext.getSelectedLayers();
@@ -126,10 +137,11 @@ public class Toc extends JPanel implements DockingPanel  {
         //Items can be selected freely
         tree.getSelectionModel().setSelectionMode(
 				TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-        TocTransferHandler handler = new TocTransferHandler();
+        TocTransferHandler handler = new TocTransferHandler(this);
         //Add a drop listener
         handler.getTransferEditableEvent().addListener(this,
                 EventHandler.create(Listener.class,this,"onDropEditableElement",""));
+        tree.setDragEnabled(true);
         tree.setTransferHandler(handler);
         tree.setRootVisible(false);
         tree.setShowsRootHandles(true);
@@ -147,9 +159,9 @@ public class Toc extends JPanel implements DockingPanel  {
      * @throws IllegalArgumentException If drop location is not null,Style or ILayer
      */
     public void onDropEditableElement(EditableTransferEvent editTransfer) {
-        LOGGER.info("Drop of "+editTransfer.getEditableList().length+" editables on node "+((JTree.DropLocation)editTransfer.getDropLocation()).getPath());
         JTree.DropLocation dropLocation = (JTree.DropLocation) editTransfer.getDropLocation();
-        
+        EditableElement[] editableList = editTransfer.getEditableList();
+        //Evaluate Drop Location
         ILayer dropNode;
         if(dropLocation.getPath() != null) {            
             Object node = dropLocation.getPath().getLastPathComponent();
@@ -164,22 +176,59 @@ public class Toc extends JPanel implements DockingPanel  {
             // By default drop on rootNode
             dropNode = (ILayer) treeModel.getRoot();
         }
+        int index;
+        if (!dropNode.acceptsChilds()) {
+                ILayer parent = dropNode.getParent();
+                if (parent.acceptsChilds()) {
+                        index = parent.getIndex(dropNode);
+                        dropNode = parent;
+                } else {
+                        LOGGER.error(I18N.tr("Cannot drop layer on {0}",dropNode.getName())); //$NON-NLS-1$
+                        return;
+                }
+        } else {
+                index = dropNode.getLayerCount();
+        }
+        
+        //Drop content to drop location
         List<EditableSource> sourceToDrop = new ArrayList<EditableSource>();
-        for( EditableElement editableElement : editTransfer.getEditableList()) {
+        List<ILayer> newSelectedLayer = new ArrayList<ILayer>(editableList.length);
+
+        for( EditableElement editableElement : editableList) {
             if(editableElement instanceof EditableSource) {
+                    //From the GeoCatalog
                     sourceToDrop.add((EditableSource)editableElement);
+            } else if(editableElement instanceof EditableLayer) {
+                    //From the TOC (move)
+                    ILayer layer = ((EditableLayer) editableElement).getLayer();
+                    try {
+                        layer.moveTo(dropNode, index);
+                        newSelectedLayer.add(layer);
+                    } catch (LayerException ex) {
+                        LOGGER.error(I18N.tr("Cannot drop layer on {0}",dropNode.getName()),ex);
+                    }
             } else {
-                    LOGGER.debug("Drop unknow editable of type :"+ editableElement.getTypeId());
+                    LOGGER.error(I18N.tr("Drop unknown editable of type : {0}",editableElement.getTypeId()));
             }
         }
+        
+        //Select moved layers
+        if(!newSelectedLayer.isEmpty()) {
+            mapContext.setSelectedLayers(newSelectedLayer.toArray(new ILayer[newSelectedLayer.size()]));
+        }
+        
         
         if(!sourceToDrop.isEmpty()) {
             BackgroundManager bm = (BackgroundManager) Services
                             .getService(BackgroundManager.class);
-            bm.backgroundOperation(new DropDataSourceListProcess(dropNode,sourceToDrop));
+            bm.backgroundOperation(new DropDataSourceListProcess(dropNode,index,sourceToDrop));
         }
     }
 
+    public  ArrayList<ILayer> getSelectedLayers() {
+        return getSelectedLayers(tree.getSelectionPaths());
+    }
+    
     /**
      * Cast all ILayer elements of provided tree paths
      * @param selectedPaths Internal Tree path
@@ -187,11 +236,13 @@ public class Toc extends JPanel implements DockingPanel  {
      */
     private ArrayList<ILayer> getSelectedLayers(TreePath[] selectedPaths) {
             ArrayList<ILayer> layers = new ArrayList<ILayer>();
-            for (int i = 0; i < selectedPaths.length; i++) {
-                    Object lastPathComponent = selectedPaths[i].getLastPathComponent();
-                    if (lastPathComponent instanceof ILayer) {
-                            layers.add((ILayer) lastPathComponent);
-                    }
+            if(selectedPaths!=null) {
+                for (int i = 0; i < selectedPaths.length; i++) {
+                        Object lastPathComponent = selectedPaths[i].getLastPathComponent();
+                        if (lastPathComponent instanceof ILayer) {
+                                layers.add((ILayer) lastPathComponent);
+                        }
+                }
             }
             return layers;
     }
@@ -202,10 +253,9 @@ public class Toc extends JPanel implements DockingPanel  {
      * @return All Style instances of provided path
      */
     private ArrayList<Style> getSelectedStyles(TreePath[] selectedPaths) {
-            ArrayList<Style> rules = new ArrayList<Style>();
+            ArrayList<Style> rules = new ArrayList<Style>(selectedPaths.length);
             for (int i = 0; i < selectedPaths.length; i++) {
                     Object lastPathComponent = selectedPaths[i].getLastPathComponent();
-                    LOGGER.debug("Selection : " + lastPathComponent.toString());
                     if (lastPathComponent instanceof Style) {
                             rules.add(((Style) lastPathComponent));
                     }
@@ -218,7 +268,7 @@ public class Toc extends JPanel implements DockingPanel  {
      * This method do nothing if the fireSelectionEvent is false
      */
     public void onTreeSelectionChange() {
-        if(fireSelectionEvent.get()) {
+        if(fireSelectionEvent.get() ) {
             fireSelectionEvent.set(false);
             try {
                 TreePath[] selectedPaths = tree.getSelectionPaths();
@@ -415,29 +465,20 @@ public class Toc extends JPanel implements DockingPanel  {
         private class DropDataSourceListProcess implements BackgroundJob {
 
 		private ILayer dropNode;
+                private int dropIndex;
 		private List<EditableSource> draggedResources;
 
-                public DropDataSourceListProcess(ILayer dropNode, List<EditableSource> draggedResources) {
+                public DropDataSourceListProcess(ILayer dropNode, int dropIndex, List<EditableSource> draggedResources) {
                     this.dropNode = dropNode;
+                    this.dropIndex = dropIndex;
                     this.draggedResources = draggedResources;
                 }
 
 
+
                 @Override
 		public void run(ProgressMonitor pm) {
-			int index;
-			if (!dropNode.acceptsChilds()) {
-				ILayer parent = dropNode.getParent();
-				if (parent.acceptsChilds()) {
-					index = parent.getIndex(dropNode);
-					dropNode = parent;
-				} else {
-					LOGGER.error(I18N.tr("Cannot create layer on {0}",dropNode.getName())); //$NON-NLS-1$
-					return;
-				}
-			} else {
-				index = dropNode.getLayerCount();
-			}
+
 			DataManager dataManager = (DataManager) Services
 					.getService(DataManager.class);
 			for (int i = 0; i < draggedResources.size(); i++) {
@@ -448,7 +489,7 @@ public class Toc extends JPanel implements DockingPanel  {
 					pm.progressTo(100 * i / draggedResources.size());
 					try {
 						dropNode.insertLayer(dataManager
-								.createLayer(sourceName), index);
+								.createLayer(sourceName), dropIndex);
 					} catch (LayerException e) {
 						throw new RuntimeException(I18N.tr("Cannot add the layer to the destination") , e); //$NON-NLS-1$
 					}

@@ -2,16 +2,12 @@ package org.orbisgis.view.toc;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.NonEditableDataSourceException;
-import org.gdms.data.edition.EditionEvent;
-import org.gdms.data.edition.EditionListener;
-import org.gdms.data.edition.FieldEditionEvent;
-import org.gdms.data.edition.MetadataEditionListener;
-import org.gdms.data.edition.MultipleEditionEvent;
+import org.gdms.data.edition.*;
 import org.gdms.driver.DriverException;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.edition.AbstractEditableElement;
 import org.orbisgis.view.edition.EditableElementException;
 import org.orbisgis.view.table.TableEditableElement;
-import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

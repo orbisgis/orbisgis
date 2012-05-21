@@ -49,15 +49,24 @@ public class MapTransferHandler  extends TransferHandler{
     static final private Logger GUILOGGER = Logger.getLogger("gui."+MapTransferHandler.class);
     static final private I18n I18N = I18nFactory.getI18n(MapTransferHandler.class);
     private ListenerContainer<EditableTransferEvent> transferEditableEvent = new ListenerContainer<EditableTransferEvent>();
+
+    /**
+     * If this method return true, this transfer handler fire the transfer editable event
+     * @param editableElement
+     * @return True if this handler accept the editable element
+     */
+    protected boolean canImportEditableElement(EditableElement editableElement) {
+        return editableElement.getTypeId().equals(EditableSource.EDITABLE_RESOURCE_TYPE) ||
+                editableElement.getTypeId().equals(MapElement.EDITABLE_TYPE);
+    }
     /**
      * MapEditor support MapElement and EditableSource only
      * @param editableArray Array Of Editable
      * @return 
      */
-    private boolean canImportEditableElement(EditableElement[] editableArray) {
+    private boolean canImportEditableElements(EditableElement[] editableArray) {
         for(EditableElement ee : editableArray) {
-            if(!ee.getTypeId().equals(EditableSource.EDITABLE_RESOURCE_TYPE) &&
-                !ee.getTypeId().equals(MapElement.EDITABLE_TYPE)) {
+            if(!canImportEditableElement(ee)) {
                 return false;
             }
         }
@@ -90,7 +99,7 @@ public class MapTransferHandler  extends TransferHandler{
                 //A transferable element
                 Transferable trans = ts.getTransferable();
                 EditableElement[] editableList = (EditableElement[])trans.getTransferData(TransferableEditableElement.editableElementFlavor);
-                if(canImportEditableElement(editableList)) {
+                if(canImportEditableElements(editableList)) {
                     try {
                         //All elements are compatible
                         transferEditableEvent.callListeners(new EditableTransferEvent(editableList, ts.getDropLocation() ,ts.getComponent()));
