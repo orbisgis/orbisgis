@@ -29,9 +29,9 @@
 package org.orbisgis.view.map;
 
 import com.vividsolutions.jts.geom.Envelope;
+import java.beans.EventHandler;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.layerModel.LayerException;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.layerModel.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
 import org.orbisgis.progress.ProgressMonitor;
@@ -39,6 +39,7 @@ import org.orbisgis.view.edition.AbstractEditableElement;
 
 /**
  * MapElement is an editable document that contain a Map Context
+ * @note The source code, functionality is mainly provided by GeocognitionMapContext
  */
 public final class MapElement extends AbstractEditableElement implements
 		TransformListener{
@@ -48,12 +49,27 @@ public final class MapElement extends AbstractEditableElement implements
 	private MapContext mapContext;
         Object jAXBObject; //The saved state of the MapContext
         private String mapId;
-        
+        private MapContextListener updateListener = EventHandler.create(MapContextListener.class, this , "setModified");
+        private LayerUpdateListener layerUpdateListener = new LayerUpdateListener();
 	public MapElement(MapContext mapContext) {
 		this.mapContext = mapContext;
                 mapId = String.valueOf(mapContext.getIdTime());
 	}
 
+        /**
+         * Update the modified state
+         * @param modified 
+         */
+        public void setModified(Boolean modified) {
+            this.modified = modified;
+        }
+
+        /**
+         * Mark this MapContext as modified
+         */
+        public void setModified() {
+            setModified(true);
+        }
 	@Override
 	public boolean isModified() {
             return modified;
@@ -73,7 +89,8 @@ public final class MapElement extends AbstractEditableElement implements
 		modified = false;
                 try {
                     mapContext.open(progressMonitor);
-                    mapContext.addMapContextListener(null);
+                    mapContext.addMapContextListener(updateListener);
+                    mapContext.getLayerModel().addLayerListenerRecursively(layerUpdateListener);
                 } catch (LayerException ex) {
                     LOGGER.error(ex);
                 } catch (IllegalStateException ex) {
@@ -85,7 +102,8 @@ public final class MapElement extends AbstractEditableElement implements
 	public void close(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException {
 		mapContext.close(progressMonitor);
-                //TODO Remove listeners
+                mapContext.removeMapContextListener(updateListener);
+                mapContext.getLayerModel().removeLayerListenerRecursively(layerUpdateListener);
                 
 	}
 
@@ -123,4 +141,53 @@ public final class MapElement extends AbstractEditableElement implements
 	public void imageSizeChanged(int oldWidth, int oldHeight,
 			MapTransform mapTransform) {		
 	}
+        
+        /**
+         * Set the editable map as modified when the layer model change
+         */
+        private class LayerUpdateListener extends LayerListenerAdapter {
+
+            @Override
+            public void nameChanged(LayerListenerEvent e) {
+                setModified();
+            }
+
+            @Override
+            public void visibilityChanged(LayerListenerEvent e) {
+                setModified();
+            }
+
+            @Override
+            public void styleChanged(LayerListenerEvent e) {                
+                
+                setModified();
+            }
+
+            @Override
+            public void layerAdded(LayerCollectionEvent e) {
+                for (final ILayer layer : e.getAffected()) {
+                        layer.addLayerListenerRecursively(this);
+                }
+                setModified();
+            }
+
+            @Override
+            public void layerRemoved(LayerCollectionEvent e) {
+                for (final ILayer layer : e.getAffected()) {
+                        layer.removeLayerListenerRecursively(this);
+                }
+                setModified();
+            }
+
+            @Override
+            public void layerMoved(LayerCollectionEvent e) {
+                setModified();
+            }
+
+            @Override
+            public void selectionChanged(SelectionEvent e) {
+                setModified();
+            }
+            
+        }
 }

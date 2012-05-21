@@ -34,15 +34,9 @@ import java.beans.EventHandler;
 import java.io.File;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.NoSuchTableException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
 import org.orbisgis.core.layerModel.DefaultMapContext;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.LayerException;
-import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundManager;
@@ -151,6 +145,12 @@ public class Core {
         //Add the views as a new Docking Panel
         dockManager.show(mapEditor);
         dockManager.show(toc);
+        
+        //Set the same MapEditable element
+        MapElement defaultMap = new MapElement(new DefaultMapContext());
+        defaultMap.open(new NullProgressMonitor());
+        toc.setEditableMap(defaultMap);
+        mapEditor.loadMap(defaultMap);
     }
     
     /**

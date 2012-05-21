@@ -30,11 +30,14 @@ package org.orbisgis.view.toc;
 
 import java.awt.BorderLayout;
 import java.beans.EventHandler;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.apache.log4j.Logger;
@@ -47,9 +50,14 @@ import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.layerModel.*;
+import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.view.background.BackgroundJob;
+import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.EditableTransferEvent;
 import org.orbisgis.view.map.MapElement;
@@ -103,8 +111,11 @@ public class Toc extends JPanel implements DockingPanel  {
 
         
         fireSelectionEvent.set(false);
-        tree.setSelectionPaths(selectedPaths);
-        fireSelectionEvent.set(true);
+        try {
+            tree.setSelectionPaths(selectedPaths);
+        } finally {
+            fireSelectionEvent.set(true);
+        }
     }    
     /**
      * Create the Toc JTree
@@ -126,14 +137,107 @@ public class Toc extends JPanel implements DockingPanel  {
         setEmptyLayerModel(tree);
         tree.setCellRenderer(new TocRenderer(this));
         tree.setCellEditor(new TocEditor(tree));
+        //Add a tree selection listener
+        tree.getSelectionModel().addTreeSelectionListener(EventHandler.create(TreeSelectionListener.class, this, "onTreeSelectionChange"));
         return tree;
     }
     /**
      * The user drop one or multiple EditableElement into the Toc Tree
      * @param editTransfer 
+     * @throws IllegalArgumentException If drop location is not null,Style or ILayer
      */
     public void onDropEditableElement(EditableTransferEvent editTransfer) {
         LOGGER.info("Drop of "+editTransfer.getEditableList().length+" editables on node "+((JTree.DropLocation)editTransfer.getDropLocation()).getPath());
+        JTree.DropLocation dropLocation = (JTree.DropLocation) editTransfer.getDropLocation();
+        
+        ILayer dropNode;
+        if(dropLocation.getPath() != null) {            
+            Object node = dropLocation.getPath().getLastPathComponent();
+            if (node instanceof Style) {
+                    dropNode = ((Style) node).getLayer();
+            } else if (node instanceof ILayer) {
+                    dropNode = (ILayer) node;
+            } else {
+                throw new IllegalArgumentException("Drop node is not an instance of Style or ILayer");
+            }
+        }else {
+            // By default drop on rootNode
+            dropNode = (ILayer) treeModel.getRoot();
+        }
+        List<EditableSource> sourceToDrop = new ArrayList<EditableSource>();
+        for( EditableElement editableElement : editTransfer.getEditableList()) {
+            if(editableElement instanceof EditableSource) {
+                    sourceToDrop.add((EditableSource)editableElement);
+            } else {
+                    LOGGER.debug("Drop unknow editable of type :"+ editableElement.getTypeId());
+            }
+        }
+        
+        if(!sourceToDrop.isEmpty()) {
+            BackgroundManager bm = (BackgroundManager) Services
+                            .getService(BackgroundManager.class);
+            bm.backgroundOperation(new DropDataSourceListProcess(dropNode,sourceToDrop));
+        }
+    }
+
+    /**
+     * Cast all ILayer elements of provided tree paths
+     * @param selectedPaths Internal Tree path
+     * @return All ILayer instances of provided path
+     */
+    private ArrayList<ILayer> getSelectedLayers(TreePath[] selectedPaths) {
+            ArrayList<ILayer> layers = new ArrayList<ILayer>();
+            for (int i = 0; i < selectedPaths.length; i++) {
+                    Object lastPathComponent = selectedPaths[i].getLastPathComponent();
+                    if (lastPathComponent instanceof ILayer) {
+                            layers.add((ILayer) lastPathComponent);
+                    }
+            }
+            return layers;
+    }
+
+    /**
+     * Cast all Style elements of provided tree paths
+     * @param selectedPaths Internal Tree path
+     * @return All Style instances of provided path
+     */
+    private ArrayList<Style> getSelectedStyles(TreePath[] selectedPaths) {
+            ArrayList<Style> rules = new ArrayList<Style>();
+            for (int i = 0; i < selectedPaths.length; i++) {
+                    Object lastPathComponent = selectedPaths[i].getLastPathComponent();
+                    LOGGER.debug("Selection : " + lastPathComponent.toString());
+                    if (lastPathComponent instanceof Style) {
+                            rules.add(((Style) lastPathComponent));
+                    }
+            }
+            return rules;
+    }
+    
+    /**
+     * Copy the selection of the JTree into the selection in the layer model.
+     * This method do nothing if the fireSelectionEvent is false
+     */
+    public void onTreeSelectionChange() {
+        if(fireSelectionEvent.get()) {
+            fireSelectionEvent.set(false);
+            try {
+                TreePath[] selectedPaths = tree.getSelectionPaths();
+                if(selectedPaths!=null) {
+                    ArrayList<Style> styles = getSelectedStyles(selectedPaths);
+                    mapContext.setSelectedStyles(styles);
+                    if (!styles.isEmpty()) {
+                        mapContext.setSelectedLayers(new ILayer[0]);
+                    } else {
+                        ArrayList<ILayer> layers = getSelectedLayers(selectedPaths);
+                        if (!layers.isEmpty()) {
+                                mapContext.setSelectedLayers(layers.toArray(new ILayer[0]));
+                        }
+                    }
+                }
+            } finally {
+                fireSelectionEvent.set(true);
+            }            
+        }
     }
     
     private void setEmptyLayerModel(JTree jTree) {
@@ -169,11 +273,14 @@ public class Toc extends JPanel implements DockingPanel  {
 			root.addLayerListenerRecursively(tocLayerListener);
 
 			treeModel = new TocTreeModel(root, tree);
-
-			// Clear selection        
+			// Apply treeModel and clear the selection        
                         fireSelectionEvent.set(false);
-                        tree.getSelectionModel().clearSelection();
-                        fireSelectionEvent.set(true);
+                        try {
+                            tree.setModel(treeModel);
+                            tree.getSelectionModel().clearSelection();
+                        } finally {
+                            fireSelectionEvent.set(true);
+                        }
                         
 			setTocSelection(mapContext);
 			//TODO ? repaint 
@@ -299,6 +406,58 @@ public class Toc extends JPanel implements DockingPanel  {
 		public void activeLayerChanged(ILayer previousActiveLayer,
 				MapContext mapContext) {
 			treeModel.refresh();
+		}
+	}
+        
+        /**
+         * The user drop a list of EditableSource in the TOC tree
+         */
+        private class DropDataSourceListProcess implements BackgroundJob {
+
+		private ILayer dropNode;
+		private List<EditableSource> draggedResources;
+
+                public DropDataSourceListProcess(ILayer dropNode, List<EditableSource> draggedResources) {
+                    this.dropNode = dropNode;
+                    this.draggedResources = draggedResources;
+                }
+
+
+                @Override
+		public void run(ProgressMonitor pm) {
+			int index;
+			if (!dropNode.acceptsChilds()) {
+				ILayer parent = dropNode.getParent();
+				if (parent.acceptsChilds()) {
+					index = parent.getIndex(dropNode);
+					dropNode = parent;
+				} else {
+					LOGGER.error(I18N.tr("Cannot create layer on {0}",dropNode.getName())); //$NON-NLS-1$
+					return;
+				}
+			} else {
+				index = dropNode.getLayerCount();
+			}
+			DataManager dataManager = (DataManager) Services
+					.getService(DataManager.class);
+			for (int i = 0; i < draggedResources.size(); i++) {
+				String sourceName = draggedResources.get(i).getId();
+				if (pm.isCancelled()) {
+					break;
+				} else {
+					pm.progressTo(100 * i / draggedResources.size());
+					try {
+						dropNode.insertLayer(dataManager
+								.createLayer(sourceName), index);
+					} catch (LayerException e) {
+						throw new RuntimeException(I18N.tr("Cannot add the layer to the destination") , e); //$NON-NLS-1$
+					}
+				}
+			}
+		}
+
+		public String getTaskName() {
+			return I18N.tr("Load the data source droped into the toc."); //$NON-NLS-1$
 		}
 	}
 }
