@@ -150,4 +150,9 @@ class DefaultByteValue extends DefaultNumericValue implements ByteValue {
         public NumericValue opposite() {
                 return ValueFactory.createValue(-value);
         }
+
+        @Override
+        public int hashCode() {
+                return 79 + value;
+        }
 }

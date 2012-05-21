@@ -146,4 +146,9 @@ class DefaultShortValue extends DefaultNumericValue implements ShortValue {
         public NumericValue opposite() {
                 return ValueFactory.createValue(-value);
         }
+
+        @Override
+        public int hashCode() {
+                return 83 * 7 + value;
+        }
 }

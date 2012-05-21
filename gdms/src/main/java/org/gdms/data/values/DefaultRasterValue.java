@@ -127,7 +127,7 @@ class DefaultRasterValue extends AbstractValue implements RasterValue {
          */
         @Override
         public int hashCode() {
-                return geoRaster.hashCode();
+                return 19 * 5 + geoRaster.hashCode();
         }
 
         @Override

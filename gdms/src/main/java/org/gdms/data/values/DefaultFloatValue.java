@@ -148,4 +148,11 @@ class DefaultFloatValue extends DefaultNumericValue implements FloatValue {
         public NumericValue opposite() {
                 return ValueFactory.createValue(-value);
         }
+
+        @Override
+        public int hashCode() {
+                return 79 * 7 + Float.floatToIntBits(value);
+        }
+        
+        
 }

@@ -151,4 +151,9 @@ class DefaultLongValue extends DefaultNumericValue implements LongValue {
         public NumericValue opposite() {
                 return ValueFactory.createValue(-value);
         }
+
+        @Override
+        public int hashCode() {
+                return 47 * 7 + (int) (value ^ (value >>> 32));
+        }
 }

@@ -157,4 +157,10 @@ class DefaultDoubleValue extends DefaultNumericValue implements DoubleValue {
         public NumericValue opposite() {
                 return ValueFactory.createValue(-value);
         }
+
+        @Override
+        public int hashCode() {
+                final long bits = Double.doubleToLongBits(value);
+                return 59 * 5 + (int) (bits ^ (bits >>> 32));
+        }
 }

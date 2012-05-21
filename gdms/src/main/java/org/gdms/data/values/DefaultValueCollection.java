@@ -313,7 +313,7 @@ class DefaultValueCollection extends AbstractValue implements ValueCollection {
 
         @Override
         public int hashCode() {
-                int acum = 0;
+                int acum = 13 * 7;
 
                 for (int i = 0; i < values.size(); i++) {
                         acum += values.get(i).hashCode();

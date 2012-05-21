@@ -334,7 +334,7 @@ class DefaultStringValue extends AbstractValue implements Serializable, StringVa
 
         @Override
         public int hashCode() {
-                return value.hashCode();
+                return 67 * 5 + value.hashCode();
         }
 
         @Override

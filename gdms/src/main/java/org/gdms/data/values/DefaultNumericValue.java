@@ -251,11 +251,6 @@ abstract class DefaultNumericValue extends AbstractValue implements Serializable
         }
 
         @Override
-        public int hashCode() {
-                return intValue();
-        }
-
-        @Override
         public byte getAsByte() {
                 return byteValue();
         }

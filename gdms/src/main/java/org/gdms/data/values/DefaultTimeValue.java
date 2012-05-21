@@ -201,7 +201,7 @@ class DefaultTimeValue extends AbstractValue implements Serializable, TimeValue 
 
         @Override
         public int hashCode() {
-                return value.hashCode();
+                return 97 * 3 + value.hashCode();
         }
 
         /**

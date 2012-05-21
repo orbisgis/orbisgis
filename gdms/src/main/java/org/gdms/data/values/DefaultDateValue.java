@@ -190,7 +190,7 @@ class DefaultDateValue extends AbstractValue implements Serializable, DateValue 
 
         @Override
         public int hashCode() {
-                return value.hashCode();
+                return 49 * 7 + value.hashCode();
         }
 
         public Date getValue() {

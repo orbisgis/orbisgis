@@ -180,7 +180,7 @@ class DefaultTimestampValue extends AbstractValue implements Serializable, Times
 
         @Override
         public int hashCode() {
-                return value.hashCode();
+                return 37 * 9 + value.hashCode();
         }
 
         /**

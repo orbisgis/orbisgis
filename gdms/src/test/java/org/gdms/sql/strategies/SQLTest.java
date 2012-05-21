@@ -612,6 +612,16 @@ public class SQLTest extends TestBase {
                 sm.delete(name);
 
         }
+        
+        @Test
+        public void regressionTest611() throws Exception {
+                dsf.executeSQL("CREATE TABLE test AS SELECT * FROM VALUES (1.0), (1.1) a;");
+                
+                DataSource d = dsf.getDataSourceFromSQL("SELECT DISTINCT exp0 FROM test;");
+                d.open();
+                assertEquals(2, d.getRowCount());
+                d.close();
+        }
 
         @Test
         public void testDistinctOnOneFieldCase() throws Exception {

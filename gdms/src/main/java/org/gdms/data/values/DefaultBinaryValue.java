@@ -184,7 +184,7 @@ class DefaultBinaryValue extends AbstractValue implements BinaryValue {
         public int hashCode() {
                 // Dodgy: value.hashCode() does not take into account the content
                 // of the array, not even its length
-                return Arrays.hashCode(value);
+                return 13 * 9 + Arrays.hashCode(value);
         }
 
         /**

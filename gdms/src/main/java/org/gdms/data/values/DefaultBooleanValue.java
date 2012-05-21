@@ -201,7 +201,7 @@ class DefaultBooleanValue extends AbstractValue implements Serializable, Boolean
 
         @Override
         public int hashCode() {
-                return Boolean.valueOf(value).hashCode();
+                return value ? 1234 : 7891;
         }
 
         @Override

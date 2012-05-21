@@ -152,4 +152,9 @@ class DefaultIntValue extends DefaultNumericValue implements IntValue {
         public NumericValue opposite() {
                 return ValueFactory.createValue(-value);
         }
+
+        @Override
+        public int hashCode() {
+                return 47 * 3 + value;
+        }
 }
