@@ -40,19 +40,21 @@
  */
 package org.orbisgis.collections.twoqueue;
 
+import java.util.Iterator;
+
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 /**
  * Tests for TwoQueueBuffer.
- * 
+ *
  * @author Antoine Gourlay
  */
 public class TwoQueueTest {
-        
+
         private class TestAddClear2Q extends TwoQueueBuffer<Integer, Integer> {
-                
+
                 boolean passed;
 
                 public TestAddClear2Q(int maxSize) {
@@ -62,17 +64,15 @@ public class TwoQueueTest {
                 @Override
                 protected Integer reclaim(Integer id) {
                         passed = !passed;
-                        
+
                         return id;
                 }
 
                 @Override
                 protected void unload(Integer b) {
-                        
                 }
-                
         }
-        
+
         @Test
         public void testAddClear() {
                 TestAddClear2Q b = new TestAddClear2Q(10);
@@ -84,9 +84,9 @@ public class TwoQueueTest {
                 b.get(10);
                 assertFalse(b.passed);
         }
-        
+
         private class TestUnload2Q extends TwoQueueBuffer<Integer, Integer> {
-                
+
                 int lastUn = -1;
 
                 public TestUnload2Q(int maxSize) {
@@ -102,9 +102,8 @@ public class TwoQueueTest {
                 protected void unload(Integer b) {
                         lastUn = b;
                 }
-                
         }
-        
+
         @Test
         public void testUnload() {
                 TestUnload2Q b = new TestUnload2Q(8);
@@ -116,9 +115,9 @@ public class TwoQueueTest {
                 b.get(9);
                 assertEquals(1, b.lastUn);
         }
-        
+
         private class TestComplex2Q extends TwoQueueBuffer<Integer, Integer> {
-                
+
                 int lastUn = -1;
                 int lastRec = -1;
 
@@ -136,13 +135,12 @@ public class TwoQueueTest {
                 protected void unload(Integer b) {
                         lastUn = b;
                 }
-                
         }
-        
+
         @Test
         public void testComplex2Q() {
                 TestComplex2Q b = new TestComplex2Q(8);
-                
+
                 // no duplicates
                 b.get(0);
                 b.get(1);
@@ -155,9 +153,9 @@ public class TwoQueueTest {
                 b.get(0);
                 b.get(1);
                 assertEquals(-1, b.lastUn);
-                
+
                 b.clear();
-                
+
                 b.get(0);
                 b.get(1);
                 // now we start unloading
@@ -175,5 +173,128 @@ public class TwoQueueTest {
                 b.get(0);
                 assertEquals(0, b.lastRec);
                 assertEquals(1, b.lastUn);
+        }
+
+        @Test
+        public void testSize() {
+                TestComplex2Q b = new TestComplex2Q(8);
+
+                assertEquals(0, b.size());
+                assertTrue(b.isEmpty());
+
+                b.get(0);
+                b.get(1);
+
+                assertEquals(2, b.size());
+                assertFalse(b.isEmpty());
+
+                b.get(2);
+                assertEquals(2, b.size());
+
+                // 0 gets back in Am
+                b.get(0);
+                assertEquals(3, b.size());
+
+                b.get(4);
+                assertEquals(3, b.size());
+        }
+
+        @Test
+        public void testRemove() {
+                TestComplex2Q b = new TestComplex2Q(8);
+
+                b.get(0);
+                b.get(1);
+
+                // remove in A1in
+                assertTrue(b.remove(0));
+                assertEquals(0, b.lastUn);
+                assertEquals(1, b.size());
+                assertFalse(b.remove(0));
+
+                b.clear();
+                b.get(0);
+                b.get(1);
+
+                b.get(2);
+                b.get(0);
+
+                // remove in Am
+                assertTrue(b.remove(0));
+                assertEquals(0, b.lastUn);
+                assertEquals(2, b.size());
+                assertFalse(b.remove(0));
+        }
+
+        @Test
+        public void testIterator() {
+                TestComplex2Q b = new TestComplex2Q(8);
+
+                Iterator<DoubleQueueValue<Integer, Integer>> it = b.iterator();
+                assertFalse(it.hasNext());
+
+                b.get(0);
+                b.get(1);
+                b.get(2);
+                b.get(0);
+
+                it = b.iterator();
+                assertTrue(it.hasNext());
+                boolean flag0 = false;
+                boolean flag1 = false;
+                boolean flag2 = false;
+
+                while (it.hasNext()) {
+                        DoubleQueueValue<Integer, Integer> n = it.next();
+                        switch (n.key) {
+                                case 0:
+                                        if (flag0) {
+                                                fail();
+                                        }
+                                        flag0 = true;
+                                        break;
+                                case 1:
+                                        if (flag1) {
+                                                fail();
+                                        }
+                                        flag1 = true;
+                                        break;
+                                case 2:
+                                        if (flag2) {
+                                                fail();
+                                        }
+                                        flag2 = true;
+                                        break;
+                                default:
+                                        fail();
+                        }
+                }
+                
+                assertTrue(flag0);
+                assertTrue(flag1);
+                assertTrue(flag2);
+                
+                b.clear();
+                
+                it = b.iterator();
+                assertFalse(it.hasNext());
+        }
+        
+        @Test
+        public void testIteratorRemove() {
+                TestComplex2Q b = new TestComplex2Q(8);
+
+                b.get(0);
+                b.get(1);
+                b.get(2);
+                b.get(0);
+                b.get(4);
+                
+                Iterator<DoubleQueueValue<Integer, Integer>> it = b.iterator();
+                int i = it.next().key;
+                it.remove();
+                assertEquals(i, b.lastUn);
+                b.get(i);
+                assertEquals(i, b.lastRec);
         }
 }

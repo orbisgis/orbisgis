@@ -109,6 +109,7 @@ final class TwoQueueA1in<I, B> implements Iterable<Entry<I, DoubleQueueValue<I, 
                 if (newest != null) {
                         v.previous = newest.previous;
                         v.next = newest;
+                        v.previous.next = v;
                         newest.previous = v;
                 } else {
                         v.next = v;
@@ -156,13 +157,6 @@ final class TwoQueueA1in<I, B> implements Iterable<Entry<I, DoubleQueueValue<I, 
          */
         public int getMaxSize() {
                 return maxSize;
-        }
-
-        /**
-         * @param maxSize the new maximum size of this queue
-         */
-        public void setMaxSize(int maxSize) {
-                this.maxSize = maxSize;
         }
 
         B remove(I key) {

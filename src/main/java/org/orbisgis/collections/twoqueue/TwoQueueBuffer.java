@@ -87,7 +87,7 @@ public abstract class TwoQueueBuffer<I, B> implements Iterable<DoubleQueueValue<
          */
         public TwoQueueBuffer(int maxSize) {
                 if (maxSize < 8) {
-                        throw new IllegalArgumentException("");
+                        throw new IllegalArgumentException("The maximum size cannot be < 8. Found: " + maxSize);
                 }
                 final int inBuffer = Math.round(maxSize / 4.0f);
                 a1in = new TwoQueueA1in<I, B>(inBuffer);
@@ -230,41 +230,42 @@ public abstract class TwoQueueBuffer<I, B> implements Iterable<DoubleQueueValue<
         private class TwoQueueIterator implements Iterator<DoubleQueueValue<I, B>> {
 
                 boolean changed = false;
-                private Iterator<Entry<I, DoubleQueueValue<I, B>>> iam;
+                private Iterator<Entry<I, DoubleQueueValue<I, B>>> it;
                 private DoubleQueueValue<I, B> next;
 
                 private TwoQueueIterator() {
-                        iam = am.iterator();
+                        it = am.iterator();
                 }
 
                 @Override
                 public boolean hasNext() {
-                        if (iam.hasNext()) {
+                        if (it.hasNext()) {
                                 return true;
                         } else if (changed) {
                                 return false;
                         } else {
-                                iam = a1in.iterator();
+                                it = a1in.iterator();
                                 changed = true;
-                                return iam.hasNext();
+                                return it.hasNext();
 
                         }
                 }
 
                 @Override
                 public DoubleQueueValue<I, B> next() {
-                        next = iam.next().getValue();
+                        next = it.next().getValue();
                         return next;
                 }
 
                 @Override
                 public void remove() {
-                        iam.remove();
+                        it.remove();
                         if (!changed) {
                                 am.remove(next);
                         } else {
                                 a1in.remove(next);
                         }
+                        unload(next.val);
                 }
         }
 }

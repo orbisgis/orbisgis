@@ -45,7 +45,7 @@ import java.util.Map;
 
 /**
  * Special FIFO Linked Queue for use by {@link TwoQueueBuffer}.
- * 
+ *
  * @param <I> the key
  * @param <B> the value
  * @author Antoine Gourlay
@@ -107,16 +107,16 @@ final class TwoQueueA1out<I, B> {
                         v.next = newest;
                         v.previous.next = v;
                         newest.previous = v;
-                        newest = v;
                 } else {
-                        newest = v;
-                        newest.next = newest;
-                        newest.previous = newest;
+                        v.next = v;
+                        v.previous = v;
                 }
+                
+                newest = v;
         }
 
         private void trimOldest() {
-                if (map.size() == maxSize) {
+                if (map.size() == maxSize + 1) {
                         map.remove(newest.previous.key);
                         newest.previous = newest.previous.previous;
                         newest.previous.next = newest;
@@ -133,13 +133,6 @@ final class TwoQueueA1out<I, B> {
          */
         int getMaxSize() {
                 return maxSize;
-        }
-
-        /**
-         * @param maxSize the maximum size to set
-         */
-        void setMaxSize(int maxSize) {
-                this.maxSize = maxSize;
         }
 
         private static class SingleQueueValue<I> {
