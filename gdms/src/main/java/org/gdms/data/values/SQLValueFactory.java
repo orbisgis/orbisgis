@@ -44,8 +44,10 @@
  */
 package org.gdms.data.values;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.gdms.data.types.Type;
 import org.gdms.sql.parser.GdmSQLParser;
@@ -124,6 +126,8 @@ public final class SQLValueFactory {
         }
 
         private static void populateSqlTypes() {
+                TYPES.clear();
+                
                 // binary
                 TYPES.put("binary", Type.BINARY);
                 TYPES.put("bytea", Type.BINARY);
@@ -200,6 +204,18 @@ public final class SQLValueFactory {
                 } else {
                         return i;
                 }
+        }
+        
+        /**
+         * Gets the set of all valid SQL types (aliases included).
+         * @return a read-only set
+         */
+        public static Set<String> getValidSQLTypes() {
+                if (TYPES.isEmpty()) {
+                        populateSqlTypes();
+                }
+                
+                return Collections.unmodifiableSet(TYPES.keySet());
         }
 
         /**
