@@ -29,15 +29,14 @@
 package org.orbisgis.view.toc;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
@@ -149,6 +148,7 @@ public class Toc extends JPanel implements DockingPanel  {
         setEmptyLayerModel(tree);
         tree.setCellRenderer(new TocRenderer(this));
         tree.setCellEditor(new TocEditor(tree));
+        tree.addMouseListener(new PopupMouselistener());
         //Add a tree selection listener
         tree.getSelectionModel().addTreeSelectionListener(EventHandler.create(TreeSelectionListener.class, this, "onTreeSelectionChange"));
         return tree;
@@ -348,6 +348,31 @@ public class Toc extends JPanel implements DockingPanel  {
     public JComponent getComponent() {
         return this;
     }
+    private JPopupMenu makePopupMenu() {
+        JPopupMenu popup = new JPopupMenu();
+        //Popup:delete layer
+        if(tree.getSelectionCount()>0) {
+            JMenuItem deleteLayer = new JMenuItem(I18N.tr("Remove layer"),OrbisGISIcon.getIcon("remove"));
+            deleteLayer.setToolTipText(I18N.tr("Remove the layer from the map context"));
+            deleteLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onDeleteLayer"));
+            popup.add(deleteLayer);
+        }
+        return popup;
+    }
+    /**
+     * The user click on delete layer menu item.
+     */
+    public void onDeleteLayer() {
+        ILayer[] selectedResources = mapContext.getSelectedLayers();
+        for (ILayer resource : selectedResources) {
+                try {
+                        resource.getParent().remove(resource);
+                } catch (LayerException e) {
+                        LOGGER.error(I18N.tr("Cannot delete layer"),e);
+                }
+        }    
+    }
+    
     
 	private class TocLayerListener implements LayerListener, EditionListener,
 			DataSourceListener {
@@ -501,4 +526,60 @@ public class Toc extends JPanel implements DockingPanel  {
 			return I18N.tr("Load the data source droped into the toc."); //$NON-NLS-1$
 		}
 	}
+        
+        /**
+         * Implements Popup action on JTree
+         */
+        private class PopupMouselistener extends MouseAdapter {
+		public void mousePressed(MouseEvent e) {
+			maybeShowPopup(e);
+		}
+
+		public void mouseReleased(MouseEvent e) {
+			maybeShowPopup(e);
+		}
+
+		private boolean contains(TreePath[] selectionPaths, TreePath path) {
+			for (TreePath treePath : selectionPaths) {
+				boolean equals = true;
+				Object[] objectPath = treePath.getPath();
+				Object[] testPath = path.getPath();
+				if (objectPath.length != testPath.length) {
+					equals = false;
+				} else {
+					for (int i = 0; i < testPath.length; i++) {
+						if (testPath[i] != objectPath[i]) {
+							equals = false;
+						}
+					}
+				}
+				if (equals) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+		private void maybeShowPopup(MouseEvent e) {
+                    if (e.isPopupTrigger()) {
+                        //Update selection
+                        TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+                        TreePath[] selectionPaths = tree.getSelectionPaths();
+                        if ((selectionPaths != null) && (path != null)) {
+                                if (!contains(selectionPaths, path)) {
+                                        if (e.isControlDown()) {
+                                                tree.addSelectionPath(path);
+                                        } else {
+                                                tree.setSelectionPath(path);
+                                        }
+                                }
+                        } else {
+                                tree.setSelectionPath(path);
+                        }                        
+                        //Show popup
+                        makePopupMenu().show(e.getComponent(),
+                                e.getX(), e.getY());
+                    }
+                }
+        }
 }
