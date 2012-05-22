@@ -100,6 +100,9 @@ public class SQLParser extends AbstractParser {
                         }
 
                         if (!statements[statements.length - 1].trim().isEmpty()) {
+                                if (content.endsWith(";")) {
+                                        statements[statements.length - 1] += ";";
+                                }
                                 ParserNotice p = getError(statements[statements.length - 1], totalLength);
                                 totalLength += statements[statements.length - 1].length();
                                 if (p != null) {
