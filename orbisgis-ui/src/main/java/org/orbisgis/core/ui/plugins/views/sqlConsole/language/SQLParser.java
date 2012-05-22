@@ -40,9 +40,12 @@ package org.orbisgis.core.ui.plugins.views.sqlConsole.language;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+
 import javax.swing.text.BadLocationException;
+
 import org.antlr.runtime.ANTLRInputStream;
 import org.antlr.runtime.CommonTokenStream;
+import org.antlr.runtime.MismatchedTokenException;
 import org.antlr.runtime.RecognitionException;
 import org.antlr.runtime.Token;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
@@ -52,12 +55,14 @@ import org.fife.ui.rsyntaxtextarea.parser.DefaultParseResult;
 import org.fife.ui.rsyntaxtextarea.parser.DefaultParserNotice;
 import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
 import org.fife.ui.rsyntaxtextarea.parser.ParserNotice;
+
 import org.gdms.sql.engine.ANTLRCaseInsensitiveInputStream;
 import org.gdms.sql.parser.GdmSQLLexer;
 import org.gdms.sql.parser.GdmSQLParser;
 
 /**
  * A parser for Gdms SQL syntax that provides error locations.
+ *
  * @author Antoine Gourlay
  */
 public class SQLParser extends AbstractParser {
@@ -70,7 +75,7 @@ public class SQLParser extends AbstractParser {
 
         @Override
         public ParseResult parse(RSyntaxDocument doc, String style) {
-                String content = "";
+                String content;
                 try {
                         content = doc.getText(0, doc.getLength()).trim();
 
@@ -83,7 +88,7 @@ public class SQLParser extends AbstractParser {
 
                         String[] statements = content.split(";");
                         int totalLength = 0;
-                        for (int i = 0; i < statements.length; i++) {
+                        for (int i = 0; i < statements.length - 1; i++) {
                                 if (!statements[i].trim().isEmpty()) {
                                         statements[i] += ";";
                                         ParserNotice p = getError(statements[i], totalLength);
@@ -91,6 +96,14 @@ public class SQLParser extends AbstractParser {
                                         if (p != null) {
                                                 res.addNotice(p);
                                         }
+                                }
+                        }
+
+                        if (!statements[statements.length - 1].trim().isEmpty()) {
+                                ParserNotice p = getError(statements[statements.length - 1], totalLength);
+                                totalLength += statements[statements.length - 1].length();
+                                if (p != null) {
+                                        res.addNotice(p);
                                 }
                         }
 
@@ -122,6 +135,14 @@ public class SQLParser extends AbstractParser {
 
                 try {
                         parser.start_rule();
+                } catch (MismatchedTokenException e) {
+                        int length = content.substring(e.charPositionInLine).indexOf(';');
+                        if (length == -1) {
+                        }
+                        int[] location = getErrorLocationAndLength(e, currPosition);
+                        DefaultParserNotice not = new DefaultParserNotice(this, getErrorLocationText(location[0], location[1] + location[3]) + " "
+                                + getErrorString(e.token, e.getUnexpectedType(), e.expecting), location[0], location[2], location[3]);
+                        return not;
                 } catch (RecognitionException e) {
                         int length = content.substring(e.charPositionInLine).indexOf(';');
                         if (length == -1) {
@@ -154,6 +175,8 @@ public class SQLParser extends AbstractParser {
                 // 3: length of the highlighted part
 
                 loc[0] = textArea.getLineOfOffset(currentOffset);
+                int lineStartOffset = textArea.getLineStartOffset(loc[0]);
+                int lineSize = textArea.getLineEndOffset(loc[0]) - lineStartOffset;
 
                 // line within the String
                 if (ex.line > 1) {
@@ -164,32 +187,38 @@ public class SQLParser extends AbstractParser {
                                 loc[1] = 0;
                         }
                         loc[1] += 1;
-                        loc[2] = textArea.getLineStartOffset(loc[0]) + loc[1];
+                        loc[2] = lineStartOffset + loc[1];
                         if (ex.token != null && ex.token.getType() != -1) {
                                 loc[3] = ex.token.getText().length();
                         } else {
-                                loc[3] = textArea.getLineEndOffset(loc[0]) - textArea.getLineStartOffset(loc[0]) - loc[1];
+                                loc[3] = lineSize - loc[1];
                         }
                 } else if (ex.line == 1) {
-                        int realPos = currentOffset - textArea.getLineStartOffset(loc[0]);
+                        int realPos = currentOffset - lineStartOffset;
                         if (ex.charPositionInLine != -1) {
                                 loc[1] = realPos + ex.charPositionInLine;
                         } else {
                                 loc[1] = realPos;
                         }
-                        loc[2] = textArea.getLineStartOffset(loc[0]) + loc[1];
+                        loc[2] = lineStartOffset + loc[1];
                         if (ex.token != null && ex.token.getType() != -1) {
                                 loc[3] = ex.token.getText().length();
                         } else {
-                                loc[3] = textArea.getLineEndOffset(loc[0]) - textArea.getLineStartOffset(loc[0]) - loc[1];
+                                loc[3] = lineSize - loc[1];
                         }
                 } else {
                         loc[1] = 0;
-                        loc[2] = textArea.getLineStartOffset(loc[0]) + loc[1];
-                        loc[3] = textArea.getLineEndOffset(loc[0]) - textArea.getLineStartOffset(loc[0]);
+                        loc[2] = lineStartOffset + loc[1];
+                        loc[3] = lineSize;
                 }
 
                 if (loc[3] == 0 && loc[1] != 0) {
+                        loc[3] = 1;
+                        loc[2]--;
+                        loc[1]--;
+                }
+
+                if (loc[1] + loc[3] > lineSize) {
                         loc[3] = 1;
                         loc[2]--;
                         loc[1]--;
