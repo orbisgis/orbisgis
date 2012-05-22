@@ -95,7 +95,7 @@ public class ST_KMeans extends AbstractTableFunction {
 
         @Override
         public String getSqlOrder() {
-                return "select * from ST_KMeans(table, cellIndex, 7);";
+                return "select ST_KMeans(cellIndex, 7) from myTable;";
         }
 
         @Override
@@ -125,8 +125,6 @@ public class ST_KMeans extends AbstractTableFunction {
                         Cluster[] clusters;
                         Cluster[] newClusters = new Cluster[listOfNewCentroids.size()];
 
-                        final int ifieldCount = inDs.getMetadata().getFieldCount();
-
                         // K-Means iterations
                         int count = 0;
                         do {
@@ -136,11 +134,7 @@ public class ST_KMeans extends AbstractTableFunction {
                                 // find the closest centroid for each DataPoint
                                 newClusters = new Cluster[listOfNewCentroids.size()];
                                 for (long rowIndex = 0; rowIndex < rowCount; rowIndex++) {
-                                        Value[] v = new Value[ifieldCount];
-                                        for (int i = 0; i < v.length; i++) {
-                                                v[i] = inDs.getFieldValue(rowIndex, i);
-                                        }
-                                        final DataPoint dataPoint = new DataPoint(v, cellIndexFieldId);
+                                        final DataPoint dataPoint = new DataPoint(inDs.getRow(rowIndex), cellIndexFieldId);
                                         final int clusterIndex = dataPoint.findClosestCentroidIndex(listOfCentroids);
                                         if (null == newClusters[clusterIndex]) {
                                                 newClusters[clusterIndex] = new Cluster(dimension,
@@ -201,55 +195,21 @@ public class ST_KMeans extends AbstractTableFunction {
         private void check() throws DriverException, FunctionException {
                 LOG.trace("Checking");
                 metadata = inDs.getMetadata();
-                final int fieldCount0 = metadata.getFieldCount();
-                for (int fieldId = 0; fieldId < fieldCount0; fieldId++) {
+                final int fieldCount = metadata.getFieldCount();
+                for (int fieldId = 0; fieldId < fieldCount; fieldId++) {
                         if (cellIndexFieldId != fieldId && !TypeFactory.isNumerical(metadata.getFieldType(fieldId).getTypeCode())) {
                                 throw new FunctionException("Field '"
                                         + metadata.getFieldName(fieldId)
                                         + "' is not numeric !");
                         }
-
                 }
         }
 
         private List<DataPoint> initialization() throws DriverException,
-                DataSourceCreationException, ParseException,
-                NoSuchTableException {
-                LOG.trace("Initializing");
+                DriverLoadException, DataSourceCreationException, ParseException,
+                SemanticException, NoSuchTableException {
                 int fieldCount = inDs.getMetadata().getFieldCount();
-                // build the sql query
-                final StringBuilder queryAvgSb = new StringBuilder();
-                final StringBuilder queryStdDevSb = new StringBuilder();
-
-                for (int fieldId = 0; fieldId < fieldCount; fieldId++) {
-                        if (cellIndexFieldId != fieldId) {
-                                queryAvgSb.append(
-                                        (queryAvgSb.length() == 0) ? "Avg(" : ", Avg(").append(
-                                        metadata.getFieldName(fieldId)).append(")");
-                                queryStdDevSb.append(
-                                        (queryStdDevSb.length() == 0) ? "StandardDeviation("
-                                        : ", StandardDeviation(").append(
-                                        metadata.getFieldName(fieldId)).append(")");
-                        }
-                }
-
-                MemoryDriver d = new MemoryDataSetDriver(inDs, true);
-                String name = dsf.getSourceManager().nameAndRegister(d, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
-
-                final String query = "select " + queryAvgSb.toString() + ", "
-                        + queryStdDevSb.toString() + " from \"" + name + "\"";
-
-                // execute the query (CollectiveAvg + CollectiveStandardDeviation
-                // computations) and retrieve the averages and the standard deviations
-                // ValueCollection and arrays of double
-                final String tmpDsName = dsf.getSourceManager().nameAndRegister(query);
-                final DataSource tmpDs = dsf.getDataSource(tmpDsName);
-                tmpDs.open();
-                final Value[] resultingValues = tmpDs.getRow(0);
-                tmpDs.close();
-                dsf.remove(tmpDsName);
-                dsf.remove(name);
-
+                Value[] resultingValues = computeStatistics();
                 dimension = fieldCount - 1;
                 final double[] averages = new double[dimension];
                 final double[] standardDeviations = new double[dimension];
@@ -345,5 +305,55 @@ public class ST_KMeans extends AbstractTableFunction {
                                 ScalarArgument.STRING,
                                 ScalarArgument.INT)
                         };
+        }
+
+        /**
+         * Compute average and standard deviation for all fields in the table.
+         *
+         * @return
+         * @throws ParseException
+         * @throws SemanticException
+         * @throws DriverLoadException
+         * @throws DriverException
+         * @throws NoSuchTableException
+         * @throws DataSourceCreationException
+         */
+        private Value[] computeStatistics() throws ParseException, SemanticException, DriverLoadException, DriverException, NoSuchTableException, DataSourceCreationException {
+
+                // build the sql query
+                final StringBuilder queryAvgSb = new StringBuilder();
+                final StringBuilder queryStdDevSb = new StringBuilder();
+
+                int fieldCount = metadata.getFieldCount();
+                for (int fieldId = 0; fieldId < fieldCount; fieldId++) {
+                        if (cellIndexFieldId != fieldId) {
+                                queryAvgSb.append(
+                                        (queryAvgSb.length() == 0) ? "Avg(" : ", Avg(").append(
+                                        metadata.getFieldName(fieldId)).append(")");
+                                queryStdDevSb.append(
+                                        (queryStdDevSb.length() == 0) ? "StandardDeviation("
+                                        : ", StandardDeviation(").append(
+                                        metadata.getFieldName(fieldId)).append(")");
+                        }
+                }
+
+                MemoryDriver d = new MemoryDataSetDriver(inDs, true);
+                String name = dsf.getSourceManager().nameAndRegister(d, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+
+                final String query = "select " + queryAvgSb.toString() + ", "
+                        + queryStdDevSb.toString() + " from \"" + name + "\"";
+
+                // execute the query (CollectiveAvg + CollectiveStandardDeviation
+                // computations) and retrieve the averages and the standard deviations
+                // ValueCollection and arrays of double
+                final String tmpDsName = dsf.getSourceManager().nameAndRegister(query);
+                final DataSource tmpDs = dsf.getDataSource(tmpDsName);
+                tmpDs.open();
+                final Value[] resultingValues = tmpDs.getRow(0);
+                tmpDs.close();
+                dsf.remove(tmpDsName);
+                dsf.remove(name);
+
+                return resultingValues;
         }
 }
