@@ -28,6 +28,9 @@
  */
 package org.orbisgis.view.output;
 
+import java.awt.Color;
+import java.beans.EventHandler;
+import java.util.EventObject;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Level;
@@ -36,8 +39,9 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.varia.DenyAllFilter;
 import org.apache.log4j.varia.LevelMatchFilter;
 import org.apache.log4j.varia.LevelRangeFilter;
+import org.orbisgis.core.events.Listener;
+import org.orbisgis.core.events.ListenerException;
 import org.orbisgis.view.docking.DockingPanel;
-import org.orbisgis.view.output.filters.AllFilter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -58,7 +62,10 @@ public class OutputManager {
         private static final Logger GUI_LOGGER = Logger.getLogger("gui");
         private PatternLayout loggingLayout = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
         private PatternLayout infoLayout = new PatternLayout("%m%n");
-
+        //All panel additionnal objects
+        private Listener outputAllListener;
+        private OutputPanel allPanel;
+        
         public OutputManager(boolean debugConsole) {
                 mainPanel = new MainOutputPanel();
                 makeOutputAll(debugConsole);
@@ -87,17 +94,15 @@ public class OutputManager {
         private void makeOutputAll(boolean showDebug) {
                 PanelAppender app = makePanel();
                 app.setLayout(loggingLayout);
-                AllFilter allFilter = new AllFilter();
-                if(showDebug) {
-                    allFilter.setRootMinLevel(Level.DEBUG);
-                    allFilter.setuIMinLevel(Level.DEBUG);
-                }
-                app.addFilter(allFilter);      
+                allPanel = app.getGuiPanel();
+                outputAllListener = EventHandler.create(Listener.class,this,"onNewLogMessage","");
                 outputPanels.put(LOG_ALL, app);
-                ROOT_LOGGER.addAppender(app);
                 mainPanel.addSubPanel(i18n.tr("orbisgis.view.log_all_title"), app.getGuiPanel());
         }
 
+        public void onNewLogMessage(ShowMessageEventData evtMsg) {
+            allPanel.print(evtMsg.getMessage(), evtMsg.getMessageColor());
+        }
         /**
          * Make the Info Output panel
          * This panel accept root.gui == Info      >
@@ -105,6 +110,7 @@ public class OutputManager {
         private void makeOutputError() {
                 PanelAppender app = makePanel();
                 app.setLayout(loggingLayout);
+                app.getMessageEvent().addListener(this, outputAllListener);
                 LevelRangeFilter filter = new LevelRangeFilter();
                 filter.setLevelMax(Level.FATAL);
                 filter.setLevelMin(Level.ERROR);
@@ -128,6 +134,7 @@ public class OutputManager {
         private void makeOutputInfo() {
                 PanelAppender app = makePanel();
                 app.setLayout(infoLayout);
+                app.getMessageEvent().addListener(this, outputAllListener);
                 LevelMatchFilter filter = new LevelMatchFilter();
                 filter.setLevelToMatch(Level.INFO.toString());
                 app.addFilter(filter);
@@ -146,6 +153,7 @@ public class OutputManager {
                 PanelAppender app = makePanel();
                 app.setLayout(loggingLayout);
                 LevelMatchFilter filter = new LevelMatchFilter();
+                app.getMessageEvent().addListener(this, outputAllListener);
                 filter.setLevelToMatch(Level.WARN.toString());
                 app.addFilter(filter);
                 app.addFilter(new DenyAllFilter());
@@ -161,6 +169,7 @@ public class OutputManager {
                 PanelAppender app = makePanel();
                 app.setLayout(loggingLayout);
                 LevelMatchFilter filter = new LevelMatchFilter();
+                app.getMessageEvent().addListener(this, outputAllListener);
                 filter.setLevelToMatch(Level.DEBUG.toString());
                 app.addFilter(filter);
                 app.addFilter(new DenyAllFilter());
@@ -177,4 +186,5 @@ public class OutputManager {
         public DockingPanel getPanel() {
                 return mainPanel;
         }
+        
 }

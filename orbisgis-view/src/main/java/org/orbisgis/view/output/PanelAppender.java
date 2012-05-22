@@ -32,10 +32,13 @@ import java.awt.Color;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
+import org.orbisgis.core.events.EventException;
+import org.orbisgis.core.events.ListenerContainer;
 
 /**
  * A LOG4J Appender connected with the LogPanel
@@ -55,7 +58,14 @@ public class PanelAppender extends AppenderSkeleton {
     
     //Messages are stored here before being pushed in the gui
     private Queue<LoggingEvent> leQueue = new LinkedList<LoggingEvent>();
-    private AtomicBoolean processingQueue=new AtomicBoolean(false); /*!< If true a swing runnable
+    private AtomicBoolean processingQueue=new AtomicBoolean(false); /*!< If true a swing runnable */
+    
+    private ListenerContainer<ShowMessageEventData> messageEvent = new ListenerContainer<ShowMessageEventData>();
+
+    public ListenerContainer<ShowMessageEventData> getMessageEvent() {
+        return messageEvent;
+    }
+    
     /**
      * 
      * @return The linked GuiPanel
@@ -112,6 +122,19 @@ public class PanelAppender extends AppenderSkeleton {
     public boolean requiresLayout() {
         return true;
     }
+    
+    /**
+     * Output the message on each listener
+     * @param text Message text
+     * @param textColor Message color
+     */
+    private void firePrintMessage(String text,Color textColor) {
+        try {
+            messageEvent.callListeners(new ShowMessageEventData(text, textColor, this));
+        } catch (EventException ex) {
+            //Do nothing on listener error
+        }
+    } 
    /**
     * Push awaiting messages to the gui
     */ 
@@ -135,16 +158,21 @@ public class PanelAppender extends AppenderSkeleton {
                                 lastLevelColor = getLevelColor(lastLevel);
                                 guiPanel.setDefaultColor(lastLevelColor);
                             }
-                            guiPanel.print(layout.format(le));
+                            StringBuilder outputString = new StringBuilder();
+                            outputString.append(layout.format(le));
                             if(layout.ignoresThrowable()) {
                                 String[] s = le.getThrowableStrRep();
                                 if (s != null) {
                                     int len = s.length;
                                     for(int i = 0; i < len; i++) {
-                                        guiPanel.println(s[i]);
+                                        outputString.append(s[i]);
+                                        outputString.append("\n");
                                     }
                                 }
                             }
+                            String outputStr=outputString.toString();
+                            guiPanel.print(outputStr);
+                            firePrintMessage(outputStr,lastLevelColor);
                         }
                     }
                 }

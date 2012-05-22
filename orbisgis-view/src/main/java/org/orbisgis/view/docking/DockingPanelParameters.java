@@ -36,16 +36,16 @@ import javax.swing.JToolBar;
 
 
 /**
- * @brief Parameters of a panel in a docking environnement
- * Theses parameters indicate the behavior related to a panel
- * in a docking environnement.
+ * @brief Parameters of a panel in a docking environment
+ * Theses parameters indicate the behaviour related to a panel
+ * in a docking environment.
  * 
  * This class is created thanks to the NetBeans user interface.
  * Use the "Add property" NetBeans function to add properties easily.
  * See documentation related to java.beans management systems
  * 
  * Using parameter beans instead of implementing docking frame panels
- * help to extends/update functionnality of application without breaking codes
+ * help to extends/update functionality of application without breaking codes
  * 
  * @warning New properties must be linked with the current docking system {@link OrbisGISView} 
  */
@@ -117,7 +117,7 @@ public class DockingPanelParameters implements Serializable {
     }
 
     /**
-     * Set the value of externalizable
+     * Set the value of externalisable
      *
      * @param externalizable new value of externalizable
      */
