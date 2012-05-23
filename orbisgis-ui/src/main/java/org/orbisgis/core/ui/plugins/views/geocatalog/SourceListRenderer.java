@@ -54,6 +54,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 
+import org.apache.log4j.Logger;
 import org.gdms.source.Source;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
@@ -61,6 +62,8 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.SourceRenderer;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
+
+import org.gdms.driver.DriverException;
 
 public class SourceListRenderer implements ListCellRenderer {
 
@@ -75,6 +78,7 @@ public class SourceListRenderer implements ListCellRenderer {
         private static final Icon spatial = OrbisGISIcon.GEOFILE;
         private static final Icon alphanumeric_file = IconLoader.getIcon("flatfile.png");
         private static final Icon server_connect = IconLoader.getIcon("server_connect.png");
+        private static final Icon sql_view = IconLoader.getIcon("table_go.png");
         private Catalog geocatalog;
         private OurJPanel ourJPanel = null;
 
@@ -141,6 +145,8 @@ public class SourceListRenderer implements ListCellRenderer {
                                                 icon = alphanumeric_database;
                                         } else if ((sourceType & SourceManager.SYSTEM_TABLE) == SourceManager.SYSTEM_TABLE) {
                                                 icon = system_table;
+                                        } else if ((sourceType & SourceManager.SQL) == SourceManager.SQL) {
+                                                icon = sql_view;
                                         }
                                 }
                                 if (null != icon) {
@@ -157,7 +163,12 @@ public class SourceListRenderer implements ListCellRenderer {
                                 }
                                 if (text == null) {
                                         text = source;
-                                        text += " (" + src.getTypeName() + ")";
+                                        try {
+                                                text += " (" + src.getTypeName() + ")";
+                                        } catch (DriverException ex) {
+                                                Logger.getLogger(SourceListRenderer.class).warn(
+                                                        "Failed to read type name of " + source, ex);
+                                        }
                                 }
                                 if (geocatalog.isEditingSource(source)) {
                                         System.out.println("Editing source " + source);
