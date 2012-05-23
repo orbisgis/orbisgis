@@ -45,7 +45,7 @@
 package org.gdms.data;
 
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -58,12 +58,12 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
 
-public abstract class AbstractDataSourceDefinition implements
-        DataSourceDefinition {
+public abstract class AbstractDataSourceDefinition<D extends Driver> implements
+        DataSourceDefinition<D> {
 
         private static final Logger LOG = Logger.getLogger(AbstractDataSourceDefinition.class);
         private DataSourceFactory dsf;
-        private Driver driver;
+        private D driver;
 
         @Override
         public void freeResources(String name) throws DataSourceFinalizationException {
@@ -75,7 +75,7 @@ public abstract class AbstractDataSourceDefinition implements
         }
 
         @Override
-        public Driver getDriver() {
+        public D getDriver() throws DriverException {
                 if (driver == null) {
                         driver = getDriverInstance();
                 }
@@ -96,9 +96,9 @@ public abstract class AbstractDataSourceDefinition implements
         @Override
         public abstract int hashCode();
 
-        protected abstract Driver getDriverInstance();
+        protected abstract D getDriverInstance() throws DriverException;
 
-        public void setDriver(Driver driver) {
+        public void setDriver(D driver) {
                 this.driver = driver;
         }
 
@@ -135,16 +135,16 @@ public abstract class AbstractDataSourceDefinition implements
 
         @Override
         public List<String> getSourceDependencies() throws DriverException {
-                return new ArrayList<String>(0);
+                return Collections.emptyList();
         }
 
         @Override
-        public int getType() {
+        public int getType() throws DriverException {
                 return getDriver().getType();
         }
 
         @Override
-        public String getTypeName() {
+        public String getTypeName() throws DriverException {
                 try {
                         return getDriver().getTypeName();
                 } catch (DriverLoadException e) {
@@ -158,7 +158,7 @@ public abstract class AbstractDataSourceDefinition implements
         }
 
         @Override
-        public String getDriverId() {
+        public String getDriverId() throws DriverException {
                 try {
                         return getDriver().getDriverId();
                 } catch (DriverLoadException e) {
@@ -167,7 +167,7 @@ public abstract class AbstractDataSourceDefinition implements
         }
 
         @Override
-        public void delete() {
+        public void delete() throws DriverException {
         }
 
         @Override

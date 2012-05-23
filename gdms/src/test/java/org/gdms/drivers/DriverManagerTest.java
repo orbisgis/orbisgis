@@ -56,6 +56,7 @@ import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import org.gdms.driver.DriverException;
 import org.gdms.driver.io.Exporter;
 import org.gdms.driver.io.Importer;
 
@@ -76,7 +77,7 @@ public class DriverManagerTest extends TestBase {
          * many instance of a Driver for a common File.
          */
         @Test
-        public void testDriverUnicity() {
+        public void testDriverUnicity() throws DriverException {
                 //Our source is a single, simple, ShapeFile
                 File shape = super.getAnySpatialResource();
                 //Our start point is FileSourceDefinition

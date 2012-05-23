@@ -96,8 +96,9 @@ public class CustomQueriesTest extends TestBase {
                 dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, 'field', 'the_geom');");
 
                 try {
-                        dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, 'the_geom',"
-                                + " 15);");
+                        DataSource d = dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, 'the_geom',"
+                                                               + " 15);");
+                        d.open();
                         fail();
                 } catch (IncompatibleTypesException e) {
                 }
@@ -112,7 +113,8 @@ public class CustomQueriesTest extends TestBase {
                         + " 'the_geom');");
 
                 try {
-                        dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, ggidd);");
+                        DataSource d = dsf.getDataSourceFromSQL("select * from fieldReferenceQuery(ds, ds2, ggidd);");
+                        d.open();
                         fail();
                 } catch (Exception e) {
                 }

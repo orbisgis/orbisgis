@@ -57,7 +57,7 @@ import org.gdms.source.directory.DefinitionType;
 /**
  * Class to be implemented to add new types of sources to the system.
  */
-public interface DataSourceDefinition {
+public interface DataSourceDefinition<D extends Driver> {
 
         /**
          * Creates a DataSource with the information of this object
@@ -135,15 +135,17 @@ public interface DataSourceDefinition {
          * Gets the type of the source accessed by this definition
          *
          * @return
+         * @throws DriverException  
          */
-        int getType();
+        int getType() throws DriverException;
 
         /**
          * Get the source type description of the source accessed by this definition
          *
          * @return
+         * @throws DriverException  
          */
-        String getTypeName();
+        String getTypeName() throws DriverException;
 
         /**
          * Method that lets the DataSourceDefinitions perform any kind of
@@ -158,14 +160,16 @@ public interface DataSourceDefinition {
          * Get the id of the driver used to access this source definition
          *
          * @return the id of the driver
+         * @throws DriverException  
          */
-        String getDriverId();
+        String getDriverId() throws DriverException;
 
         /**
          * Gets the driver associated with this source.
          * @return the driver
+         * @throws DriverException  
          */
-        Driver getDriver();
+        D getDriver() throws DriverException;
         
         /**
          * Refreshes all stored data of the definition (e.g. the type).
@@ -182,7 +186,7 @@ public interface DataSourceDefinition {
         /**
          * Deletes all physical storage associated with this source.
          */
-        void delete();
+        void delete() throws DriverException;
         
         /**
          * Gets the schema of underlying source.

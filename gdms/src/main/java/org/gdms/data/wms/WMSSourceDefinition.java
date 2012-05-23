@@ -58,17 +58,15 @@ import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DataSet;
-import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
-import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.WmsDefinitionType;
 
-public class WMSSourceDefinition extends AbstractDataSourceDefinition {
+public class WMSSourceDefinition extends AbstractDataSourceDefinition<MemoryDriver> {
 
         private WMSSource wmsSource;
         private static final Logger LOG = Logger.getLogger(WMSSourceDefinition.class);
@@ -79,19 +77,14 @@ public class WMSSourceDefinition extends AbstractDataSourceDefinition {
         }
 
         @Override
-        protected Driver getDriverInstance() {
-                try {
-                        MemoryDataSetDriver ret = new MemoryDataSetDriver(getWMSMetadata());
-                        ret.addValues(new Value[]{
-                                        ValueFactory.createValue(wmsSource.getHost()),
-                                        ValueFactory.createValue(wmsSource.getLayer()),
-                                        ValueFactory.createValue(wmsSource.getSrs()),
-                                        ValueFactory.createValue(wmsSource.getFormat())});
-                        return ret;
-                } catch (DriverException e) {
-                        // Access to DefaultMetadata doesn't give any exception
-                        throw new DriverLoadException(e);
-                }
+        protected MemoryDriver getDriverInstance() throws DriverException {
+                MemoryDataSetDriver ret = new MemoryDataSetDriver(getWMSMetadata());
+                ret.addValues(new Value[]{
+                                ValueFactory.createValue(wmsSource.getHost()),
+                                ValueFactory.createValue(wmsSource.getLayer()),
+                                ValueFactory.createValue(wmsSource.getSrs()),
+                                ValueFactory.createValue(wmsSource.getFormat())});
+                return ret;
         }
 
         private Metadata getWMSMetadata() throws DriverException {
@@ -107,10 +100,18 @@ public class WMSSourceDefinition extends AbstractDataSourceDefinition {
         public DataSource createDataSource(String tableName, ProgressMonitor pm)
                 throws DataSourceCreationException {
                 LOG.trace("Creating datasource");
-                getDriver().setDataSourceFactory(getDataSourceFactory());
+
+                final MemoryDriver driver;
+                try {
+                        driver = getDriver();
+                } catch (DriverException ex) {
+                        throw new DataSourceCreationException(ex);
+                }
+
+                driver.setDataSourceFactory(getDataSourceFactory());
 
                 MemoryDataSourceAdapter ds = new MemoryDataSourceAdapter(
-                        getSource(tableName), (MemoryDriver) getDriver());
+                        getSource(tableName), driver);
                 LOG.trace("Datasource created");
                 return ds;
         }

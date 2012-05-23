@@ -473,7 +473,7 @@ public final class ExtendedSource implements org.gdms.source.Source {
         }
 
         @Override
-        public String getDriverId() {
+        public String getDriverId() throws DriverException {
                 return def.getDriverId();
         }
 
@@ -483,11 +483,13 @@ public final class ExtendedSource implements org.gdms.source.Source {
                         return def.getType();
                 } catch (DriverLoadException e) {
                         return SourceManager.UNKNOWN;
+                }  catch (DriverException e) {
+                        return SourceManager.UNKNOWN;
                 }
         }
 
         @Override
-        public String getTypeName() {
+        public String getTypeName() throws DriverException {
                 return def.getTypeName();
         }
 

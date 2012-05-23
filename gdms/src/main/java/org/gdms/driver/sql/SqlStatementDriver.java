@@ -77,17 +77,22 @@ public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver 
         private DataSet set;
         private DefaultMetadata metadata = new DefaultMetadata();
         private int openState = CLOSED;
+        private int openCount = 0;
 
         public SqlStatementDriver(SQLStatement sql, DataSourceFactory dsf) throws DriverException {
                 this.sql = sql;
                 this.dsf = dsf;
-                schema = new DefaultSchema("sql");
+                schema = new DefaultSchema("sql" + hashCode());
                 schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
+        }
+        
+        public SqlStatementDriver(SQLStatement sql) throws DriverException {
+                this(sql, null);
         }
 
         @Override
         public void open() throws DriverException {
-                if (openState == CLOSED) {
+                if (openState == CLOSED && openCount == 0) {
                         sql.setDataSourceFactory(dsf);
                         sql.prepare();
                         set = sql.execute();
@@ -95,11 +100,12 @@ public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver 
                         metadata.addAll(sql.getResultMetadata());
                         openState = OPENED;
                 }
+                openCount++;
         }
 
         @Override
         public void close() throws DriverException {
-                if (openState == OPENED) {
+                if (openState == OPENED && openCount == 1) {
                         // WARNING: do not remove!
                         // When cleaning up, sources referenced by the SQL Statement can be
                         // committed to, which causes a #sync() of the sources depending of it
@@ -109,6 +115,7 @@ public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver 
                         sql.cleanUp();
                         openState = CLOSED;
                 }
+                openCount--;
         }
 
         @Override
@@ -190,6 +197,6 @@ public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver 
 
         @Override
         public Metadata getMetadata() throws DriverException {
-                return set.getMetadata();
+                return metadata;
         }
 }

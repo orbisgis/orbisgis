@@ -49,6 +49,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.progress.ProgressMonitor;
@@ -74,9 +75,9 @@ import org.gdms.source.directory.FileDefinitionType;
 
 /**
  * Definition of file sources
- * 
+ *
  */
-public class FileSourceDefinition extends AbstractDataSourceDefinition {
+public class FileSourceDefinition extends AbstractDataSourceDefinition<FileDriver> {
 
         protected File file;
         private int cachedType = -1;
@@ -113,17 +114,21 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
                         throw new DataSourceCreationException(file + " "
                                 + I18N.getString("gdms.datasource.error.noexits"));
                 }
-                Driver driver = getDriver();
+                FileDriver driver;
+                try {
+                        driver = getDriver();
+                } catch (DriverException ex) {
+                        throw new DataSourceCreationException(ex);
+                }
                 driver.setDataSourceFactory(getDataSourceFactory());
 
-                FileDataSourceAdapter ds = new FileDataSourceAdapter(
-                        getSource(sourceName), file, (FileDriver) driver, true);
+                FileDataSourceAdapter ds = new FileDataSourceAdapter(getSource(sourceName), file, driver, true);
                 LOG.trace("Datasource created");
                 return ds;
         }
 
         @Override
-        protected Driver getDriverInstance() {
+        protected FileDriver getDriverInstance() {
                 return DriverUtilities.getDriver(getDataSourceFactory().getSourceManager().getDriverManager(), file);
         }
 
@@ -187,7 +192,7 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
         }
 
         @Override
-        public int getType() {
+        public int getType() throws DriverException {
                 if (cachedType == -1) {
                         try {
                                 if (getDriver().getTypeName().equals("GDMS")) {
@@ -223,7 +228,7 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition {
         }
 
         @Override
-        public void delete() {
+        public void delete() throws DriverException {
                 Driver driver = getDriver();
                 if (driver instanceof ShapefileDriver) {
                         try {

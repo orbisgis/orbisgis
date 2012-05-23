@@ -56,18 +56,18 @@ import org.orbisgis.progress.ProgressMonitor;
 
 public class FakeDBTableSourceDefinition extends DBTableSourceDefinition {
 
-	protected Driver driver;
+	protected DBDriver driver;
 
 	private String prefix;
 
-	public FakeDBTableSourceDefinition(Driver driver, String prefix) {
+	public FakeDBTableSourceDefinition(DBDriver driver, String prefix) {
 		super(new DBSource(null, 0, null, null, null, null, null));
 		this.driver = driver;
 		this.prefix = prefix;
 	}
 
         @Override
-        protected Driver getDriverInstance() {
+        protected DBDriver getDriverInstance() {
                 return driver;
         }
         

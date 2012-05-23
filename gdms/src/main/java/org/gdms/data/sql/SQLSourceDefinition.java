@@ -45,8 +45,8 @@
 package org.gdms.data.sql;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -58,13 +58,12 @@ import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.memory.MemoryDataSourceAdapter;
-import org.gdms.data.schema.DefaultMetadata;
-import org.gdms.data.schema.DefaultSchema;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DataSet;
-import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.sql.SqlStatementDriver;
 import org.gdms.source.SourceManager;
@@ -74,25 +73,22 @@ import org.gdms.sql.engine.SQLStatement;
 
 /**
  * Represents the result of a SQL query
+ *
  * @author Antoine Gourlay
  */
-public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
+public final class SQLSourceDefinition extends AbstractDataSourceDefinition<MemoryDriver> {
 
         private SQLStatement statement;
-        private Schema schema;
-        private DefaultMetadata metadata;
         private static final Logger LOG = Logger.getLogger(SQLSourceDefinition.class);
 
         /**
          * Creates a new SQLSourceDefinition from a SQL statement
+         *
          * @param instruction a statement
          */
         public SQLSourceDefinition(SQLStatement instruction) {
                 LOG.trace("Constructor");
                 this.statement = instruction;
-                schema = new DefaultSchema("SQL" + instruction.hashCode());
-                metadata = new DefaultMetadata();
-                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
         }
 
         @Override
@@ -102,6 +98,7 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
 
         /**
          * Gets the GDMS file that backs up this SQLSource, or null if there is not.
+         *
          * @return
          */
         public File getFile() {
@@ -111,16 +108,10 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
         private DataSource execute(String tableName, ProgressMonitor pm) throws DriverException,
                 DataSourceCreationException {
                 LOG.trace("Preparing SQLSource");
-                metadata.clear();
                 DataSource def = null;
                 if (!pm.isCancelled()) {
-                        SqlStatementDriver d = new SqlStatementDriver(statement, getDataSourceFactory());
-                        def = new MemoryDataSourceAdapter(getSource(tableName), d);
-                        statement.setDataSourceFactory(getDataSourceFactory());
-                        statement.prepare();
-                        metadata.addAll(statement.getResultMetadata());
-                        statement.cleanUp();
-                        LOG.trace("Built temp MemoryDataSourceAdapter with SQL Query results");
+                        def = new MemoryDataSourceAdapter(getSource(tableName), getDriver());
+                        LOG.trace("Built temp MemoryDataSourceAdapter as an SQL view");
                 }
                 return def;
         }
@@ -135,8 +126,6 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
                                 return null;
                         } else {
                                 LOG.trace("Datasource created");
-//				return new FileDataSourceAdapter(getSource(tableName), file,
-//						new GdmsDriver(), false);
                                 return def;
                         }
                 } catch (DriverException e) {
@@ -160,6 +149,7 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
 
         /**
          * Builds this definition from XML
+         *
          * @param definitionType
          * @return
          */
@@ -169,28 +159,19 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
         }
 
         @Override
-        protected Driver getDriverInstance() {
-                return null;
+        protected MemoryDriver getDriverInstance() throws DriverException {
+                return new SqlStatementDriver(statement, getDataSourceFactory());
         }
 
         @Override
         public List<String> getSourceDependencies() throws DriverException {
                 LOG.trace("Getting Source dependencies");
-                ArrayList<String> ret = new ArrayList<String>();
-                String[] sources = statement.getReferencedSources();
-                ret.addAll(Arrays.asList(sources));
-
-                return ret;
-
-        }
-
-        @Override
-        public Driver getDriver() {
-                return null;
+                return Collections.unmodifiableList(Arrays.asList(statement.getReferencedSources()));
         }
 
         /**
          * Gets the SQL statement behind this definition
+         *
          * @return
          */
         public String getSQL() {
@@ -198,9 +179,10 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
         }
 
         @Override
-        public int getType() {
+        public int getType() throws DriverException {
                 int type = SourceManager.SQL | SourceManager.LIVE;
-                if (statement != null) {
+                Metadata metadata = statement.getResultMetadata();
+                if (metadata != null) {
                         for (int i = 0; i < metadata.getFieldCount(); i++) {
                                 int typeCode = metadata.getFieldType(i).getTypeCode();
                                 if (typeCode == Type.GEOMETRY) {
@@ -248,7 +230,7 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
 
         @Override
         public Schema getSchema() throws DriverException {
-                return schema;
+                return getDriver().getSchema();
         }
 
         @Override

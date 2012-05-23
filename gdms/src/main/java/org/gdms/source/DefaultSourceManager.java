@@ -360,7 +360,11 @@ public final class DefaultSourceManager implements SourceManager {
                 fireSourceRemoved(name);
 
                 if (purge) {
-                        toRemove.getDataSourceDefinition().delete();
+                        try {
+                                toRemove.getDataSourceDefinition().delete();
+                        } catch (DriverException ex) {
+                                throw new IllegalStateException(ex);
+                        }
                 }
                 //We have a <File,Driver> association in the DriverManager, we must get rid of it.
                 File assoc = toRemove.getFile();
@@ -423,7 +427,7 @@ public final class DefaultSourceManager implements SourceManager {
         public void register(String name, File file) {
                 register(name, new FileSourceCreation(file, null));
         }
-        
+
         @Override
         public void register(String name, String sql) throws ParseException {
                 SQLStatement[] s = Engine.parse(sql, dsf.getProperties());
@@ -619,7 +623,7 @@ public final class DefaultSourceManager implements SourceManager {
                 register(name, false, new FileSourceDefinition(file, DriverManager.DEFAULT_SINGLE_TABLE_NAME));
                 return name;
         }
-        
+
         @Override
         public String nameAndRegister(String sql) throws ParseException {
                 SQLStatement[] s = Engine.parse(sql, dsf.getProperties());
@@ -703,8 +707,12 @@ public final class DefaultSourceManager implements SourceManager {
                                 } else {
                                         ds = new OCCounterDecorator(ds);
                                         ds.setDataSourceFactory(dsf);
-                                        if ((dsd.getType() & SourceManager.LIVE) == 0) {
-                                                src.setDatasource(ds);
+                                        try {
+                                                if ((dsd.getType() & SourceManager.LIVE) == 0) {
+                                                        src.setDatasource(ds);
+                                                }
+                                        } catch (DriverException ex) {
+                                                throw new DataSourceCreationException(ex);
                                         }
                                         dataSource = ds;
                                 }

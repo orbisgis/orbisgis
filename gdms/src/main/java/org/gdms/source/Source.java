@@ -60,236 +60,237 @@ import org.gdms.driver.MemoryDriver;
  */
 public interface Source {
 
-	/**
-	 * Creates a property which content is stored in a file. If the property
-	 * already exists it returns the associated File
-	 * 
-	 * @param propertyName
-	 *            name of the property
-	 * @return The file to store the content
-	 * @throws IOException
-	 *             If the file cannot be created
-	 */
-	File createFileProperty(String propertyName) throws IOException;
+        /**
+         * Creates a property which content is stored in a file. If the property
+         * already exists it returns the associated File
+         *
+         * @param propertyName
+         * name of the property
+         * @return The file to store the content
+         * @throws IOException
+         * If the file cannot be created
+         */
+        File createFileProperty(String propertyName) throws IOException;
 
-	/**
-	 * Gets the contents of the file associated with the property
-	 * 
-	 * @param propertyName
-	 *            name of the property we want to access
-	 * @return The bytes stored in the associated file or null if the property
-	 *         does not exist
-	 * @throws IOException
-	 */
-	byte[] getFilePropertyContents(String propertyName) throws IOException;
+        /**
+         * Gets the contents of the file associated with the property
+         *
+         * @param propertyName
+         * name of the property we want to access
+         * @return The bytes stored in the associated file or null if the property
+         * does not exist
+         * @throws IOException
+         */
+        byte[] getFilePropertyContents(String propertyName) throws IOException;
 
-	/**
-	 * The same as getFilePropertyContents but building an string with the byte
-	 * array
-	 * 
-	 * @param propertyName
-	 * @return
-	 * @throws IOException
-	 */
-	String getFilePropertyContentsAsString(String propertyName)
-			throws IOException;
+        /**
+         * The same as getFilePropertyContents but building an string with the byte
+         * array
+         *
+         * @param propertyName
+         * @return
+         * @throws IOException
+         */
+        String getFilePropertyContentsAsString(String propertyName)
+                throws IOException;
 
-	/**
-	 * Creates (or modifies if it already exist) a string property.
-	 * 
-	 * @param propertyName
-	 * @param value
-	 */
-	void putProperty(String propertyName, String value);
+        /**
+         * Creates (or modifies if it already exist) a string property.
+         *
+         * @param propertyName
+         * @param value
+         */
+        void putProperty(String propertyName, String value);
 
-	/**
-	 * Gets the value of a string property or null if the property does not
-	 * exist
-	 * 
-	 * @param propertyName
-	 *            Name of the property which value will be returned
-	 * @return
-	 */
-	String getProperty(String propertyName);
+        /**
+         * Gets the value of a string property or null if the property does not
+         * exist
+         *
+         * @param propertyName
+         * Name of the property which value will be returned
+         * @return
+         */
+        String getProperty(String propertyName);
 
-	/**
-	 * Returns true if the source has a property, either stored on a file or a
-	 * string, with the specified name
-	 * 
-	 * @param propertyName
-	 * @return
-	 */
-	boolean hasProperty(String propertyName);
+        /**
+         * Returns true if the source has a property, either stored on a file or a
+         * string, with the specified name
+         *
+         * @param propertyName
+         * @return
+         */
+        boolean hasProperty(String propertyName);
 
-	/**
-	 * Deletes the property. This method is independent of the type of storage
-	 * of the property
-	 * 
-	 * @param propertyName
-	 * @throws IOException
-	 */
-	void deleteProperty(String propertyName) throws IOException;
+        /**
+         * Deletes the property. This method is independent of the type of storage
+         * of the property
+         *
+         * @param propertyName
+         * @throws IOException
+         */
+        void deleteProperty(String propertyName) throws IOException;
 
-	/**
-	 * Gets the file associated with the specified property. if the property
-	 * content is not stored on a file or the property does not exist this
-	 * method will return null
-	 * 
-	 * @param propertyName
-	 * @return
-	 */
-	File getFileProperty(String propertyName);
+        /**
+         * Gets the file associated with the specified property. if the property
+         * content is not stored on a file or the property does not exist this
+         * method will return null
+         *
+         * @param propertyName
+         * @return
+         */
+        File getFileProperty(String propertyName);
 
-	/**
-	 * Gets the names of all properties with string values
-	 * 
-	 * @return
-	 * @throws IOException
-	 */
-	String[] getStringPropertyNames() throws IOException;
+        /**
+         * Gets the names of all properties with string values
+         *
+         * @return
+         * @throws IOException
+         */
+        String[] getStringPropertyNames() throws IOException;
 
-	/**
-	 * Gets the names of all properties with values stored in files
-	 * 
-	 * @return
-	 */
-	String[] getFilePropertyNames();
+        /**
+         * Gets the names of all properties with values stored in files
+         *
+         * @return
+         */
+        String[] getFilePropertyNames();
 
-	/**
-	 * Gets the name of the source
-	 * 
-	 * @return
-	 */
-	String getName();
+        /**
+         * Gets the name of the source
+         *
+         * @return
+         */
+        String getName();
 
-	/**
-	 * @return true if the user specified a name when registering it. False if
-	 *         the name was generated automatically
-	 */
-	boolean isWellKnownName();
+        /**
+         * @return true if the user specified a name when registering it. False if
+         * the name was generated automatically
+         */
+        boolean isWellKnownName();
 
-	/**
-	 * Indicates if the source has been modified by another entity different
-	 * from the DataSourceFactory this source belongs to. This call can be quite
-	 * time consuming depending on the type of the source
-	 * 
-	 * @return true if the source has not been modified and false otherwise
-	 * @throws DriverException
-	 */
-	boolean isUpToDate() throws DriverException;
+        /**
+         * Indicates if the source has been modified by another entity different
+         * from the DataSourceFactory this source belongs to. This call can be quite
+         * time consuming depending on the type of the source
+         *
+         * @return true if the source has not been modified and false otherwise
+         * @throws DriverException
+         */
+        boolean isUpToDate() throws DriverException;
 
-	/**
-	 * Gets all the sources that depend on this source
-	 * 
-	 * @return
-	 */
-	String[] getReferencingSources();
+        /**
+         * Gets all the sources that depend on this source
+         *
+         * @return
+         */
+        String[] getReferencingSources();
 
-	/**
-	 * Gets all the sources this source depends on
-	 * 
-	 * @return
-	 */
-	String[] getReferencedSources();
+        /**
+         * Gets all the sources this source depends on
+         *
+         * @return
+         */
+        String[] getReferencedSources();
 
-	/**
-	 * Gets the definition of this source
-	 * 
-	 * @return
-	 */
-	DataSourceDefinition getDataSourceDefinition();
+        /**
+         * Gets the definition of this source
+         *
+         * @return
+         */
+        DataSourceDefinition getDataSourceDefinition();
 
-	/**
-	 * Get the id of the driver used to access this source
-	 * 
-	 * @return
-	 */
-	String getDriverId();
+        /**
+         * Get the id of the driver used to access this source
+         *
+         * @return
+         * @throws DriverException
+         */
+        String getDriverId() throws DriverException;
 
-	/**
-	 * Get the type of the source as a bit-or of the constants:
-	 * {@link SourceManager#FILE},{@link SourceManager#DB},
-	 * {@link SourceManager#SQL},{@link SourceManager#VECTORIAL},
-	 * {@link SourceManager#MEMORY},{@link SourceManager#RASTER},
-	 * {@link SourceManager#SQL}
-	 * 
-	 * @return
-	 */
-	int getType();
+        /**
+         * Get the type of the source as a bit-or of the constants:
+         * {@link SourceManager#FILE},{@link SourceManager#DB},
+         * {@link SourceManager#SQL},{@link SourceManager#VECTORIAL},
+         * {@link SourceManager#MEMORY},{@link SourceManager#RASTER},
+         * {@link SourceManager#SQL}
+         *
+         * @return
+         */
+        int getType();
 
-	/**
-	 * Get the name of the source type as a short description
-	 * 
-	 * @return
-	 */
-	String getTypeName();
+        /**
+         * Get the name of the source type as a short description
+         *
+         * @return
+         * @throws DriverException
+         */
+        String getTypeName() throws DriverException;
 
-	/**
-	 * Gets the file of this source. If this source is not a file it returns
-	 * null
-	 * 
-	 * @return
-	 */
-	File getFile();
+        /**
+         * Gets the file of this source. If this source is not a file it returns
+         * null
+         *
+         * @return
+         */
+        File getFile();
 
-	/**
-	 * Gets the definition of the db source. If this source is not a database
-	 * source it returns null
-	 * 
-	 * @return
-	 */
-	DBSource getDBSource();
+        /**
+         * Gets the definition of the db source. If this source is not a database
+         * source it returns null
+         *
+         * @return
+         */
+        DBSource getDBSource();
 
-	/**
-	 * Get the WMSSource with the information of the WMS connection. If this
-	 * source is not a wms source it returns null
-	 * 
-	 * @return
-	 */
-	WMSSource getWMSSource();
+        /**
+         * Get the WMSSource with the information of the WMS connection. If this
+         * source is not a wms source it returns null
+         *
+         * @return
+         */
+        WMSSource getWMSSource();
 
-	/**
-	 * Gets the source of the object source. If this source is not a object
-	 * source it returns null
-	 * 
-	 * @return
-	 */
-	MemoryDriver getObject();
+        /**
+         * Gets the source of the object source. If this source is not a object
+         * source it returns null
+         *
+         * @return
+         */
+        MemoryDriver getObject();
 
-	/**
-	 * @return true if this source is a file. False otherwise
-	 */
-	boolean isFileSource();
+        /**
+         * @return true if this source is a file. False otherwise
+         */
+        boolean isFileSource();
 
-	/**
-	 * @return true if source is a database table. False otherwise
-	 */
-	boolean isDBSource();
+        /**
+         * @return true if source is a database table. False otherwise
+         */
+        boolean isDBSource();
 
-	/**
-	 * @return true if source is a wms layer. False otherwise
-	 */
-	boolean isWMSSource();
+        /**
+         * @return true if source is a wms layer. False otherwise
+         */
+        boolean isWMSSource();
 
-	/**
-	 * @return true if source is an object. False otherwise
-	 */
-	boolean isObjectSource();
+        /**
+         * @return true if source is an object. False otherwise
+         */
+        boolean isObjectSource();
 
-	/**
-	 * @return true if source is a sql query. False otherwise
-	 */
-	boolean isSQLSource();
+        /**
+         * @return true if source is a sql query. False otherwise
+         */
+        boolean isSQLSource();
 
-	/**
-	 * 
-	 * @return true if source is a system table. False otherwise
-	 */
-	boolean isSystemTableSource();
+        /**
+         *
+         * @return true if source is a system table. False otherwise
+         */
+        boolean isSystemTableSource();
 
         /**
          * @return true if the source is a live source (e.g. a view). False otherwise
          */
         boolean isLiveSource();
-
 }

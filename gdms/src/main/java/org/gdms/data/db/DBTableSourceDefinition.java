@@ -63,14 +63,13 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DataSet;
-import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.DriverUtilities;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.directory.DbDefinitionType;
 import org.gdms.source.directory.DefinitionType;
 
-public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
+public class DBTableSourceDefinition extends AbstractDataSourceDefinition<DBDriver> {
 
         protected DBSource def;
         private static final Logger LOG = Logger.getLogger(DBTableSourceDefinition.class);
@@ -90,17 +89,24 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition {
                 throws DataSourceCreationException {
                 LOG.trace("Creating datasource");
 
-                (getDriver()).setDataSourceFactory(getDataSourceFactory());
+                DBDriver driver;
+                try {
+                        driver = getDriver();
+                } catch (DriverException ex) {
+                        throw new DataSourceCreationException(ex);
+                }
+
+                (driver).setDataSourceFactory(getDataSourceFactory());
 
                 AbstractDataSource adapter = new DBTableDataSourceAdapter(
-                        getSource(tableName), def, (DBDriver) getDriver());
+                        getSource(tableName), def, driver);
                 adapter.setDataSourceFactory(getDataSourceFactory());
                 LOG.trace("Datasource created");
                 return adapter;
         }
 
         @Override
-        protected Driver getDriverInstance() {
+        protected DBDriver getDriverInstance() {
                 return DriverUtilities.getDriver(getDataSourceFactory().getSourceManager().getDriverManager(), def.getPrefix());
         }
 
