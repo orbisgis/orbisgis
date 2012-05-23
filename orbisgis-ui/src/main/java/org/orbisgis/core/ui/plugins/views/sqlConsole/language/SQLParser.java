@@ -77,7 +77,7 @@ public class SQLParser extends AbstractParser {
         public ParseResult parse(RSyntaxDocument doc, String style) {
                 String content;
                 try {
-                        content = doc.getText(0, doc.getLength()).trim();
+                        content = doc.getText(0, doc.getLength());
 
                         DefaultParseResult res = new DefaultParseResult(this);
                         if (content.isEmpty()) {
@@ -89,22 +89,42 @@ public class SQLParser extends AbstractParser {
                         String[] statements = content.split(";");
                         int totalLength = 0;
                         for (int i = 0; i < statements.length - 1; i++) {
-                                if (!statements[i].trim().isEmpty()) {
-                                        statements[i] += ";";
-                                        ParserNotice p = getError(statements[i], totalLength);
-                                        totalLength += statements[i].length();
-                                        if (p != null) {
-                                                res.addNotice(p);
-                                        }
+                                statements[i] += ";";
+                                String trimmed = statements[i].trim();
+
+                                // 0: current absolute start position
+                                // 1: current trimmed absolute start position
+                                // 2: length of the current section
+                                // 3: length of the trimmed section
+                                int[] info = new int[4];
+                                info[0] = totalLength;
+                                info[1] = totalLength + statements[i].indexOf(trimmed);
+                                info[2] = statements[i].length();
+                                info[3] = trimmed.length();
+                                ParserNotice p = getError(statements[i], info);
+                                if (p != null) {
+                                        res.addNotice(p);
                                 }
+
+                                totalLength += statements[i].length();
                         }
 
                         if (!statements[statements.length - 1].trim().isEmpty()) {
-                                if (content.endsWith(";")) {
+                                if (content.trim().endsWith(";")) {
                                         statements[statements.length - 1] += ";";
                                 }
-                                ParserNotice p = getError(statements[statements.length - 1], totalLength);
-                                totalLength += statements[statements.length - 1].length();
+                                String trimmed = statements[statements.length - 1].trim();
+                                // 0: current absolute start position
+                                // 1: current trimmed absolute start position
+                                // 2: length of the current section
+                                // 3: length of the trimmed section
+                                int[] info = new int[4];
+                                info[0] = totalLength;
+                                info[1] = totalLength + statements[statements.length - 1].indexOf(trimmed);
+
+                                info[2] = statements[statements.length - 1].length();
+                                info[3] = trimmed.length();
+                                ParserNotice p = getError(statements[statements.length - 1], info);
                                 if (p != null) {
                                         res.addNotice(p);
                                 }
@@ -119,7 +139,7 @@ public class SQLParser extends AbstractParser {
                 }
         }
 
-        private ParserNotice getError(String content, int currPosition) throws BadLocationException {
+        private ParserNotice getError(String content, int[] info) throws BadLocationException {
                 if (content.isEmpty()) {
                         return null;
                 }
@@ -139,29 +159,20 @@ public class SQLParser extends AbstractParser {
                 try {
                         parser.start_rule();
                 } catch (MismatchedTokenException e) {
-                        int length = content.substring(e.charPositionInLine).indexOf(';');
-                        if (length == -1) {
-                        }
-                        int[] location = getErrorLocationAndLength(e, currPosition);
-                        DefaultParserNotice not = new DefaultParserNotice(this, getErrorLocationText(location[0], location[1] + location[3]) + " "
+                        int[] location = getErrorLocationAndLength(e, info);
+                        DefaultParserNotice not = new DefaultParserNotice(this, getErrorLocationText(location[4], location[1]) + " "
                                 + getErrorString(e.token, e.getUnexpectedType(), e.expecting), location[0], location[2], location[3]);
                         return not;
                 } catch (RecognitionException e) {
-                        int length = content.substring(e.charPositionInLine).indexOf(';');
-                        if (length == -1) {
-                        }
-                        int[] location = getErrorLocationAndLength(e, currPosition);
-                        DefaultParserNotice not = new DefaultParserNotice(this, getErrorLocationText(location[0], location[1] + location[3]) + " "
+                        int[] location = getErrorLocationAndLength(e, info);
+                        DefaultParserNotice not = new DefaultParserNotice(this, getErrorLocationText(location[0], location[1]) + " "
                                 + getErrorString(e.token, e.getUnexpectedType(), -1), location[0], location[2], location[3]);
                         return not;
                 } catch (IllegalArgumentException ex) {
                         if (ex.getCause() instanceof RecognitionException) {
                                 RecognitionException e = (RecognitionException) ex.getCause();
-                                int length = content.substring(e.charPositionInLine).indexOf(';');
-                                if (length == -1) {
-                                }
-                                int[] location = getErrorLocationAndLength(e, currPosition);
-                                DefaultParserNotice not = new DefaultParserNotice(this, getErrorLocationText(location[0], location[1] + location[3]) + " "
+                                int[] location = getErrorLocationAndLength(e, info);
+                                DefaultParserNotice not = new DefaultParserNotice(this, getErrorLocationText(location[4], location[1]) + " "
                                         + getErrorString(e.token, e.getUnexpectedType(), -1), location[0], location[2], location[3]);
                                 return not;
                         }
@@ -170,61 +181,40 @@ public class SQLParser extends AbstractParser {
                 return null;
         }
 
-        private int[] getErrorLocationAndLength(RecognitionException ex, int currentOffset) throws BadLocationException {
-                int[] loc = new int[4];
+        private int[] getErrorLocationAndLength(RecognitionException ex, int[] info) throws BadLocationException {
+                // input info
+                // 0: current absolute start position
+                // 1: current trimmed absolute start position
+                // 2: length of the current section
+                // 3: length of the trimmed section
+
+                int[] loc = new int[5];
                 // 0: line number
-                // 1: char in line
-                // 2: char in the whole textArea
+                // 1: char in line for error location text
+                // 2: char in the whole textArea for the underline
                 // 3: length of the highlighted part
+                // 4: line number for error location text
 
-                loc[0] = textArea.getLineOfOffset(currentOffset);
-                int lineStartOffset = textArea.getLineStartOffset(loc[0]);
-                int lineSize = textArea.getLineEndOffset(loc[0]) - lineStartOffset;
+                loc[0] = textArea.getLineOfOffset(info[1]);
+                loc[4] = textArea.getLineOfOffset(info[0]) + ex.line - 1;
+                 final int startOfLine = textArea.getLineStartOffset(loc[4]);
+                loc[1] = info[0] - startOfLine;
 
-                // line within the String
-                if (ex.line > 1) {
-                        loc[0] += ex.line - 1;
-                        if (ex.charPositionInLine != -1) {
-                                loc[1] = ex.charPositionInLine;
-                        } else {
-                                loc[1] = 0;
-                        }
-                        loc[1] += 1;
-                        loc[2] = lineStartOffset + loc[1];
-                        if (ex.token != null && ex.token.getType() != -1) {
-                                loc[3] = ex.token.getText().length();
-                        } else {
-                                loc[3] = lineSize - loc[1];
-                        }
-                } else if (ex.line == 1) {
-                        int realPos = currentOffset - lineStartOffset;
-                        if (ex.charPositionInLine != -1) {
-                                loc[1] = realPos + ex.charPositionInLine;
-                        } else {
-                                loc[1] = realPos;
-                        }
-                        loc[2] = lineStartOffset + loc[1];
-                        if (ex.token != null && ex.token.getType() != -1) {
-                                loc[3] = ex.token.getText().length();
-                        } else {
-                                loc[3] = lineSize - loc[1];
-                        }
-                } else {
+                if (loc[1] < 0) {
                         loc[1] = 0;
-                        loc[2] = lineStartOffset + loc[1];
-                        loc[3] = lineSize;
                 }
 
-                if (loc[3] == 0 && loc[1] != 0) {
-                        loc[3] = 1;
-                        loc[2]--;
-                        loc[1]--;
+                if (ex.charPositionInLine != -1) {
+                        loc[1] += ex.charPositionInLine;
                 }
 
-                if (loc[1] + loc[3] > lineSize) {
-                        loc[3] = 1;
-                        loc[2]--;
-                        loc[1]--;
+                if (ex.token != null && ex.token.getType() != -1) {
+                        loc[0] = loc[4];
+                        loc[2] = startOfLine + loc[1];
+                        loc[3] = ex.token.getText().length();
+                } else {
+                        loc[2] = info[1];
+                        loc[3] = info[3];
                 }
 
                 return loc;
@@ -232,7 +222,7 @@ public class SQLParser extends AbstractParser {
 
         private String getErrorLocationText(int line, int pos) {
                 StringBuilder b = new StringBuilder();
-                b.append(line);
+                b.append(line + 1);
                 b.append(':');
                 b.append(pos);
                 return b.toString();
