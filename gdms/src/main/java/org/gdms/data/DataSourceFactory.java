@@ -48,8 +48,6 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.jproj.CRSFactory;
@@ -66,7 +64,6 @@ import org.gdms.data.indexes.IndexManager;
 import org.gdms.data.indexes.RTreeIndex;
 import org.gdms.data.memory.MemorySourceDefinition;
 import org.gdms.data.schema.Schema;
-import org.gdms.data.sql.SQLEvent;
 import org.gdms.data.sql.SQLSourceDefinition;
 import org.gdms.data.system.SystemSource;
 import org.gdms.data.system.SystemSourceDefinition;
@@ -147,7 +144,6 @@ public final class DataSourceFactory {
         private CRSFactory crsFactory;
         private static final Logger LOG = Logger.getLogger(DataSourceFactory.class);
         private FunctionManager functionManager = new FunctionManager();
-        private final List<DataSourceFactoryListener> listeners = new ArrayList<DataSourceFactoryListener>();
         private GdmsProperties properties = new GdmsProperties(defaultProperties);
         private static final GdmsProperties defaultProperties;
 
@@ -609,16 +605,6 @@ public final class DataSourceFactory {
         }
 
         /**
-         * Adds a DataSourceFactoryListener to this DataSourceFactory
-         *
-         * @param e a DataSourceFactoryListener
-         * @return true if the add succeeded
-         */
-        public boolean addDataSourceFactoryListener(DataSourceFactoryListener e) {
-                return listeners.add(e);
-        }
-
-        /**
          * Executes a SQL statement
          *
          * @param sql
@@ -659,13 +645,6 @@ public final class DataSourceFactory {
                 LOG.trace("Execute SQL Statement" + '\n' + sql);
 
                 Engine.execute(sql, this, properties);
-                fireInstructionExecuted(sql);
-        }
-
-        public void fireInstructionExecuted(String sql) {
-                for (DataSourceFactoryListener listener : listeners) {
-                        listener.sqlExecuted(new SQLEvent(sql, this));
-                }
         }
 
         /**
@@ -781,15 +760,6 @@ public final class DataSourceFactory {
         }
 
         /**
-         * Gets all listeners associated with this Factory.
-         *
-         * @return a (possibly empty) list of listeners
-         */
-        public List<DataSourceFactoryListener> getListeners() {
-                return listeners;
-        }
-
-        /**
          * Names and registers an SQL view from the query <tt>sql</tt>.
          * @param sql a SELECT query
          * @return the name of the registered view
@@ -816,16 +786,6 @@ public final class DataSourceFactory {
         @Deprecated
         public void register(String name, String sql) throws ParseException, DriverException {
                 sourceManager.register(name, sql);
-        }
-
-        /**
-         * Removes a DataSourceFactoryListener from this DataSourceFactory
-         *
-         * @param o a DataSourceFactoryListener
-         * @return true if the removal succeeded
-         */
-        public boolean removeDataSourceFactoryListener(DataSourceFactoryListener o) {
-                return listeners.remove(o);
         }
 
         private static class GdmsFileFilter implements FileFilter {

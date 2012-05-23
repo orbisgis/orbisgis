@@ -51,7 +51,6 @@ import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.utils.FileUtils;
 
 import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
@@ -112,7 +111,6 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition {
         private DataSource execute(String tableName, ProgressMonitor pm) throws DriverException,
                 DataSourceCreationException {
                 LOG.trace("Preparing SQLSource");
-                getDataSourceFactory().fireInstructionExecuted(statement.getSQL());
                 metadata.clear();
                 DataSource def = null;
                 if (!pm.isCancelled()) {

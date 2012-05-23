@@ -67,10 +67,10 @@ import org.gdms.sql.engine.SQLStatement;
 public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver {
         // states of the driver
         // see #close() for rational.
+
         private static final int CLOSED = 0;
         private static final int OPENED = 1;
         private static final int CLOSING = 2;
-
         private SQLStatement sql;
         private DataSourceFactory dsf;
         private DefaultSchema schema;
@@ -126,10 +126,7 @@ public class SqlStatementDriver extends AbstractDataSet implements MemoryDriver 
 
         @Override
         public void setDataSourceFactory(DataSourceFactory dsf) {
-                if (dsf instanceof DataSourceFactory) {
-                        this.dsf = (DataSourceFactory) dsf;
-                }
-                throw new UnsupportedOperationException();
+                this.dsf = dsf;
         }
 
         @Override
