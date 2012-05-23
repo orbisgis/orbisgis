@@ -348,6 +348,12 @@ public class Toc extends JPanel implements DockingPanel  {
     public JComponent getComponent() {
         return this;
     }
+    
+    /**
+     * Called each time on popup trigger button
+     * @return The constructed PopUp menu, 
+     * depending to the state of the tree selection
+     */
     private JPopupMenu makePopupMenu() {
         JPopupMenu popup = new JPopupMenu();
         //Popup:delete layer
@@ -531,10 +537,12 @@ public class Toc extends JPanel implements DockingPanel  {
          * Implements Popup action on JTree
          */
         private class PopupMouselistener extends MouseAdapter {
+                @Override
 		public void mousePressed(MouseEvent e) {
 			maybeShowPopup(e);
 		}
 
+                @Override
 		public void mouseReleased(MouseEvent e) {
 			maybeShowPopup(e);
 		}

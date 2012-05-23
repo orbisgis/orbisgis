@@ -98,6 +98,7 @@ public class OutputManager {
                 outputAllListener = EventHandler.create(Listener.class,this,"onNewLogMessage","");
                 outputPanels.put(LOG_ALL, app);
                 mainPanel.addSubPanel(i18n.tr("orbisgis.view.log_all_title"), app.getGuiPanel());
+                mainPanel.showSubPanel(app.getGuiPanel()); //Select this panel by default                
         }
 
         public void onNewLogMessage(ShowMessageEventData evtMsg) {
@@ -142,7 +143,6 @@ public class OutputManager {
                 outputPanels.put(LOG_INFO, app);
                 GUI_LOGGER.addAppender(app);
                 mainPanel.addSubPanel(i18n.tr("orbisgis.view.log_info_title"), app.getGuiPanel());
-                mainPanel.showSubPanel(app.getGuiPanel()); //Select this panel by default
         }
 
         /**

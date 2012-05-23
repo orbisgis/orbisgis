@@ -40,7 +40,7 @@ import javax.swing.JTree;
 import javax.swing.tree.TreePath;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.ui.components.resourceTree.AbstractTreeModel;
+import org.orbisgis.view.components.resourceTree.AbstractTreeModel;
 
 public class TocTreeModel extends AbstractTreeModel {
 

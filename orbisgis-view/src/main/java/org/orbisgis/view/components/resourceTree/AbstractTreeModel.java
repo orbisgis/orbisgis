@@ -35,7 +35,7 @@
  * erwan.bocher _at_ ec-nantes.fr
  * gwendall.petit _at_ ec-nantes.fr
  */
-package org.orbisgis.core.ui.components.resourceTree;
+package org.orbisgis.view.components.resourceTree;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
