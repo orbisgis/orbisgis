@@ -85,7 +85,8 @@ public class DefaultDataManager implements DataManager {
                 Source src = dsf.getSourceManager().getSource(sourceName);
                 if (src != null) {
                         int type = src.getType();
-                        if ((type & (SourceManager.RASTER | SourceManager.VECTORIAL | SourceManager.WMS)) != 0) {
+                        if ((type & (SourceManager.RASTER | SourceManager.SQL |
+                                SourceManager.VECTORIAL | SourceManager.WMS)) != 0) {
                                 try {
                                         DataSource ds = dsf.getDataSource(sourceName);
                                         return createLayer(ds);
@@ -113,8 +114,8 @@ public class DefaultDataManager implements DataManager {
                         return new WMSLayer(sds.getName(), sds);
                 } else {
                         boolean hasSpatialData = true;
-                        if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL && 
-                                (type & SourceManager.LIVE) != SourceManager.LIVE) {
+                        if ((type & SourceManager.VECTORIAL) == 0 && 
+                                (type & SourceManager.LIVE) == SourceManager.LIVE) {
                                 int sfi;
                                 try {
                                         sds.open();
