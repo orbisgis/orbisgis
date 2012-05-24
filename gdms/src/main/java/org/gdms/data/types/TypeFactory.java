@@ -41,6 +41,12 @@ import java.util.HashMap;
  * @author Fernando Gonzalez Cortes
  */
 public final class TypeFactory {
+        
+        private static void checkNotNull(int typeCode) {
+                if (typeCode == Type.NULL) {
+                        throw new InvalidTypeException("You cannot build a NULL type!");
+                }
+        }
 
         /**
          * Creates a type with the specified type code. The code must be one of the
@@ -50,7 +56,11 @@ public final class TypeFactory {
          * @return
          */
         public static Type createType(final int typeCode) {
-                return createType(typeCode, DefaultType.typesDescription.get(typeCode));
+                final String desc = DefaultType.typesDescription.get(typeCode);
+                if (desc == null ) {
+                        throw new InvalidTypeException("There is no known type with typeCode " + typeCode);
+                }
+                return createType(typeCode, desc);
         }
 
         /**
@@ -65,6 +75,7 @@ public final class TypeFactory {
                 if (null == typeName) {
                         return createType(typeCode);
                 } else {
+                        checkNotNull(typeCode);
                         final TypeDefinition typeDef = new DefaultTypeDefinition(typeName,
                                 typeCode);
                         return typeDef.createType();
@@ -103,6 +114,7 @@ public final class TypeFactory {
          */
         public static Type createType(final int typeCode, final String typeName,
                 final Constraint... constraints) {
+                checkNotNull(typeCode);
                 if (null == constraints) {
                         return createType(typeCode, typeName);
                 } else {
