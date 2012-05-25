@@ -252,4 +252,9 @@ public class BTreeIndex implements DataSourceIndex<Value> {
         public boolean isOpen() {
                 return index != null;
         }
+
+        @Override
+        public long getRowCount() {
+                return index != null ? index.size() : -1;
+        }
 }

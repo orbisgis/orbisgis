@@ -73,4 +73,10 @@ public interface AdHocIndex<T> {
 	void query(IndexQuery indexQuery, IndexVisitor<T> visitor)
 			throws IndexQueryException, IndexException;
 
+        
+        /**
+         * Gets the number of rows currently indexed in this index.
+         * @return a positive number of row or -1 if the index is not accessible
+         */
+        long getRowCount();
 }

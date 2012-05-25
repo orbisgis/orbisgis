@@ -637,8 +637,8 @@ public final class DiskBTree implements BTree {
         @Override
         public int[] rangeQuery(Value min, boolean minIncluded, Value max,
                 boolean maxIncluded) throws IOException {
-                RangeComparator minComparator = null;
-                RangeComparator maxComparator = null;
+                RangeComparator minComparator;
+                RangeComparator maxComparator;
                 if (min.isNull()) {
                         minComparator = new TrueComparator();
                 } else if (minIncluded) {
@@ -660,8 +660,8 @@ public final class DiskBTree implements BTree {
         @Override
         public void rangeQuery(Value min, boolean minIncluded, Value max,
                 boolean maxIncluded, IndexVisitor<Value> visitor) throws IOException {
-                RangeComparator minComparator = null;
-                RangeComparator maxComparator = null;
+                RangeComparator minComparator;
+                RangeComparator maxComparator;
                 if (min.isNull()) {
                         minComparator = new TrueComparator();
                 } else if (minIncluded) {
