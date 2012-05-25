@@ -84,7 +84,7 @@ public class ST_SetZToExtremities extends AbstractScalarFunction {
                 }
 
 
-                return ValueFactory.createValue(geom);
+                return ValueFactory.createValue(geom, args[0].getCRS());
 
         }
 

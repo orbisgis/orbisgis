@@ -86,7 +86,7 @@ public final class ST_RingBuffer extends AbstractScalarSpatialFunction {
                                 buffer = getBuffers(geom, bufferSize, numBuffer,
                                         CAP_STYLE_ROUND);
                         }
-                        return ValueFactory.createValue(buffer);
+                        return ValueFactory.createValue(buffer, args[0].getCRS());
                 }
         }
 

@@ -68,8 +68,7 @@ public final class ST_Simplify extends AbstractScalarSpatialFunction {
 
                 double distance = args[1].getAsDouble();
 
-                return ValueFactory.createValue(DouglasPeuckerSimplifier.simplify(g,
-                        distance));
+                return ValueFactory.createValue(DouglasPeuckerSimplifier.simplify(g, distance), args[0].getCRS());
 
         }
 

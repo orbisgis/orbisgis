@@ -87,6 +87,7 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
         protected Envelope envelope;
         private static final Logger LOG = Logger.getLogger(AbstractRasterDriver.class);
         private File file;
+        private CoordinateReferenceSystem crs;
 
         @Override
         public void open() throws DriverException {
@@ -102,7 +103,7 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
 
                         File prj = FileUtils.getFileWithExtension(file, "prj");
                         if (prj != null && prj.exists()) {
-                                CoordinateReferenceSystem crs = dsf.getCrsFactory().createFromPrj(prj);
+                                crs = dsf.getCrsFactory().createFromPrj(prj);
                                 if (crs != null) {
                                         CRSConstraint cc = new CRSConstraint(crs);
                                         constraints = new Constraint[]{dc, cc};
@@ -239,7 +240,7 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
         @Override
         public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
                 if (fieldId == 0) {
-                        return ValueFactory.createValue(geoRaster);
+                        return ValueFactory.createValue(geoRaster, crs);
                 } else {
                         throw new DriverException("No such field:" + fieldId);
 

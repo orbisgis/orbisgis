@@ -806,6 +806,21 @@ public final class ValueFactory {
                         return createNullValue();
                 }
         }
+        
+        /**
+         * Creates a Value instance that contains the specified raster value
+         *
+         * @param raster
+         * @param crs 
+         * @return
+         */
+        public static RasterValue createValue(GeoRaster raster, CoordinateReferenceSystem crs) {
+                if (raster != null) {
+                        return new DefaultRasterValue(raster, crs);
+                } else {
+                        return createNullValue();
+                }
+        }
 
         /**
          * Creates a Value from the specified bytes. Those bytes must have been

@@ -70,7 +70,7 @@ public final class ST_Scale extends AbstractScalarSpatialFunction {
 		Coordinate centre = geom.getEnvelopeInternal().centre();
 		AffineTransformation trans = AffineTransformation.scaleInstance(scale,
 				scale, centre.x, centre.y);
-		return ValueFactory.createValue(trans.transform(geom));
+		return ValueFactory.createValue(trans.transform(geom), args[0].getCRS());
 	}
 
         @Override

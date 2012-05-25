@@ -68,7 +68,7 @@ public class ST_Expand extends AbstractScalarSpatialFunction {
                 Geometry geom = values[0].getAsGeometry();
                 Envelope expand = geom.getEnvelopeInternal();
                 expand.expandBy(values[1].getAsDouble());
-                return ValueFactory.createValue(GeometryConvert.toGeometry(expand, geom.getFactory()));
+                return ValueFactory.createValue(GeometryConvert.toGeometry(expand, geom.getFactory()), values[0].getCRS());
         }
 
         @Override

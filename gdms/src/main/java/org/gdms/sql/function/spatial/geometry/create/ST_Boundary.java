@@ -63,7 +63,7 @@ public final class ST_Boundary extends AbstractScalarSpatialFunction {
                         return ValueFactory.createNullValue();
                 } else {
                         final Geometry geom = args[0].getAsGeometry();
-                        return ValueFactory.createValue(geom.getBoundary());
+                        return ValueFactory.createValue(geom.getBoundary(), args[0].getCRS());
                 }
         }
 

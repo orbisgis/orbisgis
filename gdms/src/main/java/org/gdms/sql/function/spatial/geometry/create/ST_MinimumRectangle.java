@@ -64,7 +64,7 @@ public final class ST_MinimumRectangle extends AbstractScalarSpatialFunction {
 		} else {
 			final Geometry geom = args[0].getAsGeometry();
 			return ValueFactory.createValue(new MinimumDiameter(geom)
-					.getMinimumRectangle());
+					.getMinimumRectangle(), args[0].getCRS());
 		}
 	}
 

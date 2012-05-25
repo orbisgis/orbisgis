@@ -92,12 +92,11 @@ public class SpatialReferenceSystem {
         public GeometryValue transform(GeometryValue geom) {
                 Geometry g = getGeometryTransformer().transform(geom.getAsGeometry());
                 
-                return ValueFactory.createValue(g);
+                return ValueFactory.createValue(g, coordTransform.getTargetCRS());
         }
 
         public GeometryTransformer getGeometryTransformer() {
-                GeometryTransformer gt = null;
-                gt = new GeometryTransformer() {
+                GeometryTransformer gt = new GeometryTransformer() {
 
                         @Override
                         protected CoordinateSequence transformCoordinates(

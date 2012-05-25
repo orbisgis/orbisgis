@@ -714,7 +714,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                         return ValueFactory.createNullValue();
                                 } else {
                                         Geometry geom = parser.parse(bytes);
-                                        return ValueFactory.createValue(geom);
+                                        return ValueFactory.createValue(geom, crs);
                                 }
                         } catch (SQLException e) {
                                 getWL().throwWarning(

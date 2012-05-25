@@ -79,7 +79,7 @@ public final class ST_LocateAlong extends AbstractScalarSpatialFunction {
                 } else {
                         Geometry result = computePointAlongOffSet(geom, segmentLengthFraction, offsetDistance);
                         if (result != null) {
-                                return ValueFactory.createValue(result);
+                                return ValueFactory.createValue(result, args[0].getCRS());
                         } else {
                                 return ValueFactory.createNullValue();
                         }

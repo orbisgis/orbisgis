@@ -65,7 +65,8 @@ public final class ST_Force_2D extends AbstractScalarSpatialFunction {
                 if (!args[0].isNull()) {
                         Geometry geom = args[0].getAsGeometry();
                         if (!Double.isNaN(geom.getCoordinate().z)) {
-                                return ValueFactory.createValue(GeometryEdit.force2D(args[0].getAsGeometry()));
+                                return ValueFactory.createValue(GeometryEdit.force2D(args[0].getAsGeometry()),
+                                        args[0].getCRS());
                         }
                         return args[0];
                 }

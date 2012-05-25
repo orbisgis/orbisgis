@@ -56,6 +56,7 @@ import com.vividsolutions.jts.index.SpatialIndex;
 import com.vividsolutions.jts.index.strtree.STRtree;
 import com.vividsolutions.jts.operation.union.CascadedPolygonUnion;
 import org.apache.log4j.Logger;
+import org.jproj.CoordinateReferenceSystem;
 import org.orbisgis.progress.ProgressMonitor;
 
 import org.gdms.data.DataSourceFactory;
@@ -97,12 +98,14 @@ public final class InternalGapFinder {
 
                 long rowCount = sds.getRowCount();
                 pm.startTask("Read data", rowCount);
+                
+                CoordinateReferenceSystem crs = sds.getCRS();
 
                 SpatialIndex spatialIndex = new STRtree(10);
 
                 List<Geometry> geometries = new ArrayList<Geometry>();
                 for (int i = 0; i < rowCount; i++) {
-                        Geometry geom = sds.getFieldValue(i, spatialFieldIndex).getAsGeometry();
+                        Geometry geom = sds.getGeometry(i, spatialFieldIndex);
 
                         if (i >= 100 && i % 100 == 0) {
                                 if (pm.isCancelled()) {
@@ -187,7 +190,7 @@ public final class InternalGapFinder {
                                         }
                                         //EPSYLON value used to limit small polygon.
                                         if (geomDiff.getArea() > EPSYLON) {
-                                                fieldsValues[spatialFieldIndex] = ValueFactory.createValue(geomDiff);
+                                                fieldsValues[spatialFieldIndex] = ValueFactory.createValue(geomDiff, crs);
                                                 driver.addValues(fieldsValues);
                                         }
 

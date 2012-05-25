@@ -64,7 +64,7 @@ public final class ST_BoundingCircle extends AbstractScalarSpatialFunction {
                         return ValueFactory.createNullValue();
                 } else {
                         final Geometry geom = args[0].getAsGeometry();
-                        return ValueFactory.createValue(new MinimumBoundingCircle(geom).getCircle());
+                        return ValueFactory.createValue(new MinimumBoundingCircle(geom).getCircle(), args[0].getCRS());
                 }
         }
 

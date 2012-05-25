@@ -78,7 +78,7 @@ public final class ST_AddVertex extends AbstractScalarSpatialFunction {
                                         throw new FunctionException(ex);
                                 }
                         }
-                        return ValueFactory.createValue(geom);
+                        return ValueFactory.createValue(geom, args[0].getCRS());
                 }
 
                 return ValueFactory.createNullValue();

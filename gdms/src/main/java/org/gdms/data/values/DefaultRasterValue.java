@@ -60,6 +60,7 @@ import org.grap.io.RasterReader;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
+import org.jproj.CoordinateReferenceSystem;
 import org.orbisgis.utils.ByteUtils;
 
 import org.gdms.data.InitializationException;
@@ -72,6 +73,7 @@ class DefaultRasterValue extends AbstractValue implements RasterValue {
          * {@link org.gdms.driver.gdms.GdmsReader}
          */
         private static int RASTER_HEADER_SIZE = -1;
+        private CoordinateReferenceSystem crs;
 
         static int getHeaderSize() throws InitializationException {
                 if (RASTER_HEADER_SIZE == -1) {
@@ -96,10 +98,20 @@ class DefaultRasterValue extends AbstractValue implements RasterValue {
 
         /**
          * Package-public constructor
-         * @param geoRaster the {@link org.grap.model.GeoRaster} which stores the datas
+         * @param geoRaster the {@link org.grap.model.GeoRaster} which stores the data
          */
         DefaultRasterValue(GeoRaster geoRaster) {
+                this(geoRaster, null);
+        }
+        
+        /**
+         * Package-public constructor
+         * @param geoRaster the {@link org.grap.model.GeoRaster} which stores the data
+         * @param crs the associated crs
+         */
+        DefaultRasterValue(GeoRaster geoRaster, CoordinateReferenceSystem crs) {
                 this.geoRaster = geoRaster;
+                this.crs = crs;
         }
 
         /**
@@ -388,5 +400,10 @@ class DefaultRasterValue extends AbstractValue implements RasterValue {
                 public RasterMetadata readRasterMetadata() throws IOException {
                         return metadata;
                 }
+        }
+
+        @Override
+        public CoordinateReferenceSystem getCRS() {
+                return crs;
         }
 }

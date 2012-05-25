@@ -74,7 +74,7 @@ public class ST_LinearInterpolation extends AbstractScalarFunction {
                 } else if (geom instanceof LineString) {
                         geom = GeometryEdit.linearZInterpolation((LineString) geom);
                 }
-                return ValueFactory.createValue(geom);
+                return ValueFactory.createValue(geom, values[0].getCRS());
 
         }
 

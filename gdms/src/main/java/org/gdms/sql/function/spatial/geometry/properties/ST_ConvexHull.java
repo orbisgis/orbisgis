@@ -60,7 +60,7 @@ public final class ST_ConvexHull extends AbstractSpatialPropertyFunction {
         @Override
         public Value evaluateResult(DataSourceFactory dsf, Value[] args) throws FunctionException {
                 final Geometry gv = args[0].getAsGeometry();
-                return ValueFactory.createValue(gv.convexHull());
+                return ValueFactory.createValue(gv.convexHull(), args[0].getCRS());
         }
 
         @Override

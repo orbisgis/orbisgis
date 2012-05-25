@@ -60,6 +60,7 @@ import com.vividsolutions.jts.operation.union.CascadedPolygonUnion;
 import ij.process.ImageProcessor;
 import org.apache.log4j.Logger;
 import org.grap.model.GeoRaster;
+import org.jproj.CoordinateReferenceSystem;
 import org.orbisgis.progress.ProgressMonitor;
 
 import org.gdms.data.DataSourceFactory;
@@ -108,6 +109,7 @@ public final class ST_RasterToPolygons extends AbstractTableFunction {
 
                         final long rowCount = sds.getRowCount();
                         for (int rowIndex = 0, i = 0; rowIndex < rowCount; rowIndex++) {
+                                CoordinateReferenceSystem crs = sds.getFieldValue(rowIndex, spatialFieldIndex).getCRS();
                                 final GeoRaster geoRasterSrc = sds.getFieldValue(rowIndex, spatialFieldIndex).getAsRaster();
                                 final float ndv = (float) geoRasterSrc.getNoDataValue();
                                 final ImageProcessor processor = geoRasterSrc.getImagePlus().getProcessor();
@@ -158,7 +160,7 @@ public final class ST_RasterToPolygons extends AbstractTableFunction {
                                 for (double height : hm.keySet()) {
                                         driver.addValues(new Value[]{
                                                         ValueFactory.createValue(i++),
-                                                        ValueFactory.createValue(SimplificationUtilities.simplifyGeometry(CascadedPolygonUnion.union(hm.get(height)))),
+                                                        ValueFactory.createValue(SimplificationUtilities.simplifyGeometry(CascadedPolygonUnion.union(hm.get(height))), crs),
                                                         ValueFactory.createValue(height)});
                                 }
                                 pm.progressTo(nrows);

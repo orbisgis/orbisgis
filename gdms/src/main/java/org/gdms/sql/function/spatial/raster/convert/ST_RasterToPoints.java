@@ -54,6 +54,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import ij.process.ImageProcessor;
 import org.apache.log4j.Logger;
 import org.grap.model.GeoRaster;
+import org.jproj.CoordinateReferenceSystem;
 import org.orbisgis.progress.ProgressMonitor;
 
 import org.gdms.data.DataSourceFactory;
@@ -100,6 +101,7 @@ public final class ST_RasterToPoints extends AbstractTableFunction {
 
                         final long rowCount = sds.getRowCount();
                         for (int rowIndex = 0; rowIndex < rowCount; rowIndex++) {
+                                CoordinateReferenceSystem crs = sds.getFieldValue(rowIndex, spatialFieldIndex).getCRS();
                                 final GeoRaster geoRasterSrc = sds.getFieldValue(rowIndex, spatialFieldIndex).getAsRaster();
                                 final ImageProcessor processor = geoRasterSrc.getImagePlus().getProcessor();
                                 final float ndv = (float) geoRasterSrc.getNoDataValue();
@@ -123,7 +125,7 @@ public final class ST_RasterToPoints extends AbstractTableFunction {
                                                                 point2D.getY(), h));
                                                         driver.addValues(new Value[]{
                                                                         ValueFactory.createValue(i),
-                                                                        ValueFactory.createValue(point),
+                                                                        ValueFactory.createValue(point, crs),
                                                                         ValueFactory.createValue(h)});
                                                 }
                                                 i++;

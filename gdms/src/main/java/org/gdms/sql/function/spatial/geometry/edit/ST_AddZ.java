@@ -78,7 +78,7 @@ public final class ST_AddZ extends AbstractScalarSpatialFunction {
 
                 Geometry geom = GeometryEdit.force3D(geometry, zFieldValue, true);
 
-                return ValueFactory.createValue(geom);
+                return ValueFactory.createValue(geom, args[0].getCRS());
 
         }
 

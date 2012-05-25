@@ -51,6 +51,7 @@ import java.util.regex.Pattern;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.grap.model.GeoRaster;
+import org.jproj.CoordinateReferenceSystem;
 
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
@@ -647,5 +648,10 @@ public abstract class AbstractValue implements Value {
         @Override
         public int compareTo(Value o) {
                 throw new IncompatibleTypesException("Cannot compare " + this + " and " + o);
+        }
+
+        @Override
+        public CoordinateReferenceSystem getCRS() {
+                return null;
         }
 }

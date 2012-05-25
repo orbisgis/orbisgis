@@ -78,7 +78,7 @@ public final class ST_GeometryN extends AbstractSpatialPropertyFunction {
         protected Value evaluateResult(DataSourceFactory dsf, Value[] args) throws FunctionException {
                 final Geometry g = args[0].getAsGeometry();
                 final int n = args[1].getAsInt();
-                return ValueFactory.createValue(g.getGeometryN(n));
+                return ValueFactory.createValue(g.getGeometryN(n), args[0].getCRS());
         }
 
         @Override

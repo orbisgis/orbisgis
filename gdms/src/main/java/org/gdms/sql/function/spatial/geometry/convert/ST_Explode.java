@@ -150,7 +150,8 @@ public final class ST_Explode extends AbstractTableFunction {
                 if (geometry instanceof GeometryCollection) {
                         final int nbOfGeometries = geometry.getNumGeometries();
                         for (int i = 0; i < nbOfGeometries; i++) {
-                                fieldsValues[spatialFieldIndex] = ValueFactory.createValue(geometry.getGeometryN(i));
+                                fieldsValues[spatialFieldIndex] = ValueFactory.createValue(geometry.getGeometryN(i), 
+                                        driver.getCRS());
                                 fieldsValues[fieldsValues.length - 1] = ValueFactory.createValue(gid);
                                 gid++;
                                 explode(driver, fieldsValues, geometry.getGeometryN(i),

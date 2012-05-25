@@ -49,6 +49,7 @@ import java.util.List;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.operation.union.UnaryUnionOp;
+import org.jproj.CoordinateReferenceSystem;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
@@ -62,11 +63,15 @@ import org.gdms.sql.function.spatial.geometry.AbstractAggregateSpatialFunction;
 public final class ST_GeomUnion extends AbstractAggregateSpatialFunction {
 
         private List<Geometry> toUnite = new ArrayList<Geometry>();
+        private CoordinateReferenceSystem crs;
 
         @Override
         public void evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 if (!args[0].isNull()) {
                         final Geometry geom = args[0].getAsGeometry();
+                        if (crs == null) {
+                                crs = args[0].getCRS();
+                        }
                         addGeometry(geom);
                 }
         }
@@ -83,7 +88,7 @@ public final class ST_GeomUnion extends AbstractAggregateSpatialFunction {
 
         @Override
         public Value getAggregateResult() {
-	                return ValueFactory.createValue(UnaryUnionOp.union(toUnite));
+	                return ValueFactory.createValue(UnaryUnionOp.union(toUnite), crs);
 	        }
 
         @Override

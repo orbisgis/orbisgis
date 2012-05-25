@@ -66,7 +66,7 @@ public class ST_3DReverse extends AbstractScalarSpatialFunction {
         @Override
         public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 Geometry geom = args[0].getAsGeometry();
-                return ValueFactory.createValue(GeometryEdit.reverse3D(geom));
+                return ValueFactory.createValue(GeometryEdit.reverse3D(geom), args[0].getCRS());
         }
 
         @Override

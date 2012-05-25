@@ -70,7 +70,7 @@ public class ST_RemoveHoles extends AbstractScalarSpatialFunction {
         public Value evaluate(DataSourceFactory dsf, Value... values) throws FunctionException {
                 Geometry result = GeometryEdit.removeHole(values[0].getAsGeometry());
                 if (result != null) {
-                        return ValueFactory.createValue(result);
+                        return ValueFactory.createValue(result, values[0].getCRS());
                 }
                 return ValueFactory.createNullValue();
         }

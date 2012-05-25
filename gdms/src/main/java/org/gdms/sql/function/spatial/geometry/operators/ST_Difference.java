@@ -61,9 +61,6 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
  */
 public final class ST_Difference extends AbstractScalarSpatialFunction {
 
-        /**
-         * @see org.gdms.sql.function.Function#evaluate(org.gdms.data.values.Value[])
-         */
         @Override
         public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
                 if ((args[0].isNull()) || (args[1].isNull())) {

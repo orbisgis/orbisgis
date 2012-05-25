@@ -129,7 +129,7 @@ public class ST_SplitLine extends AbstractTableFunction {
                                                         }
 
                                                 }
-                                                vals[geomFieldindex] = ValueFactory.createValue(geom);
+                                                vals[geomFieldindex] = ValueFactory.createValue(geom, dataSet.getCRS());
                                                 diskBufferDriver.addValues(vals);
                                         }
                                         pm.endTask();

@@ -70,7 +70,7 @@ public final class ST_Snap extends AbstractScalarSpatialFunction {
 
                 Geometry[] snapped = GeometrySnapper.snap(g1, g2, distance);
 
-                return ValueFactory.createValue(snapped[0]);
+                return ValueFactory.createValue(snapped[0], args[0].getCRS());
 
         }
 

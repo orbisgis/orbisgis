@@ -92,7 +92,7 @@ public final class ST_AddZFromRaster extends AbstractScalarSpatialFunction {
                                 throw new FunctionException(zFilter.exception);
                         }
 
-                        return ValueFactory.createValue(geometry);
+                        return ValueFactory.createValue(geometry, args[0].getCRS());
                 } catch (IOException e) {
                         throw new FunctionException(
                                 "Bug while trying to retrieve the GeoRaster data", e);

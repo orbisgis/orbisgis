@@ -71,7 +71,7 @@ public class ST_PrecisionReducer extends AbstractScalarSpatialFunction {
                 }
                 PrecisionModel pm = new PrecisionModel(scaleFactorForDecimalPlaces(nbDec));
                 Geometry geom = SimpleGeometryPrecisionReducer.reduce(values[0].getAsGeometry(), pm);
-                return ValueFactory.createValue(geom);
+                return ValueFactory.createValue(geom, values[0].getCRS());
         }
 
         @Override

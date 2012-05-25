@@ -63,7 +63,7 @@ public final class ST_Normalize extends AbstractScalarSpatialFunction {
 		Geometry g = args[0].getAsGeometry();
 		g.normalize();
 
-		return ValueFactory.createValue(g);
+		return ValueFactory.createValue(g, args[0].getCRS());
 
 	}
 

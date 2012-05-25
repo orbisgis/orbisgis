@@ -74,7 +74,7 @@ public final class ST_Envelope extends AbstractScalarSpatialFunction {
                 } else {
                         grEnv = args[0].getAsGeometry().getEnvelopeInternal();
                 }
-                return ValueFactory.createValue(toGeometry(grEnv));
+                return ValueFactory.createValue(toGeometry(grEnv), args[0].getCRS());
         }
 
         private static Geometry toGeometry(final Envelope envelope) {

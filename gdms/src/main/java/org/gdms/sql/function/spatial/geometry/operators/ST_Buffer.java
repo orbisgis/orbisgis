@@ -79,7 +79,7 @@ public final class ST_Buffer extends AbstractScalarSpatialFunction {
                         } else {
                                 buffer = geom.buffer(bufferSize);
                         }
-                        return ValueFactory.createValue(buffer);
+                        return ValueFactory.createValue(buffer, args[0].getCRS());
                 }
         }
 

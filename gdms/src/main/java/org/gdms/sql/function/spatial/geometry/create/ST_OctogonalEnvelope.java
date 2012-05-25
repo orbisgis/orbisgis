@@ -64,7 +64,8 @@ public final class ST_OctogonalEnvelope extends AbstractScalarSpatialFunction {
                         return ValueFactory.createNullValue();
                 } else {
                         final Geometry geom = args[0].getAsGeometry();
-                        return ValueFactory.createValue(new OctagonalEnvelope(geom).toGeometry(geom.getFactory()));
+                        return ValueFactory.createValue(new OctagonalEnvelope(geom).toGeometry(
+                                geom.getFactory()), args[0].getCRS());
                 }
         }
 

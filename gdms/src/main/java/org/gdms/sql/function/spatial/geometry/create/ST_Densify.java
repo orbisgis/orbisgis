@@ -66,8 +66,7 @@ public final class ST_Densify extends AbstractScalarSpatialFunction {
 
                 final Geometry geom = args[0].getAsGeometry();
                 final double distanceTolerance = args[1].getAsDouble();
-                return ValueFactory.createValue(Densifier.densify(geom,
-                        distanceTolerance));
+                return ValueFactory.createValue(Densifier.densify(geom, distanceTolerance), args[0].getCRS());
 
         }
 

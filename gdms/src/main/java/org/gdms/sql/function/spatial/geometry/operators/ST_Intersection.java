@@ -69,7 +69,7 @@ public final class ST_Intersection extends AbstractScalarSpatialFunction {
                         final Geometry geom1 = args[0].getAsGeometry();
                         final Geometry geom2 = args[1].getAsGeometry();
                         final Geometry intersection = geom1.intersection(geom2);
-                        return ValueFactory.createValue(intersection);
+                        return ValueFactory.createValue(intersection, args[0].getCRS());
                 }
         }
 

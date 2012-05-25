@@ -68,7 +68,7 @@ public final class ST_SymDifference extends AbstractScalarSpatialFunction {
                         final Geometry geom1 = args[0].getAsGeometry();
                         final Geometry geom2 = args[1].getAsGeometry();
                         final Geometry symDifference = geom1.symDifference(geom2);
-                        return ValueFactory.createValue(symDifference);
+                        return ValueFactory.createValue(symDifference, args[0].getCRS());
                 }
         }
 

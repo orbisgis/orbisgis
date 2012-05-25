@@ -51,6 +51,7 @@ import java.util.regex.Pattern;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.grap.model.GeoRaster;
+import org.jproj.CoordinateReferenceSystem;
 
 import org.gdms.data.types.IncompatibleTypesException;
 
@@ -465,4 +466,10 @@ public interface Value extends Comparable<Value> {
          * these two products.
          */
         DoubleValue pow(Value value);
+
+        /**
+         * Gets the CRS associated with this Value, if there is one.
+         * @return a valid CRS or null if not present or not applicable
+         */
+        CoordinateReferenceSystem getCRS();
 }

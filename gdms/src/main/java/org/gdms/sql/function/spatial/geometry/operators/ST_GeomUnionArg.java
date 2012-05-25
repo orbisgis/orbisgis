@@ -70,7 +70,7 @@ public final class ST_GeomUnionArg extends AbstractScalarSpatialFunction {
                         ArrayList<Geometry> toUnite = new ArrayList<Geometry>();
                         addGeometry(toUnite, args[0].getAsGeometry());
                         addGeometry(toUnite, args[1].getAsGeometry());
-                        return ValueFactory.createValue(UnaryUnionOp.union(toUnite));
+                        return ValueFactory.createValue(UnaryUnionOp.union(toUnite), args[0].getCRS());
                 }
 
                 return ValueFactory.createNullValue();

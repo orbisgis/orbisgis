@@ -68,8 +68,7 @@ public final class ST_SimplifyPreserveTopology extends AbstractScalarSpatialFunc
 
                 double distance = args[1].getAsDouble();
 
-                return ValueFactory.createValue(TopologyPreservingSimplifier.simplify(
-                        g, distance));
+                return ValueFactory.createValue(TopologyPreservingSimplifier.simplify(g, distance), args[0].getCRS());
 
         }
 

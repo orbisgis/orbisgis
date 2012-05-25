@@ -45,7 +45,6 @@
 package org.gdms.data.values;
 
 import com.vividsolutions.jts.geom.Geometry;
-import org.jproj.CoordinateReferenceSystem;
 
 /**
  *
@@ -54,7 +53,5 @@ import org.jproj.CoordinateReferenceSystem;
 public interface GeometryValue extends Value {
 
     void setValue(Geometry value);
-    
-    CoordinateReferenceSystem getCRS();
 
 }

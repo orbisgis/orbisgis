@@ -68,9 +68,11 @@ public final class ST_Force_3D extends AbstractScalarSpatialFunction {
                 throws FunctionException {
                 if (!args[0].isNull()) {
                         if (args.length == 2) {
-                                return ValueFactory.createValue(GeometryEdit.force3D(args[0].getAsGeometry(), args[1].getAsDouble(), true));
+                                return ValueFactory.createValue(GeometryEdit.force3D(args[0].getAsGeometry(), 
+                                        args[1].getAsDouble(), true), args[0].getCRS());
                         } else {
-                                return ValueFactory.createValue(GeometryEdit.force3D(args[0].getAsGeometry(), 0, false));
+                                return ValueFactory.createValue(GeometryEdit.force3D(args[0].getAsGeometry(), 0, false), 
+                                        args[0].getCRS());
                         }
                 }
                 return ValueFactory.createNullValue();
