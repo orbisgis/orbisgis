@@ -44,8 +44,10 @@
  */
 package org.gdms.sql.function.spatial.geometry.io;
 
+import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
+import org.jproj.CoordinateReferenceSystem;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
@@ -70,10 +72,19 @@ public final class ST_GeomFromText extends AbstractScalarSpatialFunction {
                 if (args[0].isNull()) {
                         return ValueFactory.createNullValue();
                 } else {
+                        final Geometry geom;
                         try {
-                                return ValueFactory.createValue(reader.read(args[0].toString()));
+                                geom = reader.read(args[0].toString());
                         } catch (ParseException e) {
                                 throw new FunctionException("Cannot parse the WKT.", e);
+                        }
+                        
+                        if (args.length > 1 && !args[1].isNull()) {
+                                String crsStr = args[1].toString();
+                                CoordinateReferenceSystem crs = dsf.getCrsFactory().createFromName(crsStr);
+                                return ValueFactory.createValue(geom, crs);
+                        } else {
+                                return ValueFactory.createValue(geom);
                         }
                 }
         }
@@ -102,7 +113,11 @@ public final class ST_GeomFromText extends AbstractScalarSpatialFunction {
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
                                 new BasicFunctionSignature(getType(null),
-                                ScalarArgument.STRING)
+                                ScalarArgument.STRING),
+                                new BasicFunctionSignature(getType(null),
+                                ScalarArgument.STRING, ScalarArgument.STRING),
+                                new BasicFunctionSignature(getType(null),
+                                ScalarArgument.STRING, ScalarArgument.INT)
                         };
         }
 }

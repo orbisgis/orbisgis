@@ -59,6 +59,8 @@ import com.vividsolutions.jts.io.WKTWriter;
 
 import static org.junit.Assert.*;
 
+import org.gdms.data.values.Value;
+
 public class IOSpatialFunctionTest extends FunctionTest {
 
         @Test
@@ -73,13 +75,36 @@ public class IOSpatialFunctionTest extends FunctionTest {
         @Test
         public void testGeomFromText() throws Exception {
                 String wkt = new WKTWriter().write(JTSMultiPolygon2D);
-                Geometry g = testSpatialFunction(new ST_GeomFromText(), new int[]{Type.STRING}, 1,
+                Geometry g = testSpatialFunction(new ST_GeomFromText(), new int[]{Type.STRING, Type.STRING}, 2,
                         ValueFactory.createValue(wkt)).getAsGeometry();
                 assertEquals(g, JTSMultiPolygon2D);
                 Point p3d = new GeometryFactory().createPoint(new Coordinate(3, 3, 3));
                 wkt = new WKTWriter(3).write(p3d);
-                g = testSpatialFunction(new ST_GeomFromText(), new int[]{Type.STRING}, 1,
+                g = testSpatialFunction(new ST_GeomFromText(), new int[]{Type.STRING, Type.STRING}, 2,
                         ValueFactory.createValue(wkt)).getAsGeometry();
                 assertEquals(g, p3d);
+        }
+        
+        @Test
+        public void testGeomFromTextWithCRS() throws Exception {
+                String wkt = new WKTWriter().write(JTSMultiPolygon2D);
+                ST_GeomFromText st = new ST_GeomFromText();
+                Value ret = st.evaluate(dsf, new Value[] { ValueFactory.createValue(wkt),
+                                 ValueFactory.createValue(4326)});
+                
+                assertNotNull(ret.getCRS());
+                assertEquals("WGS84", ret.getCRS().getDatum().getName());
+                
+                ret = st.evaluate(dsf, new Value[] { ValueFactory.createValue(wkt),
+                                 ValueFactory.createValue("4326")});
+                
+                assertNotNull(ret.getCRS());
+                assertEquals("WGS84", ret.getCRS().getDatum().getName());
+                
+                ret = st.evaluate(dsf, new Value[] { ValueFactory.createValue(wkt),
+                                 ValueFactory.createValue("EPSG:4326")});
+                
+                assertNotNull(ret.getCRS());
+                assertEquals("WGS84", ret.getCRS().getDatum().getName());
         }
 }
