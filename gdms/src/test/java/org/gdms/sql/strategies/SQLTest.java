@@ -67,6 +67,7 @@ import org.gdms.data.DigestUtilities;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
+import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -74,6 +75,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.data.values.ValueWriter;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.MemoryDataSetDriver;
+import org.gdms.sql.engine.ParseException;
 import org.gdms.sql.engine.SemanticException;
 
 public class SQLTest extends TestBase {
@@ -244,7 +246,7 @@ public class SQLTest extends TestBase {
                 dsf.executeSQL("create table temp as select *  from " + SHPTABLE + ";");
                 dsf.executeSQL("alter table temp add column gwen text;");
         }
-        
+
         @Test
         public void testAlterColumn() throws Exception {
                 dsf.executeSQL("CREATE TABLE temp as select *, autonumeric() as cons from " + SHPTABLE + ";");
@@ -254,8 +256,15 @@ public class SQLTest extends TestBase {
                 assertEquals(Type.DOUBLE, d.getFieldType(d.getFieldIndexByName("cons")).getTypeCode());
                 assertEquals(4, d.getDouble(4, d.getFieldIndexByName("cons")), 1e-15);
                 d.close();
+
+                // no implicit conversion from double to int: this should fail
+                try {
+                        dsf.executeSQL("ALTER TABLE temp ALTER cons TYPE int;");
+                        fail();
+                } catch (IncompatibleTypesException ex) {
+                }
         }
-        
+
         @Test
         public void testAlterColumnWithExpr() throws Exception {
                 dsf.executeSQL("CREATE TABLE temp as select *, autonumeric() as cons from " + SHPTABLE + ";");
@@ -265,6 +274,13 @@ public class SQLTest extends TestBase {
                 assertEquals(Type.DOUBLE, d.getFieldType(d.getFieldIndexByName("cons")).getTypeCode());
                 assertEquals(16, d.getDouble(4, d.getFieldIndexByName("cons")), 1e-15);
                 d.close();
+
+                // no implicit conversion from text to double: this should fail
+                try {
+                        dsf.executeSQL("ALTER TABLE temp ALTER cons TYPE double USING 12 :: text;");
+                        fail();
+                } catch (IncompatibleTypesException ex) {
+                }
         }
 
         @Test
@@ -629,11 +645,11 @@ public class SQLTest extends TestBase {
                 sm.delete(name);
 
         }
-        
+
         @Test
         public void regressionTest611() throws Exception {
                 dsf.executeSQL("CREATE TABLE test AS SELECT * FROM VALUES (1.0), (1.1) a;");
-                
+
                 DataSource d = dsf.getDataSourceFromSQL("SELECT DISTINCT exp0 FROM test;");
                 d.open();
                 assertEquals(2, d.getRowCount());
@@ -1211,7 +1227,7 @@ public class SQLTest extends TestBase {
                         fail();
                 } catch (SemanticException e) {
                 }
-                
+
                 try {
                         dsf.executeSQL("CREATE TABLE test AS SELECT the_geom, count(*) as toto FROM toto;");
                         fail();

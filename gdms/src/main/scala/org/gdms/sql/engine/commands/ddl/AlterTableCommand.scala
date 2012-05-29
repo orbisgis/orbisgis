@@ -47,6 +47,7 @@ package org.gdms.sql.engine.commands.ddl
 import org.gdms.data.DataSource
 import org.gdms.data.DataSourceFactory
 import org.gdms.data.NoSuchTableException
+import org.gdms.data.types.IncompatibleTypesException
 import org.gdms.data.types.TypeFactory
 import org.gdms.data.values.SQLValueFactory
 import org.gdms.sql.engine.SemanticException
@@ -88,7 +89,10 @@ extends Command with OutputCommand with ExpressionCommand {
             case e: IllegalArgumentException => throw new SemanticException(e)
           }
         }
-      case a @ AlterTypeOfColumn(_, nT, init) => {
+      case a @ AlterTypeOfColumn(n, nT, init) => {
+          if (ds.getFieldIndexByName(n) == -1) {
+            throw new SemanticException("Column '" + n + "' does not exist in table '" + name + "'")
+          }
           try {
             a.sqlTypeInstance = buildType(nT)
           } catch {
@@ -111,6 +115,29 @@ extends Command with OutputCommand with ExpressionCommand {
     
     // init expressions
     super.doPrepare
+    
+    elems foreach {
+      case a @ AlterTypeOfColumn(n, nT, init) => {
+          init match {
+            case Some(ex) => 
+              val s = ex.evaluator.sqlType
+              val t = a.sqlTypeInstance.getTypeCode
+              if (!TypeFactory.canBeCastTo(s, t)) {
+                throw new IncompatibleTypesException("The field '" + n + "' cannot be changed: the expression cannot be implicitly cast " +
+                                                     "from type '" + TypeFactory.getTypeName(s) + "' to type '" + TypeFactory.getTypeName(t) + "'")
+              }
+            case None =>
+              val s = ds.getFieldType(ds.getFieldIndexByName(n)).getTypeCode
+              val t = a.sqlTypeInstance.getTypeCode
+              if (!TypeFactory.canBeCastTo(s, t)) {
+                throw new IncompatibleTypesException("The field '" + n + "' cannot be changed: the expression cannot be implicitly cast " +
+                                                     "from type '" + TypeFactory.getTypeName(s) + "' to type '" + TypeFactory.getTypeName(t) +
+                                                     "'. Use an explicit cast with USING instead.")
+              }
+          }
+        }
+      case _ =>
+    }
     
     children = Nil
   }
