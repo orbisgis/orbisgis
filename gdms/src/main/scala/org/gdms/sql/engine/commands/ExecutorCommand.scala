@@ -46,7 +46,6 @@ package org.gdms.sql.engine.commands
 
 import org.gdms.data.DataSource
 import org.gdms.data.types.TypeFactory
-import org.gdms.driver.DataSet
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.FieldEvaluator

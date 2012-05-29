@@ -205,8 +205,7 @@ public class ShapefileReader {
                                 + fileShapeType + " to " + recordType);
                 }
 
-                Geometry g = handler.read(buffer, recordType);
-                return g;
+                return handler.read(buffer, recordType);
         }
 
         /**

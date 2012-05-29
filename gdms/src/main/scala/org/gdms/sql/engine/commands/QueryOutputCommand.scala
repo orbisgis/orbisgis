@@ -110,6 +110,7 @@ class QueryOutputCommand extends Command with OutputCommand {
       Row(i, driver.getRow(i))
     }
   }
+  
   override def getMetadata = {
     val m = super.getMetadata
     

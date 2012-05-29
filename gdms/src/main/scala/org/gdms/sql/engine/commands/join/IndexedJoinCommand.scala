@@ -79,12 +79,16 @@ class IndexedJoinCommand(queryExpr: Expression, expr: Expression, field: String,
   
   private val d = new DefaultMetadata()
   
-  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]): RowStream = {
+  override def execute(implicit pm: Option[ProgressMonitor]): RowStream = {
     if (!strict) {
       for (r <- small.execute ; s <- queryIndex(r); t <- filter(r ++ s)) yield t
     } else {
       for (r <- small.execute ; s <- queryIndex(r)) yield r ++ s
     }
+  }
+  
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]): RowStream = {
+    Iterator.empty
   }
   
   private def queryIndex(r: Row)(implicit pm: Option[ProgressMonitor]) = {
@@ -148,16 +152,7 @@ class IndexedJoinCommand(queryExpr: Expression, expr: Expression, field: String,
                                            TypeFactory.getTypeName(i))
     }
     
-    // we do not want this command to have any direct children when executed
-    // it takes care by itself of calling its children.
-    // TODO: this could be refactored now that Command.execute() is not final...
-    children = Nil
-    
     d.clear
     List(small, big) foreach { c => addAndRename(d, c.getMetadata) }
-  }
-  
-  override def preDoCleanUp = {
-    children = List(small, big)
   }
 }

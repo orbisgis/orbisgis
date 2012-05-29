@@ -55,43 +55,36 @@ import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionException;
 
 /**
- * Interface to implement by the function that can be queried
- *
+ * Interface to implement by functions that can be queried as a table.
  */
 public interface TableFunction extends Function {
 
         /**
-         * Executes the custom query
+         * Executes the table function.
          *
-         * @param dsf
-         *            data source factory
-         * @param tables
-         *            tables involved in the query
-         * @param values
-         *            values passed to the query
-         *
+         * @param dsf the current DataSourceFactory
+         * @param tables tables involved in the query
+         * @param values values passed to the query
+         * @param pm a progress monitor to report progress
          * @return DataSource result of the query
-         *
-         * @throws FunctionException
-         *             if the custom query execution fails
+         * @throws FunctionException if the custom query execution fails
          */
         DataSet evaluate(DataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) throws FunctionException;
 
         /**
-         * Gets the metadata of the result without executing the query
+         * Gets the metadata of the result without executing the query.
          *
-         * @param tables
-         *            TODO
-         *
-         * @return
+         * @param tables metadata objects of input tables
+         * @return the corresponding output metadata
          * @throws DriverException
          */
         Metadata getMetadata(Metadata[] tables) throws DriverException;
 
         /**
          * This method is called once the function is finished executing.
-         * @throws DriverException 
+         *
+         * @throws DriverException
          */
         void workFinished() throws DriverException;
 }

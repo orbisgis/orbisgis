@@ -61,11 +61,11 @@ public class Dimension3DConstraint extends AbstractIntConstraint {
         /**
          * Constant to use to build constraint for objects that have only x and y coordinates.
          */
-        public static int DIMENSION_2D = 2;
+        public static final int DIMENSION_2D = 2;
         /**
          * Constant to use to build constraint for objects that have x, y and z coordinates.
          */
-        public static int DIMENSION_3D = 3;
+        public static final int DIMENSION_3D = 3;
 
 	/**
 	 * The dimension of the coordinates in the geometries. 2 if the geometries

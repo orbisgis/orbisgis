@@ -68,13 +68,13 @@ import org.gdms.driver.DriverException;
 
 public final class InternalGapFinder {
 
-        private double EPSYLON = 10e-6;
         private DataSet sds;
         private ProgressMonitor pm;
         private int spatialFieldIndex;
         private DiskBufferDriver driver;
         private static final Logger LOG = Logger.getLogger(InternalGapFinder.class);
         private final DataSourceFactory dsf;
+        private double minGapArea = 10e-6;
 
         /**
          * This method extract all gap in a set of geometries : polygon and multi-polygon.
@@ -189,7 +189,7 @@ public final class InternalGapFinder {
                                                 }
                                         }
                                         //EPSYLON value used to limit small polygon.
-                                        if (geomDiff.getArea() > EPSYLON) {
+                                        if (geomDiff.getArea() > minGapArea) {
                                                 fieldsValues[spatialFieldIndex] = ValueFactory.createValue(geomDiff, crs);
                                                 driver.addValues(fieldsValues);
                                         }
@@ -209,7 +209,7 @@ public final class InternalGapFinder {
          * @param minArea
          */
         public void setMinGAPArea(double minArea) {
-                EPSYLON = minArea;
+                minGapArea = minArea;
         }
 
         public DiskBufferDriver getDriver() {

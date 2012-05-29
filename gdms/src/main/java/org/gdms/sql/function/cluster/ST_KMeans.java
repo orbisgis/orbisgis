@@ -206,8 +206,8 @@ public class ST_KMeans extends AbstractTableFunction {
         }
 
         private List<DataPoint> initialization() throws DriverException,
-                DriverLoadException, DataSourceCreationException, ParseException,
-                SemanticException, NoSuchTableException {
+                DataSourceCreationException, ParseException,
+                NoSuchTableException {
                 int fieldCount = inDs.getMetadata().getFieldCount();
                 Value[] resultingValues = computeStatistics();
                 dimension = fieldCount - 1;

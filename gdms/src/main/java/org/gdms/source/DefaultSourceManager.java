@@ -57,6 +57,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -133,6 +134,7 @@ public final class DefaultSourceManager implements SourceManager {
         private Schema schema;
         private String lastUID = "gdms" + System.currentTimeMillis();
         private List<String> contextPaths = new ArrayList<String>();
+        private static final Pattern DOT = Pattern.compile("\\.");
         public static final String SPATIAL_REF_SYSTEM = "spatial_ref_table";
         public static final String SPATIAL_REF_TABLE_SYSTEM_PATH = "spatial_ref_sys_extended.gdms";
 
@@ -519,7 +521,7 @@ public final class DefaultSourceManager implements SourceManager {
                 // split on the dots '.' into
                 // schema1.schema2.schema3.table1
 
-                String[] l = name.split("\\.");
+                String[] l = DOT.split(name);
                 final DataSourceDefinition dsd = src.getDataSourceDefinition();
 
                 if (l.length == 0) {
@@ -550,7 +552,7 @@ public final class DefaultSourceManager implements SourceManager {
                 // split on the dots '.' into
                 // schema1.schema2.schema3.table1
 
-                String[] l = name.split("\\.");
+                String[] l = DOT.split(name);
 
                 if (l.length <= 1) {
                         // just a table, we remove it from the root schema
@@ -1049,7 +1051,7 @@ public final class DefaultSourceManager implements SourceManager {
                         throw new IllegalArgumentException("Entpy schema name!");
                 }
 
-                String[] s = schemaName.split("\\.");
+                String[] s = DOT.split(schemaName);
                 int i = 0;
 
                 // jump over root schema name
@@ -1105,7 +1107,7 @@ public final class DefaultSourceManager implements SourceManager {
                         throw new IllegalArgumentException("Empty schema name!");
                 }
 
-                String[] s = name.split("\\.");
+                String[] s = DOT.split(name);
                 int i = 0;
 
                 // jump over root schema name

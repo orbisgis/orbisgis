@@ -45,6 +45,7 @@
 package org.gdms.sql.function.spatial.geometry.distance;
 
 import java.util.HashSet;
+import java.util.Set;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
@@ -93,7 +94,7 @@ public final class ST_LocateAlong extends AbstractScalarSpatialFunction {
          * @param geom
          * @return 
          */
-        public Geometry computePointAlongOffSet(Geometry geom, double segmentLengthFraction, double offsetDistance) {
+        private Geometry computePointAlongOffSet(Geometry geom, double segmentLengthFraction, double offsetDistance) {
                 int numGeom = geom.getNumGeometries();
                 HashSet<Coordinate> acc = new HashSet<Coordinate>();
                 for (int i = 0; i < numGeom; i++) {                                                      
@@ -101,10 +102,10 @@ public final class ST_LocateAlong extends AbstractScalarSpatialFunction {
                         if (GeometryTypeUtil.isPolygon(subGeom)) {
                                 Polygon polygon = (Polygon) subGeom;
                                 //Dot not take into account hole.  
-                                HashSet<Coordinate> result = compute(polygon.getExteriorRing().getCoordinates(), segmentLengthFraction, offsetDistance);
+                                Set<Coordinate> result = compute(polygon.getExteriorRing().getCoordinates(), segmentLengthFraction, offsetDistance);
                                 acc.addAll(result);
                         } else if (GeometryTypeUtil.isLineString(subGeom)) {
-                                HashSet<Coordinate> result = compute(subGeom.getCoordinates(), segmentLengthFraction, offsetDistance);
+                                Set<Coordinate> result = compute(subGeom.getCoordinates(), segmentLengthFraction, offsetDistance);
                                 acc.addAll(result);
                         }
 
@@ -112,8 +113,8 @@ public final class ST_LocateAlong extends AbstractScalarSpatialFunction {
                 return gf.createMultiPoint(acc.toArray(new Coordinate[acc.size()]));
         }
 
-        private HashSet<Coordinate> compute(Coordinate[] coords, double segmentLengthFraction, double offsetDistance) {
-                HashSet<Coordinate> coordOffSet = new HashSet<Coordinate>();
+        private Set<Coordinate> compute(Coordinate[] coords, double segmentLengthFraction, double offsetDistance) {
+                Set<Coordinate> coordOffSet = new HashSet<Coordinate>();
                 for (int j = 0; j < coords.length - 1; j++) {
                         LineSegment seg = new LineSegment(coords[j], coords[j + 1]);
                         Coordinate coord = seg.pointAlongOffset(segmentLengthFraction, offsetDistance);

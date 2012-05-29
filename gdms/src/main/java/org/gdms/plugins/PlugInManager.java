@@ -68,7 +68,7 @@ import org.gdms.data.DataSourceFactory;
  */
 public class PlugInManager {
 
-        private Logger LOG = Logger.getLogger(PlugInManager.class);
+        private Logger log = Logger.getLogger(PlugInManager.class);
         private File plugInDirectory;
         private DataSourceFactory dsf;
         private Set<PlugInManagerListener> listeners = new HashSet<PlugInManagerListener>();
@@ -115,7 +115,8 @@ public class PlugInManager {
                                                 String className = entry.getName();
                                                 className = className.substring(0, className.length() - 6);
                                                 className = className.replace("/", ".");
-                                                Class candidate = null;
+                                                
+                                                Class candidate;
 
                                                 if (!firePluginLoading(className)) {
                                                         continue;
@@ -126,7 +127,7 @@ public class PlugInManager {
                                                 } catch (ClassNotFoundException ex) {
                                                         continue;
                                                 } catch (Throwable t) {
-                                                        LOG.error("Throwable encountered loading " + className, t);
+                                                        log.error("Throwable encountered loading " + className, t);
                                                         continue;
                                                 }
 
@@ -135,9 +136,9 @@ public class PlugInManager {
                                                         try {
                                                                 pl = (GdmsPlugIn) candidate.newInstance();
                                                         } catch (InstantiationException ex) {
-                                                                LOG.error("Error encountered loading " + className, ex);
+                                                                log.error("Error encountered loading " + className, ex);
                                                         } catch (IllegalAccessException ex) {
-                                                                LOG.error("Error encountered loading " + className, ex);
+                                                                log.error("Error encountered loading " + className, ex);
                                                         }
 
                                                         plugins.add(pl);
@@ -145,10 +146,10 @@ public class PlugInManager {
                                         }
                                 } catch (ZipException ex) {
                                         // forget about the file
-                                        LOG.warn("Failed to read file '" + f.getPath() + " as a .jar.", ex);
+                                        log.warn("Failed to read file '" + f.getPath() + " as a .jar.", ex);
                                 } catch (IOException ex) {
                                         // forget about the file
-                                        LOG.warn("Failed to read file '" + f.getPath() + '.', ex);
+                                        log.warn("Failed to read file '" + f.getPath() + '.', ex);
                                 }
                         }
                 }

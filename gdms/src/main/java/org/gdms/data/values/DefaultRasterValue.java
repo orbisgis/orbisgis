@@ -72,11 +72,11 @@ class DefaultRasterValue extends AbstractValue implements RasterValue {
          * the length, in bytes, of a RasterMetadata object. Used to be stored efficiently in GDMS, particularly in
          * {@link org.gdms.driver.gdms.GdmsReader}
          */
-        private static int RASTER_HEADER_SIZE = -1;
+        private static int RasterHeaderSize = -1;
         private CoordinateReferenceSystem crs;
 
-        static int getHeaderSize() throws InitializationException {
-                if (RASTER_HEADER_SIZE == -1) {
+        static int getHeaderSize() {
+                if (RasterHeaderSize == -1) {
                         ByteArrayOutputStream bos = new ByteArrayOutputStream();
                         DataOutputStream dos = new DataOutputStream(bos);
                         RasterMetadata rasterMetadata = new RasterMetadata(0, 0, 10, 10, 2, 2);
@@ -86,10 +86,10 @@ class DefaultRasterValue extends AbstractValue implements RasterValue {
                                 throw new InitializationException("Problem initializing raster metadatas", e);
                         }
 
-                        RASTER_HEADER_SIZE = bos.toByteArray().length;
+                        RasterHeaderSize = bos.toByteArray().length;
                 }
 
-                return RASTER_HEADER_SIZE;
+                return RasterHeaderSize;
 
         }
         

@@ -425,9 +425,9 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                                                                 newSet[i] = oldSet[i];
                                                         }
                                                 }
-                                                index.setFieldValue(ValueFactory.createValue(oldSet), 
+                                                index.setFieldValue(ValueFactory.createValue(oldSet),
                                                         ValueFactory.createValue(newSet), rowIndex);
-                                                
+
                                         }
                                 }
                         } catch (IndexException e) {
@@ -770,10 +770,11 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
 
                 @Override
                 public Schema getSchema() {
-                        // TODO: change this - 12/08/2010
-                        // an editable source is removed from its schema
-                        // not good
-                        return null;
+                        try {
+                                return getDataSource().getMetadata().getSchema();
+                        } catch (DriverException ex) {
+                                throw new IllegalStateException(ex);
+                        }
                 }
 
                 @Override

@@ -57,22 +57,15 @@ import org.orbisgis.progress.ProgressMonitor
 class MemoryDistinctCommand extends Command {
 
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
-    r.next flatMap keepOrDrop
+    r.next filter keepOrDrop
   }
   
   /**
-   * Checks if the row already exists, if not, returns it
-   * 
-   * TODO: maybe this can be refactored into a filter function...
+   * Checks if the row already exists.
    */
   private def keepOrDrop(r: Row) = {
-    val ha = r.hashCode
     // add returns true if the element is 'new'
-    if (h.add(ha)) {
-      r :: Nil
-    } else {
-      Nil
-    }
+    h.add(r.hashCode)
   }
   
   override def preDoCleanUp = {
