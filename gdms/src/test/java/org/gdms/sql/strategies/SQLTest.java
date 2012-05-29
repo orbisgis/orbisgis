@@ -135,12 +135,7 @@ public class SQLTest extends TestBase {
                 try {
                         dsf.executeSQL("alter table temp drop column \"type\";");
                         fail();
-                } catch (DriverException e) {
-                        if (!(e.getCause() instanceof SemanticException)) {
-                                fail();
-                        }
-                } finally {
-                        dsf.getSourceManager().remove("temp");
+                } catch (SemanticException e) {
                 }
         }
 
@@ -248,6 +243,28 @@ public class SQLTest extends TestBase {
         public void testAddColumn() throws Exception {
                 dsf.executeSQL("create table temp as select *  from " + SHPTABLE + ";");
                 dsf.executeSQL("alter table temp add column gwen text;");
+        }
+        
+        @Test
+        public void testAlterColumn() throws Exception {
+                dsf.executeSQL("CREATE TABLE temp as select *, autonumeric() as cons from " + SHPTABLE + ";");
+                dsf.executeSQL("ALTER TABLE temp ALTER cons TYPE double;");
+                DataSource d = dsf.getDataSource("temp");
+                d.open();
+                assertEquals(Type.DOUBLE, d.getFieldType(d.getFieldIndexByName("cons")).getTypeCode());
+                assertEquals(4, d.getDouble(4, d.getFieldIndexByName("cons")), 1e-15);
+                d.close();
+        }
+        
+        @Test
+        public void testAlterColumnWithExpr() throws Exception {
+                dsf.executeSQL("CREATE TABLE temp as select *, autonumeric() as cons from " + SHPTABLE + ";");
+                dsf.executeSQL("ALTER TABLE temp ALTER cons TYPE double USING cons + ceil(12);");
+                DataSource d = dsf.getDataSource("temp");
+                d.open();
+                assertEquals(Type.DOUBLE, d.getFieldType(d.getFieldIndexByName("cons")).getTypeCode());
+                assertEquals(16, d.getDouble(4, d.getFieldIndexByName("cons")), 1e-15);
+                d.close();
         }
 
         @Test

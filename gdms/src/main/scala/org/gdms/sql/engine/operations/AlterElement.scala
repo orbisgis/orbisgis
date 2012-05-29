@@ -44,6 +44,7 @@
  */
 package org.gdms.sql.engine.operations
 
+import org.gdms.data.types.Type
 import org.gdms.sql.evaluator.Expression
 
 /**
@@ -53,7 +54,7 @@ import org.gdms.sql.evaluator.Expression
  * @author Antoine Gourlay
  * @since 0.1
  */
-abstract class AlterElement(val column: String)
+sealed abstract class AlterElement(val column: String)
 
 /**
  * Represents the addition of a new empty column.
@@ -65,6 +66,7 @@ abstract class AlterElement(val column: String)
  */
 case class AddColumn(override val column: String, sqlType: String) extends AlterElement(column) {
   override def toString = "Add col(" + column + ", " + sqlType + ")"
+  var sqlTypeInstance: Type = _
 }
 
 /**
@@ -90,6 +92,7 @@ case class DropColumn(override val column: String, ifExists: Boolean) extends Al
  */
 case class AlterTypeOfColumn(override val column: String, newSqlType: String, init: Option[Expression]) extends AlterElement(column) {
   override def toString = "Alter col(" + column + ") newtype=" + newSqlType + " with(" + init + ")"
+  var sqlTypeInstance: Type = _
 }
 
 /**

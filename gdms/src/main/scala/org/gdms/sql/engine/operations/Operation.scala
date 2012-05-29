@@ -546,10 +546,14 @@ case class CreateTable(name: String, cols: Seq[(String, String, Seq[ConstraintTy
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class AlterTable(name: String, actions: Seq[AlterElement]) extends Operation {
+case class AlterTable(name: String, actions: Seq[AlterElement]) extends Operation with ExpressionOperation {
   def children = Nil
   override def toString = "AlterTable name(" + name + ") do(" + actions + ")"
   def duplicate: AlterTable = AlterTable(name, actions)
+  val expr: Seq[Expression] = actions.flatMap {
+    case AlterTypeOfColumn(_,_,ex) => ex
+    case _ => Nil
+  }
 }
 
 
