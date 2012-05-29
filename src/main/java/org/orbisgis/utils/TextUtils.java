@@ -191,7 +191,7 @@ public final class TextUtils {
          * @return a standard pattern
          */
         public static Pattern buildLikePattern(String pattern, boolean caseInsensitive) {
-                String[] s = splitLike.split(pattern);
+                String[] s = SPLITLIKE.split(pattern);
                 StringBuilder b = new StringBuilder();
                 b.append("^");
                 if (s.length == 0) {
@@ -221,7 +221,7 @@ public final class TextUtils {
                                         }
                                 }
                                 if (!s[i].isEmpty()) {
-                                        b.append(Pattern.quote(escape.matcher(s[i]).replaceAll("\\\\")));
+                                        b.append(Pattern.quote(ESCAPE.matcher(s[i]).replaceAll("\\\\")));
                                         pos += s[i].length();
                                 }
                                 if (pos < pattern.length()) {
@@ -268,9 +268,9 @@ public final class TextUtils {
                         return Pattern.compile(b.toString());
                 }
         }
-        private static final Pattern splitLike = Pattern.compile("%|_");
-        private static final Pattern escape = Pattern.compile("\\\\\\\\");
-        private static final Pattern dot = Pattern.compile("\\.");
+        private static final Pattern SPLITLIKE = Pattern.compile("%|_");
+        private static final Pattern ESCAPE = Pattern.compile("\\\\\\\\");
+        private static final Pattern DOT = Pattern.compile("\\.");
 
         /**
          * Creates a {@link Pattern } instance for a SIMILAR TO pattern.
@@ -297,7 +297,7 @@ public final class TextUtils {
          * @return
          */
         public static Pattern buildSimilarToPattern(String pattern) {
-                String[] s = splitLike.split(pattern);
+                String[] s = SPLITLIKE.split(pattern);
                 StringBuilder b = new StringBuilder();
                 b.append("^");
                 if (s.length == 0) {
@@ -327,8 +327,8 @@ public final class TextUtils {
                                         }
                                 }
                                 if (!s[i].isEmpty()) {
-                                        String t = escape.matcher(s[i]).replaceAll("\\\\");
-                                        b.append(dot.matcher(t).replaceAll("\\\\."));
+                                        String t = ESCAPE.matcher(s[i]).replaceAll("\\\\");
+                                        b.append(DOT.matcher(t).replaceAll("\\\\."));
                                         pos += s[i].length();
                                 }
                                 if (pos < pattern.length()) {

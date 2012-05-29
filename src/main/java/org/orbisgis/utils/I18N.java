@@ -45,6 +45,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
+
 import org.apache.log4j.Logger;
 
 /**
@@ -52,12 +53,12 @@ import org.apache.log4j.Logger;
  */
 public final class I18N {
 
-        private final static Logger LOG = Logger.getLogger(I18N.class);
+        private static final Logger LOG = Logger.getLogger(I18N.class);
         //I18N file must be in "properties/" repository
         private static final String PROPERTIES = "language";
         private static final String SEPARATOR = "."; //System.getProperty("file.separator");
-        //Orbisgis loacle. This local would applied to all plugin (if -i18n local has been given by command line)
-        private static Locale I18N_SETLOCALE;
+        //Orbisgis locale. This local would applied to all plugin (if -i18n local has been given by command line)
+        private static Locale i18n_SetLocale;
         //Orbisgis key, for find back Resource bundle about orbisgis Context.
         private static final String ORBISGIS_CTX = "orbisgis";
         //ResourceBundle dictionnary (contains all resource bundle : plugIns, orbisgis, gdms ...)
@@ -108,7 +109,7 @@ public final class I18N {
                 //Get Locale
                 Locale locale = getLocale(lang);
                 //Get bundle
-                ResourceBundle bundle = null;
+                ResourceBundle bundle;
                 try {
                         bundle = ResourceBundle.getBundle(baseName, locale, loader.getClassLoader());
                         if (I18NS.get(fileName) == null) {//Put bundle into dictionnary with context key (file name)
@@ -120,7 +121,7 @@ public final class I18N {
                 //Record OrbisGIS locale. Only if locale has added on command line.
                 if (fileName.equals(ORBISGIS_CTX) && !lang.isEmpty()) //Set OrbisGIS Locale as default locale (For subProject and plugins)
                 {
-                        I18N_SETLOCALE = locale;
+                        i18n_SetLocale = locale;
                 }
         }
 
@@ -152,8 +153,8 @@ public final class I18N {
         }
 
         private static Locale getLocale(String lang) {
-                Locale locale = null;
-                if (I18N_SETLOCALE == null) {
+                Locale locale;
+                if (i18n_SetLocale == null) {
                         //No default language fix in orbisgis
                         locale = Locale.getDefault();
                         if (lang != null && !lang.isEmpty()) {
@@ -168,7 +169,7 @@ public final class I18N {
                         }
                 } else //keep orbisgis language (because command line fix i18n)
                 {
-                        locale = I18N_SETLOCALE;
+                        locale = i18n_SetLocale;
                 }
 
                 return locale;

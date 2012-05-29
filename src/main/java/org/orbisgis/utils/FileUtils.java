@@ -65,7 +65,7 @@ import java.util.zip.ZipOutputStream;
  */
 public final class FileUtils {
 
-        private static int BUF_SIZE = 1024 * 64;
+        private static final int BUF_SIZE = 1024 * 64;
 
         /**
          * Copies the specified folder in the destination folder

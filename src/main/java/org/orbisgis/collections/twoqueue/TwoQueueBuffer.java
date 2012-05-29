@@ -227,7 +227,7 @@ public abstract class TwoQueueBuffer<I, B> implements Iterable<DoubleQueueValue<
         
         
 
-        private class TwoQueueIterator implements Iterator<DoubleQueueValue<I, B>> {
+        private final class TwoQueueIterator implements Iterator<DoubleQueueValue<I, B>> {
 
                 boolean changed = false;
                 private Iterator<Entry<I, DoubleQueueValue<I, B>>> it;
