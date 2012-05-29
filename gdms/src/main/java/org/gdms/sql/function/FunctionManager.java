@@ -72,6 +72,7 @@ import org.gdms.sql.function.math.Cbrt;
 import org.gdms.sql.function.math.Ceil;
 import org.gdms.sql.function.math.Cos;
 import org.gdms.sql.function.math.Exp;
+import org.gdms.sql.function.math.Fac;
 import org.gdms.sql.function.math.Floor;
 import org.gdms.sql.function.math.Ln;
 import org.gdms.sql.function.math.Log;
@@ -220,6 +221,7 @@ public final class FunctionManager {
                 addFunction(StrLength.class);
                 addFunction(Max.class);
                 addFunction(Min.class);
+                addFunction(Fac.class);
                 addFunction(ST_Buffer.class);
                 addFunction(ST_Intersects.class);
                 addFunction(ST_Contains.class);

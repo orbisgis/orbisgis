@@ -44,7 +44,6 @@
  */
 package org.gdms.sql.function.math;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -52,7 +51,8 @@ import static org.junit.Assert.*;
 
 import org.gdms.TestBase;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceFactory;
+import org.gdms.driver.DriverException;
+import org.gdms.sql.function.FunctionException;
 
 /**
  *
@@ -158,6 +158,42 @@ public class FunctionMathTest extends TestBase {
                 d = dsf.getDataSourceFromSQL("SELECT sqrt(NULL);");
                 d.open();
                 assertTrue(d.getFieldValue(0, 0).isNull());
+                d.close();
+        }
+        
+        @Test
+        public void testFac() throws Exception {
+                DataSource d = dsf.getDataSourceFromSQL("SELECT fac(5);");
+                d.open();
+                assertEquals(120, d.getLong(0, 0));
+                d.close();
+                
+                // negative: bad
+                d = dsf.getDataSourceFromSQL("SELECT fac(-5);");
+                try {
+                        d.open();
+                        fail();
+                } catch (DriverException ex) {
+                        assertTrue(ex.getCause() instanceof FunctionException);
+                }
+                
+                // too big: useless
+                d = dsf.getDataSourceFromSQL("SELECT fac(22);");
+                try {
+                        d.open();
+                        fail();
+                } catch (DriverException ex) {
+                        assertTrue(ex.getCause() instanceof FunctionException);
+                }
+                
+                d = dsf.getDataSourceFromSQL("SELECT 6!;");
+                d.open();
+                assertEquals(720, d.getLong(0, 0));
+                d.close();
+                
+                d = dsf.getDataSourceFromSQL("SELECT !! 6;");
+                d.open();
+                assertEquals(720, d.getLong(0, 0));
                 d.close();
         }
 }

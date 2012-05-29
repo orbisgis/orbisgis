@@ -701,7 +701,7 @@ object LogicPlanBuilder {
       case NOITILDE => !(left.~(right, true))
 
         // TODO: factorial operator
-      case FACTORIAL_PREFIX => throw new UnsupportedOperationException("Not yet implemented.")
+      case FACTORIAL_PREFIX | FACTORIAL => Expression("Fac", List(left))
       case T_NULL => Expression(ValueFactory.createNullValue[Value])
 
         // boolean unknown is stored as NULL for simplicity, just like PostgreSQL does.

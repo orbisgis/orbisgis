@@ -844,6 +844,7 @@ expression_final
 expression_in
         : (o=SQRT | o=CBRT | o=FACTORIAL_PREFIX | o=AT_SIGN | o=TILDE | o=MINUS) expression_in
           -> ^($o expression_in)
+        | expression_final FACTORIAL -> ^(FACTORIAL expression_final)
         | expression_final
         ;
 
