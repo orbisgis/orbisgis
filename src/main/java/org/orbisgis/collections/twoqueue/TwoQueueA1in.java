@@ -152,13 +152,6 @@ final class TwoQueueA1in<I, B> implements Iterable<Entry<I, DoubleQueueValue<I, 
                 }
         }
 
-        /**
-         * @return the maximum size of this queue
-         */
-        public int getMaxSize() {
-                return maxSize;
-        }
-
         B remove(I key) {
                 DoubleQueueValue<I, B> v = map.remove(key);
                 if (v != null) {

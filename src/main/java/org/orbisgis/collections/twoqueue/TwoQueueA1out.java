@@ -128,13 +128,6 @@ final class TwoQueueA1out<I, B> {
                 newest = null;
         }
 
-        /**
-         * @return the maxSize
-         */
-        int getMaxSize() {
-                return maxSize;
-        }
-
         private static class SingleQueueValue<I> {
 
                 I key;

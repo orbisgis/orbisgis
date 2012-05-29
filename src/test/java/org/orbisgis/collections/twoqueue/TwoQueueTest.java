@@ -173,6 +173,12 @@ public class TwoQueueTest {
                 b.get(0);
                 assertEquals(0, b.lastRec);
                 assertEquals(1, b.lastUn);
+                
+                // now we get it from Am
+                b.get(0);
+                // see that nothing changed
+                assertEquals(0, b.lastRec);
+                assertEquals(1, b.lastUn);
         }
 
         @Test
@@ -290,8 +296,19 @@ public class TwoQueueTest {
                 b.get(0);
                 b.get(4);
                 
+                // remove from Am
                 Iterator<DoubleQueueValue<Integer, Integer>> it = b.iterator();
                 int i = it.next().key;
+                it.remove();
+                assertEquals(i, b.lastUn);
+                b.get(i);
+                assertEquals(i, b.lastRec);
+                
+                
+                // remove from A1int
+                it = b.iterator();
+                it.next();
+                i = it.next().key;
                 it.remove();
                 assertEquals(i, b.lastUn);
                 b.get(i);

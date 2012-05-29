@@ -156,13 +156,6 @@ final class TwoQueueAm<I, B> implements Iterable<Entry<I, DoubleQueueValue<I, B>
                 newest = null;
         }
 
-        /**
-         * @return the maxSize
-         */
-        int getMaxSize() {
-                return maxSize;
-        }
-
         @Override
         public Iterator<Entry<I, DoubleQueueValue<I, B>>> iterator() {
                 return map.entrySet().iterator();

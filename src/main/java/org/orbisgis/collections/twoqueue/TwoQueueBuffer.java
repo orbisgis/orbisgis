@@ -253,6 +253,10 @@ public abstract class TwoQueueBuffer<I, B> implements Iterable<DoubleQueueValue<
 
                 @Override
                 public DoubleQueueValue<I, B> next() {
+                        if (!changed && !it.hasNext()) {
+                                it = a1in.iterator();
+                                changed = true;
+                        }
                         next = it.next().getValue();
                         return next;
                 }
