@@ -12,7 +12,8 @@
         </organization>
         <url>http://orbisgis.org</url>
         <modules>
-            <module>orbisgis-base</module>
+            <module>legend</module>
+            <module>orbisgis-core</module>
             <module>orbisgis-view</module>
             <module>orbisgis-sif</module>
         </modules>
