@@ -82,13 +82,14 @@ public class TransferableLayer implements Transferable {
 				.equals(TransferableEditableElement.editableElementFlavor)) {
                     ret = nodes;
 		} else if (flavor.equals(DataFlavor.stringFlavor)) {
-			String retString = "";
-			String separator = "";
+                        StringBuilder retString = new StringBuilder();
 			for (EditableLayer node : nodes) {
-				retString = retString + separator + node.getLayer().getName();
-				separator = ", ";
+                                if(retString.length()!=0) {
+                                    retString.append(", ");
+                                }
+				retString.append(node.getLayer().getName());
 			}
-			ret = retString;
+			ret = retString.toString();
 		}
 
 		return ret;
