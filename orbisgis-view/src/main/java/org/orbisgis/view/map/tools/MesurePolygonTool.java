@@ -48,17 +48,17 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.DrawingException;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
-import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
 import javax.swing.ImageIcon;
+import org.apache.log4j.Logger;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 public class MesurePolygonTool extends AbstractPolygonTool {
-
-
+        protected static Logger GUI_LOGGER = Logger.getLogger("gui."+MesureLineTool.class);
+	
 	@Override
 	public void update(Observable o, Object arg) {
 		//PlugInContext.checkTool(this);
@@ -66,12 +66,7 @@ public class MesurePolygonTool extends AbstractPolygonTool {
 
 	protected void polygonDone(Polygon g, MapContext vc, ToolManager tm)
 			throws TransitionException {
-		OutputManager om = (OutputManager) Services
-				.getService(OutputManager.class);
-		Color color = Color.blue;
-
-		om.print("Area : " + getArea(g) + " Perimeter : " + getPerimeter(g)
-				+ "\n", color);
+                GUI_LOGGER.info(I18N.tr("Area : {0} Perimeter : {1}",getArea(g),getPerimeter(g)));
 	}
 
 	private String getPerimeter(Geometry g) {

@@ -1,30 +1,23 @@
 package org.orbisgis.view.map.tools;
 
-import java.awt.Color;
-import java.awt.Graphics;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Observable;
-
-import javax.swing.AbstractButton;
-
-import org.orbisgis.core.Services;
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.view.map.tool.DrawingException;
-import org.orbisgis.view.map.tool.FinishedAutomatonException;
-import org.orbisgis.view.map.tool.ToolManager;
-import org.orbisgis.view.map.tool.TransitionException;
-import org.orbisgis.view.map.tools.generated.Compass;
-import org.orbisgis.core.ui.plugins.views.output.OutputManager;
-
 import com.vividsolutions.jts.algorithm.Angle;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineSegment;
 import com.vividsolutions.jts.geom.LineString;
+import java.awt.Graphics;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Observable;
 import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.map.tool.DrawingException;
+import org.orbisgis.view.map.tool.FinishedAutomatonException;
+import org.orbisgis.view.map.tool.ToolManager;
+import org.orbisgis.view.map.tool.TransitionException;
+import org.orbisgis.view.map.tools.generated.Compass;
 
 public class CompassTool extends Compass {
         private static Logger GUILOGGER = Logger.getLogger("gui."+CompassTool.class);

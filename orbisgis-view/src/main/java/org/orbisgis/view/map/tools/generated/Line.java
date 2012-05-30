@@ -48,7 +48,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 public abstract class Line implements Automaton {
         protected final static I18n I18N = I18nFactory.getI18n(Line.class);
-	private static Logger logger = Logger.getLogger(Line.class.getName());
+	protected static Logger logger = Logger.getLogger(Line.class.getName());
 
 	private String status = "Standby";
 

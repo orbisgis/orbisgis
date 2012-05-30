@@ -36,28 +36,22 @@
  */
 package org.orbisgis.view.map.tools;
 
-import java.awt.Color;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.LineString;
 import java.awt.Graphics;
 import java.text.DecimalFormat;
 import java.util.Observable;
-
 import javax.swing.AbstractButton;
-
-import org.orbisgis.core.Services;
+import javax.swing.ImageIcon;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.DrawingException;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
-import org.orbisgis.core.ui.plugins.views.output.OutputManager;
-
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.LineString;
-import javax.swing.ImageIcon;
-import org.orbisgis.view.icons.OrbisGISIcon;
 
 public class MesureLineTool extends AbstractLineTool {
-
+        protected static Logger GUI_LOGGER = Logger.getLogger("gui."+MesureLineTool.class);
 	AbstractButton button;
 
 	public AbstractButton getButton() {
@@ -82,10 +76,7 @@ public class MesureLineTool extends AbstractLineTool {
 
 	protected void lineDone(LineString ls, MapContext vc, ToolManager tm)
 			throws TransitionException {
-		OutputManager om = (OutputManager) Services
-				.getService(OutputManager.class);
-		Color color = Color.blue;
-		om.print("Distance : " + getLength(ls) + "\n", color);
+                GUI_LOGGER.info(I18N.tr("Distance : {0}",getLength(ls)));
 	}
 
 	private String getLength(Geometry ls) {
