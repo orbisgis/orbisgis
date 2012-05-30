@@ -350,7 +350,7 @@ public class Catalog extends JPanel implements DockingPanel {
         }
 
         /**
-         * Create the Source List ui compenent
+         * Create the Source List ui component
          */
         private JList makeSourceList(SourceContext sourceContext) {
                 sourceList = new JList();
