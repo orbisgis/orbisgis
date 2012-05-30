@@ -57,7 +57,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 public class MesurePolygonTool extends AbstractPolygonTool {
-        protected static Logger GUI_LOGGER = Logger.getLogger("gui."+MesureLineTool.class);
+        protected static Logger GUI_LOGGER = Logger.getLogger("gui."+MesurePolygonTool.class);
 	
 	@Override
 	public void update(Observable o, Object arg) {
