@@ -1,0 +1,8 @@
+193;method-equals(Object arg0);method-endsWith(String arg0);method-equalsIgnoreCase(String arg0)
+import com.vividsolutions.jts.geom.MultiPolygon;
+import com.vividsolutions.jts.geom.Polygon;
+
+if (geom instanceof Polygon || geom instanceof MultiPolygon) {
+String str = new String();
+if (str.e
+}

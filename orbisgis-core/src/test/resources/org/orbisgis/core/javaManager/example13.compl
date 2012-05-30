@@ -1,0 +1,9 @@
+135;method-hashCode()
+String str = new String("hola");
+int index = str.indexOf("o");
+
+int count;
+for (int i = 0; i < index; i++) {
+  count++; 
+  if (str.hash
+}

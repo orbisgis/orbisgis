@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:tse="http://www.opengis.net/se/2.0/thematic" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.0" xmlns:ns4="http://www.w3.org/1999/xlink" version="2.0.0">
+    <Rule>
+        <AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+            <Name>Area symbolizer</Name>
+            <Extension>
+                <ExtensionParameter name="level">0</ExtensionParameter>
+            </Extension>
+            <tse:DensityFill>
+	        <PenStroke>
+		  <SolidFill>
+		  <Color>
+                    <Categorize thresholdsBelongTo="succeeding" fallbackValue="#000000">
+                        <LookupValue>
+                            <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
+                        </LookupValue>
+                        <Value>#cc0000</Value>
+                        <Threshold>50.0</Threshold>
+                        <Value>#00cc00</Value>
+                        <Extension>
+                            <ExtensionParameter name="method">MANUAL</ExtensionParameter>
+                        </Extension>
+		    </Categorize></Color>
+		  </SolidFill>
+
+
+                    <Width>1</Width>
+                </PenStroke>
+                <tse:Percentage>
+                    <ns3:Function name="div">
+                        <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
+                        <ns3:Literal>100</ns3:Literal>
+                    </ns3:Function>
+                </tse:Percentage>
+            </tse:DensityFill>
+            <PenStroke>
+                <SolidFill>
+                    <Color>#000000</Color>
+                    <Opacity>0.65</Opacity>
+                </SolidFill>
+                <Width>0.1</Width>
+            </PenStroke>
+        </AreaSymbolizer>
+    </Rule>
+</Style>

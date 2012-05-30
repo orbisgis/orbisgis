@@ -1,0 +1,1168 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:fes="http://www.opengis.net/fes/2.0" xmlns:ns4="http://www.w3.org/1999/xlink">
+  <Rule>
+    <PointSymbolizer uom="urn:ogc:def:uom:se::mm">
+      <CompositeGraphic>
+        <!-- Background: draughtboard -->
+        <MarkGraphic>
+          <WellKnownName>SQUARE</WellKnownName>
+          <ViewBox>
+            <Width>270</Width>
+            <Height>160</Height>
+           </ViewBox>
+                <GraphicFill>
+                    <CompositeGraphic>
+                    <MarkGraphic>
+                        <WellKnownName>SQUARE</WellKnownName>
+                        <ViewBox><Width>4</Width></ViewBox>
+                        <SolidFill>
+                            <Color>#888888</Color>
+                            <Opacity>100</Opacity>
+                        </SolidFill>
+                    </MarkGraphic>
+                    <MarkGraphic>
+                        <WellKnownName>SQUARE</WellKnownName>
+                        <ViewBox><Width>2</Width></ViewBox>
+                        <SolidFill>
+                            <Color>#BBBBBB</Color>
+                            <Opacity>100</Opacity>
+                        </SolidFill>
+                        <Transform>
+                            <Translate>
+                               <X>1</X>
+                               <Y>1</Y>
+                            </Translate>
+                        </Transform>
+                    </MarkGraphic>
+                    <MarkGraphic>
+                        <WellKnownName>SQUARE</WellKnownName>
+                        <ViewBox><Width>2</Width></ViewBox>
+                        <SolidFill>
+                            <Color>#BBBBBB</Color>
+                            <Opacity>100</Opacity>
+                        </SolidFill>
+                        <Transform>
+                            <Translate>
+                               <X>-1</X>
+                               <Y>-1</Y>
+                            </Translate>
+                        </Transform>
+                    </MarkGraphic>
+                    </CompositeGraphic>
+                </GraphicFill>
+            </MarkGraphic>
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>10</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-130</X>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>2500</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-120</X>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>5000</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-110</X>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>7500</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-100</X>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>10000</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-90</X>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>12500</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-80</X>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>15000</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-70</X>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>17500</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-60</X>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>20000</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-50</X>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>22500</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-40</X>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+	      <fes:Function name="mul">
+                <fes:Literal>10</fes:Literal>
+	        <fes:Function name="sqrt">
+	          <fes:Function name="div">
+                    <fes:Literal>25000</fes:Literal>
+                    <fes:Literal>25000</fes:Literal>
+		  </fes:Function>
+		</fes:Function>
+              </fes:Function>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-30</X>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+<!--
+      <TextGraphic>
+        <StyledLabel>
+          <LabelText>0</LabelText>
+        </StyledLabel>
+        <Transform>
+          <Translate>
+            <X>-130</X>
+            <Y>10</Y>
+          </Translate>
+        </Transform>
+      </TextGraphic>
+
+      <TextGraphic>
+        <StyledLabel>
+          <LabelText>2500</LabelText>
+        </StyledLabel>
+        <Transform>
+          <Translate>
+            <X>-120</X>
+            <Y>10</Y>
+          </Translate>
+        </Transform>
+      </TextGraphic>
+
+
+      <TextGraphic>
+        <StyledLabel>
+          <LabelText>5000</LabelText>
+        </StyledLabel>
+        <Transform>
+          <Translate>
+            <X>-110</X>
+            <Y>10</Y>
+          </Translate>
+        </Transform>
+      </TextGraphic>
+
+
+      <TextGraphic>
+        <StyledLabel>
+          <LabelText>7500</LabelText>
+        </StyledLabel>
+        <Transform>
+          <Translate>
+            <X>-100</X>
+            <Y>10</Y>
+          </Translate>
+        </Transform>
+      </TextGraphic>
+
+
+      <TextGraphic>
+        <StyledLabel>
+          <LabelText>10000</LabelText>
+        </StyledLabel>
+        <Transform>
+          <Translate>
+            <X>-90</X>
+            <Y>10</Y>
+          </Translate>
+        </Transform>
+      </TextGraphic>
+
+
+      <TextGraphic>
+        <StyledLabel>
+          <LabelText>12500</LabelText>
+        </StyledLabel>
+        <Transform>
+          <Translate>
+            <X>-80</X>
+            <Y>10</Y>
+          </Translate>
+        </Transform>
+      </TextGraphic>
+
+
+      <TextGraphic>
+        <StyledLabel>
+          <LabelText>15000</LabelText>
+        </StyledLabel>
+        <Transform>
+          <Translate>
+            <X>-70</X>
+            <Y>10</Y>
+          </Translate>
+        </Transform>
+      </TextGraphic>
+
+
+      <TextGraphic>
+        <StyledLabel>
+          <LabelText>17500</LabelText>
+        </StyledLabel>
+        <Transform>
+          <Translate>
+            <X>-60</X>
+            <Y>10</Y>
+          </Translate>
+        </Transform>
+      </TextGraphic>
+
+
+      <TextGraphic>
+        <StyledLabel>
+          <LabelText>20000</LabelText>
+        </StyledLabel>
+        <Transform>
+          <Translate>
+            <X>-50</X>
+            <Y>10</Y>
+          </Translate>
+        </Transform>
+      </TextGraphic>
+
+
+      <TextGraphic>
+        <StyledLabel>
+          <LabelText>22500</LabelText>
+        </StyledLabel>
+        <Transform>
+          <Translate>
+            <X>-40</X>
+            <Y>10</Y>
+          </Translate>
+        </Transform>
+      </TextGraphic>
+
+
+      <TextGraphic>
+        <StyledLabel>
+          <LabelText>25000</LabelText>
+        </StyledLabel>
+        <Transform>
+          <Translate>
+            <X>-30</X>
+            <Y>10</Y>
+          </Translate>
+        </Transform>
+      </TextGraphic>
+
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+		<ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+	        <Sqrt>
+		  <ogc:Div>
+                    <Log><ogc:Literal>0</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-130</X>
+	      <Y>20</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+              <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+	        <Sqrt>
+		  <ogc:Div>
+                    <Log><ogc:Literal>2500</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-120</X>
+	      <Y>20</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+              <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+	        <Sqrt>
+		  <ogc:Div>
+                    <Log><ogc:Literal>5000</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-110</X>
+	      <Y>20</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+	    <Width>
+              <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+	        <Sqrt>
+		  <ogc:Div>
+                    <Log><ogc:Literal>7500</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-100</X>
+	      <Y>20</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+              <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+	        <Sqrt>
+		  <ogc:Div>
+                    <Log><ogc:Literal>10000</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-90</X>
+	      <Y>20</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+              <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+	        <Sqrt>
+		  <ogc:Div>
+                    <Log><ogc:Literal>12500</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-80</X>
+	      <Y>20</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+ <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+	        <Sqrt>
+		  <ogc:Div>
+                    <Log><ogc:Literal>15000</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+
+
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-70</X>
+	      <Y>20</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+ <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+	        <Sqrt>
+		  <ogc:Div>
+                    <Log><ogc:Literal>17500</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+
+
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-60</X>
+	      <Y>20</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+ <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+	        <Sqrt>
+		  <ogc:Div>
+                    <Log><ogc:Literal>20000</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+
+
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-50</X>
+	      <Y>20</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+ <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+	        <Sqrt>
+		  <ogc:Div>
+                    <Log><ogc:Literal>22500</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+
+
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-40</X>
+	      <Y>20</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+ <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+	        <Sqrt>
+		  <ogc:Div>
+                    <Log><ogc:Literal>25000</ogc:Literal></Log>
+               	    <Log><ogc:Literal>25000</ogc:Literal></Log>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+
+
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-30</X>
+	      <Y>20</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+ 	</MarkGraphic>
+
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+ 	      <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+    		<Sqrt>
+		  <ogc:Div>
+                    <Sqrt><ogc:Literal>0</ogc:Literal></Sqrt>
+               	    <Sqrt><ogc:Literal>25000</ogc:Literal></Sqrt>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-130</X>
+	      <Y>30</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+ 	      <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+    		<Sqrt>
+		  <ogc:Div>
+                    <Sqrt><ogc:Literal>2500</ogc:Literal></Sqrt>
+               	    <Sqrt><ogc:Literal>25000</ogc:Literal></Sqrt>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-120</X>
+	      <Y>30</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+ 	      <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+    		<Sqrt>
+		  <ogc:Div>
+                    <Sqrt><ogc:Literal>5000</ogc:Literal></Sqrt>
+               	    <Sqrt><ogc:Literal>25000</ogc:Literal></Sqrt>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-110</X>
+	      <Y>30</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+ 	      <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+    		<Sqrt>
+		  <ogc:Div>
+                    <Sqrt><ogc:Literal>7500</ogc:Literal></Sqrt>
+               	    <Sqrt><ogc:Literal>25000</ogc:Literal></Sqrt>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-100</X>
+	      <Y>30</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+ 	      <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+    		<Sqrt>
+		  <ogc:Div>
+                    <Sqrt><ogc:Literal>10000</ogc:Literal></Sqrt>
+               	    <Sqrt><ogc:Literal>25000</ogc:Literal></Sqrt>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-90</X>
+	      <Y>30</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+ 	      <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+    		<Sqrt>
+		  <ogc:Div>
+                    <Sqrt><ogc:Literal>12500</ogc:Literal></Sqrt>
+               	    <Sqrt><ogc:Literal>25000</ogc:Literal></Sqrt>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-80</X>
+	      <Y>30</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+ 	      <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+    		<Sqrt>
+		  <ogc:Div>
+                    <Sqrt><ogc:Literal>15000</ogc:Literal></Sqrt>
+               	    <Sqrt><ogc:Literal>25000</ogc:Literal></Sqrt>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-70</X>
+	      <Y>30</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+ 	      <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+    		<Sqrt>
+		  <ogc:Div>
+                    <Sqrt><ogc:Literal>17500</ogc:Literal></Sqrt>
+               	    <Sqrt><ogc:Literal>25000</ogc:Literal></Sqrt>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-60</X>
+	      <Y>30</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+ 	      <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+    		<Sqrt>
+		  <ogc:Div>
+                    <Sqrt><ogc:Literal>20000</ogc:Literal></Sqrt>
+               	    <Sqrt><ogc:Literal>25000</ogc:Literal></Sqrt>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-50</X>
+	      <Y>30</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+ 	      <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+    		<Sqrt>
+		  <ogc:Div>
+                    <Sqrt><ogc:Literal>22500</ogc:Literal></Sqrt>
+               	    <Sqrt><ogc:Literal>25000</ogc:Literal></Sqrt>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-40</X>
+	      <Y>30</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+
+      <MarkGraphic>
+        <WellKnownName>Circle</WellKnownName>
+          <ViewBox>
+            <Width>
+ 	      <ogc:Mul>
+                <ogc:Literal>10</ogc:Literal>
+    		<Sqrt>
+		  <ogc:Div>
+                    <Sqrt><ogc:Literal>25000</ogc:Literal></Sqrt>
+               	    <Sqrt><ogc:Literal>25000</ogc:Literal></Sqrt>
+		  </ogc:Div>
+	        </Sqrt>
+              </ogc:Mul>
+            </Width>
+          </ViewBox>
+	  <Transform>
+	    <Translate>
+	      <X>-30</X>
+	      <Y>30</Y>
+	    </Translate>
+	  </Transform>
+          <SolidFill>
+            <Color>#E06161</Color>
+            <Opacity>100.0</Opacity>
+          </SolidFill>
+        <PenStroke />
+      </MarkGraphic>
+
+-->
+
+      </CompositeGraphic>
+
+    </PointSymbolizer>
+  </Rule>
+</Style>

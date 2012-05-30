@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.0" xmlns:ns4="http://www.w3.org/1999/xlink">
+	<Rule>
+		<PointSymbolizer uom="urn:ogc:def:uom:se::mm">
+			<PointTextGraphic>
+				<PointLabel>
+					<StyledText>
+						<Text>
+							<Concatenate fallbackValue="hello">
+								<StringValue>A</StringValue>
+								<StringValue>Z</StringValue>
+							</Concatenate>
+						</Text>
+					</StyledText>
+				</PointLabel>
+				<PointPosition>
+					<X>-60</X>
+					<Y>40</Y>
+				</PointPosition>
+			</PointTextGraphic>
+		</PointSymbolizer>
+	</Rule>
+</Style>
+

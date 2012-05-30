@@ -1,0 +1,5 @@
+160;method-createFileProperty(String arg0);method-deleteProperty(String arg0);method-getDataSourceDefinition();method-getDBSource();method-getDriverId();method-getFile();method-getFileProperty(String arg0);method-getFilePropertyContents(String arg0);method-getFilePropertyContentsAsString(String arg0);method-getFilePropertyNames();method-getName();method-getObject();method-getProperty(String arg0);method-getReferencedSources();method-getReferencingSources();method-getSQL();method-getStringPropertyNames();method-getType();method-getTypeName();method-getWMSSource();method-hasProperty(String arg0);method-isDBSource();method-isFileSource();method-isObjectSource();method-isSQLSource();method-isUpToDate();method-isWellKnownName();method-isWMSSource();method-putProperty(String arg0, String arg1)
+import org.orbisgis.DataManager;
+import org.orbisgis.Services;
+DataManager dm = Services.getService(DataManager.class);
+dm.getSourceManager().getSource("cool").;
