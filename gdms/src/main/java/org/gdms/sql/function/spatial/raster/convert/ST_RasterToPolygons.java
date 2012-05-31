@@ -111,7 +111,8 @@ public final class ST_RasterToPolygons extends AbstractTableFunction {
                         for (int rowIndex = 0, i = 0; rowIndex < rowCount; rowIndex++) {
                                 CoordinateReferenceSystem crs = sds.getFieldValue(rowIndex, spatialFieldIndex).getCRS();
                                 final GeoRaster geoRasterSrc = sds.getFieldValue(rowIndex, spatialFieldIndex).getAsRaster();
-                                final float ndv = (float) geoRasterSrc.getNoDataValue();
+                                final float ndv = geoRasterSrc.getMetadata().getNoDataValue();
+                                //final float ndv = (float) geoRasterSrc.getNoDataValue();
                                 final ImageProcessor processor = geoRasterSrc.getImagePlus().getProcessor();
 
                                 int nrows = geoRasterSrc.getHeight();
@@ -133,15 +134,15 @@ public final class ST_RasterToPolygons extends AbstractTableFunction {
                                                 }
                                         }
                                         for (int x = 0; x < ncols; x++) {
-                                                final Double height = (double) processor.getPixelValue(
+                                                final Double pixelValue = (double) processor.getPixelValue(
                                                         x, y);
                                                 final Point2D pixelCentroid = geoRasterSrc.fromPixelToRealWorld(x, y);
                                                 Geometry polygon = createPolygon(pixelCentroid,
-                                                        halfPixelSizeX, halfPixelSizeY, height);
+                                                        halfPixelSizeX, halfPixelSizeY, pixelValue);
 
-                                                if (ndv != height) {
-                                                        if (hm.containsKey(height)) {
-                                                                LinkedList<Geometry> list = hm.get(height);
+                                                if (ndv != pixelValue) {
+                                                        if (hm.containsKey(pixelValue)) {
+                                                                LinkedList<Geometry> list = hm.get(pixelValue);
                                                                 list.add(polygon);
                                                                 if (list.size() > THRESHOLD) {
                                                                         Geometry unionOfList = CascadedPolygonUnion.union(list);
@@ -151,7 +152,7 @@ public final class ST_RasterToPolygons extends AbstractTableFunction {
                                                         } else {
                                                                 LinkedList<Geometry> list = new LinkedList<Geometry>();
                                                                 list.add(polygon);
-                                                                hm.put(height, list);
+                                                                hm.put(pixelValue, list);
                                                         }
                                                 }
                                         }
@@ -166,6 +167,7 @@ public final class ST_RasterToPolygons extends AbstractTableFunction {
                                 pm.progressTo(nrows);
                                 pm.endTask();
                         }
+                        driver.writingFinished();
                         driver.open();
                         return driver;
                 } catch (DriverException e) {
