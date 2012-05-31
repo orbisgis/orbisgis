@@ -104,7 +104,7 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
     
     // validation of table & type signatures
     FunctionValidator.failIfTablesDoNotMatchSignature(dss toArray, f.getFunctionSignatures)
-    val types = e map (ev => TypeFactory.createType(ev.evaluator.sqlType))
+    val types = e map (_.evaluator.sqlType)
     FunctionValidator.failIfTypesDoNotMatchSignature(types toArray, f.getFunctionSignatures)
     
     // result metadata of teh function

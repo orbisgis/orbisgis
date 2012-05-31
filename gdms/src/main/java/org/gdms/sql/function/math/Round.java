@@ -35,7 +35,6 @@ package org.gdms.sql.function.math;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.FunctionException;
@@ -43,39 +42,39 @@ import org.gdms.sql.function.FunctionException;
 /**
  * Returns the closest long to the argument. The result is rounded to an integer by adding 1/2 and
  * taking the floor of the result.
+ *
  * @author Vladimir Peric
  */
 public final class Round extends AbstractScalarMathFunction {
 
-	@Override
-	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
-		if (args[0].isNull()) {
-			return ValueFactory.createNullValue();
-		} else {
-			return ValueFactory.createValue(Math.round(args[0].getAsDouble()));
-		}
-	}
-
-	@Override
-	public String getName() {
-		return "Round";
-	}
-
-	@Override
-	public String getDescription() {
-
-		return "Returns the closest long to the argument. The result is rounded to an integer by adding 1/2 "
-                        + "and taking the floor of the result.";
-	}
-
         @Override
-	public String getSqlOrder() {
-		return "select Round(myNumericField) from myTable;";
-	}
-
-	@Override
-        public Type getType(Type[] argsTypes) {
-                return TypeFactory.createType(Type.LONG);
+        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+                if (args[0].isNull()) {
+                        return ValueFactory.createNullValue();
+                } else {
+                        return ValueFactory.createValue(Math.round(args[0].getAsDouble()));
+                }
         }
 
+        @Override
+        public String getName() {
+                return "Round";
+        }
+
+        @Override
+        public String getDescription() {
+
+                return "Returns the closest long to the argument. The result is rounded to an integer by adding 1/2 "
+                        + "and taking the floor of the result.";
+        }
+
+        @Override
+        public String getSqlOrder() {
+                return "select Round(myNumericField) from myTable;";
+        }
+
+        @Override
+        public int getType(int[] argsTypes) {
+                return Type.LONG;
+        }
 }

@@ -39,7 +39,6 @@ import com.vividsolutions.jts.geom.MultiLineString;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.geometryUtils.GeometryEdit;
@@ -73,8 +72,8 @@ public class ST_LinearInterpolation extends AbstractScalarFunction {
         }
 
         @Override
-        public final Type getType(Type[] types) {
-                return TypeFactory.createType(Type.GEOMETRY);
+        public final int getType(int[] types) {
+                return Type.GEOMETRY;
         }
 
         @Override

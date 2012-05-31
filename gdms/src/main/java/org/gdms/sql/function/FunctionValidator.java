@@ -219,11 +219,11 @@ public final class FunctionValidator {
         }
 
         /**
-         * Fails is the array of types does not match any FunctionSignature.
+         * Fails is the array of type codes does not match any FunctionSignature.
          * @param types
          * @param signs
          */
-        public static void failIfTypesDoNotMatchSignature(Type[] types, FunctionSignature[] signs) {
+        public static void failIfTypesDoNotMatchSignature(int[] types, FunctionSignature[] signs) {
                 boolean ok;
                 for (int i = 0; i < signs.length; i++) {
                         FunctionSignature sign = signs[i];
@@ -256,7 +256,7 @@ public final class FunctionValidator {
                                                 //We must make a special check for geometry types.
                                                 boolean notGeomCompatibles = true;
                                                 int argType = arg.getTypeCode();
-                                                int typeC = types[typeId].getTypeCode();
+                                                int typeC = types[typeId];
                                                 if(TypeFactory.isVectorial(typeC)){
                                                         notGeomCompatibles = (typeC & argType) == 0;
                                                 }

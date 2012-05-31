@@ -34,7 +34,6 @@
 package org.gdms.sql.function.spatial.geometry;
 
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.sql.function.AbstractScalarFunction;
 import org.gdms.sql.function.BasicFunctionSignature;
 import org.gdms.sql.function.FunctionSignature;
@@ -45,8 +44,8 @@ import org.gdms.sql.function.ScalarArgument;
  */
 public abstract class AbstractScalarSpatialFunction extends AbstractScalarFunction {
         @Override
-	public Type getType(Type[] types) {
-		return TypeFactory.createType(Type.GEOMETRY);
+	public int getType(int[] types) {
+		return Type.GEOMETRY;
 	}
 
         @Override

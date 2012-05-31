@@ -35,7 +35,6 @@ package org.gdms.sql.function.spatial.geometry.properties;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.geometryUtils.CoordinatesUtils;
@@ -53,8 +52,8 @@ public class ST_3DLength extends AbstractSpatialPropertyFunction {
         }
 
         @Override
-        public Type getType(Type[] types) {
-                return TypeFactory.createType(Type.DOUBLE);
+        public int getType(int[] types) {
+                return Type.DOUBLE;
         }
 
         @Override

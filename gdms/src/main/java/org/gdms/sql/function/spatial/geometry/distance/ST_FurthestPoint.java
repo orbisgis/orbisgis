@@ -38,7 +38,6 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.geometryUtils.CoordinatesUtils;
@@ -82,8 +81,8 @@ public class ST_FurthestPoint extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public Type getType(Type[] types) {
-                return TypeFactory.createType(Type.POINT);
+        public int getType(int[] types) {
+                return Type.POINT;
         }
 
         @Override

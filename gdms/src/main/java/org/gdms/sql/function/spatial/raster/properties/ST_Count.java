@@ -37,7 +37,6 @@ import org.grap.model.RasterMetadata;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.FunctionException;
@@ -51,7 +50,7 @@ public final class ST_Count extends AbstractScalarRasterFunction {
         @Override
         public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 RasterMetadata metadata = args[0].getAsRaster().getMetadata();
-                return ValueFactory.createValue(metadata.getNCols()
+                return ValueFactory.createValue(1l * metadata.getNCols()
                         * metadata.getNRows());
         }
 
@@ -71,7 +70,7 @@ public final class ST_Count extends AbstractScalarRasterFunction {
         }
 
         @Override
-        public Type getType(Type[] argsTypes) {
-                return TypeFactory.createType(Type.INT);
+        public int getType(int[] argsTypes) {
+                return Type.LONG;
         }
 }

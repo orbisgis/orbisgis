@@ -35,7 +35,6 @@ package org.gdms.sql.function.spatial.geometry.predicates;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.BasicFunctionSignature;
@@ -63,8 +62,8 @@ public abstract class AbstractSpatialPredicateFunction extends AbstractScalarSpa
                 throws FunctionException;
 
         @Override
-        public Type getType(Type[] types) {
-                return TypeFactory.createType(Type.BOOLEAN);
+        public int getType(int[] types) {
+                return Type.BOOLEAN;
         }
 
         @Override

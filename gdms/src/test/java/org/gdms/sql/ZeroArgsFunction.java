@@ -35,44 +35,45 @@ package org.gdms.sql;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.AbstractScalarFunction;
 import org.gdms.sql.function.BasicFunctionSignature;
-import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionSignature;
 
 public class ZeroArgsFunction extends AbstractScalarFunction {
 
-	public Value evaluate(DataSourceFactory dsf, Value[] args)
-			throws FunctionException {
-		return ValueFactory.createNullValue();
-	}
+        @Override
+        public Value evaluate(DataSourceFactory dsf, Value[] args)
+                throws FunctionException {
+                return ValueFactory.createNullValue();
+        }
 
-	public String getDescription() {
-		return null;
-	}
+        @Override
+        public String getDescription() {
+                return null;
+        }
 
-	public String getName() {
-		return "zeroargs";
-	}
+        @Override
+        public String getName() {
+                return "zeroargs";
+        }
 
-	public String getSqlOrder() {
-		return null;
-	}
+        @Override
+        public String getSqlOrder() {
+                return null;
+        }
 
-	public Type getType(Type[] argsTypes) {
-		return TypeFactory.createType(Type.INT);
-	}
+        @Override
+        public int getType(int[] argsTypes) {
+                return Type.INT;
+        }
 
         @Override
         public FunctionSignature[] getFunctionSignatures() {
-                return new FunctionSignature[] {
-                        new BasicFunctionSignature(getType(null))
-                };
+                return new FunctionSignature[]{
+                                new BasicFunctionSignature(getType(null))
+                        };
         }
-
-	
-
 }

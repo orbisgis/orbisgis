@@ -36,10 +36,7 @@ package org.gdms.sql.function.spatial.geometry.edit;
 import com.vividsolutions.jts.geom.Geometry;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.geometryUtils.GeometryEdit;
@@ -80,15 +77,15 @@ public class ST_RemoveHoles extends AbstractScalarSpatialFunction {
         }
         
         @Override
-        public Type getType(Type[] types) {
-                return TypeFactory.createType(Type.GEOMETRY, new Constraint[]{new GeometryDimensionConstraint(2)});
+        public int getType(int[] types) {
+                return types[0];
         }
         
         @Override
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
-                                new BasicFunctionSignature(getType(null), ScalarArgument.POLYGON),
-                                new BasicFunctionSignature(getType(null), ScalarArgument.MULTIPOLYGON)
+                                new BasicFunctionSignature(Type.POLYGON, ScalarArgument.POLYGON),
+                                new BasicFunctionSignature(Type.MULTIPOLYGON, ScalarArgument.MULTIPOLYGON)
                         };
         }
 }

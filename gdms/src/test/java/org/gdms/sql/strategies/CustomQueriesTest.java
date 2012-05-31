@@ -33,30 +33,27 @@
  */
 package org.gdms.sql.strategies;
 
-import org.junit.Before;
-import org.junit.Test;
-import org.gdms.data.types.IncompatibleTypesException;
 import java.io.File;
 
-import org.gdms.TestBase;
-
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.file.FileSourceCreation;
-import org.gdms.data.types.Type;
-import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
-import org.gdms.sql.function.FunctionException;
-import org.gdms.sql.function.FunctionSignature;
-import org.gdms.sql.function.system.RegisterCall;
-import org.gdms.sql.function.ScalarFunction;
-import org.gdms.sql.function.executor.ExecutorFunction;
-import org.gdms.sql.function.spatial.geometry.operators.ST_Buffer;
+import org.junit.Before;
+import org.junit.Test;
 import org.orbisgis.progress.ProgressMonitor;
 
 import static org.junit.Assert.*;
 
+import org.gdms.TestBase;
 import org.gdms.TestResourceHandler;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.types.IncompatibleTypesException;
+import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
+import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionSignature;
+import org.gdms.sql.function.ScalarFunction;
+import org.gdms.sql.function.executor.ExecutorFunction;
+import org.gdms.sql.function.spatial.geometry.operators.ST_Buffer;
+import org.gdms.sql.function.system.RegisterCall;
 
 public class CustomQueriesTest extends TestBase {
 
@@ -250,7 +247,7 @@ public class CustomQueriesTest extends TestBase {
                                 }
 
                                 @Override
-                                public Type getType(Type[] argsTypes) {
+                                public int getType(int[] argsTypes) {
                                         throw new UnsupportedOperationException();
                                 }
 

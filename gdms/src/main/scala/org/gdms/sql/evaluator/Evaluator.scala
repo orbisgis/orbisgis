@@ -129,12 +129,11 @@ trait DsfEvaluator extends Evaluator {
 case class FunctionEvaluator(name: String, l: List[Expression]) extends Evaluator with DsfEvaluator {
   var f: ScalarFunction = null
   def eval = s => f.evaluate(dsf, l map ( _.evaluate(s)): _*)
-  def sqlType = f.getType(l.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray).getTypeCode
+  def sqlType = f.getType(l.map( _.evaluator.sqlType ) toArray)
   override val childExpressions = l
   override def doValidate = {
     if (f == null) throw new FunctionException("Internal error: failed to initialized function for '" + name + "'.")
-    FunctionValidator.failIfTypesDoNotMatchSignature(
-      l.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray,
+    FunctionValidator.failIfTypesDoNotMatchSignature(l.map(_.evaluator.sqlType) toArray,
       f.getFunctionSignatures)
   }
   override def toString = if (f == null) name else f.getName + "(" + l + ")"
@@ -177,14 +176,14 @@ case class AggregateEvaluator(f: AggregateFunction, l: List[Expression]) extends
     ValueFactory.createNullValue[Value]
   }
   val finalValue = () => f.getAggregateResult
-  def sqlType = f.getType(l.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray).getTypeCode
+  def sqlType = f.getType(l.map(_.evaluator.sqlType) toArray)
   override val childExpressions = l
   override def doPreValidate = {
     if (f == null) throw new FunctionException("The function does not exist.")
   }
   override def doValidate = {
     FunctionValidator.failIfTypesDoNotMatchSignature(
-      l.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray,
+      l.map (_.evaluator.sqlType) toArray,
       f.getFunctionSignatures)
   }
   override def toString = "Func(" + f.getName + "(" + l + "))"

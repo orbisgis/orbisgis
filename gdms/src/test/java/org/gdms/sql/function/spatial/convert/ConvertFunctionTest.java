@@ -33,35 +33,33 @@
  */
 package org.gdms.sql.function.spatial.convert;
 
-import org.gdms.driver.DataSet;
-import org.gdms.driver.memory.MemoryDataSetDriver;
-import org.gdms.data.types.Dimension3DConstraint;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
 import org.junit.Test;
-import org.gdms.data.types.Constraint;
+import org.orbisgis.progress.NullProgressMonitor;
+
+import static org.junit.Assert.*;
+
+import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DataSet;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.ColumnValue;
 import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Centroid;
+import org.gdms.sql.function.spatial.geometry.convert.ST_EndPoint;
+import org.gdms.sql.function.spatial.geometry.convert.ST_Explode;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Force_2D;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Force_3D;
+import org.gdms.sql.function.spatial.geometry.convert.ST_Holes;
+import org.gdms.sql.function.spatial.geometry.convert.ST_StartPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiLine;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiPoint;
 import org.gdms.sql.function.spatial.geometry.convert.ST_ToMultiSegments;
 import org.gdms.sql.function.spatial.geometry.create.ST_Boundary;
-import org.gdms.data.types.IncompatibleTypesException;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import org.gdms.sql.function.spatial.geometry.convert.ST_EndPoint;
-import org.gdms.sql.function.spatial.geometry.convert.ST_Explode;
-import org.gdms.sql.function.spatial.geometry.convert.ST_Holes;
-import org.gdms.sql.function.spatial.geometry.convert.ST_StartPoint;
-
-import org.orbisgis.progress.NullProgressMonitor;
-import static org.junit.Assert.*;
 
 public class ConvertFunctionTest extends FunctionTest {
 
@@ -81,23 +79,22 @@ public class ConvertFunctionTest extends FunctionTest {
 
                 // Test too many parameters
                 try {
-                        res = evaluate(function, vg1, ValueFactory.createValue(JTSMultiLineString2D));
+                        evaluate(function, vg1, ValueFactory.createValue(JTSMultiLineString2D));
                         fail();
                 } catch (IncompatibleTypesException e) {
                 }
 
                 // Test wrong parameter type
                 try {
-                        res = evaluate(function, ValueFactory.createValue(true));
+                        evaluate(function, ValueFactory.createValue(true));
                         fail();
                 } catch (IncompatibleTypesException e) {
                 }
 
                 // Test return type
-                Type type = TypeFactory.createType(Type.LINESTRING);
-                type = evaluate(function, type);
-                assertEquals(type.getTypeCode(), Type.GEOMETRY);
-                assertEquals(type.getIntConstraint(Constraint.DIMENSION_3D_GEOMETRY), 2);
+                int type = evaluateDeclaredType(function, Type.LINESTRING);
+                assertEquals(type, Type.GEOMETRY);
+                //assertEquals(type.getIntConstraint(Constraint.DIMENSION_3D_GEOMETRY), 2);
 
                 // Test coordinates
                 try {
@@ -130,23 +127,22 @@ public class ConvertFunctionTest extends FunctionTest {
 
                 // Test too many parameters
                 try {
-                        res = evaluate(function, vg1, ValueFactory.createValue(JTSMultiLineString2D));
+                        evaluate(function, vg1, ValueFactory.createValue(JTSMultiLineString2D));
                         fail();
                 } catch (IncompatibleTypesException e) {
                 }
 
                 // Test wrong parameter type
                 try {
-                        res = evaluate(function, ValueFactory.createValue(true));
+                        evaluate(function, ValueFactory.createValue(true));
                         fail();
                 } catch (IncompatibleTypesException e) {
                 }
 
                 // Test return type
-                Type type = TypeFactory.createType(Type.LINESTRING);
-                type = evaluate(function, type);
-                assertEquals(type.getTypeCode(), Type.GEOMETRY);
-                assertEquals(type.getIntConstraint(Constraint.DIMENSION_3D_GEOMETRY), 3);
+                int type = evaluateDeclaredType(function, Type.LINESTRING);
+                assertEquals(type, Type.GEOMETRY);
+//                assertEquals(type.getIntConstraint(Constraint.DIMENSION_3D_GEOMETRY), 3);
         }
 
         @Test
@@ -178,22 +174,21 @@ public class ConvertFunctionTest extends FunctionTest {
 
                 // Test too many parameters
                 try {
-                        res = evaluate(function, ValueFactory.createValue(JTSMultiPolygon2D), ValueFactory.createValue(JTSMultiLineString2D));
+                        evaluate(function, ValueFactory.createValue(JTSMultiPolygon2D), ValueFactory.createValue(JTSMultiLineString2D));
                         fail();
                 } catch (IncompatibleTypesException e) {
                 }
 
                 // Test wrong parameter type
                 try {
-                        res = evaluate(function, ValueFactory.createValue(true));
+                        evaluate(function, ValueFactory.createValue(true));
                         fail();
                 } catch (IncompatibleTypesException e) {
                 }
 
                 // Test return type
-                Type type = TypeFactory.createType(Type.LINESTRING, new Dimension3DConstraint(3));
-                type = evaluate(function, type);
-                assertEquals(type.getTypeCode(), Type.GEOMETRY);
+                int type = evaluateDeclaredType(function, Type.LINESTRING);
+                assertEquals(type, Type.GEOMETRY);
         }
 
         public final void testToMultiline() throws Exception {

@@ -111,7 +111,7 @@ class ExecutorCommand(name: String, tables: Seq[Either[String, OutputCommand]], 
     // validates tables & parameter types
     FunctionValidator.failIfTablesDoNotMatchSignature(dss toArray, f.getFunctionSignatures)
     FunctionValidator.failIfTypesDoNotMatchSignature(
-      params.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray,
+      params.map(_.evaluator.sqlType) toArray,
       function.getFunctionSignatures)
     
   }
