@@ -29,8 +29,8 @@
         </dependency>
         <dependency>
             <groupId>org.orbisgis</groupId>
-            <artifactId>orbisgis-core-se</artifactId>
-            <version>3.2</version>
+            <artifactId>orbisgis-core-monomap</artifactId>
+            <version>4.0</version>
         </dependency>
     </dependencies>
         <distributionManagement>
