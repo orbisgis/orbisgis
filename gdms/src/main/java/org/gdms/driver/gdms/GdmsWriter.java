@@ -168,6 +168,7 @@ public class GdmsWriter implements RowWriter {
          * @param row an array of values representing a row
          * @throws DriverException
          */
+        @Override
         public void addValues(Value[] row) throws DriverException {
                 ensureCapacity();
                 try {

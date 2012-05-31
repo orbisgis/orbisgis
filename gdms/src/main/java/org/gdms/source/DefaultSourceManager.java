@@ -1186,7 +1186,7 @@ public final class DefaultSourceManager implements SourceManager {
                                         DataSource d = getDataSource(names[i], new NullProgressMonitor());
 
                                         def.setDataSourceFactory(dsf);
-                                        String intName = names[i].substring(names[i].lastIndexOf(".") + 1);
+                                        String intName = names[i].substring(names[i].lastIndexOf('.') + 1);
                                         final Metadata met = def.getSchema().getTableByName(intName);
 
                                         // checks the table is allowed
