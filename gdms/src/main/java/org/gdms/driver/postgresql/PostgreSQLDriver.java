@@ -211,7 +211,9 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                 isPostGISTable = true;
                                 String geomFieldName = res.getString("f_geometry_column");
                                 int srid = res.getInt("srid");
-                                if (srid != -1) {
+                                // -1 means no value for postgis < 2.0
+                                // 0 means no value for postgis >= 2.0
+                                if (srid != -1 && srid != 0) {
                                         crs = getDataSourceFactory().getCrsFactory().createFromName("EPSG:" + srid);
                                 }
                                 geometryFields.add(geomFieldName);
@@ -496,7 +498,8 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
         private String getAddGeometryColumn(String fieldName, Type fieldType)
                 throws DriverException {
                 Dimension3DConstraint dimensionConstraint = (Dimension3DConstraint) fieldType.getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
-                return "select AddGeometryColumn('" + schemaName + "', '" + tableName
+                String sch = schemaName == null ? "public" : schemaName;
+                return "select AddGeometryColumn('" + sch + "', '" + tableName
                         + "', '" + fieldName + "', -1, '"
                         + getGeometryTypeName(fieldType) + "', '"
                         + getGeometryDimension(dimensionConstraint) + "');";
@@ -574,7 +577,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                         Geometry g = row[i].getAsGeometry();
                                         Dimension3DConstraint gc = (Dimension3DConstraint) fieldTypes[i].getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
                                         WKTWriter writer = new WKTWriter(getGeometryDimension(gc));
-                                        fieldValue = "GeomFromText('" + writer.write(g) + "')";
+                                        fieldValue = "ST_GeomFromText('" + writer.write(g) + "')";
                                 } else {
                                         fieldValue = row[i].getStringValue(this);
                                 }
@@ -603,7 +606,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                         Geometry g = row[i].getAsGeometry();
                                         Dimension3DConstraint gc = (Dimension3DConstraint) fieldTypes[i].getConstraint(Constraint.DIMENSION_3D_GEOMETRY);
                                         WKTWriter writer = new WKTWriter(getGeometryDimension(gc));
-                                        fieldValue = "GeomFromText('" + writer.write(g) + "')";
+                                        fieldValue = "ST_GeomFromText('" + writer.write(g) + "')";
                                 } else {
                                         fieldValue = row[i].getStringValue(this);
                                 }
