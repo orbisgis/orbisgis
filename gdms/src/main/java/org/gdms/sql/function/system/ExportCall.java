@@ -48,10 +48,7 @@ import java.io.File;
 
 import org.orbisgis.progress.ProgressMonitor;
 
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.values.Value;
@@ -63,6 +60,7 @@ import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.executor.AbstractExecutorFunction;
 import org.gdms.sql.function.executor.ExecutorFunctionSignature;
+import org.gdms.sql.function.table.TableArgument;
 
 /**
  *
@@ -74,54 +72,35 @@ public final class ExportCall extends AbstractExecutorFunction {
         public void evaluate(DataSourceFactory dsf, DataSet[] tables, Value[] values, ProgressMonitor pm) throws FunctionException {
                 final SourceManager sourceManager = dsf.getSourceManager();
 
-                if (values.length == 2) {
-                        String name = values[0].getAsString();
-                        String file = values[1].getAsString();
+                if (values.length == 1) {
+                        DataSet ds = tables[0];
+                        String file = values[0].getAsString();
 
-                        DataSource ds = null;
-                        try {
-                                ds = dsf.getDataSource(name);
-                        } catch (NoSuchTableException ex) {
-                                throw new FunctionException(ex);
-                        } catch (DataSourceCreationException ex) {
-                                throw new FunctionException(ex);
-                        }
                         String destName = sourceManager.nameAndRegister(new File(file));
                         try {
-                                ds.open();
                                 dsf.saveContents(destName, ds, pm);
-                                ds.close();
                         } catch (DriverException ex) {
                                 throw new FunctionException(ex);
                         } finally {
                                 sourceManager.remove(destName);
                         }
-                } else if (values.length > 7 && values.length < 10) {
+                } else if (values.length > 6 && values.length < 9) {
 
-                        final String fromName = values[0].toString();
-                        DataSource ds = null;
-                        try {
-                                ds = dsf.getDataSource(fromName);
-                        } catch (NoSuchTableException ex) {
-                                throw new FunctionException(ex);
-                        } catch (DataSourceCreationException ex) {
-                                throw new FunctionException(ex);
-                        }
-
-                        String vendor = values[1].toString();
-                        final String host = values[2].toString();
-                        final int port = values[3].getAsInt();
-                        final String dbName = values[4].toString();
-                        final String user = values[5].toString();
-                        final String password = values[6].toString();
+                        DataSet ds = tables[0];
+                        String vendor = values[0].toString();
+                        final String host = values[1].toString();
+                        final int port = values[2].getAsInt();
+                        final String dbName = values[3].toString();
+                        final String user = values[4].toString();
+                        final String password = values[5].toString();
                         String schemaName = null;
                         String tableName = null;
-                        if (values.length == 8) {
-                                tableName = values[7].toString();
+                        if (values.length == 7) {
+                                tableName = values[6].toString();
                         }
-                        if (values.length == 9) {
-                                schemaName = values[7].toString();
-                                tableName = values[8].toString();
+                        if (values.length == 8) {
+                                schemaName = values[6].toString();
+                                tableName = values[7].toString();
                         }
                         
                         if (!vendor.startsWith("jdbc:")) {
@@ -155,22 +134,21 @@ public final class ExportCall extends AbstractExecutorFunction {
 
         @Override
         public String getSqlOrder() {
-                return "1) EXECUTE Export('myTable', '/home/myuser/myFile.shp')\n"
-                        + "2) EXECUTE Export('myTable', 'vendor', 'host', port, "
+                return "1) EXECUTE Export(myTable, '/home/myuser/myFile.shp')\n"
+                        + "2) EXECUTE Export(myTable, 'vendor', 'host', port, "
                         + "dbName, user, password, tableName);\n"
-                        + "3) EXECUTE Export('myTable', 'vendor', 'host', port, "
+                        + "3) EXECUTE Export(myTable, 'vendor', 'host', port, "
                         + "dbName, user, password, schema, tableName);\n";
         }
 
         @Override
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
-                                new ExecutorFunctionSignature(ScalarArgument.STRING, ScalarArgument.STRING),
-                                new ExecutorFunctionSignature(ScalarArgument.STRING, ScalarArgument.STRING,
+                                new ExecutorFunctionSignature(TableArgument.ANY, ScalarArgument.STRING),
+                                new ExecutorFunctionSignature(TableArgument.ANY, ScalarArgument.STRING,
                                 ScalarArgument.STRING, ScalarArgument.INT, ScalarArgument.STRING,
                                 ScalarArgument.STRING, ScalarArgument.STRING, ScalarArgument.STRING),
-                                
-                                new ExecutorFunctionSignature(ScalarArgument.STRING, ScalarArgument.STRING,
+                                new ExecutorFunctionSignature(TableArgument.ANY, ScalarArgument.STRING,
                                 ScalarArgument.STRING, ScalarArgument.INT, ScalarArgument.STRING,
                                 ScalarArgument.STRING, ScalarArgument.STRING, ScalarArgument.STRING,
                                 ScalarArgument.STRING)

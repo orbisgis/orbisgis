@@ -461,8 +461,8 @@ object LogicPlanBuilder {
 	  // ^( T_EXECUTOR function_call)
           val l = getChildren(node.getChild(0))
           val name = l(0).getText
-          val li = if (l.tail.isEmpty) (Nil) else (getChildren(l(1)).map (parseExpression))
-          end = ExecutorCall(name, li)
+          val res = doCustomQuery(node.getChild(0))
+          end = ExecutorCall(name, res._2, res._1)
         }
       case T_SET => {
           // AST:

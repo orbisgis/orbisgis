@@ -413,7 +413,7 @@ case class Grouping(var exp: List[(Expression, Option[String])],var child: Opera
  * @since 0.1
  */
 case class Join(var joinType: JoinType, var left: Operation,var right: Operation) extends Operation
-with ExpressionOperation {
+                                                                                     with ExpressionOperation {
   def children = List(left, right)
   override def children_=(o: List[Operation]) = {o match {
       case a :: b :: Nil => left = a; right = b;
@@ -654,12 +654,26 @@ case class DropIndex(table: String, columns: Seq[String]) extends Operation {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class ExecutorCall(name: String, params: List[Expression]) extends Operation with ExpressionOperation {
-  def children = Nil
-  override def doValidate = params foreach (_ preValidate)
+case class ExecutorCall(name: String, tables: Seq[Either[String, Operation]], params: Seq[Expression]) extends Operation with ExpressionOperation {
+  def children = tables.flatMap(_.right.toOption).toList
+  override def doValidate = {
+    params foreach (_ preValidate)
+    
+    def check(e: Expression) {
+      e match {
+        case field(n,_) => throw new SemanticException("No field is allowed in an executor function: found '" + n + "'.")
+        case _ => e.children map (check)
+      }
+    }
+    
+    params map (check)
+  }
   override def toString = "ExecutorFunction name(" + name + ") " + " params(" + params + ")"
   def expr = params
-  def duplicate: ExecutorCall = ExecutorCall(name, params)
+  def duplicate: ExecutorCall = ExecutorCall(name, tables map { 
+      case Right(a) => Right(a.duplicate)
+      case b => b
+    }, params)
 }
 
 /**

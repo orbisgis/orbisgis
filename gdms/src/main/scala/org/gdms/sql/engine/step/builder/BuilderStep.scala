@@ -55,9 +55,7 @@ import org.gdms.sql.engine.commands.scan._
 import org.gdms.sql.engine.operations._
 import org.gdms.sql.engine.step.functions.FunctionsStep
 import org.gdms.sql.engine.step.physicalJoin.PhysicalJoinOptimStep
-import org.gdms.sql.evaluator.ExistsEvaluator
 import org.gdms.sql.evaluator.Expression
-import org.gdms.sql.evaluator.InEvaluator
 import org.gdms.sql.evaluator.QueryEvaluator
 
 /**
@@ -149,7 +147,16 @@ case object BuilderStep extends AbstractEngineStep[(Operation, DataSourceFactory
       case RenameTable(n, nn) => new RenameTableCommand(n, nn)
       case CreateIndex(t, c) => new CreateIndexCommand(t, c)
       case DropIndex(t, c) => new DropIndexCommand(t, c)
-      case ExecutorCall(name, l) => new ExecutorCommand(name, l)
+      case ExecutorCall(name, t, l) => {
+          var tables = t map { 
+            case Left(s) => Left(s)
+            case Right(o) => buildCommandTree(o) match {
+                case out: OutputCommand => Right(out)
+                case other => Right(new QueryOutputCommand withChild other)
+              }}
+          l map processExp
+          new ExecutorCommand(name, tables, l)
+        }
       case Set(p, v) => new SetParamCommand(p, v)
       case Show(p) => new ShowParamCommand(p)
       case CreateFunction(n, a, l, r) => new CreateFunctionCommand(n, a, l, r)

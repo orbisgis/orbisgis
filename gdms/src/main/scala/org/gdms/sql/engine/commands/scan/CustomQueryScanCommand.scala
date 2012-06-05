@@ -62,8 +62,7 @@ import org.orbisgis.progress.ProgressMonitor
  * The first argument <tt>e</tt> is a list of (constant-based) expressions.
  * The second is a sequence of tables, either:
  *  - the name of a table
- *  - an OutputCommand, that is the result of another custom query
- *    (or in the futur a sub-query...)
+ *  - an OutputCommand, that is the result of another custom query or a subquery
  *
  * This Command is also an Output command so as not to need another OutputCommand
  * on top of it to feed it to an operator that needs DataSet objects. Having

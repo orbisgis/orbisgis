@@ -597,6 +597,7 @@ update_single_set
 
 update_expression
         : expression_main
+        | subquery
         | T_DEFAULT
         ;
 
@@ -642,7 +643,7 @@ insert_value_list
         ;
 
 insert_value_list_item
-        : expression_main | T_DEFAULT
+        : expression_main | subquery | T_DEFAULT
         ;
 
 // DELETE FROM
@@ -760,8 +761,8 @@ drop_index_statement
 // CALL statement
 
 call_statement
-        : (T_CALL | T_EXECUTE) function_call
-        -> ^( T_EXECUTOR function_call)
+        : (T_CALL | T_EXECUTE) custom_query_call
+        -> ^( T_EXECUTOR custom_query_call)
         ;
 
 // SET statement

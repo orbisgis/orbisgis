@@ -45,10 +45,10 @@
 package org.gdms.sql.engine.commands
 
 import org.gdms.data.DataSource
+import org.gdms.data.schema.Metadata
 import org.gdms.data.types.TypeFactory
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.evaluator.Expression
-import org.gdms.sql.evaluator.FieldEvaluator
 import org.gdms.sql.function.AggregateFunction
 import org.gdms.sql.function.FunctionException
 import org.gdms.sql.function.FunctionValidator
@@ -67,17 +67,19 @@ import org.orbisgis.progress.ProgressMonitor
  * @author Antoine Gourlay
  * @since 0.1
  */
-class ExecutorCommand(name: String, params: List[Expression]) extends Command with OutputCommand with ExpressionCommand {
-  // splits params into tables and scalar
-  // tables are resolved as direct field references by the parser, which does not really matter
-  val (tableParams, scalarParams) = params.partition(_.evaluator.isInstanceOf[FieldEvaluator])
-  val exp = scalarParams
-  
-  // holds the tables to give the the ExecutorFunction
-  var tables: List[DataSource] = _
+class ExecutorCommand(name: String, tables: Seq[Either[String, OutputCommand]], params: Seq[Expression]) extends Command with OutputCommand with ExpressionCommand {
 
+  // finds the actual child commands
+  children = tables flatMap (_.right toSeq) toList
+  
+  // splits params into tables and scalar
+  val exp = params
+  
   // holds the actual function instance
   private var function: ExecutorFunction = _
+  
+  // holds all tables opened before given to the function
+  private var openedTables: List[Either[DataSource, OutputCommand]] = Nil
 
   override def doPrepare = {
     // check if the function exists and is of correct type
@@ -86,32 +88,50 @@ class ExecutorCommand(name: String, params: List[Expression]) extends Command wi
       throw new FunctionException("The function " + name + " does not exist.")
     } else {
       f  match {
-            case _: ScalarFunction | _: AggregateFunction => throw new SemanticException("The function '" + name + "' cannot be used here. Syntax is:" +
-                                                                                         " SELECT " + name + "(...) FROM myTable;")
-            case e: ExecutorFunction => function = e
-            case t: TableFunction => throw new SemanticException("The function '" + name
-                                                                    + "' cannot be used here. Syntax is: SELECT * FROM " +
-                                                                    name + "(...);")
-            case _ => throw new SemanticException("Unknown function: '" + name + "'.")
-          }
+        case _: ScalarFunction | _: AggregateFunction => throw new SemanticException("The function '" + name + "' cannot be used here. Syntax is:" +
+                                                                                     " SELECT " + name + "(...) FROM myTable;")
+        case e: ExecutorFunction => function = e
+        case t: TableFunction => throw new SemanticException("The function '" + name
+                                                             + "' cannot be used here. Syntax is: SELECT * FROM " +
+                                                             name + "(...);")
+        case _ => throw new SemanticException("Unknown function: '" + name + "'.")
+      }
     }
     
-    // validates parameterss
+    // initialize expressions
+    super.doPrepare
+    
+    // functions to open the inputs and get their metadata
+    def forDs: String => Metadata = { s =>
+      val ds = dsf.getDataSource(s)
+      ds.open
+      openedTables = Left(ds) :: openedTables
+      ds.getMetadata
+    }
+    def forOut: OutputCommand => Metadata = {  o =>
+      openedTables = Right(o) :: openedTables
+      o.getMetadata
+    }
+
+    // opens everything and gets all metadata
+    val dss = tables map (_ fold(forDs, forOut))
+    
+    // reverse: they were added in reverse order above
+    openedTables = openedTables reverse
+    
+    // validates tables & parameter types
+    FunctionValidator.failIfTablesDoNotMatchSignature(dss toArray, f.getFunctionSignatures)
     FunctionValidator.failIfTypesDoNotMatchSignature(
-      scalarParams.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray,
+      params.map { e => TypeFactory.createType(e.evaluator.sqlType) } toArray,
       function.getFunctionSignatures)
     
-    // get sources and open then
-    // TODO: what happens here with a fully qualified table name??
-    tables = tableParams map (ex => dsf.getDataSource(ex.evaluator.asInstanceOf[FieldEvaluator].name))
-    tables map (_.open)
   }
 
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
     pm.map(_.startTask("Executing", 0))
     
     // evaluates the function
-    function.evaluate(dsf, tables toArray, scalarParams map (_.evaluate(emptyRow)) toArray, new NullProgressMonitor)
+    function.evaluate(dsf, openedTables map (_ fold(identity, _.getResult)) toArray, params map (_.evaluate(emptyRow)) toArray, new NullProgressMonitor)
 
     pm.map(_.endTask)
     Iterator.empty
@@ -119,7 +139,8 @@ class ExecutorCommand(name: String, params: List[Expression]) extends Command wi
   
   override def doCleanUp {
     // close sources
-    tables map (_.close)
+    openedTables flatMap (_.left toSeq) foreach (_.close)
+    openedTables = Nil
     
     super.doCleanUp
   }
