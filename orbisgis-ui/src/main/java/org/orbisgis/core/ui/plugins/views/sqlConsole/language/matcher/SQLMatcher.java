@@ -341,6 +341,7 @@ public class SQLMatcher {
                                 // after from, tables and table functions
                                 addTables(false);
                                 addTableFunctions();
+                                addScalarFunctions();
                                 return;
                         } else if ("SELECT".equalsIgnoreCase(a) || "(SELECT".equalsIgnoreCase(a) || "WHERE".equalsIgnoreCase(a)
                                 || "SET".equalsIgnoreCase(a) || "ON".equalsIgnoreCase(a)) {
@@ -358,6 +359,11 @@ public class SQLMatcher {
                         } else if ("BY".equalsIgnoreCase(a)) {
                                 // GROUP/ORDER BY
                                 addTables(true);
+                                return;
+                        } else if ("EXECUTE".equalsIgnoreCase(a) || "CALL".equalsIgnoreCase(a)) {
+                                addScalarFunctions();
+                                addTableFunctions();
+                                addTables(false);
                                 return;
                         }
                 }
@@ -445,7 +451,14 @@ public class SQLMatcher {
                                 addTables(true);
                                 return;
                         } else if ("FROM".equalsIgnoreCase(b)) {
+                                addScalarFunctions();
                                 addTables(false);
+                                addTableFunctions();
+                                return;
+                        } else if ("EXECUTE".equalsIgnoreCase(b) || "CALL".equalsIgnoreCase(b)) {
+                                addScalarFunctions();
+                                addTables(false);
+                                addTableFunctions();
                                 return;
                         }
                         if (b.contains(";")) {

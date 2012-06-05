@@ -73,7 +73,8 @@ final class SQLLexer {
                         // drop one if does not end in a whitespace or a dot
                         if (currentIndex != -1) {
                                 char currChar = s.charAt(currentIndex);
-                                while (isCorrectChar(currChar) && currChar != '.') {
+                                while (isCorrectChar(currChar) && currChar != '.'
+                                        && currChar != '(') {
                                         currentIndex--;
                                         if (currentIndex == -1) {
                                                 break;

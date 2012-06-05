@@ -214,7 +214,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                                                                 // adds a parameter with no name but a type
                                                                 params.add(new ParameterizedCompletion.Parameter(DefaultType.typesDescription.get(typeCode).replace("TYPE_", "").replace("ALL", "ANY"), null));
                                                         }
-                                                } else if (tables) {
+                                                } else if (tables || executor) {
                                                         // table argument
                                                         params.add(new ParameterizedCompletion.Parameter("TABLE", null));
                                                 }
