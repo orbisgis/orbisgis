@@ -137,8 +137,8 @@ public class SpatialEditionTest extends TestBase {
                 }
 
                 for (int i = 0; i < geometries.length; i++) {
-                        assertTrue(contains(d, d.queryIndex(new DefaultSpatialIndexQuery(
-                                bounds[i], spatialField)),
+                        assertTrue(contains(d, d.queryIndex(new DefaultSpatialIndexQuery(spatialField,
+                                bounds[i])),
                                 geometries[i]));
                 }
 
@@ -147,8 +147,8 @@ public class SpatialEditionTest extends TestBase {
                 }
 
                 for (int i = 0; i < geometries.length; i++) {
-                        assertTrue(contains(d, d.queryIndex(new DefaultSpatialIndexQuery(
-                                bounds[i], spatialField)),
+                        assertTrue(contains(d, d.queryIndex(new DefaultSpatialIndexQuery(spatialField,
+                                bounds[i])),
                                 geometries[geometries.length - i - 1]));
                 }
 
@@ -181,7 +181,7 @@ public class SpatialEditionTest extends TestBase {
                 Envelope e = d.getFullExtent();
                 d.deleteRow(0);
                 d.deleteRow(0);
-                DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(e, spatialField);
+                DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(spatialField, e);
                 assertEquals(rc - 2, count(d.queryIndex(query)));
                 d.commit();
                 d.close();
@@ -195,7 +195,7 @@ public class SpatialEditionTest extends TestBase {
                 e = d.getFullExtent();
                 d.insertFilledRowAt(0, nullifyAutoIncrement(d, d.getRow(0)));
                 d.deleteRow(1);
-                query = new DefaultSpatialIndexQuery(e, spatialField);
+                query = new DefaultSpatialIndexQuery(spatialField, e);
                 assertEquals(rc, count(d.queryIndex(query)));
                 d.commit();
                 d.close();
@@ -233,7 +233,7 @@ public class SpatialEditionTest extends TestBase {
                 d.open();
                 long originalRowCount = d.getRowCount();
                 Envelope e = d.getFullExtent();
-                DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(e, spatialField);
+                DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(spatialField, e);
                 d.deleteRow(0);
                 assertEquals(count(d.queryIndex(query)), originalRowCount - 1);
                 d.insertEmptyRowAt(1);
@@ -399,7 +399,7 @@ public class SpatialEditionTest extends TestBase {
                         }
                 }
 
-                DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(fe, sds.getFieldName(sds.getSpatialFieldIndex()));
+                DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(sds.getFieldName(sds.getSpatialFieldIndex()), fe);
                 Iterator<Integer> it = sds.queryIndex(query);
                 if (it != null) {
                         return count(it) == sds.getRowCount();
@@ -498,7 +498,7 @@ public class SpatialEditionTest extends TestBase {
                         IndexManager.RTREE_SPATIAL_INDEX, null);
                 DataSource sds = dsf.getDataSource(dsName);
                 sds.open();
-                DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(sds.getFullExtent(), spatialField);
+                DefaultSpatialIndexQuery query = new DefaultSpatialIndexQuery(spatialField, sds.getFullExtent());
 
                 Iterator<Integer> it = sds.queryIndex(query);
                 assertEquals(count(it), sds.getRowCount());
@@ -578,8 +578,7 @@ public class SpatialEditionTest extends TestBase {
 
                 sds = dsf.getDataSource(sds.getName());
                 sds.open();
-                IndexQuery query = new DefaultSpatialIndexQuery(sds.getFullExtent(),
-                        "geom");
+                IndexQuery query = new DefaultSpatialIndexQuery("geom", sds.getFullExtent());
                 assertEquals(count(sds.queryIndex(query)), sds.getRowCount());
                 sds.close();
         }

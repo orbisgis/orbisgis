@@ -233,8 +233,7 @@ public class IndexesTest extends TestBase {
                 ds.open();
                 Envelope env = ds.getFullExtent();
                 ds.close();
-                SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(env,
-                        "the_geom");
+                SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery("the_geom", env);
                 testDeletion(spatialQuery);
         }
 
@@ -269,8 +268,7 @@ public class IndexesTest extends TestBase {
                 ds.open();
                 Envelope env = ds.getFullExtent();
                 ds.close();
-                SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(env,
-                        "the_geom");
+                SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery("the_geom", env);
                 testInsertionAtTheBeginning(spatialQuery);
         }
 
@@ -315,8 +313,8 @@ public class IndexesTest extends TestBase {
                 ds.open();
                 DefaultAlphaQuery DefaultAlphaQuery = new DefaultAlphaQuery("gid",
                         null, false, null, false);
-                SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(
-                        ds.getFullExtent(), "the_geom");
+                SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery("the_geom",
+                        ds.getFullExtent());
                 Iterator<Integer> it = ds.queryIndex(DefaultAlphaQuery);
                 int count = getCount(it);
                 assertEquals(count, 0);
@@ -348,7 +346,7 @@ public class IndexesTest extends TestBase {
                 count = getCount(it);
                 assertEquals(count, ds.getRowCount());
                 // Check the spatial index remains
-                SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(geom.getEnvelopeInternal(), "the_geom");
+                SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery( "the_geom", geom.getEnvelopeInternal());
                 it = ds.queryIndex(spatialQuery);
                 assertTrue(contains(ds, it, geom));
                 ds.close();
@@ -432,8 +430,8 @@ public class IndexesTest extends TestBase {
                 ds.syncWithSource();
                 ds.setFieldValue(3, 0, ds.getFieldValue(1, 0));
 
-                SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery(
-                        ds.getFullExtent(), "the_geom");
+                SpatialIndexQuery spatialQuery = new DefaultSpatialIndexQuery("the_geom",
+                        ds.getFullExtent());
                 assertEquals(getCount(ds.queryIndex(spatialQuery)), ds.getRowCount());
                 ds.close();
         }

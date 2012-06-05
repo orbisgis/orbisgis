@@ -48,6 +48,7 @@ import com.vividsolutions.jts.geom.Envelope;
 
 /**
  * Default implementation for {@code SpatialIndexQuery}
+ *
  * @author Antoine Gourlay
  */
 public class DefaultSpatialIndexQuery implements SpatialIndexQuery {
@@ -55,10 +56,10 @@ public class DefaultSpatialIndexQuery implements SpatialIndexQuery {
         private Envelope area;
         private String[] fieldNames;
 
-        public DefaultSpatialIndexQuery(Envelope area, String fieldName) {
+        public DefaultSpatialIndexQuery(String fieldName, Envelope area) {
                 super();
                 this.area = area;
-                this.fieldNames = new String[] {fieldName};
+                this.fieldNames = new String[]{fieldName};
         }
 
         @Override

@@ -252,8 +252,8 @@ public class DataSourceFactoryTest extends TestBase {
                 sm.addName(dsName, secondName);
                 dsf.getIndexManager().buildIndex(dsName, spatialFieldName,
                         IndexManager.RTREE_SPATIAL_INDEX, null);
-                SpatialIndexQuery query = new DefaultSpatialIndexQuery(new Envelope(0,
-                        0, 0, 0), spatialFieldName);
+                SpatialIndexQuery query = new DefaultSpatialIndexQuery(spatialFieldName,
+                        new Envelope(0, 0, 0, 0));
                 assertNotNull(dsf.getIndexManager().getIndex(dsName, spatialFieldName));
                 assertNotNull(dsf.getIndexManager().getIndexedFieldNames(dsName));
                 assertNotNull(dsf.getIndexManager().queryIndex(dsName, query));

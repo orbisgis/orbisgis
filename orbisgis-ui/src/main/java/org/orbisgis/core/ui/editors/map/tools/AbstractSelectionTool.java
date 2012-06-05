@@ -191,8 +191,7 @@ public abstract class AbstractSelectionTool extends Selection {
                 String geomFieldName = ds.getMetadata().getFieldName(
                         ds.getSpatialFieldIndex());
                 Envelope env = new Envelope(rect.getMinX(), rect.getMaxX(), rect.getMinY(), rect.getMaxY());
-                Iterator<Integer> res = ds.queryIndex(new DefaultSpatialIndexQuery(env,
-                        geomFieldName));
+                Iterator<Integer> res = ds.queryIndex(new DefaultSpatialIndexQuery(geomFieldName, env));
 
                 return res;
         }

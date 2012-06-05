@@ -109,8 +109,7 @@ public class FailedEditionTest extends TestBase {
         public void testSpatialObjectfailedCommit() throws Exception {
                 DataSource ds = dsf.getDataSource("object");
                 ds.open();
-                failedCommit(ds, new DefaultSpatialIndexQuery(ds.getFullExtent(),
-                        SPATIAL_FIELD_NAME));
+                failedCommit(ds, new DefaultSpatialIndexQuery(SPATIAL_FIELD_NAME, ds.getFullExtent()));
         }
 
         @Test
@@ -133,8 +132,7 @@ public class FailedEditionTest extends TestBase {
                 DataSource ds = dsf.getDataSource("executeDB");
                 ds.open();
                 ReadDriver.setCurrentDataSource(ds);
-                failedCommit(ds, new DefaultSpatialIndexQuery(ds.getFullExtent(),
-                        SPATIAL_FIELD_NAME));
+                failedCommit(ds, new DefaultSpatialIndexQuery(SPATIAL_FIELD_NAME, ds.getFullExtent()));
         }
 
         @Before

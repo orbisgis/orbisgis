@@ -101,7 +101,7 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
     // gets the envelope of the current geometry value
     val env = r(smallSpatialField).getAsGeometry.getEnvelopeInternal
     // creates a query for that envelope
-    big.query = new DefaultSpatialIndexQuery(env, bigSpatialFieldName)
+    big.query = new DefaultSpatialIndexQuery(bigSpatialFieldName, env)
     
     // runs the query
     big.execute
