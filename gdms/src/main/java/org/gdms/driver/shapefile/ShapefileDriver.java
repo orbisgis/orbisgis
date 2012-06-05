@@ -139,7 +139,11 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         FileInputStream shpFis = new FileInputStream(file);
                         WarningListener warningListener = dataSourceFactory.getWarningListener();
                         reader = new ShapefileReader(shpFis.getChannel(), warningListener);
-                        FileInputStream shxFis = new FileInputStream(FileUtils.getFileWithExtension(file, "shx"));
+                        File shx = FileUtils.getFileWithExtension(file, "shx");
+                        if (shx == null || !shx.exists()) {
+                                throw new DriverException("The file " + file.getAbsolutePath() + " has no corresponding .shx file");
+                        }
+                        FileInputStream shxFis = new FileInputStream(shx);
                         shxFile = new IndexFile(shxFis.getChannel(), warningListener);
 
                         ShapefileHeader header = reader.getHeader();
