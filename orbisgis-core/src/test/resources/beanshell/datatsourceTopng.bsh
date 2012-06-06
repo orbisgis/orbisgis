@@ -18,4 +18,4 @@ Renderer r = new ImageRenderer();
 BufferedImage img = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
 r.draw(img, layer.getEnvelope(), layer);
 
-ImageIO.write(img, "png", new File(System.getProperty("user.home")+ File.separator+"myImage.png"));
+ImageIO.write(img, "png", new File("target"+ File.separator+"myImage.png"));
