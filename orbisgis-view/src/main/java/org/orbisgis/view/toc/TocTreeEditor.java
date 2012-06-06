@@ -51,7 +51,7 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.sif.CRFlowLayout;
 
-public class TocEditor extends TocAbstractRenderer implements TreeCellEditor {
+public class TocTreeEditor extends TocAbstractRenderer implements TreeCellEditor {
 	private EditorPanel editorPanel;
 
 	private JTree tree;
@@ -109,7 +109,7 @@ public class TocEditor extends TocAbstractRenderer implements TreeCellEditor {
 
 	}
 
-	public TocEditor(JTree toc) {
+	public TocTreeEditor(JTree toc) {
 		editorPanel = new EditorPanel();
 		this.tree = toc;
 	}

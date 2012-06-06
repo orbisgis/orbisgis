@@ -147,7 +147,7 @@ public class Toc extends JPanel implements DockingPanel  {
         tree.setEditable(true);        
         setEmptyLayerModel(tree);
         tree.setCellRenderer(new TocRenderer(this));
-        tree.setCellEditor(new TocEditor(tree));
+        tree.setCellEditor(new TocTreeEditor(tree));
         tree.addMouseListener(new PopupMouselistener());
         //Add a tree selection listener
         tree.getSelectionModel().addTreeSelectionListener(EventHandler.create(TreeSelectionListener.class, this, "onTreeSelectionChange"));
