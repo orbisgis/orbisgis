@@ -41,6 +41,20 @@
                                         <keywords>-ktr</keywords>
                                 </configuration>
                         </plugin>
+                        <plugin>
+                                <groupId>org.codehaus.mojo</groupId>
+                                <artifactId>exec-maven-plugin</artifactId>
+                                <version>1.2.1</version>
+                                <configuration>
+                                        <executable>java</executable>
+                                        <classpathScope>runtime</classpathScope>
+                                        <arguments>
+                                                <argument>-classpath</argument>
+                                                <classpath />
+                                                <argument>org.orbisgis.view.main.Main</argument>
+                                        </arguments>
+                                </configuration>
+                        </plugin>
                 </plugins>
         </build>  
         <properties>
