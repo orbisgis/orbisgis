@@ -39,6 +39,7 @@ package org.orbisgis.core;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
+import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.FileOutputStream;
 import net.opengis.ows_context.OWSContextType;
@@ -456,6 +457,11 @@ public class MapContextTest extends AbstractTest {
 		Envelope envelope = mc.getLayerModel().getEnvelope();
 		FileOutputStream outStream = new FileOutputStream(new File(
 				"/tmp/output.svg"));
+                if(GraphicsEnvironment.isHeadless()) {
+                        //MapTransform require the screen size for DPI
+                        //it show a warning message is there is not graphic environment
+                        failErrorManager.setIgnoreWarnings(true);
+                }
 		mem.exportSVG(mc, outStream, 10, 10, new Envelope(new Coordinate(
 				306260, 2251944), new Coordinate(310000, 2253464)), null, 72);
 		outStream.close();
@@ -465,7 +471,8 @@ public class MapContextTest extends AbstractTest {
 			mem.exportSVG(mc, outStream, 10, 10, envelope, null, 72);
 			assertTrue(false);
 		} catch (IllegalArgumentException e) {
-		}
+		}                
+                failErrorManager.setIgnoreWarnings(false);
 	}
 
 }
