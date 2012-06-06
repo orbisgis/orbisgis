@@ -63,13 +63,14 @@ import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.sql.engine.ParseException;
 
 /**
- * Manages all registered sources.
+ * Manages all registered sources.<br />
  *
- * An instance of this class represents the internal catalog of sources registered with Gdms.
- *
+ * <p>An instance of this class represents the internal catalog of sources registered with Gdms.
+ * </p><p>
  * New sources can be registered with the <tt>register(...)</tt> and <tt>nameAndRegister(...)</tt>
  * methods and removed with {@link #remove(java.lang.String) } and {@link #delete(java.lang.String) }.
- *
+ * </p>
+ * 
  * @author Antoine Gourlay
  */
 public interface SourceManager {
@@ -575,6 +576,11 @@ public interface SourceManager {
         
         /**
          * Imports and register with the given name the content of the file.
+         * 
+         * If the file contains several tables, they are all imported and
+         * registered under the schema <tt>name</tt>. If it contains a single
+         * table, it is directly registered as <tt>name</tt>.
+         * 
          * @param name a new name
          * @param file a file to import
          * @throws DriverException 
@@ -583,6 +589,12 @@ public interface SourceManager {
         
         /**
          * Imports and register with the given name the content of an import source definition.
+         * 
+         * 
+         * If the file contains several tables, they are all imported and
+         * registered under the schema <tt>name</tt>. If it contains a single
+         * table, it is directly registered as <tt>name</tt>.
+         * 
          * @param name a new name
          * @param def a source to import
          * @throws DriverException 
