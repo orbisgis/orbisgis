@@ -49,9 +49,9 @@ import net.opengis.se._2_0.core.ExtensionParameterType;
 import net.opengis.se._2_0.core.ExtensionType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.PointSymbolizerType;
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -60,6 +60,8 @@ import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * {@code PointSymbolizer} are used to draw a graphic at a point. As a symbolizer, 
@@ -82,7 +84,8 @@ import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
  * @author alexis, maxence
  */
 public final class PointSymbolizer extends VectorSymbolizer implements GraphicNode {
-
+    private final static I18n I18N = I18nFactory.getI18n(PointSymbolizer.class);
+    private final static Logger LOGGER = Logger.getLogger(PointSymbolizer.class);
     private static final String MODE_VERTEX = "vertex";
     private GraphicCollection graphic;
     private boolean onVertex;
@@ -176,7 +179,7 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
                     graphic.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(x, y));
                 }
             } catch (ParameterException ex) {
-                Services.getErrorManager().error("Could not render feature ", ex);
+                LOGGER.error(I18N.tr("Could not render feature"), ex);
             }
         }
     }

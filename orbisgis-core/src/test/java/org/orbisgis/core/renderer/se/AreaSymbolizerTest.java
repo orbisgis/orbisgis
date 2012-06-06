@@ -15,11 +15,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import net.opengis.se._2_0.core.StyleType;
 import org.junit.Test;
-import org.orbisgis.core.ConsoleErrorManager;
-import org.orbisgis.core.ConsoleOutputManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 import static org.junit.Assert.*;
 
 /**
@@ -27,9 +23,6 @@ import static org.junit.Assert.*;
  * @author maxence
  */
 public class AreaSymbolizerTest {
-
-    ConsoleOutputManager output;
-    ConsoleErrorManager error;
 
     private class ImagePanel extends JPanel {
 
@@ -49,15 +42,6 @@ public class AreaSymbolizerTest {
         }
     }
 
-
-    public AreaSymbolizerTest() throws IOException {
-
-        error = new ConsoleErrorManager();
-        Services.registerService(ErrorManager.class, "", error);
-        output = new ConsoleOutputManager();
-        Services.registerService(OutputManager.class, "", output);
-
-    }
 
     @Test
     public void testAreaSymbolizer() throws Exception {

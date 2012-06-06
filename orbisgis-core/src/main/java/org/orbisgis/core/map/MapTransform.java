@@ -51,11 +51,15 @@ import java.awt.image.renderable.RenderContext;
 import java.util.ArrayList;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 public class MapTransform implements PointTransformation {
-
+        private final static Logger LOGGER = Logger.getLogger(MapTransform.class);
+        private final static I18n I18N = I18nFactory.getI18n(MapTransform.class);
         private boolean adjustExtent;
         private BufferedImage image = null;
         private Envelope adjustedExtent;
@@ -106,7 +110,7 @@ public class MapTransform implements PointTransformation {
                 try {
                         this.dpi = Toolkit.getDefaultToolkit().getScreenResolution();
                 } catch (HeadlessException e) {
-                        Services.getOutputManager().println("Could not retrieve current DPI. Use 96.0!", Color.ORANGE);
+                        LOGGER.warn(I18N.tr("Could not retrieve current DPI. Use 96.0!"), e);
                         this.dpi = DEFAULT_DPI;
                 }
         }
@@ -137,12 +141,12 @@ public class MapTransform implements PointTransformation {
 
         public void switchToDraft() {
                 this.currentRenderContext = MapTransform.draftContext;
-                Services.getOutputManager().println("Switch to draft!");
+                LOGGER.debug("Switch to draft!");
         }
 
         public void switchToScreen() {
                 this.currentRenderContext = MapTransform.screenContext;
-                Services.getOutputManager().println("Switch to Hign-Quality!");
+                LOGGER.debug("Switch to Hign-Quality!");
         }
 
         public RenderContext getCurrentRenderContext() {

@@ -38,16 +38,21 @@ package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.logging.Level;
 import net.opengis.ows._2.BoundingBoxType;
-import net.opengis.ows_context.OWSContextType;
-import net.opengis.ows_context.ObjectFactory;
+import net.opengis.ows_context.*;
+import net.opengis.sld._2.LayerDescriptionType;
 import org.apache.log4j.Logger;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceEvent;
@@ -59,7 +64,9 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.Renderer;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
@@ -70,7 +77,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * 
  * 
  */
-public class OwsMapContext extends BeanMapContext {
+public final class OwsMapContext extends BeanMapContext {
 
         private final static I18n I18N = I18nFactory.getI18n(OwsMapContext.class);
         private final static Logger LOGGER = Logger.getLogger(OwsMapContext.class);
@@ -93,14 +100,13 @@ public class OwsMapContext extends BeanMapContext {
 	public OwsMapContext() {
 		openerListener = new OpenerListener();
 		sourceListener = new LayerRemovalSourceListener();
-		DataManager dataManager = Services.getService(DataManager.class);
-		layerModel=dataManager.createLayerCollection("root");
+		setRootLayer(createLayerCollection("root"));
                 
                 //Create an empty map context
-		createJaxbMapContext();
+		jaxbMapContext = createJaxbMapContext();
 		idTime = System.currentTimeMillis();
 	}
-
+        
         public ILayer createLayer(DataSource sds) throws LayerException {
                 int type = sds.getSource().getType();
                 if ((type & SourceManager.WMS) == SourceManager.WMS) {
@@ -135,14 +141,18 @@ public class OwsMapContext extends BeanMapContext {
 	public ILayer createLayerCollection(String layerName) {
 		return new LayerCollection(layerName);
 	}
-
-        @Override
-	protected void setLayerModel(ILayer newRoot) {
+        
+        private void setRootLayer(ILayer newRoot) {
 		if (layerModel != null) {
 			layerModel.removeLayerListenerRecursively(openerListener);
 		}
-		super.setLayerModel(newRoot);
-		layerModel.addLayerListenerRecursively(openerListener);
+                super.setLayerModel(newRoot);
+		layerModel.addLayerListenerRecursively(openerListener);            
+        }
+
+        @Override
+	protected void setLayerModel(ILayer newRoot) {
+                setRootLayer(newRoot);
 	}
 
 	@Override
@@ -231,7 +241,7 @@ public class OwsMapContext extends BeanMapContext {
 	}
 
 	private final class OpenerListener extends LayerListenerAdapter {
-
+                
 		@Override
 		public void layerAdded(LayerCollectionEvent e) {
 			if (isOpen()) {
@@ -278,8 +288,8 @@ public class OwsMapContext extends BeanMapContext {
 				}
 			}
 
-			selectedLayers = newSelection.toArray(new ILayer[newSelection
-					.size()]);
+			setSelectedLayers(newSelection.toArray(new ILayer[newSelection
+					.size()]));
 			// checkIfHasToResetSRID();
 		}
 	}
@@ -349,15 +359,15 @@ public class OwsMapContext extends BeanMapContext {
 		}
 	}
        
-        private void createJaxbMapContext() {
+        private OWSContextType createJaxbMapContext() {
             //Create jaxbcontext data
             ObjectFactory ows_context_factory = new ObjectFactory();
             net.opengis.ows._2.ObjectFactory ows_factory = new net.opengis.ows._2.ObjectFactory();
 
-            jaxbMapContext = ows_context_factory.createOWSContextType();
+            OWSContextType mapContextSerialisation = ows_context_factory.createOWSContextType();
 
             //GeneralType
-            jaxbMapContext.setGeneral(ows_context_factory.createGeneralType());                   
+            mapContextSerialisation.setGeneral(ows_context_factory.createGeneralType());                   
 
             //GeneralType:Bounding Box
             if(boundingBox!=null) {
@@ -366,13 +376,26 @@ public class OwsMapContext extends BeanMapContext {
                 bbox.getLowerCorner().add(boundingBox.getMinY());
                 bbox.getUpperCorner().add(boundingBox.getMaxX());
                 bbox.getUpperCorner().add(boundingBox.getMaxY());
-                jaxbMapContext.getGeneral().setBoundingBox(ows_factory.createBoundingBox(bbox));
-            }            
+                mapContextSerialisation.getGeneral().setBoundingBox(ows_factory.createBoundingBox(bbox));
+            }
+            //ResourceList
+            ResourceListType rs = ows_context_factory.createResourceListType();
+            mapContextSerialisation.setResourceList(rs);
+            
+            //LayerList
+            if(layerModel!=null) {
+                List<LayerType> rootLayerList = rs.getLayer();
+                ILayer[] rootLayers = layerModel.getChildren();
+                for(ILayer layer : rootLayers) {
+                        rootLayerList.add(layer.getJAXBElement());
+                }
+            }
+            return mapContextSerialisation;
         }
 	@Override
 	public Object getJAXBObject() {
 		if(jaxbMapContext==null) {
-                    createJaxbMapContext();
+                    return createJaxbMapContext();
                 }
                 return jaxbMapContext;		
 	}
@@ -415,12 +438,103 @@ public class OwsMapContext extends BeanMapContext {
 		}
 		layerModel.removeLayerListenerRecursively(openerListener);
 
-		// Listen source removal events
+		// Remove Listener source removal
 		DataManager dm = Services.getService(DataManager.class);
 		dm.getSourceManager().removeSourceListener(sourceListener);
 
 		this.open = false;
+                
+                
 	}
+        
+        /**
+         * Register a layer DataURL from an URI
+         * 
+         * TODO Already registered URI are not registered twice
+         */
+        private DataSource registerLayerResource(URI resourceUri) throws DataSourceCreationException, DriverException {
+		DataManager dm = Services.getService(DataManager.class);
+                //dm.getDataSourceFactory().
+                return dm.getDataSourceFactory().getDataSource(new File(resourceUri));
+        }
+        /**
+         * Recursive function to parse a layer tree
+         * @param lt
+         * @param parentLayer 
+         */
+        private void parseJaxbLayer(LayerType lt,ILayer parentLayer) throws LayerException {
+                //Test if lt is a group
+                if(!lt.getLayer().isEmpty() || (lt.getStyleList()==null && lt.getDataURL()==null )) {
+                        //it will create a LayerCollection
+                        parseJaxbLayerCollection(lt,parentLayer);
+                }else{
+                        //it corresponding to a leaf layer
+                        //We need to read the data declaration and create the layer
+                        try {
+                                URLType dataUrl = lt.getDataURL();
+                                DataSource layerSource = null;
+                                if(dataUrl!=null) {
+                                        OnlineResourceType resType = dataUrl.getOnlineResource();
+                                        if(resType!=null) {
+                                                try {
+                                                        URI resourceURI = new URI(resType.getHref());
+                                                        layerSource = registerLayerResource(resourceURI);
+                                                } catch (DriverException ex) {
+                                                        throw new LayerException(I18N.tr("Unable to load the data source for the layer {1}.",resType.getHref(),lt.getTitle().toString()),ex);
+                                                } catch (DataSourceCreationException ex) {
+                                                        throw new LayerException(I18N.tr("Unable to load the data source for the layer {1}.",resType.getHref(),lt.getTitle().toString()),ex);
+                                                } catch (URISyntaxException ex) {
+                                                        throw new LayerException(I18N.tr("Unable to parse the href URI {1} for the layer {2}.",resType.getHref(),lt.getTitle().toString()),ex);
+                                                }
+                                        }
+                                }
+                                if(layerSource!=null) {
+                                        try {
+                                                ILayer leafLayer = createLayer(layerSource);
+                                                leafLayer.setDescription(new Description(lt));
+                                                parentLayer.addLayer(leafLayer);
+                                        } catch (InvalidStyle ex) {
+                                                throw new LayerException(I18N.tr("Unable to load the description of the layer {1}",lt.getTitle().toString()), ex);
+                                        }
+                                }
+                        } catch(LayerException ex) {
+                                //The layer is not created if a layer exception is thrown
+                                LOGGER.error(ex);
+                        }
+                }
+        }        
+        
+        /**
+         * Recursive function to parse a layer tree
+         * @param lt
+         * @param parentLayer 
+         */
+        private void parseJaxbLayerCollection(LayerType lt,ILayer parentLayer) throws LayerException {
+                LayerCollection layerCollection = new LayerCollection(lt);
+                for(LayerType ltc : lt.getLayer()) {
+                        parseJaxbLayer(ltc,layerCollection);
+                }
+                parentLayer.addLayer(layerCollection);
+        }
+
+        private void loadOwsContext() throws LayerException {
+            if(jaxbMapContext!=null) {
+                //Load bounding box
+                if(jaxbMapContext.getGeneral().getBoundingBox()!=null) {
+                    List<Double> lowerCorner = jaxbMapContext.getGeneral().getBoundingBox().getValue().getLowerCorner();
+                    List<Double> upperCorner = jaxbMapContext.getGeneral().getBoundingBox().getValue().getUpperCorner();
+                    if(lowerCorner.size() >= 2 && upperCorner.size() >= 2) {
+                        setBoundingBox(new Envelope(lowerCorner.get(0),upperCorner.get(0),lowerCorner.get(1),upperCorner.get(1)));
+                    }
+                }
+                //Load layers
+                //Root layer correspond to ResourceList
+                setRootLayer(createLayerCollection("root"));
+                for(LayerType lt : jaxbMapContext.getResourceList().getLayer()) {
+                        parseJaxbLayer(lt,getLayerModel());
+                }   
+            }            
+        }
 
 	@Override
 	public void open(ProgressMonitor pm) throws LayerException {
@@ -429,21 +543,19 @@ public class OwsMapContext extends BeanMapContext {
 			throw new IllegalStateException(
 					I18N.tr("The map is already open"));
 		}
-
+                open = true;
 		this.activeLayer = null;
                 //Read the specified jaxbMapContext
                 setSelectedLayers(new ILayer[]{});
                 setSelectedStyles(new ArrayList<Style>());
-                if(jaxbMapContext!=null) {
-
-                    List<Double> lowerCorner = jaxbMapContext.getGeneral().getBoundingBox().getValue().getLowerCorner();
-                    List<Double> upperCorner = jaxbMapContext.getGeneral().getBoundingBox().getValue().getUpperCorner();
-                    if(lowerCorner.size() >= 2 && upperCorner.size() >= 2) {
-                        setBoundingBox(new Envelope(lowerCorner.get(0),upperCorner.get(0),lowerCorner.get(1),upperCorner.get(1)));
-                    }
-                    
-                }
+                
+                loadOwsContext();
                 jaxbMapContext = null;
+                
+                
+		// Listen source removal events
+		DataManager dm = Services.getService(DataManager.class);
+		dm.getSourceManager().addSourceListener(sourceListener);
 	}
 
 	@Override

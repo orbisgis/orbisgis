@@ -13,17 +13,13 @@ import org.grap.model.GeoRaster;
 import org.gvsig.remoteClient.utils.BoundaryBox;
 import org.gvsig.remoteClient.wms.WMSClient;
 import org.gvsig.remoteClient.wms.WMSStatus;
-import org.orbisgis.core.layerModel.persistence.LayerType;
 import org.orbisgis.core.renderer.legend.Legend;
-import org.orbisgis.core.renderer.legend.RasterLegend;
 import org.orbisgis.core.renderer.legend.WMSLegend;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.utils.I18N;
 
-public class WMSLayer extends GdmsLayer {
+public class WMSLayer extends BeanLayer {
 
-	private static final String NOT_SUPPORTED = I18N.getString("orbisgis-core.orbisgis.org.orbisgis.wMSLayer.methodNotSupportedInWMSLayer"); //$NON-NLS-1$
 	private DataSource ds;
 	private Envelope envelope;
 	private WMSConnection connection;
@@ -46,7 +42,7 @@ public class WMSLayer extends GdmsLayer {
 
 	@Override
 	public GeoRaster getRaster() throws DriverException {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);
+		throw new UnsupportedOperationException(I18N.tr("Method not supported in WMS layers"));
 	}
 
 	public Legend[] getRenderingLegend() throws DriverException {
@@ -55,7 +51,7 @@ public class WMSLayer extends GdmsLayer {
 
 	@Override
 	public int[] getSelection() {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);
+		throw new UnsupportedOperationException(I18N.tr("Method not supported in WMS layers"));
 	}
 
 	public WMSLegend getWMSLegend() {
@@ -75,7 +71,6 @@ public class WMSLayer extends GdmsLayer {
 
 	@Override
 	public void open() throws LayerException {
-		super.open();
 		try {
 			ds.open();
 			String host = ds.getString(0, "host"); //$NON-NLS-1$
@@ -97,13 +92,13 @@ public class WMSLayer extends GdmsLayer {
 			connection = new WMSConnection(client, status);
 			ds.close();
 		} catch (AlreadyClosedException e) {
-			throw new LayerException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.wMSLayer.bug"), e); //$NON-NLS-1$
+			throw new LayerException(e); //$NON-NLS-1$
 		} catch (DriverException e) {
-			throw new LayerException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.wMSLayer.cannotOpenWMSDescription"), e); //$NON-NLS-1$
+			throw new LayerException(I18N.tr("Cannot open wms description"), e); //$NON-NLS-1$
 		} catch (ConnectException e) {
-			throw new LayerException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.wMSLayer.cannotConnectToWmsServer"), e); //$NON-NLS-1$
+			throw new LayerException(I18N.tr("Cannot connect to WMS server"), e); //$NON-NLS-1$
 		} catch (IOException e) {
-			throw new LayerException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.wMSLayer.cannotRetrieveWMSServerContent"), e); //$NON-NLS-1$
+			throw new LayerException(I18N.tr("Cannot retrieve WMS server content"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -156,23 +151,8 @@ public class WMSLayer extends GdmsLayer {
 	}
 
 	@Override
-	public void restoreLayer(LayerType layer) throws LayerException {
-		this.setName(layer.getName());
-		this.setVisible(layer.isVisible());
-	}
-
-	@Override
-	public LayerType saveLayer() {
-		LayerType ret = new LayerType();
-		ret.setName(getName());
-		ret.setSourceName(getMainName());
-		ret.setVisible(isVisible());
-		return ret;
-	}
-
-	@Override
 	public void setSelection(int[] newSelection) {
-		throw new UnsupportedOperationException(NOT_SUPPORTED);
+		throw new UnsupportedOperationException(I18N.tr("Method not supported in WMS layers"));
 	}
 
         @Override
@@ -189,4 +169,76 @@ public class WMSLayer extends GdmsLayer {
 	public ArrayList<Rule> getRenderingRule() throws DriverException {
 		throw new UnsupportedOperationException("Not supported yet.");
 	}
+
+        public void addLayerListenerRecursively(LayerListener listener) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public void removeLayerListenerRecursively(LayerListener listener) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public ILayer remove(ILayer layer, boolean isMoving) throws LayerException {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public ILayer remove(ILayer layer) throws LayerException {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public ILayer remove(String layerName) throws LayerException {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public void addLayer(ILayer layer) throws LayerException {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public void addLayer(ILayer layer, boolean isMoving) throws LayerException {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public ILayer getLayerByName(String layerName) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public boolean acceptsChilds() {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public ILayer[] getChildren() {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public void insertLayer(ILayer layer, int index) throws LayerException {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public int getIndex(ILayer targetLayer) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public void close() throws LayerException {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public void insertLayer(ILayer layer, int index, boolean isMoving) throws LayerException {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public int getLayerCount() {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public ILayer getLayer(int index) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public ILayer[] getRasterLayers() throws DriverException {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        public ILayer[] getVectorLayers() throws DriverException {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
 }

@@ -8,6 +8,7 @@ import java.awt.geom.Area;
 import java.io.IOException;
 import java.util.HashSet;
 import net.opengis.se._2_0.core.HaloType;
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
@@ -24,6 +25,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.utils.I18N;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * A {@code Halo} is a type of {@code Fill} that is applied to the background of font glyphs.
@@ -32,6 +35,8 @@ import org.orbisgis.utils.I18N;
  */
 public final class Halo implements SymbolizerNode, UomNode, FillNode {
 
+    private final static Logger LOGGER = Logger.getLogger(Halo.class);
+    private final static I18n I18N = I18nFactory.getI18n(Halo.class);
         /**
          * The default radius for new {@code Halo} instances. Set to 5.0, and UOM dependant.
          */
@@ -231,8 +236,8 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
             }
             fill.draw(g2, sds, fid, aHalo, selected, mt);
         } else {
-            Services.getErrorManager().error(
-                    I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotCreatePerpendicularOffset"));
+            LOGGER.error(
+                    I18N.tr("Perpendicular offset failed"));
         }
     }
 

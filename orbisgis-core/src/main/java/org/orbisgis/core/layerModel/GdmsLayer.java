@@ -37,27 +37,14 @@
  */
 package org.orbisgis.core.layerModel;
 
-import java.util.ArrayList;
-import java.util.List;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.driver.DriverException;
-import org.gdms.source.SourceEvent;
-import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
-import org.gdms.source.SourceRemovalEvent;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.utils.I18N;
 
-public abstract class GdmsLayer extends AbstractLayer {
-
-    private boolean isVisible = true;
-
+@Deprecated
+public abstract class GdmsLayer extends BeanLayer {
     private String mainName;
-    private SourceListener listener = new NameSourceListener();
-    private List<Style> styleList;
 
 
     public GdmsLayer(String name) {
@@ -66,35 +53,25 @@ public abstract class GdmsLayer extends AbstractLayer {
     }
 
     /**
-     *
-     * @see org.orbisgis.core.layerModel.ILayer#isVisible()
-     */
-    public boolean isVisible() {
-        return isVisible;
-    }
-
-    /**
      * @throws LayerException
      * @see org.orbisgis.core.layerModel.ILayer#setVisible(boolean)
      */
+    @Override
     public void setVisible(boolean isVisible) throws LayerException {
-        this.isVisible = isVisible;
+        super.setVisible(isVisible);
         fireVisibilityChanged();
     }
 
     public void addLayer(ILayer layer) {
-        throw new IllegalArgumentException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
-                + "layerModel.gdmsLayer.layerCannotHaveChildren")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
     }
 
     public ILayer remove(ILayer layer) {
-        throw new IllegalArgumentException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
-                + "layerModel.gdmsLayer.layerCannotDoesntChildren")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.tr("This layer does not have children")); //$NON-NLS-1$
     }
 
     public ILayer remove(String layerName) {
-        throw new IllegalArgumentException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
-                + "layerModel.gdmsLayer.layerCannotDoesntChildren")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.tr("This layer does not have children")); //$NON-NLS-1$
     }
 
     public boolean acceptsChilds() {
@@ -110,8 +87,7 @@ public abstract class GdmsLayer extends AbstractLayer {
     }
 
     public void insertLayer(ILayer layer, int index) throws LayerException {
-        throw new IllegalArgumentException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
-                + "layerModel.gdmsLayer.layerCannotHaveChildren")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
     }
 
     public void addLayerListenerRecursively(LayerListener listener) {
@@ -123,19 +99,16 @@ public abstract class GdmsLayer extends AbstractLayer {
     }
 
     public void addLayer(ILayer layer, boolean isMoving) throws LayerException {
-        throw new IllegalArgumentException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
-                + "layerModel.gdmsLayer.layerCannotHaveChildren")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
     }
 
     public ILayer remove(ILayer layer, boolean isMoving) throws LayerException {
-        throw new IllegalArgumentException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
-                + "layerModel.gdmsLayer.layerCannotHaveChildren")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
     }
 
     public void insertLayer(ILayer layer, int index, boolean isMoving)
             throws LayerException {
-        throw new IllegalArgumentException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
-                + "layerModel.gdmsLayer.layerCannotHaveChildren")); //$NON-NLS-1$
+        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
     }
 
     public int getLayerCount() {
@@ -144,8 +117,7 @@ public abstract class GdmsLayer extends AbstractLayer {
 
     public ILayer getLayer(final int index) {
         throw new ArrayIndexOutOfBoundsException(
-                I18N.getString("orbisgis-core.orbisgis.org.orbisgis.layerModel."
-                + "gdmsLayer.layerDoesntContainAnyChild")); //$NON-NLS-1$
+                I18N.tr("This layer doesn't contain any child")); //$NON-NLS-1$
     }
 
     public ILayer getLayerByName(String layerName) {
@@ -162,143 +134,22 @@ public abstract class GdmsLayer extends AbstractLayer {
 
     @Override
     public void setName(String name) throws LayerException {
-		SourceManager sourceManager = ((DataManager) Services
-				.getService(DataManager.class)).getDataSourceFactory().getSourceManager();
-
-        // Remove previous alias
-        if (!mainName.equals(getName())) {
-            sourceManager.removeName(getName());
-        }
-        if (!name.equals(mainName)) {
             super.setName(name);
-            try {
-                        sourceManager.addName(mainName, name);
-            } catch (NoSuchTableException ex) {
-                    throw new RuntimeException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
-                            + "layerModel.gdmsLayer.bug")
-                            , ex); //$NON-NLS-1$
-            } catch (SourceAlreadyExistsException e) {
-                throw new LayerException(I18N.getString("orbisgis-core.orbisgis.org.orbisgis."
-                        + "layerModel.gdmsLayer.sourceAlreadyExists")
-                        , e); //$NON-NLS-1$
-            }
-        } else {
-            super.setName(name);
-        }
     }
 
     public void close() throws LayerException {
 		SourceManager sourceManager = Services.getService(DataManager.class)
 				.getSourceManager();
 
-        sourceManager.removeSourceListener(listener);
-
-        // Remove alias
-        if (!mainName.equals(getName())) {
-            sourceManager.removeName(getName());
-        }
     }
 
     @Override
     public void open() throws LayerException {
 		SourceManager sourceManager = Services.getService(DataManager.class)
 				.getSourceManager();
-        sourceManager.addSourceListener(listener);
     }
 
     protected String getMainName() {
         return mainName;
     }
-
-    private class NameSourceListener implements SourceListener {
-
-        @Override
-        public void sourceAdded(SourceEvent e) {
-        }
-
-        @Override
-        public void sourceNameChanged(SourceEvent e) {
-            // If this layer source name was changed
-            if (e.getName().equals(mainName)) {
-                mainName = e.getNewName();
-                // Add alias if necessary
-                if (!getName().equals(mainName)
-                        && (getName().equals(e.getName()))) {
-                    SourceManager sourceManager = Services.getService(
-                            DataManager.class).getSourceManager();
-                    try {
-                        // If this layer name was the mainName
-                        sourceManager.addName(mainName, getName());
-                    } catch (NoSuchTableException e1) {
-                        // The table exists since mainName is the new name
-                        throw new RuntimeException(I18N.getString("orbisgis-core.orbisgis.org."
-                                + "orbisgis.layerModel.gdmsLayer.bug"), e1); //$NON-NLS-1$
-                    } catch (SourceAlreadyExistsException e1) {
-                        // This layer had the old source name so there is no
-                        // possibility for a conflict to happen
-                        throw new RuntimeException(I18N.getString("orbisgis-core.orbisgis."
-                                + "org.orbisgis.layerModel.gdmsLayer.bug"), e1); //$NON-NLS-1$
-                    }
-                }
-            }
-        }
-
-        @Override
-        public void sourceRemoved(SourceRemovalEvent e) {
-        }
-    }
-
-
-    @Override
-    public List<Style> getStyles() {
-        if (styleList == null){
-            styleList = new ArrayList<Style>();
-            styleList.add(new Style(this, true));
-        }
-        return styleList;
-    }
-
-    @Override
-    public void setStyles(List<Style> fts) {
-        this.styleList = fts;
-        this.fireStyleChanged();
-    }
-
-    @Override
-    public Style getStyle(int i){
-            return styleList.get(i);
-    }
-
-    @Override
-    public void setStyle(int i, Style s){
-        if (styleList == null){
-            styleList = new ArrayList<Style>();
-        }
-        styleList.set(i, s);
-        this.fireStyleChanged();
-    }
-
-    @Override
-    public void addStyle(Style s){
-        if (styleList == null){
-            styleList = new ArrayList<Style>();
-        }
-        styleList.add(s);
-        this.fireStyleChanged();
-    }
-
-    @Override
-    public void addStyle(int i, Style s){
-        if (styleList == null){
-            styleList = new ArrayList<Style>();
-        }
-        styleList.add(i, s);
-        this.fireStyleChanged();
-    }
-
-    @Override
-    public int indexOf(Style s){
-            return styleList == null ? -1 : styleList.indexOf(s);
-    }
-
 }

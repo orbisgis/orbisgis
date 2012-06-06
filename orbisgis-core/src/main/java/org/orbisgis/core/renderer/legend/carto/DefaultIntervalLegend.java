@@ -209,13 +209,7 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 				try {
 					minValue = createValueByType(initValue, getFieldType());
 				} catch (NumberFormatException e) {
-					Services.getErrorManager().error(
-							"Cannot parse interval init in legend " + getName()
-									+ ": " + initValue, e);
 				} catch (ParseException e) {
-					Services.getErrorManager().error(
-							"Cannot parse interval init in legend " + getName()
-									+ ": " + initValue, e);
 				}
 			}
 			Value maxValue = null;
@@ -224,11 +218,7 @@ public class DefaultIntervalLegend extends AbstractClassifiedLegend implements
 				try {
 					maxValue = createValueByType(endValue, getFieldType());
 				} catch (NumberFormatException e) {
-					Services.getErrorManager().error(
-							"Cannot parse interval end: " + initValue, e);
 				} catch (ParseException e) {
-					Services.getErrorManager().error(
-							"Cannot parse interval end: " + initValue, e);
 				}
 			}
 			SymbolManager sm = (SymbolManager) Services

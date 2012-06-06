@@ -49,6 +49,7 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.CompositeGraphicType;
 import net.opengis.se._2_0.core.GraphicType;
 import net.opengis.se._2_0.core.ObjectFactory;
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
@@ -56,6 +57,8 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * This class doesn't exists within XSD. Actually, it the CompositeGraphic element which has been move up
@@ -64,6 +67,9 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  */
 public final class GraphicCollection implements SymbolizerNode {
 
+    private final static Logger LOGGER = Logger.getLogger(GraphicCollection.class);
+    private final static I18n I18N = I18nFactory.getI18n(GraphicCollection.class);
+    
     private ArrayList<Graphic> graphics;
     private SymbolizerNode parent;
     
@@ -274,7 +280,7 @@ public final class GraphicCollection implements SymbolizerNode {
                     }
                 }
             } catch (ParameterException ex) {
-                Services.getErrorManager().error("Error during graphic composition : " + ex.getMessage());
+                LOGGER.error(I18N.tr("Error during graphic composition"),ex);
             }
         }
 
@@ -304,7 +310,7 @@ public final class GraphicCollection implements SymbolizerNode {
             try {
                 g.draw(g2, sds, fid, selected, mt, at);
             } catch (ParameterException ex) {
-                Services.getErrorManager().error("Could not render graphic : " + ex);
+                LOGGER.error(I18N.tr("Could not render graphic"),ex);
             }
         }
     }

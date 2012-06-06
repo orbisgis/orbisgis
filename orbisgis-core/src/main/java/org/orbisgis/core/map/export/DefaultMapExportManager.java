@@ -1,7 +1,6 @@
 package org.orbisgis.core.map.export;
 
 import com.vividsolutions.jts.geom.Envelope;
-import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
@@ -14,7 +13,6 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.Renderer;
-import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.w3c.dom.DOMImplementation;

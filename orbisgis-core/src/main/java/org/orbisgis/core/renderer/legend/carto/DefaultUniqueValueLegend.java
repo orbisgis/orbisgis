@@ -130,13 +130,7 @@ public class DefaultUniqueValueLegend extends AbstractClassifiedLegend
 				value = ValueFactory
 						.createValueByType(xmlValue, getFieldType());
 			} catch (NumberFormatException e) {
-				Services.getErrorManager().error(
-						"Cannot parse legend value in " + getName() + ": "
-								+ xmlValue, e);
 			} catch (ParseException e) {
-				Services.getErrorManager().error(
-						"Cannot parse legend value in " + getName() + ": "
-								+ xmlValue, e);
 			}
 			Symbol symbol = sm.getSymbolFromJAXB(classification.getSymbol());
 			addClassification(value, symbol, label);

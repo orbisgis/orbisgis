@@ -37,27 +37,64 @@
  */
 package org.orbisgis.core;
 
+import org.orbisgis.core.log.FailErrorManager;
 import java.io.File;
+import org.apache.log4j.Appender;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.SourceManager;
+import org.junit.After;
 import org.junit.Before;
-import org.orbisgis.core.errorManager.ErrorListener;
-import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.ui.plugins.views.output.OutputManager;
+import org.orbisgis.core.layerModel.LayerException;
+import org.orbisgis.core.map.export.DefaultMapExportManager;
+import org.orbisgis.core.map.export.MapExportManager;
+import org.orbisgis.core.map.export.RectanglesScale;
+import org.orbisgis.core.map.export.SingleLineScale;
 
 public abstract class AbstractTest {
 
         protected FailErrorManager failErrorManager;
-
+        private Appender consoleAppender;
+        
         @Before
         public void setUp() throws Exception {
                 failErrorManager = new FailErrorManager();
-                Services.registerService(ErrorManager.class, "", failErrorManager);
-                Services.registerService( OutputManager.class, "output", new ConsoleOutputManager());
-
-                OrbisgisCoreServices.installServices();
+                consoleAppender = initConsoleLogger();
+                Logger.getRootLogger().addAppender(failErrorManager);
+                installExportServices();
         }
-
+        
+        @After
+        public void tearDown() {
+            Logger.getRootLogger().removeAppender(failErrorManager);
+            Logger.getRootLogger().removeAppender(consoleAppender);
+        }
+        
+        /**
+        * Console output to info level min
+        */
+        private Appender initConsoleLogger() {
+                Logger root = Logger.getRootLogger();
+                ConsoleAppender appender = new ConsoleAppender(
+                new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN));
+                root.addAppender(appender);
+                return appender;
+        }
+        
+	private void installExportServices() {
+		DefaultMapExportManager mem = new DefaultMapExportManager();
+		Services.registerService(MapExportManager.class,
+				"Manages the export of MapContexts to different formats.", mem);
+		mem.registerScale(SingleLineScale.class);
+		mem.registerScale(RectanglesScale.class);
+	}
+        
         public static void registerDataManager(DataSourceFactory dsf) {
                 // Installation of the service
                 Services.registerService(
@@ -78,48 +115,17 @@ public abstract class AbstractTest {
         protected DataManager getDataManager() {
                 return (DataManager) Services.getService(DataManager.class);
         }
-
-        protected class FailErrorManager implements ErrorManager {
-
-                private boolean ignoreWarnings;
-                private boolean ignoreErrors;
-
-                public void setIgnoreWarnings(boolean ignore) {
-                        this.ignoreWarnings = ignore;
-                }
-
-                public void addErrorListener(ErrorListener listener) {
-                }
-
-                public void error(String userMsg) {
-                        if (!ignoreErrors) {
-                                throw new RuntimeException(userMsg);
-                        }
-                }
-
-                public void error(String userMsg, Throwable exception) {
-                        if (!ignoreErrors) {
-                                throw new RuntimeException(userMsg, exception);
-                        }
-                }
-
-                public void removeErrorListener(ErrorListener listener) {
-                }
-
-                public void warning(String userMsg, Throwable exception) {
-                        if (!ignoreWarnings) {
-                                throw new RuntimeException(userMsg, exception);
-                        }
-                }
-
-                public void warning(String userMsg) {
-                        if (!ignoreWarnings) {
-                                throw new RuntimeException(userMsg);
-                        }
-                }
-
-                public void setIgnoreErrors(boolean b) {
-                        this.ignoreErrors = b;
-                }
+        protected DataSource getDataSourceFromPath(String path) throws LayerException {
+		String name = getDataManager().getDataSourceFactory().getSourceManager().nameAndRegister(new File(path));
+		try {
+			return getDataManager().getDataSourceFactory().getDataSource(name);
+		} catch (DriverLoadException e) {
+			throw new LayerException(e);
+		} catch (NoSuchTableException e) {
+			throw new LayerException(e);
+		} catch (DataSourceCreationException e) {
+			throw new LayerException(e);
+		}
         }
+        
 }

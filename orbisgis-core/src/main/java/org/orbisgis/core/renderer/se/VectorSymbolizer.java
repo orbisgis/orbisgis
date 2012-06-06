@@ -46,9 +46,9 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.SymbolizerType;
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
@@ -68,7 +68,7 @@ import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
  * @author maxence, alexis
  */
 public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
-
+        private final static Logger LOGGER = Logger.getLogger(VectorSymbolizer.class);
         private Uom uom;
         private GeometryAttribute theGeom;
 
@@ -274,7 +274,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
                 try {
                         point = geom.getInteriorPoint();
                 } catch (TopologyException ex) {
-                        Services.getOutputManager().println("getPointShape :: TopologyException: " + ex);
+                        LOGGER.error("getPointShape :: TopologyException: ", ex);
                         point = geom.getCentroid();
                 }
                 return at.transform(new Point2D.Double(point.getX(), point.getY()), null);

@@ -10,6 +10,7 @@
 				<ns2:Type >politesse</ns2:Type>
 			</ns2:Keywords>
 			<ns2:Title xml:lang="fr">Bonjour</ns2:Title>
+			<ns2:Title xml:lang="br-FR">Salud</ns2:Title>
 			<ns2:Abstract xml:lang="fr">J'ai dit bonjour !</ns2:Abstract>
 			<ns2:Keywords>
 				<ns2:Keyword xml:lang="fr">salut</ns2:Keyword>

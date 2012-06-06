@@ -212,10 +212,6 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 		Symbol symbol = sm.getSymbolFromJAXB(xmlLegend.getSampleSymbol());
 		if (symbol != null) {
 			setSampleSymbol((StandardPointSymbol) symbol);
-		} else {
-			Services.getErrorManager().error(
-					"Unknown symbol: "
-					+ ((SimpleSymbolType) xmlLegend.getSampleSymbol()).getSymbolTypeId() + ". Using default");
 		}
 		setClassificationField(xmlLegend.getFieldName());
 	}
@@ -317,7 +313,6 @@ public class DefaultProportionalPointLegend extends AbstractCartoLegend
 			}
 			g.drawLine(lineStartX, textOffset, lineEndX, textOffset);
 		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot get proportional image", e);
 		}
 
 	}

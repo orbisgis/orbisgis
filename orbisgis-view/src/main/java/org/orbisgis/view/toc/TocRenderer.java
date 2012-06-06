@@ -42,6 +42,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.swing.*;
 import javax.swing.tree.TreeCellRenderer;
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
@@ -53,6 +54,7 @@ import org.orbisgis.sif.CRFlowLayout;
 
 public class TocRenderer extends TocAbstractRenderer implements
 		TreeCellRenderer {
+        private static Logger UILOGGER = Logger.getLogger("gui."+ TocRenderer.class);
 	private static final Color SELECTED = Color.lightGray;
 
 	private static final Color DESELECTED = Color.white;
@@ -263,7 +265,7 @@ public class TocRenderer extends TocAbstractRenderer implements
 				}*/
 
 			} catch (Exception e) {
-				Services.getErrorManager().error(
+				UILOGGER.error(
                                         I18N.tr("Cannot access the legends in the layer {0}",node.getName()),
                                         e);
 			}

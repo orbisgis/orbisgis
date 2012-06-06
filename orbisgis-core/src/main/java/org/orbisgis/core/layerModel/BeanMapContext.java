@@ -46,12 +46,6 @@ import org.orbisgis.core.renderer.se.Style;
  * listen for property change
  */
 public abstract class BeanMapContext implements MapContext {
-    //Properties index
-    public static final String PROP_BOUNDINGBOX = "boundingBox";
-    public static final String PROP_SELECTEDLAYERS = "selectedLayers";
-    public static final String PROP_SELECTEDSTYLES = "selectedStyles";
-    public static final String PROP_ACTIVELAYER = "activeLayer";
-    public static final String PROP_LAYERMODEL = "layerModel";
 
     //Listener container
     protected transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
@@ -104,6 +98,7 @@ public abstract class BeanMapContext implements MapContext {
     }
 
     /**
+        sourceManager.addSourceListener(listener);
      * Get the value of selectedStyles
      *
      * @return the value of selectedStyles

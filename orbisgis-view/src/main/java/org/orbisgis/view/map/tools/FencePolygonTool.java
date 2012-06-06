@@ -37,41 +37,31 @@
  */
 package org.orbisgis.view.map.tools;
 
-import java.awt.Color;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Polygon;
+import java.io.File;
 import java.io.IOException;
 import java.util.Observable;
-
-import javax.swing.AbstractButton;
-
+import javax.swing.ImageIcon;
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
+import org.gdms.driver.gdms.GdmsWriter;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.renderer.legend.carto.LegendFactory;
-import org.orbisgis.core.renderer.legend.carto.UniqueSymbolLegend;
-import org.orbisgis.core.renderer.symbol.Symbol;
-import org.orbisgis.core.renderer.symbol.SymbolFactory;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
-
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Polygon;
-import java.io.File;
-import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
-import org.gdms.data.schema.DefaultMetadata;
-import org.gdms.data.schema.Metadata; 
-import org.gdms.driver.gdms.GdmsWriter;
-import org.orbisgis.view.icons.OrbisGISIcon;
 
 public class FencePolygonTool extends AbstractPolygonTool {
         private static Logger UILOGGER = Logger.getLogger("gui."+FencePolygonTool.class);
@@ -144,15 +134,15 @@ public class FencePolygonTool extends AbstractPolygonTool {
 
 
                 } catch (DriverLoadException e) {
-                        Services.getErrorManager().error(I18N.tr("orbisgis.core.ui.editors.map.tool.fence.errorRecovering"), e);
+                        UILOGGER.error(I18N.tr("orbisgis.core.ui.editors.map.tool.fence.errorRecovering"), e);
                 } catch (DriverException e) {
-                        Services.getErrorManager().error(I18N.tr("orbisgis.core.ui.editors.map.tool.fence.create"), e);
+                        UILOGGER.error(I18N.tr("orbisgis.core.ui.editors.map.tool.fence.create"), e);
 
                 } catch (LayerException e) {
-                        Services.getErrorManager().error(I18N.tr("orbisgis.core.ui.editors.map.tool.fence.create"), e);
+                        UILOGGER.error(I18N.tr("orbisgis.core.ui.editors.map.tool.fence.create"), e);
 
                 } catch (IOException e) {
-                        Services.getErrorManager().error(I18N.tr("orbisgis.core.ui.editors.map.tool.fence.create"), e);
+                        UILOGGER.error(I18N.tr("orbisgis.core.ui.editors.map.tool.fence.create"), e);
                 }
                 return null;
         }

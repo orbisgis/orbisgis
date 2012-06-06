@@ -212,10 +212,6 @@ public class DefaultProportionalLineLegend extends AbstractCartoLegend
 		Symbol symbol = sm.getSymbolFromJAXB(xmlLegend.getSampleSymbol());
 		if (symbol != null) {
 			setSampleSymbol((StandardLineSymbol) symbol);
-		} else {
-			Services.getErrorManager().error(
-					"Unknown symbol: "
-					+ ((SimpleSymbolType) xmlLegend.getSampleSymbol()).getSymbolTypeId() + ". Using default");
 		}
 		setClassificationField(xmlLegend.getFieldName());
 	}
@@ -313,7 +309,7 @@ public class DefaultProportionalLineLegend extends AbstractCartoLegend
 						lineEndX, renderPermission, Double.toString(FormatUtils.round(proportionnalMethod.getMinValue(), 3)));
 			}
 		} catch (DriverException e) {
-			Services.getErrorManager().error("Cannot get proportional image", e);
+			
 		}
 
 	}

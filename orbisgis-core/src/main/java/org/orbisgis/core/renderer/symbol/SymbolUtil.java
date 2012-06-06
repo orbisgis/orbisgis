@@ -8,7 +8,6 @@ import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import net.LiteShape.LiteShape;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.AllowAllRenderContext;
 import org.orbisgis.core.renderer.RenderContext;
@@ -88,13 +87,12 @@ public class SymbolUtil {
 						Thread.sleep(millisecondDelay);
 						graphics.draw(shape);
 					} catch (Throwable t) {
-						Services.getErrorManager().error(
-								"Cannot draw the shape", t);
+
 					}
 				}
 			});
 		} catch (Throwable t) {
-			Services.getErrorManager().error("Cannot draw the shape", t);
+
 		}
 	}
 

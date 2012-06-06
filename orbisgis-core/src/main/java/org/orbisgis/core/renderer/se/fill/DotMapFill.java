@@ -50,6 +50,7 @@ import java.util.Random;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.thematic.DotMapFillType;
 import net.opengis.se._2_0.thematic.ObjectFactory;
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
@@ -60,6 +61,8 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Descriptor for dot maps. Each point represents a given quantity. Points are randomly placed
@@ -72,6 +75,9 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  */
 public final class DotMapFill extends Fill implements GraphicNode {
 
+    private final static Logger LOGGER = Logger.getLogger(DotMapFill.class);
+    private final static I18n I18N = I18nFactory.getI18n(DotMapFill.class);
+    
     static final int MAX_ATTEMPT = 100;
 
     private GraphicCollection mark;
@@ -208,7 +214,7 @@ public final class DotMapFill extends Fill implements GraphicNode {
             if (pos != null) {
                 mark.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(pos.x, pos.y));
             } else {
-                Services.getErrorManager().error("Could not find position for mark within area");
+                LOGGER.error(I18N.tr("Could not find position for mark within area"));
             }
         }
     }

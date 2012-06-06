@@ -51,11 +51,6 @@ import javax.imageio.ImageIO;
 import javax.media.jai.RenderableGraphics;
 import javax.swing.JFrame;
 import junit.framework.TestCase;
-import org.junit.Before;
-import org.orbisgis.core.ConsoleErrorManager;
-import org.orbisgis.core.ConsoleOutputManager;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
@@ -63,7 +58,6 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -75,19 +69,6 @@ import static org.junit.Assert.*;
 public class ProportionalSymbolsTest {
 
     private Style fts;
-
-
-    protected ConsoleErrorManager failErrorManager;
-    protected ConsoleOutputManager failOutput;
-
-    @Before
-    public void setUp() throws Exception {
-
-        failErrorManager = new ConsoleErrorManager();
-        Services.registerService(ErrorManager.class, "", failErrorManager);
-        failOutput = new ConsoleOutputManager();
-        Services.registerService(OutputManager.class, "", failOutput);
-    }
 
     /**
      * Proportional symbols are drawn using ViewBox instances, most of the time.

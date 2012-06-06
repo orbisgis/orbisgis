@@ -37,18 +37,56 @@
 package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
+import java.beans.PropertyChangeListener;
 import java.util.List;
+import java.util.Locale;
 import java.util.Set;
+import net.opengis.ows_context.LayerType;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
-import org.orbisgis.core.layerModel.persistence.LayerType;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.common.Description;
 
 public interface ILayer {
 
+        //Properties index
+        public static final String PROP_DESCRIPTION = "description";
+        public static final String PROP_VISIBLE = "visible";
+        public static final String PROP_STYLES = "styles";
+        
+        
+        /**
+        * Add a property-change listener for all properties.
+        * The listener is called for all properties.
+        * @param listener The PropertyChangeListener instance
+        * @note Use EventHandler.create to build the PropertyChangeListener instance
+        */
+        void addPropertyChangeListener(PropertyChangeListener listener);
+        /**
+        * Add a property-change listener for a specific property.
+        * The listener is called only when there is a change to 
+        * the specified property.
+        * @param prop The static property name PROP_..
+        * @param listener The PropertyChangeListener instance
+        * @note Use EventHandler.create to build the PropertyChangeListener instance
+        */
+        void addPropertyChangeListener(String prop,PropertyChangeListener listener);
+        /**
+        * Remove the specified listener from the list
+        * @param listener The listener instance
+        */
+        void removePropertyChangeListener(PropertyChangeListener listener);
+
+        /**
+        * Remove the specified listener for a specified property from the list
+        * @param prop The static property name PROP_..
+        * @param listener The listener instance
+        */
+        public void removePropertyChangeListener(String prop,PropertyChangeListener listener);
+                
 	void addLayerListener(LayerListener listener);
 
 	void removeLayerListener(LayerListener listener);
@@ -57,8 +95,35 @@ public interface ILayer {
 
 	void removeLayerListenerRecursively(LayerListener listener);
 
+        
+        
+        /**
+         * Get the value of description
+         *
+         * @return the value of description
+         */
+        public Description getDescription();
+
+        /**
+         * Set the value of description
+         *
+         * @param description new value of description
+         */
+        public void setDescription(Description description);
+        
+        /**
+         * Get the internal identifier of this layer
+         * This is not the displayable layer label.
+         * Use the localised description title
+         * @return 
+         */
 	String getName();
 
+        /**
+         * Set the internal name of the layer
+         * @param name
+         * @throws LayerException 
+         */
 	void setName(final String name) throws LayerException;
 
 	void setParent(final ILayer parent) throws LayerException;
@@ -71,6 +136,14 @@ public interface ILayer {
 
 	ILayer getParent();
 
+        /**
+         * Create a jaxb instance of this layer for serialisation
+         * @return The layer serialisation object
+         */
+        LayerType getJAXBElement();
+                
+                
+                
 	/**
 	 * Removes the specified child layer.
 	 * 
@@ -147,22 +220,6 @@ public interface ILayer {
 	int getLayerCount();
 
 	/**
-	 * Gets the status of this object as a xml object
-	 * 
-	 * @return
-	 */
-	LayerType saveLayer();
-
-	/**
-	 * Sets the status of the layer from a xml object
-	 * 
-	 * @param layer
-	 * @throws LayerException
-	 *             If the status cannot be set
-	 */
-	void restoreLayer(LayerType layer) throws LayerException;
-
-	/**
 	 * Gets the specified child layer
 	 * 
 	 * @param index
@@ -235,11 +292,6 @@ public interface ILayer {
          * @param fts
          */
         void setStyles(List<Style> fts);
-
-	/**
-	 * We need an entry point for AbstractLayer.fireStyleChanged!
-	 */
-	void fireStyleChangedPublic();
 
         /**
          * Gets the {@code i}th {@code Style} that is used to define the

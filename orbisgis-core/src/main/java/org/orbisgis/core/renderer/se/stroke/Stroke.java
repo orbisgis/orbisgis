@@ -6,12 +6,10 @@ import java.io.IOException;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
 import org.gdms.data.DataSource;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
 /**
  * Style description for linear features (Area or Line)
@@ -20,7 +18,6 @@ import org.orbisgis.core.ui.plugins.views.output.OutputManager;
  */
 public abstract class Stroke implements SymbolizerNode {
 
-    protected static OutputManager logger = Services.getOutputManager();
 
     /**
      * The parent of this node.

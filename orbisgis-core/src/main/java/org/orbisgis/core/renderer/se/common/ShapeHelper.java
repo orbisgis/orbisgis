@@ -44,13 +44,14 @@ import java.awt.Shape;
 import java.awt.geom.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Provides utility methods to handle Shape instances.
@@ -61,9 +62,9 @@ public final class ShapeHelper {
     public static final double ONE_DEG_IN_RAD = Math.PI / 180.0;
     private static final boolean ENABLE_QUAD = true;
     private static final double FLATNESS = 1e-5;
-    private static ErrorManager logger = Services.getErrorManager();
-
-
+    private final static Logger LOGGER = Logger.getLogger(ShapeHelper.class);
+    private final static I18n I18N = I18nFactory.getI18n(ShapeHelper.class);
+    
     private ShapeHelper(){
     }
 
@@ -141,22 +142,22 @@ public final class ShapeHelper {
 
             switch (type) {
                 case PathIterator.SEG_CLOSE:
-                    logger.warning("CLOSE");
+                    LOGGER.warn(I18N.tr("CLOSE"));
                     break;
                 case PathIterator.SEG_CUBICTO:
-                    logger.warning("CUBIC TO " + coords[0] + ";" + coords[1]);
+                    LOGGER.warn(I18N.tr("CUBIC TO {1}:{2}",coords[0],coords[1]));
                     break;
                 case PathIterator.SEG_LINETO:
-                    logger.warning("LINE TO " + coords[0] + ";" + coords[1]);
+                    LOGGER.warn(I18N.tr("LINE TO {1}:{2}",coords[0],coords[1]));
                     break;
                 case PathIterator.SEG_MOVETO:
-                    logger.warning("MOVE TO " + coords[0] + ";" + coords[1]);
+                    LOGGER.warn(I18N.tr("MOVE TO {1}:{2}",coords[0],coords[1]));
                     break;
                 case PathIterator.SEG_QUADTO:
-                    logger.warning("QUAD TO " + coords[0] + ";" + coords[1]);
+                    LOGGER.warn(I18N.tr("QUAD TO {1}:{2}",coords[0],coords[1]));
                     break;
                 default:
-                    logger.warning("!DEFAULT!");
+                    LOGGER.warn(I18N.tr("!DEFAULT!"));
                     break;
             }
             it.next();
@@ -1130,7 +1131,7 @@ public final class ShapeHelper {
 
             List<Vertex> offsetVertexes = createOffsetVertexes(vertexes, offset, closed);
             if (offsetVertexes.size() < 2) {
-                Services.getErrorManager().error("Unable to compute perpendicular offset");
+                LOGGER.error(I18N.tr("Unable to compute perpendicular offset"));
                 return rawShapes;
             }
 

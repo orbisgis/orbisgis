@@ -7,25 +7,20 @@ package org.orbisgis.legend;
 import java.io.FileInputStream;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 import net.opengis.se._2_0.core.StyleType;
+import org.apache.log4j.*;
+import org.apache.log4j.varia.LevelRangeFilter;
+import org.junit.After;
 import org.junit.Before;
-import org.orbisgis.core.OrbisgisCoreServices;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorListener;
-import org.orbisgis.core.errorManager.ErrorManager;
+import org.orbisgis.core.log.FailErrorManager;
 import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 
-/**
- *
- * @author alexis
- */
 public abstract class AnalyzerTest {
 
         protected FailErrorManager failErrorManager;
-
+        private Appender consoleAppender;
+        
         public Style getStyle(String path) throws Exception {
             JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
             Unmarshaller u = jaxbContext.createUnmarshaller();
@@ -37,53 +32,24 @@ public abstract class AnalyzerTest {
         @Before
         public void setUp() throws Exception {
                 failErrorManager = new FailErrorManager();
-                Services.registerService(ErrorManager.class, "", failErrorManager);
-                Services.registerService(OutputManager.class, "output", new ConsoleOutputManager());
-
-                OrbisgisCoreServices.installServices();
+                Logger.getRootLogger().addAppender(failErrorManager);
+                consoleAppender = initConsoleLogger();
         }
-
-        protected class FailErrorManager implements ErrorManager {
-
-                private boolean ignoreWarnings;
-                private boolean ignoreErrors;
-
-                public void setIgnoreWarnings(boolean ignore) {
-                        this.ignoreWarnings = ignore;
-                }
-
-                public void addErrorListener(ErrorListener listener) {
-                }
-
-                public void error(String userMsg) {
-                        if (!ignoreErrors) {
-                                throw new RuntimeException(userMsg);
-                        }
-                }
-
-                public void error(String userMsg, Throwable exception) {
-                        if (!ignoreErrors) {
-                                throw new RuntimeException(userMsg, exception);
-                        }
-                }
-
-                public void removeErrorListener(ErrorListener listener) {
-                }
-
-                public void warning(String userMsg, Throwable exception) {
-                        if (!ignoreWarnings) {
-                                throw new RuntimeException(userMsg, exception);
-                        }
-                }
-
-                public void warning(String userMsg) {
-                        if (!ignoreWarnings) {
-                                throw new RuntimeException(userMsg);
-                        }
-                }
-
-                public void setIgnoreErrors(boolean b) {
-                        this.ignoreErrors = b;
-                }
+        
+        @After
+        public void tearDown() {
+            Logger.getRootLogger().removeAppender(failErrorManager);
+            Logger.getRootLogger().removeAppender(consoleAppender);
         }
+        
+    /**
+     * Console output to info level min
+     */
+    private Appender initConsoleLogger() {
+        Logger root = Logger.getRootLogger();
+        ConsoleAppender appender = new ConsoleAppender(
+        new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN));
+        root.addAppender(appender);
+        return appender;
+    }
 }

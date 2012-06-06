@@ -44,7 +44,7 @@ public class Description {
         abstractTexts = new HashMap<Locale, String>();
         keywords = new  HashMap<URI,Keywords>();
     }
-
+    
     /**
      * Builds a new {@code Description} from the given
      * {@code DescriptionType}.
@@ -56,7 +56,7 @@ public class Description {
         if(tlst != null){
             for(LanguageStringType l : tlst){
                 String lang = l.getLang();
-                Locale loc = lang != null && validateLocale(lang) ? new Locale(lang) : null;
+                Locale loc = LocalizedText.forLanguageTag(lang);
                 titles.put(loc,l.getValue());
             }
         }
@@ -64,7 +64,7 @@ public class Description {
         if(dlst !=null){
             for(LanguageStringType l : dlst){
                 String lang = l.getLang();
-                Locale loc = lang != null && validateLocale(lang) ? new Locale(lang) : null;
+                Locale loc = LocalizedText.forLanguageTag(lang);
                 abstractTexts.put(loc,l.getValue());
             }
         }
@@ -150,6 +150,15 @@ public class Description {
     public HashMap<Locale, String> getTitles() {
         return titles;
     }
+    
+    /**
+     * Sets the list of localized titles registered in this {@code
+     * Description}.
+     * @param titles The map of titles
+     */
+    public void setTitles(HashMap<Locale,String> titles) {
+            this.titles = titles;
+    }
 
     /**
      * Adds a title to this {@code Description}, associated to the given {@code
@@ -194,24 +203,25 @@ public class Description {
     public String getAbstract(Locale locale){
         return abstractTexts.get(locale);
     }
+    
     /**
-     * Gets the JAXB representation of this object.
-     * @return
+     * Initialise the data of the provided description type with
+     * the JAXB representation of this object.
+     * @param[in-out] dt Instance of DescriptionType
      */
-    public DescriptionType getJAXBType() {
+    public void initJAXBType(DescriptionType dt) {
         ObjectFactory of = new ObjectFactory();
-        DescriptionType dt = of.createDescriptionType();
         List<LanguageStringType> ts = dt.getTitle();
         for(Map.Entry<Locale, String> lt : titles.entrySet()){
             LanguageStringType lst = of.createLanguageStringType();
-            lst.setLang(lt.getKey()!= null ? lt.getKey().toString() : "");
+            lst.setLang(lt.getKey()!= null ? LocalizedText.toLanguageTag(lt.getKey()) : "");
             lst.setValue(lt.getValue());
             ts.add(lst);
         }
         List<LanguageStringType> abs = dt.getAbstract();
         for(Map.Entry<Locale, String> lt : abstractTexts.entrySet()){
             LanguageStringType lst = of.createLanguageStringType();
-            lst.setLang(lt.getKey()!= null ? lt.getKey().toString() : "");
+            lst.setLang(lt.getKey()!= null ? LocalizedText.toLanguageTag(lt.getKey()) : "");
             lst.setValue(lt.getValue());
             abs.add(lst);
         }
@@ -223,27 +233,18 @@ public class Description {
                 kwjt.getType().setCodeSpace(entry.getKey().toString());
             }
             kts.add(kwjt);
-        }
-        return dt;
+        }            
     }
-
-
+    
     /**
-     * Does a pretty naive validation about the structure of the given {@code
-     * String}. It is absolutely not imperfect, but faster than retrieving all
-     * the available {@code Locale} instances available in the current runtime
-     * environment.
-     * @param loc
+     * Gets the JAXB representation of this object.
      * @return
      */
-    private boolean validateLocale(String loc){
-        String[] parts = loc.split("_");
-        if(parts.length == 1){
-            return parts[0].length() == 2;
-        } else if(parts.length == 2 || parts.length == 3){
-            return parts[0].length() == 2 && parts[1].length() == 2;
-        } else {
-            return false;
-        }
+    public DescriptionType getJAXBType() {
+        ObjectFactory of = new ObjectFactory();
+        DescriptionType dt = of.createDescriptionType();
+        initJAXBType(dt);
+        return dt;
     }
+    
 }

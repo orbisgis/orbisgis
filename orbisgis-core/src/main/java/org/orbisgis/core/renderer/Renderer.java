@@ -57,6 +57,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.logging.Level;
 import javax.imageio.ImageIO;
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.indexes.*;
 import org.gdms.driver.DriverException;
@@ -64,8 +65,6 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gvsig.remoteClient.exceptions.ServerErrorException;
 import org.gvsig.remoteClient.exceptions.WMSException;
 import org.gvsig.remoteClient.wms.WMSStatus;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.WMSConnection;
 import org.orbisgis.core.map.MapTransform;
@@ -75,10 +74,10 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.VectorSymbolizer;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.utils.I18N;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Renderer contains all the logic of the Symbology Encoding process based on java
@@ -93,10 +92,10 @@ public abstract class Renderer {
         static final int ONE_HUNDRED_I = 100;
         static final int BATCH_SIZE = 1000;
         static final int EXECP_POS = 20;
-        private static OutputManager logger = Services.getOutputManager();
-
+        private final static Logger LOGGER = Logger.getLogger(Renderer.class);
+        private final static I18n I18N = I18nFactory.getI18n(Renderer.class);
         /**
-         * This method shall returns a graphics2D for each symbolizers in the list.
+         * This method shall returns a graphics2D for each symbolisers in the list.
          * This is useful to make the diff bw pdf purpose and image purpose
          * Is called just before a new layer is drawn
          * @return
@@ -443,14 +442,13 @@ public abstract class Renderer {
                                                                 if (sds.isVectorial()) {
                                                                    this.drawVector(g2, mt, layer, pm, perm);
                                                                 } else if (sds.isRaster()) {
-                                                                        logger.println("Raster Not Yet supported => Not drawn: " + layer.getName(), Color.red);
+                                                                        LOGGER.warn("Raster Not Yet supported => Not drawn: {0}"+layer.getName());
                                                                 } else {
-                                                                        logger.println(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.notDraw") //$NON-NLS-1$
-                                                                                + layer.getName(), Color.RED);
+                                                                        LOGGER.warn(I18N.tr("Layer {0} not drawn",layer.getName()));
                                                                 }
                                                         } catch (DriverException e) {
-                                                                Services.getErrorManager().error(
-                                                                        I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotDraw") + layer.getName(), e); //$NON-NLS-1$
+                                                                LOGGER.error(
+                                                                        I18N.tr("Layer {0} not drawn",layer.getName()), e); //$NON-NLS-1$
                                                         }
                                                         pm.progressTo(ONE_HUNDRED_I
                                                                 - (ONE_HUNDRED_I * i) / layers.length);
@@ -486,14 +484,14 @@ public abstract class Renderer {
                         BufferedImage image = ImageIO.read(file);
                         g2.drawImage(image, 0, 0, null);
                 } catch (WMSException e) {
-                        Services.getService(ErrorManager.class).error(
-                                I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
+                        LOGGER.error(
+                                I18N.tr("Cannot get WMS image"), e);
                 } catch (ServerErrorException e) {
-                        Services.getService(ErrorManager.class).error(
-                                I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
+                        LOGGER.error(
+                                I18N.tr("Cannot get WMS image"), e);
                 } catch (IOException e) {
-                        Services.getService(ErrorManager.class).error(
-                                I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotGetWMSImage"), e); //$NON-NLS-1$
+                        LOGGER.error(
+                                I18N.tr("Cannot get WMS image"), e);
                 }
         }
 
@@ -621,7 +619,7 @@ public abstract class Renderer {
                         return blue;
                 } else {
                         throw new IllegalArgumentException(
-                                I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.cannotCreatRGBCodes")); //$NON-NLS-1$
+                                I18N.tr("The RGB code doesn't contain RGB codes"));
                 }
         }
 }

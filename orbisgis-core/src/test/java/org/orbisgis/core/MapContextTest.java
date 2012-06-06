@@ -37,31 +37,21 @@
  */
 package org.orbisgis.core;
 
-import org.junit.Before;
-import java.awt.Color;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
 import java.io.File;
 import java.io.FileOutputStream;
-
-import org.gdms.data.DataSource;
-import org.gdms.source.SourceManager;
-import org.orbisgis.core.layerModel.DefaultMapContext;
+import net.opengis.ows_context.OWSContextType;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.core.map.export.MapExportManager;
-import org.orbisgis.core.renderer.legend.Legend;
-import org.orbisgis.core.renderer.legend.carto.LabelLegend;
-import org.orbisgis.core.renderer.legend.carto.LegendFactory;
-import org.orbisgis.core.renderer.legend.carto.UniqueSymbolLegend;
-import org.orbisgis.core.renderer.symbol.Symbol;
-import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.FileUtils;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 @Deprecated
 public class MapContextTest extends AbstractTest {
@@ -70,12 +60,12 @@ public class MapContextTest extends AbstractTest {
         @Before
 	public void setUp() throws Exception {
 		super.setUp();
-		super.registerDataManager();
+		AbstractTest.registerDataManager();
 	}
 
         @Test
 	public void testRemoveSelectedLayer() throws Exception {
-		MapContext mc = new DefaultMapContext();
+		MapContext mc = new OwsMapContext();
 		mc.open(null);
 		ILayer layer = getDataManager().createLayer(
 				new File("src/test/resources/data/bv_sap.shp"));
@@ -90,7 +80,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testSetBadLayerSelection() throws Exception {
-		MapContext mc = new DefaultMapContext();
+		MapContext mc = new OwsMapContext();
 		mc.open(null);
 		ILayer layer = getDataManager().createLayer(
 				new File("src/test/resources/data/bv_sap.shp"));
@@ -106,7 +96,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testRemoveActiveLayer() throws Exception {
-		MapContext mc = new DefaultMapContext();
+		MapContext mc = new OwsMapContext();
 		mc.open(null);
 		ILayer layer = getDataManager().createLayer(
 				new File("src/test/resources/data/bv_sap.shp"));
@@ -119,7 +109,7 @@ public class MapContextTest extends AbstractTest {
 
 //        @Test
 //	public void testSaveAndRecoverMapContext() throws Exception {
-//		MapContext mc = new DefaultMapContext();
+//		MapContext mc = new OwsMapContext();
 //		mc.open(null);
 //		ILayer layer1 = getDataManager().createLayer(
 //				new File("src/test/resources/data/linestring.shp"));
@@ -132,7 +122,7 @@ public class MapContextTest extends AbstractTest {
 //		Symbol sym2 = layer2.getVectorLegend()[0].getSymbol(layer2
 //				.getDataSource(), 0);
 //		Object persistence = mc.getJAXBObject();
-//		DefaultMapContext mc2 = new DefaultMapContext();
+//		OwsMapContext mc2 = new OwsMapContext();
 //		mc2.setJAXBObject(persistence);
 //		mc2.open(null);
 //		assertTrue(mc2.getLayers().length == 2);
@@ -150,7 +140,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testSaveAndRecoverTwoNestedCollections() throws Exception {
-		MapContext mc = new DefaultMapContext();
+		MapContext mc = new OwsMapContext();
 		mc.open(null);
 		ILayer layer1 = getDataManager().createLayerCollection("a");
 		ILayer layer2 = getDataManager().createLayerCollection("a");
@@ -161,7 +151,7 @@ public class MapContextTest extends AbstractTest {
 		layer2.addLayer(layer3);
 		Object persistence = mc.getJAXBObject();
 		mc.close(null);
-		mc = new DefaultMapContext();
+		mc = new OwsMapContext();
 		mc.setJAXBObject(persistence);
 		mc.open(null);
 		ILayer layer1_ = mc.getLayerModel().getLayer(0);
@@ -174,7 +164,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testOperateOnClosedMapContext() throws Exception {
-		MapContext mc = new DefaultMapContext();
+		MapContext mc = new OwsMapContext();
 		try {
 			mc.getSelectedLayers();
 			assertTrue(false);
@@ -214,7 +204,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testIsOpen() throws Exception {
-		MapContext mc = new DefaultMapContext();
+		MapContext mc = new OwsMapContext();
 		assertTrue(!mc.isOpen());
 		mc.open(new NullProgressMonitor());
 		assertTrue(mc.isOpen());
@@ -222,7 +212,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testOpenTwice() throws Exception {
-		MapContext mc = new DefaultMapContext();
+		MapContext mc = new OwsMapContext();
 		mc.open(new NullProgressMonitor());
 		try {
 			mc.open(new NullProgressMonitor());
@@ -233,7 +223,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testCloseClosedMap() throws Exception {
-		MapContext mc = new DefaultMapContext();
+		MapContext mc = new OwsMapContext();
 		try {
 			mc.close(new NullProgressMonitor());
 			assertTrue(false);
@@ -243,7 +233,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testSetJAXBOnOpenMap() throws Exception {
-		MapContext mc = new DefaultMapContext();
+		MapContext mc = new OwsMapContext();
 		Object obj = mc.getJAXBObject();
 		mc.open(new NullProgressMonitor());
 		try {
@@ -255,7 +245,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testRemoveSource() throws Exception {
-		MapContext mc = new DefaultMapContext();
+		MapContext mc = new OwsMapContext();
 		mc.open(null);
 		ILayer layer = getDataManager().createLayer("linestring",
 				new File("src/test/resources/data/linestring.shp"));
@@ -270,7 +260,7 @@ public class MapContextTest extends AbstractTest {
 		MapContext mc = getSampleMapContext();
 		Object jaxbObj = mc.getJAXBObject();
 
-		MapContext mc2 = new DefaultMapContext();
+		MapContext mc2 = new OwsMapContext();
 		mc2.setJAXBObject(jaxbObj);
 		jaxbObj = mc2.getJAXBObject();
 		mc2.open(null);
@@ -278,14 +268,13 @@ public class MapContextTest extends AbstractTest {
 		mc2.close(null);
 
 		mc2.setJAXBObject(jaxbObj);
-		jaxbObj = mc2.getJAXBObject();
 		mc2.open(null);
 		assertTrue(mc2.getLayerModel().getLayerCount() == 1);
 		mc2.close(null);
 	}
 
 	private MapContext getSampleMapContext() throws LayerException {
-		MapContext mc = new DefaultMapContext();
+		MapContext mc = new OwsMapContext();
 		mc.open(null);
 		ILayer layer = getDataManager().createLayerCollection("a");
 		mc.getLayerModel().addLayer(layer);
@@ -298,7 +287,7 @@ public class MapContextTest extends AbstractTest {
 		MapContext mc = getSampleMapContext();
 		Object jaxbObj = mc.getJAXBObject();
 
-		MapContext mc2 = new DefaultMapContext();
+		MapContext mc2 = new OwsMapContext();
 		mc2.setJAXBObject(jaxbObj);
 		mc2.open(null);
 		assertTrue(mc2.getLayerModel().getLayerCount() == 1);
@@ -314,7 +303,7 @@ public class MapContextTest extends AbstractTest {
 
 //        @Test
 //	public void testLegendPersistenceOpeningTwice() throws Exception {
-//		MapContext mc = new DefaultMapContext();
+//		MapContext mc = new OwsMapContext();
 //		mc.open(null);
 //		ILayer layer = getDataManager().createLayer("bv_sap",
 //				new File("src/test/resources/data/bv_sap.shp"));
@@ -326,7 +315,7 @@ public class MapContextTest extends AbstractTest {
 //		assertTrue(legend.getSymbol().getPersistentProperties().equals(
 //				symbol.getPersistentProperties()));
 //		mc.close(null);
-//		MapContext mc2 = new DefaultMapContext();
+//		MapContext mc2 = new OwsMapContext();
 //		mc2.setJAXBObject(mc.getJAXBObject());
 //		mc2.open(null);
 //		assertTrue(legend.getSymbol().getPersistentProperties().equals(
@@ -345,7 +334,7 @@ public class MapContextTest extends AbstractTest {
 		MapContext mc = getSampleMapContext();
 		Object jaxbObj = mc.getJAXBObject();
 
-		MapContext mc2 = new DefaultMapContext();
+		MapContext mc2 = new OwsMapContext();
 		// set JAXB
 		mc2.setJAXBObject(jaxbObj);
 		// modify
@@ -358,7 +347,7 @@ public class MapContextTest extends AbstractTest {
 		mc2.close(null);
 		Object obj = mc2.getJAXBObject();
 		// check obj is good
-		MapContext mc3 = new DefaultMapContext();
+		MapContext mc3 = new OwsMapContext();
 		mc3.setJAXBObject(obj);
 		mc3.open(null);
 		assertTrue(mc3.getLayerModel().getLayerCount() == 2);
@@ -367,7 +356,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testActiveLayerClearedOnClose() throws Exception {
-		MapContext mc = new DefaultMapContext();
+		MapContext mc = new OwsMapContext();
 		mc.open(null);
 		ILayer layer = getDataManager().createLayer(
 				new File("src/test/resources/data/bv_sap.shp"));
@@ -380,15 +369,15 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testGetJAXBAfterModify() throws Exception {
-		MapContext mc = new DefaultMapContext();
+		MapContext mc = new OwsMapContext();
 		mc.open(null);
 		mc.getJAXBObject();
 		ILayer layer = getDataManager().createLayer(
 				new File("src/test/resources/data/bv_sap.shp"));
 		mc.getLayerModel().addLayer(layer);
-		org.orbisgis.core.layerModel.persistence.MapContext xmlMC = (org.orbisgis.core.layerModel.persistence.MapContext) mc
+		OWSContextType xmlMC = (OWSContextType) mc
 				.getJAXBObject();
-		assertTrue(xmlMC.getLayerCollection().getLayer().size() == 1);
+		assertTrue(xmlMC.getResourceList().getLayer().size() == 1);
 		mc.close(null);
 	}
 
@@ -401,7 +390,7 @@ public class MapContextTest extends AbstractTest {
 		FileUtils.copy(originalShp, shp);
 		FileUtils.copy(new File("src/test/resources/data/bv_sap.dbf"), dbf);
 		FileUtils.copy(new File("src/test/resources/data/bv_sap.shx"), shx);
-		MapContext mc = new DefaultMapContext();
+		MapContext mc = new OwsMapContext();
 		mc.open(null);
 		mc.getLayerModel().addLayer(getDataManager().createLayer(shp));
 		mc.getLayerModel().addLayer(getDataManager().createLayer(originalShp));
@@ -426,7 +415,7 @@ public class MapContextTest extends AbstractTest {
 //		FileUtils.copy(new File("src/test/resources/data/bv_sap.shp"), shp);
 //		FileUtils.copy(new File("src/test/resources/data/bv_sap.dbf"), dbf);
 //		FileUtils.copy(new File("src/test/resources/data/bv_sap.shx"), shx);
-//		MapContext mc = new DefaultMapContext();
+//		MapContext mc = new OwsMapContext();
 //		mc.open(null);
 //		ILayer layer = getDataManager().createLayer(shp);
 //		mc.getLayerModel().addLayer(layer);
@@ -454,7 +443,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testExportSVG() throws Exception {
-		MapContext mc = new DefaultMapContext();
+		MapContext mc = new OwsMapContext();
 		mc.open(null);
 		ILayer layer = getDataManager().createLayer("bv",
 				new File("src/test/resources/data/bv_sap.shp"));
@@ -479,33 +468,4 @@ public class MapContextTest extends AbstractTest {
 		}
 	}
 
-        @Test
-	public void testRenameLayerSource() throws Exception {
-		MapContext mc = new DefaultMapContext();
-		mc.open(null);
-		SourceManager sm = getDataManager().getSourceManager();
-		sm.register("bv", new File("src/test/resources/data/bv_sap.shp"));
-		ILayer layer = getDataManager().createLayer("bv");
-		mc.getLayerModel().addLayer(layer);
-		sm.rename("bv", "bva");
-		assertTrue(sm.getAllNames("bva").length == 1);
-		assertTrue(sm.getAllNames("bva")[0].equals("bv"));
-		mc.close(null);
-	}
-
-        @Test
-	public void testRenameLayerBack() throws Exception {
-		MapContext mc = new DefaultMapContext();
-		mc.open(null);
-		SourceManager sm = getDataManager().getSourceManager();
-		sm.register("bv", new File("src/test/resources/data/bv_sap.shp"));
-		ILayer layer = getDataManager().createLayer("bv");
-		mc.getLayerModel().addLayer(layer);
-		layer.setName("bva");
-		assertTrue(sm.getAllNames("bv").length == 1);
-		assertTrue(sm.getAllNames("bv")[0].equals("bva"));
-		layer.setName("bv");
-		assertTrue(sm.getAllNames("bv").length == 0);
-		mc.close(null);
-	}
 }

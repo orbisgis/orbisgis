@@ -13,8 +13,6 @@ import org.gdms.data.DataSource;
 import org.gvsig.remoteClient.exceptions.ServerErrorException;
 import org.gvsig.remoteClient.exceptions.WMSException;
 import org.gvsig.remoteClient.wms.WMSStatus;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.layerModel.WMSConnection;
 import org.orbisgis.core.renderer.symbol.Symbol;
 
@@ -108,14 +106,8 @@ public class WMSLegend extends AbstractLegend {
 			}
 			image = ImageIO.read(file);
 		} catch (WMSException e) {
-			Services.getService(ErrorManager.class).error(
-					"Cannot get WMS legend", e);
 		} catch (ServerErrorException e) {
-			Services.getService(ErrorManager.class).error(
-					"Cannot get WMS legend", e);
 		} catch (IOException e) {
-			Services.getService(ErrorManager.class).error(
-					"Cannot get WMS legend", e);
 		}
 		return image;
 	}

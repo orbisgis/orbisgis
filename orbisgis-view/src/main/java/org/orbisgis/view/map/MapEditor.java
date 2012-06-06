@@ -40,7 +40,6 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.events.Listener;
-import org.orbisgis.core.layerModel.DefaultMapContext;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
@@ -94,18 +93,7 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
         //Add the tools in the docking Panel title
         dockingPanelParameters.setToolBar(createToolBar(true));
 
-      
-        //Test
-        MapContext mc = new DefaultMapContext();
-        try {
-            //Load MapContext In MapEditor
-            mc.open(new NullProgressMonitor());
-            MapElement testMap = new MapElement(mc);
-            loadMap(testMap);            
-        } catch (LayerException ex) {
-            GUILOGGER.error(ex);
-        }
-        
+       
         //Set the Drop target
         dragDropHandler = new MapTransferHandler();        
         this.setTransferHandler(dragDropHandler);

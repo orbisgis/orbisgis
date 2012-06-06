@@ -176,11 +176,7 @@ public class LayerModelTest extends AbstractTest {
 		lc1.addLayer(lc2);
 		lc3.addLayer(vl3);
 		lc2.addLayer(lc3);
-		try {
-			vl3.setName(dummy2.getName());
-			assertTrue(false);
-		} catch (LayerException e) {
-		}
+		vl3.setName(dummy2.getName());
 		assertTrue(!vl3.getName().equals("vector2"));
 		vl3.setName("firstLevel");
 		assertTrue(!vl3.getName().equals("firstLevel"));

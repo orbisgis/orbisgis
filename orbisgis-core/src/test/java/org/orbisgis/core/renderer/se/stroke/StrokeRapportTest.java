@@ -52,19 +52,14 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 
 import java.io.IOException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.media.jai.RenderableGraphics;
 
 import javax.swing.JFrame;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
+import org.apache.log4j.Logger;
 
-import org.orbisgis.core.ConsoleErrorManager;
-import org.orbisgis.core.ConsoleOutputManager;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
@@ -73,7 +68,6 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
-import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -82,19 +76,12 @@ import static org.junit.Assert.*;
  * @author maxence
  */
 public class StrokeRapportTest {
-
+    private final static Logger LOGGER = Logger.getLogger(StrokeRapportTest.class);
     private Style fts;
-
-    protected ConsoleErrorManager failErrorManager;
-    protected ConsoleOutputManager failOutput;
 
     @Before
     public void setUp() throws Exception {
 
-        failErrorManager = new ConsoleErrorManager();
-        Services.registerService(ErrorManager.class, "", failErrorManager);
-        failOutput = new ConsoleOutputManager();
-        Services.registerService(OutputManager.class, "", failOutput);
     }
 
     /**
@@ -134,7 +121,7 @@ public class StrokeRapportTest {
 
 			marshaller.marshal(fts.getJAXBElement(), oStream);
 		} catch (Exception ex) {
-            Services.getErrorManager().error("Unable to marshall", ex);
+            LOGGER.error("Unable to marshall", ex);
             ex.printStackTrace(System.err);
             assertTrue(false);
 		}
@@ -173,13 +160,11 @@ public class StrokeRapportTest {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize((int)rg.getWidth(), (int)rg.getHeight()+24); // adjust the frame size.
         frame.setVisible(true); // show the frame.
-
-        System.out.print("");
         
         try {
             Thread.sleep(5000);
         } catch (InterruptedException ex) {
-            Logger.getLogger(StrokeRapportTest.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.error(ex);
         }
         
     }

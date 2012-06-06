@@ -33,9 +33,10 @@ public class DescriptionTest extends AbstractTest {
     public void testDeserialization() throws Exception {
         Description descr = getDescription();
         assertNotNull(descr);
-        assertTrue(descr.getTitles().size()==2);
+        assertTrue(descr.getTitles().size()==3);
         assertTrue(descr.getTitle(new Locale("en")).equals("Hello"));
         assertTrue(descr.getTitle(new Locale("fr")).equals("Bonjour"));
+        assertTrue(descr.getTitle(new Locale("br","FR")).equals("Salud"));
         assertTrue(descr.getAbstractTexts().size()==3);
         assertTrue(descr.getAbstract(new Locale("en")).equals("I've said hello !"));
         assertTrue(descr.getAbstract(new Locale("fr")).equals("J'ai dit bonjour !"));
@@ -52,7 +53,7 @@ public class DescriptionTest extends AbstractTest {
         Description descr = getDescription();
         DescriptionType dt = descr.getJAXBType();
         assertNotNull(dt);
-        assertTrue(dt.getTitle().size()==2);
+        assertTrue(dt.getTitle().size()==3);
         assertTrue(dt.getAbstract().size()==3);
         assertTrue(dt.getKeywords().size()==2);
     }

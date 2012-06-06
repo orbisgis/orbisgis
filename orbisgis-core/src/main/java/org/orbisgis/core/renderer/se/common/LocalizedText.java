@@ -4,9 +4,13 @@
  */
 package org.orbisgis.core.renderer.se.common;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 import net.opengis.ows._2.LanguageStringType;
 import net.opengis.ows._2.ObjectFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Basically a {@code String} associated to a {@code Locale} instance.
@@ -14,9 +18,12 @@ import net.opengis.ows._2.ObjectFactory;
  */
 public class LocalizedText {
 
+    private final static String lang_sep = "-";
+    
     private String content;
     private Locale locale;
-
+    protected final static I18n I18N = I18nFactory.getI18n(LocalizedText.class);
+            
     /**
      * Builds a new instance of {@code LocalizedText} with the given {@code
      * String} and {@code Locale}.
@@ -52,6 +59,7 @@ public class LocalizedText {
         return locale;
     }
 
+            
     /**
      * Sets the {@code Locale} associated to this text.
      * @param locale
@@ -59,7 +67,120 @@ public class LocalizedText {
     public void setLocale(Locale locale) {
         this.locale = locale;
     }
-
+    
+    /**
+     * Separate a Locale from one to three parts
+     * @param localeRepresentation A string that conforms to the IETF BCP 47 standard
+     * @return An array of [Language,Country,Variant]
+     * @note ([a-zA-Z]{2,8})-?([a-zA-Z]{2}|[0-9]{3})?-?([0-9a-zA-Z]*)? regex should work
+     */
+    public static String[] separateLocale(String localeRepresentation) {
+            List<String> ret = new ArrayList(3);
+            int start = 0;
+            do {
+                    int end = localeRepresentation.indexOf(lang_sep, start);
+                    if(ret.size()==2 || end==-1) {
+                            if(start<localeRepresentation.length()) {
+                                ret.add(localeRepresentation.substring(start));
+                            }
+                            break;
+                    } else {
+                            ret.add(localeRepresentation.substring(start,end));
+                    }
+                    start = end + 1;
+            } while(start!=0);
+            return ret.toArray(new String[ret.size()]);
+    }
+    /**
+     * @param localeRepresentation  a string that conforms to the IETF BCP 47 standard
+     * @return Locale instance or null if the specified string is not a valid Locale representation
+     * @see http://docs.oracle.com/javase/tutorial/i18n/locale/create.html#factory
+     */
+    public static Locale forLanguageTag(String localeRepresentation) {
+            String[] parts = separateLocale(localeRepresentation);
+            if(localeRepresentation.equals("und")) {
+                    return null;
+            }
+            switch(parts.length) {
+                    case 1:
+                            return new Locale(localeRepresentation);
+                    case 2:
+                            return new Locale(parts[0],parts[1]);
+                    case 3:
+                            return new Locale(parts[0],parts[1],parts[2]);
+                    default:
+                            return null;
+            }
+    }
+    
+    /**
+     * Validation of the language part of the java.util.Locale
+     * @see http://docs.oracle.com/javase/7/docs/api/java/util/Locale.html#def_region
+     * @return 
+     */
+    public static boolean validateLanguage(String language) {
+            return language.matches("[a-zA-Z]{2,8}");
+    }
+    
+    /**
+     * Validation of the country part of the java.util.Locale
+     * @see http://docs.oracle.com/javase/7/docs/api/java/util/Locale.html#def_region
+     * @return 
+     */
+    public static boolean validateCountry(String country) {
+            return country.matches("[a-zA-Z]{2}|[0-9]{3}");
+    }
+    
+    /**
+     * Validation of the variant part of the java.util.Locale
+     * @see http://docs.oracle.com/javase/7/docs/api/java/util/Locale.html#def_region
+     * @return 
+     */
+    public static boolean validateVariant(String variant) {
+            return true;
+    }
+    
+    /**
+     * Serialisation of a Locale, simple version of the java 7 function
+     * @param locale A locale instance
+     * @return A string that conforms to the IETF BCP 47 standard
+     * @see http://docs.oracle.com/javase/7/docs/api/java/util/Locale.html#toLanguageTag%28%29
+     */
+    public static String toLanguageTag(Locale locale) {
+            String[] parts = locale.toString().split("_");
+            StringBuilder ret = new StringBuilder();
+            if(parts.length>=1) {
+                    //Language
+                    if(validateLanguage(parts[0])) {
+                            ret.append(parts[0]);
+                    } else {
+                            return "und";
+                    }
+                    if(parts.length==1) {
+                            return ret.toString();
+                    }
+                    //Country
+                    if(validateCountry(parts[1])) {
+                            ret.append("-");
+                            ret.append(parts[1]);
+                    } else {
+                            return ret.toString();                            
+                    }
+                    if(parts.length==2) {
+                            return ret.toString();
+                    }
+                    //Variant
+                    if(validateVariant(parts[2])) {
+                            ret.append("-");
+                            ret.append(parts[2]);  
+                    }
+                    return ret.toString();
+            } else {
+                    return "und";
+            }
+            
+    }
+    
     /**
      * Gets the JAXB representation of this object.
      * @return
@@ -67,7 +188,7 @@ public class LocalizedText {
     public LanguageStringType getJAXBType(){
         ObjectFactory of = new ObjectFactory();
         LanguageStringType lst = of.createLanguageStringType();
-        lst.setLang(locale != null ? getLocale().toString() : "");
+        lst.setLang(locale != null ? toLanguageTag(getLocale()) : "");
         lst.setValue(getValue());
         return lst;
     }

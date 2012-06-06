@@ -47,9 +47,12 @@ import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.RecodeType;
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Recoding is defined as the "transformation of discrete values to any other values".
@@ -61,7 +64,9 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
  * when an input value can't be processed for whatever reason.
  */
 public abstract class Recode<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
-
+    private final static I18n I18N = I18nFactory.getI18n(Recode.class);
+    private final static Logger LOGGER = Logger.getLogger(Recode.class);
+    
     private FallbackType fallbackValue;
     private StringParameter lookupValue;
     private LinkedHashMap<String, ToType> mapItems;
@@ -225,7 +230,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
          * {@code fid} does not match anything in the underlying map, the {@code
          * fallBackValue} is returned.</p>
          * <p>If an error of any kind is catched, the {@code fallBackValue} is
-         * returned, and a message is print using the {@code OutputManager}.
+         * returned, and a message is print using the {@code Logger}.
          */
     public ToType getParameter(DataSource sds, long fid) {
         String key = "";
@@ -234,7 +239,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
             ToType ret = getMapItemValue(key);
             return ret == null ? fallbackValue : ret;
         } catch (Exception e) {
-            Services.getOutputManager().println("Fallback (" + key + "): " + e, Color.DARK_GRAY);
+            LOGGER.error(I18N.tr("Fallback ({0})",key),e);
             return fallbackValue;
         }
     }

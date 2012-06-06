@@ -422,7 +422,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
 
                     g2.drawImage(bi, 0, 0, null);
                         } catch (DriverException e) {
-                                Services.getErrorManager().error(
+                                UILOGGER.error(
                                         I18N.tr("The legend of the map cannot be drawn correctly"), e); //$NON-NLS-1$
                 }
                 }

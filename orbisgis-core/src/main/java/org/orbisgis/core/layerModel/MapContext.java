@@ -39,6 +39,7 @@
 package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
@@ -51,7 +52,41 @@ import org.orbisgis.progress.ProgressMonitor;
  * to notify it about certain events during edition
  */
 public interface MapContext {
+        //Properties index
+        public static final String PROP_BOUNDINGBOX = "boundingBox";
+        public static final String PROP_SELECTEDLAYERS = "selectedLayers";
+        public static final String PROP_SELECTEDSTYLES = "selectedStyles";
+        public static final String PROP_ACTIVELAYER = "activeLayer";
+        public static final String PROP_LAYERMODEL = "layerModel";
+        
+        /**
+        * Add a property-change listener for all properties.
+        * The listener is called for all properties.
+        * @param listener The PropertyChangeListener instance
+        * @note Use EventHandler.create to build the PropertyChangeListener instance
+        */
+        void addPropertyChangeListener(PropertyChangeListener listener);
+        /**
+        * Add a property-change listener for a specific property.
+        * The listener is called only when there is a change to 
+        * the specified property.
+        * @param prop The static property name PROP_..
+        * @param listener The PropertyChangeListener instance
+        * @note Use EventHandler.create to build the PropertyChangeListener instance
+        */
+        void addPropertyChangeListener(String prop,PropertyChangeListener listener);
+        /**
+        * Remove the specified listener from the list
+        * @param listener The listener instance
+        */
+        void removePropertyChangeListener(PropertyChangeListener listener);
 
+        /**
+        * Remove the specified listener for a specified property from the list
+        * @param prop The static property name PROP_..
+        * @param listener The listener instance
+        */
+        public void removePropertyChangeListener(String prop,PropertyChangeListener listener);
 
         /**
          * Return a new layer corresponding to the provided data source

@@ -36,7 +36,7 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
-import org.orbisgis.core.layerModel.DefaultMapContext;
+import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundManager;
@@ -147,7 +147,7 @@ public class Core {
         dockManager.show(toc);
         
         //Set the same MapEditable element
-        MapElement defaultMap = new MapElement(new DefaultMapContext());
+        MapElement defaultMap = new MapElement(new OwsMapContext());
         defaultMap.open(new NullProgressMonitor());
         toc.setEditableMap(defaultMap);
         mapEditor.loadMap(defaultMap);

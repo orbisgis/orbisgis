@@ -28,7 +28,6 @@
  */
 package org.orbisgis.core.context.main;
 
-import java.awt.Color;
 import java.io.IOException;
 import org.apache.log4j.*;
 import org.apache.log4j.varia.LevelRangeFilter;
@@ -38,8 +37,6 @@ import org.orbisgis.core.DataManager;
 import org.orbisgis.core.DefaultDataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.SourceContext.SourceContext;
-import org.orbisgis.core.errorManager.ErrorListener;
-import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -79,15 +76,7 @@ public class MainContext {
      * Register Services
      */
     private void registerServices() {
-        //TODO remove this service
-        Services.registerService(org.orbisgis.core.ui.plugins.views.output.OutputManager.class,
-                "Temporary output manager",
-                new temporaryLogger());
-        Services.registerService(ErrorManager.class,
-                "Temporary error manager",
-                new temporaryErrorLogger());
-        
-        
+
         Services.registerService(DataManager.class,
                         I18N.tr("Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial"),
                         dataManager);
@@ -196,62 +185,4 @@ public class MainContext {
         }
     }
     
-    /**
-     * 
-     * @deprecated This class must be removed when old OutputManager will not be used
-     */
-    @Deprecated
-    private class temporaryLogger implements org.orbisgis.core.ui.plugins.views.output.OutputManager {
-        private Logger logger = Logger.getLogger("gui."+temporaryLogger.class);
-        public void print(String out) {
-            logger.info(out);
-        }
-
-        public void print(String text, Color color) {
-            logger.info(text);
-        }
-
-        public void println(String out) {
-            logger.info(out);
-        }
-
-        public void println(String text, Color color) {
-            logger.info(text);
-        }
-        
-    }
-    /**
-     * 
-     * @deprecated This class must be removed when old ErrorManager will not be used anymore
-     */
-    @Deprecated
-    private class temporaryErrorLogger implements ErrorManager {
-        private Logger logger = Logger.getLogger("gui."+temporaryLogger.class);
-
-        public void addErrorListener(ErrorListener listener) {
-            
-        }
-
-        public void removeErrorListener(ErrorListener listener) {
-            
-        }
-
-        public void warning(String userMsg) {
-            logger.warn(userMsg);
-        }
-
-        public void error(String userMsg) {
-            logger.error(userMsg);
-        }
-
-        public void warning(String userMsg, Throwable exception) {
-            logger.warn(userMsg, exception);
-        }
-
-        public void error(String userMsg, Throwable exception) {
-            logger.error(userMsg, exception);
-        }
-        
-        
-    }
 }
