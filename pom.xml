@@ -46,17 +46,17 @@
                 <repository>
                         <id>IRSTV</id>
                         <name>IRSTV repository</name>
-                        <url>sftp://irstv@www.orbisgis.org:/var/www/repo.orbisgis.org/htdocs</url>
+                        <url>scp://ateliersig@repo.orbisgis.org:/var/www/repo.orbisgis.org</url>
                 </repository>
         </distributionManagement>
         <build>
                 <plugins>
                         <plugin>
                             <artifactId>maven-compiler-plugin</artifactId>
-                            <version>2.3.1</version>
+                            <version>2.3.2</version>
                             <configuration>
-                                <source>1.5</source>
-                                <target>1.5</target>
+                                <source>1.6</source>
+                                <target>1.6</target>
                             </configuration>
                         </plugin>
                         <plugin>
@@ -70,7 +70,7 @@
                         <plugin>
                                 <groupId>org.apache.maven.plugins</groupId>
                                 <artifactId>maven-jar-plugin</artifactId>
-                                <version>2.3.1</version>
+                                <version>2.4</version>
                                 <configuration>
                                         <archive>
                                                 <manifest>
@@ -84,5 +84,12 @@
                                 </configuration>
                         </plugin>
                 </plugins>
+                 <extensions>
+                        <extension>
+                                <groupId>org.apache.maven.wagon</groupId>
+                                <artifactId>wagon-ssh</artifactId>
+                                <version>2.2</version>
+                        </extension>
+                </extensions>
         </build>
 </project>
