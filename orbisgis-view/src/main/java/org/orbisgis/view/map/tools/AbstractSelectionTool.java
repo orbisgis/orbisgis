@@ -59,33 +59,22 @@
  */
 package org.orbisgis.view.map.tools;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Point;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Iterator;
-
+import org.gdms.data.DataSource;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.view.map.tool.DrawingException;
-import org.orbisgis.view.map.tool.FinishedAutomatonException;
-import org.orbisgis.view.map.tool.Handler;
 import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
-import org.orbisgis.view.map.tool.ToolManager;
-import org.orbisgis.view.map.tool.TransitionException;
+import org.orbisgis.view.map.tool.*;
 import org.orbisgis.view.map.tools.generated.Selection;
-
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import org.gdms.data.DataSource;
-import org.orbisgis.view.map.tool.CannotChangeGeometryException;
 
 /**
  * Tool to select geometries
@@ -191,8 +180,8 @@ public abstract class AbstractSelectionTool extends Selection {
                 String geomFieldName = ds.getMetadata().getFieldName(
                         ds.getSpatialFieldIndex());
                 Envelope env = new Envelope(rect.getMinX(), rect.getMaxX(), rect.getMinY(), rect.getMaxY());
-                Iterator<Integer> res = ds.queryIndex(new DefaultSpatialIndexQuery(env,
-                        geomFieldName));
+                Iterator<Integer> res = ds.queryIndex(new DefaultSpatialIndexQuery(geomFieldName,
+                        env));
 
                 return res;
         }
@@ -308,7 +297,7 @@ public abstract class AbstractSelectionTool extends Selection {
                         }
                 }
 
-                if (selected.size() == 0) {
+                if (selected.isEmpty()) {
                         transition("out-handler"); //$NON-NLS-1$
                         rect.setRect(tm.getValues()[0], tm.getValues()[1], 0, 0);
                 } else {
