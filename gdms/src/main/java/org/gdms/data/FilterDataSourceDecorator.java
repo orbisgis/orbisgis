@@ -64,29 +64,51 @@ import org.gdms.sql.engine.SQLStatement;
 /**
  * This Decorator can filter a underlying DataSource with a SQL Expression.
  *
+ * <p>
  * It does not produce a new DataSource, but rather allows access through getFieldValue()
  * to the filtered results.
  * This class does not replicate the data, it simply builds an list of rowIndexes from
  * the original DataSource that match the Expression, and use it to return the data
  * from the real DataSource. The list of indexes is stored in memory only.
- *
+ * </p><p>
+ * The filter property has to be set before use. An optional order property is available:
+ * if present the results are ordered according to it. The order supports everything that
+ * can be specified in an SQL ORDER BY clause.
+ * </p><p>
  * It is not necessary to call the open and close methods to access methods that do not
  * read any data in the original DataSource : getOriginalIndex, getRowCount and getIndexMap
  * can be called without the DataSourceDecorator or the actual DataSource being opened.
  * The first call to any of these will trigger the filtering.
- * 
+ * <p/>
  * @author Antoine Gourlay
  */
 public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
 
         private List<Integer> map;
         private String filter;
+        private String order;
 
-        public FilterDataSourceDecorator(DataSource internalDataSource) throws DriverException {
+        /**
+         * Creates a new <tt>FilterDataSourceDecorator</tt> over the specified source.
+         * <p>
+         * A filter has to be specified with {@link #setFilter(java.lang.String) } before
+         * use.
+         * </p>
+         *
+         * @param internalDataSource a data source
+         */
+        public FilterDataSourceDecorator(DataSource internalDataSource) {
                 this(internalDataSource, null);
         }
 
-        public FilterDataSourceDecorator(DataSource internalDataSource, String filter) throws DriverException {
+        /**
+         * Creates a new <tt>FilterDataSourceDecorator</tt> over the specified source, with
+         * the specified filter.
+         *
+         * @param internalDataSource a data source
+         * @param filter an initial filter
+         */
+        public FilterDataSourceDecorator(DataSource internalDataSource, String filter) {
                 super(internalDataSource);
                 setFilter(filter);
                 if (internalDataSource.isEditable()) {
@@ -103,12 +125,12 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
         }
 
         /**
-         * Returns the index in the original datasource (unfiltered). This index
+         * Returns the index in the original data source (unfiltered). This index
          * is kept in memory only, it is NOT written to disk.
-         * {@inheritDoc}
-         * @param rowIndex
-         * @return
-         * @throws DriverException
+         *
+         * @param rowIndex a row in this (filtered) data source
+         * @return the original index of the row
+         * @throws DriverException if there is a problem building the filter
          */
         public long getOriginalIndex(long rowIndex) throws DriverException {
                 if (map == null) {
@@ -140,49 +162,57 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
 
         /**
          * Returns the Driver used by the SelectionOp when processing the query
+         *
          * @return the driver
          * @throws DriverException
          */
         private List<Integer> getMapDriver() throws DriverException {
                 List<Integer> ints = new ArrayList<Integer>();
-                if (getFilter() == null || getFilter().isEmpty()) {
+                if (filter == null || filter.isEmpty()) {
                         throw new IllegalArgumentException("The filter condition cannot be null or empty.");
                 }
-                
+
                 boolean opened = false;
                 if (!getDataSource().isOpen()) {
-                     getDataSource().open();   
-                     opened = true;
+                        getDataSource().open();
+                        opened = true;
                 }
-                
+
                 SourceManager sm = getDataSourceFactory().getSourceManager();
                 MemoryDataSetDriver d = new MemoryDataSetDriver(getDataSource(), true);
                 final String uID = sm.nameAndRegister(d, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
-                
-                String rq = "SELECT oid FROM " + uID + " WHERE " + filter + ";";
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("SELECT oid FROM ").append(uID).append(" WHERE ");
+                sb.append(filter);
+                if (order != null && !order.isEmpty()) {
+                        sb.append(" ORDER BY ").append(order);
+                }
+                sb.append(';');
+
                 SQLStatement s = null;
                 try {
-                        s = Engine.parse(rq, getDataSourceFactory().getProperties())[0];
+                        s = Engine.parse(sb.toString(), getDataSourceFactory().getProperties())[0];
                 } catch (ParseException ex) {
                         throw new DriverException(ex);
                 }
-                
+
                 s.setDataSourceFactory(getDataSourceFactory());
                 s.prepare();
                 DataSet dset = s.execute();
-                
+
                 for (int i = 0; i < dset.getRowCount(); i++) {
                         ints.add(dset.getFieldValue(i, 0).getAsInt());
                 }
-                
+
                 s.cleanUp();
-                
+
                 if (opened) {
                         getDataSource().close();
                 }
-                
+
                 sm.remove(uID);
-                
+
                 return ints;
         }
 
@@ -194,6 +224,11 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
         }
 
         /**
+         * Sets a new value for the filter.
+         * <p>
+         * This method always invalidate the current filter if there is one.
+         * </p>
+         *
          * @param filter the filter to set
          */
         public final void setFilter(String filter) {
@@ -202,8 +237,26 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
         }
 
         /**
+         * @return the current ordering
+         */
+        public String getOrder() {
+                return order;
+        }
+
+        /**
+         * Sets the current ordering (in SQL syntax).
+         *
+         * @param order an ordering string or null/empty string for no ordering
+         */
+        public void setOrder(String order) {
+                this.order = order == null ? "" : order;
+                map = null;
+        }
+
+        /**
          * Returns the readonly list of rowIndexes from the original DataSource
          * that correspond to the filtered results
+         *
          * @return
          * @throws DriverException
          */

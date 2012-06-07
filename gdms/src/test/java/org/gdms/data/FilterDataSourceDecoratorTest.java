@@ -44,19 +44,18 @@
  */
 package org.gdms.data;
 
-import org.junit.Test;
 import java.io.File;
 import java.util.List;
-
-import org.gdms.TestBase;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTReader;
 import org.junit.Before;
+import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import org.gdms.TestBase;
 import org.gdms.TestResourceHandler;
 
 public class FilterDataSourceDecoratorTest extends TestBase {
@@ -135,6 +134,27 @@ public class FilterDataSourceDecoratorTest extends TestBase {
 
                 assertFalse(rowC == decorator.getRowCount());
                 assertEquals(rowC - 1, decorator.getRowCount());
+                decorator.close();
+        }
+        
+        @Test
+        public void testFilterWithOrder() throws Exception {
+                sm.register("hedgerow", new File(TestResourceHandler.TESTRESOURCES, "hedgerow.shp"));
+                
+                FilterDataSourceDecorator decorator = new FilterDataSourceDecorator(dsf.getDataSource("hedgerow"));
+                decorator.setFilter("\"type\" = 'talus'");
+                decorator.setOrder("gid DESC");
+                decorator.open();
+                long rowC = decorator.getRowCount();
+                assertFalse(rowC == 0);
+                
+                int lastgid = Integer.MAX_VALUE;
+                for (int i = 0; i < rowC; i++) {
+                        int d = decorator.getInt(i, 1);
+                        assertTrue(d <= lastgid);
+                        lastgid = d;
+                }
+                
                 decorator.close();
         }
 
