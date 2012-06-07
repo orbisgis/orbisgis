@@ -86,19 +86,19 @@
                                         <detectOfflineLinks>false</detectOfflineLinks>
                                         <offlineLinks>
                                                 <offlineLink>
-                                                        <url>http://javadoc.orbisgis.org/commons-1.4-SNAPSHOT</url>
+                                                        <url>http://javadoc.orbisgis.org/latest/commons-1.4-SNAPSHOT</url>
                                                         <location>${basedir}/../commons/target/site/apidocs/</location>
                                                 </offlineLink>
                                                 <offlineLink>
-                                                        <url>http://javadoc.orbisgis.org/gdms-2.0-SNAPSHOT</url>
+                                                        <url>http://javadoc.orbisgis.org/latest/gdms-2.0-SNAPSHOT</url>
                                                         <location>${basedir}/../gdms/target/site/apidocs/</location>
                                                 </offlineLink>
                                                 <offlineLink>
-                                                        <url>http://javadoc.orbisgis.org/grap-1.4.3-SNAPSHOT</url>
+                                                        <url>http://javadoc.orbisgis.org/latest/grap-1.4.3-SNAPSHOT</url>
                                                         <location>${basedir}/../grap/target/site/apidocs/</location>
                                                 </offlineLink>
                                                 <offlineLink>
-                                                        <url>http://javadoc.orbisgis.org/orbisgis-core-4.0-SNAPSHOT</url>
+                                                        <url>http://javadoc.orbisgis.org/latest/orbisgis-core-4.0-SNAPSHOT</url>
                                                         <location>${basedir}/../orbisgis-core/target/site/apidocs/</location>
                                                 </offlineLink>
                                         </offlineLinks>
