@@ -85,7 +85,12 @@ public class ExportInDatabaseOperation implements BackgroundJob {
 			}
 
 			// Do the migration
-			String load = "CALL EXPORT('" + inSourceName + "', '" + dbSource.getPrefix()
+                        
+                        // 2012-06-07
+                        // this is ugly - please, do not migrate this into the new 4.0!
+                        // this should die with the orbisgis-ui module
+                        
+			String load = "CALL EXPORT(" + inSourceName + ", '" + dbSource.getPrefix()
 					+ "' ,'" + dbSource.getHost() + "', "
 					+ dbSource.getPort() + ",'" + dbSource.getDbName() + "','"
 					+ dbSource.getUser() + "','" + dbSource.getPassword()
