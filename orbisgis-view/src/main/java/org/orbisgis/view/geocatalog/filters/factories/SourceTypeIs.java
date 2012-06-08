@@ -63,38 +63,38 @@ public class SourceTypeIs implements FilterFactory<IFilter> {
         filterLabelsId.add(new ContainerItemProperties(name,label));
     }
     /**
-     * Init built-in source type filters
+     * Initialise built-in source type filters
      */
     public SourceTypeIs() {
         addFilter("geocatalog.filters.AlphanumericFilter",
-                i18n.tr("orbisgis.view.geocatalog.filters.AlphanumericFilter"),
+                i18n.tr("Alphanumeric"),
                 new AlphanumericFilter());
         addFilter("geocatalog.filters.DbsFilter",
-                i18n.tr("orbisgis.view.geocatalog.filters.DbsFilter"),
+                i18n.tr("DataBase"),
                 new DBsFilter());
         
         addFilter("geocatalog.filters.FilesFilter",
-                i18n.tr("orbisgis.view.geocatalog.filters.FilesFilter"),
+                i18n.tr("Files"),
                 new FilesFilter());
         
         addFilter("geocatalog.filters.GeoFilter",
-                i18n.tr("orbisgis.view.geocatalog.filters.GeoFilter"),
+                i18n.tr("Geometry"),
                 new GeoFilter());
 
         addFilter("geocatalog.filters.RasterFilter",
-                i18n.tr("orbisgis.view.geocatalog.filters.RasterFilter"),
+                i18n.tr("Raster"),
                 new RasterFilter());
 
         addFilter("geocatalog.filters.VectorialFilter",
-                i18n.tr("orbisgis.view.geocatalog.filters.VectorialFilter"),
+                i18n.tr("Vectorial"),
                 new VectorialFilter());
         
         addFilter("geocatalog.filters.WMSFilter",
-                i18n.tr("orbisgis.view.geocatalog.filters.WMSFilter"),
+                i18n.tr("Web Map Services"),
                 new WMSFilter());
         
         addFilter("geocatalog.filters.TableSystemFilter",
-                i18n.tr("orbisgis.view.geocatalog.filters.TableSystemFilter"),
+                i18n.tr("System Table"),
                 new TableSystemFilter());
     }
     
@@ -103,6 +103,7 @@ public class SourceTypeIs implements FilterFactory<IFilter> {
      *
      * @return Internal name of the filter type
      */
+    @Override
     public String getFactoryId() {
         return "type_is";
     }
@@ -112,8 +113,9 @@ public class SourceTypeIs implements FilterFactory<IFilter> {
      *
      * @return
      */
+    @Override
     public String getFilterLabel() {
-        return i18n.tr("orbisgis.view.geocatalog.filters.factories.TypeIsLabel");
+        return i18n.tr("Source type is");
     }
 
     /**
@@ -122,6 +124,7 @@ public class SourceTypeIs implements FilterFactory<IFilter> {
      * @param filterValue The new value fired by PropertyChangeEvent
      * @return
      */
+    @Override
     public IFilter getFilter(String filterValue) {
         if(!filters.containsKey(filterValue)) {
             return filters.get(DEFAULT_FILTER);
@@ -137,6 +140,7 @@ public class SourceTypeIs implements FilterFactory<IFilter> {
      * @param filterValue When the control change the ActiveFilter value must be updated
      * @return The swing component.
      */
+    @Override
     public Component makeFilterField(ActiveFilter filterValue) {
         JComboBox filterField = new JComboBox(filterLabelsId.toArray());
         if(filters.containsKey(filterValue.getCurrentFilterValue())) {

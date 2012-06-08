@@ -38,18 +38,10 @@
 package org.orbisgis.view.map.tools.generated;
 
 import java.awt.Graphics;
-import java.util.ArrayList;
-
 import javax.swing.ImageIcon;
-
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.view.map.tool.Automaton;
-import org.orbisgis.view.map.tool.DrawingException;
-import org.orbisgis.view.map.tool.FinishedAutomatonException;
-import org.orbisgis.view.map.tool.NoSuchTransitionException;
-import org.orbisgis.view.map.tool.ToolManager;
-import org.orbisgis.view.map.tool.TransitionException;
+import org.orbisgis.view.map.tool.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -237,11 +229,11 @@ public abstract class Drag implements Automaton {
         public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return I18N.tr("orbisgis.core.ui.editors.map.tool.pan_standby");
+			return I18N.tr("Select start point");
 		}
 
 		if ("MouseDown".equals(status)) {
-			return I18N.tr("orbisgis.core.ui.editors.map.tool.pan_MouseDown");
+			return I18N.tr("Drag to destination point");
 		}
 
 		if ("MouseReleased".equals(status)) {
@@ -257,7 +249,7 @@ public abstract class Drag implements Automaton {
 
         @Override
 	public String getTooltip() {
-		return I18N.tr("orbisgis.core.ui.editors.map.tool.pan_tooltip");
+		return I18N.tr("Move the map");
 	}
 
 	protected ImageIcon mouseCursor;

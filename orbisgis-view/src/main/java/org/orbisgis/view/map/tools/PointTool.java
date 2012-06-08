@@ -125,7 +125,7 @@ public class PointTool extends AbstractPointTool {
 
         @Override
 	public String getName() {
-		return I18N.tr("orbisgis.core.ui.editors.map.tool.point_tooltip");
+		return I18N.tr("Draw a point");
 	}
 
         @Override

@@ -39,17 +39,10 @@ package org.orbisgis.view.map.tools.generated;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
-
 import javax.swing.ImageIcon;
-
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.view.map.tool.Automaton;
-import org.orbisgis.view.map.tool.DrawingException;
-import org.orbisgis.view.map.tool.FinishedAutomatonException;
-import org.orbisgis.view.map.tool.NoSuchTransitionException;
-import org.orbisgis.view.map.tool.ToolManager;
-import org.orbisgis.view.map.tool.TransitionException;
+import org.orbisgis.view.map.tool.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -63,10 +56,12 @@ public abstract class Multiline implements Automaton {
 
 	private ToolManager tm;
 
+        @Override
         public ImageIcon getCursor() {
             return null;
         }
 
+        @Override
 	public String[] getTransitionLabels() {
 		ArrayList<String> ret = new ArrayList<String>();
 
@@ -88,21 +83,10 @@ public abstract class Multiline implements Automaton {
 
 		}
 
-		if ("Line".equals(status)) {
-
-		}
-
-		if ("Done".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
 		return ret.toArray(new String[0]);
 	}
 
+        @Override
 	public String[] getTransitionCodes() {
 		ArrayList<String> ret = new ArrayList<String>();
 
@@ -124,21 +108,10 @@ public abstract class Multiline implements Automaton {
 
 		}
 
-		if ("Line".equals(status)) {
-
-		}
-
-		if ("Done".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
 		return ret.toArray(new String[0]);
 	}
 
+        @Override
 	public void init(MapContext ec, ToolManager tm) throws TransitionException,
 			FinishedAutomatonException {
 		logger.info("status: " + status);
@@ -151,6 +124,7 @@ public abstract class Multiline implements Automaton {
 		}
 	}
 
+        @Override
 	public void transition(String code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
 		logger.info("transition code: " + code);
@@ -311,9 +285,6 @@ public abstract class Multiline implements Automaton {
 
 		}
 
-		if ("Cancel".equals(status)) {
-
-		}
 
 		if ("esc".equals(code)) {
 			status = "Cancel";
@@ -362,6 +333,7 @@ public abstract class Multiline implements Automaton {
 		throw new RuntimeException("Invalid status: " + status);
 	}
 
+        @Override
 	public void draw(Graphics g) throws DrawingException {
 
 		if ("Standby".equals(status)) {
@@ -424,6 +396,7 @@ public abstract class Multiline implements Automaton {
 		return status;
 	}
 
+        @Override
 	public String getName() {
 		return "Multiline";
 	}
@@ -457,12 +430,14 @@ public abstract class Multiline implements Automaton {
 		return "multiline";
 	}
 
+        @Override
 	public String getTooltip() {
 		return I18N.tr("Draw a multiline");
 	}
 
 	private ImageIcon mouseCursor;
 
+        @Override
 	public ImageIcon getImageIcon() {
 		if (mouseCursor != null) {
 			return mouseCursor;
@@ -475,6 +450,7 @@ public abstract class Multiline implements Automaton {
 		this.mouseCursor = mouseCursor;
 	}
 
+        @Override
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
@@ -485,6 +461,7 @@ public abstract class Multiline implements Automaton {
 		}
 	}
 
+        @Override
 	public java.awt.Point getHotSpotOffset() {
 
 		return new java.awt.Point(8, 8);

@@ -39,7 +39,6 @@ package org.orbisgis.core.layerModel;
 import com.vividsolutions.jts.geom.Envelope;
 import java.beans.PropertyChangeListener;
 import java.util.List;
-import java.util.Locale;
 import java.util.Set;
 import net.opengis.ows_context.LayerType;
 import org.gdms.data.DataSource;

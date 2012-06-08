@@ -94,7 +94,7 @@ public class Toc extends JPanel implements EditorDockable  {
         //Set docking parameters
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName("toc");
-        dockingPanelParameters.setTitle(I18N.tr("orbisgis.view.toc.TocTitle"));
+        dockingPanelParameters.setTitle(I18N.tr("Toc"));
         dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
         
         //Initialise an empty tree

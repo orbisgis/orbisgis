@@ -39,17 +39,10 @@ package org.orbisgis.view.map.tools.generated;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
-
 import javax.swing.ImageIcon;
-
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.view.map.tool.Automaton;
-import org.orbisgis.view.map.tool.DrawingException;
-import org.orbisgis.view.map.tool.FinishedAutomatonException;
-import org.orbisgis.view.map.tool.NoSuchTransitionException;
-import org.orbisgis.view.map.tool.ToolManager;
-import org.orbisgis.view.map.tool.TransitionException;
+import org.orbisgis.view.map.tool.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -64,12 +57,14 @@ public abstract class ZoomOut implements Automaton {
 
 	private ToolManager tm;
 
+        @Override
         public ImageIcon getCursor() {
             return null;
         }
 
         
         
+        @Override
 	public String[] getTransitionLabels() {
 		ArrayList<String> ret = new ArrayList<String>();
 
@@ -88,24 +83,12 @@ public abstract class ZoomOut implements Automaton {
 		return ret.toArray(new String[0]);
 	}
 
+        @Override
 	public String[] getTransitionCodes() {
-		ArrayList<String> ret = new ArrayList<String>();
-
-		if ("Standby".equals(status)) {
-
-		}
-
-		if ("Done".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
-		return ret.toArray(new String[0]);
+		return new String[]{};
 	}
 
+        @Override
 	public void init(MapContext ec, ToolManager tm) throws TransitionException,
 			FinishedAutomatonException {
 		logger.info("status: " + status);
@@ -118,6 +101,7 @@ public abstract class ZoomOut implements Automaton {
 		}
 	}
 
+        @Override
 	public void transition(String code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
 		logger.info("transition code: " + code);
@@ -258,7 +242,7 @@ public abstract class ZoomOut implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return I18N.tr("orbisgis.core.ui.editors.map.tool.zoomout_standby");
+			return I18N.tr("Select the center of the zoom");
 		}
 
 		if ("Done".equals(status)) {
@@ -277,7 +261,7 @@ public abstract class ZoomOut implements Automaton {
 	}
 
 	public String getTooltip() {
-		return I18N.tr("orbisgis.core.ui.editors.map.tool.zoomout_tooltip");
+		return I18N.tr("Zoom out");
 	}
 
 	private ImageIcon mouseCursor;
@@ -297,18 +281,6 @@ public abstract class ZoomOut implements Automaton {
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
-
-		if ("Standby".equals(status)) {
-
-		}
-
-		if ("Done".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
 
 	}
 

@@ -50,6 +50,7 @@ public class NameNotContains implements FilterFactory<IFilter> {
      *
      * @return Internal name of the filter type
      */
+    @Override
     public String getFactoryId() {
         return "name_not_contains";
     }
@@ -59,8 +60,9 @@ public class NameNotContains implements FilterFactory<IFilter> {
      *
      * @return
      */
+    @Override
     public String getFilterLabel() {
-        return i18n.tr("orbisgis.view.geocatalog.filters.factories.NameNotContainsLabel");
+        return i18n.tr("Not contains");
     }
 
     /**
@@ -69,6 +71,7 @@ public class NameNotContains implements FilterFactory<IFilter> {
      * @param filterValue The new value fired by PropertyChangeEvent
      * @return
      */
+    @Override
     public IFilter getFilter(String filterValue) {
         return new TextFilter(filterValue);
     }
@@ -80,6 +83,7 @@ public class NameNotContains implements FilterFactory<IFilter> {
      * @param filterValue When the control change the ActiveFilter value must be updated
      * @return The swing component.
      */
+    @Override
     public Component makeFilterField(ActiveFilter filterValue) {
         JTextField filterField = new JTextField(filterValue.getCurrentFilterValue());
         //Update the field at each modification        
@@ -105,6 +109,7 @@ public class NameNotContains implements FilterFactory<IFilter> {
         * @param sourceName Source name
         * @return True if the Source should be shown
         */
+        @Override
         public boolean accepts(SourceManager sm, String sourceName) {
             return !sourceName.toLowerCase().contains(nameFilter.toLowerCase());
         }     

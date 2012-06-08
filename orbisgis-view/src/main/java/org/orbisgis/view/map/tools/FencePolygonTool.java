@@ -74,6 +74,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
                 //PlugInContext.checkTool(this);
         }
 
+        @Override
         protected void polygonDone(Polygon g, MapContext vc, ToolManager tm)
                 throws TransitionException {
                 try {
@@ -85,14 +86,16 @@ public class FencePolygonTool extends AbstractPolygonTool {
 
                         vc.getLayerModel().insertLayer(layer, 0);
                 } catch (LayerException e) {
-                        UILOGGER.error(I18N.tr("orbisgis.core.ui.editors.map.tool.fence.use"), e);
+                        UILOGGER.error(I18N.tr("Cannot use fence tool"), e);
                 }
         }
 
+        @Override
         public boolean isEnabled(MapContext vc, ToolManager tm) {
                 return vc.getLayerModel().getLayerCount() > 0;
         }
 
+        @Override
         public boolean isVisible(MapContext vc, ToolManager tm) {
                 return true;
         }
@@ -134,23 +137,25 @@ public class FencePolygonTool extends AbstractPolygonTool {
 
 
                 } catch (DriverLoadException e) {
-                        UILOGGER.error(I18N.tr("orbisgis.core.ui.editors.map.tool.fence.errorRecovering"), e);
+                        UILOGGER.error(I18N.tr("Error while recovering fence vectorial layer"), e);
                 } catch (DriverException e) {
-                        UILOGGER.error(I18N.tr("orbisgis.core.ui.editors.map.tool.fence.create"), e);
+                        UILOGGER.error(I18N.tr("Cannot create fence layer"), e);
 
                 } catch (LayerException e) {
-                        UILOGGER.error(I18N.tr("orbisgis.core.ui.editors.map.tool.fence.create"), e);
+                        UILOGGER.error(I18N.tr("Cannot create fence layer"), e);
 
                 } catch (IOException e) {
-                        UILOGGER.error(I18N.tr("orbisgis.core.ui.editors.map.tool.fence.create"), e);
+                        UILOGGER.error(I18N.tr("Cannot create fence layer"), e);
                 }
                 return null;
         }
 
+        @Override
         public String getName() {
                 return I18N.tr("Draw a fence");
         }
 
+        @Override
         public ImageIcon getImageIcon() {
             return OrbisGISIcon.getIcon("shape_polygon_edit");
         }

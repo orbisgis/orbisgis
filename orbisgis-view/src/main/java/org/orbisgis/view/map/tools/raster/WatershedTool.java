@@ -36,15 +36,15 @@
  */
 package org.orbisgis.view.map.tools.raster;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Point;
 import ij.ImagePlus;
-
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.io.IOException;
 import java.util.Observable;
-
-import javax.swing.AbstractButton;
-
+import javax.swing.ImageIcon;
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -58,16 +58,10 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.tools.AbstractPointTool;
-
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Point;
-import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
-import org.orbisgis.view.icons.OrbisGISIcon;
 
 public class WatershedTool extends AbstractPointTool {
         private static Logger UILOGGER = Logger.getLogger("gui."+WatershedTool.class);
@@ -140,18 +134,18 @@ public class WatershedTool extends AbstractPointTool {
 				vc.getLayerModel().insertLayer(newLayer, 0);
 			}
 		} catch (IOException e) {
-			UILOGGER.error(I18N.tr("orbisgis.org.orbisgis.ui.watershedTool.cannotAccesingGeoraster"), //$NON-NLS-1$
+			UILOGGER.error(I18N.tr("Problem to access the GeoRaster"), //$NON-NLS-1$
 					e);
 		} catch (LayerException e) {
-			UILOGGER.error(I18N.tr("orbisgis.org.orbisgis.ui.watershedTool.cannotAddNewLayer"), e); //$NON-NLS-1$
+			UILOGGER.error(I18N.tr("Problem adding the new layer"), e); //$NON-NLS-1$
 		} catch (OperationException e) {
 			UILOGGER.error(
-					I18N.tr("orbisgis.org.orbisgis.ui.watershedTool.operationError"), e); //$NON-NLS-1$
+					I18N.tr("Operation error with the GeoRaster"), e); //$NON-NLS-1$
 		} catch (DriverLoadException e) {
 			UILOGGER.error(
-					I18N.tr("orbisgis.org.orbisgis.ui.watershedTool.cannotCreateLayer"), e); //$NON-NLS-1$
+					I18N.tr("Cannot create the resulting layer of raster type"), e); //$NON-NLS-1$
 		} catch (DriverException e) {
-			UILOGGER.error(I18N.tr("orbisgis.org.orbisgis.ui.watershedTool.cannotAccesingGeoraster"), //$NON-NLS-1$
+			UILOGGER.error(I18N.tr("Problem to access the GeoRaster"), //$NON-NLS-1$
 					e);
 		}
 	}
@@ -162,7 +156,7 @@ public class WatershedTool extends AbstractPointTool {
 
         @Override
 	public String getName() {
-		return I18N.tr("orbisgis.org.orbisgis.ui.watershedTool.computeWatershed"); //$NON-NLS-1$
+		return I18N.tr("Compute a watershed"); //$NON-NLS-1$
 	}
 
         @Override

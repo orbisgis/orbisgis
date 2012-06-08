@@ -38,7 +38,6 @@ package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
@@ -47,14 +46,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Level;
 import javax.xml.bind.*;
 import net.opengis.ows._2.BoundingBoxType;
 import net.opengis.ows_context.*;
 import org.apache.log4j.Logger;
-import org.gdms.data.AlreadyClosedException;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.*;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceEvent;
@@ -111,6 +107,7 @@ public final class OwsMapContext extends BeanMapContext {
 		idTime = System.currentTimeMillis();
 	}
         
+        @Override
         public ILayer createLayer(DataSource sds) throws LayerException {
                 int type = sds.getSource().getType();
                 if ((type & SourceManager.WMS) == SourceManager.WMS) {
@@ -142,6 +139,7 @@ public final class OwsMapContext extends BeanMapContext {
                 }
         }
 
+        @Override
 	public ILayer createLayerCollection(String layerName) {
 		return new LayerCollection(layerName);
 	}
@@ -400,6 +398,7 @@ public final class OwsMapContext extends BeanMapContext {
         private JAXBContext createJAXBContext() throws JAXBException {
                 return JAXBContext.newInstance("net.opengis.ows_context:net.opengis.wms._2");
         }
+        @Override
         public void read(InputStream in) throws IllegalArgumentException {
                 try {
                         JAXBContext jcontext = createJAXBContext();
@@ -411,6 +410,7 @@ public final class OwsMapContext extends BeanMapContext {
                 }
         }
 
+        @Override
         public void write(OutputStream out) {
                 ObjectFactory owsFactory = new ObjectFactory();
                 try {
@@ -480,10 +480,13 @@ public final class OwsMapContext extends BeanMapContext {
          * 
          * TODO Already registered URI are not registered twice
          */
-        private DataSource registerLayerResource(URI resourceUri) throws DataSourceCreationException, DriverException {
+        private DataSource registerLayerResource(URI resourceUri) throws NoSuchTableException, DataSourceCreationException {
 		DataManager dm = Services.getService(DataManager.class);
-                //dm.getDataSourceFactory().
-                return dm.getDataSourceFactory().getDataSource(new File(resourceUri));
+                try {
+                        return dm.getDataSourceFactory().getDataSource(dm.getSourceManager().nameAndRegister(resourceUri));                        
+                } catch( SourceAlreadyExistsException ex) {
+                        throw new DataSourceCreationException(ex);
+                }
         }
         /**
          * Recursive function to parse a layer tree
@@ -498,36 +501,31 @@ public final class OwsMapContext extends BeanMapContext {
                 }else{
                         //it corresponding to a leaf layer
                         //We need to read the data declaration and create the layer
-                        try {
-                                URLType dataUrl = lt.getDataURL();
-                                DataSource layerSource = null;
-                                if(dataUrl!=null) {
-                                        OnlineResourceType resType = dataUrl.getOnlineResource();
-                                        if(resType!=null) {
-                                                try {
-                                                        URI resourceURI = new URI(resType.getHref());
-                                                        layerSource = registerLayerResource(resourceURI);
-                                                } catch (DriverException ex) {
-                                                        throw new LayerException(I18N.tr("Unable to load the data source for the layer {1}.",resType.getHref(),lt.getTitle().toString()),ex);
-                                                } catch (DataSourceCreationException ex) {
-                                                        throw new LayerException(I18N.tr("Unable to load the data source for the layer {1}.",resType.getHref(),lt.getTitle().toString()),ex);
-                                                } catch (URISyntaxException ex) {
-                                                        throw new LayerException(I18N.tr("Unable to parse the href URI {1} for the layer {2}.",resType.getHref(),lt.getTitle().toString()),ex);
-                                                }
-                                        }
-                                }
-                                if(layerSource!=null) {
+                        URLType dataUrl = lt.getDataURL();
+                        DataSource layerSource = null;
+                        if(dataUrl!=null) {
+                                OnlineResourceType resType = dataUrl.getOnlineResource();
+                                if(resType!=null) {
                                         try {
-                                                ILayer leafLayer = createLayer(layerSource);
-                                                leafLayer.setDescription(new Description(lt));
-                                                parentLayer.addLayer(leafLayer);
-                                        } catch (InvalidStyle ex) {
-                                                throw new LayerException(I18N.tr("Unable to load the description of the layer {1}",lt.getTitle().toString()), ex);
+                                                URI resourceURI = new URI(resType.getHref());
+                                                layerSource = registerLayerResource(resourceURI);
+                                        } catch (NoSuchTableException ex) {
+                                                throw new LayerException(I18N.tr("Unable to load the data source uri {0}.",resType.getHref()),ex);
+                                        } catch (DataSourceCreationException ex) {
+                                                throw new LayerException(I18N.tr("Unable to load the data source uri {0}.",resType.getHref()),ex);
+                                        } catch (URISyntaxException ex) {
+                                                throw new LayerException(I18N.tr("Unable to parse the href URI {0}.",resType.getHref()),ex);
                                         }
                                 }
-                        } catch(LayerException ex) {
-                                //The layer is not created if a layer exception is thrown
-                                LOGGER.error(ex);
+                        }
+                        if(layerSource!=null) {
+                                try {
+                                        ILayer leafLayer = createLayer(layerSource);
+                                        leafLayer.setDescription(new Description(lt));
+                                        parentLayer.addLayer(leafLayer);
+                                } catch (InvalidStyle ex) {
+                                        throw new LayerException(I18N.tr("Unable to load the description of the layer {0}",lt.getTitle().toString()), ex);
+                                }
                         }
                 }
         }        
@@ -540,7 +538,12 @@ public final class OwsMapContext extends BeanMapContext {
         private void parseJaxbLayerCollection(LayerType lt,ILayer parentLayer) throws LayerException {
                 LayerCollection layerCollection = new LayerCollection(lt);
                 for(LayerType ltc : lt.getLayer()) {
-                        parseJaxbLayer(ltc,layerCollection);
+                        try {
+                                parseJaxbLayer(ltc,layerCollection);
+                        } catch(LayerException ex) {
+                                //The layer is not created if a layer exception is thrown
+                                LOGGER.error(I18N.tr("The layer has not been imported"),ex);
+                        }
                 }
                 parentLayer.addLayer(layerCollection);
         }
@@ -561,7 +564,13 @@ public final class OwsMapContext extends BeanMapContext {
                 //Root layer correspond to ResourceList
                 setRootLayer(createLayerCollection("root"));
                 for(LayerType lt : jaxbMapContext.getResourceList().getLayer()) {
-                        parseJaxbLayer(lt,getLayerModel());
+                        try
+                        {
+                                parseJaxbLayer(lt,getLayerModel());
+                        } catch(LayerException ex) {
+                                //The layer is not created if a layer exception is thrown
+                                LOGGER.error(I18N.tr("The layer has not been imported"),ex);
+                        }
                 }   
             }            
         }

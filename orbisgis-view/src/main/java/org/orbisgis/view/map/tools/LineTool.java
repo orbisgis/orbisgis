@@ -118,7 +118,7 @@ public class LineTool extends AbstractLineTool {
                         row = ToolUtilities.populateNotNullFields(sds, row);
                         sds.insertFilledRow(row);
                 } catch (DriverException e) {
-                        throw new TransitionException("Cannot insert linestring", e);
+                        throw new TransitionException(I18N.tr("Cannot insert linestring"), e);
                 }
         }
 
@@ -129,6 +129,6 @@ public class LineTool extends AbstractLineTool {
 
         @Override
         public String getName() {
-                return I18N.tr("orbisgis.core.ui.editors.map.tool.line_tooltip");
+                return I18N.tr("Draw a line");
         }
 }

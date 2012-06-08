@@ -71,15 +71,15 @@ public class OrbisGISPreferenceTreeModel extends PreferenceTreeModel {
         DockController controller = control.intern().getController();
         //Linked, we use the DockingFrames i18n
         //Taken from CPreferenceModel, but with a specific root node
-        putNode(new Path( "windows"),i18n.tr("orbisgis.preferencies.window"));
+        putNode(new Path( "windows"),i18n.tr("Windows"));
         putLinked( new Path( "windows.shortcuts" ), "preference.shortcuts", new CKeyStrokePreferenceModel( controller.getProperties() ) );
         putLinked( new Path( "windows.buttonContent" ), "preference.buttonContent", new ButtonContentPreferenceModel( controller ) );
         putLinked( new Path( "windows.layout" ), "preference.layout", new CLayoutPreferenceModel( control ));
         putLinked( new Path( "windows.layout.BubbleTheme" ), "theme.bubble", new BubbleThemePreferenceModel( controller.getProperties() ));
         putLinked( new Path( "windows.layout.EclipseTheme" ), "theme.eclipse", new EclipseThemePreferenceModel( controller.getProperties() ));
         //Custom properties
-        putNode(new Path( "web"),i18n.tr("orbisgis.preferencies.web"));
-        put(new Path( "web.proxy" ),i18n.tr("orbisgis.preferencies.proxytreenode"),new ProxyPreferenceModel(controller).initListeners());
+        putNode(new Path( "web"),i18n.tr("Web configuration"));
+        put(new Path( "web.proxy" ),i18n.tr("Proxy"),new ProxyPreferenceModel(controller).initListeners());
         
     }
 }

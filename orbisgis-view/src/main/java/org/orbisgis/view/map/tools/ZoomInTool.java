@@ -59,20 +59,15 @@
  */
 package org.orbisgis.view.map.tools;
 
+import com.vividsolutions.jts.geom.Envelope;
 import java.awt.Point;
 import java.awt.geom.Rectangle2D;
 import java.util.Observable;
-
-import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
-
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
-
-
-import com.vividsolutions.jts.geom.Envelope;
-        import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  * Tool to zoom in

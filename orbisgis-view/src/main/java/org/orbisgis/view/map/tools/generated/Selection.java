@@ -38,7 +38,6 @@
 package org.orbisgis.view.map.tools.generated;
 
 import java.awt.Graphics;
-import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
@@ -57,80 +56,17 @@ public abstract class Selection implements Automaton {
 
 	private ToolManager tm;
 
+        @Override
 	public String[] getTransitionLabels() {
-		ArrayList<String> ret = new ArrayList<String>();
-
-		if ("Standby".equals(status)) {
-
-		}
-
-		if ("OnePoint".equals(status)) {
-
-		}
-
-		if ("OnePointLeft".equals(status)) {
-
-		}
-
-		if ("TwoPoints".equals(status)) {
-
-		}
-
-		if ("Selection".equals(status)) {
-
-		}
-
-		if ("PointWithSelection".equals(status)) {
-
-		}
-
-		if ("Movement".equals(status)) {
-
-		}
-
-		if ("MakeMove".equals(status)) {
-
-		}
-		return ret.toArray(new String[0]);
+		return new String[]{};
 	}
 
+        @Override
 	public String[] getTransitionCodes() {
-		ArrayList<String> ret = new ArrayList<String>();
-
-		if ("Standby".equals(status)) {
-
-		}
-
-		if ("OnePoint".equals(status)) {
-
-		}
-
-		if ("OnePointLeft".equals(status)) {
-
-		}
-
-		if ("TwoPoints".equals(status)) {
-
-		}
-
-		if ("Selection".equals(status)) {
-
-		}
-
-		if ("PointWithSelection".equals(status)) {
-
-		}
-
-		if ("Movement".equals(status)) {
-
-		}
-
-		if ("MakeMove".equals(status)) {
-
-		}
-		return ret.toArray(new String[0]);
+		return new String[]{};
 	}
 
+        @Override
 	public void init(MapContext ec, ToolManager tm) throws TransitionException,
 			FinishedAutomatonException {
 		logger.info("status: " + status);
@@ -143,6 +79,7 @@ public abstract class Selection implements Automaton {
 		}
 	}
 
+        @Override
 	public void transition(String code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
 		logger.info("transition code: " + code);
@@ -484,6 +421,7 @@ public abstract class Selection implements Automaton {
 		throw new RuntimeException("Invalid status: " + status);
 	}
 
+        @Override
 	public void draw(Graphics g) throws DrawingException {
 
 		if ("Standby".equals(status)) {
@@ -577,6 +515,7 @@ public abstract class Selection implements Automaton {
 		return status;
 	}
 
+        @Override
 	public String getName() {
 		return "Selection";
 	}
@@ -584,7 +523,7 @@ public abstract class Selection implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return I18N.tr("orbisgis.core.ui.editors.map.tool.selection_standby");
+			return I18N.tr("Select a geometry or draw a selection rectangle");
 		}
 
 		if ("OnePoint".equals(status)) {
@@ -592,7 +531,7 @@ public abstract class Selection implements Automaton {
 		}
 
 		if ("OnePointLeft".equals(status)) {
-			return I18N.tr("org.orbisgis.core.ui.editors.map.tool.selection_onepointleft");
+			return I18N.tr("Select the second point");
 		}
 
 		if ("TwoPoints".equals(status)) {
@@ -600,7 +539,7 @@ public abstract class Selection implements Automaton {
 		}
 
 		if ("Selection".equals(status)) {
-			return I18N.tr("orbisgis.core.ui.editors.map.tool.selection_selection");
+			return I18N.tr("Click a handler to move it or select another geometry");
 		}
 
 		if ("PointWithSelection".equals(status)) {
@@ -608,7 +547,7 @@ public abstract class Selection implements Automaton {
 		}
 
 		if ("Movement".equals(status)) {
-			return I18N.tr("orbisgis.core.ui.editors.map.tool.selection_movement");
+			return I18N.tr("Place the handler in its new position");
 		}
 
 		if ("MakeMove".equals(status)) {
@@ -622,14 +561,17 @@ public abstract class Selection implements Automaton {
 		return "select";
 	}
 
+        @Override
 	public String getTooltip() {
-		return I18N.tr("orbisgis.core.ui.editors.map.tool.selection_tooltip");
+		return I18N.tr("Select a feature");
 	}
 
+        @Override
 	public ImageIcon getCursor() {
         	return null;
 	}
 
+        @Override
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
@@ -637,6 +579,7 @@ public abstract class Selection implements Automaton {
 
 	}
 
+        @Override
 	public java.awt.Point getHotSpotOffset() {
 
 		return new java.awt.Point(8, 8);

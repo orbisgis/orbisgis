@@ -42,10 +42,7 @@ import com.vividsolutions.jts.geom.Polygon;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Observable;
-
-import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
-
 import org.gdms.data.DataSource;
 import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
@@ -56,11 +53,7 @@ import org.gdms.driver.DriverException;
 import org.gdms.geometryUtils.GeometryEdit;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.map.tool.Handler;
-import org.orbisgis.view.map.tool.MultiPolygonHandler;
-import org.orbisgis.view.map.tool.PolygonHandler;
-import org.orbisgis.view.map.tool.ToolManager;
-import org.orbisgis.view.map.tool.TransitionException;
+import org.orbisgis.view.map.tool.*;
 
 
 public class CutPolygonTool extends AbstractPolygonTool {
@@ -100,7 +93,7 @@ public class CutPolygonTool extends AbstractPolygonTool {
                         }
 
                 } catch (DriverException e) {
-                        throw new TransitionException(I18N.tr("orbisgis.core.ui.editors.map.tool.polygon.cannotCut"), e);
+                        throw new TransitionException(I18N.tr("Cannot cut the polygon"), e);
                 }
         }
 
@@ -128,9 +121,10 @@ public class CutPolygonTool extends AbstractPolygonTool {
 
         @Override
         public String getName() {
-                return I18N.tr("orbisgis.core.ui.editors.map.tool.polygon.cut");
+                return I18N.tr("Cut a polygon");
         }
 
+        @Override
         public ImageIcon getImageIcon() {
             return OrbisGISIcon.getIcon("cutpolygon");
         }

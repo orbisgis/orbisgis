@@ -123,6 +123,7 @@ public class SourceListModel extends AbstractListModel {
             /**
              * Refresh the JList on the swing thread
              */
+            @Override
             public void run(){
                 awaitingRefresh.set(false);
                 readDataManager();
@@ -212,7 +213,7 @@ public class SourceListModel extends AbstractListModel {
                     }
                 } catch(DriverException ex) {
                     //Log warning
-                    LOGGER.warn(i18n.tr("orbisgis.view.geocatalog.CannotReadDataSourceSchema"),ex);
+                    LOGGER.warn(i18n.tr("Data source schema could not be read"),ex);
                 }
                 sourceList[rowidSource] = new CatalogSourceItem(
                                                 tempSourceNames[rowidSource], //Source Name
@@ -246,6 +247,7 @@ public class SourceListModel extends AbstractListModel {
          * @param index The item index @see getSize()
          * @return The item
          */
+        @Override
 	public Object getElementAt(int index) {
 		return sourceList[index];
 	}
@@ -253,6 +255,7 @@ public class SourceListModel extends AbstractListModel {
          * 
          * @return The number of source shown
          */
+        @Override
 	public int getSize() {
 		return sourceList.length;
 	}
@@ -294,6 +297,7 @@ public class SourceListModel extends AbstractListModel {
             * @return True if the Source should be shown
             */
 
+            @Override
             public boolean accepts(SourceManager sm, String sourceName) {
                 for (int i = 0; i < filters.size(); i++) {
                     if (!filters.get(i).accepts(sm, sourceName)) {
@@ -313,6 +317,7 @@ public class SourceListModel extends AbstractListModel {
             * @param sourceName Source name
             * @return True if the Source should be shown
             */
+            @Override
             public boolean accepts(SourceManager sm, String sourceName) {
                 Source source = sm.getSource(sourceName);
                 return (source != null) && !source.isSystemTableSource();			

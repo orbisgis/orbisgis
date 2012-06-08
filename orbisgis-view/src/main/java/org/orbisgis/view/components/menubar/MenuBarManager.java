@@ -31,8 +31,7 @@ package org.orbisgis.view.components.menubar;
 import java.util.HashMap;
 import java.util.Map;
 import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import org.orbisgis.sif.common.menuCommonFunctions;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 
 /**
  * Persistant menu management in OrbisGIS. The final menu key is unique.
@@ -58,7 +57,7 @@ public class MenuBarManager {
         if(menuContainers.containsKey(menu.getKey())) {
             throw new IllegalArgumentException("The menu key already exists.");
         }
-        menuCommonFunctions.setMnemonic(menu.getMenu());
+        MenuCommonFunctions.setMnemonic(menu.getMenu());
         if(parentKey.isEmpty()) {
             rootBar.add(menu.getMenu());
         } else {
@@ -81,7 +80,7 @@ public class MenuBarManager {
         if(parentMenu==null) {
             throw new IllegalArgumentException(PARENT_NOT_EXISTS);
         }
-        menuCommonFunctions.setMnemonic(menuItem.getMenuItem());
+        MenuCommonFunctions.setMnemonic(menuItem.getMenuItem());
         parentMenu.getMenu().add(menuItem.getMenuItem());
     }
 

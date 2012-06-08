@@ -67,8 +67,7 @@ public class MainFrame extends JFrame {
          * @param dockingManager 
 	 */
 	public MainFrame(){
-		setTitle( "OrbisGIS "
-                        + i18n.tr("orbisgis.org.orbisgis.version") + " - " + i18n.tr("orbisgis.org.orbisgis.versionName") + " - " + Locale.getDefault().getCountry() );
+		setTitle( i18n.tr("OrbisGIS version {0} La Rochelle {1}", getClass().getPackage().getImplementationVersion(),Locale.getDefault().getCountry()));
                 setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
 		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis")); 
                 createMenu();
@@ -87,15 +86,15 @@ public class MainFrame extends JFrame {
          */
         private void createMenu() {
             //File menu
-            menuBar.addMenu("", new MenuProperties(MENU_FILE, new JMenu(i18n.tr("orbisgis.view.main.frames.menu.file"))));
+            menuBar.addMenu("", new MenuProperties(MENU_FILE, new JMenu(i18n.tr("&File"))));
             //Add exit item
-            JMenuItem exitMenu = new JMenuItem(i18n.tr("orbisgis.view.main.frames.menu.exitapp"),OrbisGISIcon.getIcon("exit"));
+            JMenuItem exitMenu = new JMenuItem(i18n.tr("&Exit"),OrbisGISIcon.getIcon("exit"));
             exitMenu.addActionListener(EventHandler.create(ActionListener.class,this,"onMenuExitApplication"));
             menuBar.addMenuItem(MENU_FILE,new MenuItemProperties(MENU_EXIT,exitMenu));
             //Add the tools menu
-            menuBar.addMenu("", new MenuProperties(MENU_TOOLS, new JMenu(i18n.tr("orbisgis.view.main.frames.menu.tools"))));
+            menuBar.addMenu("", new MenuProperties(MENU_TOOLS, new JMenu(i18n.tr("&Tools"))));
             //Add preferencies menu item
-            JMenuItem preferenciesMenu = new JMenuItem(i18n.tr("orbisgis.view.main.frames.menu.preferencies"),OrbisGISIcon.getIcon("preferences-system"));
+            JMenuItem preferenciesMenu = new JMenuItem(i18n.tr("&Configuration"),OrbisGISIcon.getIcon("preferences-system"));
             preferenciesMenu.addActionListener(EventHandler.create(ActionListener.class,this,"onMenuShowPreferencies"));
             menuBar.addMenuItem(MENU_TOOLS, new MenuItemProperties(MENU_TOOLS, preferenciesMenu));
         }

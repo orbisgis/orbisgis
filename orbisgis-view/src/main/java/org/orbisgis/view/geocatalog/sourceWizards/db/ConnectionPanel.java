@@ -60,29 +60,29 @@ public class ConnectionPanel extends MultiInputPanel {
         private final SourceManager sourceManager;
 
         public ConnectionPanel(SourceManager sourceManager) {
-                super("orbisgis.view.geocatalog.sourceWizards.db.FirstUIPanel", i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.connect"));
+                super("orbisgis.view.geocatalog.sourceWizards.db.FirstUIPanel", i18n.tr("Connect"));
                 this.sourceManager = sourceManager;
-                setInfoText(i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.connectionParameters"));
-                addInput(DBTYPE, i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.dbType"),
+                setInfoText(i18n.tr("Connection parameters"));
+                addInput(DBTYPE, i18n.tr("Type of database"),
                         getDriverInput());
-                addValidationExpression(DBTYPE + " is not null", i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.dbTypeChooser"));
-                addInput(HOST, i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.hostName"),
+                addValidationExpression(DBTYPE + " is not null", i18n.tr("Database chooser"));
+                addInput(HOST, i18n.tr("Host"),
                         "127.0.0.1", new StringType(LENGTH));
-                addValidationExpression(HOST + " is not null", i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.hostNameChooser"));
-                addInput(PORT, i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.portNumberDefault"),
+                addValidationExpression(HOST + " is not null", i18n.tr("Host name"));
+                addInput(PORT, i18n.tr("Default port"),
                         "0", new IntType(LENGTH));
 
                 addValidationExpression("(" + PORT + " >= 0) and (" + PORT
-                        + " <= 32767)", i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.portNumber"));
-                addInput(DBNAME, i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.dbName"),
+                        + " <= 32767)", i18n.tr("Port"));
+                addInput(DBNAME, i18n.tr("Database name"),
                         "database_name", new StringType(LENGTH));
-                addValidationExpression(DBNAME + " is not null", i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.dbNameMandatory"));
-                addInput(USER, i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.userName"),
+                addValidationExpression(DBNAME + " is not null", i18n.tr("The database name is mandatory"));
+                addInput(USER, i18n.tr("User name"),
                         "postgres", new StringType(LENGTH));
-                addInput(PASSWORD, i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.password"), "",
+                addInput(PASSWORD, i18n.tr("Password"), "",
                         new PasswordType(LENGTH));
 
-                addInput(SSL, i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.ssl"), new CheckBoxChoice(false));
+                addInput(SSL, i18n.tr("SSL"), new CheckBoxChoice(false));
         }
 
         private InputType getDriverInput() {
@@ -108,7 +108,7 @@ public class ConnectionPanel extends MultiInputPanel {
                         connection.close();
                         return null;
                 } catch (SQLException e) {
-                        return i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.cannotConnect") + ": " + e.getMessage();
+                        return i18n.tr("Cannot connect {0}",e);
                 }
         }
 

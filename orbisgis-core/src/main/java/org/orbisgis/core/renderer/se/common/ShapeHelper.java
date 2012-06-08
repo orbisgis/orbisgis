@@ -145,16 +145,16 @@ public final class ShapeHelper {
                     LOGGER.warn(I18N.tr("CLOSE"));
                     break;
                 case PathIterator.SEG_CUBICTO:
-                    LOGGER.warn(I18N.tr("CUBIC TO {1}:{2}",coords[0],coords[1]));
+                    LOGGER.warn(I18N.tr("CUBIC TO {0}:{1}",coords[0],coords[1]));
                     break;
                 case PathIterator.SEG_LINETO:
-                    LOGGER.warn(I18N.tr("LINE TO {1}:{2}",coords[0],coords[1]));
+                    LOGGER.warn(I18N.tr("LINE TO {0}:{1}",coords[0],coords[1]));
                     break;
                 case PathIterator.SEG_MOVETO:
-                    LOGGER.warn(I18N.tr("MOVE TO {1}:{2}",coords[0],coords[1]));
+                    LOGGER.warn(I18N.tr("MOVE TO {0}:{1}",coords[0],coords[1]));
                     break;
                 case PathIterator.SEG_QUADTO:
-                    LOGGER.warn(I18N.tr("QUAD TO {1}:{2}",coords[0],coords[1]));
+                    LOGGER.warn(I18N.tr("QUAD TO {0}:{1}",coords[0],coords[1]));
                     break;
                 default:
                     LOGGER.warn(I18N.tr("!DEFAULT!"));

@@ -38,6 +38,8 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.*;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.edition.AbstractEditableElement;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * MapElement is an editable document that contain a Map Context
@@ -46,7 +48,9 @@ import org.orbisgis.view.edition.AbstractEditableElement;
 public final class MapElement extends AbstractEditableElement {
         public final static String EDITABLE_TYPE = "MapContext";
         private final static Logger LOGGER = Logger.getLogger("gui."+MapElement.class);
-	private Boolean modified = false;
+	private final static I18n I18N = I18nFactory.getI18n(MapElement.class);
+        
+        private Boolean modified = false;
 	private MapContext mapContext;
         private String mapId;
         private MapContextListener updateListener = EventHandler.create(MapContextListener.class, this , "setModified");
@@ -101,9 +105,9 @@ public final class MapElement extends AbstractEditableElement {
                     mapContext.addPropertyChangeListener(mapContextPropertyUpdateListener);
                     mapContext.getLayerModel().addLayerListenerRecursively(layerUpdateListener);
                 } catch (LayerException ex) {
-                    LOGGER.error(ex);
+                    LOGGER.error(I18N.tr("Unable to load the map context"),ex);
                 } catch (IllegalStateException ex) {
-                    LOGGER.error(ex);
+                    LOGGER.error(I18N.tr("Unable to load the map context"),ex);
                 }
 	}
 

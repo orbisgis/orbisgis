@@ -103,14 +103,14 @@ public class SplitLineStringTool extends AbstractPointTool {
                         }
 
                 } catch (DriverException e) {
-                        throw new TransitionException(I18N.tr("orbisgis.core.ui.editors.map.tool.line.cannotSplitLine"), e);
+                        throw new TransitionException(I18N.tr("Cannot split line"), e);
                 }
 
         }
 
         @Override
         public String getName() {
-                return I18N.tr("orbisgis.core.ui.editors.map.tool.line.splitLine");
+                return I18N.tr("Split line");
         }
 
         @Override

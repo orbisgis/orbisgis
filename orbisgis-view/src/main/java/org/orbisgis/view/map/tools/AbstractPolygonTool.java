@@ -36,21 +36,19 @@
  */
 package org.orbisgis.view.map.tools;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LinearRing;
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.DrawingException;
 import org.orbisgis.view.map.tool.FinishedAutomatonException;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.tools.generated.Polygon;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
 
 public abstract class AbstractPolygonTool extends Polygon implements
         InsertionTool {
@@ -81,7 +79,7 @@ public abstract class AbstractPolygonTool extends Polygon implements
         points = ToolUtilities.removeDuplicated(points);
         if (points.size() < 3) {
             throw new TransitionException(
-                    I18N.tr("orbisgis.core.ui.editors.map.tool.multipolygonTool_0")); //$NON-NLS-1$
+                    I18N.tr("Polygons must have more than two points")); //$NON-NLS-1$
         }
         ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points.clone();
         double firstX = points.get(0).x;
@@ -92,7 +90,7 @@ public abstract class AbstractPolygonTool extends Polygon implements
 
         if (!pol.isValid()) {
             throw new TransitionException(
-                    I18N.tr("orbisgis.core.ui.editors.map.tool.polygonTool_1")); //$NON-NLS-1$
+                    I18N.tr("Invalid polygon")); //$NON-NLS-1$
         }
         polygonDone(pol, vc, tm);
 
@@ -137,7 +135,7 @@ public abstract class AbstractPolygonTool extends Polygon implements
 
             if (!geom.isValid()) {
                 throw new DrawingException(
-                        I18N.tr("orbisgis.core.ui.editors.map.tool.polygonTool_1")); //$NON-NLS-1$
+                        I18N.tr("Invalid polygon")); //$NON-NLS-1$
             }
         }
     }

@@ -91,16 +91,16 @@ public class ProxyPreferenceModel extends DefaultPreferenceModel {
         this.add(proxyInfo);
         //Use Proxy Check Box
         useProxy = new DockPropertyPreference<Boolean>(controller.getProperties(),USE_PROXY, Path.TYPE_BOOLEAN_PATH, new Path(USE_PROXY_KEY));
-        useProxy.setLabel(i18n.tr("orbisgis.preferencies.proxy.useproxylabel"));
+        useProxy.setLabel(i18n.tr("Use Proxy"));
         useProxy.setDefaultValue(Boolean.FALSE);
         this.add(useProxy);
         //Proxy Url
         proxyUrl = new DockPropertyPreference<String>(controller.getProperties(),PROXY_URL, Path.TYPE_STRING_PATH, new Path(PROXY_URL_KEY));
-        proxyUrl.setLabel(i18n.tr("orbisgis.preferencies.proxy.proxyUrlLabel"));
+        proxyUrl.setLabel(i18n.tr("Proxy url"));
         this.add(proxyUrl);
         //Proxy Port
         proxyPort = new DockPropertyPreference<String>(controller.getProperties(),PROXY_PORT, Path.TYPE_STRING_PATH, new Path(PROXY_PORT_KEY));
-        proxyPort.setLabel(i18n.tr("orbisgis.preferencies.proxy.proxyPortLabel"));
+        proxyPort.setLabel(i18n.tr("Proxy port"));
         proxyPort.setDefaultValue(DEFAULT_PORT_VALUE);
         this.add(proxyPort);
         
@@ -159,12 +159,12 @@ public class ProxyPreferenceModel extends DefaultPreferenceModel {
             int p = Integer.parseInt(preference.getValue());
             if (p < 0 || p > 65535) {
                 skipEvent = true;
-                proxyInfo.setValue(i18n.tr("orbisgis.preferencies.proxy.invalidPortNumber"));
+                proxyInfo.setValue(i18n.tr("The proxy port is invalid"));
                 preference.setValue(oldProxyPort);
             }
         } catch (NumberFormatException e) {
             skipEvent = true;
-            proxyInfo.setValue(i18n.tr("orbisgis.preferencies.proxy.invalidPortNumber"));
+            proxyInfo.setValue(i18n.tr("The proxy port is invalid"));
             preference.setValue(oldProxyPort);
             return;
         }

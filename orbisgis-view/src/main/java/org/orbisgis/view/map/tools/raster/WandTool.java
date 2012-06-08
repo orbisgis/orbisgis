@@ -36,20 +36,15 @@
  */
 package org.orbisgis.view.map.tools.raster;
 
+import com.vividsolutions.jts.geom.*;
 import ij.gui.Wand;
-
 import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.Observable;
-
-import javax.swing.AbstractButton;
-
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.NonEditableDataSourceException;
+import javax.swing.ImageIcon;
+import org.apache.log4j.Logger;
+import org.gdms.data.*;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -67,19 +62,10 @@ import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.orbisgis.core.renderer.legend.carto.UniqueSymbolLegend;
 import org.orbisgis.core.renderer.symbol.Symbol;
 import org.orbisgis.core.renderer.symbol.SymbolFactory;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.tools.AbstractPointTool;
-
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 
 public class WandTool extends AbstractPointTool {
@@ -158,29 +144,22 @@ public class WandTool extends AbstractPointTool {
 //			wandLayer.setLegend(uniqueSymbolLegend);
 		} catch (LayerException e) {
 			UILOGGER.error(
-					I18N.tr("orbisgis.org.orbisgis.ui.tools.WandTool.cannotUseWandTool") + e.getMessage(), e); //$NON-NLS-1$
+					I18N.tr("Cannot use wand tool {0}",e.getMessage()), e); //$NON-NLS-1$
 		} catch (DriverException e) {
 			UILOGGER.error(
-					I18N.tr("orbisgis.org.orbisgis.ui.tools.WandTool.cannotApplyLegend") + e.getMessage(), e); //$NON-NLS-1$
+					I18N.tr("Cannot apply the legend {0}",e.getMessage()), e); //$NON-NLS-1$
 		} catch (IOException e) {
 			UILOGGER.error(
-					I18N.tr("orbisgis.org.orbisgis.ui.tools.WandTool.errorAccessingGeoraster") + e.getMessage(), e); //$NON-NLS-1$
+					I18N.tr("Error accessing the GeoRaster {0}",e.getMessage()), e); //$NON-NLS-1$
 		} catch (DriverLoadException e) {
-			UILOGGER.error(
-					I18N.tr("orbisgis.org.orbisgis.ui.tools.WandTool.errorAccessingWandDatasource") //$NON-NLS-1$
-							+ e.getMessage(), e);
+			UILOGGER.error(I18N.tr("Error accessing the wand layer datasource {0}",e.getMessage()), e);
 		} catch (NoSuchTableException e) {
-			UILOGGER.error(
-					I18N.tr("orbisgis.org.orbisgis.ui.tools.WandTool.errorAccessingWandDatasource") //$NON-NLS-1$
-							+ e.getMessage(), e);
+			UILOGGER.error(I18N.tr("Error accessing the wand layer datasource {0}",e.getMessage()), e);
 		} catch (DataSourceCreationException e) {
-			UILOGGER.error(
-					I18N.tr("orbisgis.org.orbisgis.ui.tools.WandTool.errorAccessingWandDatasource") //$NON-NLS-1$
-							+ e.getMessage(), e);
+			UILOGGER.error(I18N.tr("Error accessing the wand layer datasource {0}",e.getMessage()), e);
 		} catch (NonEditableDataSourceException e) {
 			UILOGGER.error(
-					I18N.tr("orbisgis.org.orbisgis.ui.tools.WandTool.errorCommittingWandDatasource") //$NON-NLS-1$
-							+ e.getMessage(), e);
+					I18N.tr("Error committing the wand layer datasource {0}",e.getMessage()), e);
 		}
 	}
 
@@ -210,7 +189,7 @@ public class WandTool extends AbstractPointTool {
 
         @Override
 	public String getName() {
-		return I18N.tr("orbisgis.org.orbisgis.ui.tools.WandTool.vectorizeSetPixels"); //$NON-NLS-1$
+		return I18N.tr("Vectorize a set of pixels"); //$NON-NLS-1$
 	}
 
         @Override

@@ -56,10 +56,12 @@ public abstract class Line implements Automaton {
 
 	private ToolManager tm;
 
+        @Override
         public ImageIcon getCursor() {
             return null;
         }
 
+        @Override
 	public String[] getTransitionLabels() {
 		ArrayList<String> ret = new ArrayList<String>();
 
@@ -86,13 +88,9 @@ public abstract class Line implements Automaton {
 		return ret.toArray(new String[0]);
 	}
 
+        @Override
 	public String[] getTransitionCodes() {
 		ArrayList<String> ret = new ArrayList<String>();
-
-		if ("Standby".equals(status)) {
-
-		}
-
 		if ("Point".equals(status)) {
 
 			ret.add("esc");
@@ -100,18 +98,10 @@ public abstract class Line implements Automaton {
 			ret.add("t");
 
 		}
-
-		if ("Done".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
 		return ret.toArray(new String[0]);
 	}
 
+        @Override
 	public void init(MapContext ec, ToolManager tm) throws TransitionException,
 			FinishedAutomatonException {
 		logger.info("status: " + status);
@@ -124,6 +114,7 @@ public abstract class Line implements Automaton {
 		}
 	}
 
+        @Override
 	public void transition(String code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
 		logger.info("transition code: " + code);
@@ -220,10 +211,6 @@ public abstract class Line implements Automaton {
 
 		}
 
-		if ("Cancel".equals(status)) {
-
-		}
-
 		if ("esc".equals(code)) {
 			status = "Cancel";
 			transitionTo_Cancel(ec, tm);
@@ -265,6 +252,7 @@ public abstract class Line implements Automaton {
 		throw new RuntimeException("Invalid status: " + status);
 	}
 
+        @Override
 	public void draw(Graphics g) throws DrawingException {
 
 		if ("Standby".equals(status)) {
@@ -317,6 +305,7 @@ public abstract class Line implements Automaton {
 		return status;
 	}
 
+        @Override
 	public String getName() {
 		return "Line";
 	}
@@ -346,12 +335,14 @@ public abstract class Line implements Automaton {
 		return "line";
 	}
 
+        @Override
 	public String getTooltip() {
-		return I18N.tr("orbisgis.core.ui.editors.map.tool.line_tooltip");
+		return I18N.tr("Draw a line");
 	}
 
 	private ImageIcon mouseCursor;
 
+        @Override
 	public ImageIcon getImageIcon() {
 		if (mouseCursor != null) {
 			return mouseCursor;
@@ -364,6 +355,7 @@ public abstract class Line implements Automaton {
 		this.mouseCursor = mouseCursor;
 	}
 
+        @Override
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
@@ -388,6 +380,7 @@ public abstract class Line implements Automaton {
 
 	}
 
+        @Override
 	public java.awt.Point getHotSpotOffset() {
 
 		return new java.awt.Point(8, 8);

@@ -76,7 +76,7 @@ public class TableSelectionPanel implements UIPanel {
 
         @Override
         public String getTitle() {
-                return i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.selectTableOrView");
+                return i18n.tr("Select a table or a view");
         }
 
         @Override
@@ -129,7 +129,7 @@ public class TableSelectionPanel implements UIPanel {
 
                                 // list Tables
                                 DefaultMutableTreeNode tableNode = new DefaultMutableTreeNode(
-                                        i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.tables"));
+                                        i18n.tr("Tables"));
 
                                 // we send possible loading errors to the Output window
                                 DriverException[] exs = dbDriver.getLastNonBlockingErrors();
@@ -150,7 +150,7 @@ public class TableSelectionPanel implements UIPanel {
 
                                 // list View
                                 DefaultMutableTreeNode viewNode = new DefaultMutableTreeNode(
-                                        i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.views"));
+                                        i18n.tr("Views"));
                                 if (viewDescriptions.length > 0) {
                                         schemaNode.add(viewNode);
                                         for (TableDescription viewDescription : viewDescriptions) {
@@ -173,7 +173,7 @@ public class TableSelectionPanel implements UIPanel {
         @Override
         public String validateInput() {
                 String validateInput = null;
-                validateInput = (getSelectedDBSources().length == 0) ? i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.selectAtLeastTableOrView")
+                validateInput = (getSelectedDBSources().length == 0) ? i18n.tr("Select one table or view")
                         : null;
                 return validateInput;
         }
@@ -203,13 +203,9 @@ public class TableSelectionPanel implements UIPanel {
                                 }
                         }
                 } catch (SQLException e) {
-                        //TODO : please change
-                        //ErrorMessages.error(i18n.tr(""));
-                        LOGGER.error(i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.cannotDisplayListOfTables"), e);
-                        //e.printStackTrace();
+                        LOGGER.error(i18n.tr("Cannot display the list of tables"), e);
                 } catch (DriverException e) {
-                        LOGGER.error(i18n.tr("orbisgis.view.geocatalog.sourceWizards.db.cannotDisplayListOfTables"), e);
-                        // e.printStackTrace();
+                        LOGGER.error(i18n.tr("Cannot display the list of tables"), e);
                 }
 
                 final DBSource[] dbSources = new DBSource[tables.size()];

@@ -325,7 +325,7 @@ public class FilterFactoryManager<FilterInterface> {
     private JButton makeRemoveFilterButton() {
         //Create a compact button
         JButton removeFilterButton = new JButton(OrbisGISIcon.getIcon("delete"));
-        removeFilterButton.setToolTipText(i18n.tr("orbisgis.view.geocatalog.removefilter"));
+        removeFilterButton.setToolTipText(i18n.tr("Delete this filter"));
         removeFilterButton.setMargin(new Insets(0, 0, 0, 0));
         removeFilterButton.setBorderPainted(false);
         removeFilterButton.setContentAreaFilled(false);

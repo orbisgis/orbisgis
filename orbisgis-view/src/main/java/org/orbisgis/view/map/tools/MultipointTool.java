@@ -36,23 +36,18 @@
  */
 package org.orbisgis.view.map.tools;
 
+import com.vividsolutions.jts.geom.MultiPoint;
 import java.util.Observable;
-
-import javax.swing.AbstractButton;
- 
+import org.gdms.data.DataSource;
+import org.gdms.data.types.GeometryDimensionConstraint;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
-
-
-import com.vividsolutions.jts.geom.MultiPoint;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.GeometryDimensionConstraint;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 
 public class MultipointTool extends AbstractMultipointTool {
 
@@ -95,7 +90,7 @@ public class MultipointTool extends AbstractMultipointTool {
 
         @Override
 	public String getName() {
-		return I18N.tr("orbisgis.core.ui.editors.map.tool.multipoint_tooltip");
+		return I18N.tr("Draw a multipoint");
 	}
 
 }

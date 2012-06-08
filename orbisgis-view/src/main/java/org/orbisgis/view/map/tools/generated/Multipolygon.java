@@ -56,10 +56,12 @@ public abstract class Multipolygon implements Automaton {
 
 	private ToolManager tm;
 
+        @Override
         public ImageIcon getCursor() {
             return null;
         }
 
+        @Override
 	public String[] getTransitionLabels() {
 		ArrayList<String> ret = new ArrayList<String>();
 
@@ -81,23 +83,10 @@ public abstract class Multipolygon implements Automaton {
 
 		}
 
-		if ("Line".equals(status)) {
-
-		}
-
-		if ("Done".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
-
-
 		return ret.toArray(new String[0]);
 	}
 
+        @Override
 	public String[] getTransitionCodes() {
 		ArrayList<String> ret = new ArrayList<String>();
 
@@ -119,23 +108,10 @@ public abstract class Multipolygon implements Automaton {
 
 		}
 
-		if ("Line".equals(status)) {
-
-		}
-
-		if ("Done".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
-
-
 		return ret.toArray(new String[0]);
 	}
 
+        @Override
 	public void init(MapContext ec, ToolManager tm) throws TransitionException,
 			FinishedAutomatonException {
 		logger.info("status: " + status);
@@ -148,6 +124,7 @@ public abstract class Multipolygon implements Automaton {
 		}
 	}
 
+        @Override
 	public void transition(String code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
 		logger.info("transition code: " + code);
@@ -308,10 +285,6 @@ public abstract class Multipolygon implements Automaton {
 
 		}
 
-		if ("Cancel".equals(status)) {
-
-		}
-
 		if ("esc".equals(code)) {
 			status = "Cancel";
 			transitionTo_Cancel(ec, tm);
@@ -359,6 +332,7 @@ public abstract class Multipolygon implements Automaton {
 		throw new RuntimeException("Invalid status: " + status);
 	}
 
+        @Override
 	public void draw(Graphics g) throws DrawingException {
 
 		if ("Standby".equals(status)) {
@@ -421,6 +395,7 @@ public abstract class Multipolygon implements Automaton {
 		return status;
 	}
 
+        @Override
 	public String getName() {
 		return "Multipolygon";
 	}
@@ -454,6 +429,7 @@ public abstract class Multipolygon implements Automaton {
 		return "multipolygon";
 	}
 
+        @Override
 	public String getTooltip() {
 		return I18N.tr("Draw a multipolygon");
 	}
@@ -472,13 +448,10 @@ public abstract class Multipolygon implements Automaton {
 		this.mouseCursor = mouseCursor;
 	}
 
+        @Override
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
-
-		if ("Standby".equals(status)) {
-
-		}
 
 		if ("Point".equals(status)) {
 
@@ -486,20 +459,9 @@ public abstract class Multipolygon implements Automaton {
 
 		}
 
-		if ("Line".equals(status)) {
-
-		}
-
-		if ("Done".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
 	}
 
+        @Override
 	public java.awt.Point getHotSpotOffset() {
 
 		return new java.awt.Point(8, 8);

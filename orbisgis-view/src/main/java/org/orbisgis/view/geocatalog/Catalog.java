@@ -111,7 +111,7 @@ public class Catalog extends JPanel implements DockingPanel {
         public Catalog(SourceContext sourceContext) {
                 super(new BorderLayout());
                 dockingParameters.setName("geocatalog");
-                dockingParameters.setTitle(I18N.tr("orbisgis.org.orbisgis.Catalog.title"));
+                dockingParameters.setTitle(I18N.tr("GeoCatalog"));
                 dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("geocatalog"));
                 dockingParameters.setCloseable(true);
                 //Add the Source List in a Scroll Pane, 
@@ -212,7 +212,7 @@ public class Catalog extends JPanel implements DockingPanel {
         public void onMenuAddFile() {
                 SourceContext srcContext = sourceListContent.getSourceContext();
                 //Create the SIF panel
-                OpenGdmsFilePanel openDialog = new OpenGdmsFilePanel(I18N.tr("orbisgis.view.geocatalog.OpenGdmsFilePanelTitle"),
+                OpenGdmsFilePanel openDialog = new OpenGdmsFilePanel(I18N.tr("Select the file to add"),
                         srcContext.getSourceManager().getDriverManager());
 
                 //Ask SIF to open the dialog
@@ -229,7 +229,7 @@ public class Catalog extends JPanel implements DockingPanel {
                                                 String name = srcContext.getSourceManager().getUniqueName(FileUtils.getFileNameWithoutExtensionU(file));
                                                 srcContext.getSourceManager().register(name, file);
                                         } catch (SourceAlreadyExistsException e) {
-                                                LOGGER.error(I18N.tr("orbisgis.view.geocatalog.SourceAlreadyRegistered"), e);
+                                                LOGGER.error(I18N.tr("This source was already registered"), e);
                                         }
                                 }
                         }
@@ -261,8 +261,8 @@ public class Catalog extends JPanel implements DockingPanel {
         public void onMenuClearGeoCatalog() {
                 //User must validate this action
                 int option = JOptionPane.showConfirmDialog(this,
-                        I18N.tr("orbisgis.view.geocatalog.validateClearMessage"),
-                        I18N.tr("orbisgis.view.geocatalog.validateClearTitle"),
+                        I18N.tr("All data source of the GeoCatalog will be removed. Are you sure ?"),
+                        I18N.tr("Clear the GeoCatalog"),
                         JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (option == JOptionPane.YES_OPTION) {
                         sourceListContent.clearAllSourceExceptSystemTables();
@@ -280,8 +280,7 @@ public class Catalog extends JPanel implements DockingPanel {
                         try {
                                 sm.remove(resource);
                         } catch (IllegalStateException e) {
-                                LOGGER.error(I18N.tr("orbisgis.view.geocatalog.cannotRemoveSource") + ": "
-                                        + resource, e);
+                                LOGGER.error(I18N.tr("Cannot remove the source {0}",resource), e);
 
                         }
                 }
@@ -295,7 +294,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 JPopupMenu rootMenu = new JPopupMenu();
                 //Popup:ClearGeocatalog (added if the datasource manager is not empty)
                 if (!sourceListContent.getSourceContext().isDataSourceManagerEmpty()) {
-                        JMenuItem clearCatalogItem = new JMenuItem(I18N.tr("orbisgis.view.geocatalog.clearGeoCatalogMenuItem"),
+                        JMenuItem clearCatalogItem = new JMenuItem(I18N.tr("Clear the GeoCatalog"),
                                 OrbisGISIcon.getIcon("bin_closed"));
                         clearCatalogItem.addActionListener(EventHandler.create(ActionListener.class,
                                 this,
@@ -306,7 +305,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 //Add function to remove a source
                 if(!sourceList.isSelectionEmpty()) {
                     JMenuItem removeSourceItem = new JMenuItem(
-                                    I18N.tr("orbisgis.view.geocatalog.removeSource"),
+                                    I18N.tr("Remove the source"),
                                     OrbisGISIcon.getIcon("remove"));
                     removeSourceItem.addActionListener(EventHandler.create(ActionListener.class,
                             this,
@@ -314,12 +313,12 @@ public class Catalog extends JPanel implements DockingPanel {
                     rootMenu.add(removeSourceItem);
                 }
                 //Popup:Add
-                JMenu addMenu = new JMenu(I18N.tr("orbisgis.view.geocatalog.addMenuItem"));
+                JMenu addMenu = new JMenu(I18N.tr("Add"));
                 rootMenu.addSeparator();
                 rootMenu.add(addMenu);
                 //Popup:Add:File
                 JMenuItem addFileItem = new JMenuItem(
-                        I18N.tr("orbisgis.view.geocatalog.addFileMenuItem"),
+                        I18N.tr("File"),
                         OrbisGISIcon.getIcon("page_white_add"));
                 addFileItem.addActionListener(EventHandler.create(ActionListener.class,
                         this,
@@ -328,7 +327,7 @@ public class Catalog extends JPanel implements DockingPanel {
 
                 //Add the database panel
                 addFileItem = new JMenuItem(
-                        I18N.tr("orbisgis.view.geocatalog.addDataBaseMenuItem"),
+                        I18N.tr("DataBase"),
                         OrbisGISIcon.getIcon("database_add"));
                 addFileItem.addActionListener(EventHandler.create(ActionListener.class,
                         this,
@@ -343,7 +342,7 @@ public class Catalog extends JPanel implements DockingPanel {
                         eventSourceListPopupMenuCreating.callListeners(new MenuPopupEventData(rootMenu, this));
                 } catch (EventException ex) {
                         //A listener cancel the creation of the popup menu
-                        LOGGER.warn(I18N.tr("orbisgis.view.geocatalog.listenerMenuThrown"), ex);
+                        LOGGER.warn(I18N.tr("An external code stop the creation of the PopUp menu"), ex);
                         return null;
                 }
                 return rootMenu;

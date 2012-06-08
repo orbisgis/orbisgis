@@ -45,11 +45,9 @@ import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
-import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.button.DropDownButton;
-import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorDockable;
@@ -82,7 +80,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         super(new BorderLayout());
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName("map_editor");
-        dockingPanelParameters.setTitle(I18N.tr("orbisgis.view.map.MapEditorTitle"));
+        dockingPanelParameters.setTitle(I18N.tr("Map"));
         dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
         dockingPanelParameters.setMinimizable(false);
         dockingPanelParameters.setExternalizable(false);
@@ -134,6 +132,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             mapControl.setMapContext(mapContext);
             mapControl.getMapTransform().setExtent(mapContext.getBoundingBox());
             mapControl.initMapControl();
+            repaint();
         } catch (IllegalStateException ex) {
             GUILOGGER.error(ex);
         } catch (TransitionException ex) {

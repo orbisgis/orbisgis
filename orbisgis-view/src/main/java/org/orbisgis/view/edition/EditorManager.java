@@ -33,7 +33,6 @@ import java.util.List;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelLayout;
-import org.orbisgis.view.docking.internals.OrbisGISView;
 
 /**
  * The editor Manager is responsible of all EditorFactories.
@@ -88,7 +87,7 @@ public class EditorManager {
                                 MultipleEditorFactory mFactory = (MultipleEditorFactory)factory;
                                 DockingPanelLayout data = mFactory.makeEditableLayout(editableElement);
                                 if(data!=null) {
-                                        
+                                        dockingManager.show(mFactory.getId(), data);
                                 }
                         }
                 }

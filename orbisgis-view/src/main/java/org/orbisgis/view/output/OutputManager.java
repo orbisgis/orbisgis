@@ -28,9 +28,7 @@
  */
 package org.orbisgis.view.output;
 
-import java.awt.Color;
 import java.beans.EventHandler;
-import java.util.EventObject;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.log4j.Level;
@@ -40,7 +38,6 @@ import org.apache.log4j.varia.DenyAllFilter;
 import org.apache.log4j.varia.LevelMatchFilter;
 import org.apache.log4j.varia.LevelRangeFilter;
 import org.orbisgis.core.events.Listener;
-import org.orbisgis.core.events.ListenerException;
 import org.orbisgis.view.docking.DockingPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -97,7 +94,7 @@ public class OutputManager {
                 allPanel = app.getGuiPanel();
                 outputAllListener = EventHandler.create(Listener.class,this,"onNewLogMessage","");
                 outputPanels.put(LOG_ALL, app);
-                mainPanel.addSubPanel(i18n.tr("orbisgis.view.log_all_title"), app.getGuiPanel());
+                mainPanel.addSubPanel(i18n.tr("All"), app.getGuiPanel());
                 mainPanel.showSubPanel(app.getGuiPanel()); //Select this panel by default                
         }
 
@@ -120,7 +117,7 @@ public class OutputManager {
                 app.addFilter(new DenyAllFilter());
                 outputPanels.put(LOG_ERROR, app);
                 ROOT_LOGGER.addAppender(app);
-                mainPanel.addSubPanel(i18n.tr("orbisgis.view.log_error_title"), app.getGuiPanel());
+                mainPanel.addSubPanel(i18n.tr("Errors"), app.getGuiPanel());
         }
 
         private PanelAppender makePanel() {
@@ -142,7 +139,7 @@ public class OutputManager {
                 app.addFilter(new DenyAllFilter());
                 outputPanels.put(LOG_INFO, app);
                 GUI_LOGGER.addAppender(app);
-                mainPanel.addSubPanel(i18n.tr("orbisgis.view.log_info_title"), app.getGuiPanel());
+                mainPanel.addSubPanel(i18n.tr("Infos"), app.getGuiPanel());
         }
 
         /**
@@ -159,7 +156,7 @@ public class OutputManager {
                 app.addFilter(new DenyAllFilter());
                 outputPanels.put(LOG_WARNING, app);
                 ROOT_LOGGER.addAppender(app);
-                mainPanel.addSubPanel(i18n.tr("orbisgis.view.log_warning_title"), app.getGuiPanel());
+                mainPanel.addSubPanel(i18n.tr("Warnings"), app.getGuiPanel());
         }
         /**
          * Make the debug Output panel

@@ -99,7 +99,7 @@ public class PolygonTool extends AbstractPolygonTool {
 
 	@Override
 	public String getName() {
-		return I18N.tr("orbisgis.core.ui.editors.map.tool.polygon_tooltip");
+		return I18N.tr("Draw a polygon");
 	}
 
         @Override

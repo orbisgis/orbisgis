@@ -39,24 +39,17 @@ package org.orbisgis.view.map.tools.generated;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
-
 import javax.swing.ImageIcon;
-
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.view.map.tool.Automaton;
-import org.orbisgis.view.map.tool.DrawingException;
-import org.orbisgis.view.map.tool.FinishedAutomatonException;
-import org.orbisgis.view.map.tool.NoSuchTransitionException;
-import org.orbisgis.view.map.tool.ToolManager;
-import org.orbisgis.view.map.tool.TransitionException;
+import org.orbisgis.view.map.tool.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 
-public abstract class VertexAdition implements Automaton {
-        protected final static I18n I18N = I18nFactory.getI18n(VertexAdition.class);
-	private static Logger logger = Logger.getLogger(VertexAdition.class);
+public abstract class VertexAddition implements Automaton {
+        protected final static I18n I18N = I18nFactory.getI18n(VertexAddition.class);
+	private static Logger logger = Logger.getLogger(VertexAddition.class);
 
 	private String status = "Standby";
 
@@ -64,46 +57,22 @@ public abstract class VertexAdition implements Automaton {
 
 	private ToolManager tm;
 
+        @Override
         public ImageIcon getCursor() {
             return null;
         }
         
+        @Override
 	public String[] getTransitionLabels() {
-		ArrayList<String> ret = new ArrayList<String>();
-
-		if ("Standby".equals(status)) {
-
-		}
-
-		if ("Done".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
-		return ret.toArray(new String[0]);
+		return new String[] {};
 	}
 
+        @Override
 	public String[] getTransitionCodes() {
-		ArrayList<String> ret = new ArrayList<String>();
-
-		if ("Standby".equals(status)) {
-
-		}
-
-		if ("Done".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
-		return ret.toArray(new String[0]);
+		return new String[] {};
 	}
 
+        @Override
 	public void init(MapContext ec, ToolManager tm) throws TransitionException,
 			FinishedAutomatonException {
 		logger.info("status: " + status);
@@ -116,6 +85,7 @@ public abstract class VertexAdition implements Automaton {
 		}
 	}
 
+        @Override
 	public void transition(String code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
 		logger.info("transition code: " + code);
@@ -207,6 +177,7 @@ public abstract class VertexAdition implements Automaton {
 		throw new RuntimeException("Invalid status: " + status);
 	}
 
+        @Override
 	public void draw(Graphics g) throws DrawingException {
 
 		if ("Standby".equals(status)) {
@@ -249,6 +220,7 @@ public abstract class VertexAdition implements Automaton {
 		return status;
 	}
 
+        @Override
 	public String getName() {
 		return "VertexAdition";
 	}
@@ -256,7 +228,7 @@ public abstract class VertexAdition implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return I18N.tr("orbisgis.core.ui.editors.map.tool.vertexAdition_standby");
+			return I18N.tr("Click on an edge to insert a vertex");
 		}
 
 		if ("Done".equals(status)) {
@@ -274,12 +246,14 @@ public abstract class VertexAdition implements Automaton {
 		return "vertexAdition";
 	}
 
+        @Override
 	public String getTooltip() {
-		return I18N.tr("orbisgis.core.ui.editors.map.tool.vertexAdition_tooltip");
+		return I18N.tr("Add a new vertex");
 	}
 
 	private ImageIcon mouseCursor;
 
+        @Override
 	public ImageIcon getImageIcon() {
 		if (mouseCursor != null) {
 			return mouseCursor;
@@ -292,24 +266,13 @@ public abstract class VertexAdition implements Automaton {
 		this.mouseCursor = mouseCursor;
 	}
 
+        @Override
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
-
-		if ("Standby".equals(status)) {
-
-		}
-
-		if ("Done".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
 	}
 
+        @Override
 	public java.awt.Point getHotSpotOffset() {
 
 		return new java.awt.Point(8, 8);

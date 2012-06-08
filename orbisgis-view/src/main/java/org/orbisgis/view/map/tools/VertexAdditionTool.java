@@ -37,29 +37,25 @@
 package org.orbisgis.view.map.tools;
 
 import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Point;
 import java.awt.Graphics;
 import java.util.Observable;
-
-
+import org.gdms.data.DataSource;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.geometryUtils.GeometryEdit;
+import org.gdms.geometryUtils.GeometryException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.DrawingException;
 import org.orbisgis.view.map.tool.FinishedAutomatonException;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
-import org.orbisgis.view.map.tools.generated.VertexAdition;
+import org.orbisgis.view.map.tools.generated.VertexAddition;
 
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Point;
-import org.gdms.data.DataSource; 
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
-import org.gdms.geometryUtils.GeometryEdit;
-import org.gdms.geometryUtils.GeometryException;
-
-public class VertexAditionTool extends VertexAdition {
+public class VertexAdditionTool extends VertexAddition {
 
         @Override
         public void update(Observable o, Object arg) {
@@ -147,6 +143,6 @@ public class VertexAditionTool extends VertexAdition {
 
         @Override
         public String getName() {
-                return I18N.tr("orbisgis.core.ui.editors.map.tool.vertexAdition_tooltip");
+                return I18N.tr("Add a new vertex");
         }
 }

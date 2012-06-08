@@ -4,21 +4,14 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
 import java.util.Observable;
-
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.map.tool.CannotChangeGeometryException;
-import org.orbisgis.view.map.tool.DrawingException;
-import org.orbisgis.view.map.tool.FinishedAutomatonException;
-import org.orbisgis.view.map.tool.Handler;
-import org.orbisgis.view.map.tool.ToolManager;
-import org.orbisgis.view.map.tool.TransitionException;
+import org.orbisgis.view.map.tool.*;
 
 
 public class EditionSelectionTool extends AbstractSelectionTool {
@@ -33,19 +26,23 @@ public class EditionSelectionTool extends AbstractSelectionTool {
                 this.button = button;
         }
 
+        @Override
         public void update(Observable o, Object arg) {
                 //PlugInContext.checkTool(this);
         }
 
+        @Override
         public boolean isEnabled(MapContext vc, ToolManager tm) {
                 return ToolUtilities.isActiveLayerEditable(vc)
                         && ToolUtilities.isActiveLayerVisible(vc) && ToolUtilities.isSelectionGreaterOrEqualsThan(vc,1);
         }
 
+        @Override
         public boolean isVisible(MapContext vc, ToolManager tm) {
                 return isEnabled(vc, tm);
         }
 
+        @Override
         protected ILayer getLayer(MapContext mc) {
                 return mc.getActiveLayer();
         }
@@ -100,7 +97,7 @@ public class EditionSelectionTool extends AbstractSelectionTool {
                         }
                 } catch (CannotChangeGeometryException e) {
                         throw new DrawingException(
-                                I18N.tr("orbisgis.core.ui.editors.map.tool.selectionTool1") + ". " + e.getMessage()); //$NON-NLS-1$
+                                I18N.tr("Cannot update the geometry {0}",e.getMessage())); //$NON-NLS-1$
                 }
         }
 
@@ -109,6 +106,7 @@ public class EditionSelectionTool extends AbstractSelectionTool {
                 return I18N.tr("Move vertex");
         }
 
+        @Override
         public ImageIcon getImageIcon() {
             return OrbisGISIcon.getIcon("moveVertex");
         }

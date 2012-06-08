@@ -33,10 +33,9 @@ import bibliothek.extension.gui.dock.preference.PreferenceTreeModel;
 import bibliothek.gui.DockStation;
 import bibliothek.gui.dock.FlapDockStation;
 import bibliothek.gui.dock.common.CControl;
-import bibliothek.gui.dock.common.DefaultSingleCDockable;
+import bibliothek.gui.dock.common.MultipleCDockableFactory;
 import bibliothek.gui.dock.common.SingleCDockable;
 import bibliothek.gui.dock.common.intern.CDockable;
-import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import bibliothek.gui.dock.common.menu.CLookAndFeelMenuPiece;
 import bibliothek.gui.dock.common.menu.SingleCDockableListMenuPiece;
 import bibliothek.gui.dock.facile.menu.RootMenuPiece;
@@ -46,10 +45,14 @@ import bibliothek.util.PathCombiner;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import org.apache.log4j.Logger;
+import org.orbisgis.view.docking.internals.CustomMultipleCDockable;
 import org.orbisgis.view.docking.internals.DockingArea;
 import org.orbisgis.view.docking.internals.InternalCommonFactory;
 import org.orbisgis.view.docking.internals.OrbisGISView;
@@ -85,7 +88,7 @@ public final class DockingManager {
          * @return The look and feel menu
          */
         public JMenu getLookAndFeelMenu() {
-            RootMenuPiece laf = new RootMenuPiece(i18n.tr("orbisgis.view.docking.LookAndFeel"), false, new CLookAndFeelMenuPiece( commonControl ));
+            RootMenuPiece laf = new RootMenuPiece(i18n.tr("&Look And Feel"), false, new CLookAndFeelMenuPiece( commonControl ));
             return laf.getMenu();
         }
         /**
@@ -93,7 +96,7 @@ public final class DockingManager {
          * @return The menu that shows items declared in the docking
          */
         public JMenu getCloseableDockableMenu() {
-            RootMenuPiece laf = new RootMenuPiece(i18n.tr("orbisgis.view.docking.Windows"), false,dockableMenuTracker);
+            RootMenuPiece laf = new RootMenuPiece(i18n.tr("&Windows"), false,dockableMenuTracker);
             return laf.getMenu();
         }
         /**
@@ -105,7 +108,7 @@ public final class DockingManager {
                     try {
                         commonControl.readXML(dockingState);
                     } catch (IOException ex) {
-                        LOGGER.error(i18n.tr("orbisgis.view.DockingManager.layoutloadfailed"), ex);
+                        LOGGER.error(i18n.tr("Unable to load the docking layout."), ex);
                     }
                 }
             }            
@@ -118,7 +121,7 @@ public final class DockingManager {
                 try {
                     commonControl.writeXML(dockingState);
                 } catch (IOException ex) {
-                    LOGGER.error(i18n.tr("orbisgis.view.DockingManager.layoutsavefailes"), ex);
+                    LOGGER.error(i18n.tr("Unable to save the docking layout."), ex);
                 }    
             }
         }
@@ -184,7 +187,7 @@ public final class DockingManager {
                 commonControl.putProperty(FlapDockStation.MINIMUM_SIZE,  new Dimension(4,4));
                 
                 //DEFAULT property of a view
-		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, i18n.tr("orbisgis.view.docking.stationTitle") );
+		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, i18n.tr("Docked Window") );
 		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_ICON, OrbisGISIcon.getIcon("mini_orbisgis") );
 				
                 //StackDockStation will contain all instances of ReservedDockStation
@@ -214,7 +217,17 @@ public final class DockingManager {
          * @param panelLayout 
          */
         public void show( String factoryId, DockingPanelLayout panelLayout) {
-                //commonControl.addDockable(commonControl.getMultipleDockableFactory(factoryId).read(panelLayout));
+                MultipleCDockableFactory factory = commonControl.getMultipleDockableFactory(factoryId);
+                if(factory!=null && factory instanceof InternalCommonFactory) {
+                        InternalCommonFactory iFactory = (InternalCommonFactory)factory;
+                        CustomMultipleCDockable dockItem = iFactory.read(panelLayout);
+                        if(dockItem!=null) {
+                                commonControl.addDockable(dockItem);
+                        }
+                }
+                
+                
+                
         }
 	/**
 	 * Shows a view at the given location as child

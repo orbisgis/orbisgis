@@ -37,34 +37,20 @@
  */
 package org.orbisgis.view.map.tools;
 
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Observable;
-
-import javax.swing.AbstractButton;
-
 import org.gdms.data.DataSource;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.ConstraintFactory;
-import org.gdms.data.types.GeometryDimensionConstraint;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
-
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.view.map.tool.ToolManager;
-import org.orbisgis.view.map.tool.TransitionException;
-
- 
+import org.gdms.data.types.*;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.geometryUtils.GeometryEdit;
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.Handler;
+import org.orbisgis.view.map.tool.ToolManager;
+import org.orbisgis.view.map.tool.TransitionException;
 
 public class SplitPolygonTool extends AbstractLineTool {
 
@@ -95,7 +81,7 @@ public class SplitPolygonTool extends AbstractLineTool {
 
         @Override
         public String getName() {
-                return I18N.tr("orbisgis.core.ui.editors.map.tool.polygon.splitPolygon");
+                return I18N.tr("Split polygon");
         }
 
         @Override
@@ -135,7 +121,7 @@ public class SplitPolygonTool extends AbstractLineTool {
                         }
 
                 } catch (DriverException e) {
-                        throw new TransitionException(I18N.tr("orbisgis.core.ui.editors.map.tool.polygon.cannotSplitPolygon"), e);
+                        throw new TransitionException(I18N.tr("Cannot split the polygon"), e);
                 }
         }
 }

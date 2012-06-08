@@ -39,13 +39,17 @@ package org.orbisgis.core.layerModel;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.File;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import net.opengis.ows_context.*;
 import org.gdms.data.DataSource;
 import org.gdms.data.db.DBSource;
+import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.Style;
@@ -132,19 +136,13 @@ public abstract class BeanLayer extends AbstractLayer {
                         Source src = dataSource.getSource();                                                
                         //Serialisation of the data source into a single string
                         String resourceSerialisation = "";
-                        //Take the file path if there is one
-                        if(src.getFile() != null) {
-                                // url: file://
-                                File file = src.getFile();
-                                resourceSerialisation = file.toURI().toString();
-                        } else if(src.getDBSource() != null) {
-                                // url: database:port//
-                                DBSource dbSource = src.getDBSource();
-                                // TODO getDbms does not contain the requested serialisable form
-                                resourceSerialisation = dbSource.getDbms();
-                        } else {
-                                LOGGER.warn(I18N.tr("Unable to serialise the data source of layer {0}",getName()));
+                        try {
+                                URI srcUri = src.getURI();
+                                resourceSerialisation = srcUri.toString();
+                        } catch (DriverException ex) {
+                                LOGGER.error(I18N.tr("Unable to serialise the data source of layer {0}",getName()),ex);
                         }
+                        
                         resource.setHref(resourceSerialisation);
                         if(!resourceSerialisation.isEmpty()) {
                                 layerType.setDataURL(dataURL);                                

@@ -39,17 +39,10 @@ package org.orbisgis.view.map.tools.generated;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
-
 import javax.swing.ImageIcon;
-
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.view.map.tool.Automaton;
-import org.orbisgis.view.map.tool.DrawingException;
-import org.orbisgis.view.map.tool.FinishedAutomatonException;
-import org.orbisgis.view.map.tool.NoSuchTransitionException;
-import org.orbisgis.view.map.tool.ToolManager;
-import org.orbisgis.view.map.tool.TransitionException;
+import org.orbisgis.view.map.tool.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -64,10 +57,12 @@ public abstract class ZoomIn implements Automaton {
 
 	private ToolManager tm;
 
+        @Override
         public ImageIcon getCursor() {
             return null;
         }
 
+        @Override
 	public String[] getTransitionLabels() {
 		ArrayList<String> ret = new ArrayList<String>();
 
@@ -90,6 +85,7 @@ public abstract class ZoomIn implements Automaton {
 		return ret.toArray(new String[0]);
 	}
 
+        @Override
 	public String[] getTransitionCodes() {
 		ArrayList<String> ret = new ArrayList<String>();
 
@@ -112,9 +108,10 @@ public abstract class ZoomIn implements Automaton {
 		return ret.toArray(new String[0]);
 	}
 
+        @Override
 	public void init(MapContext ec, ToolManager tm) throws TransitionException,
 			FinishedAutomatonException {
-		logger.info("status: " + status);
+		logger.debug("status: " + status);
 		this.ec = ec;
 		this.tm = tm;
 		status = "Standby";
@@ -124,9 +121,10 @@ public abstract class ZoomIn implements Automaton {
 		}
 	}
 
+        @Override
 	public void transition(String code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
-		logger.info("transition code: " + code);
+		logger.debug("transition code: " + code);
 
 		if ("Standby".equals(status)) {
 
@@ -158,7 +156,7 @@ public abstract class ZoomIn implements Automaton {
 				String preStatus = status;
 				try {
 					status = "RectangleDone";
-					logger.info("status: " + status);
+					logger.debug("status: " + status);
 					double[] v = tm.getValues();
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
@@ -182,7 +180,7 @@ public abstract class ZoomIn implements Automaton {
 				String preStatus = status;
 				try {
 					status = "Standby";
-					logger.info("status: " + status);
+					logger.debug("status: " + status);
 					double[] v = tm.getValues();
 					for (int i = 0; i < v.length; i++) {
 						logger.info("value: " + v[i]);
@@ -245,6 +243,7 @@ public abstract class ZoomIn implements Automaton {
 		throw new RuntimeException("Invalid status: " + status);
 	}
 
+        @Override
 	public void draw(Graphics g) throws DrawingException {
 
 		if ("Standby".equals(status)) {
@@ -298,6 +297,7 @@ public abstract class ZoomIn implements Automaton {
 		return status;
 	}
 
+        @Override
 	public String getName() {
 		return "ZoomIn";
 	}
@@ -305,11 +305,11 @@ public abstract class ZoomIn implements Automaton {
 	public String getMessage() {
 
 		if ("Standby".equals(status)) {
-			return I18N.tr("orbisgis.core.ui.editors.map.tool.zoomin_standby");
+			return I18N.tr("Select the first point of the zooming rectangle");
 		}
 
 		if ("OnePointLeft".equals(status)) {
-			return I18N.tr("orbisgis.core.ui.editors.map.tool.zoomin_onepointleft");
+			return I18N.tr("Select the second point");
 		}
 
 		if ("RectangleDone".equals(status)) {
@@ -327,12 +327,14 @@ public abstract class ZoomIn implements Automaton {
 		return "zoomin";
 	}
 
+        @Override
 	public String getTooltip() {
-		return I18N.tr("orbisgis.core.ui.editors.map.tool.zoomin_tooltip");
+		return I18N.tr("Zoom in");
 	}
 
 	private ImageIcon mouseCursor;
 
+        @Override
 	public ImageIcon getImageIcon() {
 		if (mouseCursor != null) {
 			return mouseCursor;
@@ -345,6 +347,7 @@ public abstract class ZoomIn implements Automaton {
 		this.mouseCursor = mouseCursor;
 	}
 
+        @Override
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
@@ -367,6 +370,7 @@ public abstract class ZoomIn implements Automaton {
 
 	}
 
+        @Override
 	public java.awt.Point getHotSpotOffset() {
 
 		return new java.awt.Point(8, 8);

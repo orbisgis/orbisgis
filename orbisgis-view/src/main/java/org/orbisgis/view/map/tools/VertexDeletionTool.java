@@ -36,29 +36,20 @@
  */
 package org.orbisgis.view.map.tools;
 
+import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Observable;
-
-import javax.swing.AbstractButton;
-
-import org.gdms.driver.DriverException;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.view.map.tool.DrawingException;
-import org.orbisgis.view.map.tool.FinishedAutomatonException;
-import org.orbisgis.view.map.tool.Handler;
-import org.orbisgis.view.map.tool.ToolManager;
-import org.orbisgis.view.map.tool.TransitionException;
-import org.orbisgis.view.map.tools.generated.VertexDeletion;
-
-
-import com.vividsolutions.jts.geom.Geometry;
-import org.gdms.data.DataSource; 
+import org.gdms.data.DataSource;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.gdms.driver.DriverException;
 import org.gdms.geometryUtils.GeometryException;
+import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.map.tool.*;
+import org.orbisgis.view.map.tools.generated.VertexDeletion;
 
 public class VertexDeletionTool extends VertexDeletion {
 
@@ -119,7 +110,7 @@ public class VertexDeletionTool extends VertexDeletion {
                                 }
                         } catch (GeometryException e) {
                                 throw new DrawingException(
-                                        I18N.tr("orbisgis.core.ui.editors.map.tool.VertexDeletionTool_1")); //$NON-NLS-1$
+                                        I18N.tr("Cannot delete vertex")); //$NON-NLS-1$
                         }
                 }
         }
@@ -148,6 +139,6 @@ public class VertexDeletionTool extends VertexDeletion {
 
 	@Override
         public String getName() {
-                return I18N.tr("orbisgis.core.ui.editors.map.tool.vertexDeletion_tooltip");
+                return I18N.tr("Delete vertex");
         }
 }
