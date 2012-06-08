@@ -44,6 +44,7 @@
  */
 package org.gdms.data;
 
+import java.net.URI;
 import java.util.List;
 
 import org.orbisgis.progress.ProgressMonitor;
@@ -62,10 +63,8 @@ public interface DataSourceDefinition<D extends Driver> {
         /**
          * Creates a DataSource with the information of this object
          *
-         * @param tableName
-         *            name of the DataSource
-         * @param pm
-         *            To indicate progress or being canceled
+         * @param tableName name of the DataSource
+         * @param pm to indicate progress or being canceled
          * @return DataSource
          * @throws DataSourceCreationException
          */
@@ -77,7 +76,7 @@ public interface DataSourceDefinition<D extends Driver> {
          *
          * @param contents
          * @param pm
-         * @throws DriverException 
+         * @throws DriverException
          */
         void createDataSource(DataSet contents, ProgressMonitor pm)
                 throws DriverException;
@@ -85,11 +84,8 @@ public interface DataSourceDefinition<D extends Driver> {
         /**
          * if any, frees the resources taken when the DataSource was created
          *
-         * @param name
-         *            DataSource registration name
-         *
-         * @throws DataSourceFinalizationException
-         *             If the operation fails
+         * @param name dataSource registration name
+         * @throws DataSourceFinalizationException if the operation fails
          */
         void freeResources(String name)
                 throws DataSourceFinalizationException;
@@ -112,9 +108,8 @@ public interface DataSourceDefinition<D extends Driver> {
         /**
          * Calculates the checksum of the source
          *
-         * @param openDS
-         *            An instance to an open DataSource that accesses the source
-         *            this object defines. Null if there is no open DataSource
+         * @param openDS an instance to an open DataSource that accesses the source
+         * this object defines or null if there is none
          *
          * @return
          * @throws DriverException
@@ -135,7 +130,7 @@ public interface DataSourceDefinition<D extends Driver> {
          * Gets the type of the source accessed by this definition
          *
          * @return
-         * @throws DriverException  
+         * @throws DriverException
          */
         int getType() throws DriverException;
 
@@ -143,7 +138,7 @@ public interface DataSourceDefinition<D extends Driver> {
          * Get the source type description of the source accessed by this definition
          *
          * @return
-         * @throws DriverException  
+         * @throws DriverException
          */
         String getTypeName() throws DriverException;
 
@@ -152,7 +147,7 @@ public interface DataSourceDefinition<D extends Driver> {
          * initialization
          *
          * @throws DriverException
-         *             If the source is not valid and cannot be initializated
+         * If the source is not valid and cannot be initializated
          */
         void initialize() throws DriverException;
 
@@ -160,17 +155,18 @@ public interface DataSourceDefinition<D extends Driver> {
          * Get the id of the driver used to access this source definition
          *
          * @return the id of the driver
-         * @throws DriverException  
+         * @throws DriverException
          */
         String getDriverId() throws DriverException;
 
         /**
          * Gets the driver associated with this source.
+         *
          * @return the driver
-         * @throws DriverException  
+         * @throws DriverException
          */
         D getDriver() throws DriverException;
-        
+
         /**
          * Refreshes all stored data of the definition (e.g. the type).
          */
@@ -179,6 +175,7 @@ public interface DataSourceDefinition<D extends Driver> {
         /**
          * Gets the name of the table of the driver this Definition is
          * describing
+         *
          * @return the name of the driver
          */
         String getDriverTableName();
@@ -187,11 +184,18 @@ public interface DataSourceDefinition<D extends Driver> {
          * Deletes all physical storage associated with this source.
          */
         void delete() throws DriverException;
-        
+
         /**
          * Gets the schema of underlying source.
+         *
          * @return a never-empty schema
-         * @throws DriverException  
+         * @throws DriverException
          */
         Schema getSchema() throws DriverException;
+
+        /**
+         * Gets an URI representing this definition.
+         * @throws DriverException 
+         */
+        URI getURI() throws DriverException;
 }

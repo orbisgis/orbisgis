@@ -48,6 +48,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -571,5 +572,10 @@ public final class ExtendedSource implements org.gdms.source.Source {
          */
         public void init() throws DriverException {
                 def.initialize();
+        }
+
+        @Override
+        public URI getURI() throws DriverException {
+                return def.getURI();
         }
 }

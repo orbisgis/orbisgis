@@ -44,6 +44,7 @@
  */
 package org.gdms.data.db;
 
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.SQLException;
 
@@ -128,7 +129,8 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition<DBDriv
                 driver.setDataSourceFactory(getDataSourceFactory());
                 Connection con;
                 try {
-                        con = driver.getConnection(def.getHost(), def.getPort(), def.isSsl(), def.getDbName(), def.getUser(), def.getPassword());
+                        String cs = driver.getConnectionString(def.getHost(), def.getPort(), def.isSsl(), def.getDbName(), def.getUser(), def.getPassword());
+                        con = driver.getConnection(cs);
                 } catch (SQLException e) {
                         throw new DriverException(e);
                 }
@@ -255,5 +257,28 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition<DBDriv
         @Override
         public String getDriverTableName() {
                 return DriverManager.DEFAULT_SINGLE_TABLE_NAME;
+        }
+
+        @Override
+        public URI getURI() throws DriverException {
+                StringBuilder ds = new StringBuilder();
+                String cs = getDriver().getConnectionString(def.getHost(), def.getPort(), def.isSsl(), def.getDbName(), def.getUser(), def.getPassword());
+                ds.append(cs);
+                
+                if (cs.contains("?")) {
+                        if (def.getSchemaName() != null) {
+                                ds.append("&schema=").append(def.getSchemaName());
+                        }
+                        ds.append("&table=").append(def.getTableName());
+                } else {
+                        ds.append("?table=").append(def.getTableName());
+                        if (def.getSchemaName() != null) {
+                                ds.append("&schema=").append(def.getSchemaName());
+                        }
+                }
+                
+                // substring drops the jdbc at the beginning
+                URI con = URI.create(ds.toString().substring(5));
+                return con;
         }
 }

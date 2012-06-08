@@ -46,10 +46,10 @@ package org.gdms.data.file;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.progress.ProgressMonitor;
@@ -244,5 +244,14 @@ public class FileSourceDefinition extends AbstractDataSourceDefinition<FileDrive
         @Override
         public final void refresh() {
                 cachedType = -1;
+        }
+
+        /**
+         * Gets an URI to the file used by this definition.
+         * @return an never-null file URI
+         */
+        @Override
+        public URI getURI() {
+                return file.toURI();
         }
 }

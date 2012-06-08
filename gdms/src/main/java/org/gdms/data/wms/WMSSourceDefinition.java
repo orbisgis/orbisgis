@@ -44,6 +44,8 @@
  */
 package org.gdms.data.wms;
 
+import java.net.URI;
+
 import org.apache.log4j.Logger;
 import org.orbisgis.progress.ProgressMonitor;
 
@@ -177,5 +179,10 @@ public class WMSSourceDefinition extends AbstractDataSourceDefinition<MemoryDriv
         @Override
         public String getDriverTableName() {
                 return DriverManager.DEFAULT_SINGLE_TABLE_NAME;
+        }
+
+        @Override
+        public URI getURI() throws DriverException {
+                return URI.create(wmsSource.getHost());
         }
 }

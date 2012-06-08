@@ -48,137 +48,117 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Interface to implement by the drivers that use jdbc to access data
- * 
- * @author Fernando Gonzalez Cortes
+ * Interface implemented by drivers that use JDBC to access data.
  */
 public interface DBDriver extends Driver {
 
-	/**
-	 * Provides connections to the database. Each invocation creates and returns
-	 * a new connection. The connection are managed in upper layers
-	 * 
-	 * @param host
-	 * 
-	 * @param port
-	 *            Port of the database management system. -1 means default port
-         * @param ssl 
+        /**
+         * Provides connections to the database. Each invocation creates and returns
+         * a new connection. The connection are managed in upper layers.
+         *
+         * @param connectionString
+         * @return Connection
+         * @throws SQLException if some error happens
+         */
+        Connection getConnection(String connectionString) throws SQLException;
+        
+        /**
+         * Creates a connection string for the given database parameters
+         *
+         * @param host
+         * @param port port of the database management system. -1 means default port
+         * @param ssl
          * @param dbName
-	 * 
-	 * @param user
-	 * 
-	 * @param password
-	 * 
-	 * 
-	 * @return Connection
-	 * 
-	 * @throws SQLException
-	 *             If some error happens
-	 */
-	Connection getConnection(String host, int port, boolean ssl, String dbName, String user,
-			String password) throws SQLException;
+         * @param user
+         * @param password
+         * @return the connection string
+         */
+        String getConnectionString(String host, int port, boolean ssl, String dbName, String user,
+                String password);
 
-	/**
-	 * Free any resource reserved in the open method
-	 * 
-	 * @param conn
-	 * 
+        /**
+         * Frees any resource allocated in the open method.
+         *
+         * @param conn
          * @throws DriverException
-	 */
-	void close(Connection conn) throws DriverException;
+         */
+        void close(Connection conn) throws DriverException;
 
-	/**
-	 * Connects to the data source and reads the specified table of 
-	 * the default schema in the database. Set this Table as current.
-	 * 
-	 * @param con
-	 * 			Connection to the database
-	 * @param tableName
-	 *            Name of the table where the data is in
-	 * 
-	 * @throws DriverException
-	 */
+        /**
+         * Connects to the data source and reads the specified table of
+         * the default schema in the database. Sets this table as current.
+         *
+         * @param con connection to the database
+         * @param tableName name of the table where the data is in
+         * @throws DriverException
+         */
+        void open(Connection con, String tableName) throws DriverException;
 
-	void open(Connection con, String tableName) throws DriverException;
-	
-	/**
-	 * Connects to the data source and reads the specified table in the
-	 * specified schema. Set this Table and this schema as current.
-	 * 
-	 * @param con
-	 * 			Connection to the database
-	 * @param tableName
-	 *          Name of the table where the data is in
-	 * @param schemaName
-	 * 			Name of the schema where the table is in
-	 * 
-	 * @throws DriverException
-	 */
-	void open(Connection con, String tableName, String schemaName) throws DriverException;
+        /**
+         * Connects to the data source and reads the specified table in the
+         * specified schema. Sets this table and this schema as current.
+         *
+         * @param con connection to the database
+         * @param tableName name of the table where the data is in
+         * @param schemaName name of the schema where the table is in
+         * @throws DriverException
+         */
+        void open(Connection con, String tableName, String schemaName) throws DriverException;
 
-	
-	/**
-	 * Retrieves all Table names in a database (with types TABLES or VIEW)
-	 * 
-	 * @param c
-	 * 		Connection to the database
-	 * 
-	 * @return table of Tables descriptions
-	 * 
-	 * @throws DriverException
-	 */
-	TableDescription[] getTables(Connection c) throws DriverException;
+        /**
+         * Retrieves all table names in a database (with types TABLES or VIEW).
+         *
+         * @param c connection to the database
+         * @return the descriptions of the tables
+         * @throws DriverException
+         */
+        TableDescription[] getTables(Connection c) throws DriverException;
 
-	
-	/**
-	 * Retrieves all Schema names in a database.
-	 * 
-	 * @param c : the connection
-	 * @return a String table
-	 * 
-	 * @throws DriverException
-	 */
-	String[] getSchemas(Connection c) throws DriverException;
+        /**
+         * Retrieves all schema names in a database.
+         *
+         * @param c the connection
+         * @return the names of the schemas
+         *
+         * @throws DriverException
+         */
+        String[] getSchemas(Connection c) throws DriverException;
 
-	
-	/**
-	 * Retrieves all Table names in a database, in specified catalog and schema
-	 * and matches with a "tableNamePattern" and with some types.
-	 * 
-	 * @param c : the database connection.
-	 * @param catalog 
-	 * @param schemaPattern
-	 * @param tableNamePattern
-	 * @param types
-	 * @return a table description of the Tables.
-	 * @throws DriverException
-	 * 
-	 * @see {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
-	 */
-	TableDescription[] getTables(Connection c, String catalog, 
-			String schemaPattern, String tableNamePattern, String[] types)	throws DriverException;
-	
+        /**
+         * Retrieves all table names in a database, in the specified catalog and schema
+         * and that match with a "tableNamePattern" and with some types.
+         *
+         * @param c the database connection.
+         * @param catalog
+         * @param schemaPattern
+         * @param tableNamePattern
+         * @param types
+         * @return a table description of the Tables.
+         * @throws DriverException
+         * @see {@link java.sql.DatabaseMetaData#getTables(String, String, String, String[])}
+         */
+        TableDescription[] getTables(Connection c, String catalog,
+                String schemaPattern, String tableNamePattern, String[] types) throws DriverException;
 
-	
-	/**
-	 * Get the port the dbms accessed by this driver listen by default
-	 * 
-	 * @return the port number
-	 */
-	int getDefaultPort();
+        /**
+         * Gets the port the dbms accessed by this driver listens to by default.
+         *
+         * @return the port number
+         */
+        int getDefaultPort();
 
-	/**
-	 * Gets the array of the prefixes accepted by this driver
-	 * 
-	 * @return
-	 */
-	String[] getPrefixes();
+        /**
+         * Gets the prefixes accepted by this driver.
+         *
+         * @return
+         */
+        String[] getPrefixes();
 
         /**
          * Gets all non blocking errors that happened since the last
-         * call to any DBDriver method that could throw DriverException
+         * call to any DBDriver method that could throw DriverException.
+         *
          * @return an array of exceptions, possibly empty
          */
         DriverException[] getLastNonBlockingErrors();
-
 }

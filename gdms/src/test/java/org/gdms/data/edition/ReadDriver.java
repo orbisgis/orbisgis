@@ -66,7 +66,6 @@ import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.ConstraintFactory;
-import org.gdms.data.types.PrimaryKeyConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -128,13 +127,16 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
                 return newValues;
         }
 
+        @Override
         public void setDataSourceFactory(DataSourceFactory dsf) {
         }
 
+        @Override
         public String getDriverId() {
                 return "failing driver";
         }
         
+        @Override
         public int getSupportedType() {
                 return 0;
         }
@@ -143,6 +145,7 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
                 return Type.STRING;
         }
 
+        @Override
         public void open() throws DriverException {
                 final Type[] fieldsTypes = new Type[]{
                         TypeFactory.createType(Type.GEOMETRY),
@@ -152,11 +155,13 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
                 open = true;
         }
 
+        @Override
         public void close() throws DriverException {
                 schema.removeTable("main");
                 close(null);
         }
 
+        @Override
         public void close(Connection conn) throws DriverException {
                 if (newValues != null) {
                         values = newValues;
@@ -168,6 +173,7 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
                 open = false;
         }
 
+        @Override
         public void execute(Connection con, String sql) throws SQLException {
                 if (failOnWrite) {
                         throw new SQLException();
@@ -189,51 +195,62 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
                 currentDataSource = ds;
         }
 
-        public Connection getConnection(String host, int port, boolean ssl, String dbName,
-                String user, String password) throws SQLException {
+        @Override
+        public Connection getConnection(String connStr) throws SQLException {
                 return new FooConnection("alpha");
         }
 
+        @Override
         public String getNullStatementString() {
                 return null;
         }
 
+        @Override
         public String getStatementString(long i) {
                 return null;
         }
 
+        @Override
         public String getStatementString(int i, int sqlType) {
                 return null;
         }
 
+        @Override
         public String getStatementString(double d, int sqlType) {
                 return null;
         }
 
+        @Override
         public String getStatementString(String str, int sqlType) {
                 return null;
         }
 
+        @Override
         public String getStatementString(Date d) {
                 return null;
         }
 
+        @Override
         public String getStatementString(Time t) {
                 return null;
         }
 
+        @Override
         public String getStatementString(Timestamp ts) {
                 return null;
         }
 
+        @Override
         public String getStatementString(byte[] binary) {
                 return null;
         }
 
+        @Override
         public String getStatementString(boolean b) {
                 return null;
         }
 
+        @Override
         public void createSource(DBSource source, Metadata driverMetadata)
                 throws DriverException {
         }
@@ -276,23 +293,29 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
                 open = true;
         }
 
+        @Override
         public void open(Connection con, String tableName) throws DriverException {
                 open(null, null, null);
         }
 
+        @Override
         public void beginTrans(Connection con) throws SQLException {
         }
 
+        @Override
         public void commitTrans(Connection con) throws SQLException {
         }
 
+        @Override
         public void rollBackTrans(Connection con) throws SQLException {
         }
 
+        @Override
         public boolean isCommitable() {
                 return isEditable;
         }
 
+        @Override
         public ConversionRule[] getConversionRules() {
                 return null;
         }
@@ -302,14 +325,17 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
                 return null;
         }
 
+        @Override
         public TableDescription[] getTables(Connection c) throws DriverException {
                 return new TableDescription[0];
         }
 
+        @Override
         public int getType() {
                 return 0;
         }
 
+        @Override
         public String validateMetadata(Metadata metadata) {
                 return null;
         }
@@ -392,6 +418,11 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
         @Override
         public boolean isOpen() {
                 return open;
+        }
+
+        @Override
+        public String getConnectionString(String host, int port, boolean ssl, String dbName, String user, String password) {
+                return "";
         }
         
         

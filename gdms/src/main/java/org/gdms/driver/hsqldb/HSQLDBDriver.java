@@ -93,20 +93,21 @@ public final class HSQLDBDriver extends DefaultDBDriver {
 		}
 	}
 
-	@Override
-	public Connection getConnection(String host, int port, boolean ssl, String dbName,
-			String user, String password) throws SQLException {
-            LOG.trace("Retrieveing connection");
-		if (driverException != null) {
-			throw new UnsupportedOperationException(driverException);
-		}
+        @Override
+        public String getConnectionString(String host, int port, boolean ssl, String dbName, String user, String password) {
+                return "jdbc:hsqldb:file:" + dbName;
+        }
 
-		final String connectionString = "jdbc:hsqldb:file:" + dbName;
-		final Properties p = new Properties();
-		p.put("shutdown", "true");
+        @Override
+        public Connection getConnection(String connString) throws SQLException {
+                if (driverException != null) {
+                        throw new UnsupportedOperationException(driverException);
+                }
+                final Properties p = new Properties();
+                p.put("shutdown", "true");
 
-		return DriverManager.getConnection(connectionString, p);
-	}
+                return DriverManager.getConnection(connString, p);
+        }
 
 	@Override
 	public String getDriverId() {

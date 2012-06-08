@@ -45,6 +45,7 @@
 package org.gdms.data.sql;
 
 import java.io.File;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -235,6 +236,18 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition<Memo
 
         @Override
         public String calculateChecksum(DataSource openDS) throws DriverException {
+                return null;
+        }
+
+        /**
+         * {@inheritDoc }
+         * <p>
+         * There is no URI associated with this definition: this method always returns null.
+         * </p>
+         * @return null
+         */
+        @Override
+        public URI getURI() {
                 return null;
         }
 }

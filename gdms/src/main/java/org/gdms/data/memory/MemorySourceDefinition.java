@@ -44,6 +44,7 @@
  */
 package org.gdms.data.memory;
 
+import java.net.URI;
 import org.apache.log4j.Logger;
 import org.orbisgis.progress.ProgressMonitor;
 
@@ -137,5 +138,17 @@ public class MemorySourceDefinition extends AbstractDataSourceDefinition {
         @Override
         public int hashCode() {
                 return 158 * driver.hashCode() + tableName.hashCode();
+        }
+
+        /**
+         * {@inheritDoc }
+         * <p>
+         * There is no URI associated with this definition: this method always returns null.
+         * </p>
+         * @return null
+         */
+        @Override
+        public URI getURI() {
+                return null;
         }
 }

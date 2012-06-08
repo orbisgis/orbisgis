@@ -182,8 +182,8 @@ public abstract class DefaultSQL extends AbstractDataSet implements DBReadWriteD
 
         @Override
         public String[] getSchemas(Connection c) throws DriverException {
-                DatabaseMetaData md = null;
-                ResultSet rs = null;
+                DatabaseMetaData md;
+                ResultSet rs;
                 ArrayList<String> schemas = new ArrayList<String>();
                 try {
                         md = c.getMetaData();
@@ -206,8 +206,8 @@ public abstract class DefaultSQL extends AbstractDataSet implements DBReadWriteD
 
                 // Retrieves the name, schema, and type of each Database.
 
-                DatabaseMetaData md = null;
-                ResultSet rs = null;
+                DatabaseMetaData md;
+                ResultSet rs;
                 ArrayList<TableDescription> tables = new ArrayList<TableDescription>();
 
                 try {
@@ -341,7 +341,8 @@ public abstract class DefaultSQL extends AbstractDataSet implements DBReadWriteD
 
                 try {
                         try {
-                                c = getConnection(source.getHost(), source.getPort(), source.isSsl(), source.getDbName(), source.getUser(), source.getPassword());
+                                String cs = getConnectionString(source.getHost(), source.getPort(), source.isSsl(), source.getDbName(), source.getUser(), source.getPassword());
+                                c = getConnection(cs);
                                 beginTrans(c);
                                 sql.append(getCreateTableKeyWord()).append(" ");
                                 sql.append(getTableAndSchemaName());

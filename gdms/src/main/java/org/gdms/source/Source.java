@@ -46,6 +46,7 @@ package org.gdms.source;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.db.DBSource;
@@ -257,6 +258,21 @@ public interface Source {
          * @return
          */
         MemoryDriver getObject();
+        
+        /**
+         * Gets an URI representing this source.
+         * 
+         * The URI depends on the kind of source. If the source is:
+         * <ul>
+         * <li>based on some file, this is just the usual URI to the file (file://...)</li>
+         * <li>a database connection, this is a URI-formatted connection string</li>
+         * <li>a remote stream (e.g. WMS), this is the full URL to its entry point</li>
+         * <li>a memory-only object (including a SQL view), this returns <tt>null</tt></li>
+         * </ul>
+         * @return
+         * @throws DriverException  
+         */
+        URI getURI() throws DriverException;
 
         /**
          * @return true if this source is a file. False otherwise

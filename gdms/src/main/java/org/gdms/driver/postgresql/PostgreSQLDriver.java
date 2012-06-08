@@ -114,57 +114,49 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
         private CoordinateReferenceSystem crs;
         private List<DriverException> nonblockingErrors = new ArrayList<DriverException>();
 
-        /**
-         *
-         *
-         * @param host
-         *            for the database.
-         * @param port
-         *            for the database. By default is 5432.
-         * @param dbName
-         *            for the database
-         * @param user
-         *            name for the database
-         * @param password
-         *            for the database
-         *
-         * @return a JDBC connection
-         *
-         * @throws SQLException
-         * @throws RuntimeException
-         *
-         *
-         * @see org.gdms.driver.DBDriver#connect(java.lang.String)
-         */
+        
         @Override
-        public Connection getConnection(String host, int port, boolean ssl, String dbName,
-                String user, String password) throws SQLException {
+        public String getConnectionString(String host, int port, boolean ssl, String dbName, String user, String password) {
+                StringBuilder con = new StringBuilder();
+                con.append("jdbc:postgresql://").append(host);
+                
+                if (port != -1) {
+                        con.append(':').append(port);
+                }
+                
+                con.append('/').append(dbName);
+
+                if (user != null) {
+                        con.append("?user=").append(user);
+                        if (password != null) {
+                                con.append("&password=").append(password);
+                        }
+                        if (ssl) {
+                                con.append("&ssl=true");
+                        }
+                } else if (ssl) {
+                        con.append("?ssl=true");
+                }
+
+
+                return con.toString();
+        }
+
+        @Override
+        public Connection getConnection(String connString) throws SQLException {
                 if (driverException != null) {
                         throw new UnsupportedOperationException(driverException);
                 }
                 LOG.trace("Getting connection");
 
-                String connectionString = "jdbc:postgresql://" + host;
-
-                if (port != -1) {
-                        connectionString += (":" + port);
-                }
-
-                connectionString += ("/" + dbName);
-
-                if (user != null) {
-                        connectionString += ("?user=" + user + "&password=" + password);
-                }
-
-                Connection c = null;
-                if (ssl) {
+                Connection c;
+                if (connString.toLowerCase().contains("ssl=true")) {
                         Properties props = new Properties();
-                        props.setProperty("ssl", "true");
                         props.setProperty("sslfactory", "org.postgresql.ssl.NonValidationFactory");
-                        c = DriverManager.getConnection(user, props);
+                        c = DriverManager.getConnection(connString, props);
 
                 } else {
-                        c = DriverManager.getConnection(connectionString);
+                        c = DriverManager.getConnection(connString);
                 }
                 ((PGConnection) c).addDataType("geometry", org.postgis.PGgeometry.class);
                 ((PGConnection) c).addDataType("box3d", org.postgis.PGbox3d.class);

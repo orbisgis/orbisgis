@@ -49,6 +49,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -632,6 +633,30 @@ public class SourceManagementTest extends TestBase {
                 testListenCommits(dsf.getDataSource("file"));
                 testListenCommits(dsf.getDataSource("db"));
 
+        }
+        
+        @Test
+        public void testCreateFromURI() throws Exception {
+                URI uri = testFile.toURI();
+                sm.register("test", uri);
+                
+                assertTrue(sm.getSource("test").isFileSource());
+                
+                uri = URI.create("postgresql://www.host.com:1234/db_name?table=toto&schema=tata&"
+                        + "user=me&password=changeme");
+                
+                sm.register("test2", uri);
+                assertTrue(sm.getSource("test2").isDBSource());
+                
+                DBSource s = sm.getSource("test2").getDBSource();
+                assertEquals("www.host.com", s.getHost());
+                assertEquals("db_name", s.getDbName());
+                assertEquals(1234, s.getPort());
+                assertEquals("jdbc:postgresql", s.getPrefix());
+                assertEquals("toto", s.getTableName());
+                assertEquals("tata", s.getSchemaName());
+                assertEquals("me", s.getUser());
+                assertEquals("changeme", s.getPassword());
         }
 
         private void testListenCommits(DataSource ds) throws DriverException {

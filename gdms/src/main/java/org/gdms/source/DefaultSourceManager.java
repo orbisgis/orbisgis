@@ -49,6 +49,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.URI;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -426,6 +427,52 @@ public final class DefaultSourceManager implements SourceManager {
         }
 
         @Override
+        public void register(String name, URI uri) {
+                registerURI(name, true, uri);
+        }
+
+        private void registerURI(String name, boolean wellKnown, URI uri) {
+                final String scheme = uri.getScheme().toLowerCase();
+                if ("file".equals(scheme)) {
+                        if (wellKnown) {
+                                register(name, new FileSourceCreation(new File(uri), null));
+                        } else {
+                                register(name, false, new FileSourceDefinition(new File(uri), DriverManager.DEFAULT_SINGLE_TABLE_NAME));
+                        }
+                } else if (scheme.startsWith("http")) {
+                        throw new UnsupportedOperationException("Unsupported URI: " + uri);
+                } else {
+                        String table = null;
+                        String sch = null;
+                        String user = null;
+                        String password = null;
+                        boolean ssl = false;
+                        String dbName = uri.getPath();
+                        if (dbName.startsWith("/")) {
+                                dbName = dbName.substring(1);
+                        }
+                        String[] params = uri.getQuery().split("&");
+                        for (int i = 0; i < params.length; i++) {
+                                String[] vals = params[i].split("=");
+                                if ("table".equalsIgnoreCase(vals[0])) {
+                                        table = vals[1];
+                                } else if ("schema".equalsIgnoreCase(vals[0])) {
+                                        sch = vals[1];
+                                } else if ("user".equalsIgnoreCase(vals[0])) {
+                                        user = vals[1];
+                                } else if ("password".equalsIgnoreCase(vals[0])) {
+                                        password = vals[1];
+                                } else if ("ssl".equalsIgnoreCase(vals[0]) && "true".equalsIgnoreCase(vals[1])) {
+                                        ssl = true;
+                                }
+                        }
+                        DBSource s = new DBSource(uri.getHost(), uri.getPort(), dbName, user,
+                                password, sch, table, "jdbc:" + scheme, ssl);
+                        register(name, wellKnown, new DBTableSourceDefinition(s));
+                }
+        }
+
+        @Override
         public void register(String name, File file) {
                 register(name, new FileSourceCreation(file, null));
         }
@@ -617,6 +664,13 @@ public final class DefaultSourceManager implements SourceManager {
                 }
 
                 return tmpName;
+        }
+
+        @Override
+        public String nameAndRegister(URI uri) {
+                String name = getUID();
+                registerURI(name, false, uri);
+                return name;
         }
 
         @Override

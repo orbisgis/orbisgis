@@ -46,6 +46,7 @@ package org.gdms.source;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 
 import org.gdms.data.DataSourceCreation;
 import org.gdms.data.DataSourceCreationException;
@@ -168,6 +169,17 @@ public interface SourceManager {
          * @throws IllegalStateException if some source depends on the source being removed
          */
         boolean delete(String name);
+        
+        /**
+         * Registers a source from a URI with the specified name.
+         * 
+         * This method is 
+         *
+         * @param name name to register with
+         * @param uri URI to the resource to register
+         * @throws org.gdms.data.SourceAlreadyExistsException
+         */
+        void register(String name, URI uri);
 
         /**
          * Registers a file with the specified name.
@@ -246,6 +258,14 @@ public interface SourceManager {
          * @return a new name
          */
         String getUniqueName(String base);
+        
+        /**
+         * Registers a source from an URI generating the name automatically.
+         *
+         * @param uri an URI
+         * @return the name of the registered source
+         */
+        String nameAndRegister(URI uri);
 
         /**
          * Registers generating the name automatically.
