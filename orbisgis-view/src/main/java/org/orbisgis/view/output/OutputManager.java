@@ -105,8 +105,8 @@ public class OutputManager {
             allPanel.print(evtMsg.getMessage(), evtMsg.getMessageColor());
         }
         /**
-         * Make the Info Output panel
-         * This panel accept root.gui == Info      >
+         * Make the Error Output panel
+         * This panel accept root == Error      >
          */
         private void makeOutputError() {
                 PanelAppender app = makePanel();

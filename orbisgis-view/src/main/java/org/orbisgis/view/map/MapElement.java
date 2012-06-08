@@ -28,12 +28,14 @@
  */
 package org.orbisgis.view.map;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.*;
-import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.map.TransformListener;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.edition.AbstractEditableElement;
 
@@ -41,18 +43,20 @@ import org.orbisgis.view.edition.AbstractEditableElement;
  * MapElement is an editable document that contain a Map Context
  * @note The source code, functionality is mainly provided by GeocognitionMapContext
  */
-public final class MapElement extends AbstractEditableElement implements
-		TransformListener{
+public final class MapElement extends AbstractEditableElement {
         public final static String EDITABLE_TYPE = "MapContext";
         private final static Logger LOGGER = Logger.getLogger("gui."+MapElement.class);
 	private Boolean modified = false;
 	private MapContext mapContext;
-        Object jAXBObject; //The saved state of the MapContext
         private String mapId;
         private MapContextListener updateListener = EventHandler.create(MapContextListener.class, this , "setModified");
+        private PropertyChangeListener mapContextPropertyUpdateListener = EventHandler.create(PropertyChangeListener.class, this , "setModified");
         private LayerUpdateListener layerUpdateListener = new LayerUpdateListener();
-	public MapElement(MapContext mapContext) {
+        private File mapContextFile;
+        
+	public MapElement(MapContext mapContext,File mapContextFile) {
 		this.mapContext = mapContext;
+                this.mapContextFile = mapContextFile;
                 mapId = String.valueOf(mapContext.getIdTime());
 	}
 
@@ -77,9 +81,13 @@ public final class MapElement extends AbstractEditableElement implements
 
 	@Override
 	public void save() throws UnsupportedOperationException {
-            jAXBObject = mapContext.getJAXBObject();
-            modified = false;
-            fireSave();
+                try {
+                        mapContext.write(new FileOutputStream(mapContextFile));
+                } catch (FileNotFoundException ex) {
+                        throw new UnsupportedOperationException(ex);
+                }
+                modified = false;
+                fireSave();
 	}
 
 	@Override
@@ -90,6 +98,7 @@ public final class MapElement extends AbstractEditableElement implements
                 try {
                     mapContext.open(progressMonitor);
                     mapContext.addMapContextListener(updateListener);
+                    mapContext.addPropertyChangeListener(mapContextPropertyUpdateListener);
                     mapContext.getLayerModel().addLayerListenerRecursively(layerUpdateListener);
                 } catch (LayerException ex) {
                     LOGGER.error(ex);
@@ -103,6 +112,7 @@ public final class MapElement extends AbstractEditableElement implements
 			throws UnsupportedOperationException {
 		mapContext.close(progressMonitor);
                 mapContext.removeMapContextListener(updateListener);
+                mapContext.removePropertyChangeListener(mapContextPropertyUpdateListener);
                 mapContext.getLayerModel().removeLayerListenerRecursively(layerUpdateListener);
                 
 	}
@@ -126,22 +136,6 @@ public final class MapElement extends AbstractEditableElement implements
 		return getId();
 	}
 
-	@Override
-	public void extentChanged(Envelope oldExtent, MapTransform mapTransform) {		
-		if(oldExtent!=null) {
-                        if(!mapTransform.getExtent().equals(oldExtent)){		
-				//Extent update change the Map content
-                                LOGGER.debug("Map move !"+mapTransform.getExtent());
-				modified = true;
-			}
-		}
-	}
-
-	@Override
-	public void imageSizeChanged(int oldWidth, int oldHeight,
-			MapTransform mapTransform) {		
-	}
-        
         /**
          * Set the editable map as modified when the layer model change
          */

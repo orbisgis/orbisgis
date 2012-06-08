@@ -39,6 +39,8 @@ package org.orbisgis.core.layerModel;
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -46,9 +48,9 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
+import javax.xml.bind.*;
 import net.opengis.ows._2.BoundingBoxType;
 import net.opengis.ows_context.*;
-import net.opengis.sld._2.LayerDescriptionType;
 import org.apache.log4j.Logger;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
@@ -71,6 +73,8 @@ import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+
 /**
  * Class that contains the status of the map view.
  * 
@@ -392,25 +396,49 @@ public final class OwsMapContext extends BeanMapContext {
             }
             return mapContextSerialisation;
         }
-	@Override
-	public Object getJAXBObject() {
+
+        private JAXBContext createJAXBContext() throws JAXBException {
+                return JAXBContext.newInstance("net.opengis.ows_context:net.opengis.wms._2");
+        }
+        public void read(InputStream in) throws IllegalArgumentException {
+                try {
+                        JAXBContext jcontext = createJAXBContext();
+                        Unmarshaller unMarsh = jcontext.createUnmarshaller();
+                        JAXBElement<OWSContextType> importedOwsContextType = (JAXBElement<OWSContextType>)unMarsh.unmarshal(in);
+                        setJAXBObject(importedOwsContextType.getValue());
+                } catch (JAXBException ex) {
+                        throw new IllegalArgumentException(I18N.tr("Unable to read the provided map context"),ex);
+                }
+        }
+
+        public void write(OutputStream out) {
+                ObjectFactory owsFactory = new ObjectFactory();
+                try {
+                        JAXBElement<OWSContextType> exportedOwsContextType = owsFactory.createOWSContext(getJAXBObject());
+                        JAXBContext jcontext = createJAXBContext();
+                        Marshaller marshaller = jcontext.createMarshaller();
+                        marshaller.setProperty("jaxb.formatted.output", Boolean.TRUE);
+                        marshaller.marshal(exportedOwsContextType, out);
+                } catch (JAXBException ex) {
+                        throw new IllegalArgumentException(I18N.tr("Error raised while exporting the map context"),ex);
+                }
+        }
+        
+        
+	private OWSContextType getJAXBObject() {
 		if(jaxbMapContext==null) {
                     return createJaxbMapContext();
                 }
                 return jaxbMapContext;		
 	}
 
-	@Override
-	public void setJAXBObject(Object jaxbObject) {
+	private void setJAXBObject(OWSContextType jaxbObject) {
 		if (isOpen()) {
 			throw new IllegalStateException(
 					I18N.tr("The map must be closed to invoke this method")); //$NON-NLS-1$
 		}
-                if(jaxbObject instanceof OWSContextType) {
-                    this.jaxbMapContext = (OWSContextType) jaxbObject;
-                } else {
-                    LOGGER.error("The jaxb object must be an instance of OWSContextType");
-                }
+                this.jaxbMapContext = (OWSContextType) jaxbObject;
+
 	}
 
 	@Override
@@ -527,7 +555,9 @@ public final class OwsMapContext extends BeanMapContext {
                         setBoundingBox(new Envelope(lowerCorner.get(0),upperCorner.get(0),lowerCorner.get(1),upperCorner.get(1)));
                     }
                 }
-                //Load layers
+                //Collect DataSource URI already loaded
+
+                //Load layers and DataSource
                 //Root layer correspond to ResourceList
                 setRootLayer(createLayerCollection("root"));
                 for(LayerType lt : jaxbMapContext.getResourceList().getLayer()) {

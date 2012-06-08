@@ -128,6 +128,7 @@ public class OrbisGISView {
      * Link DefaultDockable parameters with OrbisGis parameters
      */
     private void setPropertyListeners() {
+            
         //Link title text change
         dockableParameters.addPropertyChangeListener(
                             DockingPanelParameters.PROP_TITLE,

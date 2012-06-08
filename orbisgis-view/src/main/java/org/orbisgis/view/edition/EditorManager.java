@@ -28,14 +28,78 @@
  */ 
 package org.orbisgis.view.edition;
 
+import java.util.ArrayList;
+import java.util.List;
+import org.orbisgis.view.docking.DockingManager;
+import org.orbisgis.view.docking.DockingPanel;
+import org.orbisgis.view.docking.DockingPanelLayout;
+import org.orbisgis.view.docking.internals.OrbisGISView;
+
 /**
  * The editor Manager is responsible of all EditorFactories.
  * It can 
- *  -for an editableElement, find and open the appropriate editor through declared EditorFactories
+ *  -for an editableElement, find and open the appropriate editor(s) through declared EditorFactories
  *  -save the state of all EditableElement opened;
  */
 
 
 public class EditorManager {
+    private List<EditorFactory> factories = new ArrayList<EditorFactory>();
+    private DockingManager dockingManager;
+
+        public EditorManager(DockingManager dockingManager) {
+                this.dockingManager = dockingManager;
+        }
     
+    
+        /**
+        * Add a new editor factory, if the factory is a SingleEditorFactory then
+        * the panels are immediately shown
+        * @param editorFactory 
+        */
+        public void addEditorFactory(EditorFactory editorFactory) {
+                factories.add(editorFactory);
+                if(editorFactory instanceof MultipleEditorFactory) {
+                        dockingManager.registerPanelFactory(editorFactory.getId(), new EditorPanelFactoryDecorator((MultipleEditorFactory)editorFactory));
+                } else {
+                        for(EditorDockable dockPanel : ((SingleEditorFactory)editorFactory).getSinglePanels()) {
+                                dockingManager.show(dockPanel);
+                        }
+                }
+        }
+
+        /**
+        * Open this editable with all compatible factories.
+        * @param editableElement 
+        */
+        public void openEditable(EditableElement editableElement) {
+                
+                // Open the element in editors
+                for( DockingPanel panel : dockingManager.getPanels()) {
+                        if(panel instanceof EditorDockable) {
+                                EditorDockable editor = (EditorDockable)panel;
+                                editor.setEditableElement(editableElement);
+                        }
+                }
+                
+                //Open the element in MultipleEditorFactories
+                for( EditorFactory factory : factories) {
+                        if(factory instanceof MultipleEditorFactory) {
+                                MultipleEditorFactory mFactory = (MultipleEditorFactory)factory;
+                                DockingPanelLayout data = mFactory.makeEditableLayout(editableElement);
+                                if(data!=null) {
+                                        
+                                }
+                        }
+                }
+        }
+
+        /**
+        * Release all factories resources
+        */
+        public void dispose() {
+                for(EditorFactory factory : factories) {
+                        factory.dispose();
+                }
+        }
 }

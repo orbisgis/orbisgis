@@ -40,6 +40,8 @@ package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.beans.PropertyChangeListener;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
@@ -199,23 +201,19 @@ public interface MapContext {
 	public void setSelectedLayers(ILayer[] selectedLayers)
 			throws IllegalStateException;
 
-	/**
-	 * Returns a JAXB object containing all the persistent information of this
-	 * MapContext
-	 * 
-	 * @return
-	 */
-	Object getJAXBObject();
-
-	/**
-	 * Populates the content of this MapContext with the information stored in
-	 * the specified JAXB Object. The map must be closed.
-	 * 
-	 * @param jaxbObject
-	 * @throws IllegalStateException
-	 *             If the map is open
-	 */
-	void setJAXBObject(Object jaxbObject) throws IllegalStateException;
+        /**
+         * (re)-Initialise this map context with the provided data stream
+         * @param in 
+         * @throws IllegalArgumentException If the provided stream
+         * doesn't comply with this context serialisation
+         */
+        public void read(InputStream in) throws IllegalArgumentException;
+        
+        /**
+         * Serialisation of this map context into an output stream
+         * @param out 
+         */
+        public void write(OutputStream out);
 
 	/**
 	 * Opens all the layers in the map. All layers added to an open map are

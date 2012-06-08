@@ -40,8 +40,7 @@ package org.orbisgis.core;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.GraphicsEnvironment;
-import java.io.File;
-import java.io.FileOutputStream;
+import java.io.*;
 import net.opengis.ows_context.OWSContextType;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
@@ -141,6 +140,7 @@ public class MapContextTest extends AbstractTest {
 
         @Test
 	public void testSaveAndRecoverTwoNestedCollections() throws Exception {
+                //Define a MapContext
 		MapContext mc = new OwsMapContext();
 		mc.open(null);
 		ILayer layer1 = getDataManager().createLayerCollection("a");
@@ -150,10 +150,13 @@ public class MapContextTest extends AbstractTest {
 		mc.getLayerModel().addLayer(layer1);
 		layer1.addLayer(layer2);
 		layer2.addLayer(layer3);
-		Object persistence = mc.getJAXBObject();
+                ByteArrayOutputStream map = new ByteArrayOutputStream();
+		mc.write(map);
 		mc.close(null);
+                
+                //Define a new MapContext from previous MapContext serialisation
 		mc = new OwsMapContext();
-		mc.setJAXBObject(persistence);
+		mc.read(new ByteArrayInputStream(map.toByteArray()));
 		mc.open(null);
 		ILayer layer1_ = mc.getLayerModel().getLayer(0);
 		assertTrue(layer1_.getLayerCount() == 1);
@@ -233,12 +236,16 @@ public class MapContextTest extends AbstractTest {
 	}
 
         @Test
-	public void testSetJAXBOnOpenMap() throws Exception {
+	public void testWriteOnOpenMap() throws Exception {
 		MapContext mc = new OwsMapContext();
-		Object obj = mc.getJAXBObject();
+                
+                
+
+                ByteArrayOutputStream map = new ByteArrayOutputStream();
+		mc.write(map);
 		mc.open(new NullProgressMonitor());
 		try {
-			mc.setJAXBObject(obj);
+                        mc.read(new ByteArrayInputStream(map.toByteArray()));
 			assertTrue(false);
 		} catch (IllegalStateException e) {
 		}
@@ -257,18 +264,19 @@ public class MapContextTest extends AbstractTest {
 	}
 
         @Test
-	public void testGetJAXBObject() throws Exception {
+	public void testReadWriteMapContext() throws Exception {
 		MapContext mc = getSampleMapContext();
-		Object jaxbObj = mc.getJAXBObject();
+
+                ByteArrayOutputStream map = new ByteArrayOutputStream();
+		mc.write(map);
 
 		MapContext mc2 = new OwsMapContext();
-		mc2.setJAXBObject(jaxbObj);
-		jaxbObj = mc2.getJAXBObject();
+                mc2.read(new ByteArrayInputStream(map.toByteArray()));
 		mc2.open(null);
 		assertTrue(mc2.getLayerModel().getLayerCount() == 1);
 		mc2.close(null);
 
-		mc2.setJAXBObject(jaxbObj);
+                mc2.read(new ByteArrayInputStream(map.toByteArray()));
 		mc2.open(null);
 		assertTrue(mc2.getLayerModel().getLayerCount() == 1);
 		mc2.close(null);
@@ -286,10 +294,11 @@ public class MapContextTest extends AbstractTest {
         @Test
 	public void testSetJAXBOpenTwice() throws Exception {
 		MapContext mc = getSampleMapContext();
-		Object jaxbObj = mc.getJAXBObject();
+                ByteArrayOutputStream map = new ByteArrayOutputStream();
+		mc.write(map);
 
 		MapContext mc2 = new OwsMapContext();
-		mc2.setJAXBObject(jaxbObj);
+		mc2.read(new ByteArrayInputStream(map.toByteArray()));
 		mc2.open(null);
 		assertTrue(mc2.getLayerModel().getLayerCount() == 1);
 		ILayer layer = getDataManager().createLayerCollection("b");
@@ -331,13 +340,14 @@ public class MapContextTest extends AbstractTest {
 //	}
 
         @Test
-	public void testgetJAXBAfterSetModifyAndClose() throws Exception {
+	public void testWriteAfterReadModifyAndClose() throws Exception {
 		MapContext mc = getSampleMapContext();
-		Object jaxbObj = mc.getJAXBObject();
+                ByteArrayOutputStream map = new ByteArrayOutputStream();
+		mc.write(map);
 
 		MapContext mc2 = new OwsMapContext();
-		// set JAXB
-		mc2.setJAXBObject(jaxbObj);
+		// set DATA
+                mc2.read(new ByteArrayInputStream(map.toByteArray()));
 		// modify
 		mc2.open(null);
 		assertTrue(mc2.getLayerModel().getLayerCount() == 1);
@@ -346,10 +356,11 @@ public class MapContextTest extends AbstractTest {
 		assertTrue(mc2.getLayerModel().getLayerCount() == 2);
 		// close
 		mc2.close(null);
-		Object obj = mc2.getJAXBObject();
+                ByteArrayOutputStream map2 = new ByteArrayOutputStream();
+		mc2.write(map2);
 		// check obj is good
 		MapContext mc3 = new OwsMapContext();
-		mc3.setJAXBObject(obj);
+		mc3.read(new ByteArrayInputStream(map2.toByteArray()));
 		mc3.open(null);
 		assertTrue(mc3.getLayerModel().getLayerCount() == 2);
 		mc3.close(null);
@@ -368,19 +379,6 @@ public class MapContextTest extends AbstractTest {
 		assertTrue(mc.getActiveLayer() == null);
 	}
 
-        @Test
-	public void testGetJAXBAfterModify() throws Exception {
-		MapContext mc = new OwsMapContext();
-		mc.open(null);
-		mc.getJAXBObject();
-		ILayer layer = getDataManager().createLayer(
-				new File("src/test/resources/data/bv_sap.shp"));
-		mc.getLayerModel().addLayer(layer);
-		OWSContextType xmlMC = (OWSContextType) mc
-				.getJAXBObject();
-		assertTrue(xmlMC.getResourceList().getLayer().size() == 1);
-		mc.close(null);
-	}
 
         @Test
 	public void testMapOpensWithBadLayer() throws Exception {
@@ -459,7 +457,7 @@ public class MapContextTest extends AbstractTest {
 				"/tmp/output.svg"));
                 if(GraphicsEnvironment.isHeadless()) {
                         //MapTransform require the screen size for DPI
-                        //it show a warning message is there is not graphic environment
+                        //it show a warning message if there is not graphic environment
                         failErrorManager.setIgnoreWarnings(true);
                 }
 		mem.exportSVG(mc, outStream, 10, 10, new Envelope(new Coordinate(

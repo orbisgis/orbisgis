@@ -47,11 +47,35 @@ public class ViewWorkspace {
         propertySupport = new PropertyChangeSupport(this);
         this.coreWorkspace = coreWorkspace;
         SIFPath = coreWorkspace.getWorkspaceFolder() + File.separator + "sif" ;
+        mapContextPath = coreWorkspace.getWorkspaceFolder() + File.separator + "maps";
     }
-    private String dockingLayoutFile = "docking_layout.xml";
-    public static final String PROP_DOCKINGLAYOUTFILE = "dockingLayoutFile";
-    private String SIFPath = "";
-    public static final String PROP_SIFPATH = "SIFPath";
+        private String dockingLayoutFile = "docking_layout.xml";
+        public static final String PROP_DOCKINGLAYOUTFILE = "dockingLayoutFile";
+        private String SIFPath = "";
+        public static final String PROP_SIFPATH = "SIFPath";
+        private String mapContextPath;
+        public static final String PROP_MAPCONTEXTPATH = "mapContextPath";
+
+        /**
+         * Get the value of mapContextPath
+         * This folder contains all serialised Map Context shown in
+         * the Map Context library
+         * @return the value of mapContextPath
+         */
+        public String getMapContextPath() {
+                return mapContextPath;
+        }
+
+        /**
+         * Set the value of mapContextPath
+         *
+         * @param mapContextPath new value of mapContextPath
+         */
+        public void setMapContextPath(String mapContextPath) {
+                String oldMapContextPath = this.mapContextPath;
+                this.mapContextPath = mapContextPath;
+                propertySupport.firePropertyChange(PROP_MAPCONTEXTPATH, oldMapContextPath, mapContextPath);
+        }
 
     /**
      * Get the value of SIFPath

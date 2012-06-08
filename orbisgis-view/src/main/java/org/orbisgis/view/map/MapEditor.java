@@ -52,6 +52,7 @@ import org.orbisgis.view.components.button.DropDownButton;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.Automaton;
@@ -63,13 +64,14 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * @brief The Map Editor Panel
  */
-public class MapEditor extends JPanel implements DockingPanel, TransformListener   {
+public class MapEditor extends JPanel implements EditorDockable, TransformListener   {
     protected final static I18n I18N = I18nFactory.getI18n(MapEditor.class);
     private static final Logger GUILOGGER = Logger.getLogger("gui."+MapEditor.class);
     //The UID must be incremented when the serialization is not compatible with the new version of this class
     private static final long serialVersionUID = 1L; 
     private MapControl mapControl = new MapControl();
     private MapContext mapContext = null;
+    private MapElement mapEditable;
     private DockingPanelParameters dockingPanelParameters;
     private MapTransferHandler dragDropHandler;
     
@@ -126,17 +128,12 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
      * @param element 
      */
     public final void loadMap(MapElement element) {
-        try {            
+        try {         
+            mapEditable = element;
             mapContext = (MapContext) element.getObject();
-            if(!mapContext.isOpen()) {
-                mapContext.open(new NullProgressMonitor());
-            }
             mapControl.setMapContext(mapContext);
-            mapControl.setElement(element);
             mapControl.getMapTransform().setExtent(mapContext.getBoundingBox());
             mapControl.initMapControl();
-        } catch (LayerException ex) {            
-            GUILOGGER.error(ex);
         } catch (IllegalStateException ex) {
             GUILOGGER.error(ex);
         } catch (TransitionException ex) {
@@ -271,6 +268,20 @@ public class MapEditor extends JPanel implements DockingPanel, TransformListener
     public void imageSizeChanged(int oldWidth, int oldHeight, MapTransform mapTransform) {
         //do nothing
     }
+
+        public boolean match(EditableElement editableElement) {
+                return editableElement instanceof MapElement;
+        }
+
+        public EditableElement getEditableElement() {
+                return mapEditable;
+        }
+
+        public void setEditableElement(EditableElement editableElement) {
+                if(editableElement instanceof MapElement) {
+                        loadMap((MapElement)editableElement);
+                }
+        }
     
     /**
      * Internal Listener that store an automaton

@@ -52,7 +52,6 @@ import java.util.ArrayList;
 import javax.media.jai.ImageLayout;
 import javax.media.jai.JAI;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;

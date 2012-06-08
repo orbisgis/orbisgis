@@ -54,9 +54,9 @@ import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.EditableTransferEvent;
@@ -68,7 +68,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @brief The Toc Panel component
  */
 
-public class Toc extends JPanel implements DockingPanel  {
+public class Toc extends JPanel implements EditorDockable  {
     //The UID must be incremented when the serialization is not compatible with the new version of this class
     private static final long serialVersionUID = 1L; 
     protected final static I18n I18N = I18nFactory.getI18n(Toc.class);
@@ -305,7 +305,23 @@ public class Toc extends JPanel implements DockingPanel  {
                 return mapContext;
         }
 
+        /**
+         * Load the specified MapElement in the toc
+         * @param newMapElement 
+         */
         public void setEditableMap(MapElement newMapElement) {
+                if (newMapElement != null) {
+                        MapContext importedMap = ((MapContext) newMapElement.getObject());
+                        if(!importedMap.isOpen()) {
+                                try {
+                                        importedMap.open(null);
+                                } catch (LayerException ex) {
+                                        throw new IllegalArgumentException(ex);
+                                } catch (IllegalStateException ex) {
+                                        throw new IllegalArgumentException(ex);
+                                }
+                        }                        
+                }
 
 		// Remove the listeners
 		if (this.mapContext != null) {
@@ -316,6 +332,7 @@ public class Toc extends JPanel implements DockingPanel  {
                 
 		if (newMapElement != null) {
 			this.mapContext = ((MapContext) newMapElement.getObject());
+
 			this.mapElement = newMapElement;
 			// Add the listeners to the new MapContext
 			this.mapContext.addMapContextListener(tocMapContextListener);
@@ -378,6 +395,21 @@ public class Toc extends JPanel implements DockingPanel  {
                 }
         }    
     }
+
+        public boolean match(EditableElement editableElement) {
+                return editableElement instanceof MapElement;
+        }
+
+        public EditableElement getEditableElement() {
+                return mapElement;
+        }
+
+        public void setEditableElement(EditableElement editableElement) {
+                if(editableElement instanceof MapElement) {
+                        MapElement importedMap = (MapElement) editableElement;
+                        setEditableMap(importedMap);
+                }
+        }
     
     
 	private class TocLayerListener implements LayerListener, EditionListener,

@@ -46,9 +46,7 @@ import bibliothek.util.PathCombiner;
 import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import org.apache.log4j.Logger;
@@ -161,6 +159,14 @@ public final class DockingManager {
             return commonControl.getSingleDockable(views.get(panel));
         }
         
+        /**
+         * Get the current opened panels
+         * @return 
+         */
+        public List<DockingPanel> getPanels() {
+                return new ArrayList<DockingPanel>(views.keySet());
+        }
+        
 	/**
 	 * Creates the new manager
 	 * @param owner the window used as parent for all dialogs
@@ -203,6 +209,13 @@ public final class DockingManager {
             loadLayout();
         }
 
+        /**
+         * Create a new dockable corresponding to this layout
+         * @param panelLayout 
+         */
+        public void show( String factoryId, DockingPanelLayout panelLayout) {
+                //commonControl.addDockable(commonControl.getMultipleDockableFactory(factoryId).read(panelLayout));
+        }
 	/**
 	 * Shows a view at the given location as child
          * This view can only be hidden by the user, and is not adapted to multiple instance editors

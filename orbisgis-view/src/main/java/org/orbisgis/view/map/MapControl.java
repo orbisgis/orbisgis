@@ -152,7 +152,9 @@ public class MapControl extends JComponent implements ContainerListener {
                 //Component event invalidate the picture
                 this.addComponentListener(EventHandler.create(ComponentListener.class, this,"invalidateImage"));
 		// Add editable element listen transform event
-                mapTransform.addTransformListener(element);
+                if(element!=null) {
+                        mapTransform.addTransformListener(element);
+                }
 
                 refreshLayerListener = new RefreshLayerListener();
 

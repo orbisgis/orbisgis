@@ -30,9 +30,17 @@ package org.orbisgis.view.edition;
 
 /**
  * The editor factory provides an adapted Editor for an EditableElement
+ * @warning Do not use directly this interface, use single or multiple editor factory
  */
 
-
 public interface EditorFactory {
-    boolean match();
+ 
+    /**
+     * @return The ID of the factory
+     */
+    String getId();
+    /**
+     * Release all resources related to this factory
+     */
+    void dispose();
 }

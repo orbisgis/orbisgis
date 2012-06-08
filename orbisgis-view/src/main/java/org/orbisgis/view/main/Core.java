@@ -32,23 +32,30 @@ import java.awt.Rectangle;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.logging.Level;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.OwsMapContext;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.JobQueue;
 import org.orbisgis.view.docking.DockingManager;
+import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditor;
+import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.output.OutputManager;
-import org.orbisgis.view.toc.Toc;
+import org.orbisgis.view.toc.TocEditorFactory;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -62,13 +69,12 @@ public class Core {
     private static final Logger LOGGER = Logger.getLogger(Core.class);
     /////////////////////
     //view package
+    private EditorManager editors;         /*!< Management of editors */
     private MainFrame mainFrame = null;     /*!< The main window */
     private Catalog geoCatalog= null;      /*!< The GeoCatalog frame */
-    private Toc toc=null;                  /*!< The map layer list frame */
-    private MapEditor mapEditor=null;      /*!< The map editor-viewer frame */
     private ViewWorkspace viewWorkspace;
     private OutputManager loggerCollection;    /*!< Loggings panels */     
-            
+    private BackgroundManager backgroundManager;
             
     private static final Rectangle MAIN_VIEW_POSITION_AND_SIZE = new Rectangle(20,20,800,600);/*!< Bounds of mainView, x,y and width height*/
     private DockingManager dockManager = null; /*!< The DockStation manager */
@@ -136,22 +142,6 @@ public class Core {
                 "windowClosing"));    //The listener method to use
         UIFactory.setMainFrame(mainFrame);
     }
-    /**
-     * Make the toc and map frames, place them in the main window
-     */
-    private void makeTocAndMap() {
-        toc = new Toc();
-        mapEditor = new MapEditor();
-        //Add the views as a new Docking Panel
-        dockManager.show(mapEditor);
-        dockManager.show(toc);
-        
-        //Set the same MapEditable element
-        MapElement defaultMap = new MapElement(new OwsMapContext());
-        defaultMap.open(new NullProgressMonitor());
-        toc.setEditableMap(defaultMap);
-        mapEditor.loadMap(defaultMap);
-    }
     
     /**
      * Create the logging panels
@@ -172,14 +162,21 @@ public class Core {
         dockManager.show(geoCatalog);
     }
     /**
-     * Init the BackGroundManager Service
+     * Load the built-ins editors factories
+     */
+    private void loadEditorFactories() {
+            editors.addEditorFactory(new TocEditorFactory());
+            editors.addEditorFactory(new MapEditorFactory());
+    }
+    /**
+     * Initialisation of the BackGroundManager Service
      */
     private void initSwingJobs() {   
-        
+        backgroundManager = new JobQueue();
         Services.registerService(
                 BackgroundManager.class,
                 I18N.tr("Execute tasks in background processes, showing progress bars. Gives access to the job queue"),
-                new JobQueue());
+               backgroundManager);
     }
     /**
      * The user want to close the main window
@@ -210,11 +207,16 @@ public class Core {
         //Load the log panels
         makeLoggingPanels();
         
+        //Load the editor factories manager
+        editors = new EditorManager(dockManager);
+        
         //Load the GeoCatalog
         makeGeoCatalogPanel();
         
         //Load the Map And view panels
-        makeTocAndMap();
+        //makeTocAndMap();
+        //Load Built-ins Editors
+        loadEditorFactories();
         
         //Debug create serialisation of panels
         
@@ -224,6 +226,9 @@ public class Core {
         // Show the application when Swing will be ready
         SwingUtilities.invokeLater( new ShowSwingApplication());
     }
+    
+    private void loadMapContext() {       
+    }
     /**
      * Change the state of the main frame in the swing thread
      */
@@ -232,7 +237,8 @@ public class Core {
         * Change the state of the main frame in the swing thread
         */
         public void run(){
-                mainFrame.setVisible( true );
+                mainFrame.setVisible( true );                
+                backgroundManager.backgroundOperation(new ReadMapContextProcess());
         }
     }
     /**
@@ -255,6 +261,7 @@ public class Core {
         //Remove all listeners created by this object
 
         //Free UI resources
+        editors.dispose();
         geoCatalog.dispose();
         mainFrame.dispose();
         dockManager.dispose();
@@ -286,5 +293,33 @@ public class Core {
             //} );
         }        
     }
-    
+    private class ReadMapContextProcess implements BackgroundJob {
+
+                public void run(ProgressMonitor pm) {                        
+                        //Create an empty map context
+                        MapContext mapContext = new OwsMapContext();
+
+                        //Load the map context
+                        File mapContextFolder = new File(viewWorkspace.getMapContextPath());
+                        if(!mapContextFolder.exists()) {
+                                mapContextFolder.mkdir();
+                        }
+                        File mapContextFile = new File(viewWorkspace.getMapContextPath()+File.separator+"mapcontext");
+                        if(mapContextFile.exists()) {
+                                try {
+                                        mapContext.read(new FileInputStream(mapContextFile));
+                                } catch (FileNotFoundException ex) {
+                                        LOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."));
+                                }
+                        }
+                        MapElement editableMap = new MapElement(mapContext,mapContextFile);
+                        editableMap.open(null);
+                        editors.openEditable(editableMap); 
+                }
+
+                public String getTaskName() {
+                        return I18N.tr("Open the map context");
+                }
+            
+    }
 }
