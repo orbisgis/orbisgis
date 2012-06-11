@@ -45,7 +45,6 @@
 package org.gdms.sql.function.spatial.convert;
 
 import org.gdms.driver.DataSet;
-import org.gdms.driver.DriverException;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.data.types.Dimension3DConstraint;
 import org.junit.Test;

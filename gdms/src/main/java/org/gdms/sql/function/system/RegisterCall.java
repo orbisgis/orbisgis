@@ -54,7 +54,6 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
-import org.gdms.data.file.FileSourceCreation;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;

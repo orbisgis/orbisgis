@@ -200,8 +200,11 @@ import org.gdms.sql.function.spatial.raster.hydrology.ST_WetnessIndex;
 import org.gdms.sql.function.spatial.raster.interpolation.ST_Interpolate;
 import org.gdms.sql.function.spatial.raster.morphology.ST_Shadow;
 import org.gdms.sql.function.spatial.raster.properties.ST_Count;
+import org.gdms.sql.function.spatial.raster.properties.ST_PixelValue;
+import org.gdms.sql.function.spatial.tin.ST_TriangleContouring;
 import org.gdms.sql.function.system.ExportCall;
 import org.gdms.sql.function.system.FunctionHelp;
+import org.gdms.sql.function.system.ImportCall;
 import org.gdms.sql.function.system.RegisterCall;
 
 /**
@@ -367,6 +370,9 @@ public final class FunctionManager {
                 addFunction(ST_FurthestPoint.class);
                 addFunction(ST_3DLength.class);
                 addFunction(ST_Expand.class);
+                addFunction(ST_TriangleContouring.class);
+                addFunction(ImportCall.class);
+                addFunction(ST_PixelValue.class);
         }
 
         /**
