@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.orbisgis.core.ui.editorViews.toc.wrapper;
+package org.orbisgis.view.toc.wrapper;
 
 import java.util.Collections;
 import java.util.LinkedList;

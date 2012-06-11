@@ -8,8 +8,8 @@ import javax.swing.JTree;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.tree.TreePath;
 import org.orbisgis.view.components.resourceTree.AbstractTreeModel;
-import org.orbisgis.core.ui.editorViews.toc.wrapper.RuleWrapper;
-import org.orbisgis.core.ui.editorViews.toc.wrapper.StyleWrapper;
+import org.orbisgis.view.toc.wrapper.RuleWrapper;
+import org.orbisgis.view.toc.wrapper.StyleWrapper;
 
 /**
  * This tree model is used in the legend edition panel. Its depth is only 2 :
