@@ -82,6 +82,11 @@
                         <artifactId>antlr</artifactId>
                         <version>3.4</version>
                 </dependency>
+                <dependency>
+                        <groupId>org.jdelaunay</groupId>
+                        <artifactId>jdelaunay</artifactId>
+                        <version>0.5</version>
+                </dependency>
         </dependencies>
         <build>
                 <plugins>
