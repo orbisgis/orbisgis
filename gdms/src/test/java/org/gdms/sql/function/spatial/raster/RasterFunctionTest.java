@@ -44,7 +44,7 @@
  */
 package org.gdms.sql.function.spatial.raster;
 
-import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
@@ -53,6 +53,7 @@ import org.gdms.driver.DataSet;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.spatial.raster.convert.ST_RasterToPolygons;
+import org.gdms.sql.function.spatial.raster.properties.ST_PixelValue;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
@@ -66,7 +67,6 @@ import static org.junit.Assert.*;
  */
 public class RasterFunctionTest extends FunctionTest {
 
-        
         @Test
         public void testRasterToPolygons() throws Exception {
 
@@ -83,12 +83,37 @@ public class RasterFunctionTest extends FunctionTest {
                 DataSet[] tables = new DataSet[]{mdsd};
 
                 ST_RasterToPolygons sT_RasterToPolygons = new ST_RasterToPolygons();
-                DataSet result = sT_RasterToPolygons.evaluate(dsf, tables, new Value[]{ValueFactory.createValue("raster")}, new NullProgressMonitor());                
-                
-                assertTrue(result.getRowCount()==2);
-                
-                assertTrue(result.getGeometry(0, 1).equals(wktReader.read("POLYGON ((0.5 3.5, 1.5 3.5, 1.5 2.5, 0.5 2.5, 0.5 3.5))")));
-                assertTrue(result.getGeometry(1, 1).equals(wktReader.read("POLYGON ((0.5 2.5, 2.5 2.5, 2.5 1.5, 0.5 1.5, 0.5 2.5))")));                  
+                DataSet result = sT_RasterToPolygons.evaluate(dsf, tables, new Value[]{ValueFactory.createValue("raster")}, new NullProgressMonitor());
 
+                assertTrue(result.getRowCount() == 2);
+
+                assertTrue(result.getGeometry(0, 1).equals(wktReader.read("POLYGON ((0.5 3.5, 1.5 3.5, 1.5 2.5, 0.5 2.5, 0.5 3.5))")));
+                assertTrue(result.getGeometry(1, 1).equals(wktReader.read("POLYGON ((0.5 2.5, 2.5 2.5, 2.5 1.5, 0.5 1.5, 0.5 2.5))")));
+
+        }
+
+        @Test
+        public void testST_PixelValue() throws Exception {
+                float[] pixels = new float[]{1, 1, 0, -9999};
+                RasterMetadata rasterMetadata = new RasterMetadata(1, 2, 1, 1, 2, 2, -9999);
+                GeoRaster georaster = GeoRasterFactory.createGeoRaster(pixels, rasterMetadata);
+                Geometry point = wktReader.read("POINT(1 2)");
+
+                ST_PixelValue sT_PixelValue = new ST_PixelValue();
+                Value result = sT_PixelValue.evaluate(dsf, new Value[]{ValueFactory.createValue(georaster), ValueFactory.createValue(point)});
+
+                assertTrue((result.getAsFloat() - 1) < 10E6);
+        }
+        
+        @Test
+        public void testST_PixelValue2() throws Exception {
+                float[] pixels = new float[]{1, 1, 0, -9999};
+                RasterMetadata rasterMetadata = new RasterMetadata(1, 2, 1, 1, 2, 2, -9999);
+                GeoRaster georaster = GeoRasterFactory.createGeoRaster(pixels, rasterMetadata);
+                Geometry point = wktReader.read("POINT(1 2)");
+                ST_PixelValue sT_PixelValue = new ST_PixelValue();
+                Value result = sT_PixelValue.evaluate(dsf, new Value[]{ValueFactory.createValue(georaster), ValueFactory.createValue(1), ValueFactory.createValue(point)});
+
+                assertTrue((result.getAsFloat() - 1) < 10E6);
         }
 }
