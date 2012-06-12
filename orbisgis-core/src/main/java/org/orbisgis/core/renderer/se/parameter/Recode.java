@@ -297,9 +297,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
             Map.Entry<String, ToType> m = it.next();
             MapItemType mt = new MapItemType();
             mt.setValue(m.getValue().getJAXBParameterValueType());
-            LiteralType lt = off.createLiteralType();
-            lt.getContent().add(m.getKey());
-            mt.setKey(lt);
+            mt.setKey(m.getKey());
             mi.add(mt);
         }
         ObjectFactory of = new ObjectFactory();

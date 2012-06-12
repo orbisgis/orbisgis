@@ -450,17 +450,17 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         }
         ObjectFactory of = new ObjectFactory();
 
-        List<Object> tv = c.getThresholdAndValue();
+        List<JAXBElement<ParameterValueType>> tv = c.getThresholdAndValue();
 
         if (firstClass != null) {
-            tv.add(firstClass.getJAXBParameterValueType());
+            tv.add(of.createValue(firstClass.getJAXBParameterValueType()));
         }
         Iterator<RealLiteral> tIt = thresholds.iterator();
         Iterator<ToType> cIt = classValues.iterator();
 
         while (tIt.hasNext()) {
-            tv.add(tIt.next().getJAXBLiteralType());
-            tv.add(cIt.next().getJAXBParameterValueType());
+            tv.add(of.createThreshold(tIt.next().getJAXBParameterValueType()));
+            tv.add(of.createValue(cIt.next().getJAXBParameterValueType()));
         }
 
 

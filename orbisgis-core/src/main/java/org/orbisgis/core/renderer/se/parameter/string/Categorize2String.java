@@ -89,14 +89,14 @@ public final class Categorize2String extends Categorize<StringParameter, StringL
         this.setLookupValue(SeParameterFactory.createRealParameter(t.getLookupValue()));
 
 
-        Iterator<Object> it = t.getThresholdAndValue().iterator();
+        Iterator<JAXBElement<ParameterValueType>> it = t.getThresholdAndValue().iterator();
 
-        this.setClassValue(0, SeParameterFactory.createStringParameter((ParameterValueType)it.next()));
+        this.setClassValue(0, SeParameterFactory.createStringParameter(it.next().getValue()));
 
         // Fetch class values and thresholds
         while (it.hasNext()) {
-            RealLiteral th = new RealLiteral((LiteralType)(it.next()));
-            StringParameter vl = SeParameterFactory.createStringParameter((ParameterValueType)it.next());
+            RealLiteral th = (RealLiteral) SeParameterFactory.createRealParameter(it.next());
+            StringParameter vl = SeParameterFactory.createStringParameter(it.next().getValue());
             this.addClass(th,vl);
         }
 

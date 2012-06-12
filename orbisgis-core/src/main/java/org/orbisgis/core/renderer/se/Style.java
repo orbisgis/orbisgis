@@ -48,9 +48,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.*;
 import javax.xml.bind.util.ValidationEventCollector;
+
+import net.opengis.se._2_0.core.AbstractStyleType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.RuleType;
 import net.opengis.se._2_0.core.StyleType;
+import net.opengis.se._2_0.core.VersionType;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -214,7 +217,7 @@ public final class Style implements SymbolizerNode {
             ftst.setName(this.name);
         }
 
-        ftst.setVersion("2.0.0"); // TODO 
+        ftst.setVersion(VersionType.VALUE_1); // TODO 
 
         List<RuleType> ruleTypes = ftst.getRule();
         for (Rule r : rules) {

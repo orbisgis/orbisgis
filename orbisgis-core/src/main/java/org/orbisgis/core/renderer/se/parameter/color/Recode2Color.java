@@ -44,7 +44,7 @@ public class Recode2Color extends Recode<ColorParameter, ColorLiteral> implement
                 this.setLookupValue(SeParameterFactory.createStringParameter(t.getLookupValue()));
 
                 for (MapItemType mi : t.getMapItem()) {
-                        this.addMapItem(mi.getKey().getContent().get(0).toString(),
+                        this.addMapItem(mi.getKey(),
                                 SeParameterFactory.createColorParameter(mi.getValue()));
                 }
         }

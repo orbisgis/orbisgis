@@ -199,7 +199,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         // TODO Load description from XML
         s.setDescription(null);
         s.setName(name);
-        s.setVersion(Symbolizer.VERSION);
+        s.setVersion(VersionType.VALUE_1);
 
         ExtensionType exts = of.createExtensionType();
         ExtensionParameterType param = of.createExtensionParameterType();

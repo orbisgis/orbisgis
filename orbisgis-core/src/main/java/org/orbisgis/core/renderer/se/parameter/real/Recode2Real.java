@@ -81,7 +81,7 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
                 this.setLookupValue(SeParameterFactory.createStringParameter(expr.getLookupValue()));
 
                 for (MapItemType mi : expr.getMapItem()) {
-                        this.addMapItem(mi.getKey().getContent().get(0).toString(),
+                        this.addMapItem(mi.getKey(),
                                 SeParameterFactory.createRealParameter(mi.getValue()));
                 }
         }

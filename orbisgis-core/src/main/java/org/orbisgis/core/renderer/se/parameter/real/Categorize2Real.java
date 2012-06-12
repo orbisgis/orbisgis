@@ -1,6 +1,8 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.util.Iterator;
+
+import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
 import net.opengis.se._2_0.core.CategorizeType;
 import net.opengis.se._2_0.core.ParameterValueType;
@@ -47,14 +49,14 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
                 this.setLookupValue(SeParameterFactory.createRealParameter(expr.getLookupValue()));
 
 
-                Iterator<Object> it = expr.getThresholdAndValue().iterator();
+                Iterator<JAXBElement<ParameterValueType>> it = expr.getThresholdAndValue().iterator();
 
-                this.setClassValue(0, SeParameterFactory.createRealParameter((ParameterValueType)it.next()));
+                this.setClassValue(0, SeParameterFactory.createRealParameter(it.next().getValue()));
 
                 // Fetch class values and thresholds
                 while (it.hasNext()) {
-                        RealLiteral th = new RealLiteral((LiteralType)(it.next()));
-                        RealParameter vl = SeParameterFactory.createRealParameter((ParameterValueType)it.next());
+                        RealLiteral th = (RealLiteral) SeParameterFactory.createRealParameter(it.next());
+                        RealParameter vl = SeParameterFactory.createRealParameter(it.next().getValue());
                         this.addClass(th,vl);
                 }
 

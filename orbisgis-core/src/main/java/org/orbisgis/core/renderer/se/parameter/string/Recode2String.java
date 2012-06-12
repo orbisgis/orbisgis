@@ -50,7 +50,7 @@ public final class Recode2String extends Recode<StringParameter, StringLiteral> 
                 this.setLookupValue(SeParameterFactory.createStringParameter(t.getLookupValue()));
 
                 for (MapItemType mi : t.getMapItem()) {
-                        this.addMapItem(mi.getKey().getContent().get(0).toString(),
+                        this.addMapItem(mi.getKey(),
                                 SeParameterFactory.createStringParameter(mi.getValue()));
                 }
         }
