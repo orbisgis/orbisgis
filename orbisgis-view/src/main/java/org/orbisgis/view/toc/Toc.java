@@ -40,18 +40,26 @@ import javax.swing.*;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import javax.xml.bind.JAXBElement;
+import net.opengis.se._2_0.core.StyleType;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceListener;
 import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
+import org.gdms.data.types.Type;
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.layerModel.*;
+import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.classification.ClassificationMethodException;
+import org.orbisgis.core.renderer.se.SeExceptions;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.docking.DockingPanelParameters;
@@ -60,7 +68,12 @@ import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.EditableTransferEvent;
+import org.orbisgis.view.map.MapEditor;
 import org.orbisgis.view.map.MapElement;
+import org.orbisgis.view.toc.actions.cui.LegendsPanel;
+import org.orbisgis.view.toc.actions.cui.legend.EPLegendHelper;
+import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.view.toc.actions.cui.legend.ISymbolEditor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -118,8 +131,6 @@ public class Toc extends JPanel implements EditorDockable  {
         for (int i = 0; i < selectedPaths.length; i++) {
                 selectedPaths[i] = new TreePath(selected[i].getLayerPath());
         }
-
-        
         fireSelectionEvent.set(false);
         try {
             tree.setSelectionPaths(selectedPaths);
@@ -297,6 +308,7 @@ public class Toc extends JPanel implements EditorDockable  {
 				jTree);
         jTree.setModel(treeModel);
     }
+    @Override
     public DockingPanelParameters getDockingParameters() {
         return dockingPanelParameters;
     }
@@ -362,6 +374,8 @@ public class Toc extends JPanel implements EditorDockable  {
                     return false;
             }
     }
+
+    @Override
     public JComponent getComponent() {
         return this;
     }
@@ -373,12 +387,20 @@ public class Toc extends JPanel implements EditorDockable  {
      */
     private JPopupMenu makePopupMenu() {
         JPopupMenu popup = new JPopupMenu();
+        Object selected = tree.getLastSelectedPathComponent();
         //Popup:delete layer
         if(tree.getSelectionCount()>0) {
             JMenuItem deleteLayer = new JMenuItem(I18N.tr("Remove layer"),OrbisGISIcon.getIcon("remove"));
             deleteLayer.setToolTipText(I18N.tr("Remove the layer from the map context"));
             deleteLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onDeleteLayer"));
             popup.add(deleteLayer);
+        }
+        //Popups : edit style, simple and advanced.
+        if(selected instanceof Style){
+            JMenuItem simpleEdtiorLayer = new JMenuItem(I18N.tr("Simple style edition"),OrbisGISIcon.getIcon("pencil"));
+            simpleEdtiorLayer.setToolTipText(I18N.tr("Open the simple editor for SE styles"));
+            simpleEdtiorLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onSimpleEditor"));
+            popup.add(simpleEdtiorLayer);
         }
         return popup;
     }
@@ -396,14 +418,52 @@ public class Toc extends JPanel implements EditorDockable  {
         }    
     }
 
+    public void onSimpleEditor(){
+        TreePath selObjs = tree.getSelectionPath();
+        if(selObjs.getLastPathComponent() instanceof Style){
+            try {
+                Style style = (Style) selObjs.getLastPathComponent();
+                Layer layer = (Layer) style.getLayer();
+                Type typ = layer.getDataSource().getMetadata().getFieldType(
+                        layer.getDataSource().getSpatialFieldIndex());
+                //In order to be able to cancel all of our modifications,
+                //we produce a copy of our style.
+                MapEditor editor = mapElement.getMapEditor();
+                MapTransform mt = editor.getMapControl().getMapTransform();
+                JAXBElement<StyleType> jest = style.getJAXBElement();
+                LegendsPanel pan = new LegendsPanel();
+                Style copy = new Style(jest, layer);
+                ILegendPanel[] legends = EPLegendHelper.getLegendPanels(pan);
+                ISymbolEditor[] symbolEditors = EPLegendHelper.getSymbolPanels();
+                pan.init(mt, typ, copy, legends, symbolEditors, layer);
+                if (UIFactory.showDialog(pan)) {
+                    try {
+                        layer.setStyle(0, pan.getStyleWrapper().getStyle());
+                    } catch (ClassificationMethodException e) {
+                        LOGGER.error(e.getMessage());
+                    }
+                }
+            } catch(SeExceptions.InvalidStyle sis){
+                //I don't know how this could happen : we are creating a style
+                //from a valid style. Should be valid too, consequently...
+                LOGGER.error("The style you're trying to edit is not valid !");
+            } catch (DriverException de){
+                LOGGER.error("An error occurred while processing the DataSource");
+            }
+        }
+    }
+
+        @Override
         public boolean match(EditableElement editableElement) {
                 return editableElement instanceof MapElement;
         }
 
+        @Override
         public EditableElement getEditableElement() {
                 return mapElement;
         }
 
+        @Override
         public void setEditableElement(EditableElement editableElement) {
                 if(editableElement instanceof MapElement) {
                         MapElement importedMap = (MapElement) editableElement;

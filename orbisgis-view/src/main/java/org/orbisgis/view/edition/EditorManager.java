@@ -59,7 +59,8 @@ public class EditorManager {
         public void addEditorFactory(EditorFactory editorFactory) {
                 factories.add(editorFactory);
                 if(editorFactory instanceof MultipleEditorFactory) {
-                        dockingManager.registerPanelFactory(editorFactory.getId(), new EditorPanelFactoryDecorator((MultipleEditorFactory)editorFactory));
+                        dockingManager.registerPanelFactory(editorFactory.getId(),
+                                new EditorPanelFactoryDecorator((MultipleEditorFactory)editorFactory));
                 } else {
                         for(EditorDockable dockPanel : ((SingleEditorFactory)editorFactory).getSinglePanels()) {
                                 dockingManager.show(dockPanel);

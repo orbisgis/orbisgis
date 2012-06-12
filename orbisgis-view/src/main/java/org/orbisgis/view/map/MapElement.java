@@ -33,16 +33,16 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.*;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.edition.AbstractEditableElement;
+import org.orbisgis.view.toc.Toc;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * MapElement is an editable document that contain a Map Context
+ * MapElement is an editable document that contains a Map Context
  * @note The source code, functionality is mainly provided by GeocognitionMapContext
  */
 public final class MapElement extends AbstractEditableElement {
@@ -52,9 +52,11 @@ public final class MapElement extends AbstractEditableElement {
         
         private Boolean modified = false;
 	private MapContext mapContext;
+        private MapEditor editor;
         private String mapId;
         private MapContextListener updateListener = EventHandler.create(MapContextListener.class, this , "setModified");
-        private PropertyChangeListener mapContextPropertyUpdateListener = EventHandler.create(PropertyChangeListener.class, this , "setModified");
+        private PropertyChangeListener mapContextPropertyUpdateListener =
+                EventHandler.create(PropertyChangeListener.class, this , "setModified");
         private LayerUpdateListener layerUpdateListener = new LayerUpdateListener();
         private File mapContextFile;
         
@@ -121,6 +123,7 @@ public final class MapElement extends AbstractEditableElement {
                 
 	}
 
+        @Override
         public String getId() {
             return mapId;
         }
@@ -139,6 +142,26 @@ public final class MapElement extends AbstractEditableElement {
 	public String toString() {
 		return getId();
 	}
+
+        /**
+         * Gets the editor linked to this {@code MapElement}. This is needed
+         * in order to be able to retrieve all the informations about the map
+         * from the {@link Toc}
+         * @return
+         */
+        public MapEditor getMapEditor(){
+                return editor;
+        }
+
+        /**
+         * Sets the editor linked to this {@code MapElement}. This is needed
+         * in order to be able to retrieve all the informations about the map
+         * from the {@link Toc}
+         * @param edit
+         */
+        public void setMapEditor(MapEditor edit){
+                editor = edit;
+        }
 
         /**
          * Set the editable map as modified when the layer model change

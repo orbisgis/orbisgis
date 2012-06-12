@@ -12,7 +12,7 @@ import org.orbisgis.view.edition.SingleEditorFactory;
 public class MapEditorFactory implements SingleEditorFactory {
         public static final String FACTORY_ID = "MapFactory";
         private static final Logger LOGGER = Logger.getLogger(MapEditorFactory.class);
-        MapEditor mapPanel = null;
+        private MapEditor mapPanel = null;
 
         public void dispose() {
                 //Save the loaded map

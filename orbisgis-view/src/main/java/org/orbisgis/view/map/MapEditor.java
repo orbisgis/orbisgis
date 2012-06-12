@@ -129,6 +129,9 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         try {         
             mapEditable = element;
             mapContext = (MapContext) element.getObject();
+            //We (unfortunately) need a cross reference here : this way, we'll
+            //be able to retrieve the MapTransform from the Toc..
+            element.setMapEditor(this);
             mapControl.setMapContext(mapContext);
             mapControl.getMapTransform().setExtent(mapContext.getBoundingBox());
             mapControl.initMapControl();
@@ -151,7 +154,10 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         autoSelection.add(addButton(toolBar,new ZoomOutTool(),useButtonText));
         autoSelection.add(addButton(toolBar,new PanTool(),useButtonText));
         //Full extent button
-        toolBar.add(addButton(OrbisGISIcon.getIcon("world"), I18N.tr("Full extent"), I18N.tr("Zoom to show all geometries"), useButtonText,"onFullExtent"));
+        toolBar.add(addButton(OrbisGISIcon.getIcon("world"),
+                I18N.tr("Full extent"),
+                I18N.tr("Zoom to show all geometries"),
+                useButtonText,"onFullExtent"));
 
         //Mesure Tools
         JPopupMenu mesureMenu = new JPopupMenu();
@@ -258,6 +264,14 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         } catch (TransitionException ex) {
             GUILOGGER.error(I18N.tr("Unable to choose this tool"),ex);
         }
+    }
+
+    /**
+     * Gets the {@link MapControl} linked to this {@code MapEditor}.
+     * @return
+     */
+    public MapControl getMapControl(){
+            return mapControl;
     }
 
     public void extentChanged(Envelope oldExtent, MapTransform mapTransform) {
