@@ -123,7 +123,7 @@ public abstract class BeanLayer extends AbstractLayer {
                                 slt.getStyle().add(st);
                                 SLDType sltType = ows_context_factory.createSLDType();
                                 st.setSLD(sltType);
-                                sltType.setStyle(style.getJAXBElement().getValue());
+                                sltType.setAbstractStyle(style.getJAXBElement());
                         }                        
                 }
                 DataSource dataSource = getDataSource();
