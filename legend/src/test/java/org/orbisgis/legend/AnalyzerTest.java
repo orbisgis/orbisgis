@@ -8,7 +8,7 @@ import java.io.FileInputStream;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
-import net.opengis.se._2_0.StyleType;
+import net.opengis.se._2_0.core.StyleType;
 import org.apache.log4j.*;
 import org.apache.log4j.varia.LevelRangeFilter;
 import org.junit.After;
