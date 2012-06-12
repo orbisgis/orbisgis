@@ -13,6 +13,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import javax.swing.*;
@@ -171,7 +172,12 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                 JLabel lblFill = new JLabel();
                 MouseListener ma = EventHandler.create(MouseListener.class,this,"chooseFillColor","","mouseClicked");
                 lblFill.addMouseListener(ma);
-                PropertyChangeListener pcl = EventHandler.create(PropertyChangeListener.class, c, "setValue", "source.background" );
+                PropertyChangeListener pcl =  new PropertyChangeListener() {
+                        @Override
+                        public void propertyChange(PropertyChangeEvent evt) {
+                                c.setValue((Color) evt.getNewValue());
+                        }
+                };
                 PropertyChangeListener pcl2 = EventHandler.create(PropertyChangeListener.class, preview, "repaint");
                 lblFill.addPropertyChangeListener("background", pcl);
                 lblFill.addPropertyChangeListener("background", pcl2);

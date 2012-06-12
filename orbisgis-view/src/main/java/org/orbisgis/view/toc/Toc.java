@@ -127,9 +127,18 @@ public class Toc extends JPanel implements EditorDockable  {
     
     private void setTocSelection(MapContext mapContext) {
         ILayer[] selected = mapContext.getSelectedLayers();
-        TreePath[] selectedPaths = new TreePath[selected.length];
-        for (int i = 0; i < selectedPaths.length; i++) {
+        Style[] styles = mapContext.getSelectedStyles();
+        TreePath[] selectedPaths = new TreePath[selected.length+styles.length];
+        for (int i = 0; i < selected.length; i++) {
                 selectedPaths[i] = new TreePath(selected[i].getLayerPath());
+        }
+        for(int i = 0; i < styles.length; i++){
+                Style s = styles[i];
+                ILayer[] lays = s.getLayer().getLayerPath();
+                Object[] objs = new Object[lays.length+1];
+                System.arraycopy(lays, 0, objs, 0, lays.length);
+                objs[objs.length-1] = s;
+                selectedPaths[i+selected.length] = new TreePath(objs);
         }
         fireSelectionEvent.set(false);
         try {
