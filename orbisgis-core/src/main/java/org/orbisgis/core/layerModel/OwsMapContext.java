@@ -396,7 +396,7 @@ public final class OwsMapContext extends BeanMapContext {
         }
 
         private JAXBContext createJAXBContext() throws JAXBException {
-                return JAXBContext.newInstance("net.opengis.ows_context:net.opengis.wms._1_4_0:net.opengis.se._2_0.core"
+                return JAXBContext.newInstance("net.opengis.ows_context:net.opengis.wms:net.opengis.se._2_0.core"
                         + ":oasis.names.tc.ciq.xsdschema.xal._2");
         }
         @Override
