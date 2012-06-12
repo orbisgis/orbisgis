@@ -43,7 +43,7 @@ public class RealAnalyzerTest extends AnalyzerTest {
         public void testInterpolate2Real() throws Exception {
                 //First we build the JAXB tree
 
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
                 Unmarshaller u = jaxbContext.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
@@ -68,7 +68,7 @@ public class RealAnalyzerTest extends AnalyzerTest {
         @Test
         public void testRealCategorize() throws Exception {
                 String xmlCat = "src/test/resources/org/orbisgis/legend/density_hatch_classif.se";
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
                 Unmarshaller u = jaxbContext.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xmlCat));
@@ -83,7 +83,7 @@ public class RealAnalyzerTest extends AnalyzerTest {
         @Test
         public void testRealRecode() throws Exception {
                 String xmlCat = "src/test/resources/org/orbisgis/legend/density_hatch_recode.se";
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
                 Unmarshaller u = jaxbContext.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xmlCat));

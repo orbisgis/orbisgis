@@ -45,7 +45,7 @@ public class ColorAnalyzerTest extends AnalyzerTest{
         @Test
         public void testColorRecode() throws Exception {
                 //We retrieve a Recode from an external file...
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
                 Unmarshaller u = jaxbContext.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xmlRecode));
@@ -61,7 +61,7 @@ public class ColorAnalyzerTest extends AnalyzerTest{
         @Test
         public void testColorCategorize() throws Exception {
                 //We retrieve a Categorize from an external file...
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
                 Unmarshaller u = jaxbContext.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xmlCategorize));

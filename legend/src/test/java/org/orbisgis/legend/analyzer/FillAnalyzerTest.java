@@ -31,7 +31,7 @@ public class FillAnalyzerTest extends AnalyzerTest {
         public void testConstantSolidFill() throws Exception{
                 //We have some xml with a constant solidfill
                 File xml = new File("src/test/resources/org/orbisgis/legend/colorCategorize.se");
-                JAXBContext context = JAXBContext.newInstance(StyleType.class);
+                JAXBContext context = JAXBContext.newInstance(JAXBCONTEXT);
                 Unmarshaller u = context.createUnmarshaller();
                 JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(xml);
                 Style style = new Style(st.getValue(), null);
@@ -48,7 +48,7 @@ public class FillAnalyzerTest extends AnalyzerTest {
                 //We have some xml with a categorized solidfill. And it's the same one
                 //that has been used in the previous test :-p
                 File xml = new File("src/test/resources/org/orbisgis/legend/colorCategorize.se");
-                JAXBContext context = JAXBContext.newInstance(StyleType.class);
+                JAXBContext context = JAXBContext.newInstance(JAXBCONTEXT);
                 Unmarshaller u = context.createUnmarshaller();
                 JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(xml);
                 Style style = new Style(st.getValue(), null);
@@ -64,7 +64,7 @@ public class FillAnalyzerTest extends AnalyzerTest {
         public void testRecodedSolidFill() throws Exception{
                 //We have some xml with a constant solidfill
                 File xml = new File("src/test/resources/org/orbisgis/legend/colorRecode.se");
-                JAXBContext context = JAXBContext.newInstance(StyleType.class);
+                JAXBContext context = JAXBContext.newInstance(JAXBCONTEXT);
                 Unmarshaller u = context.createUnmarshaller();
                 JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(xml);
                 Style style = new Style(st.getValue(), null);

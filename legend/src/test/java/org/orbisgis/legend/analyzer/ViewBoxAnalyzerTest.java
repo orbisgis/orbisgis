@@ -35,7 +35,7 @@ public class ViewBoxAnalyzerTest extends AnalyzerTest {
         @Test
         public void testMonovariateProportionalVB() throws Exception {
                 //First we build the JAXB tree
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
                 Unmarshaller u = jaxbContext.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
@@ -49,7 +49,7 @@ public class ViewBoxAnalyzerTest extends AnalyzerTest {
         @Test
         public void testLinearProportionalVB() throws Exception {
                 //First we build the JAXB tree
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
                 Unmarshaller u = jaxbContext.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml2));
@@ -64,7 +64,7 @@ public class ViewBoxAnalyzerTest extends AnalyzerTest {
         @Test
         public void testBivariateProp() throws Exception {
                 //First we build the JAXB tree
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
                 Unmarshaller u = jaxbContext.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml3));
@@ -77,7 +77,7 @@ public class ViewBoxAnalyzerTest extends AnalyzerTest {
 
         @Test
         public void testConstantViewBox() throws Exception {
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
                 Unmarshaller u = jaxbContext.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml4));
@@ -91,7 +91,7 @@ public class ViewBoxAnalyzerTest extends AnalyzerTest {
 
         @Test
         public void testConstantViewBox2D() throws Exception {
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
                 Unmarshaller u = jaxbContext.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml5));

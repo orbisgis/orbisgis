@@ -30,7 +30,7 @@ public class GraphicAnalyzerTest extends AnalyzerTest {
     @Test
     public void testConstantWKN() throws Exception {
         File path = new File(constant);
-        JAXBContext context = JAXBContext.newInstance(StyleType.class);
+        JAXBContext context = JAXBContext.newInstance(JAXBCONTEXT);
         Unmarshaller u = context.createUnmarshaller();
         JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(path);
         Style style = new Style(st.getValue(), null);
@@ -44,7 +44,7 @@ public class GraphicAnalyzerTest extends AnalyzerTest {
     @Test
     public void testProportionalWKN() throws Exception {
         File path = new File(proportional);
-        JAXBContext context = JAXBContext.newInstance(StyleType.class);
+        JAXBContext context = JAXBContext.newInstance(JAXBCONTEXT);
         Unmarshaller u = context.createUnmarshaller();
         JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(path);
         Style style = new Style(st.getValue(), null);

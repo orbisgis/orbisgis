@@ -20,6 +20,7 @@ import javax.xml.bind.JAXBException;
 import net.opengis.se._2_0.core.StyleType;
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 import static org.junit.Assert.*;
 
@@ -33,7 +34,7 @@ public class StringAnalyzerTest {
         public void testLiteralString() throws Exception {
                 String location = "src/test/resources/org/orbisgis/legend/simpleText.se";
                 File xml = new File(location);
-                JAXBContext jc = JAXBContext.newInstance(StyleType.class);
+                JAXBContext jc = JAXBContext.newInstance(AnalyzerTest.JAXBCONTEXT);
                 Unmarshaller u = jc.createUnmarshaller();
                 JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(xml);
                 Style style = new Style(st, null);
@@ -48,7 +49,7 @@ public class StringAnalyzerTest {
         public void testCategorize() throws Exception {
                 String location = "src/test/resources/org/orbisgis/legend/stringCategorize.se";
                 File xml = new File(location);
-                JAXBContext jc = JAXBContext.newInstance(StyleType.class);
+                JAXBContext jc = JAXBContext.newInstance(AnalyzerTest.JAXBCONTEXT);
                 Unmarshaller u = jc.createUnmarshaller();
                 JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(xml);
                 Style style = new Style(st, null);
@@ -63,7 +64,7 @@ public class StringAnalyzerTest {
         public void testRecode() throws Exception {
                 String location = "src/test/resources/org/orbisgis/legend/stringRecode.se";
                 File xml = new File(location);
-                JAXBContext jc = JAXBContext.newInstance(StyleType.class);
+                JAXBContext jc = JAXBContext.newInstance(AnalyzerTest.JAXBCONTEXT);
                 Unmarshaller u = jc.createUnmarshaller();
                 JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(xml);
                 Style style = new Style(st, null);

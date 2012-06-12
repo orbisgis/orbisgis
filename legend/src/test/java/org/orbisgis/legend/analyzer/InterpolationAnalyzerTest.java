@@ -41,7 +41,7 @@ public class InterpolationAnalyzerTest extends AnalyzerTest{
         @Test
         public void testFindSqrtInterp() throws Exception {
                 //First we build the JAXB tree
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
                 Unmarshaller u = jaxbContext.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
@@ -61,7 +61,7 @@ public class InterpolationAnalyzerTest extends AnalyzerTest{
         @Test
         public void testInterpolationLinear() throws Exception {
                 //First we build the JAXB tree
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
                 Unmarshaller u = jaxbContext.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(linearInterpo));
@@ -81,7 +81,7 @@ public class InterpolationAnalyzerTest extends AnalyzerTest{
         @Test
         public void testInterpolationOnOtherFunction() throws Exception {
                 //First we build the JAXB tree
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
                 Unmarshaller u = jaxbContext.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));

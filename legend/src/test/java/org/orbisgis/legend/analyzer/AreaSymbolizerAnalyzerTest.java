@@ -130,7 +130,7 @@ public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
     
     @Test
     public void testChoroConstructorFail() throws Exception {
-        JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+        JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
         Unmarshaller u = jaxbContext.createUnmarshaller();
         JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                 new FileInputStream(constant));
