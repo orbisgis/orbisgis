@@ -141,10 +141,10 @@ public class ConnectionPanel extends MultiInputPanel {
 
     public Connection getConnection() throws SQLException {
         DBSource dbSource = getDBSource();
-        Connection connection = getDBDriver().getConnection(dbSource.getHost(),
+        String s = getDBDriver().getConnectionString(dbSource.getHost(),
                                                             dbSource.getPort(), dbSource.isSsl(), dbSource.getDbName(), dbSource.getUser(),
                                                             dbSource.getPassword());
-        return connection;
+        return getDBDriver().getConnection(s);
     }
 
 

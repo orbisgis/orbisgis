@@ -2,7 +2,6 @@ package org.orbisgis.core.ui.plugins.views.geomark;
 
 import java.io.Serializable;
 
-import org.gdms.sql.function.alphanumeric.ToStringFunction;
 
 import com.vividsolutions.jts.geom.Envelope;
 

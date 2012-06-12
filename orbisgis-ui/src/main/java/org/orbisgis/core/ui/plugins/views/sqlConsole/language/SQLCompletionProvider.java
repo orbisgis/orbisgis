@@ -167,11 +167,12 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         public void addFunctionCompletions(boolean tables, boolean scalar, boolean executor) {
                 HashSet a = new HashSet();
 
+                FunctionManager fm = dataManager.getDataSourceFactory().getFunctionManager();
                 // retrieve all registered functions
-                String[] functions = FunctionManager.getFunctionNames();
+                String[] functions = fm.getFunctionNames();
 
                 for (int i = 0; i < functions.length; i++) {
-                        Function function = FunctionManager.getFunction(functions[i]);
+                        Function function = fm.getFunction(functions[i]);
 
                         if (((function.isScalar() || function.isAggregate()) && scalar)
                                 || (function.isTable() && tables) || (function.isExecutor() && executor)) {

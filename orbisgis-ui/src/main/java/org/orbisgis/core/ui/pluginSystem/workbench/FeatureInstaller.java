@@ -53,6 +53,8 @@ import javax.swing.JPopupMenu;
 import javax.swing.MenuElement;
 
 import org.apache.log4j.Logger;
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
@@ -350,9 +352,10 @@ public class FeatureInstaller {
         }
 
         public void addRegisterFunction(Class<? extends Function> functionClass) {
-                if (FunctionManager.getFunction(functionClass.getSimpleName()) == null) {
+                FunctionManager fm = Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager();
+                if (fm.getFunction(functionClass.getSimpleName()) == null) {
                         try {
-                                FunctionManager.addFunction(functionClass);
+                                fm.addFunction(functionClass);
                         } catch (IllegalArgumentException e) {
                                 LOG.error("Error registering function.", e);
                         }

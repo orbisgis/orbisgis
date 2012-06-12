@@ -342,11 +342,11 @@ public class PnlProportionalPointLegend extends JPanel implements ILegendPanel {
                         TypeFactory.createType(Type.GEOMETRYCOLLECTION,
                                 new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_POINT)),
                         TypeFactory.createType(Type.GEOMETRYCOLLECTION,
-                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_POLYGON)),
+                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_SURFACE)),
                         TypeFactory.createType(Type.GEOMETRY,
                                 new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_POINT)),
                         TypeFactory.createType(Type.GEOMETRY,
-                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_POLYGON))),
+                                new GeometryDimensionConstraint(GeometryDimensionConstraint.DIMENSION_SURFACE))),
 				new SymbolFilter() {
 
 					@Override

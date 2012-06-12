@@ -31,12 +31,10 @@ import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.engine.SQLEngine;
-import org.gdms.sql.engine.SqlStatement;
 import org.gdms.sql.engine.ParseException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
@@ -48,6 +46,9 @@ import org.orbisgis.core.ui.editors.map.MapContextManager;
 import org.orbisgis.core.ui.plugins.views.output.OutputManager;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.ui.SQLConsolePanel;
 import org.orbisgis.progress.ProgressMonitor;
+
+import org.gdms.sql.engine.Engine;
+import org.gdms.sql.engine.SQLStatement;
 
 public class ExecuteScriptProcess implements BackgroundJob {
 
@@ -71,15 +72,14 @@ public class ExecuteScriptProcess implements BackgroundJob {
         public void run(ProgressMonitor pm) {
 
                 DataManager dataManager = (DataManager) Services.getService(DataManager.class);
-                SQLDataSourceFactory dsf = dataManager.getDataSourceFactory();
-                SQLEngine engine = new SQLEngine(dsf);
-                SqlStatement[] statements = null;
+                DataSourceFactory dsf = dataManager.getDataSourceFactory();
+                SQLStatement[] statements = null;
 
                 long t1 = System.currentTimeMillis();
                 try {
                         logger.debug("Preparing script: " + script);
                         try {
-                                statements = engine.parse(script);
+                                statements = Engine.parse(script);
                         } catch (ParseException e) {
                                 Services.getErrorManager().error("Cannot parse script", e);
                                 if (panel != null) {
@@ -92,11 +92,12 @@ public class ExecuteScriptProcess implements BackgroundJob {
 
                         for (int i = 0; i < statements.length; i++) {
 
-                                SqlStatement st = statements[i];
+                                SQLStatement st = statements[i];
                                 logger.debug("Preparing instruction: " + st.getSQL());
                                 boolean spatial = false;
                                 try {
-                                        st.prepare(dsf);
+                                        st.setDataSourceFactory(dsf);
+                                        st.prepare();
                                         Metadata metadata = st.getResultMetadata();
                                         if (metadata != null) {
                                                 spatial = MetadataUtilities.isSpatial(metadata);

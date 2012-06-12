@@ -46,7 +46,7 @@ import org.orbisgis.core.ui.plugins.ows.OwsContextUtils;
 import org.orbisgis.core.ui.plugins.ows.remote.OwsService;
 import org.orbisgis.core.ui.plugins.ows.remote.OwsServiceImpl;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.junit.Before;
 import org.junit.Test;
@@ -71,7 +71,7 @@ import org.xml.sax.SAXException;
  */
 public class ImportFromOwsContextDemo {
 
-    static SQLDataSourceFactory dsf = new SQLDataSourceFactory();
+    static DataSourceFactory dsf = new DataSourceFactory();
 
     protected ConsoleErrorManager failErrorManager;
     protected ConsoleOutputManager failOutput;

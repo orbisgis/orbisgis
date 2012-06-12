@@ -32,6 +32,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import javax.swing.AbstractListModel;
 import javax.swing.ListModel;
+
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
 import org.gdms.sql.function.FunctionManager;
 
 /**
@@ -58,7 +61,8 @@ public class FunctionListModel extends AbstractListModel implements ListModel {
 
     private void getSQLFunctions() {
         functionsList = new ArrayList<FunctionElement>();
-        String[] functions = FunctionManager.getFunctionNames();
+        String[] functions = Services.getService(DataManager.class).getDataSourceFactory().
+                getFunctionManager().getFunctionNames();
 
         for (String functionName : functions) {
             functionsList.add(new FunctionElement(functionName.toUpperCase(), FunctionElement.BASIC_FUNCTION));

@@ -187,7 +187,7 @@ public abstract class Renderer {
                 double gap = mt.getScaleDenominator() * EXTRA_EXTENT_FACTOR;
                 Envelope envelope = new Envelope(extent.getMinX() - gap, extent.getMaxX() + gap, 
                         extent.getMinY() - gap, extent.getMaxY() + gap);
-                DefaultSpatialIndexQuery iq = new DefaultSpatialIndexQuery(envelope, sfn);
+                DefaultSpatialIndexQuery iq = new DefaultSpatialIndexQuery(sfn, envelope);
                 return im.queryIndex(sds, iq);
         } catch(IndexException ie){
                 throw new DriverException("Can't handle the index", ie);

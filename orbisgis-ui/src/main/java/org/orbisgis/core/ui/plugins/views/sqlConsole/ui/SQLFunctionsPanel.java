@@ -52,6 +52,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.ui.components.jlist.OGList;
 import org.orbisgis.core.ui.components.text.JButtonTextField;
@@ -102,7 +105,9 @@ public class SQLFunctionsPanel extends JPanel implements DragGestureListener,
                         public String getToolTipText(MouseEvent evt) {
                                 int index = locationToIndex(evt.getPoint());
                                 FunctionElement item = (FunctionElement) getModel().getElementAt(index);
-                                String toolTip = FunctionManager.getFunction(item.getFunctionName()).getDescription();
+                                FunctionManager fm = Services.getService(DataManager.class).
+                                        getDataSourceFactory().getFunctionManager();
+                                String toolTip = fm.getFunction(item.getFunctionName()).getDescription();
 
                                 // Return the tool tip text
                                 return toolTip;
@@ -177,9 +182,11 @@ public class SQLFunctionsPanel extends JPanel implements DragGestureListener,
         public String[] getSelectedSources() {
                 Object[] selectedValues = list.getSelectedValues();
                 String[] sources = new String[selectedValues.length];
+                FunctionManager fm = Services.getService(DataManager.class).
+                                        getDataSourceFactory().getFunctionManager();
                 for (int i = 0; i < sources.length; i++) {
                         FunctionElement functionElement = (FunctionElement) selectedValues[i];
-                        sources[i] = FunctionManager.getFunction(functionElement.getFunctionName()).getSqlOrder();
+                        sources[i] = fm.getFunction(functionElement.getFunctionName()).getSqlOrder();
                 }
                 return sources;
         }

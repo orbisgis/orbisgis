@@ -62,6 +62,8 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.SourceRend
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.preferences.lookandfeel.images.IconLoader;
 
+import org.gdms.driver.DriverException;
+
 public class SourceListRenderer implements ListCellRenderer {
 
         private static final Color SELECTED = Color.lightGray;
@@ -157,7 +159,11 @@ public class SourceListRenderer implements ListCellRenderer {
                                 }
                                 if (text == null) {
                                         text = source;
-                                        text += " (" + src.getTypeName() + ")";
+                                        try {
+                                                text += " (" + src.getTypeName() + ")";
+                                        } catch (DriverException ex) {
+                                                text += " (unknown)";
+                                        }
                                 }
                                 if (geocatalog.isEditingSource(source)) {
                                         System.out.println("Editing source " + source);

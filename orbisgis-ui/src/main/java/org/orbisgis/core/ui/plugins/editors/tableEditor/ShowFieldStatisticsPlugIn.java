@@ -42,7 +42,7 @@ import java.awt.Color;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
@@ -73,7 +73,7 @@ public class ShowFieldStatisticsPlugIn extends AbstractPlugIn {
 		final TableEditableElement element = (TableEditableElement) editor
 				.getElement();
 		try {
-			final SQLDataSourceFactory dsf = (Services
+			final DataSourceFactory dsf = (Services
 					.getService(DataManager.class)).getDataSourceFactory();
 
 			DataSource ds = element.getDataSource();

@@ -84,7 +84,7 @@ public class MultilineTool extends AbstractMultilineTool {
 		return ToolUtilities.geometryTypeIs(vc,
 				TypeFactory.createType(Type.MULTILINESTRING),
                                 TypeFactory.createType(Type.GEOMETRYCOLLECTION, 
-                                        new GeometryDimensionConstraint((GeometryDimensionConstraint.DIMENSION_LINE))))
+                                        new GeometryDimensionConstraint((GeometryDimensionConstraint.DIMENSION_CURVE))))
 				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 
@@ -94,7 +94,6 @@ public class MultilineTool extends AbstractMultilineTool {
 		DataSource sds = mc.getActiveLayer().getDataSource();
 		try {
 			Value[] row = new Value[sds.getMetadata().getFieldCount()];
-                        mls.setSRID(sds.getSRID());
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(mls);
 			row = ToolUtilities.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);

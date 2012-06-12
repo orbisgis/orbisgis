@@ -119,7 +119,7 @@ public class LineTool extends AbstractLineTool {
                         TypeFactory.createType(Type.MULTILINESTRING),
                         TypeFactory.createType(Type.GEOMETRYCOLLECTION, 
                                 ConstraintFactory.createConstraint(Constraint.DIMENSION_2D_GEOMETRY, 
-                                        GeometryDimensionConstraint.DIMENSION_LINE))
+                                        GeometryDimensionConstraint.DIMENSION_CURVE))
                         )
                 ) {
                         g = ToolManager.toolsGeometryFactory.createMultiLineString(new LineString[]{ls});
@@ -128,7 +128,6 @@ public class LineTool extends AbstractLineTool {
                 DataSource sds = mc.getActiveLayer().getDataSource();
                 try {
                         Value[] row = new Value[sds.getMetadata().getFieldCount()];
-                        g.setSRID(sds.getSRID());
                         row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(g);
                         row = ToolUtilities.populateNotNullFields(sds, row);
                         sds.insertFilledRow(row);

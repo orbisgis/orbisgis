@@ -378,20 +378,20 @@ public class PnlIntervalLegend extends PnlAbstractClassifiedLegend {
 		Symbol polygonSymbol = SymbolFactory.createPolygonSymbol(outline,
 				fillColor);
 		Type geomType = TypeFactory.createType(legendContext.getGeometryType());
-                int dimension = GeometryTypeUtil.getTypeDimension(geomType);
-                switch (dimension) {
-			case GeometryDimensionConstraint.DIMENSION_POINT:
-				return lineSymbol;
-			case GeometryDimensionConstraint.DIMENSION_LINE:
-				return pointSymbol;
-			case GeometryDimensionConstraint.DIMENSION_POLYGON:
-				return polygonSymbol;
-                        case -1:
-                               return SymbolFactory.createSymbolComposite(polygonSymbol, lineSymbol,
-					pointSymbol);
-			default:
+//                int dimension = GeometryTypeUtil.getCoordinateDimension(geomType);
+//                switch (dimension) {
+//			case GeometryDimensionConstraint.DIMENSION_POINT:
+//				return lineSymbol;
+//			case GeometryDimensionConstraint.DIMENSION_CURVE:
+//				return pointSymbol;
+//			case GeometryDimensionConstraint.DIMENSION_SURFACE:
+//				return polygonSymbol;
+//                        case -1:
+//                               return SymbolFactory.createSymbolComposite(polygonSymbol, lineSymbol,
+//					pointSymbol);
+//			default:
 				throw new RuntimeException("bug!");
-                }
+//                }
 	}
 
 	@Override

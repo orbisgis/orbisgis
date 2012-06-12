@@ -71,7 +71,9 @@ public class OrbisGISWorkspace implements WorkspaceListener {
 		initializeWorkspace();
 		workspace = Services.getService(Workspace.class);
 		workspace.addWorkspaceListener(this);
-		FunctionManager.addFunctionManagerListener(refreshFMListener);
+                FunctionManager fm = Services.getService(DataManager.class).
+                                        getDataSourceFactory().getFunctionManager();
+		fm.addFunctionManagerListener(refreshFMListener);
 
 		Services
 				.registerService(
@@ -114,7 +116,9 @@ public class OrbisGISWorkspace implements WorkspaceListener {
 	}
 
 	public void stop() {
-		FunctionManager.removeFunctionManagerListener(refreshFMListener);
+		FunctionManager fm = Services.getService(DataManager.class).
+                                        getDataSourceFactory().getFunctionManager();
+		fm.removeFunctionManagerListener(refreshFMListener);
 
 		EPWindowHelper.saveStatus();
 		try {

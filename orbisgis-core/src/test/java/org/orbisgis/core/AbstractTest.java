@@ -38,7 +38,7 @@
 package org.orbisgis.core;
 
 import java.io.File;
-import org.gdms.data.SQLDataSourceFactory;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.source.SourceManager;
 import org.junit.Before;
 import org.orbisgis.core.errorManager.ErrorListener;
@@ -58,7 +58,7 @@ public abstract class AbstractTest {
                 OrbisgisCoreServices.installServices();
         }
 
-        public static void registerDataManager(SQLDataSourceFactory dsf) {
+        public static void registerDataManager(DataSourceFactory dsf) {
                 // Installation of the service
                 Services.registerService(
                         DataManager.class,
@@ -67,7 +67,7 @@ public abstract class AbstractTest {
         }
 
         public static void registerDataManager() {
-                SQLDataSourceFactory dsf = new SQLDataSourceFactory();
+                DataSourceFactory dsf = new DataSourceFactory();
                 dsf.setResultDir(new File("target/results"));
                 dsf.setTempDir("target/results");
                 registerDataManager(dsf);

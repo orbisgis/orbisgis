@@ -325,8 +325,12 @@ public class SimplePanel extends JPanel {
     private void registerUISource(SQLUIPanel sqlPanel) {
         MemoryDataSetDriver omd = new MemoryDataSetDriver(
                 sqlPanel.getFieldNames(), getGDMSTypes(sqlPanel.getFieldTypes()));
-        omd.addValues(getGDMSValues(sqlPanel.getValues(),
-                                    sqlPanel.getFieldTypes()));
+                try {
+                        omd.addValues(getGDMSValues(sqlPanel.getValues(),
+                                                    sqlPanel.getFieldTypes()));
+                } catch (DriverException ex) {
+                        throw new RuntimeException("bug", ex);
+                }
         if (UIFactory.dsf.exists(dsName)) {
             UIFactory.dsf.remove(dsName);
         }

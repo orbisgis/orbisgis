@@ -14,7 +14,6 @@
 	<modules>
 		<module>orbisgis-core</module>
 		<module>orbisgis-ui</module>
-		<module>orbisgis-ui/gdms</module>
 	</modules>
 	<scm>
 		<connection>

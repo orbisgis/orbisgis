@@ -99,7 +99,6 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
                         Value[] row = new Value[sds.getMetadata().getFieldCount()];
                         if (ToolUtilities.geometryTypeIs(mc, TypeFactory.createType(Type.POLYGON))) {
                                 for (int i = 0; i < geom.getNumGeometries(); i++) {
-                                        geom.getGeometryN(i).setSRID(sds.getSRID());
                                         row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(geom.getGeometryN(i));
                                         row = ToolUtilities.populateNotNullFields(sds, row);
                                         sds.insertFilledRow(row);
@@ -109,22 +108,20 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
                                                 TypeFactory.createType(Type.MULTIPOLYGON),
                                                 TypeFactory.createType(Type.GEOMETRY,
                                                         ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 
-                                                                GeometryDimensionConstraint.DIMENSION_POLYGON)),
+                                                                GeometryDimensionConstraint.DIMENSION_SURFACE)),
                                                 TypeFactory.createType(Type.GEOMETRYCOLLECTION,
                                                         ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 
-                                                        GeometryDimensionConstraint.DIMENSION_POLYGON))
+                                                        GeometryDimensionConstraint.DIMENSION_SURFACE))
                                 )) {
                                 if (geom instanceof Polygon) {
                                         Polygon polygon = (Polygon) geom;
                                         geom = geom.getFactory().createMultiPolygon(new Polygon[]{polygon});
-                                        geom.setSRID(sds.getSRID());
                                         row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(geom);
                                         row = ToolUtilities.populateNotNullFields(sds, row);
                                         sds.insertFilledRow(row);
                                 } else if (geom instanceof MultiPolygon) {
                                         for (int i = 0; i < geom.getNumGeometries(); i++) {
                                                 Polygon polygon = (Polygon) geom.getGeometryN(i);
-                                                polygon.setSRID(sds.getSRID());
                                                 geom = geom.getFactory().createMultiPolygon(new Polygon[]{polygon});
                                                 row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(geom);
                                                 row = ToolUtilities.populateNotNullFields(sds, row);
@@ -191,10 +188,10 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
                                 TypeFactory.createType(Type.MULTIPOLYGON),
                                 TypeFactory.createType(Type.GEOMETRY,
                                         ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 
-                                                GeometryDimensionConstraint.DIMENSION_POLYGON)),
+                                                GeometryDimensionConstraint.DIMENSION_SURFACE)),
                                 TypeFactory.createType(Type.GEOMETRYCOLLECTION,
                                         ConstraintFactory.createConstraint(Constraint.DIMENSION_3D_GEOMETRY, 
-                                                GeometryDimensionConstraint.DIMENSION_POLYGON)))
+                                                GeometryDimensionConstraint.DIMENSION_SURFACE)))
                         && ToolUtilities.isActiveLayerEditable(vc) 
                         && ToolUtilities.isSelectionGreaterOrEqualsThan(vc, 1);
 
