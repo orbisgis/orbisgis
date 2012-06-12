@@ -115,11 +115,12 @@ public class PnlRule extends JPanel implements ISELegendPanel {
                 txtMinScale.setText(getMinscale());
                 min.add(txtMinScale);
                 //Button
-		btnCurrentScaleToMin = new JButton(I18N.tr("Current scale :"));
+		btnCurrentScaleToMin = new JButton(I18N.tr("Current scale"));
 		btnCurrentScaleToMin.addActionListener(new ActionListener() {
                         @Override
 			public void actionPerformed(ActionEvent e) {
 				txtMinScale.setText(Integer.toString((int) mt.getScaleDenominator()));
+                                applyScales();
 			}
 
 		});
@@ -149,12 +150,13 @@ public class PnlRule extends JPanel implements ISELegendPanel {
                 txtMaxScale.setText(getMaxscale());
                 max.add(txtMaxScale,gbc);
                 //Button
-                btnCurrentScaleToMax = new JButton(I18N.tr("Current scale :"));
+                btnCurrentScaleToMax = new JButton(I18N.tr("Current scale"));
                 btnCurrentScaleToMax.addActionListener(new ActionListener() {
 
                         @Override
 			public void actionPerformed(ActionEvent e) {
 				txtMaxScale.setText(Integer.toString((int) mt.getScaleDenominator()));
+                                applyScales();
 			}
 
 		});
