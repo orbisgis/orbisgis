@@ -61,7 +61,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
             this.name = Symbolizer.DEFAULT_NAME;
         }
 
-        if (t.getVersion() != null && !t.getVersion().equals(Symbolizer.VERSION)) {
+        if (t.getVersion() != null && !t.getVersion().value().equals(Symbolizer.VERSION)) {
             System.out.println("Unsupported Style version!");
             throw new InvalidStyle("Unsupported version !");
         }
