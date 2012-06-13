@@ -20,6 +20,7 @@ import net.opengis.se._2_0.core.SymbolizerType;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.orbisgis.core.AbstractTest;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
@@ -55,11 +56,7 @@ public class SymbolizerTest extends AbstractTest {
             //The following file contains an invalid markup that MUST NOT be recognized.
         String xml = "src/test/resources/org/orbisgis/core/renderer/se/invalidCategorize.se";
 
-        JAXBContext jaxbContext;
-
-            jaxbContext = JAXBContext.newInstance(SymbolizerType.class);
-
-            Unmarshaller u = jaxbContext.createUnmarshaller();
+            Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
 
 
             Schema schema = u.getSchema();

@@ -5,12 +5,12 @@
 package org.orbisgis.legend.analyzer;
 
 import java.io.File;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 import net.opengis.se._2_0.core.StyleType;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
@@ -30,8 +30,7 @@ public class GraphicAnalyzerTest extends AnalyzerTest {
     @Test
     public void testConstantWKN() throws Exception {
         File path = new File(constant);
-        JAXBContext context = JAXBContext.newInstance(JAXBCONTEXT);
-        Unmarshaller u = context.createUnmarshaller();
+        Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
         JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(path);
         Style style = new Style(st.getValue(), null);
         //We retrieve the MarkGraphic
@@ -44,8 +43,7 @@ public class GraphicAnalyzerTest extends AnalyzerTest {
     @Test
     public void testProportionalWKN() throws Exception {
         File path = new File(proportional);
-        JAXBContext context = JAXBContext.newInstance(JAXBCONTEXT);
-        Unmarshaller u = context.createUnmarshaller();
+        Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
         JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(path);
         Style style = new Style(st.getValue(), null);
         //We retrieve the MarkGraphic

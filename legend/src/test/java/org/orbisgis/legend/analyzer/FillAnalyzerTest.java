@@ -13,9 +13,9 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import javax.xml.bind.Unmarshaller;
 import net.opengis.se._2_0.core.StyleType;
 import java.io.File;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import org.junit.Test;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.legend.structure.fill.ConstantSolidFillLegend;
@@ -31,8 +31,7 @@ public class FillAnalyzerTest extends AnalyzerTest {
         public void testConstantSolidFill() throws Exception{
                 //We have some xml with a constant solidfill
                 File xml = new File("src/test/resources/org/orbisgis/legend/colorCategorize.se");
-                JAXBContext context = JAXBContext.newInstance(JAXBCONTEXT);
-                Unmarshaller u = context.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(xml);
                 Style style = new Style(st.getValue(), null);
                 AreaSymbolizer as = (AreaSymbolizer) style.getRules().get(0).getCompositeSymbolizer().
@@ -48,8 +47,7 @@ public class FillAnalyzerTest extends AnalyzerTest {
                 //We have some xml with a categorized solidfill. And it's the same one
                 //that has been used in the previous test :-p
                 File xml = new File("src/test/resources/org/orbisgis/legend/colorCategorize.se");
-                JAXBContext context = JAXBContext.newInstance(JAXBCONTEXT);
-                Unmarshaller u = context.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(xml);
                 Style style = new Style(st.getValue(), null);
                 AreaSymbolizer as = (AreaSymbolizer) style.getRules().get(0).getCompositeSymbolizer().
@@ -64,8 +62,7 @@ public class FillAnalyzerTest extends AnalyzerTest {
         public void testRecodedSolidFill() throws Exception{
                 //We have some xml with a constant solidfill
                 File xml = new File("src/test/resources/org/orbisgis/legend/colorRecode.se");
-                JAXBContext context = JAXBContext.newInstance(JAXBCONTEXT);
-                Unmarshaller u = context.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(xml);
                 Style style = new Style(st.getValue(), null);
                 LineSymbolizer as = (LineSymbolizer) style.getRules().get(0).getCompositeSymbolizer().

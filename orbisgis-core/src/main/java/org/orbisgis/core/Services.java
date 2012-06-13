@@ -42,6 +42,9 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.util.*;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -60,6 +63,16 @@ public class Services {
 
 	private static HashMap<Class<?>, Object> services = new HashMap<Class<?>, Object>();
 	private static HashMap<Class<?>, String> servicesDoc = new HashMap<Class<?>, String>();
+        
+        public static final JAXBContext JAXBCONTEXT;
+        
+        static {
+                try {
+                        JAXBCONTEXT = JAXBContext.newInstance("net.opengis.ows_context:net.opengis.se._2_0.core:net.opengis.wms:oasis.names.tc.ciq.xsdschema.xal._2");
+                } catch (JAXBException ex) {
+                        throw new ExceptionInInitializerError(ex);
+                }
+        }
 
 	/**
 	 * Registers an interface as a service

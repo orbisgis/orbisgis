@@ -13,19 +13,17 @@ import org.apache.log4j.*;
 import org.apache.log4j.varia.LevelRangeFilter;
 import org.junit.After;
 import org.junit.Before;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.log.FailErrorManager;
 import org.orbisgis.core.renderer.se.Style;
 
 public abstract class AnalyzerTest {
         
-        public static final String JAXBCONTEXT = "net.opengis.se._2_0.core:net.opengis.wms:oasis.names.tc.ciq.xsdschema.xal._2";
-
         protected FailErrorManager failErrorManager;
         private Appender consoleAppender;
         
         public Style getStyle(String path) throws Exception {
-            JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
-            Unmarshaller u = jaxbContext.createUnmarshaller();
+            Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
             JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                     new FileInputStream(path));
             return new Style(ftsElem, null);

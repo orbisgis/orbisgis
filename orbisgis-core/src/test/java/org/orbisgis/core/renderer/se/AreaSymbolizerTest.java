@@ -15,6 +15,7 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import net.opengis.se._2_0.core.StyleType;
 import org.junit.Test;
+import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.Services;
 import static org.junit.Assert.*;
 
@@ -90,10 +91,7 @@ public class AreaSymbolizerTest {
 
             System.out.println("Marshall");
 
-            JAXBContext jaxbContext;
-
-            jaxbContext = JAXBContext.newInstance(StyleType.class);
-            Marshaller marshaller = jaxbContext.createMarshaller();
+            Marshaller marshaller = Services.JAXBCONTEXT.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             //Validator validator = jaxbContext.createValidator();
 

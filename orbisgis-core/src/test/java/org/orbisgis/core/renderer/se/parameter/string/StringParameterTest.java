@@ -15,10 +15,10 @@ import java.text.DecimalFormat;
 import java.util.Locale;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBContext;
 import net.opengis.fes._2.ValueReferenceType;
 import org.orbisgis.core.AbstractTest;
 import org.junit.Test;
+import org.orbisgis.core.Services;
 import static org.junit.Assert.*;
 
 /**
@@ -30,11 +30,10 @@ public class StringParameterTest extends AbstractTest {
         @Test
         public void testMarshallAndUnmarshallCategorize() throws Exception {
                 String xml = "src/test/resources/org/orbisgis/core/renderer/se/stringCategorize.se";
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
-                Marshaller m = jaxbContext.createMarshaller();
+                Marshaller m = Services.JAXBCONTEXT.createMarshaller();
                 m.marshal(ftsElem, new FileOutputStream("target/c2routput.se"));
                 Style st = new Style(ftsElem, null);
                 JAXBElement<StyleType> elem = st.getJAXBElement();
@@ -46,11 +45,10 @@ public class StringParameterTest extends AbstractTest {
         @Test
         public void testMarshallAndUnmarshallRecode() throws Exception {
                 String xml = "src/test/resources/org/orbisgis/core/renderer/se/stringRecode.se";
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
-                Marshaller m = jaxbContext.createMarshaller();
+                Marshaller m = Services.JAXBCONTEXT.createMarshaller();
                 m.marshal(ftsElem, new FileOutputStream("target/c2routput.se"));
                 Style st = new Style(ftsElem, null);
                 JAXBElement<StyleType> elem = st.getJAXBElement();
@@ -62,8 +60,7 @@ public class StringParameterTest extends AbstractTest {
         @Test
         public void testNumberFormat() throws Exception {
                 String xml = "src/test/resources/org/orbisgis/core/renderer/se/numberFormat.se";
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
                 Style st = new Style(ftsElem, null);
@@ -75,7 +72,7 @@ public class StringParameterTest extends AbstractTest {
                 String ret = ns.getValue(null, 0);
                 assertTrue(ret.equals("12+345:6"));
                 JAXBElement<StyleType> elem = st.getJAXBElement();
-                Marshaller m = jaxbContext.createMarshaller();
+                Marshaller m = Services.JAXBCONTEXT.createMarshaller();
                 m.marshal(elem, new FileOutputStream("target/c2routput.se"));
                 assertTrue(true);
         }
@@ -83,8 +80,7 @@ public class StringParameterTest extends AbstractTest {
         @Test
         public void testFormatNumberDecimalPoint() throws Exception {
                 String xml = "src/test/resources/org/orbisgis/core/renderer/se/numberFormat.se";
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
                 Style st = new Style(ftsElem, null);
@@ -110,8 +106,7 @@ public class StringParameterTest extends AbstractTest {
         @Test
         public void testFormatNumberGroupingSeparator() throws Exception {
                 String xml = "src/test/resources/org/orbisgis/core/renderer/se/numberFormat.se";
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
                 Style st = new Style(ftsElem, null);
@@ -137,8 +132,7 @@ public class StringParameterTest extends AbstractTest {
         @Test
         public void testFormatNumberPattern() throws Exception {
                 String xml = "src/test/resources/org/orbisgis/core/renderer/se/numberFormat.se";
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
                 Style st = new Style(ftsElem, null);
@@ -160,11 +154,10 @@ public class StringParameterTest extends AbstractTest {
         @Test
         public void testStringConcatenateUnmarshallMarshall() throws Exception {
                 String xml = "src/test/resources/org/orbisgis/core/renderer/se/concatenateString.se";
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
-                Marshaller m = jaxbContext.createMarshaller();
+                Marshaller m = Services.JAXBCONTEXT.createMarshaller();
                 m.marshal(ftsElem, new FileOutputStream("target/concatoutput.se"));
                 Style st = new Style(ftsElem, null);
                 PointTextGraphic ptg = (PointTextGraphic) ((PointSymbolizer) st.getRules().get(0).getCompositeSymbolizer().
@@ -179,8 +172,7 @@ public class StringParameterTest extends AbstractTest {
         @Test
         public void testStringConcatenateSizeAndAdd() throws Exception {
                 String xml = "src/test/resources/org/orbisgis/core/renderer/se/concatenateString.se";
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
                 Style st = new Style(ftsElem, null);
@@ -198,7 +190,7 @@ public class StringParameterTest extends AbstractTest {
                 assertTrue(conc.size()==4);
                 assertTrue(conc.get(1).getValue(null, 0).equals("fifth parameter"));
                 JAXBElement<StyleType> elem = st.getJAXBElement();
-                Marshaller m = jaxbContext.createMarshaller();
+                Marshaller m = Services.JAXBCONTEXT.createMarshaller();
                 m.marshal(elem, new FileOutputStream("target/concatoutput.se"));
                 JAXBElement<StyleType> ftsElemBis = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream("target/concatoutput.se"));

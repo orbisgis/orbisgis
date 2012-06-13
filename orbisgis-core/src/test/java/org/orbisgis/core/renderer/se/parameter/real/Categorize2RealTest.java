@@ -6,7 +6,6 @@ package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
@@ -17,6 +16,7 @@ import net.opengis.se._2_0.thematic.DensityFillType;
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.renderer.se.Style;
 import org.junit.Test;
+import org.orbisgis.core.Services;
 import static org.junit.Assert.*;
 
 /**
@@ -29,8 +29,7 @@ public class Categorize2RealTest extends AbstractTest {
 
         @Test
         public void testFromJAXB() throws Exception {
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
                 AreaSymbolizerType ast = (AreaSymbolizerType) (ftsElem.getValue().getRule().get(0).getSymbolizer().getValue());
@@ -49,11 +48,10 @@ public class Categorize2RealTest extends AbstractTest {
 
         @Test
         public void testMarshalAndUnmarshal() throws Exception {
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
-                Marshaller m = jaxbContext.createMarshaller();
+                Marshaller m = Services.JAXBCONTEXT.createMarshaller();
                 m.marshal(ftsElem, new FileOutputStream("target/c2routput.se"));
                 Style st = new Style(ftsElem, null);
                 JAXBElement<StyleType> elem = st.getJAXBElement();

@@ -12,6 +12,7 @@ import net.opengis.se._2_0.core.*;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
@@ -130,11 +131,10 @@ public class Recode2ColorTest {
     @Test
     public void testMarshalUnmarshal() throws Exception {
             String xml = "src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se";
-                JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
-                Marshaller m = jaxbContext.createMarshaller();
+                Marshaller m = Services.JAXBCONTEXT.createMarshaller();
                 m.marshal(ftsElem, new FileOutputStream("target/c2routput.se"));
                 Style st = new Style(ftsElem, null);
                 JAXBElement<StyleType> elem = st.getJAXBElement();

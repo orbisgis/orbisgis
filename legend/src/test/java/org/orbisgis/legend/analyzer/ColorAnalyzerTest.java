@@ -14,10 +14,10 @@ import java.io.FileInputStream;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.StyleType;
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.JAXBContext;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.legend.AnalyzerTest;
 import org.junit.Test;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.structure.literal.ColorLiteralLegend;
@@ -45,8 +45,7 @@ public class ColorAnalyzerTest extends AnalyzerTest{
         @Test
         public void testColorRecode() throws Exception {
                 //We retrieve a Recode from an external file...
-                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xmlRecode));
                 Style st = new Style(ftsElem, null);
@@ -61,8 +60,7 @@ public class ColorAnalyzerTest extends AnalyzerTest{
         @Test
         public void testColorCategorize() throws Exception {
                 //We retrieve a Categorize from an external file...
-                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xmlCategorize));
                 Style st = new Style(ftsElem, null);

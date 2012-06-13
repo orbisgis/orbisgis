@@ -395,15 +395,10 @@ public final class OwsMapContext extends BeanMapContext {
             return mapContextSerialisation;
         }
 
-        private JAXBContext createJAXBContext() throws JAXBException {
-                return JAXBContext.newInstance("net.opengis.ows_context:net.opengis.wms:net.opengis.se._2_0.core"
-                        + ":oasis.names.tc.ciq.xsdschema.xal._2");
-        }
         @Override
         public void read(InputStream in) throws IllegalArgumentException {
                 try {
-                        JAXBContext jcontext = createJAXBContext();
-                        Unmarshaller unMarsh = jcontext.createUnmarshaller();
+                        Unmarshaller unMarsh = Services.JAXBCONTEXT.createUnmarshaller();
                         JAXBElement<OWSContextType> importedOwsContextType = (JAXBElement<OWSContextType>)unMarsh.unmarshal(in);
                         setJAXBObject(importedOwsContextType.getValue());
                 } catch (JAXBException ex) {
@@ -416,8 +411,7 @@ public final class OwsMapContext extends BeanMapContext {
                 ObjectFactory owsFactory = new ObjectFactory();
                 try {
                         JAXBElement<OWSContextType> exportedOwsContextType = owsFactory.createOWSContext(getJAXBObject());
-                        JAXBContext jcontext = createJAXBContext();
-                        Marshaller marshaller = jcontext.createMarshaller();
+                        Marshaller marshaller = Services.JAXBCONTEXT.createMarshaller();
                         marshaller.setProperty("jaxb.formatted.output", Boolean.TRUE);
                         marshaller.marshal(exportedOwsContextType, out);
                 } catch (JAXBException ex) {

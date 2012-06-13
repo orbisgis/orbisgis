@@ -5,12 +5,12 @@
 package org.orbisgis.legend.analyzer;
 
 import java.io.FileInputStream;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 import net.opengis.se._2_0.core.StyleType;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
@@ -35,8 +35,7 @@ public class ViewBoxAnalyzerTest extends AnalyzerTest {
         @Test
         public void testMonovariateProportionalVB() throws Exception {
                 //First we build the JAXB tree
-                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
                 Style st = new Style(ftsElem, null);
@@ -49,8 +48,7 @@ public class ViewBoxAnalyzerTest extends AnalyzerTest {
         @Test
         public void testLinearProportionalVB() throws Exception {
                 //First we build the JAXB tree
-                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml2));
                 Style st = new Style(ftsElem, null);
@@ -64,8 +62,7 @@ public class ViewBoxAnalyzerTest extends AnalyzerTest {
         @Test
         public void testBivariateProp() throws Exception {
                 //First we build the JAXB tree
-                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml3));
                 Style st = new Style(ftsElem, null);
@@ -77,8 +74,7 @@ public class ViewBoxAnalyzerTest extends AnalyzerTest {
 
         @Test
         public void testConstantViewBox() throws Exception {
-                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml4));
                 Style st = new Style(ftsElem, null);
@@ -91,8 +87,7 @@ public class ViewBoxAnalyzerTest extends AnalyzerTest {
 
         @Test
         public void testConstantViewBox2D() throws Exception {
-                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml5));
                 Style st = new Style(ftsElem, null);

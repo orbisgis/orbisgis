@@ -6,13 +6,13 @@ package org.orbisgis.legend.analyzer;
 
 import java.awt.Color;
 import java.io.FileInputStream;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 import net.opengis.se._2_0.core.StyleType;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.legend.AnalyzerTest;
@@ -130,8 +130,7 @@ public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
     
     @Test
     public void testChoroConstructorFail() throws Exception {
-        JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
-        Unmarshaller u = jaxbContext.createUnmarshaller();
+        Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
         JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                 new FileInputStream(constant));
         Style st = new Style(ftsElem, null);

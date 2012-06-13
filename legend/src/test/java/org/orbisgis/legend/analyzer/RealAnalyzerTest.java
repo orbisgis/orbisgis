@@ -9,11 +9,11 @@ import org.orbisgis.legend.structure.recode.Recode2RealLegend;
 import org.orbisgis.legend.structure.categorize.Categorize2RealLegend;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import java.io.FileInputStream;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 import net.opengis.se._2_0.core.StyleType;
 import org.junit.Test;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.fill.DensityFill;
@@ -43,8 +43,7 @@ public class RealAnalyzerTest extends AnalyzerTest {
         public void testInterpolate2Real() throws Exception {
                 //First we build the JAXB tree
 
-                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
                 Style st = new Style(ftsElem, null);
@@ -68,8 +67,7 @@ public class RealAnalyzerTest extends AnalyzerTest {
         @Test
         public void testRealCategorize() throws Exception {
                 String xmlCat = "src/test/resources/org/orbisgis/legend/density_hatch_classif.se";
-                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xmlCat));
                 Style st = new Style(ftsElem, null);
@@ -83,8 +81,7 @@ public class RealAnalyzerTest extends AnalyzerTest {
         @Test
         public void testRealRecode() throws Exception {
                 String xmlCat = "src/test/resources/org/orbisgis/legend/density_hatch_recode.se";
-                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xmlCat));
                 Style st = new Style(ftsElem, null);

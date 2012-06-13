@@ -44,7 +44,6 @@ import java.awt.Color;
 import java.io.FileInputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 import net.opengis.se._2_0.core.AreaSymbolizerType;
@@ -55,6 +54,7 @@ import org.junit.Before;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.junit.Test;
+import org.orbisgis.core.Services;
 import static org.junit.Assert.*;
 
 /**
@@ -201,8 +201,7 @@ public class Categorize2ColorTest {
     public void testFromJaxb() throws Exception{
             //We want to import it directly from the input file.
             String xmlRecode = "src/test/resources/org/orbisgis/core/renderer/se/colorCategorize.se";
-        JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
-        Unmarshaller u = jaxbContext.createUnmarshaller();
+        Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
         JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                 new FileInputStream(xmlRecode));
         AreaSymbolizerType ast = (AreaSymbolizerType)(ftsElem.getValue().getRule().get(0).getSymbolizer().getValue());

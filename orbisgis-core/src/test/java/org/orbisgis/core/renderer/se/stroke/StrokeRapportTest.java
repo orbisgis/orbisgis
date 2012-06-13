@@ -56,7 +56,6 @@ import javax.imageio.ImageIO;
 import javax.media.jai.RenderableGraphics;
 
 import javax.swing.JFrame;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 import org.apache.log4j.Logger;
 
@@ -69,6 +68,7 @@ import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.junit.Test;
+import org.orbisgis.core.Services;
 import static org.junit.Assert.*;
 
 /**
@@ -114,8 +114,7 @@ public class StrokeRapportTest {
 
         // 1)
         try {
-			JAXBContext jaxbContext = JAXBContext.newInstance(Style.class);
-			Marshaller marshaller = jaxbContext.createMarshaller();
+			Marshaller marshaller = Services.JAXBCONTEXT.createMarshaller();
 			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             ByteArrayOutputStream oStream = new ByteArrayOutputStream();
 

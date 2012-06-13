@@ -12,11 +12,11 @@ import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
 import org.orbisgis.legend.AnalyzerTest;
 import javax.xml.bind.Unmarshaller;
 import org.orbisgis.core.renderer.se.Style;
-import javax.xml.bind.JAXBContext;
 import net.opengis.se._2_0.core.StyleType;
 import javax.xml.bind.JAXBElement;
 import java.io.FileInputStream;
 import org.junit.Test;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.real.RealFunction;
@@ -41,8 +41,7 @@ public class InterpolationAnalyzerTest extends AnalyzerTest{
         @Test
         public void testFindSqrtInterp() throws Exception {
                 //First we build the JAXB tree
-                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
                 Style st = new Style(ftsElem, null);
@@ -61,8 +60,7 @@ public class InterpolationAnalyzerTest extends AnalyzerTest{
         @Test
         public void testInterpolationLinear() throws Exception {
                 //First we build the JAXB tree
-                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(linearInterpo));
                 Style st = new Style(ftsElem, null);
@@ -81,8 +79,7 @@ public class InterpolationAnalyzerTest extends AnalyzerTest{
         @Test
         public void testInterpolationOnOtherFunction() throws Exception {
                 //First we build the JAXB tree
-                JAXBContext jaxbContext = JAXBContext.newInstance(JAXBCONTEXT);
-                Unmarshaller u = jaxbContext.createUnmarshaller();
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
                         new FileInputStream(xml));
                 Style st = new Style(ftsElem, null);

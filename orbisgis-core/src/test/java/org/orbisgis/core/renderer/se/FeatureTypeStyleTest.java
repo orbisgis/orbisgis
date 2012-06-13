@@ -36,6 +36,7 @@ import static org.junit.Assert.*;
 
 
 import org.junit.Test;
+import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
@@ -74,9 +75,7 @@ public class FeatureTypeStyleTest {
         JAXBContext jaxbContext;
         try {
 
-            jaxbContext = JAXBContext.newInstance(StyleType.class);
-
-            Unmarshaller u = jaxbContext.createUnmarshaller();
+            Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
 
 
             Schema schema = u.getSchema();

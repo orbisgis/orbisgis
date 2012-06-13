@@ -56,7 +56,6 @@ import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 import javax.swing.JFrame;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Marshaller;
 
 import junit.framework.TestCase;

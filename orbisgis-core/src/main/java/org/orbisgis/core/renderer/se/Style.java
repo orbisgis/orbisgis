@@ -49,11 +49,11 @@ import java.util.logging.Logger;
 import javax.xml.bind.*;
 import javax.xml.bind.util.ValidationEventCollector;
 
-import net.opengis.se._2_0.core.AbstractStyleType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.RuleType;
 import net.opengis.se._2_0.core.StyleType;
 import net.opengis.se._2_0.core.VersionType;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -84,12 +84,9 @@ public final class Style implements SymbolizerNode {
         rules = new ArrayList<Rule>();
         this.layer = layer;
 
-        JAXBContext jaxbContext;
         try {
 
-            jaxbContext = JAXBContext.newInstance(StyleType.class);
-
-            Unmarshaller u = jaxbContext.createUnmarshaller();
+            Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
 
 
             //Schema schema = u.getSchema();
