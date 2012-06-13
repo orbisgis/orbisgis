@@ -14,8 +14,8 @@ do
 	CP=${CP}:${i}
 done
 
-#We add the orbisgis-core jar to the CP
-CP=${CP}":./orbisgis-core-3.0.jar:"
+#We add the orbisgis-ui jar to the CP
+CP=${CP}":./orbisgis-ui-4.0-SNAPSHOT.jar:"
 
 #And we launch the software
 java -Xmx512m -Xms64m -cp ".:${CP}" org.orbisgis.core.Main
