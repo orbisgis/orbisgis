@@ -10,14 +10,14 @@
                 <name>IRSTV CNRS-FR-2488</name>
                 <url>http://www.irstv.fr/</url>
         </organization>
-        <url>http://orbisgis.org</url>
+        <url>http://www.orbisgis.org</url>
         <modules>
-            <module>orbisgis-core</module>
-            <module>legend</module>
-            <module>orbisgis-sif</module>
-            <module>orbisgis-view</module>
+                <module>orbisgis-core</module>
+                <module>legend</module>
+                <module>orbisgis-sif</module>
+                <module>orbisgis-view</module>
         </modules>
-	<properties>
+        <properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <netbeans.hint.license>OrbisGIS</netbeans.hint.license>
         </properties>
@@ -34,13 +34,11 @@
                 </repository>
         </repositories>
         <pluginRepositories>
-
                 <pluginRepository>
                         <id>IRSTV</id>
                         <name>IRSTV repository</name>
                         <url>http://repo.orbisgis.org</url>
                 </pluginRepository>
-
         </pluginRepositories>
         <distributionManagement>
                 <repository>
@@ -52,19 +50,11 @@
         <build>
                 <plugins>
                         <plugin>
-                            <artifactId>maven-compiler-plugin</artifactId>
-                            <version>2.3.2</version>
-                            <configuration>
-                                <source>1.6</source>
-                                <target>1.6</target>
-                            </configuration>
-                        </plugin>
-                        <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-dependency-plugin</artifactId>
+                                <artifactId>maven-compiler-plugin</artifactId>
+                                <version>2.3.2</version>
                                 <configuration>
-                                        <useRepositoryLayout>true</useRepositoryLayout>
-                                        <outputDirectory>../dependencies</outputDirectory>
+                                        <source>1.6</source>
+                                        <target>1.6</target>
                                 </configuration>
                         </plugin>
                         <plugin>
@@ -84,7 +74,7 @@
                                 </configuration>
                         </plugin>
                 </plugins>
-                 <extensions>
+                <extensions>
                         <extension>
                                 <groupId>org.apache.maven.wagon</groupId>
                                 <artifactId>wagon-ssh</artifactId>

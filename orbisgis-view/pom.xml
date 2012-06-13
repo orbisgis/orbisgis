@@ -55,6 +55,23 @@
                                         </arguments>
                                 </configuration>
                         </plugin>
+                        <plugin>
+                                <artifactId>maven-assembly-plugin</artifactId>
+                                <version>2.3</version>
+                                <configuration>
+                                        <archive>
+                                                <manifest>
+                                                        <mainClass>org.orbisgis.view.main.Main</mainClass>
+                                                </manifest>
+                                        </archive>
+                                        <descriptors>
+                                                <!-- order is important here! Do not re-order 'jar' & 'bin'. -->
+                                                <descriptor>src/main/assembly/jar.xml</descriptor>
+                                                <descriptor>src/main/assembly/bin.xml</descriptor>
+                                                <descriptor>src/main/assembly/project.xml</descriptor>
+                                        </descriptors>
+                                </configuration>
+                        </plugin>
                 </plugins>
         </build>  
         <properties>
