@@ -114,6 +114,7 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
                                 constraints = new Constraint[]{dc};
                         }
 
+                        gdmsMetadata.clear();
                         gdmsMetadata.addField("raster", TypeFactory.createType(Type.RASTER, constraints));
 
 
