@@ -51,11 +51,12 @@ import org.grap.model.GeoRaster;
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.renderer.legend.carto.LegendFactory;
 import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import org.orbisgis.core.renderer.se.Style;
+
+import org.gdms.driver.driverManager.DriverManager;
 
 @Deprecated
 public class LayerModelTest extends AbstractTest {
@@ -67,21 +68,22 @@ public class LayerModelTest extends AbstractTest {
 
 	@Override
         @Before
-	public void setUp() throws Exception {
-		MemoryDataSetDriver omd = new MemoryDataSetDriver(
-				new String[] { "the_geom" }, new Type[] { TypeFactory
-						.createType(Type.GEOMETRY) });
-		dsf.getSourceManager().register("vector1", omd);
-		dummy = dsf.getDataSource("vector1");
-		omd = new MemoryDataSetDriver();
-		dsf.getSourceManager().register("vector2", omd);
-		dummy2 = dsf.getDataSource("vector2");
-		omd = new MemoryDataSetDriver();
-		dsf.getSourceManager().register("vector3", omd);
-		dummy3 = dsf.getDataSource("vector3");
-		super.setUp();
-		super.registerDataManager();
-	}
+        public void setUp() throws Exception {
+                MemoryDataSetDriver omd = new MemoryDataSetDriver(
+                        new String[]{"the_geom"}, new Type[]{TypeFactory.createType(Type.GEOMETRY)});
+                dsf.getSourceManager().register("vector1", omd);
+                dummy = dsf.getDataSource(omd, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+                omd = new MemoryDataSetDriver(
+                        new String[]{"the_geom"}, new Type[]{TypeFactory.createType(Type.GEOMETRY)});
+                dsf.getSourceManager().register("vector2", omd);
+                dummy2 = dsf.getDataSource("vector2");
+                omd = new MemoryDataSetDriver(
+                        new String[]{"the_geom"}, new Type[]{TypeFactory.createType(Type.GEOMETRY)});
+                dsf.getSourceManager().register("vector3", omd);
+                dummy3 = dsf.getDataSource("vector3");
+                super.setUp();
+                super.registerDataManager();
+        }
 
         @Test
 	public void testTreeExploring() throws Exception {
