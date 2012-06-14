@@ -55,7 +55,6 @@ public class TypeFactoryTest extends TestBase {
                 assertTrue(TypeFactory.isVectorial(Type.MULTIPOLYGON));
                 assertTrue(TypeFactory.isVectorial(Type.GEOMETRY));
                 assertTrue(TypeFactory.isVectorial(Type.GEOMETRYCOLLECTION));
-                assertTrue(TypeFactory.isVectorial(Type.NULL));
                 assertFalse(TypeFactory.isVectorial(Type.BINARY));
 
                 assertFalse(TypeFactory.isVectorial(Type.BINARY));
@@ -74,6 +73,14 @@ public class TypeFactoryTest extends TestBase {
                 assertFalse(TypeFactory.isVectorial(Type.COLLECTION));
 
         }
+        
+        @Test
+        public void testNullTypeIsEveryhing() {
+                assertTrue(TypeFactory.isVectorial(Type.NULL));
+                assertTrue(TypeFactory.isSpatial(Type.NULL));
+                assertTrue(TypeFactory.isTime(Type.NULL));
+                assertTrue(TypeFactory.isNumerical(Type.NULL));
+        }
 
         /**
          * We check that all the int fields found in Type can be used to
@@ -88,6 +95,9 @@ public class TypeFactoryTest extends TestBase {
                 Field[] fieldArray = typeClass.getDeclaredFields();
                 for(Field f : fieldArray){
                         int i = f.getInt(typeClass);
+                        if (i == Type.NULL) {
+                                continue;
+                        }
                         Type t = TypeFactory.createType(i);
                         assertTrue(t.getHumanType().equalsIgnoreCase(f.getName()));
                 }
