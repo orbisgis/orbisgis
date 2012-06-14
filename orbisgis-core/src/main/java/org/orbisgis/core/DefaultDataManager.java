@@ -105,8 +105,20 @@ public class DefaultDataManager implements DataManager {
                         return new WMSLayer(sds.getName(), sds);
                 } else {
                         boolean hasSpatialData = true;
+                        /*
+                         * Two special cases:
+                         *  - if there is no vectorial information (this should not happen except for SQL,
+                         *    but still...), we look for one, and for that we need to open the source to
+                         *    get the metadata.
+                         *  - if it is a SQL query, we do not do the above, we just go on. This implicitly
+                         *    implies that ExecuteScriptProcess knows what it is doing, which is usually
+                         *    ok.
+                         * 
+                         * Hopefully this will be removed if/when we get a SourceManager that keeps all
+                         * metadata referenced and accessible at all times.
+                         */
                         if ((type & SourceManager.VECTORIAL) == 0 && 
-                                (type & SourceManager.LIVE) == SourceManager.LIVE) {
+                                (type & SourceManager.SQL) != SourceManager.SQL) {
                                 int sfi;
                                 try {
                                         sds.open();
