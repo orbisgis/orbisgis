@@ -620,17 +620,18 @@ public class Toc extends JPanel implements EditorDockable  {
 				} else {
 					pm.progressTo(100 * i / draggedResources.size());
 					try {
-						dropNode.insertLayer(dataManager
-								.createLayer(sourceName), dropIndex);
+                                                ILayer nl = dataManager.createLayer(sourceName);
+						dropNode.insertLayer(nl, dropIndex);
 					} catch (LayerException e) {
-						throw new RuntimeException(I18N.tr("Cannot add the layer to the destination") , e); //$NON-NLS-1$
+						throw new RuntimeException(I18N.tr("Cannot add the layer to the destination") , e);
 					}
 				}
 			}
 		}
 
+                @Override
 		public String getTaskName() {
-			return I18N.tr("Load the data source droped into the toc."); //$NON-NLS-1$
+			return I18N.tr("Load the data source droped into the toc.");
 		}
 	}
         
