@@ -59,10 +59,12 @@ public class Job implements BackgroundJob, ProgressMonitor {
 		this.listeners.remove(listener);
 	}
 
+        @Override
 	public String getTaskName() {
 		return lp.getTaskName();
 	}
 
+        @Override
 	public void run(ProgressMonitor pm) {
 		lp.run(pm);
 	}
@@ -78,6 +80,15 @@ public class Job implements BackgroundJob, ProgressMonitor {
 	public void cancel() {
 		pm.setCancelled(true);
 	}
+
+        /**
+         * Gets an instance of {@code Runnable} that is ready to be run.
+         * @return
+         */
+        public Thread getReadyRunnable(){
+                currentThread = new Thread(new RunnableBackgroundJob(jobQueue, this, this));
+                return currentThread;
+        }
 
 	public synchronized void start() {
 		RunnableBackgroundJob runnable = new RunnableBackgroundJob(jobQueue,
@@ -155,9 +166,11 @@ public class Job implements BackgroundJob, ProgressMonitor {
 	public void clear() {
 		lp = new BackgroundJob() {
 
+                        @Override
 			public void run(ProgressMonitor pm) {
 			}
 
+                        @Override
 			public String getTaskName() {
 				return "iddle";
 			}

@@ -93,15 +93,7 @@ public class JobQueue implements BackgroundManager {
 			logger.debug("Starting job: " + current.getId());
 
 			if (current.isBlocking()) {
-				SwingUtilities.invokeLater(new Runnable() {
-
-					public void run() {
-						logger.debug("Showing dialog for job: "
-								+ current.getId());
-						current.start();
-					}
-
-				});
+				SwingUtilities.invokeLater(current.getReadyRunnable());
 			} else {
 				current.start();
 			}
@@ -112,6 +104,7 @@ public class JobQueue implements BackgroundManager {
 		add(new UniqueJobID(), lp, blocking);
 	}
 
+        @Override
 	public synchronized void processFinished(JobId processId) {
 		logger.debug("Job finished: " + processId);
 		Job finishedJob = current;

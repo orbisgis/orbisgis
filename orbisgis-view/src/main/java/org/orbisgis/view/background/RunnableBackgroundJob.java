@@ -31,12 +31,32 @@ package org.orbisgis.view.background;
 import org.apache.log4j.Logger;
 import org.orbisgis.progress.ProgressMonitor;
 
+/**
+ * This class is a basic {@link Runnable} that will do two things in its {@code
+ * run} method :
+ * <ul><li>Launch the {@code run} method of the inner {@code Job}</li>
+ * <li>Once this method has finished, notify the {@link BackgroundManager} that
+ * the job has finished.</li></ul>
+ * <p>This class is meanginful particularly when no other threads are run by
+ * the inner {@code Job}. It will indeed be easier to avoid race conditions
+ * caused by some mismanagement in the {@code BackgroundManager}.</p>
+ * @author alexis
+ */
 public class RunnableBackgroundJob implements Runnable {
 
 	private Job job;
 	private ProgressMonitor pm;
 	private BackgroundManager jobQueue;
         private static final Logger LOGGER = Logger.getLogger(RunnableBackgroundJob.class);
+
+        /**
+         * Build a new {@code RunnableBackgroundJob} that will be managed by
+         * {@code JobQueue} and that will run the {@code run()} method of {@code
+         * Job}.
+         * @param jobQueue
+         * @param pm
+         * @param job
+         */
 	public RunnableBackgroundJob(BackgroundManager jobQueue, ProgressMonitor pm, Job job) {
 		this.job = job;
 		this.pm = pm;
