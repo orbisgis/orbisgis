@@ -239,9 +239,8 @@ public class Toc extends JPanel implements EditorDockable  {
         
         
         if(!sourceToDrop.isEmpty()) {
-            BackgroundManager bm = (BackgroundManager) Services
-                            .getService(BackgroundManager.class);
-            bm.backgroundOperation(new DropDataSourceListProcess(dropNode,index,sourceToDrop));
+            BackgroundManager bm = (BackgroundManager) Services.getService(BackgroundManager.class);
+            bm.nonBlockingBackgroundOperation(new DropDataSourceListProcess(dropNode,index,sourceToDrop));
         }
     }
 
@@ -605,8 +604,6 @@ public class Toc extends JPanel implements EditorDockable  {
                     this.dropIndex = dropIndex;
                     this.draggedResources = draggedResources;
                 }
-
-
 
                 @Override
 		public void run(ProgressMonitor pm) {

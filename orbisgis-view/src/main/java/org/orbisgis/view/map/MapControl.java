@@ -241,10 +241,9 @@ public class MapControl extends JComponent implements ContainerListener {
 
 				// now we start the actual drawer
 				drawer = new Drawer();
-				BackgroundManager bm = Services
-						.getService(BackgroundManager.class);
+				BackgroundManager bm = Services.getService(BackgroundManager.class);
 				bm.nonBlockingBackgroundOperation(new DefaultJobId(
-						"org.orbisgis.jobs.MapControl-" + processId), drawer); //$NON-NLS-1$
+						"org.orbisgis.jobs.MapControl-" + processId), drawer);
                     } else {
                         // Currently drawing with a mix of old and new map context !
                         // Stop the drawing
@@ -289,7 +288,7 @@ public class MapControl extends JComponent implements ContainerListener {
 		}
 
 		public String getTaskName() {
-			return I18N.tr("Drawing"); //$NON-NLS-1$
+			return I18N.tr("Drawing");
 		}
 
 		public void run(ProgressMonitor pm) {
@@ -413,7 +412,10 @@ public class MapControl extends JComponent implements ContainerListener {
 						mapTransform.setExtent(e);
 					}
 				} else {
-					invalidateImage();
+                                        drawer = new Drawer();
+                                        BackgroundManager bm = Services.getService(BackgroundManager.class);
+                                        bm.nonBlockingBackgroundOperation(new DefaultJobId(
+						"org.orbisgis.jobs.MapControl-" + processId), drawer);
 				}
 			}
 		}
@@ -442,7 +444,9 @@ public class MapControl extends JComponent implements ContainerListener {
 		}
 
 		public void styleChanged(LayerListenerEvent e) {
-			invalidateImage();
+                        BackgroundManager bm = Services.getService(BackgroundManager.class);
+                        bm.nonBlockingBackgroundOperation(new DefaultJobId(
+                                "org.orbisgis.jobs.MapControl-" + processId), drawer);
 		}
 
 		public void selectionChanged(SelectionEvent e) {
