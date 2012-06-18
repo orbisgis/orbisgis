@@ -155,6 +155,9 @@ public class Layer extends BeanLayer {
 	public void open() throws LayerException {
 		try {
 			dataSource.open();
+                        initStyles();
+                        Style s = new Style(this, true);
+                        getStyles().add(s);
 			// Create a legend for each spatial field
 			Metadata metadata = dataSource.getMetadata();
 			for (int i = 0; i < metadata.getFieldCount(); i++) {
@@ -162,13 +165,11 @@ public class Layer extends BeanLayer {
 				int fieldTypeCode = fieldType.getTypeCode();
 				if ((fieldTypeCode & Type.GEOMETRY) !=0) {
 					UniqueSymbolLegend legend = getDefaultVectorialLegend(fieldType);
-
 					try {
 						setLegend(metadata.getFieldName(i), legend);
 					} catch (DriverException e) {
 						// Should never reach here with UniqueSymbolLegend
 					}
-
 				} else if (fieldTypeCode == Type.RASTER) {
 					GeoRaster gr = dataSource.getRaster(0);
 					RasterLegend rasterLegend;

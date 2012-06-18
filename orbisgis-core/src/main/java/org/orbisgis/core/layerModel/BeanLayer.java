@@ -38,17 +38,13 @@ package org.orbisgis.core.layerModel;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.io.File;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import net.opengis.ows_context.*;
 import org.gdms.data.DataSource;
-import org.gdms.data.db.DBSource;
 import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -236,14 +232,16 @@ public abstract class BeanLayer extends AbstractLayer {
                 }
 	}
        
+        /**
+         * Initialize the list of styles, letting it empty and not notifying the
+         * listeners.
+         */
+        protected final void initStyles(){
+                styleList = new ArrayList<Style>();
+        }
         
     @Override
     public List<Style> getStyles() {
-        if (styleList == null){
-            List<Style> newStyleList = new ArrayList<Style>();
-            newStyleList.add(new Style(this, true));
-            setStyles(newStyleList);
-        }
         return styleList;
     }
 
