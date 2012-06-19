@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-        <parent>
-                <artifactId>orbisgis</artifactId>
-                <groupId>org.orbisgis</groupId>
-                <version>4.0-SNAPSHOT</version>
-        </parent>
         <modelVersion>4.0.0</modelVersion>
         <groupId>org.orbisgis</groupId>
         <artifactId>commons</artifactId>
         <name>commons</name>
         <version>1.4-SNAPSHOT</version>
-        <url>http://maven.apache.org</url>
+        <organization>
+                <name>IRSTV CNRS-FR-2488</name>
+                <url>http://www.irstv.fr/</url>
+        </organization>
+        <url>http://www.orbisgis.org</url>
         <dependencies>
                 <dependency>
                         <groupId>junit</groupId>
@@ -26,4 +25,51 @@
                         <scope>compile</scope>
                 </dependency>
         </dependencies>
+        <properties>
+                <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+                <netbeans.hint.license>OrbisGIS</netbeans.hint.license>
+        </properties>
+        <distributionManagement>
+                <repository>
+                        <id>IRSTV</id>
+                        <name>IRSTV repository</name>
+                        <url>scp://ateliersig@repo.orbisgis.org:/var/www/repo.orbisgis.org/</url>
+                </repository>
+        </distributionManagement>
+        <build>
+                <plugins>
+                        <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-compiler-plugin</artifactId>
+                                <version>2.3.2</version>
+                                <configuration>
+                                        <source>1.6</source>
+                                        <target>1.6</target>
+                                </configuration>
+                        </plugin>
+                        <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-jar-plugin</artifactId>
+                                <version>2.4</version>
+                                <configuration>
+                                        <archive>
+                                                <manifest>
+                                                        <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                                                </manifest>
+                                                <manifestEntries>
+                                                        <Specification-Vendor-URL>${pom.organization.url}</Specification-Vendor-URL>
+                                                        <Specification-URL>${pom.url}</Specification-URL>
+                                                </manifestEntries>
+                                        </archive>
+                                </configuration>
+                        </plugin>
+                </plugins>
+                <extensions>
+                        <extension>
+                                <groupId>org.apache.maven.wagon</groupId> 
+                                <artifactId>wagon-ssh</artifactId> 
+                                <version>2.2</version> 
+                        </extension> 
+                </extensions>
+        </build>
 </project>
