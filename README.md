@@ -14,10 +14,12 @@ Build instruction
 OrbisGIS uses the Maven build system. 
 
  * To launch a full build (including tests):
+
 ```
 mvn clean install
 ```
  * To run OrbisGIS from Maven:
+
 ```
 cd orbisgis-ui\
 mvn exec:exec
