@@ -82,6 +82,11 @@ public class SQLParser extends AbstractParser {
                                 statements[i] += ";";
                                 String trimmed = statements[i].trim();
 
+                                if (trimmed.startsWith("--")) {
+                                        totalLength += statements[i].length();
+                                        continue;
+                                }
+
                                 // 0: current absolute start position
                                 // 1: current trimmed absolute start position
                                 // 2: length of the current section
@@ -104,19 +109,22 @@ public class SQLParser extends AbstractParser {
                                         statements[statements.length - 1] += ";";
                                 }
                                 String trimmed = statements[statements.length - 1].trim();
-                                // 0: current absolute start position
-                                // 1: current trimmed absolute start position
-                                // 2: length of the current section
-                                // 3: length of the trimmed section
-                                int[] info = new int[4];
-                                info[0] = totalLength;
-                                info[1] = totalLength + statements[statements.length - 1].indexOf(trimmed);
 
-                                info[2] = statements[statements.length - 1].length();
-                                info[3] = trimmed.length();
-                                ParserNotice p = getError(statements[statements.length - 1], info);
-                                if (p != null) {
-                                        res.addNotice(p);
+                                if (!trimmed.startsWith("--")) {
+                                        // 0: current absolute start position
+                                        // 1: current trimmed absolute start position
+                                        // 2: length of the current section
+                                        // 3: length of the trimmed section
+                                        int[] info = new int[4];
+                                        info[0] = totalLength;
+                                        info[1] = totalLength + statements[statements.length - 1].indexOf(trimmed);
+
+                                        info[2] = statements[statements.length - 1].length();
+                                        info[3] = trimmed.length();
+                                        ParserNotice p = getError(statements[statements.length - 1], info);
+                                        if (p != null) {
+                                                res.addNotice(p);
+                                        }
                                 }
                         }
 
@@ -187,7 +195,7 @@ public class SQLParser extends AbstractParser {
 
                 loc[0] = textArea.getLineOfOffset(info[1]);
                 loc[4] = textArea.getLineOfOffset(info[0]) + ex.line - 1;
-                 final int startOfLine = textArea.getLineStartOffset(loc[4]);
+                final int startOfLine = textArea.getLineStartOffset(loc[4]);
                 loc[1] = info[0] - startOfLine;
 
                 if (loc[1] < 0) {
