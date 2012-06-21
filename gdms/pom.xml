@@ -64,7 +64,7 @@
                 <dependency>
                         <groupId>org.gdms.test</groupId>
                         <artifactId>gdmstest</artifactId>
-                        <version>0.4-SNAPSHOT</version>
+                        <version>0.5-SNAPSHOT</version>
                         <scope>test</scope>
                 </dependency>
                 <dependency>
