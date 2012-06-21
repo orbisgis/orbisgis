@@ -7,20 +7,12 @@ ${licensePrefix}data-sources such as spatial vectorial data or alphanumeric. Bas
 ${licensePrefix}on the JTS library and conform to the OGC simple feature access
 ${licensePrefix}specifications, it provides a complete and robust API to manipulate
 ${licensePrefix}in a SQL way remote DBMS (PostgreSQL, H2...) or flat files (.shp,
-${licensePrefix}.csv...). It is produced by the "Atelier SIG" team of
-${licensePrefix}the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+${licensePrefix}.csv...).
 ${licensePrefix}
+${licensePrefix}Gdms is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+${licensePrefix}team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
 ${licensePrefix}
-${licensePrefix}Team leader : Erwan BOCHER, scientific researcher,
-${licensePrefix}
-${licensePrefix}User support leader : Gwendall Petit, geomatic engineer.
-${licensePrefix}
-${licensePrefix}Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, 
-${licensePrefix}scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
-${licensePrefix}
-${licensePrefix}Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
-${licensePrefix}
-${licensePrefix}Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
+${licensePrefix}Copyright (C) 2007-2012 IRSTV FR CNRS 2488
 ${licensePrefix}
 ${licensePrefix}This file is part of Gdms.
 ${licensePrefix}

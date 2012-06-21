@@ -1,23 +1,12 @@
 /**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Lead Erwan BOCHER, scientific researcher,
- *
- *  Developer lead : Pierre-Yves FADET, computer engineer.
- *
- *  User support lead : Gwendall Petit, geomatic engineer.
- *
- * Previous computer developer : Thomas LEDUC, scientific researcher, Fernando GONZALEZ
- * CORTES, computer engineer.
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -33,15 +22,10 @@
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult: <http://orbisgis.cerma.archi.fr/>
- * <http://sourcesup.cru.fr/projects/orbisgis/>
- *
+ * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * Pierre-Yves.Fadet _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
- **/
-
+ * info_at_ orbisgis.org
+ */
 package org.orbisgis.core.ui.plugins.views.geocognition;
 
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;

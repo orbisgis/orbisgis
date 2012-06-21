@@ -17,9 +17,9 @@
  * (ANR) under contract ANR-07-VULN-01.
  * 
  * TANATO is distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Jean-Yves MARTIN
- * Copyright (C) 2011 Erwan BOCHER, , Alexis GUEGANNO, Jean-Yves MARTIN
+ * the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * 
+ * Copyright (C) 2010-2012 IRSTV FR CNRS 2488
  * 
  * TANATO is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -33,7 +33,7 @@
  * You should have received a copy of the GNU General Public License along with
  * TANATO. If not, see <http://www.gnu.org/licenses/>.
  * 
- * For more information, please consult: <http://trac.orbisgis.org/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
  * info_at_ orbisgis.org
  */
@@ -41,10 +41,10 @@ package org.gdms.sql.function.spatial.tin;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
+import org.jdelaunay.delaunay.error.DelaunayError;
 import org.jdelaunay.delaunay.geometries.DEdge;
 import org.jdelaunay.delaunay.geometries.DPoint;
 import org.jdelaunay.delaunay.geometries.DTriangle;
-import org.jdelaunay.delaunay.error.DelaunayError;
 
 /**
  * A small factory used to create jDelaunay objects from JTS geometries.
