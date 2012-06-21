@@ -38,7 +38,7 @@ import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 
 /**
  * Filter on the dimension of the coordinate sequence.
- * 
+ *
  * @author Erwan Bocher
  */
 public class CoordinateSequenceDimensionFilter implements CoordinateSequenceFilter {
@@ -53,16 +53,26 @@ public class CoordinateSequenceDimensionFilter implements CoordinateSequenceFilt
 
         @Override
         public void filter(CoordinateSequence seq, int i) {
-                double firstZ = seq.getOrdinate(i, CoordinateSequence.Z);
-                if (!Double.isNaN(firstZ)) {
-                        double firstM = seq.getOrdinate(i, CoordinateSequence.M);
-                        if (!Double.isNaN(firstM)) {
-                                dimension = XYZM;
-                        } else {
-                                dimension = XYZ;
-                        }
-                } else {
+                int dim = seq.getDimension();
+                // we have to check for both the dimension AND that the value is not NaN
+                if (dim == XY) {
                         dimension = XY;
+                } else {
+                        double firstZ = seq.getOrdinate(i, CoordinateSequence.Z);
+                        if (!Double.isNaN(firstZ)) {
+                                if (dim == XYZ) {
+                                        dimension = XYZ;
+                                } else {
+                                        double firstM = seq.getOrdinate(i, CoordinateSequence.M);
+                                        if (!Double.isNaN(firstM)) {
+                                                dimension = XYZM;
+                                        } else {
+                                                dimension = XYZ;
+                                        }
+                                }
+                        } else {
+                                dimension = XY;
+                        }
                 }
                 if (dimension > lastDimen) {
                         lastDimen = dimension;
@@ -74,6 +84,7 @@ public class CoordinateSequenceDimensionFilter implements CoordinateSequenceFilt
 
         /**
          * Gets the dimension of the coordinate sequence.
+         *
          * @return a integer between 2 and 4.
          */
         public int getDimension() {
@@ -82,14 +93,18 @@ public class CoordinateSequenceDimensionFilter implements CoordinateSequenceFilt
 
         /**
          * Sets the maximum allowed dimension for the filter.
-         * 
+         *
          * The filter will stop after this dimension has been reached.
          * Possible values are:
-         *  - <code>CoordinateSequenceDimensionFilter.XY</code>
-         *  - <code>CoordinateSequenceDimensionFilter.XYZ</code>
-         *  - <code>CoordinateSequenceDimensionFilter.XYZM</code>
-         * Default value is <code>CoordinateSequenceDimensionFilter.XYZM</code>.
-         * 
+         * -
+         * <code>CoordinateSequenceDimensionFilter.XY</code>
+         * -
+         * <code>CoordinateSequenceDimensionFilter.XYZ</code>
+         * -
+         * <code>CoordinateSequenceDimensionFilter.XYZM</code>
+         * Default value is
+         * <code>CoordinateSequenceDimensionFilter.XYZM</code>.
+         *
          * @param maxDim a integer dimension
          */
         public void setMAXDim(int maxDim) {

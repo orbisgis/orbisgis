@@ -33,19 +33,22 @@
  */
 package org.gdms.geometryUtils;
 
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.CoordinateSequenceFilter;
 import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Point;
+import com.vividsolutions.jts.geom.impl.PackedCoordinateSequence;
 import com.vividsolutions.jts.io.WKTReader;
-import junit.framework.TestCase;
-import org.gdms.geometryUtils.filter.CoordinateSequenceDimensionFilter;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+import org.gdms.geometryUtils.filter.CoordinateSequenceDimensionFilter;
 
 /**
  *
  * @author ebocher
  */
-public class GeometryTypeUtilTest extends TestCase {
+public class GeometryTypeUtilTest {
 
         public WKTReader wKTReader = new WKTReader();
 
@@ -66,6 +69,7 @@ public class GeometryTypeUtilTest extends TestCase {
          * Test several geometries
          * @throws Exception
          */
+        @Test
         public void testGeometryTypes() throws Exception {
                 Geometry geom = wKTReader.read("POINT(0 0)");
                 assertTrue(GeometryTypeUtil.isPoint(geom));
@@ -88,6 +92,7 @@ public class GeometryTypeUtilTest extends TestCase {
          * Test if a geometry has a z value or not
          * @throws Exception
          */
+        @Test
         public void testGeometryHasZ() throws Exception {
                 Geometry geom = wKTReader.read("POINT(0 0)");
                 assertFalse(GeometryTypeUtil.is25Geometry(geom));
@@ -97,5 +102,13 @@ public class GeometryTypeUtilTest extends TestCase {
                 assertTrue(GeometryTypeUtil.is25Geometry(geom));
                 geom = wKTReader.read("MULTILINESTRING((0 0, 1 1),(0 0, 1 1 1))");
                 assertTrue(GeometryTypeUtil.is25Geometry(geom));
+        }
+        
+        @Test
+        public void regressionIssue1() throws Exception {
+                PackedCoordinateSequence.Double seq = new PackedCoordinateSequence.Double(new double[]{1, 4}, 2);
+                Point p = new Point(seq, new GeometryFactory());
+
+                assertFalse(GeometryTypeUtil.is25Geometry(p));
         }
 }
