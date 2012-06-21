@@ -30,24 +30,29 @@ package org.orbisgis.core.ui.plugins.editors.mapEditor;
 
 import javax.swing.JButton;
 
+import org.orbisgis.core.DataManager;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.images.OrbisGISIcon;
+import org.orbisgis.core.crs.ProjectionConfigPanel;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editor.IEditor;
 import org.orbisgis.core.ui.pluginSystem.AbstractPlugIn;
 import org.orbisgis.core.ui.pluginSystem.PlugInContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.plugins.editor.PlugInEditorListener;
-import org.orbisgis.core.ui.plugins.views.MapEditorPlugIn;
 import org.orbisgis.core.ui.plugins.views.editor.EditorManager;
+import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
+import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
+
+import org.gdms.data.DataSourceFactory;
 
 public class CoordinateReferenceSystemPlugIn extends AbstractPlugIn{
 
 	private JButton CRSButton;
 
 	public boolean execute(PlugInContext context) throws Exception {
-		final ProjectionConfigPanel projectionPanel = new ProjectionConfigPanel(
+                DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
+		final ProjectionConfigPanel projectionPanel = new ProjectionConfigPanel(dsf,
 				context.getWorkbenchContext().getWorkbench().getFrame(), true);
 
 
@@ -82,4 +87,3 @@ public class CoordinateReferenceSystemPlugIn extends AbstractPlugIn{
 		return isVisible;
 	}
 }
-*/
