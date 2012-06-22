@@ -208,13 +208,13 @@ public class ProcessorTest extends TestBase {
                 p.prepare();
                 Metadata m1 = p.getResultMetadata();
                 p.cleanUp();
-                assertEquals(m1.getFieldType(0).getTypeCode(), Type.INT);
-                p = getValidatedStatement("select 3.0/3 from alltypes;");
+                assertEquals(Type.FLOAT, m1.getFieldType(0).getTypeCode());
+                p = getValidatedStatement("select (3.0 :: double)/3 from alltypes;");
                 p.setDataSourceFactory(dsf);
                 p.prepare();
                 m1 = p.getResultMetadata();
                 p.cleanUp();
-                assertEquals(m1.getFieldType(0).getTypeCode(), Type.DOUBLE);
+                assertEquals(Type.DOUBLE, m1.getFieldType(0).getTypeCode());
         }
 
         private void compareMetadata(Metadata m1, Metadata m2)
