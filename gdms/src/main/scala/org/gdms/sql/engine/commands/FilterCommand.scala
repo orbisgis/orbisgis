@@ -73,11 +73,12 @@ class ExpressionFilterCommand(e: Expression) extends FilterCommand with Expressi
   protected def filterExecute: Row => Boolean = { e.evaluate(_).getAsBoolean.booleanValue }
   
   override def doPrepare {
-    // no aggregate function is allowed in a WHERE / HAVING clause
+    // no aggregate function is allowed in a WHERE clause
     // this check cannot be done in Filter Operation because aggregates are resolved later.
+    // HAVING clauses are handled during the function step (aggregates are allowed in these)
     def check (ex: Expression) {
       ex match {
-        case agg(f,_) => throw new SemanticException("No aggregate function is allowed in a WHERE / HAVING clause."
+        case agg(f,_) => throw new SemanticException("No aggregate function is allowed in a WHERE clause."
                                                      + " Found function '" + f.getName + "'.")
         case _ => ex.children map check
       }

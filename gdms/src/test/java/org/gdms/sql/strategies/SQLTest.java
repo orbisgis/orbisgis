@@ -994,6 +994,7 @@ public class SQLTest extends TestBase {
         
         @Test
         public void testHavingDirectAggregate() throws Exception {
+                dsf.getProperties().setProperty("output.explain", "true");
                 dsf.getSourceManager().register("groupcsv",
                         new File(TestResourceHandler.TESTRESOURCES, "groupby.csv"));
                 DataSource ds = dsf.getDataSourceFromSQL("SELECT country"
@@ -1001,6 +1002,18 @@ public class SQLTest extends TestBase {
                         + " ORDER BY country;");
                 ds.open();
                 assertEquals(ds.getRowCount(), 3);
+                ds.close();
+        }
+        
+        @Test
+        public void testHavingDirectAggregateNoGroupBy() throws Exception {
+                dsf.getProperties().setProperty("output.explain", "true");
+                dsf.getSourceManager().register("groupcsv",
+                        new File(TestResourceHandler.TESTRESOURCES, "groupby.csv"));
+                DataSource ds = dsf.getDataSourceFromSQL("SELECT 1"
+                        + " FROM groupcsv HAVING Sum(id :: double) >= 8;");
+                ds.open();
+                assertEquals(1, ds.getRowCount());
                 ds.close();
         }
 
