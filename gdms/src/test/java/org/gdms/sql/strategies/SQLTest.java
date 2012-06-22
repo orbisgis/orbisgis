@@ -978,6 +978,33 @@ public class SQLTest extends TestBase {
         }
 
         @Test
+        public void testHavingAggregateAlias() throws Exception {
+                dsf.getSourceManager().register("groupcsv",
+                        new File(TestResourceHandler.TESTRESOURCES, "groupby.csv"));
+                DataSource ds = dsf.getDataSourceFromSQL("SELECT Sum(id :: double) AS agg"
+                        + " FROM groupcsv GROUP BY country, category HAVING agg >= 8"
+                        + " ORDER BY country, category;");
+                ds.open();
+                assertEquals(ds.getRowCount(), 3);
+                assertEquals(ds.getInt(0, 0), 9);
+                assertEquals(ds.getInt(1, 0), 8);
+                assertEquals(ds.getInt(2, 0), 11);
+                ds.close();
+        }
+        
+        @Test
+        public void testHavingDirectAggregate() throws Exception {
+                dsf.getSourceManager().register("groupcsv",
+                        new File(TestResourceHandler.TESTRESOURCES, "groupby.csv"));
+                DataSource ds = dsf.getDataSourceFromSQL("SELECT country"
+                        + " FROM groupcsv GROUP BY country, category HAVING Sum(id :: double) >= 8"
+                        + " ORDER BY country;");
+                ds.open();
+                assertEquals(ds.getRowCount(), 3);
+                ds.close();
+        }
+
+        @Test
         public void testLimitOffset() throws Exception {
                 String resource = SHPTABLE;
                 testLimitOffset("select * from " + resource + " where true");
