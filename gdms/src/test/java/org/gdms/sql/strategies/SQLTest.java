@@ -243,7 +243,8 @@ public class SQLTest extends TestBase {
                 DataSource d = dsf.getDataSource("temp");
                 d.open();
                 assertEquals(Type.DOUBLE, d.getFieldType(d.getFieldIndexByName("cons")).getTypeCode());
-                assertEquals(4, d.getDouble(4, d.getFieldIndexByName("cons")), 1e-15);
+                assertEquals(4, d.getDouble(4, "cons"), 1e-15);
+                assertFalse(d.isNull(0, "cons"));
                 d.close();
 
                 // no implicit conversion from double to int: this should fail

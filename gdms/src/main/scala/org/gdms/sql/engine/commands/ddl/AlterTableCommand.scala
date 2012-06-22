@@ -158,12 +158,12 @@ extends Command with OutputCommand with ExpressionCommand {
             val newIndex = ds.getFieldIndexByName(ntemp)
             exp.headOption match {
               case Some(e) => {
-                  (1l until ds.getRowCount) foreach { i =>
+                  (0l until ds.getRowCount) foreach { i =>
                     ds.setFieldValue(i, newIndex, e.evaluate(Row(ds.getRow(i))))
                   }
                 }
               case None => {
-                  (1l until ds.getRowCount) foreach { i =>
+                  (0l until ds.getRowCount) foreach { i =>
                     ds.setFieldValue(i, newIndex, ds.getFieldValue(i, index))
                   }
                 }
