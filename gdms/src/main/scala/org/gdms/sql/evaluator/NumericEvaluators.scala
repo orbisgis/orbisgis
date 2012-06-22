@@ -151,9 +151,10 @@ case class DivideEvaluator(e1: Expression, e2: Expression) extends NumericEvalua
   def eval = s => e1.evaluate(s) multiply (e2.evaluate(s) inverse)
   override val childExpressions = e1 :: e2 :: Nil
   override def toString = "(" + e1 + " / " + e2 + ")"
-  override def sqlType = {
-    val t = super.sqlType
-    if (t == Type.FLOAT) Type.DOUBLE else t
+  override def sqlType = if (e1.evaluator.sqlType == Type.DOUBLE || e1.evaluator.sqlType == Type.DOUBLE) {
+    Type.DOUBLE
+  } else {
+    Type.FLOAT
   }
   def duplicate: DivideEvaluator = DivideEvaluator(e1.duplicate, e2.duplicate)
 }
