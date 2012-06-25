@@ -269,6 +269,7 @@ public final class DockingManager {
                 dockArea.getWorkingArea().add(dockItem);
             }                
             commonControl.addDockable(dockItem);
+            dockItem.setVisible(true);
             views.put( frame, dockItem.getUniqueId());
 
 	}
