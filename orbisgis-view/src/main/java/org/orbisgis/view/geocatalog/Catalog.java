@@ -399,10 +399,12 @@ public class Catalog extends JPanel implements DockingPanel {
          * docking system
          * @return The panel parameter instance
          */
+        @Override
         public DockingPanelParameters getDockingParameters() {
                 return dockingParameters;
         }
 
+        @Override
         public JComponent getComponent() {
                 return this;
         }
