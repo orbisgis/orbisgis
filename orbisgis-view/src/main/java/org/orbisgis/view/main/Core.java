@@ -34,7 +34,6 @@ import java.beans.EventHandler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.logging.Level;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
@@ -51,7 +50,6 @@ import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.main.frames.MainFrame;
-import org.orbisgis.view.map.MapEditor;
 import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.output.OutputManager;
@@ -227,8 +225,6 @@ public class Core {
         SwingUtilities.invokeLater( new ShowSwingApplication());
     }
     
-    private void loadMapContext() {       
-    }
     /**
      * Change the state of the main frame in the swing thread
      */
