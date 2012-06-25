@@ -397,21 +397,35 @@ public class Toc extends JPanel implements EditorDockable  {
         JPopupMenu popup = new JPopupMenu();
         Object selected = tree.getLastSelectedPathComponent();
         //Popup:delete layer
-        if(tree.getSelectionCount()>0) {
+        if(tree.getSelectionCount()>0 && selected instanceof ILayer) {
             JMenuItem deleteLayer = new JMenuItem(I18N.tr("Remove layer"),OrbisGISIcon.getIcon("remove"));
             deleteLayer.setToolTipText(I18N.tr("Remove the layer from the map context"));
             deleteLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onDeleteLayer"));
             popup.add(deleteLayer);
         }
-        //Popups : edit style, simple and advanced.
         if(selected instanceof Style){
-            JMenuItem simpleEdtiorLayer = new JMenuItem(I18N.tr("Simple style edition"),OrbisGISIcon.getIcon("pencil"));
-            simpleEdtiorLayer.setToolTipText(I18N.tr("Open the simple editor for SE styles"));
-            simpleEdtiorLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onSimpleEditor"));
-            popup.add(simpleEdtiorLayer);
+                makePopupStyle(popup);
         }
         return popup;
     }
+
+    /**
+     * If we've right-clicked on a style node
+     * @param popup
+     */
+    private void makePopupStyle(JPopupMenu popup){
+        //Display the menu to enter in the simple style editor.
+        JMenuItem simpleEdtiorLayer = new JMenuItem(I18N.tr("Simple style edition"),OrbisGISIcon.getIcon("pencil"));
+        simpleEdtiorLayer.setToolTipText(I18N.tr("Open the simple editor for SE styles"));
+        simpleEdtiorLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onSimpleEditor"));
+        popup.add(simpleEdtiorLayer);
+        //Display the menu to remove the currently selected style
+        JMenuItem deleteStyle = new JMenuItem(I18N.tr("Remove style"), OrbisGISIcon.getIcon("remove"));
+        deleteStyle.setToolTipText(I18N.tr("Remove this style from the associater layer."));
+        deleteStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onDeleteStyle"));
+        popup.add(deleteStyle);
+    }
+
     /**
      * The user click on delete layer menu item.
      */
@@ -424,6 +438,17 @@ public class Toc extends JPanel implements EditorDockable  {
                         LOGGER.error(I18N.tr("Cannot delete layer"),e);
                 }
         }    
+    }
+
+    /**
+     * The user choose to delete a style through the dedicated menu.
+     */
+    public void onDeleteStyle(){
+            Style[] styles = mapContext.getSelectedStyles();
+            for(Style s : styles){
+                    ILayer l = s.getLayer();
+                    l.removeStyle(s);
+            }
     }
 
     public void onSimpleEditor(){
