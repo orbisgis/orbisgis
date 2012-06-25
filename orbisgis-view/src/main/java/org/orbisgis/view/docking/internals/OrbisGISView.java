@@ -29,10 +29,14 @@
 
 package org.orbisgis.view.docking.internals;
 
+import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.DefaultSingleCDockable;
 import bibliothek.gui.dock.common.SingleCDockable;
 import bibliothek.gui.dock.common.action.CAction;
+import bibliothek.gui.dock.common.event.CDockableStateListener;
+import bibliothek.gui.dock.common.intern.CDockable;
 import bibliothek.gui.dock.common.intern.DefaultCDockable;
+import bibliothek.gui.dock.common.mode.ExtendedMode;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.util.List;
@@ -45,7 +49,7 @@ import org.orbisgis.view.docking.DockingPanelParameters;
  * Listen to DockingPanelParameters to change the behaviour of this dockable.
  * 
  * This class help to add OrbisGis specific actions ( Reduce, close view ..)
- * and custom compenents like custom titles.
+ * and custom components like custom titles.
  */
 public class OrbisGISView {
     private DefaultCDockable internalDock;
@@ -60,13 +64,15 @@ public class OrbisGISView {
         this.dockableParameters = dockingPanel.getDockingParameters();
         this.internalDock = internalDock;
     }
-    public static SingleCDockable createSingle(DockingPanel dockingPanel) {
+    public static SingleCDockable createSingle(DockingPanel dockingPanel, CControl ccontrol) {
         DefaultSingleCDockable dockItem = new DefaultSingleCDockable(dockingPanel.getDockingParameters().getName(),dockingPanel.getComponent());
+        ccontrol.addDockable(dockItem);
         new OrbisGISView(dockingPanel,dockItem).init(dockItem);
         return dockItem;
     }
-    public static CustomMultipleCDockable createMultiple(DockingPanel dockingPanel,InternalCommonFactory factory) {
+    public static CustomMultipleCDockable createMultiple(DockingPanel dockingPanel,InternalCommonFactory factory, CControl ccontrol) {
         CustomMultipleCDockable dockItem = new CustomMultipleCDockable(dockingPanel,factory);
+        ccontrol.addDockable(dockItem);
         //Feed and link the CDockable
         new OrbisGISView(dockingPanel,dockItem).init(dockItem);
         return dockItem;        
@@ -85,6 +91,7 @@ public class OrbisGISView {
         internalDock.setMinimizable(dockableParameters.isMinimizable());
         internalDock.setExternalizable(dockableParameters.isExternalizable());
         internalDock.setCloseable(dockableParameters.isCloseable());
+        internalDock.setVisible(dockableParameters.isVisible());
         onSetToolBar(dockableParameters.getToolBar());        
     }
     /**
@@ -171,7 +178,23 @@ public class OrbisGISView {
                                                 this,
                                                 "onSetToolBar",
                                                 "newValue"));
-  
+        //Link visible state change
+        dockableParameters.addPropertyChangeListener(
+                            DockingPanelParameters.PROP_VISIBLE,
+                            EventHandler.create(PropertyChangeListener.class,
+                                                internalDock,
+                                                "setVisible",
+                                                "newValue"));
+        //Visible state back listener, change property on user action        
+        internalDock.addCDockableStateListener(
+                EventHandler.create(CDockableStateListener.class,this,"visibilityChanged"));
     }
+
+        public void visibilityChanged() {
+                if(internalDock.isVisible()!=dockableParameters.isVisible()) {
+                        dockableParameters.setVisible(internalDock.isVisible());
+                }
+        }
+
     
 }

@@ -64,7 +64,31 @@ public class DockingPanelParameters implements Serializable {
     public static final String PROP_CLOSEABLE = "closeable";
     private JToolBar toolBar = null;
     public static final String PROP_TOOLBAR = "toolBar";
+        private boolean visible = true;
+        public static final String PROP_VISIBLE = "visible";
 
+        /**
+         * Get the value of visible
+         *
+         * @return the value of visible
+         */
+        public boolean isVisible() {
+                return visible;
+        }
+
+        /**
+         * Set the value of visible
+         *
+         * @param visible new value of visible
+         */
+        public void setVisible(boolean visible) {
+                boolean oldVisible = this.visible;
+                this.visible = visible;
+                propertySupport.firePropertyChange(PROP_VISIBLE, oldVisible, visible);
+        }
+
+    
+    
     /**
      * Get the value of toolBar
      *

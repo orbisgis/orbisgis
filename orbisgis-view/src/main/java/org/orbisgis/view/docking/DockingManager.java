@@ -31,7 +31,6 @@ package org.orbisgis.view.docking;
 import bibliothek.extension.gui.dock.preference.PreferenceTreeDialog;
 import bibliothek.extension.gui.dock.preference.PreferenceTreeModel;
 import bibliothek.gui.DockStation;
-import bibliothek.gui.dock.FlapDockStation;
 import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.MultipleCDockableFactory;
 import bibliothek.gui.dock.common.SingleCDockable;
@@ -42,7 +41,6 @@ import bibliothek.gui.dock.facile.menu.RootMenuPiece;
 import bibliothek.gui.dock.layout.DockableProperty;
 import bibliothek.gui.dock.util.PropertyKey;
 import bibliothek.util.PathCombiner;
-import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -142,7 +140,7 @@ public final class DockingManager {
          * before loading the layout {@link setDockingStateFile}
          */
         public void registerPanelFactory(String factoryName,DockingPanelFactory factory) {
-            InternalCommonFactory dockingFramesFactory = new InternalCommonFactory(factory);
+            InternalCommonFactory dockingFramesFactory = new InternalCommonFactory(factory,commonControl);
             commonControl.addMultipleDockableFactory(factoryName, dockingFramesFactory);
         }
         
@@ -183,9 +181,7 @@ public final class DockingManager {
                 //preferences = new MergedPreferenceModel
                 preferences = new OrbisGISPreferenceTreeModel( commonControl,PathCombiner.APPEND);
                 commonControl.setPreferenceModel(preferences);
-                //Set the default empty size of border docking, named flap
-                commonControl.putProperty(FlapDockStation.MINIMUM_SIZE,  new Dimension(4,4));
-                
+
                 //DEFAULT property of a view
 		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, i18n.tr("Docked Window") );
 		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_ICON, OrbisGISIcon.getIcon("mini_orbisgis") );
@@ -195,10 +191,6 @@ public final class DockingManager {
                 
 
                 owner.add(commonControl.getContentArea());
-
-                //Reduce the default height of the TOP flap bar to 0 px
-                commonControl.getContentArea().getNorth().setMinimumSize(new Dimension(-1,0));
- 
 	}
         
         /**
@@ -254,7 +246,7 @@ public final class DockingManager {
                 //We set the name as the name of the class
                 frame.getDockingParameters().setName(frame.getClass().getCanonicalName());
             }
-            SingleCDockable dockItem = OrbisGISView.createSingle( frame );
+            SingleCDockable dockItem = OrbisGISView.createSingle( frame, commonControl );
             //Place the item in a dockstation
             String restrictedAreaName = frame.getDockingParameters().getDockingArea();
             if(!restrictedAreaName.isEmpty()) {
@@ -268,8 +260,6 @@ public final class DockingManager {
                 dockItem.setWorkingArea(dockArea.getWorkingArea());
                 dockArea.getWorkingArea().add(dockItem);
             }                
-            commonControl.addDockable(dockItem);
-            dockItem.setVisible(true);
             views.put( frame, dockItem.getUniqueId());
 
 	}
