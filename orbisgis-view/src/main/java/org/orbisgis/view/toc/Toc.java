@@ -60,6 +60,7 @@ import org.orbisgis.core.renderer.se.SeExceptions;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.OpenFilePanel;
+import org.orbisgis.sif.SaveFilePanel;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
@@ -446,6 +447,12 @@ public class Toc extends JPanel implements EditorDockable {
                 deleteStyle.setToolTipText(I18N.tr("Remove this style from the associater layer."));
                 deleteStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onDeleteStyle"));
                 popup.add(deleteStyle);
+                //Export this style in a file
+                JMenuItem exportStyle = new JMenuItem(I18N.tr("Export style"), OrbisGISIcon.getIcon("add"));
+                exportStyle.setToolTipText(I18N.tr("Export this style from the associater layer."));
+                exportStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onExportStyle"));
+                popup.add(exportStyle);
+
         }
 
         /**
@@ -487,7 +494,28 @@ public class Toc extends JPanel implements EditorDockable {
         }
 
         /**
-         * The user choose to delete a style through the dedicated menu.
+         * The user choose to export a style through the dedicated menu.
+         */
+        public void onExportStyle() {
+                Style[] styles = mapContext.getSelectedStyles();
+                if(styles.length == 1){
+                        Style style = styles[0];
+                        final SaveFilePanel outputXMLPanel = new SaveFilePanel(
+                                        "org.orbisgis.core.ui.editorViews.toc.actions.ImportStyle",
+                                        "Choose a location");
+
+                        outputXMLPanel.addFilter("se", "Symbology Encoding FeatureTypeStyle");
+
+                        if (UIFactory.showDialog(outputXMLPanel)) {
+                                String seFile = outputXMLPanel.getSelectedFile().getAbsolutePath();
+                                style.export(seFile);
+                        }
+                }
+        }
+
+        /**
+         * The user choose to import a style and to add it to the selected layer
+         * through the dedicated menu.
          */
         public void onImportStyle() {
                 try {
