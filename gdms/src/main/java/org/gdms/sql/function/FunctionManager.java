@@ -42,6 +42,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import org.gdms.data.InitializationException;
+import org.gdms.driver.ply.ST_PLYExporter;
 import org.gdms.sql.function.alphanumeric.AutoNumeric;
 import org.gdms.sql.function.alphanumeric.Average;
 import org.gdms.sql.function.alphanumeric.Count;
@@ -190,7 +191,8 @@ import org.gdms.sql.function.spatial.raster.interpolation.ST_Interpolate;
 import org.gdms.sql.function.spatial.raster.morphology.ST_Shadow;
 import org.gdms.sql.function.spatial.raster.properties.ST_Count;
 import org.gdms.sql.function.spatial.raster.properties.ST_PixelValue;
-import org.gdms.sql.function.spatial.tin.ST_TriangleContouring;
+import org.gdms.sql.function.spatial.tin.analysis.ST_TriangleContouring;
+import org.gdms.sql.function.spatial.tin.create.ST_TIN;
 import org.gdms.sql.function.system.ExportCall;
 import org.gdms.sql.function.system.FunctionHelp;
 import org.gdms.sql.function.system.ImportCall;
@@ -362,6 +364,8 @@ public final class FunctionManager {
                 addFunction(ST_TriangleContouring.class);
                 addFunction(ImportCall.class);
                 addFunction(ST_PixelValue.class);
+                addFunction(ST_TIN.class);
+                addFunction(ST_PLYExporter.class);
         }
 
         /**
