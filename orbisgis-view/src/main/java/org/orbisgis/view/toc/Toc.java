@@ -59,6 +59,7 @@ import org.orbisgis.core.renderer.classification.ClassificationMethodException;
 import org.orbisgis.core.renderer.se.SeExceptions;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.sif.OpenFilePanel;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
@@ -402,6 +403,13 @@ public class Toc extends JPanel implements EditorDockable  {
             deleteLayer.setToolTipText(I18N.tr("Remove the layer from the map context"));
             deleteLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onDeleteLayer"));
             popup.add(deleteLayer);
+            if(tree.getSelectionCount() ==1){
+                    //display the menu to add a style from a file
+                    JMenuItem importStyle = new JMenuItem(I18N.tr("Import style"), OrbisGISIcon.getIcon("add"));
+                    importStyle.setToolTipText(I18N.tr("Import a style from a file."));
+                    importStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onImportStyle"));
+                    popup.add(importStyle);
+            }
         }
         if(selected instanceof Style){
                 makePopupStyle(popup);
@@ -448,6 +456,40 @@ public class Toc extends JPanel implements EditorDockable  {
             for(Style s : styles){
                     ILayer l = s.getLayer();
                     l.removeStyle(s);
+            }
+    }
+
+    /**
+     * The user choose to delete a style through the dedicated menu.
+     */
+    public void onImportStyle(){
+            try {
+                    ILayer[] layers = mapContext.getSelectedLayers();
+                    if(layers.length==1){
+                        ILayer layer = layers[0];
+                        Type typ = layer.getDataSource().getMetadata().getFieldType(layer.getDataSource().getSpatialFieldIndex());
+
+                        final OpenFilePanel inputXMLPanel = new OpenFilePanel(
+                                "org.orbisgis.core.ui.editorViews.toc.actions.ImportStyle",
+                                "Choose a location");
+
+                        inputXMLPanel.addFilter("se", "Symbology Encoding 2.0 (FeatureTypeStyle");
+
+                        if (UIFactory.showDialog(inputXMLPanel)) {
+                                String seFile = inputXMLPanel.getSelectedFile().getAbsolutePath();
+                                try {
+                                        layer.addStyle(0, new Style(layer, seFile));
+                                } catch (SeExceptions.InvalidStyle ex) {
+                                        LOGGER.error(I18N.tr(ex.getLocalizedMessage()));
+                                        String msg = ex.getMessage().replace("<", "\n    - ").replace(',', ' ').replace(": ", "\n - ");
+                                        JOptionPane.showMessageDialog(null, msg,
+                                                "Error while loading the style", JOptionPane.ERROR_MESSAGE);
+                                }
+                        }
+                    }
+
+            } catch (DriverException e) {
+                    LOGGER.error("Error while loading the style", e);
             }
     }
 
