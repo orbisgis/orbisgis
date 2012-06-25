@@ -31,11 +31,8 @@
  * or contact directly:
  * info@orbisgis.org
  */
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-package org.gdms.sql.function.spatial.tin;
+
+package org.gdms.sql.function.spatial.tin.analysis;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import java.util.HashMap;

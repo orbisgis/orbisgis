@@ -31,7 +31,7 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.sql.function.spatial.tin;
+package org.gdms.sql.function.spatial.tin.analysis;
 
 /***********************************
  * ANR EvalPDU
