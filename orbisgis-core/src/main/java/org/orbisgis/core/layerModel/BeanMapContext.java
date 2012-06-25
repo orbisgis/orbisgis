@@ -152,10 +152,13 @@ public abstract class BeanMapContext implements MapContext {
      *
      * @param boundingBox new value of boundingBox
      */
+    @Override
     public void setBoundingBox(Envelope boundingBox) {
-        Envelope oldBoundingBox = this.boundingBox;
-        this.boundingBox = boundingBox;
-        propertyChangeSupport.firePropertyChange(PROP_BOUNDINGBOX, oldBoundingBox, boundingBox);
+        if(!boundingBox.equals(this.boundingBox)) {
+                Envelope oldBoundingBox = this.boundingBox;
+                this.boundingBox = boundingBox;
+                propertyChangeSupport.firePropertyChange(PROP_BOUNDINGBOX, oldBoundingBox, boundingBox);
+        }
     }
 
     
