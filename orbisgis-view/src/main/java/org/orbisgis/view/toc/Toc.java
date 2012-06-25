@@ -79,6 +79,8 @@ import org.orbisgis.view.toc.actions.cui.legend.ISymbolEditor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 import com.vividsolutions.jts.geom.Envelope;
+import org.orbisgis.sif.UIPanel;
+import org.orbisgis.view.toc.actions.cui.LegendUIController;
 
 
 /**
@@ -442,6 +444,11 @@ public class Toc extends JPanel implements EditorDockable {
                 simpleEdtiorLayer.setToolTipText(I18N.tr("Open the simple editor for SE styles"));
                 simpleEdtiorLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onSimpleEditor"));
                 popup.add(simpleEdtiorLayer);
+                //Display the menu to enter in the advanced style editor.
+                JMenuItem advancedEditorLayer = new JMenuItem(I18N.tr("Adavanced style edition"), OrbisGISIcon.getIcon("pencil"));
+                advancedEditorLayer.setToolTipText(I18N.tr("Open the adavanced editor for SE styles"));
+                advancedEditorLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onAdvancedEditor"));
+                popup.add(advancedEditorLayer);
                 //Display the menu to remove the currently selected style
                 JMenuItem deleteStyle = new JMenuItem(I18N.tr("Remove style"), OrbisGISIcon.getIcon("remove"));
                 deleteStyle.setToolTipText(I18N.tr("Remove this style from the associater layer."));
@@ -546,6 +553,34 @@ public class Toc extends JPanel implements EditorDockable {
                 } catch (DriverException e) {
                         LOGGER.error("Error while loading the style", e);
                 }
+        }
+
+        /**
+         * If used, this method opens an advanced editor for the currently selected
+         * style.
+         */
+        public void onAdvancedEditor(){
+                try {
+                        Style[] styles = mapContext.getSelectedStyles();
+                        if(styles.length == 1){
+                                Style style = styles[0];
+                                ILayer layer = style.getLayer();
+                                // Obtain MapTransform
+                                MapEditor editor = mapElement.getMapEditor();
+                                MapTransform mt = editor.getMapControl().getMapTransform();
+                                if (mt == null) {
+                                        JOptionPane.showMessageDialog(null,I18N.tr("Advanced Editor can't be loaded"));
+                                }
+
+                                LegendUIController controller = new LegendUIController(style);
+
+                                if (UIFactory.showDialog((UIPanel)controller.getMainPanel())) {
+                                        layer.setStyle(0,controller.getEditedFeatureTypeStyle());
+                                }
+                        }
+		} catch (SeExceptions.InvalidStyle ex) {
+			LOGGER.error(I18N.tr("Error while editing the legend"), ex);
+		}
         }
 
         public void onSimpleEditor() {
