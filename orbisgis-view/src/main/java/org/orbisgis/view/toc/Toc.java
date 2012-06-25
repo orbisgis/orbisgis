@@ -77,6 +77,8 @@ import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ISymbolEditor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+import com.vividsolutions.jts.geom.Envelope;
+
 
 /**
  * @brief The Toc Panel component
