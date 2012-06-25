@@ -81,246 +81,252 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * @brief The Toc Panel component
  */
+public class Toc extends JPanel implements EditorDockable {
+        //The UID must be incremented when the serialization is not compatible with the new version of this class
 
-public class Toc extends JPanel implements EditorDockable  {
-    //The UID must be incremented when the serialization is not compatible with the new version of this class
-    private static final long serialVersionUID = 1L; 
-    protected final static I18n I18N = I18nFactory.getI18n(Toc.class);
-    private final static Logger LOGGER = Logger.getLogger("gui."+Toc.class);
-    DockingPanelParameters dockingPanelParameters;
-    private MapContext mapContext = null;
-    private JTree tree;
-    private TocTreeModel treeModel;
-    //When this boolean is false, the selection event is not fired
-    private AtomicBoolean fireSelectionEvent = new AtomicBoolean(true);
-    
-    //Listen for map context changes
-    private TocMapContextListener tocMapContextListener = new TocMapContextListener();
-    //Listen for all layers changes
-    private TocLayerListener tocLayerListener = new TocLayerListener();
-    //Loaded editable map
-    private MapElement mapElement = null;
-    /**
-     * Constructor
-     */
-    public Toc() {
-        super(new BorderLayout());
-        //Set docking parameters
-        dockingPanelParameters = new DockingPanelParameters();
-        dockingPanelParameters.setName("toc");
-        dockingPanelParameters.setTitle(I18N.tr("Toc"));
-        dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
-        
-        //Initialise an empty tree
-        add(new JScrollPane( makeTree()));
+        private static final long serialVersionUID = 1L;
+        protected final static I18n I18N = I18nFactory.getI18n(Toc.class);
+        private final static Logger LOGGER = Logger.getLogger("gui." + Toc.class);
+        DockingPanelParameters dockingPanelParameters;
+        private MapContext mapContext = null;
+        private JTree tree;
+        private TocTreeModel treeModel;
+        //When this boolean is false, the selection event is not fired
+        private AtomicBoolean fireSelectionEvent = new AtomicBoolean(true);
+        //Listen for map context changes
+        private TocMapContextListener tocMapContextListener = new TocMapContextListener();
+        //Listen for all layers changes
+        private TocLayerListener tocLayerListener = new TocLayerListener();
+        //Loaded editable map
+        private MapElement mapElement = null;
 
-    }
+        /**
+         * Constructor
+         */
+        public Toc() {
+                super(new BorderLayout());
+                //Set docking parameters
+                dockingPanelParameters = new DockingPanelParameters();
+                dockingPanelParameters.setName("toc");
+                dockingPanelParameters.setTitle(I18N.tr("Toc"));
+                dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
 
-    /**
-     * 
-     * @return The editable map
-     */
-    public MapElement getMapElement() {
-        return mapElement;
-    }
-    
-    
-    
-    private void setTocSelection(MapContext mapContext) {
-        ILayer[] selected = mapContext.getSelectedLayers();
-        Style[] styles = mapContext.getSelectedStyles();
-        TreePath[] selectedPaths = new TreePath[selected.length+styles.length];
-        for (int i = 0; i < selected.length; i++) {
-                selectedPaths[i] = new TreePath(selected[i].getLayerPath());
+                //Initialise an empty tree
+                add(new JScrollPane(makeTree()));
+
         }
-        for(int i = 0; i < styles.length; i++){
-                Style s = styles[i];
-                ILayer[] lays = s.getLayer().getLayerPath();
-                Object[] objs = new Object[lays.length+1];
-                System.arraycopy(lays, 0, objs, 0, lays.length);
-                objs[objs.length-1] = s;
-                selectedPaths[i+selected.length] = new TreePath(objs);
+
+        /**
+         *
+         * @return The editable map
+         */
+        public MapElement getMapElement() {
+                return mapElement;
         }
-        fireSelectionEvent.set(false);
-        try {
-            tree.setSelectionPaths(selectedPaths);
-        } finally {
-            fireSelectionEvent.set(true);
-        }
-    }    
-    /**
-     * Create the Toc JTree
-     * @return the Toc JTree
-     */
-    private JTree makeTree() {
-        tree = new JTree();
-        //Items can be selected freely
-        tree.getSelectionModel().setSelectionMode(
-				TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
-        TocTransferHandler handler = new TocTransferHandler(this);
-        //Add a drop listener
-        handler.getTransferEditableEvent().addListener(this,
-                EventHandler.create(Listener.class,this,"onDropEditableElement",""));
-        tree.setDragEnabled(true);
-        tree.setTransferHandler(handler);
-        tree.setRootVisible(false);
-        tree.setShowsRootHandles(true);
-        tree.setEditable(true);        
-        setEmptyLayerModel(tree);
-        tree.setCellRenderer(new TocRenderer(this));
-        tree.setCellEditor(new TocTreeEditor(tree));
-        tree.addMouseListener(new PopupMouselistener());
-        //Add a tree selection listener
-        tree.getSelectionModel().addTreeSelectionListener(EventHandler.create(TreeSelectionListener.class, this, "onTreeSelectionChange"));
-        return tree;
-    }
-    /**
-     * The user drop one or multiple EditableElement into the Toc Tree
-     * @param editTransfer 
-     * @throws IllegalArgumentException If drop location is not null,Style or ILayer
-     */
-    public void onDropEditableElement(EditableTransferEvent editTransfer) {
-        JTree.DropLocation dropLocation = (JTree.DropLocation) editTransfer.getDropLocation();
-        EditableElement[] editableList = editTransfer.getEditableList();
-        //Evaluate Drop Location
-        ILayer dropNode;
-        if(dropLocation.getPath() != null) {            
-            Object node = dropLocation.getPath().getLastPathComponent();
-            if (node instanceof Style) {
-                    dropNode = ((Style) node).getLayer();
-            } else if (node instanceof ILayer) {
-                    dropNode = (ILayer) node;
-            } else {
-                throw new IllegalArgumentException("Drop node is not an instance of Style or ILayer");
-            }
-        }else {
-            // By default drop on rootNode
-            dropNode = (ILayer) treeModel.getRoot();
-        }
-        int index;
-        if (!dropNode.acceptsChilds()) {
-                ILayer parent = dropNode.getParent();
-                if (parent.acceptsChilds()) {
-                        index = parent.getIndex(dropNode);
-                        dropNode = parent;
-                } else {
-                        LOGGER.error(I18N.tr("Cannot drop layer on {0}",dropNode.getName())); //$NON-NLS-1$
-                        return;
+
+        private void setTocSelection(MapContext mapContext) {
+                ILayer[] selected = mapContext.getSelectedLayers();
+                Style[] styles = mapContext.getSelectedStyles();
+                TreePath[] selectedPaths = new TreePath[selected.length + styles.length];
+                for (int i = 0; i < selected.length; i++) {
+                        selectedPaths[i] = new TreePath(selected[i].getLayerPath());
                 }
-        } else {
-                index = dropNode.getLayerCount();
+                for (int i = 0; i < styles.length; i++) {
+                        Style s = styles[i];
+                        ILayer[] lays = s.getLayer().getLayerPath();
+                        Object[] objs = new Object[lays.length + 1];
+                        System.arraycopy(lays, 0, objs, 0, lays.length);
+                        objs[objs.length - 1] = s;
+                        selectedPaths[i + selected.length] = new TreePath(objs);
+                }
+                fireSelectionEvent.set(false);
+                try {
+                        tree.setSelectionPaths(selectedPaths);
+                } finally {
+                        fireSelectionEvent.set(true);
+                }
         }
-        
-        //Drop content to drop location
-        List<EditableSource> sourceToDrop = new ArrayList<EditableSource>();
-        List<ILayer> newSelectedLayer = new ArrayList<ILayer>(editableList.length);
 
-        for( EditableElement editableElement : editableList) {
-            if(editableElement instanceof EditableSource) {
-                    //From the GeoCatalog
-                    sourceToDrop.add((EditableSource)editableElement);
-            } else if(editableElement instanceof EditableLayer) {
-                    //From the TOC (move)
-                    ILayer layer = ((EditableLayer) editableElement).getLayer();
-                    try {
-                        layer.moveTo(dropNode, index);
-                        newSelectedLayer.add(layer);
-                    } catch (LayerException ex) {
-                        LOGGER.error(I18N.tr("Cannot drop layer on {0}",dropNode.getName()),ex);
-                    }
-            } else {
-                    LOGGER.error(I18N.tr("Drop unknown editable of type : {0}",editableElement.getTypeId()));
-            }
+        /**
+         * Create the Toc JTree
+         *
+         * @return the Toc JTree
+         */
+        private JTree makeTree() {
+                tree = new JTree();
+                //Items can be selected freely
+                tree.getSelectionModel().setSelectionMode(
+                        TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION);
+                TocTransferHandler handler = new TocTransferHandler(this);
+                //Add a drop listener
+                handler.getTransferEditableEvent().addListener(this,
+                        EventHandler.create(Listener.class, this, "onDropEditableElement", ""));
+                tree.setDragEnabled(true);
+                tree.setTransferHandler(handler);
+                tree.setRootVisible(false);
+                tree.setShowsRootHandles(true);
+                tree.setEditable(true);
+                setEmptyLayerModel(tree);
+                tree.setCellRenderer(new TocRenderer(this));
+                tree.setCellEditor(new TocTreeEditor(tree));
+                tree.addMouseListener(new PopupMouselistener());
+                //Add a tree selection listener
+                tree.getSelectionModel().addTreeSelectionListener(EventHandler.create(TreeSelectionListener.class, this, "onTreeSelectionChange"));
+                return tree;
         }
-        
-        //Select moved layers
-        if(!newSelectedLayer.isEmpty()) {
-            mapContext.setSelectedLayers(newSelectedLayer.toArray(new ILayer[newSelectedLayer.size()]));
-        }
-        
-        
-        if(!sourceToDrop.isEmpty()) {
-            BackgroundManager bm = (BackgroundManager) Services.getService(BackgroundManager.class);
-            bm.nonBlockingBackgroundOperation(new DropDataSourceListProcess(dropNode,index,sourceToDrop));
-        }
-    }
 
-    public  ArrayList<ILayer> getSelectedLayers() {
-        return getSelectedLayers(tree.getSelectionPaths());
-    }
-    
-    /**
-     * Cast all ILayer elements of provided tree paths
-     * @param selectedPaths Internal Tree path
-     * @return All ILayer instances of provided path
-     */
-    private ArrayList<ILayer> getSelectedLayers(TreePath[] selectedPaths) {
-            ArrayList<ILayer> layers = new ArrayList<ILayer>();
-            if(selectedPaths!=null) {
+        /**
+         * The user drop one or multiple EditableElement into the Toc Tree
+         *
+         * @param editTransfer
+         * @throws IllegalArgumentException If drop location is not null,Style
+         * or ILayer
+         */
+        public void onDropEditableElement(EditableTransferEvent editTransfer) {
+                JTree.DropLocation dropLocation = (JTree.DropLocation) editTransfer.getDropLocation();
+                EditableElement[] editableList = editTransfer.getEditableList();
+                //Evaluate Drop Location
+                ILayer dropNode;
+                if (dropLocation.getPath() != null) {
+                        Object node = dropLocation.getPath().getLastPathComponent();
+                        if (node instanceof Style) {
+                                dropNode = ((Style) node).getLayer();
+                        } else if (node instanceof ILayer) {
+                                dropNode = (ILayer) node;
+                        } else {
+                                throw new IllegalArgumentException("Drop node is not an instance of Style or ILayer");
+                        }
+                } else {
+                        // By default drop on rootNode
+                        dropNode = (ILayer) treeModel.getRoot();
+                }
+                int index;
+                if (!dropNode.acceptsChilds()) {
+                        ILayer parent = dropNode.getParent();
+                        if (parent.acceptsChilds()) {
+                                index = parent.getIndex(dropNode);
+                                dropNode = parent;
+                        } else {
+                                LOGGER.error(I18N.tr("Cannot drop layer on {0}", dropNode.getName())); //$NON-NLS-1$
+                                return;
+                        }
+                } else {
+                        index = dropNode.getLayerCount();
+                }
+
+                //Drop content to drop location
+                List<EditableSource> sourceToDrop = new ArrayList<EditableSource>();
+                List<ILayer> newSelectedLayer = new ArrayList<ILayer>(editableList.length);
+
+                for (EditableElement editableElement : editableList) {
+                        if (editableElement instanceof EditableSource) {
+                                //From the GeoCatalog
+                                sourceToDrop.add((EditableSource) editableElement);
+                        } else if (editableElement instanceof EditableLayer) {
+                                //From the TOC (move)
+                                ILayer layer = ((EditableLayer) editableElement).getLayer();
+                                try {
+                                        layer.moveTo(dropNode, index);
+                                        newSelectedLayer.add(layer);
+                                } catch (LayerException ex) {
+                                        LOGGER.error(I18N.tr("Cannot drop layer on {0}", dropNode.getName()), ex);
+                                }
+                        } else {
+                                LOGGER.error(I18N.tr("Drop unknown editable of type : {0}", editableElement.getTypeId()));
+                        }
+                }
+
+                //Select moved layers
+                if (!newSelectedLayer.isEmpty()) {
+                        mapContext.setSelectedLayers(newSelectedLayer.toArray(new ILayer[newSelectedLayer.size()]));
+                }
+
+
+                if (!sourceToDrop.isEmpty()) {
+                        BackgroundManager bm = (BackgroundManager) Services.getService(BackgroundManager.class);
+                        bm.nonBlockingBackgroundOperation(new DropDataSourceListProcess(dropNode, index, sourceToDrop));
+                }
+        }
+
+        public ArrayList<ILayer> getSelectedLayers() {
+                return getSelectedLayers(tree.getSelectionPaths());
+        }
+
+        /**
+         * Cast all ILayer elements of provided tree paths
+         *
+         * @param selectedPaths Internal Tree path
+         * @return All ILayer instances of provided path
+         */
+        private ArrayList<ILayer> getSelectedLayers(TreePath[] selectedPaths) {
+                ArrayList<ILayer> layers = new ArrayList<ILayer>();
+                if (selectedPaths != null) {
+                        for (int i = 0; i < selectedPaths.length; i++) {
+                                Object lastPathComponent = selectedPaths[i].getLastPathComponent();
+                                if (lastPathComponent instanceof ILayer) {
+                                        layers.add((ILayer) lastPathComponent);
+                                }
+                        }
+                }
+                return layers;
+        }
+
+        /**
+         * Cast all Style elements of provided tree paths
+         *
+         * @param selectedPaths Internal Tree path
+         * @return All Style instances of provided path
+         */
+        private ArrayList<Style> getSelectedStyles(TreePath[] selectedPaths) {
+                ArrayList<Style> rules = new ArrayList<Style>(selectedPaths.length);
                 for (int i = 0; i < selectedPaths.length; i++) {
                         Object lastPathComponent = selectedPaths[i].getLastPathComponent();
-                        if (lastPathComponent instanceof ILayer) {
-                                layers.add((ILayer) lastPathComponent);
+                        if (lastPathComponent instanceof Style) {
+                                rules.add(((Style) lastPathComponent));
                         }
                 }
-            }
-            return layers;
-    }
-
-    /**
-     * Cast all Style elements of provided tree paths
-     * @param selectedPaths Internal Tree path
-     * @return All Style instances of provided path
-     */
-    private ArrayList<Style> getSelectedStyles(TreePath[] selectedPaths) {
-            ArrayList<Style> rules = new ArrayList<Style>(selectedPaths.length);
-            for (int i = 0; i < selectedPaths.length; i++) {
-                    Object lastPathComponent = selectedPaths[i].getLastPathComponent();
-                    if (lastPathComponent instanceof Style) {
-                            rules.add(((Style) lastPathComponent));
-                    }
-            }
-            return rules;
-    }
-    
-    /**
-     * Copy the selection of the JTree into the selection in the layer model.
-     * This method do nothing if the fireSelectionEvent is false
-     */
-    public void onTreeSelectionChange() {
-        if(fireSelectionEvent.get() ) {
-            fireSelectionEvent.set(false);
-            try {
-                TreePath[] selectedPaths = tree.getSelectionPaths();
-                if(selectedPaths!=null) {
-                    ArrayList<Style> styles = getSelectedStyles(selectedPaths);
-                    mapContext.setSelectedStyles(styles);
-                    if (!styles.isEmpty()) {
-                        mapContext.setSelectedLayers(new ILayer[0]);
-                    } else {
-                        ArrayList<ILayer> layers = getSelectedLayers(selectedPaths);
-                        if (!layers.isEmpty()) {
-                                mapContext.setSelectedLayers(layers.toArray(new ILayer[0]));
-                        }
-                    }
-                }
-            } finally {
-                fireSelectionEvent.set(true);
-            }            
+                return rules;
         }
-    }
-    
-    private void setEmptyLayerModel(JTree jTree) {
-        //Add the treeModel
-        DataManager dataManager = (DataManager) Services.getService(DataManager.class);
-        treeModel = new TocTreeModel(dataManager.createLayerCollection("root"), //$NON-NLS-1$
-				jTree);
-        jTree.setModel(treeModel);
-    }
-    @Override
-    public DockingPanelParameters getDockingParameters() {
-        return dockingPanelParameters;
-    }
+
+        /**
+         * Copy the selection of the JTree into the selection in the layer
+         * model. This method do nothing if the fireSelectionEvent is false
+         */
+        public void onTreeSelectionChange() {
+                if (fireSelectionEvent.get()) {
+                        fireSelectionEvent.set(false);
+                        try {
+                                TreePath[] selectedPaths = tree.getSelectionPaths();
+                                if (selectedPaths != null) {
+                                        ArrayList<Style> styles = getSelectedStyles(selectedPaths);
+                                        mapContext.setSelectedStyles(styles);
+                                        if (!styles.isEmpty()) {
+                                                mapContext.setSelectedLayers(new ILayer[0]);
+                                        } else {
+                                                ArrayList<ILayer> layers = getSelectedLayers(selectedPaths);
+                                                if (!layers.isEmpty()) {
+                                                        mapContext.setSelectedLayers(layers.toArray(new ILayer[0]));
+                                                }
+                                        }
+                                }
+                        } finally {
+                                fireSelectionEvent.set(true);
+                        }
+                }
+        }
+
+        private void setEmptyLayerModel(JTree jTree) {
+                //Add the treeModel
+                DataManager dataManager = (DataManager) Services.getService(DataManager.class);
+                treeModel = new TocTreeModel(dataManager.createLayerCollection("root"), //$NON-NLS-1$
+                        jTree);
+                jTree.setModel(treeModel);
+        }
+
+        @Override
+        public DockingPanelParameters getDockingParameters() {
+                return dockingPanelParameters;
+        }
 
         public MapContext getMapContext() {
                 return mapContext;
@@ -328,12 +334,13 @@ public class Toc extends JPanel implements EditorDockable  {
 
         /**
          * Load the specified MapElement in the toc
-         * @param newMapElement 
+         *
+         * @param newMapElement
          */
         public void setEditableMap(MapElement newMapElement) {
                 if (newMapElement != null) {
                         MapContext importedMap = ((MapContext) newMapElement.getObject());
-                        if(!importedMap.isOpen()) {
+                        if (!importedMap.isOpen()) {
                                 try {
                                         importedMap.open(null);
                                 } catch (LayerException ex) {
@@ -341,192 +348,210 @@ public class Toc extends JPanel implements EditorDockable  {
                                 } catch (IllegalStateException ex) {
                                         throw new IllegalArgumentException(ex);
                                 }
-                        }                        
+                        }
                 }
 
-		// Remove the listeners
-		if (this.mapContext != null) {
-			this.mapContext.getLayerModel().removeLayerListenerRecursively(tocLayerListener);
-			this.mapContext.removeMapContextListener(tocMapContextListener);
-		}
-                
-                
-		if (newMapElement != null) {
-			this.mapContext = ((MapContext) newMapElement.getObject());
+                // Remove the listeners
+                if (this.mapContext != null) {
+                        this.mapContext.getLayerModel().removeLayerListenerRecursively(tocLayerListener);
+                        this.mapContext.removeMapContextListener(tocMapContextListener);
+                }
 
-			this.mapElement = newMapElement;
-			// Add the listeners to the new MapContext
-			this.mapContext.addMapContextListener(tocMapContextListener);
-			final ILayer root = this.mapContext.getLayerModel();
-			root.addLayerListenerRecursively(tocLayerListener);
 
-			treeModel = new TocTreeModel(root, tree);
-			// Apply treeModel and clear the selection        
+                if (newMapElement != null) {
+                        this.mapContext = ((MapContext) newMapElement.getObject());
+
+                        this.mapElement = newMapElement;
+                        // Add the listeners to the new MapContext
+                        this.mapContext.addMapContextListener(tocMapContextListener);
+                        final ILayer root = this.mapContext.getLayerModel();
+                        root.addLayerListenerRecursively(tocLayerListener);
+
+                        treeModel = new TocTreeModel(root, tree);
+                        // Apply treeModel and clear the selection        
                         fireSelectionEvent.set(false);
                         try {
-                            tree.setModel(treeModel);
-                            tree.getSelectionModel().clearSelection();
+                                tree.setModel(treeModel);
+                                tree.getSelectionModel().clearSelection();
                         } finally {
-                            fireSelectionEvent.set(true);
+                                fireSelectionEvent.set(true);
                         }
-                        
-			setTocSelection(mapContext);
-			//TODO ? repaint 
+
+                        setTocSelection(mapContext);
+                        //TODO ? repaint 
                 }
         }
 
-
-    boolean isActive(ILayer layer) {
-            if (mapContext != null) {
-                    return layer == mapContext.getActiveLayer();
-            } else {
-                    return false;
-            }
-    }
-
-    @Override
-    public JComponent getComponent() {
-        return this;
-    }
-    
-    /**
-     * Called each time on popup trigger button
-     * @return The constructed PopUp menu, 
-     * depending to the state of the tree selection
-     */
-    private JPopupMenu makePopupMenu() {
-        JPopupMenu popup = new JPopupMenu();
-        Object selected = tree.getLastSelectedPathComponent();
-        //Popup:delete layer
-        if(tree.getSelectionCount()>0 && selected instanceof ILayer) {
-            JMenuItem deleteLayer = new JMenuItem(I18N.tr("Remove layer"),OrbisGISIcon.getIcon("remove"));
-            deleteLayer.setToolTipText(I18N.tr("Remove the layer from the map context"));
-            deleteLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onDeleteLayer"));
-            popup.add(deleteLayer);
-            if(tree.getSelectionCount() ==1){
-                    //display the menu to add a style from a file
-                    JMenuItem importStyle = new JMenuItem(I18N.tr("Import style"), OrbisGISIcon.getIcon("add"));
-                    importStyle.setToolTipText(I18N.tr("Import a style from a file."));
-                    importStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onImportStyle"));
-                    popup.add(importStyle);
-            }
+        boolean isActive(ILayer layer) {
+                if (mapContext != null) {
+                        return layer == mapContext.getActiveLayer();
+                } else {
+                        return false;
+                }
         }
-        if(selected instanceof Style){
-                makePopupStyle(popup);
+
+        @Override
+        public JComponent getComponent() {
+                return this;
         }
-        return popup;
-    }
 
-    /**
-     * If we've right-clicked on a style node
-     * @param popup
-     */
-    private void makePopupStyle(JPopupMenu popup){
-        //Display the menu to enter in the simple style editor.
-        JMenuItem simpleEdtiorLayer = new JMenuItem(I18N.tr("Simple style edition"),OrbisGISIcon.getIcon("pencil"));
-        simpleEdtiorLayer.setToolTipText(I18N.tr("Open the simple editor for SE styles"));
-        simpleEdtiorLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onSimpleEditor"));
-        popup.add(simpleEdtiorLayer);
-        //Display the menu to remove the currently selected style
-        JMenuItem deleteStyle = new JMenuItem(I18N.tr("Remove style"), OrbisGISIcon.getIcon("remove"));
-        deleteStyle.setToolTipText(I18N.tr("Remove this style from the associater layer."));
-        deleteStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onDeleteStyle"));
-        popup.add(deleteStyle);
-    }
+        /**
+         * Called each time on popup trigger button
+         *
+         * @return The constructed PopUp menu, depending to the state of the
+         * tree selection
+         */
+        private JPopupMenu makePopupMenu() {
+                JPopupMenu popup = new JPopupMenu();
+                Object selected = tree.getLastSelectedPathComponent();
+                //Popup:delete layer
+                if (tree.getSelectionCount() > 0 && selected instanceof ILayer) {
+                        JMenuItem deleteLayer = new JMenuItem(I18N.tr("Remove layer"), OrbisGISIcon.getIcon("remove"));
+                        deleteLayer.setToolTipText(I18N.tr("Remove the layer from the map context"));
+                        deleteLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onDeleteLayer"));
+                        JMenuItem zoomToLayer = new JMenuItem(I18N.tr("Zoom to"), OrbisGISIcon.getIcon("magnifier"));
+                        zoomToLayer.setToolTipText(I18N.tr("Zoom to the layer bounding box"));
+                        zoomToLayer.addActionListener(EventHandler.create(ActionListener.class, this, "zoomToLayer"));
+                        popup.add(zoomToLayer);
+                        popup.add(deleteLayer);
+                        if (tree.getSelectionCount() == 1) {
+                                //display the menu to add a style from a file
+                                JMenuItem importStyle = new JMenuItem(I18N.tr("Import style"), OrbisGISIcon.getIcon("add"));
+                                importStyle.setToolTipText(I18N.tr("Import a style from a file."));
+                                importStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onImportStyle"));
+                                popup.add(importStyle);
+                        }
+                }
+                if (selected instanceof Style) {
+                        makePopupStyle(popup);
+                }
+                return popup;
+        }
 
-    /**
-     * The user click on delete layer menu item.
-     */
-    public void onDeleteLayer() {
-        ILayer[] selectedResources = mapContext.getSelectedLayers();
-        for (ILayer resource : selectedResources) {
+        /**
+         * If we've right-clicked on a style node
+         *
+         * @param popup
+         */
+        private void makePopupStyle(JPopupMenu popup) {
+                //Display the menu to enter in the simple style editor.
+                JMenuItem simpleEdtiorLayer = new JMenuItem(I18N.tr("Simple style edition"), OrbisGISIcon.getIcon("pencil"));
+                simpleEdtiorLayer.setToolTipText(I18N.tr("Open the simple editor for SE styles"));
+                simpleEdtiorLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onSimpleEditor"));
+                popup.add(simpleEdtiorLayer);
+                //Display the menu to remove the currently selected style
+                JMenuItem deleteStyle = new JMenuItem(I18N.tr("Remove style"), OrbisGISIcon.getIcon("remove"));
+                deleteStyle.setToolTipText(I18N.tr("Remove this style from the associater layer."));
+                deleteStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onDeleteStyle"));
+                popup.add(deleteStyle);
+        }
+
+        /**
+         * The user click on delete layer menu item.
+         */
+        public void onDeleteLayer() {
+                ILayer[] selectedResources = mapContext.getSelectedLayers();
+                for (ILayer resource : selectedResources) {
+                        try {
+                                resource.getParent().remove(resource);
+                        } catch (LayerException e) {
+                                LOGGER.error(I18N.tr("Cannot delete layer"), e);
+                        }
+                }
+        }
+        
+        
+        /**
+         * The user click on zoomto layer menu item.
+         */
+        public void zoomToLayer() {
+                ILayer[] selectedResources = mapContext.getSelectedLayers();
+                Envelope env = selectedResources[0].getEnvelope();
+                for (ILayer resource : selectedResources) {
+                        env.expandToInclude(resource.getEnvelope());
+                }
+                mapContext.setBoundingBox(env);
+        }
+
+        /**
+         * The user choose to delete a style through the dedicated menu.
+         */
+        public void onDeleteStyle() {
+                Style[] styles = mapContext.getSelectedStyles();
+                for (Style s : styles) {
+                        ILayer l = s.getLayer();
+                        l.removeStyle(s);
+                }
+        }
+
+        /**
+         * The user choose to delete a style through the dedicated menu.
+         */
+        public void onImportStyle() {
                 try {
-                        resource.getParent().remove(resource);
-                } catch (LayerException e) {
-                        LOGGER.error(I18N.tr("Cannot delete layer"),e);
-                }
-        }    
-    }
+                        ILayer[] layers = mapContext.getSelectedLayers();
+                        if (layers.length == 1) {
+                                ILayer layer = layers[0];
+                                Type typ = layer.getDataSource().getMetadata().getFieldType(layer.getDataSource().getSpatialFieldIndex());
 
-    /**
-     * The user choose to delete a style through the dedicated menu.
-     */
-    public void onDeleteStyle(){
-            Style[] styles = mapContext.getSelectedStyles();
-            for(Style s : styles){
-                    ILayer l = s.getLayer();
-                    l.removeStyle(s);
-            }
-    }
+                                final OpenFilePanel inputXMLPanel = new OpenFilePanel(
+                                        "org.orbisgis.core.ui.editorViews.toc.actions.ImportStyle",
+                                        "Choose a location");
 
-    /**
-     * The user choose to delete a style through the dedicated menu.
-     */
-    public void onImportStyle(){
-            try {
-                    ILayer[] layers = mapContext.getSelectedLayers();
-                    if(layers.length==1){
-                        ILayer layer = layers[0];
-                        Type typ = layer.getDataSource().getMetadata().getFieldType(layer.getDataSource().getSpatialFieldIndex());
+                                inputXMLPanel.addFilter("se", "Symbology Encoding 2.0 (FeatureTypeStyle");
 
-                        final OpenFilePanel inputXMLPanel = new OpenFilePanel(
-                                "org.orbisgis.core.ui.editorViews.toc.actions.ImportStyle",
-                                "Choose a location");
-
-                        inputXMLPanel.addFilter("se", "Symbology Encoding 2.0 (FeatureTypeStyle");
-
-                        if (UIFactory.showDialog(inputXMLPanel)) {
-                                String seFile = inputXMLPanel.getSelectedFile().getAbsolutePath();
-                                try {
-                                        layer.addStyle(0, new Style(layer, seFile));
-                                } catch (SeExceptions.InvalidStyle ex) {
-                                        LOGGER.error(I18N.tr(ex.getLocalizedMessage()));
-                                        String msg = ex.getMessage().replace("<", "\n    - ").replace(',', ' ').replace(": ", "\n - ");
-                                        JOptionPane.showMessageDialog(null, msg,
-                                                "Error while loading the style", JOptionPane.ERROR_MESSAGE);
+                                if (UIFactory.showDialog(inputXMLPanel)) {
+                                        String seFile = inputXMLPanel.getSelectedFile().getAbsolutePath();
+                                        try {
+                                                layer.addStyle(0, new Style(layer, seFile));
+                                        } catch (SeExceptions.InvalidStyle ex) {
+                                                LOGGER.error(I18N.tr(ex.getLocalizedMessage()));
+                                                String msg = ex.getMessage().replace("<", "\n    - ").replace(',', ' ').replace(": ", "\n - ");
+                                                JOptionPane.showMessageDialog(null, msg,
+                                                        "Error while loading the style", JOptionPane.ERROR_MESSAGE);
+                                        }
                                 }
                         }
-                    }
 
-            } catch (DriverException e) {
-                    LOGGER.error("Error while loading the style", e);
-            }
-    }
-
-    public void onSimpleEditor(){
-        TreePath selObjs = tree.getSelectionPath();
-        if(selObjs.getLastPathComponent() instanceof Style){
-            try {
-                Style style = (Style) selObjs.getLastPathComponent();
-                Layer layer = (Layer) style.getLayer();
-                Type typ = layer.getDataSource().getMetadata().getFieldType(
-                        layer.getDataSource().getSpatialFieldIndex());
-                //In order to be able to cancel all of our modifications,
-                //we produce a copy of our style.
-                MapEditor editor = mapElement.getMapEditor();
-                MapTransform mt = editor.getMapControl().getMapTransform();
-                JAXBElement<StyleType> jest = style.getJAXBElement();
-                LegendsPanel pan = new LegendsPanel();
-                Style copy = new Style(jest, layer);
-                ILegendPanel[] legends = EPLegendHelper.getLegendPanels(pan);
-                ISymbolEditor[] symbolEditors = EPLegendHelper.getSymbolPanels();
-                pan.init(mt, typ, copy, legends, symbolEditors, layer);
-                if (UIFactory.showDialog(pan)) {
-                    try {
-                        layer.setStyle(0, pan.getStyleWrapper().getStyle());
-                    } catch (ClassificationMethodException e) {
-                        LOGGER.error(e.getMessage());
-                    }
+                } catch (DriverException e) {
+                        LOGGER.error("Error while loading the style", e);
                 }
-            } catch(SeExceptions.InvalidStyle sis){
-                //I don't know how this could happen : we are creating a style
-                //from a valid style. Should be valid too, consequently...
-                LOGGER.error("The style you're trying to edit is not valid !");
-            } catch (DriverException de){
-                LOGGER.error("An error occurred while processing the DataSource");
-            }
         }
-    }
+
+        public void onSimpleEditor() {
+                TreePath selObjs = tree.getSelectionPath();
+                if (selObjs.getLastPathComponent() instanceof Style) {
+                        try {
+                                Style style = (Style) selObjs.getLastPathComponent();
+                                Layer layer = (Layer) style.getLayer();
+                                Type typ = layer.getDataSource().getMetadata().getFieldType(
+                                        layer.getDataSource().getSpatialFieldIndex());
+                                //In order to be able to cancel all of our modifications,
+                                //we produce a copy of our style.
+                                MapEditor editor = mapElement.getMapEditor();
+                                MapTransform mt = editor.getMapControl().getMapTransform();
+                                JAXBElement<StyleType> jest = style.getJAXBElement();
+                                LegendsPanel pan = new LegendsPanel();
+                                Style copy = new Style(jest, layer);
+                                ILegendPanel[] legends = EPLegendHelper.getLegendPanels(pan);
+                                ISymbolEditor[] symbolEditors = EPLegendHelper.getSymbolPanels();
+                                pan.init(mt, typ, copy, legends, symbolEditors, layer);
+                                if (UIFactory.showDialog(pan)) {
+                                        try {
+                                                layer.setStyle(0, pan.getStyleWrapper().getStyle());
+                                        } catch (ClassificationMethodException e) {
+                                                LOGGER.error(e.getMessage());
+                                        }
+                                }
+                        } catch (SeExceptions.InvalidStyle sis) {
+                                //I don't know how this could happen : we are creating a style
+                                //from a valid style. Should be valid too, consequently...
+                                LOGGER.error("The style you're trying to edit is not valid !");
+                        } catch (DriverException de) {
+                                LOGGER.error("An error occurred while processing the DataSource");
+                        }
+                }
+        }
 
         @Override
         public boolean match(EditableElement editableElement) {
@@ -540,220 +565,218 @@ public class Toc extends JPanel implements EditorDockable  {
 
         @Override
         public void setEditableElement(EditableElement editableElement) {
-                if(editableElement instanceof MapElement) {
+                if (editableElement instanceof MapElement) {
                         MapElement importedMap = (MapElement) editableElement;
                         setEditableMap(importedMap);
                 }
         }
-    
-    
-	private class TocLayerListener implements LayerListener, EditionListener,
-			DataSourceListener {
+
+        private class TocLayerListener implements LayerListener, EditionListener,
+                DataSourceListener {
 
                 @Override
-		public void layerAdded(final LayerCollectionEvent e) {
-			for (final ILayer layer : e.getAffected()) {
+                public void layerAdded(final LayerCollectionEvent e) {
+                        for (final ILayer layer : e.getAffected()) {
                                 layer.addLayerListenerRecursively(this);
-			}
-			treeModel.refresh();
-		}
+                        }
+                        treeModel.refresh();
+                }
 
                 @Override
-		public void layerMoved(LayerCollectionEvent e) {
-			treeModel.refresh();
-		}
+                public void layerMoved(LayerCollectionEvent e) {
+                        treeModel.refresh();
+                }
 
-		@Override
-		public boolean layerRemoving(LayerCollectionEvent e) {
-			// Close editors
-			for (final ILayer layer : e.getAffected()) {
-				ILayer[] layers = new ILayer[]{layer};
-				if (layer.acceptsChilds()) {
-					layers = layer.getLayersRecursively();
-				}
-				for (ILayer lyr : layers) {
+                @Override
+                public boolean layerRemoving(LayerCollectionEvent e) {
+                        // Close editors
+                        for (final ILayer layer : e.getAffected()) {
+                                ILayer[] layers = new ILayer[]{layer};
+                                if (layer.acceptsChilds()) {
+                                        layers = layer.getLayersRecursively();
+                                }
+                                for (ILayer lyr : layers) {
                                         //TODO Close editors attached to this ILayer
                                         //Or do the job on the Editor (logic)
                                         /*
-					EditorManager em = Services.getService(EditorManager.class);
-					IEditor[] editors = em.getEditor(new EditableLayer(element,
-							lyr));
-					for (IEditor editor : editors) {
-						if (!em.closeEditor(editor)) {
-							return false;
-						}
-					}
-                                        * 
-                                        */
-				}
-			}
-			return true;
-		}
+                                         * EditorManager em =
+                                         * Services.getService(EditorManager.class);
+                                         * IEditor[] editors = em.getEditor(new
+                                         * EditableLayer(element, lyr)); for
+                                         * (IEditor editor : editors) { if
+                                         * (!em.closeEditor(editor)) { return
+                                         * false; } }
+                                         *
+                                         */
+                                }
+                        }
+                        return true;
+                }
 
                 @Override
-		public void layerRemoved(final LayerCollectionEvent e) {
-			for (final ILayer layer : e.getAffected()) {
-				layer.removeLayerListenerRecursively(this);
-			}
-			treeModel.refresh();
-		}
+                public void layerRemoved(final LayerCollectionEvent e) {
+                        for (final ILayer layer : e.getAffected()) {
+                                layer.removeLayerListenerRecursively(this);
+                        }
+                        treeModel.refresh();
+                }
 
                 @Override
-		public void nameChanged(LayerListenerEvent e) {
-		}
+                public void nameChanged(LayerListenerEvent e) {
+                }
 
                 @Override
-		public void styleChanged(LayerListenerEvent e) {
-			treeModel.refresh();
-		}
+                public void styleChanged(LayerListenerEvent e) {
+                        treeModel.refresh();
+                }
 
                 @Override
-		public void visibilityChanged(LayerListenerEvent e) {
-			treeModel.refresh();
-		}
+                public void visibilityChanged(LayerListenerEvent e) {
+                        treeModel.refresh();
+                }
 
                 @Override
-		public void selectionChanged(SelectionEvent e) {
-			treeModel.refresh();
-		}
+                public void selectionChanged(SelectionEvent e) {
+                        treeModel.refresh();
+                }
 
                 @Override
-		public void multipleModification(MultipleEditionEvent e) {
-			treeModel.refresh();
-		}
+                public void multipleModification(MultipleEditionEvent e) {
+                        treeModel.refresh();
+                }
 
                 @Override
-		public void singleModification(EditionEvent e) {
-			treeModel.refresh();
-		}
+                public void singleModification(EditionEvent e) {
+                        treeModel.refresh();
+                }
 
                 @Override
-		public void cancel(DataSource ds) {
-		}
+                public void cancel(DataSource ds) {
+                }
 
                 @Override
-		public void commit(DataSource ds) {
-			treeModel.refresh();
-		}
+                public void commit(DataSource ds) {
+                        treeModel.refresh();
+                }
 
                 @Override
-		public void open(DataSource ds) {
-			treeModel.refresh();
-		}
+                public void open(DataSource ds) {
+                        treeModel.refresh();
+                }
+        }
 
-	}
-        
-        
-	private final class TocMapContextListener implements MapContextListener {
-                @Override
-		public void layerSelectionChanged(MapContext mapContext) {
-			setTocSelection(mapContext);
-		}
+        private final class TocMapContextListener implements MapContextListener {
 
                 @Override
-		public void activeLayerChanged(ILayer previousActiveLayer,
-				MapContext mapContext) {
-			treeModel.refresh();
-		}
-	}
-        
+                public void layerSelectionChanged(MapContext mapContext) {
+                        setTocSelection(mapContext);
+                }
+
+                @Override
+                public void activeLayerChanged(ILayer previousActiveLayer,
+                        MapContext mapContext) {
+                        treeModel.refresh();
+                }
+        }
+
         /**
          * The user drop a list of EditableSource in the TOC tree
          */
         private class DropDataSourceListProcess implements BackgroundJob {
 
-		private ILayer dropNode;
+                private ILayer dropNode;
                 private int dropIndex;
-		private List<EditableSource> draggedResources;
+                private List<EditableSource> draggedResources;
 
                 public DropDataSourceListProcess(ILayer dropNode, int dropIndex, List<EditableSource> draggedResources) {
-                    this.dropNode = dropNode;
-                    this.dropIndex = dropIndex;
-                    this.draggedResources = draggedResources;
+                        this.dropNode = dropNode;
+                        this.dropIndex = dropIndex;
+                        this.draggedResources = draggedResources;
                 }
 
                 @Override
-		public void run(ProgressMonitor pm) {
+                public void run(ProgressMonitor pm) {
 
-			DataManager dataManager = (DataManager) Services
-					.getService(DataManager.class);
-			for (int i = 0; i < draggedResources.size(); i++) {
-				String sourceName = draggedResources.get(i).getId();
-				if (pm.isCancelled()) {
-					break;
-				} else {
-					pm.progressTo(100 * i / draggedResources.size());
-					try {
+                        DataManager dataManager = (DataManager) Services.getService(DataManager.class);
+                        for (int i = 0; i < draggedResources.size(); i++) {
+                                String sourceName = draggedResources.get(i).getId();
+                                if (pm.isCancelled()) {
+                                        break;
+                                } else {
+                                        pm.progressTo(100 * i / draggedResources.size());
+                                        try {
                                                 ILayer nl = dataManager.createLayer(sourceName);
-						dropNode.insertLayer(nl, dropIndex);
-					} catch (LayerException e) {
-						throw new RuntimeException(I18N.tr("Cannot add the layer to the destination") , e);
-					}
-				}
-			}
-		}
+                                                dropNode.insertLayer(nl, dropIndex);
+                                        } catch (LayerException e) {
+                                                throw new RuntimeException(I18N.tr("Cannot add the layer to the destination"), e);
+                                        }
+                                }
+                        }
+                }
 
                 @Override
-		public String getTaskName() {
-			return I18N.tr("Load the data source droped into the toc.");
-		}
-	}
-        
+                public String getTaskName() {
+                        return I18N.tr("Load the data source droped into the toc.");
+                }
+        }
+
         /**
          * Implements Popup action on JTree
          */
         private class PopupMouselistener extends MouseAdapter {
-                @Override
-		public void mousePressed(MouseEvent e) {
-			maybeShowPopup(e);
-		}
 
                 @Override
-		public void mouseReleased(MouseEvent e) {
-			maybeShowPopup(e);
-		}
+                public void mousePressed(MouseEvent e) {
+                        maybeShowPopup(e);
+                }
 
-		private boolean contains(TreePath[] selectionPaths, TreePath path) {
-			for (TreePath treePath : selectionPaths) {
-				boolean equals = true;
-				Object[] objectPath = treePath.getPath();
-				Object[] testPath = path.getPath();
-				if (objectPath.length != testPath.length) {
-					equals = false;
-				} else {
-					for (int i = 0; i < testPath.length; i++) {
-						if (testPath[i] != objectPath[i]) {
-							equals = false;
-						}
-					}
-				}
-				if (equals) {
-					return true;
-				}
-			}
+                @Override
+                public void mouseReleased(MouseEvent e) {
+                        maybeShowPopup(e);
+                }
 
-			return false;
-		}
-		private void maybeShowPopup(MouseEvent e) {
-                    if (e.isPopupTrigger()) {
-                        //Update selection
-                        TreePath path = tree.getPathForLocation(e.getX(), e.getY());
-                        TreePath[] selectionPaths = tree.getSelectionPaths();
-                        if ((selectionPaths != null) && (path != null)) {
-                                if (!contains(selectionPaths, path)) {
-                                        if (e.isControlDown()) {
-                                                tree.addSelectionPath(path);
-                                        } else {
-                                                tree.setSelectionPath(path);
+                private boolean contains(TreePath[] selectionPaths, TreePath path) {
+                        for (TreePath treePath : selectionPaths) {
+                                boolean equals = true;
+                                Object[] objectPath = treePath.getPath();
+                                Object[] testPath = path.getPath();
+                                if (objectPath.length != testPath.length) {
+                                        equals = false;
+                                } else {
+                                        for (int i = 0; i < testPath.length; i++) {
+                                                if (testPath[i] != objectPath[i]) {
+                                                        equals = false;
+                                                }
                                         }
                                 }
-                        } else {
-                                tree.setSelectionPath(path);
-                        }                        
-                        //Show popup
-                        makePopupMenu().show(e.getComponent(),
-                                e.getX(), e.getY());
-                    }
+                                if (equals) {
+                                        return true;
+                                }
+                        }
+
+                        return false;
+                }
+
+                private void maybeShowPopup(MouseEvent e) {
+                        if (e.isPopupTrigger()) {
+                                //Update selection
+                                TreePath path = tree.getPathForLocation(e.getX(), e.getY());
+                                TreePath[] selectionPaths = tree.getSelectionPaths();
+                                if ((selectionPaths != null) && (path != null)) {
+                                        if (!contains(selectionPaths, path)) {
+                                                if (e.isControlDown()) {
+                                                        tree.addSelectionPath(path);
+                                                } else {
+                                                        tree.setSelectionPath(path);
+                                                }
+                                        }
+                                } else {
+                                        tree.setSelectionPath(path);
+                                }
+                                //Show popup
+                                makePopupMenu().show(e.getComponent(),
+                                        e.getX(), e.getY());
+                        }
                 }
         }
 }
