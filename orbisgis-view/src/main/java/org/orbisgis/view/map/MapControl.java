@@ -44,6 +44,7 @@ import java.awt.event.ContainerEvent;
 import java.awt.event.ContainerListener;
 import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import org.apache.log4j.Logger;
@@ -109,6 +110,8 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	Automaton defaultTool;
         
+        PropertyChangeListener boundingBoxPropertyListener = null;
+        
         BufferedImage updatedImage=null; /*!< The last drawn image paint, shown when the status of the mapTransform is dirty */
 
 	public MapControl() {
@@ -117,6 +120,19 @@ public class MapControl extends JComponent implements ContainerListener {
         private void setStatus(int newStatus) {
             status = newStatus;
         }
+        
+        /**
+         * The bounding box of the map context need 
+         * to be read and applied to the MapTransform
+         */
+        public void onMapContextBoundingBoxChange() {
+		Envelope boundingBox = mapContext.getBoundingBox();
+		if (boundingBox != null) {
+			mapTransform.setExtent(boundingBox);
+                }                
+        }
+        
+        
 	final public void initMapControl() throws TransitionException {
 		synchronized (this) {
 			this.processId = lastProcessId++;
@@ -477,13 +493,16 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	}
 
+        /**
+         * Free resources allocated by the MapControl
+         */
         public void closing() {
 		/*
 		 * if (drawer != null) { drawer.cancel(); }
 		 */
 		toolManager.freeResources();
 		toolManager = null;
-                
+                removeMapContextListener();
                 removeLayerListenerRecursively(mapContext.getLayerModel(), refreshLayerListener);
 	}
 
@@ -513,8 +532,22 @@ public class MapControl extends JComponent implements ContainerListener {
 	public void setElement(TransformListener element) {
 		this.element = element;
 	}
-
+        /**
+        * Remove the property listeners
+        */
+        private void removeMapContextListener() {
+                if(boundingBoxPropertyListener!=null && this.mapContext!=null) {
+                        this.mapContext.removePropertyChangeListener(boundingBoxPropertyListener);
+                }                
+        }
+        /**
+         * Switch the loaded map context
+         * @param mapContext new map context
+         */
 	public void setMapContext(MapContext mapContext) {
+                //Remove the property listeners
+                removeMapContextListener();
+                mapContext.addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class,this,"onMapContextBoundingBoxChange"));
 		this.mapContext = mapContext;
 	}
 
