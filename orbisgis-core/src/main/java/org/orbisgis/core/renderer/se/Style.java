@@ -196,7 +196,7 @@ public final class Style implements SymbolizerNode {
 
     public void export(String seFile) {
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(StyleType.class);
+            JAXBContext jaxbContext = Services.JAXBCONTEXT;
             Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.marshal(getJAXBElement(), new FileOutputStream(seFile));
