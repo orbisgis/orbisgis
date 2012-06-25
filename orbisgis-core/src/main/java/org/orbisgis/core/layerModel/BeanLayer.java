@@ -293,4 +293,11 @@ public abstract class BeanLayer extends AbstractLayer {
     public int indexOf(Style s){
             return styleList == null ? -1 : styleList.indexOf(s);
     }
+
+    @Override
+    public void removeStyle(Style s){
+            styleList.remove(s);
+            propertyChangeSupport.firePropertyChange(PROP_STYLES, s, null);
+            this.fireStyleChanged();
+    }
 }

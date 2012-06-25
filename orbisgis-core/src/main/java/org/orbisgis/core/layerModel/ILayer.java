@@ -376,4 +376,9 @@ public interface ILayer {
          */
 	List<Rule> getRenderingRule() throws DriverException;
 
+        /**
+         * Removes s from the styles associated to this layer.
+         */
+        void removeStyle(Style s);
+
 }

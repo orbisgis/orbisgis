@@ -444,6 +444,7 @@ public class MapControl extends JComponent implements ContainerListener {
 		}
 
 		public void styleChanged(LayerListenerEvent e) {
+                        drawer = new Drawer();
                         BackgroundManager bm = Services.getService(BackgroundManager.class);
                         bm.nonBlockingBackgroundOperation(new DefaultJobId(
                                 "org.orbisgis.jobs.MapControl-" + processId), drawer);
