@@ -1255,4 +1255,36 @@ public final class DefaultSourceManager implements SourceManager {
                         throw new NoSuchTableException(name);
                 }
         }
+
+        @Override
+        public boolean exists(URI uri) {
+                for (ExtendedSource e : nameSource.values()) {
+                        try {
+                                if (uri.equals(e.getURI())) {
+                                        return true;
+                                }
+                        } catch (DriverException ex) {
+                                LOG.warn("Problem while retriving URI for '" + e.getName()
+                                        + "'. Ignoring.", ex);
+                        }
+                }
+
+                return false;
+        }
+
+        @Override
+        public String getNameFor(URI uri) throws NoSuchTableException {
+                for (ExtendedSource e : nameSource.values()) {
+                        try {
+                                if (uri.equals(e.getURI())) {
+                                        return e.getName();
+                                }
+                        } catch (DriverException ex) {
+                                LOG.warn("Problem while retriving URI for '" + e.getName()
+                                        + "'. Ignoring.", ex);
+                        }
+                }
+
+                throw new NoSuchTableException("for '" + uri.toString() + "'");
+        }
 }

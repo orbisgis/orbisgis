@@ -341,12 +341,29 @@ public interface SourceManager {
         void rename(String dsName, String newName);
 
         /**
-         * Checks if there is a some with a specific name.
+         * Checks if there is a source with a specific name.
          *
          * @param sourceName a name/alias
          * @return true if there is a source with the specified name, false otherwise
          */
         boolean exists(String sourceName);
+        
+        /**
+         * Checks if a source with the specified URI is already registered.
+         *
+         * @param uri a valid URI
+         * @return true if there is a source with the specified URI, false otherwise
+         */
+        boolean exists(URI uri);
+        
+        /**
+         * Gets the main name of the source.
+         *
+         * @param uri a valid URI
+         * @return the (main) name of the source with the specified URI
+         * @throws NoSuchTableException if there is no source with the specified URI
+         */
+        String getNameFor(URI uri) throws NoSuchTableException;
 
         /**
          * Gets the main name of the source.
