@@ -52,6 +52,7 @@ import org.gdms.TestBase;
 import org.gdms.TestResourceHandler;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.edition.FakeDBTableSourceDefinition;
@@ -646,6 +647,24 @@ public class SourceManagementTest extends TestBase {
                 assertEquals("tata", s.getSchemaName());
                 assertEquals("me", s.getUser());
                 assertEquals("changeme", s.getPassword());
+        }
+        
+        @Test
+        public void testURIManagement() throws Exception {
+                URI uri = testFile.toURI();
+                assertFalse(sm.exists(uri));
+                
+                try {
+                        sm.getNameFor(uri);
+                        fail();
+                } catch (NoSuchTableException e) {
+                        // should fail
+                }
+                
+                sm.register("test", uri);
+                assertTrue(sm.exists(uri));
+                
+                assertEquals("test", sm.getNameFor(uri));
         }
 
         private void testListenCommits(DataSource ds) throws DriverException {
