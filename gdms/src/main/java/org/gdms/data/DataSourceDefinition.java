@@ -46,6 +46,7 @@ import org.gdms.source.directory.DefinitionType;
 
 /**
  * Class to be implemented to add new types of sources to the system.
+ * @param <D> the driver type this definition depends on
  */
 public interface DataSourceDefinition<D extends Driver> {
 
@@ -171,6 +172,7 @@ public interface DataSourceDefinition<D extends Driver> {
 
         /**
          * Deletes all physical storage associated with this source.
+         * @throws DriverException 
          */
         void delete() throws DriverException;
 
@@ -184,6 +186,7 @@ public interface DataSourceDefinition<D extends Driver> {
 
         /**
          * Gets an URI representing this definition.
+         * @return an URI representing this definition (or null if impossible) 
          * @throws DriverException 
          */
         URI getURI() throws DriverException;
