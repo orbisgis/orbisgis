@@ -110,8 +110,10 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
     // result metadata of teh function
     metadata = f.getMetadata(dss toArray)
   }
-
-  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
+  
+  override def execute(implicit pm: Option[ProgressMonitor]): RowStream = {
+    children map (_ execute)
+    
     pm.map(_.startTask("Running table function", 0))
     // evaluates the function
     ds = f.evaluate(dsf,
@@ -126,6 +128,8 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
     pm.map(_.endTask)
     res
   }
+
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = Iterator.empty
 
   override def doCleanUp = {
     // closes any DataSource object (the other are closed by the OutputCommand)

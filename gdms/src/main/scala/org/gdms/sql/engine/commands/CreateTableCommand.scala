@@ -74,7 +74,9 @@ class CreateTableCommand(name: String) extends Command with OutputCommand {
     }
   }
   
-  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = {
+  override def execute(implicit pm: Option[ProgressMonitor]): RowStream = {
+    children map (_ execute)
+    
     dsf.getSourceManager.register(name, resultFile)
     val o = children.head
     o match {
@@ -89,6 +91,8 @@ class CreateTableCommand(name: String) extends Command with OutputCommand {
     
     Iterator.empty
   }
+  
+  protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = Iterator.empty
   
   val getResult = null
 

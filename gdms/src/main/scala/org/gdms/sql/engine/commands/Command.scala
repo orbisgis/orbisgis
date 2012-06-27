@@ -63,9 +63,7 @@ abstract class Command() {
    * @param pm an optional ProgressMonitor for reporting status
    */
   def execute(implicit pm: Option[ProgressMonitor]): RowStream = {
-    
-    // start this one and return the promise of its result
-    doWork ((for (c <- children.view) yield { c.execute }).toIterator)
+    doWork(children.view map (_ execute) toIterator)
   }
 
   /**
