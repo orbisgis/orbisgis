@@ -101,14 +101,19 @@
                         <type>jar</type>
                 </dependency>
                 <dependency>
+                        <groupId>jfree</groupId>
+                        <artifactId>jfreechart</artifactId>
+                        <version>1.0.0</version>
+                </dependency>
+                <dependency>
                         <groupId>${project.groupId}</groupId>
                         <artifactId>orbisgis-sif</artifactId>
                         <version>${project.version}</version>
                 </dependency>
                 <dependency>
                         <groupId>${project.groupId}</groupId>
-                        <artifactId>legend-monomap</artifactId>
-                        <version>0.1-SNAPSHOT</version>
+                        <artifactId>orbisgis-core-monomap</artifactId>
+                        <version>${project.version}</version>
                 </dependency>
         </dependencies>
         <pluginRepositories>
