@@ -36,18 +36,27 @@ import java.beans.EventHandler;
 import java.io.File;
 import javax.swing.*;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
-import org.gdms.source.SourceManager;
+import org.gdms.driver.Driver;
+import org.gdms.driver.FileDriver;
+import org.gdms.driver.driverManager.DriverFilter;
+import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.source.*;
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.context.SourceContext.SourceContext;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
+import org.orbisgis.sif.SaveFilePanel;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.utils.CollectionUtils;
 import org.orbisgis.utils.FileUtils;
+import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
@@ -56,6 +65,7 @@ import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.factories.NameContains;
 import org.orbisgis.view.geocatalog.filters.factories.NameNotContains;
 import org.orbisgis.view.geocatalog.filters.factories.SourceTypeIs;
+import org.orbisgis.view.geocatalog.io.ExportInFileOperation;
 import org.orbisgis.view.geocatalog.renderer.DataSourceListCellRenderer;
 import org.orbisgis.view.geocatalog.sourceWizards.db.ConnectionPanel;
 import org.orbisgis.view.geocatalog.sourceWizards.db.TableSelectionPanel;
@@ -64,12 +74,13 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * @brief This is the GeoCatalog panel. That Panel show the list of available DataSource
- * 
- * This is connected with the SourceManager model.
- * @note If you want to add new functionality to data source items without change
- * this class you can use the eventSourceListPopupMenuCreating listener container
- * to add more items in the source list pop-up menu.
+ * @brief This is the GeoCatalog panel. That Panel show the list of available
+ * DataSource
+ *
+ * This is connected with the SourceManager model. @note If you want to add new
+ * functionality to data source items without change this class you can use the
+ * eventSourceListPopupMenuCreating listener container to add more items in the
+ * source list pop-up menu.
  */
 public class Catalog extends JPanel implements DockingPanel {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
@@ -77,7 +88,9 @@ public class Catalog extends JPanel implements DockingPanel {
         private static final long serialVersionUID = 1L;
         protected final static I18n I18N = I18nFactory.getI18n(Catalog.class);
         private static final Logger LOGGER = Logger.getLogger(Catalog.class);
-        private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< GeoCatalog docked panel properties */
+        private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*
+         * !< GeoCatalog docked panel properties
+         */
 
         private JList sourceList;
         private SourceListModel sourceListContent;
@@ -89,6 +102,7 @@ public class Catalog extends JPanel implements DockingPanel {
 
         /**
          * For the Unit test purpose
+         *
          * @return The source list instance
          */
         public JList getSourceList() {
@@ -96,10 +110,11 @@ public class Catalog extends JPanel implements DockingPanel {
         }
 
         /**
-         * The popup menu event listener manager
-         * The popup menu is being created,
-         * all listeners are able to feed the menu with custom functions
-         * @return 
+         * The popup menu event listener manager The popup menu is being
+         * created, all listeners are able to feed the menu with custom
+         * functions
+         *
+         * @return
          */
         public ListenerContainer<MenuPopupEventData> getEventSourceListPopupMenuCreating() {
                 return eventSourceListPopupMenuCreating;
@@ -132,19 +147,20 @@ public class Catalog extends JPanel implements DockingPanel {
                 add(filterFactoryManager.makeFilterPanel(false), BorderLayout.NORTH);
                 //Create a toolbar to add a new filter
                 JToolBar toolBar = new JToolBar();
-                JButton button = new JButton(I18N.tr("Add filter"),OrbisGISIcon.getIcon("add_filter"));
+                JButton button = new JButton(I18N.tr("Add filter"), OrbisGISIcon.getIcon("add_filter"));
                 button.setToolTipText(I18N.tr("Add a new data source filter"));
-                button.addActionListener(EventHandler.create(ActionListener.class,filterFactoryManager,"onAddFilter"));
+                button.addActionListener(EventHandler.create(ActionListener.class, filterFactoryManager, "onAddFilter"));
                 toolBar.add(button);
                 toolBar.addSeparator();
                 dockingParameters.setToolBar(toolBar);
-                
+
                 //Add the geocatalog specific filters
                 registerFilterFactories();
         }
 
         /**
          * For JUnit purpose, return the filter factory manager
+         *
          * @return Instance of filterFactoryManager
          */
         public FilterFactoryManager<IFilter> getFilterFactoryManager() {
@@ -162,52 +178,53 @@ public class Catalog extends JPanel implements DockingPanel {
 
         /**
          * The user click on the source list control
+         *
          * @param e The mouse event fired by the LI
          */
         public void onMouseActionOnSourceList(MouseEvent e) {
                 //Manage selection of items before popping up the menu
                 if (e.isPopupTrigger()) { //Right mouse button under linux and windows
-                    int itemUnderMouse = -1; //Item under the position of the mouse event
-                    //Find the Item under the position of the mouse cursor
-                    for (int i = 0; i < sourceListContent.getSize(); i++) {
-                            //If the coordinate of the cursor cover the cell bouding box
-                            if (sourceList.getCellBounds(i, i).contains(e.getPoint())) {
-                                    itemUnderMouse = i;
-                                    break;
-                            }
-                    }
-                    //Retrieve all selected items index
-                    int[] selectedItems = sourceList.getSelectedIndices();
-                    //If there are a list item under the mouse
-                    if ((selectedItems != null) && (itemUnderMouse != -1)) {
-                            //If the item under the mouse was not previously selected
-                            if (!CollectionUtils.contains(selectedItems, itemUnderMouse)) {
-                                    //Control must be pushed to add the list item to the selection
-                                    if (e.isControlDown()) {
-                                            sourceList.addSelectionInterval(itemUnderMouse, itemUnderMouse);
-                                    } else {
-                                            //Unselect the other items and select only the item under the mouse
-                                            sourceList.setSelectionInterval(itemUnderMouse, itemUnderMouse);
-                                    }
-                            }
-                    } else if (itemUnderMouse == -1) {
-                            //Unselect all items
-                            sourceList.clearSelection();
-                    }
+                        int itemUnderMouse = -1; //Item under the position of the mouse event
+                        //Find the Item under the position of the mouse cursor
+                        for (int i = 0; i < sourceListContent.getSize(); i++) {
+                                //If the coordinate of the cursor cover the cell bouding box
+                                if (sourceList.getCellBounds(i, i).contains(e.getPoint())) {
+                                        itemUnderMouse = i;
+                                        break;
+                                }
+                        }
+                        //Retrieve all selected items index
+                        int[] selectedItems = sourceList.getSelectedIndices();
+                        //If there are a list item under the mouse
+                        if ((selectedItems != null) && (itemUnderMouse != -1)) {
+                                //If the item under the mouse was not previously selected
+                                if (!CollectionUtils.contains(selectedItems, itemUnderMouse)) {
+                                        //Control must be pushed to add the list item to the selection
+                                        if (e.isControlDown()) {
+                                                sourceList.addSelectionInterval(itemUnderMouse, itemUnderMouse);
+                                        } else {
+                                                //Unselect the other items and select only the item under the mouse
+                                                sourceList.setSelectionInterval(itemUnderMouse, itemUnderMouse);
+                                        }
+                                }
+                        } else if (itemUnderMouse == -1) {
+                                //Unselect all items
+                                sourceList.clearSelection();
+                        }
                         //Selection are ready, now create the popup menu
                         JPopupMenu popup = makePopupMenu();
                         if (popup != null) {
                                 popup.show(e.getComponent(), e.getX(), e.getY());
-            }
+                        }
 
-        }
+                }
         }
 
         /**
-         * The user click on the menu item called "Add/File"
-         * The user wants to open a file using the geocatalog.
-         * It will open a panel dedicated to the selection of the wanted files. This
-         * panel will then return the selected files.
+         * The user click on the menu item called "Add/File" The user wants to
+         * open a file using the geocatalog. It will open a panel dedicated to
+         * the selection of the wanted files. This panel will then return the
+         * selected files.
          */
         public void onMenuAddFile() {
                 SourceContext srcContext = sourceListContent.getSourceContext();
@@ -280,41 +297,84 @@ public class Catalog extends JPanel implements DockingPanel {
                         try {
                                 sm.remove(resource);
                         } catch (IllegalStateException e) {
-                                LOGGER.error(I18N.tr("Cannot remove the source {0}",resource), e);
+                                LOGGER.error(I18N.tr("Cannot remove the source {0}", resource), e);
 
                         }
                 }
         }
 
         /**
-         * Create a popup menu corresponding to the current state of source selection
+         * The user can export a source in a file.
+         */
+        public void onMenuSaveInfile() {
+                SourceContext srcContext = sourceListContent.getSourceContext();
+                SourceManager sm = srcContext.getSourceManager();
+                String[] res = getSelectedSources();
+                DataManager dm = Services.getService(DataManager.class);
+                DataSourceFactory dsf = dm.getDataSourceFactory();
+                DriverManager driverManager = sm.getDriverManager();
+                for (String source : res) {
+                        final SaveFilePanel outfilePanel = new SaveFilePanel(
+                                "org.orbisgis.core.ui.plugins.views.geocatalog.SaveInFile",
+                                I18N.tr("Save the source : " + source));  
+                        outfilePanel.setShowFavorites(false);
+                        int type = sm.getSource(source).getType();
+                        DriverFilter filter;
+                        if ((type & SourceManager.VECTORIAL) == sm.VECTORIAL) {
+                                // no other choice but to add CSV here
+                                // because of CSVStringDriver implementation
+                                filter = new OrDriverFilter(new VectorialDriverFilter(),
+                                        new CSVFileDriverFilter());
+                        } else if ((type & SourceManager.RASTER) == sm.RASTER) {
+                                filter = new RasterDriverFilter();
+                        } else if ((type & SourceManager.WMS) == sm.WMS) {
+                                filter = new DriverFilter() {
+
+                                        @Override
+                                        public boolean acceptDriver(Driver driver) {
+                                                return false;
+                                        }
+                                };
+                        } else {
+                                filter = new NotDriverFilter(new RasterDriverFilter());
+                        }
+                        Driver[] filtered = driverManager.getDrivers(new AndDriverFilter(
+                                filter, new WritableDriverFilter(), new FileDriverFilter()));
+                        for (int i = 0; i < filtered.length; i++) {
+                                FileDriver fileDriver = (FileDriver) filtered[i];
+                                String[] extensions = fileDriver.getFileExtensions();
+                                outfilePanel.addFilter(extensions, fileDriver.getTypeDescription());
+                        }
+
+                        if (UIFactory.showDialog(outfilePanel)) {
+                                final File savedFile = new File(outfilePanel.getSelectedFile().getAbsolutePath());
+                                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                                bm.backgroundOperation(new ExportInFileOperation(dsf, source,
+                                        savedFile, this));
+                        }
+
+                }
+
+        }
+        
+        /**
+         * The user can save a source in a database
+         */
+        public void onMenuSaveInDB(){
+                
+        }
+
+        /**
+         * Create a popup menu corresponding to the current state of source
+         * selection
+         *
          * @return A new popup menu
          */
         private JPopupMenu makePopupMenu() {
                 JPopupMenu rootMenu = new JPopupMenu();
-                //Popup:ClearGeocatalog (added if the datasource manager is not empty)
-                if (!sourceListContent.getSourceContext().isDataSourceManagerEmpty()) {
-                        JMenuItem clearCatalogItem = new JMenuItem(I18N.tr("Clear the GeoCatalog"),
-                                OrbisGISIcon.getIcon("bin_closed"));
-                        clearCatalogItem.addActionListener(EventHandler.create(ActionListener.class,
-                                this,
-                                "onMenuClearGeoCatalog"));
-                        rootMenu.add(clearCatalogItem);
-                }
-                
-                //Add function to remove a source
-                if(!sourceList.isSelectionEmpty()) {
-                    JMenuItem removeSourceItem = new JMenuItem(
-                                    I18N.tr("Remove the source"),
-                                    OrbisGISIcon.getIcon("remove"));
-                    removeSourceItem.addActionListener(EventHandler.create(ActionListener.class,
-                            this,
-                            "onMenuRemoveSource"));
-                    rootMenu.add(removeSourceItem);
-                }
+
                 //Popup:Add
                 JMenu addMenu = new JMenu(I18N.tr("Add"));
-                rootMenu.addSeparator();
                 rootMenu.add(addMenu);
                 //Popup:Add:File
                 JMenuItem addFileItem = new JMenuItem(
@@ -332,8 +392,56 @@ public class Catalog extends JPanel implements DockingPanel {
                 addFileItem.addActionListener(EventHandler.create(ActionListener.class,
                         this,
                         "onMenuAddFromDataBase"));
-                addMenu.add(addFileItem); 
+                addMenu.add(addFileItem);
 
+                if (!sourceList.isSelectionEmpty()) {
+                        //Popup:Save
+                        JMenu saveMenu = new JMenu(I18N.tr("Save"));
+                        rootMenu.add(saveMenu);
+
+                        //Popup:Save:File
+                        JMenuItem saveInFileItem = new JMenuItem(
+                                I18N.tr("File"),
+                                OrbisGISIcon.getIcon("page_white_save"));
+                        saveInFileItem.addActionListener(EventHandler.create(ActionListener.class,
+                                this,
+                                "onMenuSaveInfile"));
+                        saveMenu.add(saveInFileItem);
+                        
+                        //Popup:Save:File
+                        JMenuItem saveInDBItem = new JMenuItem(
+                                I18N.tr("Database"),
+                                OrbisGISIcon.getIcon("database_save"));
+                        saveInDBItem.addActionListener(EventHandler.create(ActionListener.class,
+                                this,
+                                "onMenuSaveInDB"));
+                        saveMenu.add(saveInDBItem);
+
+                }
+
+                rootMenu.addSeparator();
+
+                //Popup:ClearGeocatalog (added if the datasource manager is not empty)
+                if (!sourceListContent.getSourceContext().isDataSourceManagerEmpty()) {
+                        JMenuItem clearCatalogItem = new JMenuItem(I18N.tr("Clear the GeoCatalog"),
+                                OrbisGISIcon.getIcon("bin_closed"));
+                        clearCatalogItem.addActionListener(EventHandler.create(ActionListener.class,
+                                this,
+                                "onMenuClearGeoCatalog"));
+                        rootMenu.add(clearCatalogItem);
+                }
+
+                //Add function to remove a source
+                if (!sourceList.isSelectionEmpty()) {
+
+                        JMenuItem removeSourceItem = new JMenuItem(
+                                I18N.tr("Remove the source"),
+                                OrbisGISIcon.getIcon("remove"));
+                        removeSourceItem.addActionListener(EventHandler.create(ActionListener.class,
+                                this,
+                                "onMenuRemoveSource"));
+                        rootMenu.add(removeSourceItem);
+                }
 
                 //////////////////////////////
                 //Plugins
@@ -372,8 +480,8 @@ public class Catalog extends JPanel implements DockingPanel {
         }
 
         /**
-         * Free listeners, Catalog must not be reachable to let the Garbage Collector
-         * free this instance
+         * Free listeners, Catalog must not be reachable to let the Garbage
+         * Collector free this instance
          */
         public void dispose() {
                 //Remove listeners linked with the source list content
@@ -383,7 +491,8 @@ public class Catalog extends JPanel implements DockingPanel {
 
         /**
          * Return the names of the selected sources in the geocatalog.
-         * @return 
+         *
+         * @return
          */
         public String[] getSelectedSources() {
                 Object[] selectedValues = getSourceList().getSelectedValues();
@@ -395,8 +504,9 @@ public class Catalog extends JPanel implements DockingPanel {
         }
 
         /**
-         * Give information on the behaviour of this panel related to the current
-         * docking system
+         * Give information on the behaviour of this panel related to the
+         * current docking system
+         *
          * @return The panel parameter instance
          */
         @Override
