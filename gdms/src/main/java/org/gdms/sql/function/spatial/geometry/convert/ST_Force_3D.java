@@ -34,6 +34,7 @@
 package org.gdms.sql.function.spatial.geometry.convert;
 
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.geometryUtils.GeometryEdit;
@@ -87,8 +88,8 @@ public final class ST_Force_3D extends AbstractScalarSpatialFunction {
         @Override
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[] {
-                  new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY),
-                  new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY, ScalarArgument.DOUBLE)
+                  new BasicFunctionSignature(Type.GEOMETRY, ScalarArgument.GEOMETRY),
+                  new BasicFunctionSignature(Type.GEOMETRY, ScalarArgument.GEOMETRY, ScalarArgument.DOUBLE)
                 };
         }
 }

@@ -51,7 +51,7 @@ public abstract class AbstractScalarSpatialFunction extends AbstractScalarFuncti
         @Override
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[] {
-                  new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY)
+                  new BasicFunctionSignature(Type.GEOMETRY, ScalarArgument.GEOMETRY)
                 };
         }
 }

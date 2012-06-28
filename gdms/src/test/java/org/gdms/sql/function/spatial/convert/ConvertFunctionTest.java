@@ -93,7 +93,7 @@ public class ConvertFunctionTest extends FunctionTest {
 
                 // Test return type
                 int type = evaluateDeclaredType(function, Type.LINESTRING);
-                assertEquals(type, Type.GEOMETRY);
+                assertEquals(Type.LINESTRING, type);
                 //assertEquals(type.getIntConstraint(Constraint.DIMENSION_3D_GEOMETRY), 2);
 
                 // Test coordinates
@@ -141,7 +141,7 @@ public class ConvertFunctionTest extends FunctionTest {
 
                 // Test return type
                 int type = evaluateDeclaredType(function, Type.LINESTRING);
-                assertEquals(type, Type.GEOMETRY);
+                assertEquals(Type.LINESTRING, type);
 //                assertEquals(type.getIntConstraint(Constraint.DIMENSION_3D_GEOMETRY), 3);
         }
 
