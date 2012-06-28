@@ -35,12 +35,14 @@ package org.gdms.sql.engine.commands
 
 import org.gdms.data.DataSource
 import org.gdms.data.schema.Metadata
-import org.gdms.data.types.TypeFactory
+import org.gdms.data.types.Type
 import org.gdms.sql.engine.SemanticException
+import org.gdms.sql.evaluator.CastEvaluator
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.function.AggregateFunction
 import org.gdms.sql.function.FunctionException
 import org.gdms.sql.function.FunctionValidator
+import org.gdms.sql.function.ScalarArgument
 import org.gdms.sql.function.ScalarFunction
 import org.gdms.sql.function.executor.ExecutorFunction
 import org.gdms.sql.function.table.TableFunction
@@ -110,9 +112,18 @@ class ExecutorCommand(name: String, tables: Seq[Either[String, OutputCommand]], 
     
     // validates tables & parameter types
     FunctionValidator.failIfTablesDoNotMatchSignature(dss toArray, f.getFunctionSignatures)
-    FunctionValidator.failIfTypesDoNotMatchSignature(
-      params.map(_.evaluator.sqlType) toArray,
-      function.getFunctionSignatures)
+    
+    val fs = FunctionValidator.failIfTypesDoNotMatchSignature(params map(_.evaluator.sqlType) toArray,
+                                                              f.getFunctionSignatures)
+    // infers the type of direct NULL values as the expected type of the first
+    // function signature that matches
+    params.zip(fs.getArguments.filter(_.isScalar)) foreach { a => a._1.evaluator.sqlType match {
+        case Type.NULL =>
+          val targetType = a._2.asInstanceOf[ScalarArgument].getTypeCode
+          a._1.evaluator = CastEvaluator(Expression(a._1.evaluator), targetType)
+        case _ =>
+      }
+    }
     
   }
 

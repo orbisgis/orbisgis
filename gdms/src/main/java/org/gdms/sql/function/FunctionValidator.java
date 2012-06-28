@@ -222,8 +222,9 @@ public final class FunctionValidator {
          * Fails is the array of type codes does not match any FunctionSignature.
          * @param types
          * @param signs
+         * @return the first signature that matches 
          */
-        public static void failIfTypesDoNotMatchSignature(int[] types, FunctionSignature[] signs) {
+        public static FunctionSignature failIfTypesDoNotMatchSignature(int[] types, FunctionSignature[] signs) {
                 boolean ok;
                 for (int i = 0; i < signs.length; i++) {
                         FunctionSignature sign = signs[i];
@@ -240,7 +241,7 @@ public final class FunctionValidator {
                                         }
                                 }
                                 if (!scalarArg) {
-                                        return;
+                                        return sign;
                                 }
                         } else {
                                 ok = true;
@@ -268,7 +269,7 @@ public final class FunctionValidator {
                                         }
                                 }
                                 if (ok && typeId == types.length) {
-                                        return;
+                                        return sign;
                                 }
                         }
                 }

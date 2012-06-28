@@ -35,7 +35,6 @@ package org.gdms.sql.evaluator
 
 import org.gdms.data.DataSourceFactory
 import org.gdms.data.types.Type
-import org.gdms.data.types.TypeFactory
 import org.gdms.data.values.Value
 import org.gdms.data.values.ValueFactory
 import org.gdms.sql.engine.SemanticException
@@ -44,6 +43,7 @@ import org.gdms.sql.engine.operations.Operation
 import org.gdms.sql.function.AggregateFunction
 import org.gdms.sql.function.FunctionException
 import org.gdms.sql.function.FunctionValidator
+import org.gdms.sql.function.ScalarArgument
 import org.gdms.sql.function.ScalarFunction
 import org.gdms.sql.engine.commands.Command
 import org.gdms.sql.engine.commands.ExpressionCommand
@@ -133,8 +133,18 @@ case class FunctionEvaluator(name: String, l: List[Expression]) extends Evaluato
   override val childExpressions = l
   override def doValidate = {
     if (f == null) throw new FunctionException("Internal error: failed to initialized function for '" + name + "'.")
-    FunctionValidator.failIfTypesDoNotMatchSignature(l.map(_.evaluator.sqlType) toArray,
-      f.getFunctionSignatures)
+    val fs = FunctionValidator.failIfTypesDoNotMatchSignature(l.map(_.evaluator.sqlType) toArray,
+                                                              f.getFunctionSignatures)
+    
+    // infers the type of direct NULL values as the expected type of the first
+    // function signature that matches
+    l.zip(fs.getArguments) foreach { a => a._1.evaluator.sqlType match {
+        case Type.NULL =>
+          val targetType = a._2.asInstanceOf[ScalarArgument].getTypeCode
+          a._1.evaluator = CastEvaluator(Expression(a._1.evaluator), targetType)
+        case _ =>
+      }
+    }
   }
   override def toString = if (f == null) name else f.getName + "(" + l + ")"
   
@@ -182,9 +192,18 @@ case class AggregateEvaluator(f: AggregateFunction, l: List[Expression]) extends
     if (f == null) throw new FunctionException("The function does not exist.")
   }
   override def doValidate = {
-    FunctionValidator.failIfTypesDoNotMatchSignature(
-      l.map (_.evaluator.sqlType) toArray,
-      f.getFunctionSignatures)
+    val fs = FunctionValidator.failIfTypesDoNotMatchSignature(l.map(_.evaluator.sqlType) toArray,
+                                                              f.getFunctionSignatures)
+    
+    // infers the type of direct NULL values as the expected type of the first
+    // function signature that matches
+    l.zip(fs.getArguments) foreach { a => a._1.evaluator.sqlType match {
+        case Type.NULL =>
+          val targetType = a._2.asInstanceOf[ScalarArgument].getTypeCode
+          a._1.evaluator = CastEvaluator(Expression(a._1.evaluator), targetType)
+        case _ =>
+      }
+    }
   }
   override def toString = "Func(" + f.getName + "(" + l + "))"
   
