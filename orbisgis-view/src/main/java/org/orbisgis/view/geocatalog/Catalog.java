@@ -35,6 +35,7 @@ import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.File;
 import javax.swing.*;
+import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SourceAlreadyExistsException;
@@ -56,11 +57,13 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.utils.CollectionUtils;
 import org.orbisgis.utils.FileUtils;
+import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.geocatalog.dialogs.OpenGdmsFilePanel;
+import org.orbisgis.view.geocatalog.dialogs.OpenGdmsFolderPanel;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.factories.NameContains;
 import org.orbisgis.view.geocatalog.filters.factories.NameNotContains;
@@ -233,7 +236,7 @@ public class Catalog extends JPanel implements DockingPanel {
                         srcContext.getSourceManager().getDriverManager());
 
                 //Ask SIF to open the dialog
-                if (UIFactory.showDialog(new UIPanel[]{openDialog})) {
+                if (UIFactory.showDialog(openDialog, true, true)) {
                         // We can retrieve the files that have been selected by the user
                         File[] files = openDialog.getSelectedFiles();
                         for (int i = 0; i < files.length; i++) {
@@ -316,7 +319,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 for (String source : res) {
                         final SaveFilePanel outfilePanel = new SaveFilePanel(
                                 "org.orbisgis.core.ui.plugins.views.geocatalog.SaveInFile",
-                                I18N.tr("Save the source : " + source));  
+                                I18N.tr("Save the source : " + source));
                         outfilePanel.setShowFavorites(false);
                         int type = sm.getSource(source).getType();
                         DriverFilter filter;
@@ -346,7 +349,7 @@ public class Catalog extends JPanel implements DockingPanel {
                                 outfilePanel.addFilter(extensions, fileDriver.getTypeDescription());
                         }
 
-                        if (UIFactory.showDialog(outfilePanel)) {
+                        if (UIFactory.showDialog(outfilePanel, true, true)) {
                                 final File savedFile = new File(outfilePanel.getSelectedFile().getAbsolutePath());
                                 BackgroundManager bm = Services.getService(BackgroundManager.class);
                                 bm.backgroundOperation(new ExportInFileOperation(dsf, source,
@@ -356,12 +359,72 @@ public class Catalog extends JPanel implements DockingPanel {
                 }
 
         }
-        
+
         /**
          * The user can save a source in a database
          */
-        public void onMenuSaveInDB(){
-                
+        public void onMenuSaveInDB() {
+        }
+
+        /**
+         * The user can load several files from a folder
+         */
+        public void onMenuAddFilesFromFolder() {
+                final SourceContext srcContext = sourceListContent.getSourceContext();
+                final OpenGdmsFolderPanel folderPanel = new OpenGdmsFolderPanel(I18N.tr("Add files from a folder"));
+                if (UIFactory.showDialog(folderPanel, true,true)) {
+                        File[] files = folderPanel.getSelectedFiles();
+                        for (final File file : files) {
+                                // for each folder, we apply the method processFolder.
+                                // We use the filter selected by the user in the panel
+                                // to succeed in this operation.
+                                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                                bm.backgroundOperation(new BackgroundJob() {
+
+                                        @Override
+                                        public String getTaskName() {
+                                                return I18N.tr("Add from folder");
+                                        }
+
+                                        @Override
+                                        public void run(org.orbisgis.progress.ProgressMonitor pm) {
+                                                processFolder(file, folderPanel.getSelectedFilter(), srcContext, pm);
+                                        }
+                                });
+
+                        }
+                }
+        }
+
+        /**
+         * the method that actually process the content of a directory, or a
+         * file. If the file is acceptable by the FileFilter, it is processed
+         *
+         * @param file
+         * @param pm
+         */
+        private void processFolder(File file, FileFilter filter, SourceContext srcContext, org.orbisgis.progress.ProgressMonitor pm) {
+                if (file.isDirectory()) {
+                        pm.startTask(file.getName(), 100);
+                        for (File content : file.listFiles()) {
+                                if (pm.isCancelled()) {
+                                        break;
+                                }
+                                processFolder(content, filter, srcContext, pm);
+                        }
+                        pm.endTask();
+                } else {
+                        if (filter.accept(file) && srcContext.isFileCanBeRegistered(file)) {
+                                DataManager dm = (DataManager) Services.getService(DataManager.class);
+                                SourceManager sourceManager = dm.getSourceManager();
+                                try {
+                                        String name = sourceManager.getUniqueName(FileUtils.getFileNameWithoutExtensionU(file));
+                                        sourceManager.register(name, file);
+                                } catch (SourceAlreadyExistsException e) {
+                                        LOGGER.error(I18N.tr("The source is already registered : "), e);
+                                }
+                        }
+                }
         }
 
         /**
@@ -394,6 +457,16 @@ public class Catalog extends JPanel implements DockingPanel {
                         "onMenuAddFromDataBase"));
                 addMenu.add(addFileItem);
 
+
+                //Add files from folder
+                addFileItem = new JMenuItem(
+                        I18N.tr("Folder"),
+                        OrbisGISIcon.getIcon("folder_add"));
+                addFileItem.addActionListener(EventHandler.create(ActionListener.class,
+                        this,
+                        "onMenuAddFilesFromFolder"));
+                addMenu.add(addFileItem);
+
                 if (!sourceList.isSelectionEmpty()) {
                         //Popup:Save
                         JMenu saveMenu = new JMenu(I18N.tr("Save"));
@@ -407,7 +480,7 @@ public class Catalog extends JPanel implements DockingPanel {
                                 this,
                                 "onMenuSaveInfile"));
                         saveMenu.add(saveInFileItem);
-                        
+
                         //Popup:Save:File
                         JMenuItem saveInDBItem = new JMenuItem(
                                 I18N.tr("Database"),

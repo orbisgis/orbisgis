@@ -25,27 +25,39 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
+
 package org.orbisgis.view.geocatalog.dialogs;
 
 import org.gdms.driver.Driver;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.FileDriverFilter;
-import org.orbisgis.sif.OpenFilePanel;
+import org.gdms.source.SourceManager;
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
+import org.orbisgis.sif.OpenFolderPanel;
 
-public class OpenGdmsFilePanel extends OpenFilePanel {
+/**
+ * This panel is used to select the folders where we want to search for new datasources
+ * to import in the geocatalog.
+ * @author alexis, jean-yves
+ */
+public class OpenGdmsFolderPanel extends OpenFolderPanel  {
 
-	public static final String OPEN_GDMS_FILE_PANEL = "org.orbisgis.view.geocatalog.dialogs";
+	public static final String OPEN_GDMS_FOLDER_PANEL = "org.orbisgis.OpenGdmsFolderPanel";
 
-	public OpenGdmsFilePanel(String title,DriverManager driverManager) {
-            super(OPEN_GDMS_FILE_PANEL, title);
+	public OpenGdmsFolderPanel(String title) {
+		super(OPEN_GDMS_FOLDER_PANEL, title);
+		DataManager dm = Services.getService(DataManager.class);
+		SourceManager sourceManager = dm.getSourceManager();
+		DriverManager driverManager = sourceManager.getDriverManager();
 
-            Driver[] filtered = driverManager.getDrivers(new FileDriverFilter());
-            for (int i = 0; i < filtered.length; i++) {
-                FileDriver fileDriver = (FileDriver) filtered[i];
-                String[] extensions = fileDriver.getFileExtensions();
-                this.addFilter(extensions, fileDriver.getTypeDescription());
-            }
+		Driver[] filtered = driverManager.getDrivers(new FileDriverFilter());
+		for (int i = 0; i < filtered.length; i++) {
+			FileDriver fileDriver = (FileDriver) filtered[i];
+			String[] extensions = fileDriver.getFileExtensions();
+			this.addFilter(extensions, fileDriver.getTypeDescription());
+		}
 	}
 
 	@Override
@@ -55,7 +67,7 @@ public class OpenGdmsFilePanel extends OpenFilePanel {
 
 	@Override
 	public String getId() {
-		return OPEN_GDMS_FILE_PANEL;
+		return OPEN_GDMS_FOLDER_PANEL;
 	}
 
 	@Override
