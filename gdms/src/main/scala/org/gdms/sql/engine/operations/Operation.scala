@@ -325,7 +325,7 @@ extends Operation with ExpressionOperation {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Aggregate(exp: List[(Expression, Option[String])],var child: Operation) 
+case class Aggregate(var exp: List[(Expression, Option[String])],var child: Operation) 
 extends Operation with ExpressionOperation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
