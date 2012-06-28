@@ -473,12 +473,16 @@ public final class OwsMapContext extends BeanMapContext {
         /**
          * Register a layer DataURL from an URI
          * 
-         * TODO Already registered URI are not registered twice
          */
         private DataSource registerLayerResource(URI resourceUri) throws NoSuchTableException, DataSourceCreationException {
 		DataManager dm = Services.getService(DataManager.class);
+                SourceManager sm = dm.getSourceManager();
                 try {
+                    if(sm.exists(resourceUri)) {
+                        return dm.getDataSourceFactory().getDataSource(sm.getNameFor(resourceUri));
+                    } else {
                         return dm.getDataSourceFactory().getDataSource(dm.getSourceManager().nameAndRegister(resourceUri));                        
+                    }
                 } catch( SourceAlreadyExistsException ex) {
                         throw new DataSourceCreationException(ex);
                 }
