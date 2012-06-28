@@ -70,7 +70,10 @@ class ExpressionFilterCommand(e: Expression) extends FilterCommand with Expressi
 
   protected val exp = Seq(e)
 
-  protected def filterExecute: Row => Boolean = { e.evaluate(_).getAsBoolean.booleanValue }
+  protected def filterExecute: Row => Boolean = { r =>
+    val ev = e.evaluate(r)
+    if (ev.isNull) false else ev.getAsBoolean
+  }
   
   override def doPrepare {
     // no aggregate function is allowed in a WHERE / HAVING clause
@@ -90,7 +93,7 @@ class ExpressionFilterCommand(e: Expression) extends FilterCommand with Expressi
     
     // checks that the expression is indeed a predicate
     e.evaluator.sqlType match {
-      case Type.BOOLEAN =>
+      case Type.BOOLEAN | Type.NULL =>
       case i => throw new SemanticException("The filtering expression does not return a Boolean. Type: " +
                                            TypeFactory.getTypeName(i))
     }
