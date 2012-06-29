@@ -29,6 +29,8 @@
 package org.orbisgis.view.geocatalog;
 
 import java.awt.BorderLayout;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -59,6 +61,7 @@ import org.orbisgis.utils.CollectionUtils;
 import org.orbisgis.utils.FileUtils;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.components.file.FileDrop;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
@@ -71,6 +74,7 @@ import org.orbisgis.view.geocatalog.filters.factories.SourceTypeIs;
 import org.orbisgis.view.geocatalog.io.ExportInFileOperation;
 import org.orbisgis.view.geocatalog.renderer.DataSourceListCellRenderer;
 import org.orbisgis.view.geocatalog.sourceWizards.db.ConnectionPanel;
+import org.orbisgis.view.geocatalog.sourceWizards.db.TableExportPanel;
 import org.orbisgis.view.geocatalog.sourceWizards.db.TableSelectionPanel;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
@@ -85,7 +89,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * eventSourceListPopupMenuCreating listener container to add more items in the
  * source list pop-up menu.
  */
-public class Catalog extends JPanel implements DockingPanel {
+public class Catalog extends JPanel implements DockingPanel, DragGestureListener, DragSourceListener {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
 
         private static final long serialVersionUID = 1L;
@@ -95,6 +99,7 @@ public class Catalog extends JPanel implements DockingPanel {
          * !< GeoCatalog docked panel properties
          */
 
+        private DragSource dragSource;
         private JList sourceList;
         private SourceListModel sourceListContent;
         //The factory shown when the user click on new factory button
@@ -126,7 +131,7 @@ public class Catalog extends JPanel implements DockingPanel {
         /**
          * Default constructor
          */
-        public Catalog(SourceContext sourceContext) {
+        public Catalog(final SourceContext sourceContext) {
                 super(new BorderLayout());
                 dockingParameters.setName("geocatalog");
                 dockingParameters.setTitle(I18N.tr("GeoCatalog"));
@@ -159,6 +164,35 @@ public class Catalog extends JPanel implements DockingPanel {
 
                 //Add the geocatalog specific filters
                 registerFilterFactories();
+
+                dragSource = DragSource.getDefaultDragSource();
+                dragSource.createDefaultDragGestureRecognizer(sourceList,
+                        DnDConstants.ACTION_COPY_OR_MOVE, this);
+
+                //Init the file drop system
+                FileDrop fileDrop = new FileDrop(this, new FileDrop.Listener() {
+
+                        @Override
+                        public void filesDropped(java.io.File[] files) {
+                                DataManager dm = (DataManager) Services.getService(DataManager.class);
+                                SourceManager sourceManager = dm.getSourceManager();
+                                for (File file : files) {
+                                        // For each file, we ensure that we have a driver
+                                        // that can be used to read it. If we don't, we don't
+                                        // open the file.
+                                        if (sourceContext.isFileCanBeRegistered(file)) {
+                                                try {
+                                                        String name = sourceManager.getUniqueName(FileUtils.getFileNameWithoutExtensionU(file));
+                                                        sourceManager.register(name, file);
+                                                } catch (SourceAlreadyExistsException e) {
+                                                        LOGGER.error(I18N.tr("This source was already registered"), e);
+                                                }
+                                        }
+                                }
+
+
+                        }
+                });
         }
 
         /**
@@ -364,6 +398,16 @@ public class Catalog extends JPanel implements DockingPanel {
          * The user can save a source in a database
          */
         public void onMenuSaveInDB() {
+                final SourceContext srcContext = sourceListContent.getSourceContext();
+                SourceManager sm = srcContext.getSourceManager();
+                String[] res = getSelectedSources();
+                final ConnectionPanel firstPanel = new ConnectionPanel(sm);
+                TableExportPanel tableExportPanel = new TableExportPanel(firstPanel, res);
+                if (UIFactory.showDialog(new UIPanel[] { firstPanel,
+				tableExportPanel }, true, true)) {
+                        
+                }
+                
         }
 
         /**
@@ -372,7 +416,7 @@ public class Catalog extends JPanel implements DockingPanel {
         public void onMenuAddFilesFromFolder() {
                 final SourceContext srcContext = sourceListContent.getSourceContext();
                 final OpenGdmsFolderPanel folderPanel = new OpenGdmsFolderPanel(I18N.tr("Add files from a folder"));
-                if (UIFactory.showDialog(folderPanel, true,true)) {
+                if (UIFactory.showDialog(folderPanel, true, true)) {
                         File[] files = folderPanel.getSelectedFiles();
                         for (final File file : files) {
                                 // for each folder, we apply the method processFolder.
@@ -590,5 +634,48 @@ public class Catalog extends JPanel implements DockingPanel {
         @Override
         public JComponent getComponent() {
                 return this;
+        }
+
+        public Transferable getDragData(DragGestureEvent dge) {
+                String[] sources = getSelectedSources();
+                if (sources.length > 0) {
+                        return new TransferableSource(sources);
+                } else {
+                        return null;
+                }
+        }
+
+        @Override
+        public void dragGestureRecognized(DragGestureEvent dge) {
+                Transferable dragData = getDragData(dge);
+                if (dragData != null) {
+                        dragSource.startDrag(dge, DragSource.DefaultMoveDrop, dragData,
+                                this);
+                }
+        }
+
+        @Override
+        public void dragEnter(DragSourceDragEvent dsde) {
+              
+        }
+
+        @Override
+        public void dragOver(DragSourceDragEvent dsde) {
+               
+        }
+
+        @Override
+        public void dropActionChanged(DragSourceDragEvent dsde) {
+              
+        }
+
+        @Override
+        public void dragExit(DragSourceEvent dse) {
+               
+        }
+
+        @Override
+        public void dragDropEnd(DragSourceDropEvent dsde) {
+               
         }
 }
