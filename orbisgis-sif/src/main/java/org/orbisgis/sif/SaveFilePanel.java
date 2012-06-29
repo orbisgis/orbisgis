@@ -37,84 +37,82 @@ import javax.swing.plaf.basic.BasicFileChooserUI;
 
 public class SaveFilePanel extends OpenFilePanel {
 
-	private boolean fileMustNotExist;
+        private boolean fileMustNotExist;
 
-	public SaveFilePanel(String id, String title) {
-		super(id, title);
-		getFileChooser().setDialogType(JFileChooser.SAVE_DIALOG);
-	}
-
-	@Override
-	public File getSelectedFile() {
-		File ret;
-		JFileChooser fc = getFileChooser();
-		FileChooserUI ui = fc.getUI();
-		if (ui instanceof BasicFileChooserUI) {
-			BasicFileChooserUI basicUI = (BasicFileChooserUI) ui;
-			String fileName = basicUI.getFileName();
-			if ((fileName == null) || (fileName.length() == 0)) {
-				ret = null;
-			} else {
-				ret = autoComplete(new File(fileName));
-			}
-		} else {
-			ret = autoComplete(super.getSelectedFile());
-		}
-		if ((ret != null) && !ret.isAbsolute()) {
-			ret = new File(fc.getCurrentDirectory(), ret.getName());
-		}
-		return ret;
-	}
-
-	private File autoComplete(File selectedFile) {
-		FileFilter ff = getFileChooser().getFileFilter();
-		if (ff instanceof FormatFilter) {
-			FormatFilter filter = (FormatFilter) ff;
-			return filter.autoComplete(selectedFile);
-		} else {
-			return selectedFile;
-		}
-	}
+        public SaveFilePanel(String id, String title) {
+                super(id, title);
+                getFileChooser().setDialogType(JFileChooser.SAVE_DIALOG);
+        }
 
         @Override
-	public String validateInput() {
-		File file = getSelectedFile();
-		if (file == null) {
-			return i18n.tr("A file must be selected");
-		} else if (fileMustNotExist) {
-			if (getSelectedFile().exists()) {
-				return i18n.tr("The file already exists");
-			} else {
-				return null;
-			}
-		} else {
-			return null;
-		}
-	}
+        public File getSelectedFile() {
+                File ret;
+                JFileChooser fc = getFileChooser();
+                FileChooserUI ui = fc.getUI();
+                if (ui instanceof BasicFileChooserUI) {
+                        BasicFileChooserUI basicUI = (BasicFileChooserUI) ui;
+                        String fileName = basicUI.getFileName();
+                        if ((fileName == null) || (fileName.length() == 0)) {
+                                ret = null;
+                        } else {
+                                ret = autoComplete(new File(fileName));
+                        }
+                } else {
+                        ret = autoComplete(super.getSelectedFile());
+                }
+                if ((ret != null) && !ret.isAbsolute()) {
+                        ret = new File(fc.getCurrentDirectory(), ret.getName());
+                }
+                return ret;
+        }
 
-	@Override
-	public File[] getSelectedFiles() {
-		return new File[] { getSelectedFile() };
-	}
+        private File autoComplete(File selectedFile) {
+                FileFilter ff = getFileChooser().getFileFilter();
+                if (ff instanceof FormatFilter) {
+                        FormatFilter filter = (FormatFilter) ff;
+                        return filter.autoComplete(selectedFile);
+                } else {
+                        return selectedFile;
+                }
+        }
 
-	public void setFileMustNotExist(boolean fileMustNotExist) {
-		this.fileMustNotExist = fileMustNotExist;
-	}
+        @Override
+        public String validateInput() {
+                File file = getSelectedFile();
+                if (file == null) {
+                        return i18n.tr("A file must be selected");
+                } else if (fileMustNotExist) {
+                        if (getSelectedFile().exists()) {
+                                return i18n.tr("The file already exists");
+                        } else {
+                                return null;
+                        }
+                } else {
+                        return null;
+                }
+        }
 
-	@Override
-	public String postProcess() {
-		if (getSelectedFile().exists()) {
-			int ret = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(), i18n
-					.tr("sif.file.fileAlreadyExists")
-					+ " " + i18n.tr("sif.file.overwrite"), i18n
-					.tr("sif.file.existing"),
-					JOptionPane.YES_NO_OPTION);
-			if (ret == JOptionPane.NO_OPTION || ret == JOptionPane.CLOSED_OPTION) {
-				// just do nothing...
+        @Override
+        public File[] getSelectedFiles() {
+                return new File[]{getSelectedFile()};
+        }
+
+        public void setFileMustNotExist(boolean fileMustNotExist) {
+                this.fileMustNotExist = fileMustNotExist;
+        }
+
+        @Override
+        public String postProcess() {
+                if (getSelectedFile().exists()) {
+                        int ret = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(), i18n.tr("sif.file.fileAlreadyExists")
+                                + " " + i18n.tr("sif.file.overwrite"), i18n.tr("sif.file.existing"),
+                                JOptionPane.YES_NO_OPTION);
+                        if (ret == JOptionPane.NO_OPTION || ret == JOptionPane.CLOSED_OPTION) {
+                                // just do nothing...
                                 // still, this isn't clean code...
                                 return SimplePanel.CANCELED_ACTION;
                         }
-		}
-		return null;
-	}
+                }
+                return null;
+        }
 }

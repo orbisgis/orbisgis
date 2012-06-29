@@ -34,6 +34,8 @@ import org.xnap.commons.i18n.I18nFactory;
 
 public abstract class AbstractUIPanel implements UIPanel {
         protected final static I18n i18n = I18nFactory.getI18n(AbstractUIPanel.class);
+        private boolean showFavorites = true;
+        
 	@Override
 	public URL getIconURL() {
 		return UIFactory.getDefaultIcon();
@@ -55,6 +57,12 @@ public abstract class AbstractUIPanel implements UIPanel {
 	}
 
 	public boolean showFavorites() {
-		return true;
+		return showFavorites;
 	}
+
+        
+        public void setShowFavorites(boolean showFavorites) {
+                this.showFavorites = showFavorites;
+        }
+        
 }
