@@ -50,6 +50,8 @@ import org.gdms.sql.function.table.TableFunction
  * The function names are converted into the actual function instances.
  * This validates than scalar, aggregate and table functions exist and are in the right place.
  * 
+ * The aggregates inside having clauses are pushed down to an Aggregate clause.
+ * 
  * The projections are processed to convert aggregation and grouping into the corresponding query elements.
  * This validates than selected fields are referenced in the GROUP BY clause (if there is one).
  */
@@ -57,12 +59,46 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
   def doOperation(op: (Operation, DataSourceFactory))  (implicit p: Properties): (Operation, DataSourceFactory) = {
     
     markFunctions(op._1, op._2)
+    havingAggregation(op._1)
     processAggregates(op._1)
     
     op
   }
   
-  def markFunctions(op: Operation, dsf: DataSourceFactory) {
+  private def havingAggregation(op: Operation) {
+    // push down aggregates in Having into the Grouping clause
+    op match {
+      case f @ Filter(e, a, true) =>
+        var aliases: List[String] = Nil
+        // replaces aggregate functions by fields and returns the aggregates
+        var i = -2
+        def replaceAggregateFunctions(e: Expression): Seq[(Expression, Option[String])] = {
+          e match {
+            case agg(f, li) => 
+              val func = e.evaluator
+              i = i + 1
+              val name = '$' + f.getName + (if (i == -1) "" else i)
+              aliases = name :: aliases
+              e.evaluator = FieldEvaluator(name)
+              (Expression(func), Some(name)) :: Nil
+            case e => e.children flatMap replaceAggregateFunctions
+          }
+        }
+          
+        val res = e flatMap (replaceAggregateFunctions) toList
+        
+        if (!res.isEmpty) {
+          a match {
+            case g @ Aggregate(e, _) => g.exp = res ::: e
+            case _ => f.child = Aggregate(res, a)
+          }
+        }
+        
+      case _ => op.children map havingAggregation
+    }
+  }
+  
+  private def markFunctions(op: Operation, dsf: DataSourceFactory) {
     (op :: op.allChildren) foreach { 
       case c @ CustomQueryScan(name, exp, _, _) => {
           val f = dsf.getFunctionManager.getFunction(name)
@@ -83,7 +119,7 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
     }
   }
   
-  def markFunctions(e: Expression, dsf: DataSourceFactory) {
+  private def markFunctions(e: Expression, dsf: DataSourceFactory) {
     e.evaluator match {
       case fe @ FunctionEvaluator(name, l) => 
         dsf.getFunctionManager.getFunction(name)  match {
@@ -102,7 +138,7 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
     e foreach (markFunctions(_, dsf))
   }
   
-  def processAggregates(op: Operation) {
+  private def processAggregates(op: Operation) {
     op.allChildren foreach { case p @ Projection(exp, ch) =>
         var aliases: List[String] = Nil
         
@@ -127,7 +163,8 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
         // finds a grouping and its parent
         def find(ch: Operation) {
           ch match {
-            case a @ Grouping(_,_) => gr = Some(a)
+            case a : Grouping => gr = Some(a)
+            case b : Aggregate => top = b; find(b.child)
             case l: LimitOffset => top = l; find(l.child)
             case s: Sort => top = s; find(s.child)
             case fl @ Filter(_, f, true) => top = fl; find(f)
@@ -173,7 +210,7 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
           case None =>
         }
         
-        val aggF = p.exp flatMap (replaceAggregateFunctions)
+        val aggF = p.exp flatMap replaceAggregateFunctions
         
         if (!aggF.isEmpty) {
           // special case of a Projection with Aggregated functions
@@ -191,9 +228,13 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
             }
           }
           
-          val c = new Aggregate(aggF, gr.getOrElse(p.child))
-          
-          top.children = List(c)
+          top match {
+            case a: Aggregate =>
+              a.exp = aggF ::: a.exp
+            case _ =>
+              val c = new Aggregate(aggF, gr.getOrElse(p.child))
+              top.children = List(c)
+          }
         }
         
         if (gr.isDefined || !aggF.isEmpty) {
