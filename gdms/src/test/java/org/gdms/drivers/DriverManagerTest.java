@@ -86,6 +86,16 @@ public class DriverManagerTest extends TestBase {
         }
 
         /**
+         * Tests isFileCanBeRegistered function
+         */
+        @Test
+        public void testFileDriverSearch() {
+                final DriverManager dm = sm.getDriverManager();
+                assertTrue(dm.isFileCanBeRegistered(new File("geomFile.shp")));
+                assertTrue(dm.isFileCanBeRegistered(new File("geomFile.gdms")));                
+                assertFalse(dm.isFileCanBeRegistered(new File("unknownFileExt.uknfext")));
+        }
+        /**
          * Tests basic operations on DriverManagerListeners : add, remove, fired with the right values.
          */
         @Test
