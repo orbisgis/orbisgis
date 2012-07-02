@@ -242,6 +242,15 @@ public final class DriverManager {
                 return driverFileExtensions;
         }
         
+        /**
+         * Returns true if the file is supported by any driver registered in this DriverManager.
+         * 
+         * The method {@link #getDriver(java.io.File) } is assured to return a driver if a call 
+         * to this method returns true.
+         * 
+         * @param file a file (does not need to exist)
+         * @return true if supported by any driver.
+         */
         public boolean isFileSupported(File file) {
                 final String name = file.getName();
                 int ix = name.lastIndexOf('.');
