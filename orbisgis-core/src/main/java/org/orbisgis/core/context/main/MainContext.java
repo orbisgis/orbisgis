@@ -79,15 +79,26 @@ public class MainContext {
                         I18N.tr("Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial"),
                         dataManager);
     }
+    
+    /**
+     * Save the persistent state of all services.
+     * Use this function before closing the core to retrieve the same state on
+     * the next core initialisation.
+     * - Save the list of registered data source
+     */
+    public void saveStatus() {            
+        try {
+                dataSourceFactory.getSourceManager().saveStatus(); 
+        } catch (DriverException ex) {
+                LOGGER.error("Unable to save the source list");
+        }
+    }
+    
+    
     /**
      * Free resources
      */
     public void dispose() {
-        try {
-                dataSourceFactory.getSourceManager().saveStatus(); //Save the list of registered data source
-        } catch (DriverException ex) {
-                LOGGER.error("Unable to save the source list");
-        }
         try {
             dataSourceFactory.freeResources();
         } catch (DataSourceFinalizationException ex) {
