@@ -151,7 +151,7 @@ public class Catalog extends JPanel implements DockingPanel {
          * @return DataManager instance
          */
         private DataManager getDataManager() {
-                return (DataManager)Services.getService(DataManager.class);
+                return Services.getService(DataManager.class);
         }
         /**
          * DataSource URI drop

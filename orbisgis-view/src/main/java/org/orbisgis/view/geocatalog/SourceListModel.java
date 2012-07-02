@@ -83,7 +83,7 @@ public class SourceListModel extends AbstractListModel {
 	}
         
         private DataManager getDataManager() {
-                return (DataManager)Services.getService(DataManager.class);
+                return Services.getService(DataManager.class);
         }
         /**
          * Install listener(s) on SourceManager
