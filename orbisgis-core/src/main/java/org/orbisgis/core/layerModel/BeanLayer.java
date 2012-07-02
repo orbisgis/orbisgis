@@ -62,7 +62,7 @@ public abstract class BeanLayer extends AbstractLayer {
 
         //bean properties
         private Description description;
-        private List<Style> styleList;
+        private List<Style> styleList = new ArrayList<Style>();
         private boolean visible = true;
         
         public BeanLayer(String name) {
@@ -231,14 +231,6 @@ public abstract class BeanLayer extends AbstractLayer {
                         fireNameChanged();
                 }
 	}
-       
-        /**
-         * Initialize the list of styles, letting it empty and not notifying the
-         * listeners.
-         */
-        protected final void initStyles(){
-                styleList = new ArrayList<Style>();
-        }
         
     @Override
     public List<Style> getStyles() {
