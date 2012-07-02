@@ -864,6 +864,20 @@ public final class DefaultSourceManager implements SourceManager {
         public boolean isEmpty() {
                 return nameSource.isEmpty() && nameMapping.isEmpty();
         }
+        
+        @Override
+        public boolean isEmpty(boolean ignoreSystem) {
+                if (!ignoreSystem) {
+                        return isEmpty();
+                } else {
+                        for (ExtendedSource s : nameSource.values()) {
+                                if (!s.isSystemTableSource()) {
+                                        return false;
+                                }
+                        }
+                        return true;
+                }
+        }
 
         @Override
         public DataSourceDefinition createDataSource(DataSourceCreation dsc, String tableName)

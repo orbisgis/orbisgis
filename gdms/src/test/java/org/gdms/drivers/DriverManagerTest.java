@@ -36,6 +36,7 @@ package org.gdms.drivers;
 import org.gdms.driver.driverManager.DriverManager;
 import org.junit.Before;
 import java.io.File;
+import java.util.Set;
 import org.gdms.TestBase;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.driver.Driver;
@@ -48,6 +49,7 @@ import static org.junit.Assert.*;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.io.Exporter;
 import org.gdms.driver.io.Importer;
+import org.gdms.driver.jpg.JPGDriver;
 
 /**
  * Some tests about the DriverManager.
@@ -83,6 +85,31 @@ public class DriverManagerTest extends TestBase {
                 fsdeprime.setDataSourceFactory(dsf);
                 deprime = fsdeprime.getDriver();
                 assertTrue(d == deprime);
+        }
+
+        @Test
+        public void testDriverFileExtensions() {
+                final DriverManager dm = sm.getDriverManager();
+                
+                Set<String> d = dm.getDriverFileExtensions();
+                assertTrue(d.contains("jpg"));
+                
+                dm.unregisterDriver("jpg driver");
+                assertFalse(d.contains("jpg"));
+                
+                dm.registerDriver(JPGDriver.class);
+                assertTrue(d.contains("jpg"));
+        }
+        
+        @Test
+        public void testSupportedFiles() {
+                final DriverManager dm = sm.getDriverManager();
+                
+                assertTrue(dm.isFileSupported(new File("toto.shp")));
+                assertTrue(dm.isFileSupported(new File("toto.jpg")));
+                assertFalse(dm.isFileSupported(new File("toto.xls")));
+                assertFalse(dm.isFileSupported(new File("toto.")));
+                assertFalse(dm.isFileSupported(new File("jpg")));
         }
 
         /**

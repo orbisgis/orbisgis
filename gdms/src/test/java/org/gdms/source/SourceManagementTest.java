@@ -286,6 +286,28 @@ public class SourceManagementTest extends TestBase {
                 assertNull(source.getFileProperty("skjbnskb"));
                 assertNull(source.getProperty("skjbnskb"));
         }
+        
+        @Test
+        public void testEmpty() throws Exception {
+                assertFalse(sm.isEmpty());
+                assertTrue(sm.isEmpty(true));
+                assertFalse(sm.isEmpty(false));
+                
+                sm.register(SOURCE, testFile);
+                
+                assertFalse(sm.isEmpty());
+                assertFalse(sm.isEmpty(true));
+                
+                sm.remove(SOURCE);
+                
+                assertFalse(sm.isEmpty());
+                assertTrue(sm.isEmpty(true));
+                
+                sm.removeAll();
+                
+                assertFalse(sm.isEmpty());
+                assertTrue(sm.isEmpty(true));
+        }
 
         @Test
         public void testMoveAndChangeSourceDirectory() throws Exception {
