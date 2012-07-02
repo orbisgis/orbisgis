@@ -48,7 +48,6 @@ import net.opengis.ows_context.LayerType;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
-import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 
@@ -438,11 +437,6 @@ public class LayerCollection extends BeanLayer {
 	}
 
 	public void setSelection(int[] newSelection) {
-	}
-
-	public Legend[] getRenderingLegend() throws DriverException {
-		throw new UnsupportedOperationException(
-                        I18N.tr("Cannot draw a layer collection")); //$NON-NLS-1$
 	}
 
 	@Override

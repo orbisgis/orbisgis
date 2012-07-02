@@ -65,19 +65,4 @@ public class EPLegendHelper {
 		return legends.toArray(new ILegendPanel[legends.size()]);
 	}
 
-	/**
-	 * Create an arraylist with all symbol panels loaded by the symbol editor panel. 
-	 */
-	public static ISymbolEditor[] getSymbolPanels() {
-
-		ArrayList<ISymbolEditor> symbols = new ArrayList<ISymbolEditor>();
-		ImageSymbolEditor ImageSymbolPanel = new ImageSymbolEditor();
-		symbols.add(ImageSymbolPanel);
-		StandardSymbolEditor standardSymbolEditor = new StandardSymbolEditor();
-		symbols.add(standardSymbolEditor);
-		ArrowSymbolEditor arrowSymbolEditor = new ArrowSymbolEditor();
-		symbols.add(arrowSymbolEditor);
-		return symbols.toArray(new ISymbolEditor[symbols.size()]);
-	}
-
 }
