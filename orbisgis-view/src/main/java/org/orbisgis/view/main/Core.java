@@ -155,7 +155,7 @@ public class Core {
      */
     private void makeGeoCatalogPanel() {
         //The geocatalog view content is read from the SourceContext
-        geoCatalog = new Catalog(mainContext.getSourceContext());
+        geoCatalog = new Catalog();
         //Add the view as a new Docking Panel
         dockManager.show(geoCatalog);
     }
@@ -305,7 +305,9 @@ public class Core {
                                 try {
                                         mapContext.read(new FileInputStream(mapContextFile));
                                 } catch (FileNotFoundException ex) {
-                                        LOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."));
+                                        LOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."),ex);
+                                } catch (IllegalArgumentException ex) {
+                                        LOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."),ex);
                                 }
                         }
                         MapElement editableMap = new MapElement(mapContext,mapContextFile);

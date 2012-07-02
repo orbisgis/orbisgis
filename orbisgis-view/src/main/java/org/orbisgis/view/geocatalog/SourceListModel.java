@@ -43,7 +43,8 @@ import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
 import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
-import org.orbisgis.core.context.SourceContext.SourceContext;
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
 import org.orbisgis.view.components.ContainerItemProperties;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.TableSystemFilter;
@@ -57,8 +58,6 @@ import org.xnap.commons.i18n.I18nFactory;
 public class SourceListModel extends AbstractListModel {
         protected final static I18n i18n = I18nFactory.getI18n(SourceListModel.class);
 	private static final Logger LOGGER = Logger.getLogger(SourceListModel.class);
-        private SourceContext sourceContext; /*!< The SourceContext instance*/
-        private SourceManager sourceManager; /*!< The SourceManager instance*/
         private SourceListener sourceListener=null; /*!< The listener put in the sourceManager*/
 	private ContainerItemProperties[] sourceList;/*!< Sources */
 	private List<IFilter> filters = new ArrayList<IFilter>(); /*!< Active filters */
@@ -72,27 +71,20 @@ public class SourceListModel extends AbstractListModel {
 	public List<IFilter> getFilters() {
 		return filters;
 	}
-
-        /**
-         * Return the source context
-         * @return The source context
-         */
-        public SourceContext getSourceContext() {
-            return sourceContext;
-        }
         
         /**
          * Constructor
-         * @param sourceManager The sourceManager to listen
          * @note Do not forget to call dispose()
          */
-	public SourceListModel(SourceContext sourceContext) {
-                this.sourceManager=sourceContext.getSourceManager();
-                this.sourceContext=sourceContext;
+	public SourceListModel() {
                 //Install listeners
                 //Call readDataManager when a SourceManager fire an event         
 		readDataManager();
 	}
+        
+        private DataManager getDataManager() {
+                return (DataManager)Services.getService(DataManager.class);
+        }
         /**
          * Install listener(s) on SourceManager
          */
@@ -101,7 +93,7 @@ public class SourceListModel extends AbstractListModel {
                                                     this,
                                                     "onDataManagerChange"
                                                     );
-            this.sourceManager.addSourceListener(sourceListener);
+            getDataManager().getSourceManager().addSourceListener(sourceListener);
 
         }
         /**
@@ -145,7 +137,7 @@ public class SourceListModel extends AbstractListModel {
          * Remove listeners created by the instance
          */
         public void dispose() {
-            this.sourceManager.removeSourceListener(sourceListener);
+            getDataManager().getSourceManager().removeSourceListener(sourceListener);
         }
         /**
          * Find the icon corresponding to a data source
@@ -181,6 +173,7 @@ public class SourceListModel extends AbstractListModel {
          * TODO manage fatal error on sourceManager.getSource
          */
 	private void readDataManager() {
+            SourceManager sourceManager = getDataManager().getSourceManager();
             String[] tempSourceNames = sourceManager.getSourceNames(); //Retrieve all sources names
 
             if (!filters.isEmpty()) {
@@ -263,6 +256,7 @@ public class SourceListModel extends AbstractListModel {
          * This method clear all source in the SourceManager except source Table
          */
         public void clearAllSourceExceptSystemTables() {
+            SourceManager sourceManager = getDataManager().getSourceManager();
             for(String sourceName : sourceManager.getSourceNames()) {
                 if(!sourceManager.getSource(sourceName).isSystemTableSource()) {
                     sourceManager.remove(sourceName);
