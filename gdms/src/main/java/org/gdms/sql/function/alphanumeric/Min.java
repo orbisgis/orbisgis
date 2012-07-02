@@ -83,9 +83,8 @@ public class Min extends AbstractAggregateFunction {
 	}
 
         @Override
-	public Type getType(Type[] types) {
-                FunctionValidator.failIfTypesDoNotMatchSignature(types, getFunctionSignatures());
-		return types[0];
+	public int getType(int[] types) {
+                return types[0];
 	}
 
 	public void validateTypes(Type[] argumentsTypes) {

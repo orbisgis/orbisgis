@@ -34,13 +34,11 @@
 package org.gdms.sql.function.alphanumeric;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.AbstractAggregateFunction;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
-import org.gdms.sql.function.FunctionValidator;
 import org.gdms.sql.function.SameTypeFunctionSignature;
 import org.gdms.sql.function.ScalarArgument;
 
@@ -69,9 +67,8 @@ public class Sum extends AbstractAggregateFunction {
 	}
 
 	@Override
-	public Type getType(Type[] types) {
-                FunctionValidator.failIfTypesDoNotMatchSignature(types, getFunctionSignatures());
-		return types[0];
+	public int getType(int[] types) {
+                return types[0];
 	}
 
 	@Override

@@ -39,24 +39,37 @@ import java.util.HashMap;
  * Factory to create data type instances.
  *
  * @author Fernando Gonzalez Cortes
+ * @author Antoine Gourlay
  */
 public final class TypeFactory {
+        
+        private static void checkNotNull(int typeCode) {
+                if (typeCode == Type.NULL) {
+                        throw new InvalidTypeException("You cannot build a NULL type!");
+                }
+        }
 
         /**
          * Creates a type with the specified type code. The code must be one of the
          * constants in Type interface
          *
+         * @throws InvalidTypeException if typeCode is an unknown type code or is Type.NULL
          * @param typeCode
          * @return
          */
         public static Type createType(final int typeCode) {
-                return createType(typeCode, DefaultType.typesDescription.get(typeCode));
+                final String desc = DefaultType.typesDescription.get(typeCode);
+                if (desc == null ) {
+                        throw new InvalidTypeException("There is no known type with typeCode " + typeCode);
+                }
+                return createType(typeCode, desc);
         }
 
         /**
          * Creates a type with the specified type code and the specified name. The
          * code must be one of the constants in Type interface
          *
+         * @throws InvalidTypeException if typeCode is an unknown type code or is Type.NULL
          * @param typeCode
          * @param typeName
          * @return
@@ -65,6 +78,7 @@ public final class TypeFactory {
                 if (null == typeName) {
                         return createType(typeCode);
                 } else {
+                        checkNotNull(typeCode);
                         final TypeDefinition typeDef = new DefaultTypeDefinition(typeName,
                                 typeCode);
                         return typeDef.createType();
@@ -78,8 +92,9 @@ public final class TypeFactory {
          * @param typeCode
          * @param constraints
          * @return
-         * @throws InvalidTypeException
-         * If the constraints are not valid for this type
+         * @throws InvalidTypeException if typeCode is an unknown type code or is Type.NULL, or
+         *   if the constraints are not valid for this type
+         * 
          */
         public static Type createType(final int typeCode,
                 final Constraint... constraints) {
@@ -98,11 +113,12 @@ public final class TypeFactory {
          * @param typeName
          * @param constraints
          * @return
-         * @throws InvalidTypeException
-         * If the constraints are not valid for this type
+         * @throws InvalidTypeException if typeCode is an unknown type code or is Type.NULL, or
+         *   if the constraints are not valid for this type
          */
         public static Type createType(final int typeCode, final String typeName,
                 final Constraint... constraints) {
+                checkNotNull(typeCode);
                 if (null == constraints) {
                         return createType(typeCode, typeName);
                 } else {
@@ -184,9 +200,9 @@ public final class TypeFactory {
          * @return true if it is a numeric type
          */
         public static boolean isNumerical(int typeCode) {
-                return (typeCode == Type.BYTE) || (typeCode == Type.DOUBLE)
+                return ((typeCode == Type.BYTE) || (typeCode == Type.DOUBLE)
                         || (typeCode == Type.FLOAT) || (typeCode == Type.INT)
-                        || (typeCode == Type.LONG) || (typeCode == Type.SHORT);
+                        || (typeCode == Type.LONG) || (typeCode == Type.SHORT)) || typeCode == Type.NULL;
         }
 
         /**
@@ -209,7 +225,7 @@ public final class TypeFactory {
          * @return true if it is a spatial type
          */
         public static boolean isSpatial(int typeCode) {
-                return (typeCode & Type.GEOMETRY) != 0 || (typeCode == Type.RASTER);
+                return ((typeCode & Type.GEOMETRY) != 0 || (typeCode == Type.RASTER)) || typeCode == Type.NULL;
         }
 
         /**
@@ -230,18 +246,26 @@ public final class TypeFactory {
          * @return
          */
         public static boolean isVectorial(int typeCode) {
-                return (typeCode & Type.GEOMETRY) != 0;
+                return (typeCode & Type.GEOMETRY) != 0 || typeCode == Type.NULL;
         }
 
         /**
-         * Return the type being able to accept all the values the other type
-         * accepts. Returns -1 if the types are not compatible.
+         * Returns the type being able to accept all the values the other type
+         * accepts. Returns Type.NULL if the types are not compatible.
+         * 
+         * Type.NULL is compatible with everything, and the broader type is the other type.
          *
          * @param type1
          * @param type2
          * @return the broader type code of the two parameter type codes.
          */
         public static int getBroaderType(int type1, int type2) {
+                if (type1 == Type.NULL) {
+                        return type2;
+                } else if (type2 == Type.NULL) {
+                        return type1;
+                }
+                
                 if (isNumerical(type1) && isNumerical(type2)) {
                         HashMap<Integer, Integer> typeSort = new HashMap<Integer, Integer>();
                         typeSort.put(Type.BYTE, 0);
@@ -283,13 +307,11 @@ public final class TypeFactory {
                         } else {
                                 return Type.GEOMETRY;
                         }
-                } else {
-                        if (type1 == type2) {
+                } else if (type1 == type2) {
                                 return type1;
-                        }
                 }
 
-                return -1;
+                return Type.NULL;
         }
 
         /**
@@ -300,7 +322,7 @@ public final class TypeFactory {
          */
         public static boolean isTime(int typeCode) {
                 return (typeCode == Type.DATE) || (typeCode == Type.TIME)
-                        || (typeCode == Type.TIMESTAMP);
+                        || (typeCode == Type.TIMESTAMP) || typeCode == Type.NULL;
         }
 
         /**

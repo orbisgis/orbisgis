@@ -36,10 +36,7 @@ package org.gdms.sql.function.spatial.geometry.edit;
 import com.vividsolutions.jts.geom.Geometry;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.Dimension3DConstraint;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.geometryUtils.GeometryEdit;
@@ -88,23 +85,14 @@ public final class ST_AddZ extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public Type getType(Type[] argsTypes) {
-
-                Type type = argsTypes[0];
-                Constraint[] constrs = type.getConstraints(Constraint.ALL
-                        & ~Constraint.DIMENSION_3D_GEOMETRY);
-                Constraint[] result = new Constraint[constrs.length + 1];
-                System.arraycopy(constrs, 0, result, 0, constrs.length);
-                result[result.length - 1] = new Dimension3DConstraint(3);
-
-                return TypeFactory.createType(Type.GEOMETRY, result);
-
+        public int getType(int[] argsTypes) {
+                return argsTypes[0];
         }
 
         @Override
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
-                                new BasicFunctionSignature(getType(new Type[]{TypeFactory.createType(Type.GEOMETRY)}),
+                                new BasicFunctionSignature(Type.GEOMETRY,
                                 ScalarArgument.GEOMETRY,
                                 ScalarArgument.DOUBLE)
                         };

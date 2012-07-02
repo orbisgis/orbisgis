@@ -33,11 +33,9 @@
  */
 package org.gdms.sql.function.alphanumeric;
 
-import org.apache.log4j.Logger;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.AbstractScalarFunction;
@@ -51,48 +49,37 @@ import org.gdms.sql.function.ScalarArgument;
  */
 public class ReplaceString extends AbstractScalarFunction {
 
-        private static final Logger LOG = Logger.getLogger(ReplaceString.class);
-
         @Override
         public Value evaluate(DataSourceFactory dsf, Value... arg0) throws FunctionException {
-                LOG.trace("Evaluating");
-                String text;
                 if (arg0[0].isNull()) {
                         return ValueFactory.createNullValue();
                 } else {
-                        // Get the arguments <-- this (only) comment is really helpful...
-                        text = arg0[0].getAsString();
+                        String text = arg0[0].getAsString();
                         String textFrom = arg0[1].getAsString();
                         String textTo = arg0[2].getAsString();
 
-                        text = text.replace(textFrom, textTo);
-
+                        return ValueFactory.createValue(text.replace(textFrom, textTo));
                 }
-                return ValueFactory.createValue(text);
-
         }
 
         @Override
         public String getDescription() {
-
                 return "Replace all occurrences of a specific string";
         }
 
         @Override
         public String getName() {
-
                 return "Replace";
         }
 
         @Override
         public String getSqlOrder() {
-
                 return "select Replace(string text, from text, to text) from myTable";
         }
 
         @Override
-        public Type getType(Type[] arg0) {
-                return TypeFactory.createType(Type.STRING);
+        public int getType(int[] arg0) {
+                return Type.STRING;
         }
 
         @Override

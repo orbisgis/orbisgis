@@ -38,33 +38,37 @@ package org.gdms.sql;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.sql.function.AbstractScalarFunction;
 import org.gdms.sql.function.BasicFunctionSignature;
-import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.FunctionException;
+import org.gdms.sql.function.FunctionSignature;
 
 public class FailingFunction extends AbstractScalarFunction {
 
+        @Override
 	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
 		throw new RuntimeException();
 	}
 
+        @Override
 	public String getDescription() {
 		return null;
 	}
 
+        @Override
 	public String getName() {
 		return "failing";
 	}
 
+        @Override
 	public String getSqlOrder() {
 		return null;
 	}
 
-	public Type getType(Type[] argsTypes) {
-		return TypeFactory.createType(Type.BOOLEAN);
+        @Override
+	public int getType(int[] argsTypes) {
+		return Type.BOOLEAN;
 	}
 
         @Override

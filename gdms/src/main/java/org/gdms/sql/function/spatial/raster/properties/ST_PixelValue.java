@@ -163,8 +163,8 @@ public class ST_PixelValue extends AbstractScalarFunction {
         }
 
         @Override
-        public Type getType(Type[] types) {
-                return TypeFactory.createType(Type.FLOAT);
+        public int getType(int[] types) {
+                return Type.FLOAT;
         }
 
         @Override

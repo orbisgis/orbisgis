@@ -34,7 +34,6 @@
 package org.gdms.sql.function.math;
 
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.sql.function.AbstractScalarFunction;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.SameTypeFunctionSignature;
@@ -57,7 +56,7 @@ public abstract class AbstractScalarMathFunction extends AbstractScalarFunction 
         }
 
         @Override
-        public Type getType(Type[] argsTypes) {
-                return TypeFactory.createType(Type.DOUBLE);
+        public int getType(int[] argsTypes) {
+                return Type.DOUBLE;
         }
 }

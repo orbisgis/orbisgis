@@ -38,7 +38,6 @@ import com.vividsolutions.jts.geom.Point;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.FunctionException;
@@ -69,8 +68,8 @@ public final class ST_Y extends AbstractSpatialPropertyFunction {
         }
 
         @Override
-        public Type getType(Type[] types) {
-                return TypeFactory.createType(Type.DOUBLE);
+        public int getType(int[] types) {
+                return Type.DOUBLE;
         }
 
         @Override

@@ -35,7 +35,6 @@ package org.gdms.sql.function.alphanumeric;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.AbstractScalarFunction;
@@ -58,7 +57,7 @@ public class SubString extends AbstractScalarFunction {
                         // Get the argument
                         final String text = arg0[0].getAsString();
                         final int firstRightString = arg0[1].getAsInt();
-                        String newText = null;
+                        String newText;
                         if (arg0.length == 3) {
                                 final int secondRightString = arg0[2].getAsInt();
                                 // The substring with two arguments
@@ -82,26 +81,22 @@ public class SubString extends AbstractScalarFunction {
 
         @Override
         public String getDescription() {
-
                 return "Extract a substring between the index i (included) and j (excluded)";
         }
 
         @Override
         public String getName() {
-
                 return "SubString";
         }
 
         @Override
         public String getSqlOrder() {
-
                 return "select SubString(text, integer[, integer]) from myTable";
         }
 
         @Override
-        public Type getType(Type[] arg0) {
-
-                return TypeFactory.createType(Type.STRING);
+        public int getType(int[] arg0) {
+                return Type.STRING;
         }
 
         @Override

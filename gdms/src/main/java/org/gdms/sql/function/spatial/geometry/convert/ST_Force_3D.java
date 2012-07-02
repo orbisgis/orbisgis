@@ -34,10 +34,7 @@
 package org.gdms.sql.function.spatial.geometry.convert;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.Dimension3DConstraint;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.geometryUtils.GeometryEdit;
@@ -48,8 +45,12 @@ import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
 /**
- * Changes the metadata of the parameter by setting its dimension to 3D.
+ * 
+ * @deprecated this function is equivalent to ST_AddZ(the_geom, 0) or ST_AddZ(the_geom, value).
+ *   It does not change any metadata, that is up to the target table to set any interesting
+ *   constraint on its geometry column.
  */
+@Deprecated
 public final class ST_Force_3D extends AbstractScalarSpatialFunction {
 
         @Override
@@ -69,7 +70,7 @@ public final class ST_Force_3D extends AbstractScalarSpatialFunction {
 
         @Override
         public String getDescription() {
-                return "Forces the geometries into XYZ mode. Metadata are also modified. A specific z can be added.";
+                return "Forces the geometries into XYZ mode. A specific z can be added.";
         }
 
         @Override
@@ -83,25 +84,15 @@ public final class ST_Force_3D extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public Type getType(Type[] argsTypes) {
-                if (argsTypes != null) {
-                        Type type = argsTypes[0];
-                        Constraint[] constrs = type.getConstraints(Constraint.ALL
-                                & ~Constraint.DIMENSION_3D_GEOMETRY);
-                        Constraint[] result = new Constraint[constrs.length + 1];
-                        System.arraycopy(constrs, 0, result, 0, constrs.length);
-                        result[result.length - 1] = new Dimension3DConstraint(3);
-                        return TypeFactory.createType(Type.GEOMETRY, result);
-                } else {
-                        return TypeFactory.createType(Type.GEOMETRY);
-                }
+        public int getType(int[] argsTypes) {
+                return argsTypes[0];
         }
         
         @Override
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[] {
-                  new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY),
-                  new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY, ScalarArgument.DOUBLE)
+                  new BasicFunctionSignature(Type.GEOMETRY, ScalarArgument.GEOMETRY),
+                  new BasicFunctionSignature(Type.GEOMETRY, ScalarArgument.GEOMETRY, ScalarArgument.DOUBLE)
                 };
         }
 }
