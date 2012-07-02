@@ -39,7 +39,6 @@ package org.orbisgis.core.renderer.legend.carto;
 import org.gdms.data.values.Value;
 import org.orbisgis.utils.FormatUtils;
 
-@Deprecated
 public class Interval {
 
 	private Value start;

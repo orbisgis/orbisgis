@@ -37,6 +37,7 @@
  */
 package org.orbisgis.view.map.tool;
 
+import com.vividsolutions.jts.geom.*;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
@@ -50,26 +51,18 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.Transparency;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
+import java.awt.event.*;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
-
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceListener;
@@ -77,7 +70,6 @@ import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerListener;
 import org.orbisgis.core.layerModel.LayerListenerAdapter;
@@ -87,22 +79,18 @@ import org.orbisgis.core.layerModel.SelectionEvent;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
 import org.orbisgis.core.renderer.AllowAllRenderContext;
-import org.orbisgis.core.renderer.symbol.Symbol;
-import org.orbisgis.core.renderer.symbol.SymbolFactory;
+import org.orbisgis.core.renderer.se.AreaSymbolizer;
+import org.orbisgis.core.renderer.se.LineSymbolizer;
+import org.orbisgis.core.renderer.se.PointSymbolizer;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.view.map.tools.PanTool;
 import org.orbisgis.view.map.tools.ToolUtilities;
 import org.orbisgis.view.map.tools.ZoomInTool;
 import org.orbisgis.view.map.tools.ZoomOutTool;
-
-
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Polygon;
-import java.awt.event.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -113,10 +101,10 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class ToolManager implements MouseListener,MouseWheelListener,MouseMotionListener {
 
-        public static final String TERMINATE = "t"; //$NON-NLS-1$
-        public static final String RELEASE = "release"; //$NON-NLS-1$
-        public static final String PRESS = "press"; //$NON-NLS-1$
-        public static final String POINT = "point"; //$NON-NLS-1$
+        public static final String TERMINATE = "t";
+        public static final String RELEASE = "release";
+        public static final String PRESS = "press";
+        public static final String POINT = "point";
         public static GeometryFactory toolsGeometryFactory = new GeometryFactory();
         
         protected final static I18n I18N = I18nFactory.getI18n(ToolManager.class);
@@ -137,7 +125,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         private int mouseModifiers;
         private Automaton defaultTool;
         private static final Color HANDLER_COLOR = Color.BLUE;
-        private ArrayList<GeometryAndSymbol> geomToDraw = new ArrayList<GeometryAndSymbol>();
+        private ArrayList<Geometry> geomToDraw = new ArrayList<Geometry>();
         private ArrayList<String> textToDraw = new ArrayList<String>();
         private Component component;
         private MapTransform mapTransform;
@@ -145,6 +133,9 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         private MapContext mapContext;
         private ArrayList<ToolListener> listeners = new ArrayList<ToolListener>();
         private boolean showPopup;
+        private AreaSymbolizer areaSymbolizer;
+        private LineSymbolizer lineSymbolizer;
+        private PointSymbolizer pointSymbolizer;
 
         /**
          * Creates a new EditionToolAdapter.
@@ -214,6 +205,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                                 recalculateHandlers();
                         }
                 });
+                buildSymbolizers();
         }
 
         public void freeResources() {
@@ -367,89 +359,65 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         }
 
         public void paintEdition(Graphics g) {
-
-                if (selectionImageDirty) {
-
-                        selectionImage = new BufferedImage(mapTransform.getWidth(),
-                                mapTransform.getHeight(), BufferedImage.TYPE_INT_ARGB);
-                        Graphics2D g2 = (Graphics2D) selectionImage.getGraphics();
-
-                        for (Handler handler : currentHandlers) {
-                                handler.draw(g2, HANDLER_COLOR, this, mapTransform);
-                        }
-
-                        selectionImageDirty = false;
-                }
-
-                g.drawImage(selectionImage, 0, 0, null);
-
-                String error = null;
-                geomToDraw.clear();
-                textToDraw.clear();
                 try {
-                        currentTool.draw(g);
-                } catch (Exception e) {
-                        error = e.getMessage();
-                }
-                Graphics2D g2 = (Graphics2D) g;
-                for (int i = 0; i < geomToDraw.size(); i++) {
-                        try {
-                    GeometryAndSymbol geomAndSymbol = geomToDraw.get(i);
-                    Geometry geometry = geomAndSymbol.getGeometry();
-                    Symbol symbol = geomAndSymbol.getSymbol();
-                    if (symbol == null) {
-                            if ((geometry instanceof com.vividsolutions.jts.geom.Point)
-                                    || (geometry instanceof com.vividsolutions.jts.geom.MultiPoint)) {
-                                    symbol = SymbolFactory.createPointSquareSymbol(Color.black,
-                                            Color.red, 5);
-                            }
-                            if ((geometry instanceof LineString)
-                                    || (geometry instanceof MultiLineString)) {
-                                    symbol = SymbolFactory.createLineSymbol(Color.black, 2);
-                            }
-                            if ((geometry instanceof Polygon)
-                                    || (geometry instanceof MultiPolygon)) {
-                                    symbol = SymbolFactory.createPolygonSymbol(Color.black);
-                            }
-                    }
+                        if (selectionImageDirty) {
+                                selectionImage = new BufferedImage(mapTransform.getWidth(),
+                                        mapTransform.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                                Graphics2D g2 = (Graphics2D) selectionImage.getGraphics();
 
-                    BufferedImage bi = new BufferedImage(mapTransform.getWidth(),
-                            mapTransform.getHeight(), BufferedImage.TYPE_INT_ARGB);
-                    Graphics2D graphics = bi.createGraphics();
-
-                    symbol.draw(graphics, geometry, mapTransform,
-                            new AllowAllRenderContext());
-
-                    g2.drawImage(bi, 0, 0, null);
-                        } catch (DriverException e) {
-                                UILOGGER.error(
-                                        I18N.tr("The legend of the map cannot be drawn correctly"), e); //$NON-NLS-1$
-                }
-                }
-                if (adjustedPoint != null) {
-                        g2.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND,
-                                BasicStroke.JOIN_ROUND, 1.0f,
-					new float[] { 5f, 3f, 3f, 3f }, 0));
-                        g2.setColor(Color.red);
-                        g2.drawArc(adjustedPoint.x - uiTolerance, adjustedPoint.y
-                                - uiTolerance, 2 * uiTolerance, 2 * uiTolerance, 0, 360);
-                }
-
-                if (error != null) {
-                        drawTextWithWhiteBackGround(g2, error, new Point2D.Double(
-                                lastMouseX, lastMouseY));
-                } else {
-                        Font f = g2.getFont();
-                        g2.setFont(f.deriveFont(Font.BOLD, 16));
-                        g2.setColor(Color.black);
-                        int height = lastMouseY + 3 * uiTolerance;
-                        for (String text : textToDraw) {
-                                g2.drawString(text, lastMouseX + uiTolerance, height);
-                                height += g2.getFontMetrics().getStringBounds(text, g2).getHeight();
+                                for (Handler handler : currentHandlers) {
+                                        handler.draw(g2, HANDLER_COLOR, this, mapTransform);
+                                }
+                                selectionImageDirty = false;
                         }
-                        g2.setFont(f);
-                }
+                        g.drawImage(selectionImage, 0, 0, null);
+                        String error = null;
+                        geomToDraw.clear();
+                        textToDraw.clear();
+                        try {
+                                currentTool.draw(g);
+                        } catch (Exception e) {
+                                error = e.getMessage();
+                        }
+                        Graphics2D g2 = (Graphics2D) g;
+                        for (int i = 0; i < geomToDraw.size(); i++) {
+                        Geometry geometry = geomToDraw.get(i);
+                        BufferedImage bi = new BufferedImage(mapTransform.getWidth(),
+                                mapTransform.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                        Graphics2D graphics = bi.createGraphics();
+                        drawFeature(graphics, geometry, mapTransform, new AllowAllRenderContext());
+                        g2.drawImage(bi, 0, 0, null);
+                        }
+                        if (adjustedPoint != null) {
+                                g2.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND,
+                                        BasicStroke.JOIN_ROUND, 1.0f,
+                                                new float[] { 5f, 3f, 3f, 3f }, 0));
+                                g2.setColor(Color.red);
+                                g2.drawArc(adjustedPoint.x - uiTolerance, adjustedPoint.y
+                                        - uiTolerance, 2 * uiTolerance, 2 * uiTolerance, 0, 360);
+                        }
 
+                        if (error != null) {
+                                drawTextWithWhiteBackGround(g2, error, new Point2D.Double(
+                                        lastMouseX, lastMouseY));
+                        } else {
+                                Font f = g2.getFont();
+                                g2.setFont(f.deriveFont(Font.BOLD, 16));
+                                g2.setColor(Color.black);
+                                int height = lastMouseY + 3 * uiTolerance;
+                                for (String text : textToDraw) {
+                                        g2.drawString(text, lastMouseX + uiTolerance, height);
+                                        height += g2.getFontMetrics().getStringBounds(text, g2).getHeight();
+                                }
+                                g2.setFont(f);
+                        }
+                } catch(ParameterException pe) {
+                        UILOGGER.error(I18N.tr("Error while drawing the feature, ")+ pe.getMessage());
+                } catch(IOException ie) {
+                        UILOGGER.error(I18N.tr("Error while accessing data, ")+ ie.getMessage());
+                } catch(DriverException de){
+                        UILOGGER.error(I18N.tr("Error while accessing data, ")+ de.getMessage());
+                }
         }
 
         private void drawTextWithWhiteBackGround(Graphics2D g2, String text,
@@ -753,12 +721,8 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 return currentTool;
         }
 
-        public void addGeomToDraw(Geometry geom, Symbol symbol) {
-                this.geomToDraw.add(new GeometryAndSymbol(geom, symbol));
-        }
-
         public void addGeomToDraw(Geometry geom) {
-                this.geomToDraw.add(new GeometryAndSymbol(geom, null));
+                this.geomToDraw.add(geom);
         }
 
         public void addTextToDraw(String text) {
@@ -784,11 +748,11 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 return toolsGeometryFactory;
         }
 
-    public void mouseEntered(MouseEvent me) {
-    }
+        public void mouseEntered(MouseEvent me) {
+        }
 
-    public void mouseExited(MouseEvent me) {
-    }
+        public void mouseExited(MouseEvent me) {
+        }
 
         private class ToolLayerListener extends LayerListenerAdapter implements
                 LayerListener, EditionListener, DataSourceListener {
@@ -827,22 +791,57 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 return mapTransform;
         }
 
-        private class GeometryAndSymbol {
+        /**
+         * We'll use three dedicated tymbols to draw the selected features. We
+         * build them here... and that's quite long, as you'll see. Not that it
+         * takes much time to the CPU, but it's hard to access the part of the
+         * symbolizers we want to customize.
+         */
+        private void buildSymbolizers(){
+                //The point symbolizer first...
+                pointSymbolizer = new PointSymbolizer();
+                //From here, I just want to retrieve the color of the line and
+                //the color of the fill of the mark graphic. Let's go...
+                MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getGraphic(0);
+                ((SolidFill)mg.getFill()).setColor(new ColorLiteral(Color.YELLOW));
+                ((SolidFill)((PenStroke)mg.getStroke()).getFill()).setColor(new ColorLiteral(Color.YELLOW));
+                //Next, the line symbolizer
+                lineSymbolizer = new LineSymbolizer();
+                ((SolidFill)((PenStroke)lineSymbolizer.getStroke()).getFill()).setColor(new ColorLiteral(Color.YELLOW));
+                //And finally, the AreaSymbolizer...
+                areaSymbolizer = new AreaSymbolizer();
+                ((SolidFill)((PenStroke)areaSymbolizer.getStroke()).getFill()).setColor(new ColorLiteral(Color.YELLOW));
+                ((SolidFill)areaSymbolizer.getFill()).setColor(new ColorLiteral(Color.YELLOW));
+        }
 
-                private Geometry geometry;
-                private Symbol symbol;
-
-                public GeometryAndSymbol(Geometry g, Symbol s) {
-                        geometry = g;
-                        symbol = s;
-                }
-
-                public Geometry getGeometry() {
-                        return geometry;
-                }
-
-                public Symbol getSymbol() {
-                        return symbol;
+        /**
+         * Draw selected features using the dedicated symbolizers.
+         * @param graphics
+         * @param geometry
+         * @param mapTransform
+         * @param allowAllRenderContext
+         * @throws IOException
+         * @throws DriverException
+         * @throws ParameterException
+         */
+        private void drawFeature(Graphics2D graphics, Geometry geometry,
+                        MapTransform mapTransform, AllowAllRenderContext allowAllRenderContext)
+                        throws IOException, DriverException, ParameterException {
+                if(geometry instanceof com.vividsolutions.jts.geom.Point ||
+                        geometry instanceof  MultiPoint){
+                        pointSymbolizer.draw(graphics, null, -1, true, mapTransform, geometry, allowAllRenderContext);
+                } else if(geometry instanceof LineString || geometry instanceof MultiLineString){
+                        lineSymbolizer.draw(graphics, null, -1, true, mapTransform, geometry, allowAllRenderContext);
+                } else if(geometry instanceof Polygon || geometry instanceof MultiPolygon){
+                        areaSymbolizer.draw(graphics, null, -1, true, mapTransform, geometry, allowAllRenderContext);
+                } else {
+                        //We are dealing with a geoemtry collection
+                        GeometryCollection gc = (GeometryCollection) geometry;
+                        int num = gc.getNumGeometries();
+                        for(int i=0; i<num; i++){
+                                Geometry geom = gc.getGeometryN(i);
+                                drawFeature(graphics, geom, mapTransform, allowAllRenderContext);
+                        }
                 }
         }
 }

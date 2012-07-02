@@ -13,7 +13,6 @@ import org.grap.model.GeoRaster;
 import org.gvsig.remoteClient.utils.BoundaryBox;
 import org.gvsig.remoteClient.wms.WMSClient;
 import org.gvsig.remoteClient.wms.WMSStatus;
-import org.orbisgis.core.renderer.legend.Legend;
 import org.orbisgis.core.renderer.legend.WMSLegend;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
@@ -45,8 +44,8 @@ public class WMSLayer extends BeanLayer {
 		throw new UnsupportedOperationException(I18N.tr("Method not supported in WMS layers"));
 	}
 
-	public Legend[] getRenderingLegend() throws DriverException {
-		return new Legend[] { getWMSLegend() };
+	public WMSLegend getRenderingLegend() throws DriverException {
+		return getWMSLegend();
 	}
 
 	@Override

@@ -45,11 +45,8 @@ import javax.swing.tree.TreeCellRenderer;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.symbol.SymbolFactory;
-import org.orbisgis.core.renderer.symbol.SymbolUtil;
 import org.orbisgis.sif.CRFlowLayout;
 
 public class TocRenderer extends TocAbstractRenderer implements
@@ -340,7 +337,6 @@ public class TocRenderer extends TocAbstractRenderer implements
 	}
 
 	public void drawImage(Graphics g) {
-		SymbolUtil.drawSymbolPreview((Graphics2D) g, SymbolFactory.createLineSymbol(new Color(50, 50, 50), 2), 30, 20, true);
 		g.setColor(Color.black);
 		FontMetrics fm = g.getFontMetrics();
 		Rectangle2D r = fm.getStringBounds("line", g);

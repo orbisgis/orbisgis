@@ -154,32 +154,25 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
     @Override
     public void draw(Graphics2D g2, DataSource sds, long fid,
             boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
-            throws IOException, DriverException {
+            throws IOException, DriverException, ParameterException {
 
-        if (graphic != null && graphic.getNumGraphics() > 0) {
-
-            double x,y;
-
-            try {
-                if (onVertex) {
-                    List<Point2D> points = getPoints(sds, fid, mt, the_geom);
-                    for (Point2D pt : points) {
-                        x = pt.getX();
-                        y = pt.getY();
-
-                        graphic.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(x, y));
-                    }
-                } else {
-                    Point2D pt = getPointShape(sds, fid, mt, the_geom);
-
-                    x = pt.getX();
-                    y = pt.getY();
-
-                    // Draw the graphic right over the point !
-                    graphic.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(x, y));
+            if (graphic != null && graphic.getNumGraphics() > 0) {
+                double x,y;
+            if (onVertex) {
+                List<Point2D> points = getPoints(sds, fid, mt, the_geom);
+                for (Point2D pt : points) {
+                x = pt.getX();
+                y = pt.getY();
+                graphic.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(x, y));
                 }
-            } catch (ParameterException ex) {
-                LOGGER.error(I18N.tr("Could not render feature"), ex);
+            } else {
+                Point2D pt = getPointShape(sds, fid, mt, the_geom);
+
+                x = pt.getX();
+                y = pt.getY();
+
+                // Draw the graphic right over the point !
+                graphic.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(x, y));
             }
         }
     }
