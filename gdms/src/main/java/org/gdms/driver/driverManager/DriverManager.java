@@ -35,11 +35,14 @@ package org.gdms.driver.driverManager;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 
@@ -71,6 +74,7 @@ public final class DriverManager {
         private Map<String, Class<? extends Exporter>> exportClasses = new HashMap<String, Class<? extends Exporter>>();
         public static final String DEFAULT_SINGLE_TABLE_NAME = "main";
         private FileDriverRegister fdr = new FileDriverRegister();
+        private Set<String> driverFileExtensions = new HashSet<String>();
 
         public FileImporter getFileImporter(File file) {
                 for (Entry<String, Class<? extends Importer>> e : importClasses.entrySet()) {
@@ -230,6 +234,25 @@ public final class DriverManager {
         }
 
         /**
+         * Gets all the file extensions for the currently registered drivers.
+         *
+         * @return a set of file extensions
+         */
+        public Set<String> getDriverFileExtensions() {
+                return driverFileExtensions;
+        }
+        
+        public boolean isFileSupported(File file) {
+                final String name = file.getName();
+                int ix = name.lastIndexOf('.');
+                if (ix != -1 && ix + 1 != name.length()) {
+                        return driverFileExtensions.contains(name.substring(ix + 1).toLowerCase());
+                }
+                
+                return false;
+        }
+
+        /**
          * Registers a driver class into this DriverManager.
          *
          * @param driverClass a class extending Driver
@@ -239,6 +262,10 @@ public final class DriverManager {
                 Driver driver;
                 try {
                         driver = driverClass.newInstance();
+                        if (driver instanceof FileDriver) {
+                                FileDriver fD = (FileDriver) driver;
+                                driverFileExtensions.addAll(Arrays.asList(fD.getFileExtensions()));
+                        }
                         driverClasses.put(driver.getDriverId(), driverClass);
                         fireDriverAdded(driver.getDriverId(), driverClass);
                 } catch (InstantiationException e) {
@@ -288,6 +315,19 @@ public final class DriverManager {
         public void unregisterDriver(String driverId) {
                 Class<? extends Driver> r = driverClasses.remove(driverId);
                 if (r != null) {
+                        if (FileDriver.class.isAssignableFrom(r)) {
+                                try {
+                                        FileDriver driver = (FileDriver) r.newInstance();
+                                        driverFileExtensions.removeAll(Arrays.asList(driver.getFileExtensions()));
+                                } catch (InstantiationException e) {
+                                        throw new IllegalArgumentException(
+                                                "The driver cannot be instantiated", e);
+                                } catch (IllegalAccessException e) {
+                                        throw new IllegalArgumentException(
+                                                "The driver cannot be instantiated", e);
+                                }
+                        }
+
                         fireDriverRemoved(driverId, r);
                 }
         }
