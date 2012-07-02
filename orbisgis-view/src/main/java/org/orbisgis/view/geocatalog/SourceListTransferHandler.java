@@ -38,7 +38,6 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
-import java.util.logging.Level;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.TransferHandler;
@@ -52,12 +51,12 @@ import org.orbisgis.core.events.ListenerContainer;
 
 public class SourceListTransferHandler extends TransferHandler{
         private static final Logger LOGGER = Logger.getLogger("gui."+SourceListTransferHandler.class);
-        private DataFlavor URI_LIST_FLAVOR = null;
+        private DataFlavor uriListFlavor = null;
         private ListenerContainer<DropUriEventObject> dropListenerHandler = new ListenerContainer<DropUriEventObject>();
 
         public SourceListTransferHandler() {
                 try {
-                        URI_LIST_FLAVOR = new DataFlavor("text/uri-list;class=java.lang.String");
+                        uriListFlavor = new DataFlavor("text/uri-list;class=java.lang.String");
                 } catch (ClassNotFoundException ex) {
                         LOGGER.error("Uri flavor not supported",ex);
                 }
@@ -77,8 +76,8 @@ public class SourceListTransferHandler extends TransferHandler{
         public boolean canImport(TransferSupport ts) {
                 boolean isFileList = ts.isDataFlavorSupported(DataFlavor.javaFileListFlavor);
                 boolean isUriList = false;
-                if(URI_LIST_FLAVOR!=null) {
-                        isUriList = ts.isDataFlavorSupported(URI_LIST_FLAVOR);
+                if(uriListFlavor!=null) {
+                        isUriList = ts.isDataFlavorSupported(uriListFlavor);
                 }
                 return isFileList || isUriList;
         }
@@ -118,7 +117,7 @@ public class SourceListTransferHandler extends TransferHandler{
                         }
                 } else {
                         try {
-                                String filesChain = (String)ts.getTransferable().getTransferData(URI_LIST_FLAVOR);
+                                String filesChain = (String)ts.getTransferable().getTransferData(uriListFlavor);
                                 String lineSep = System.getProperty("line.separator"); //RFC 2483 says that lines are terminated with a CRLF pair
                                 List<URI> uriList = new ArrayList<URI>();
                                 for(StringTokenizer stringTokenizer = new StringTokenizer(filesChain, lineSep); stringTokenizer.hasMoreTokens();)
