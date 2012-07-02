@@ -29,14 +29,11 @@
 package org.orbisgis.view.geocatalog.sourceWizards.db;
 
 import java.awt.Component;
-
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import org.gdms.data.types.GeometryTypeConstraint;
-
 import org.gdms.data.types.Type;
 import org.gdms.driver.TableDescription;
 import org.orbisgis.view.icons.OrbisGISIcon;
