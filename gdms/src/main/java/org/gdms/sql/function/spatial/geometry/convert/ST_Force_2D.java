@@ -36,16 +36,19 @@ package org.gdms.sql.function.spatial.geometry.convert;
 import com.vividsolutions.jts.geom.Geometry;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.Dimension3DConstraint;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.geometryUtils.GeometryEdit;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
+/**
+ * 
+ * @deprecated this function is strictly equivalent to ST_AddZ(the_geom, NaN).
+ *    It does not change any metadata, that is up to the target table to set any interesting
+ *   constraint on its geometry column.
+ */
+@Deprecated
 public final class ST_Force_2D extends AbstractScalarSpatialFunction {
 
         @Override
@@ -64,7 +67,7 @@ public final class ST_Force_2D extends AbstractScalarSpatialFunction {
 
         @Override
         public String getDescription() {
-                return "Forces the geometries into XY mode. Metadata are also modified.";
+                return "Forces the geometries into XY mode.";
         }
 
         @Override
@@ -78,17 +81,7 @@ public final class ST_Force_2D extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public Type getType(Type[] argsTypes) {
-                if (argsTypes != null) {
-                        Type type = argsTypes[0];
-                        Constraint[] constrs = type.getConstraints(Constraint.ALL
-                                & ~Constraint.DIMENSION_3D_GEOMETRY);
-                        Constraint[] result = new Constraint[constrs.length + 1];
-                        System.arraycopy(constrs, 0, result, 0, constrs.length);
-                        result[result.length - 1] = new Dimension3DConstraint(2);
-                        return TypeFactory.createType(Type.GEOMETRY, result);
-                } else {
-                        return TypeFactory.createType(Type.GEOMETRY);
-                }
+        public int getType(int[] argsTypes) {
+                return argsTypes[0];
         }
 }

@@ -38,7 +38,6 @@ import com.vividsolutions.jts.io.WKTWriter;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.FunctionException;
@@ -64,8 +63,8 @@ public final class ST_AsWKT extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public Type getType(Type[] types) {
-                return TypeFactory.createType(Type.STRING);
+        public int getType(int[] types) {
+                return Type.STRING;
         }
 
         @Override

@@ -35,7 +35,6 @@ package org.gdms.sql.function.alphanumeric;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.AbstractScalarFunction;
@@ -65,8 +64,8 @@ public class StrLength  extends AbstractScalarFunction {
 	}
 
         @Override
-	public Type getType(Type[] types) {
-		return TypeFactory.createType(Type.INT);
+	public int getType(int[] types) {
+		return Type.INT;
 	}
 
 	@Override

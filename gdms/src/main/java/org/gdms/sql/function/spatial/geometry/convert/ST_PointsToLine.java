@@ -45,7 +45,6 @@ import com.vividsolutions.jts.geom.Point;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.FunctionException;
@@ -55,7 +54,6 @@ import org.gdms.sql.function.spatial.geometry.AbstractAggregateSpatialFunction;
  * Convert an ordered set of [Multi]Points in a single LineString geometry.
  */
 public final class ST_PointsToLine extends AbstractAggregateSpatialFunction {
-	private static final Value NULLVALUE = ValueFactory.createNullValue();
 	private static final GeometryFactory GF = new GeometryFactory();
 	private List<Coordinate> coords = new LinkedList<Coordinate>();
 
@@ -91,8 +89,8 @@ public final class ST_PointsToLine extends AbstractAggregateSpatialFunction {
 	}
 
         @Override
-	public Type getType(Type[] argsTypes) {
-		return TypeFactory.createType(Type.GEOMETRY);
+	public int getType(int[] argsTypes) {
+		return Type.LINESTRING;
 	}
 
         @Override
@@ -101,7 +99,7 @@ public final class ST_PointsToLine extends AbstractAggregateSpatialFunction {
 			return ValueFactory.createValue(GF.createLineString(coords
 					.toArray(new Coordinate[coords.size()])));
 		} else {
-			return NULLVALUE;
+			return ValueFactory.createNullValue();
 		}
 	}
 }

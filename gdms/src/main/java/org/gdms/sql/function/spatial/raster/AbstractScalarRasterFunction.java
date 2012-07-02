@@ -34,7 +34,6 @@
 package org.gdms.sql.function.spatial.raster;
 
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.sql.function.AbstractScalarFunction;
 import org.gdms.sql.function.BasicFunctionSignature;
 import org.gdms.sql.function.FunctionSignature;
@@ -43,8 +42,8 @@ import org.gdms.sql.function.ScalarArgument;
 public abstract class AbstractScalarRasterFunction extends AbstractScalarFunction {
 
         @Override
-        public Type getType(Type[] types) {
-                return TypeFactory.createType(Type.RASTER);
+        public int getType(int[] types) {
+                return Type.RASTER;
         }
 
         @Override

@@ -96,7 +96,7 @@ extends Command with ExpressionCommand with JoinCommand {
       
       // check the expression is a boolean predicate
       expr.get.evaluator.sqlType match {
-        case Type.BOOLEAN =>
+        case Type.BOOLEAN | Type.NULL =>
         case i =>throw new SemanticException("The join expression does not return a Boolean. Type: " +
                                              TypeFactory.getTypeName(i))
       }

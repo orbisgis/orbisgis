@@ -31,7 +31,6 @@ package org.orbisgis.core.ui.plugins.sql;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.geometryUtils.GeometryConvert;
@@ -67,8 +66,8 @@ public class MapContext_BBox extends AbstractScalarFunction {
         }
 
         @Override
-        public Type getType(Type[] argsTypes) throws InvalidTypeException {
-                return TypeFactory.createType(Type.GEOMETRY);
+        public int getType(int[] argsTypes) throws InvalidTypeException {
+                return Type.GEOMETRY;
         }
 
         @Override

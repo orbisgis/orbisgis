@@ -129,10 +129,10 @@ public abstract class FunctionTest extends TestBase {
 
         protected Value evaluate(Function function, ColumnValue... args)
                 throws FunctionException {
-                Type[] types = new Type[args.length];
+                int[] types = new int[args.length];
                 Value[] values = new Value[args.length];
                 for (int i = 0; i < types.length; i++) {
-                        types[i] = TypeFactory.createType(args[i].getTypeCode());
+                        types[i] = args[i].getTypeCode();
                         values[i] = args[i].getValue();
                 }
                 FunctionValidator.failIfTypesDoNotMatchSignature(types, function.getFunctionSignatures());
@@ -158,20 +158,20 @@ public abstract class FunctionTest extends TestBase {
 
         protected Value evaluate(Function function, Value... args)
                 throws FunctionException {
-                Type[] types = new Type[args.length];
+                int[] types = new int[args.length];
                 for (int i = 0; i < types.length; i++) {
-                        types[i] = TypeFactory.createType(args[i].getType());
+                        types[i] = args[i].getType();
                 }
                 FunctionValidator.failIfTypesDoNotMatchSignature(types, function.getFunctionSignatures());
                 return evaluateFunction(function, args);
         }
 
-        protected Type evaluate(ScalarFunction function, Type... args)
+        protected int evaluateDeclaredType(ScalarFunction function, int... args)
                 throws FunctionException {
                 return function.getType(args);
         }
 
-        protected Type evaluate(AggregateFunction function, Type... args)
+        protected int evaluateDeclaredType(AggregateFunction function, int... args)
                 throws FunctionException {
                 return function.getType(args);
         }

@@ -39,7 +39,6 @@ import com.vividsolutions.jts.geom.Point;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.BasicFunctionSignature;
@@ -80,8 +79,8 @@ public final class ST_Azimut extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public Type getType(Type[] argsTypes) {
-                return TypeFactory.createType(Type.DOUBLE);
+        public int getType(int[] argsTypes) {
+                return Type.DOUBLE;
         }
 
         @Override

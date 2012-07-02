@@ -34,7 +34,6 @@
 package org.gdms.sql.function;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 
 /**
@@ -75,5 +74,5 @@ public interface AggregateFunction extends Function {
          * @throws InvalidTypeException if there is no FunctionSignature matching
          * the given Type[]
 	 */
-	Type getType(Type[] argsTypes);
+	int getType(int[] argsTypes);
 }

@@ -34,7 +34,6 @@
 package org.gdms.sql.function;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 
 /**
@@ -65,10 +64,10 @@ public interface ScalarFunction extends Function {
 	 * Gets the type of the result this function provides for a specific
          * set of arguments.
 	 *
-	 * @param argsTypes
+	 * @param typeCodes
 	 * @return The type of the function
          * @throws InvalidTypeException if there is no FunctionSignature matching
          * the given Type[]
 	 */
-	Type getType(Type[] argsTypes);
+	int getType(int[] typeCodes);
 }

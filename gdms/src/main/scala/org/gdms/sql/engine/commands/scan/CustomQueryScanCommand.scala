@@ -35,11 +35,13 @@ package org.gdms.sql.engine.commands.scan
 
 import org.gdms.data.DataSource
 import org.gdms.data.schema.Metadata
-import org.gdms.data.types.TypeFactory
+import org.gdms.data.types.Type
 import org.gdms.driver.DataSet
 import org.gdms.sql.engine.commands._
+import org.gdms.sql.evaluator.CastEvaluator
 import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.function.FunctionValidator
+import org.gdms.sql.function.ScalarArgument
 import org.gdms.sql.function.table.TableFunction
 import org.orbisgis.progress.NullProgressMonitor
 import org.gdms.sql.engine.GdmSQLPredef._
@@ -104,8 +106,18 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
     
     // validation of table & type signatures
     FunctionValidator.failIfTablesDoNotMatchSignature(dss toArray, f.getFunctionSignatures)
-    val types = e map (ev => TypeFactory.createType(ev.evaluator.sqlType))
-    FunctionValidator.failIfTypesDoNotMatchSignature(types toArray, f.getFunctionSignatures)
+    val fs = FunctionValidator.failIfTypesDoNotMatchSignature(e map(_.evaluator.sqlType) toArray,
+                                                              f.getFunctionSignatures)
+    
+    // infers the type of direct NULL values as the expected type of the first
+    // function signature that matches
+    e.zip(fs.getArguments.filter(_.isScalar)) foreach { a => a._1.evaluator.sqlType match {
+        case Type.NULL =>
+          val targetType = a._2.asInstanceOf[ScalarArgument].getTypeCode
+          a._1.evaluator = CastEvaluator(Expression(a._1.evaluator), targetType)
+        case _ =>
+      }
+    }
     
     // result metadata of teh function
     metadata = f.getMetadata(dss toArray)

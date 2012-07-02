@@ -38,8 +38,6 @@ import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.MultiLineString;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.Dimension3DConstraint;
 import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
@@ -56,7 +54,6 @@ public class ST_SetZToExtremities extends AbstractScalarFunction {
 
         @Override
         public final Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
-
                 Geometry geom = args[0].getAsGeometry();
                 double startZ = args[1].getAsDouble();
                 double endZ = args[2].getAsDouble();
@@ -94,17 +91,8 @@ public class ST_SetZToExtremities extends AbstractScalarFunction {
         }
 
         @Override
-        public final Type getType(Type[] argsTypes) {
-
-                Type type = argsTypes[0];
-                Constraint[] constrs = type.getConstraints(Constraint.ALL
-                        & ~Constraint.DIMENSION_2D_GEOMETRY);
-                Constraint[] result = new Constraint[constrs.length + 1];
-                System.arraycopy(constrs, 0, result, 0, constrs.length);
-                result[result.length - 1] = new Dimension3DConstraint(Dimension3DConstraint.DIMENSION_3D);
-
-                return TypeFactory.createType(type.getTypeCode(), result);
-
+        public final int getType(int[] argsTypes) {
+                return argsTypes[0];
         }
 
         @Override

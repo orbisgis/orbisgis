@@ -40,7 +40,6 @@ import org.apache.log4j.Logger;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.AbstractScalarFunction;
@@ -52,11 +51,11 @@ import org.gdms.sql.function.ScalarArgument;
 
 /**
  * This function checks if all values in a column are unique, i.e. no values are equal.
- * 
+ *
  * WARNING: this function always return true! If duplicated elements are found, it crashes...
  * Fortunately for him I don't know who write this...
  */
-public class IsUID  extends AbstractScalarFunction {
+public class IsUID extends AbstractScalarFunction {
 
         private Set<Value> setOfUniqValues;
         private static final Logger LOG = Logger.getLogger(IsUID.class);
@@ -95,15 +94,14 @@ public class IsUID  extends AbstractScalarFunction {
         }
 
         @Override
-        public Type getType(Type[] argsTypes) {
-                return TypeFactory.createType(Type.BOOLEAN);
+        public int getType(int[] argsTypes) {
+                return Type.BOOLEAN;
         }
 
         @Override
         public FunctionSignature[] getFunctionSignatures() {
-                Type type = getType(null);
-                return new FunctionSignature[] {
-                new BasicFunctionSignature(type, ScalarArgument.LONG)
-                };
+                return new FunctionSignature[]{
+                                new BasicFunctionSignature(Type.BOOLEAN, ScalarArgument.LONG)
+                        };
         }
 }

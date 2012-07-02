@@ -35,7 +35,6 @@ package org.gdms.sql.function.math;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.BasicFunctionSignature;
@@ -95,8 +94,8 @@ public class Fac extends AbstractScalarMathFunction {
         }
 
         @Override
-        public Type getType(Type[] argsTypes) {
-                return TypeFactory.createType(Type.LONG);
+        public int getType(int[] argsTypes) {
+                return Type.LONG;
         }
         
 }

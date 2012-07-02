@@ -37,7 +37,6 @@ import org.apache.log4j.Logger;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.AbstractAggregateFunction;
@@ -71,8 +70,8 @@ public class Count extends AbstractAggregateFunction {
         }
 
         @Override
-        public Type getType(Type[] types) {
-                return TypeFactory.createType(Type.LONG);
+        public int getType(int[] types) {
+                return Type.LONG;
         }
 
         @Override
@@ -95,7 +94,6 @@ public class Count extends AbstractAggregateFunction {
         @Override
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
-                                new BasicFunctionSignature(Type.LONG, new ScalarArgument(Type.NULL)),
                                 new BasicFunctionSignature(Type.LONG),
                                 new BasicFunctionSignature(Type.LONG, ScalarArgument.INT),
                                 new BasicFunctionSignature(Type.LONG, ScalarArgument.LONG),
