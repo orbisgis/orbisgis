@@ -45,7 +45,10 @@ import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
 /**
- * Changes the metadata of the parameter by setting its dimension to 3D.
+ * 
+ * @deprecated this function is equivalent to ST_AddZ(the_geom, 0) or ST_AddZ(the_geom, value).
+ *   It does not change any metadata, that is up to the target table to set any interesting
+ *   constraint on its geometry column.
  */
 @Deprecated
 public final class ST_Force_3D extends AbstractScalarSpatialFunction {

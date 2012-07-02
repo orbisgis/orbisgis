@@ -39,6 +39,7 @@ import java.util.HashMap;
  * Factory to create data type instances.
  *
  * @author Fernando Gonzalez Cortes
+ * @author Antoine Gourlay
  */
 public final class TypeFactory {
         
@@ -52,6 +53,7 @@ public final class TypeFactory {
          * Creates a type with the specified type code. The code must be one of the
          * constants in Type interface
          *
+         * @throws InvalidTypeException if typeCode is an unknown type code or is Type.NULL
          * @param typeCode
          * @return
          */
@@ -67,6 +69,7 @@ public final class TypeFactory {
          * Creates a type with the specified type code and the specified name. The
          * code must be one of the constants in Type interface
          *
+         * @throws InvalidTypeException if typeCode is an unknown type code or is Type.NULL
          * @param typeCode
          * @param typeName
          * @return
@@ -89,8 +92,9 @@ public final class TypeFactory {
          * @param typeCode
          * @param constraints
          * @return
-         * @throws InvalidTypeException
-         * If the constraints are not valid for this type
+         * @throws InvalidTypeException if typeCode is an unknown type code or is Type.NULL, or
+         *   if the constraints are not valid for this type
+         * 
          */
         public static Type createType(final int typeCode,
                 final Constraint... constraints) {
@@ -109,8 +113,8 @@ public final class TypeFactory {
          * @param typeName
          * @param constraints
          * @return
-         * @throws InvalidTypeException
-         * If the constraints are not valid for this type
+         * @throws InvalidTypeException if typeCode is an unknown type code or is Type.NULL, or
+         *   if the constraints are not valid for this type
          */
         public static Type createType(final int typeCode, final String typeName,
                 final Constraint... constraints) {

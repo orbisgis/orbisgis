@@ -50,8 +50,7 @@ public final class ST_Count extends AbstractScalarRasterFunction {
         @Override
         public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 RasterMetadata metadata = args[0].getAsRaster().getMetadata();
-                return ValueFactory.createValue(1l * metadata.getNCols()
-                        * metadata.getNRows());
+                return ValueFactory.createValue(metadata.getNCols() * (long)metadata.getNRows());
         }
 
         @Override

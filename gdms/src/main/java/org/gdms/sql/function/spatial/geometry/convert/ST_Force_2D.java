@@ -42,6 +42,12 @@ import org.gdms.geometryUtils.GeometryEdit;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
+/**
+ * 
+ * @deprecated this function is strictly equivalent to ST_AddZ(the_geom, NaN).
+ *    It does not change any metadata, that is up to the target table to set any interesting
+ *   constraint on its geometry column.
+ */
 @Deprecated
 public final class ST_Force_2D extends AbstractScalarSpatialFunction {
 

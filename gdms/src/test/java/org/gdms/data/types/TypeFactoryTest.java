@@ -75,7 +75,7 @@ public class TypeFactoryTest extends TestBase {
         }
         
         @Test
-        public void testNullTypeIsEveryhing() {
+        public void testNullTypeIsEverything() {
                 assertTrue(TypeFactory.isVectorial(Type.NULL));
                 assertTrue(TypeFactory.isSpatial(Type.NULL));
                 assertTrue(TypeFactory.isTime(Type.NULL));
