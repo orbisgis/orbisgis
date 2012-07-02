@@ -134,6 +134,8 @@ public interface SourceManager {
          *
          * This essentially disconnects Gdms from all previously registered sources. It does not
          * hard-delete them.
+         * 
+         * Note that this does not remove system tables.
          *
          * @throws IOException
          */
@@ -382,9 +384,16 @@ public interface SourceManager {
         void shutdown() throws DataSourceFinalizationException;
 
         /**
-         * @return true if there is no source in the manager and false otherwise
+         * @return true if there is no source in the manager and false otherwise;
+         *   system tables are taken into account by this method.
          */
         boolean isEmpty();
+        
+        /**
+         * @param ignoreSystem true if system tables must be ignored
+         * @return true if there is no source in the manager and false otherwise
+         */
+        boolean isEmpty(boolean ignoreSystem);
 
         /**
          * Creates a source and returns a definition of the source that can be used
