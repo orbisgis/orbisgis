@@ -274,6 +274,7 @@ public class Core {
     */
     public void shutdown(){
         try{
+            mainContext.saveStatus(); //Save the services status
             this.dispose();
         }
         finally {      
