@@ -30,24 +30,35 @@ import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
  */
 public class ChoroplethDistInputPanel extends JPanel {
 
+    /** The frequence chart data model */
     private FreqChartDataModel freqChartDataModel;
+    /** The choropleth data model */
     private ChoroplethDataModel statModel;
+    /** The frequency chart panel */
     private FreqChart freqChart;
+    /** The choropleth range table panel */
     private ChoroplethRangeTabPanel choroplethRangeTabPanel;
+    /** The class combobox listener */
     private CmbClassListener cmbClassListener;
+    /** The input area JPanel */
     private JPanel chartInput;
+    /** The field combobox */
     private JComboBox cmbField;
+    /** The class combobox */
     private JComboBox cmbClass;
+    /** The method combobox */
     private JComboBox cmbMethod;
+    /** The yule checkbox */
     private JCheckBox yule;
+    /** The current number of row */
     private int nbRow;
 
     /**
      * ChoroplethDistInputPanel constructor
-     * @param freqChartDataModel
-     * @param statModel
-     * @param freqChart
-     * @param choroplethRangeTabPanel
+     * @param freqChartDataModel The frequence chart data model
+     * @param statModel The choropleth data model
+     * @param freqChart The frequency chart panel
+     * @param choroplethRangeTabPanel The choropleth range table panel
      */
     public ChoroplethDistInputPanel(FreqChartDataModel freqChartDataModel, ChoroplethDataModel statModel, FreqChart freqChart, ChoroplethRangeTabPanel choroplethRangeTabPanel) {
         this.freqChartDataModel = freqChartDataModel;
@@ -58,10 +69,29 @@ public class ChoroplethDistInputPanel extends JPanel {
     }
 
     /**
-     * init the Distribution Panel
+     * Init the Distribution Panel
      */
     private void initPanel() {
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
+        JPanel north = initNorthPanel();
+        JPanel center = initCenterPanel();
+        JPanel chartInputPan = initChartInputPanel();
+
+        this.add(north);
+        this.add(center);
+        this.add(freqChart.getPanel());
+        this.add(chartInputPan);
+
+        updateComboField();
+        updateComboBoxNbrClasses();
+
+    }
+
+     /**
+     * Init the North Distribution Panel
+     */
+    private JPanel initNorthPanel() {
         JPanel north = new JPanel(new SpringLayout());
 
         JLabel lblField = new JLabel("LookupValue");
@@ -96,49 +126,7 @@ public class ChoroplethDistInputPanel extends JPanel {
         String[] cmbMethodString = {"quantile", "mean", "jenks", "manual"};
         cmbMethod = new JComboBox(cmbMethodString);
         cmbMethod.setSelectedIndex(3);
-        cmbMethod.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                String method = (String) cmbMethod.getSelectedItem();
-
-                ChoroplethDataModel.StatisticMethod methode = ChoroplethDataModel.StatisticMethod.MANUAL;
-
-                if (method.equals("quantile")) {
-                    methode = ChoroplethDataModel.StatisticMethod.QUANTILES;
-                }
-                if (method.equals("mean")) {
-                    methode = ChoroplethDataModel.StatisticMethod.MEAN;
-                }
-                if (method.equals("jenks")) {
-                    methode = ChoroplethDataModel.StatisticMethod.JENKS;
-                }
-                if (method.equals("manual")) {
-                    methode = ChoroplethDataModel.StatisticMethod.MANUAL;
-                }
-
-                cmbClass.removeActionListener(cmbClassListener);
-                cmbClass.removeAllItems();
-                int[] allowed = statModel.getNumberOfClassesAllowed(freqChartDataModel, methode);
-                for (int i = 0; i < allowed.length; i++) {
-                    cmbClass.addItem(allowed[i]);
-                }
-                if (method.equals("mean")) {
-                    cmbClass.setSelectedIndex(1);
-                } else {
-                    cmbClass.setSelectedIndex(4);
-                }
-                freqChartDataModel.setNbSeuil(Integer.parseInt(cmbClass.getSelectedItem().toString()));
-                cmbClass.addActionListener(cmbClassListener);
-
-                statModel.setStatisticMethod(freqChartDataModel, methode);
-
-                freqChart.repaint();
-                updateChartInput();
-                choroplethRangeTabPanel.refresh(freqChartDataModel);
-
-            }
-        });
+        cmbMethod.addActionListener(new CmbMethodListener());
 
         north.add(lblField);
         north.add(cmbField);
@@ -147,12 +135,19 @@ public class ChoroplethDistInputPanel extends JPanel {
         north.add(lblMethod);
         north.add(cmbMethod);
 
-        SpringUtilities.makeGrid(north, 3, 2, 5, 5, 5, 5);
+        GridTools.generateGrid(north, 3, 2);
 
+        return north;
+    }
+
+     /**
+     * Init the Center Distribution Panel
+     */
+    private JPanel initCenterPanel() {
         JPanel center = new JPanel();
         center.setLayout(new BorderLayout());
 
-        JLabel lblHistogram = new JLabel(" _ Histogram ______________________________________________________");
+        JLabel lblHistogram = new JLabel("Histogram");
         lblHistogram.setPreferredSize(new Dimension(280, 25));
 
         JPanel centerInputPanel = new JPanel();
@@ -206,9 +201,16 @@ public class ChoroplethDistInputPanel extends JPanel {
         center.add(lblHistogram, BorderLayout.NORTH);
         center.add(centerInputPanel, BorderLayout.EAST);
 
+        return center;
+    }
+
+     /**
+     * Init the ChartInput Distribution Panel
+     */
+    private JPanel initChartInputPanel() {
         chartInput = new JPanel(new SpringLayout());
 
-        int nbRangeMax = freqChartDataModel.getMaxSeuil();
+        int nbRangeMax = freqChartDataModel.getMaxThreshold();
 
         int nbRange = nbRangeMax - 1;
         nbRow = (nbRange / 4);
@@ -221,23 +223,15 @@ public class ChoroplethDistInputPanel extends JPanel {
             spinner.addChangeListener(new SpinnerListener(i - 1));
             chartInput.add(spinner);
         }
-        SpringUtilities.makeCompactGrid(chartInput, nbRow, 4, 1, 1, 5, 5);
+        GridTools.generateGrid(chartInput, nbRow, 4);
 
         updateChartInput();
 
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
-
-        this.add(north);
-        this.add(center);
-        this.add(freqChart.getPanel());
-        this.add(chartInput);
-
-        updateComboField();
-        updateComboBoxNbrClasses();
+        return chartInput;
     }
 
     /**
-     * update the comboBox Field
+     * Update the comboBox Field
      */
     private void updateComboField() {
         List<String> fields = statModel.getFields();
@@ -252,12 +246,12 @@ public class ChoroplethDistInputPanel extends JPanel {
         }
     }
 
-     /**
-     * update the comboBox number of classes
+    /**
+     * Update the comboBox number of classes
      */
     private void updateComboBoxNbrClasses() {
-        int selectedNbClass = freqChartDataModel.getNbSeuil();
-        int end = freqChartDataModel.getMaxSeuil();
+        int selectedNbClass = freqChartDataModel.getThresholdNumber();
+        int end = freqChartDataModel.getMaxThreshold();
         if (selectedNbClass > end) {
             end = selectedNbClass;
         }
@@ -268,11 +262,11 @@ public class ChoroplethDistInputPanel extends JPanel {
     }
 
     /**
-     * update the chart spinner
+     * Update the chart spinner
      */
     public void updateChartInput() {
 
-        List<double[]> rangeList = freqChartDataModel.getSeuilList();
+        List<List<Double>> rangeList = freqChartDataModel.getThresholdList();
 
         for (int i = 1; i <= nbRow * 4; i++) {
 
@@ -280,8 +274,8 @@ public class ChoroplethDistInputPanel extends JPanel {
 
             if (i <= rangeList.size() - 1) {
                 SpinnerModel model =
-                        new SpinnerNumberModel(rangeList.get(i - 1)[1],
-                        rangeList.get(i - 1)[0], rangeList.get(i)[1], 1);
+                        new SpinnerNumberModel(rangeList.get(i - 1).get(1).doubleValue(),
+                        rangeList.get(i - 1).get(0).doubleValue(), rangeList.get(i).get(1).doubleValue(), 1);
                 spinner.setModel(model);
                 spinner.setVisible(true);
             } else {
@@ -291,7 +285,7 @@ public class ChoroplethDistInputPanel extends JPanel {
     }
 
     /**
-     * chart spinner listener class
+     * Chart spinner listener class
      */
     private class SpinnerListener implements ChangeListener {
 
@@ -307,31 +301,72 @@ public class ChoroplethDistInputPanel extends JPanel {
 
         @Override
         public void stateChanged(ChangeEvent e) {
-            List<double[]> rangeList = freqChartDataModel.getSeuilList();
+            List<List<Double>> rangeList = freqChartDataModel.getThresholdList();
 
             JSpinner currentSpinner = (JSpinner) (e.getSource());
             double value = Double.parseDouble(currentSpinner.getModel().getValue().toString());
 
-            double[] rangeDown = rangeList.get(rangeId);
-            rangeDown[1] = value;
+            List<Double> rangeDown = rangeList.get(rangeId);
+            rangeDown.set(1, value);
 
-            double[] rangeUp = rangeList.get(rangeId + 1);
-            rangeUp[0] = value;
+            List<Double> rangeUp = rangeList.get(rangeId + 1);
+            rangeUp.set(0, value);
 
             freqChart.repaint();
         }
     }
 
     /**
-     * chart number of range listener class
+     * Chart method listener class
      */
-    private class CmbClassListener implements ActionListener {
-
-        public CmbClassListener() {}
+    private class CmbMethodListener implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            freqChartDataModel.setNbSeuil(Integer.parseInt(cmbClass.getSelectedItem().toString()));
+            String method = (String) cmbMethod.getSelectedItem();
+
+            ChoroplethDataModel.StatisticMethod methode = ChoroplethDataModel.StatisticMethod.MANUAL;
+
+            if (method.equals("quantile")) {
+                methode = ChoroplethDataModel.StatisticMethod.QUANTILES;
+            } else if (method.equals("mean")) {
+                methode = ChoroplethDataModel.StatisticMethod.MEAN;
+            } else if (method.equals("jenks")) {
+                methode = ChoroplethDataModel.StatisticMethod.JENKS;
+            } else if (method.equals("manual")) {
+                methode = ChoroplethDataModel.StatisticMethod.MANUAL;
+            }
+
+            cmbClass.removeActionListener(cmbClassListener);
+            cmbClass.removeAllItems();
+            int[] allowed = statModel.getNumberOfClassesAllowed(freqChartDataModel, methode);
+            for (int i = 0; i < allowed.length; i++) {
+                cmbClass.addItem(allowed[i]);
+            }
+            if (method.equals("mean")) {
+                cmbClass.setSelectedIndex(1);
+            } else {
+                cmbClass.setSelectedIndex(4);
+            }
+            freqChartDataModel.setThresholdNumber(Integer.parseInt(cmbClass.getSelectedItem().toString()));
+            cmbClass.addActionListener(cmbClassListener);
+
+            statModel.setStatisticMethod(freqChartDataModel, methode);
+
+            freqChart.repaint();
+            updateChartInput();
+            choroplethRangeTabPanel.refresh(freqChartDataModel);
+        }
+    }
+
+    /**
+     * Chart number of range listener class
+     */
+    private class CmbClassListener implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            freqChartDataModel.setThresholdNumber(Integer.parseInt(cmbClass.getSelectedItem().toString()));
             freqChartDataModel.generateChartData();
             choroplethRangeTabPanel.refresh(freqChartDataModel);
             freqChart.repaint();

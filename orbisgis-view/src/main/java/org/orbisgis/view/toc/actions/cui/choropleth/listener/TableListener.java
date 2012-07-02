@@ -12,32 +12,33 @@ import javax.swing.event.TableModelListener;
 import org.orbisgis.view.toc.actions.cui.freqChart.FreqChart;
 import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
 
-
-
 /**
- * TableListener
+ * Table listener
  * @author sennj
  */
 public class TableListener extends AbstractAction implements
         TableModelListener, PropertyChangeListener, Runnable {
 
+    /** The range table JTable */
     private JTable table;
+    /** The choropleth range table panel */
     private FreqChart freqChart;
+    /** The frequence chart data model */
     private FreqChartDataModel freqChartDataModel;
+    /** The row of the table */
     private int row;
+    /** The column of the table */
     private int column;
+    /** The old value that is stored */
     private Object oldValue;
+    /** The new value that will be stored */
     private Object newValue;
 
     /**
      * TableListener Creator Create a TableCellListener.
-     *
-     * @param freqChart
-     *            the frequency chart panel
-     * @param table
-     *            the table to be monitored for data changes
-     * @param freqChartDataModel
-     *            the data to model draw
+     * @param table The table to be monitored for data changes
+     * @param freqChartDataModel The frequence chart data model
+     * @param freqChart The frequency chart panel
      */
     public TableListener(JTable table,
             FreqChartDataModel freqChartDataModel, FreqChart freqChart) {
@@ -50,17 +51,11 @@ public class TableListener extends AbstractAction implements
     /**
      * TableListener Creator Create a TableCellListener with a copy of all the
      * data relevant to the change of data for a given cell.
-     *
-     * @param table
-     *            the table to be monitored for data changes
-     * @param row
-     *            the row of the changed cell
-     * @param column
-     *            the column of the changed cell
-     * @param oldValue
-     *            the old data of the changed cell
-     * @param newValue
-     *            the new data of the changed cell
+     * @param table The table to be monitored for data changes
+     * @param row the row of the changed cell
+     * @param column The column of the changed cell
+     * @param oldValue The old data of the changed cell
+     * @param newValue The new data of the changed cell
      */
     private TableListener(JTable table, int row, int column, Object oldValue,
             Object newValue) {
@@ -72,8 +67,7 @@ public class TableListener extends AbstractAction implements
     }
 
     /**
-     * getColumn Get the column that was last edited
-     *
+     * Get the column that was last edited
      * @return the column that was edited
      */
     public int getColumn() {
@@ -81,8 +75,7 @@ public class TableListener extends AbstractAction implements
     }
 
     /**
-     * getNewValue Get the new value in the cell
-     *
+     * Get the new value in the cell
      * @return the new value in the cell
      */
     public Object getNewValue() {
@@ -90,8 +83,7 @@ public class TableListener extends AbstractAction implements
     }
 
     /**
-     * getOldValue Get the old value of the cell
-     *
+     * Get the old value of the cell
      * @return the old value of the cell
      */
     public Object getOldValue() {
@@ -99,8 +91,7 @@ public class TableListener extends AbstractAction implements
     }
 
     /**
-     * getRow Get the row that was last edited
-     *
+     * Get the row that was last edited
      * @return the row that was edited
      */
     public int getRow() {
@@ -108,17 +99,16 @@ public class TableListener extends AbstractAction implements
     }
 
     /**
-     * getTable Get the table of the cell that was changed
-     *
+     * Get the table of the cell that was changed
      * @return the table of the cell that was changed
      */
     public JTable getTable() {
         return table;
     }
 
-    //
-    // Implement the PropertyChangeListener interface
-    //
+    /**
+     * Implement the PropertyChangeListener interface
+     */
     @Override
     public void propertyChange(PropertyChangeEvent e) {
         // A cell has started/stopped editing
@@ -131,7 +121,7 @@ public class TableListener extends AbstractAction implements
         }
     }
 
-    /*
+    /**
      * Save information of the cell about to be edited
      */
     private void processEditingStarted() {
@@ -140,8 +130,6 @@ public class TableListener extends AbstractAction implements
         // PropertyChangeEvent is fired.
         // This results in the "run" method being invoked
 
-        // choroDatas.setStatisticMethod(ChoroplethDatas.StatisticMethod.MANUAL,
-        // false);
         SwingUtilities.invokeLater(this);
     }
 
@@ -153,7 +141,7 @@ public class TableListener extends AbstractAction implements
         newValue = null;
     }
 
-    /*
+    /**
      * Update the Cell history when necessary
      */
     private void processEditingStopped() {
@@ -187,14 +175,10 @@ public class TableListener extends AbstractAction implements
     }
 
     /**
-     * refreshAlias Refresh the alias
-     *
-     * @param freqChartDataModel
-     *            the data to model draw
-     * @param row
-     *            the selected row
-     * @param newValue
-     *            the new value to apply
+     * Refresh the alias
+     * @param freqChartDataModel The frequence chart data model
+     * @param row The selected row
+     * @param newValue The new value to apply
      */
     public void refreshAlias(FreqChartDataModel freqChartDataModel, int row,
             Object newValue) {

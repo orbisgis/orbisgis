@@ -11,9 +11,7 @@ import java.util.Map.Entry;
 import java.util.TreeMap;
 import javax.swing.event.EventListenerList;
 import org.orbisgis.core.renderer.classification.Range;
-import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.view.toc.actions.cui.choropleth.listener.DataChangeListener;
@@ -25,7 +23,6 @@ import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.DataChanged.DataCha
 import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.classNumberGen.ClassNumberGenerator;
 import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.classNumberGen.YuleGenerator;
 
-
 /**
  * FreqChartDataModel the data management
  * 
@@ -34,46 +31,53 @@ import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.classNumberGen.Yule
  */
 public class FreqChartDataModel {
 
+    /** The chart row data */
     private double[] data;
+    /** The class number generator */
     private ClassNumberGenerator cng;
-    private List<double[]> bornesList;
-    private List<SimpleIntervalXYDataset> intervalList;
+    /** The list of chart border */
+    private List<List<Double>> borderList;
+    /** The computed list of chart data */
+    private List<MonoIntervalXYDataset> intervalList;
+    /** The list of the chart border */
     private List<Color> color;
+    /** The list of the chart label */
     private List<String> label;
-    private Color[] colorInit;
+    /** The list of the two initial chart color */
+    private List<Color> colorInit;
+    /** The map stroke color */
     private Color strokeColor;
+    /** The map stroke width */
     private double strokeWidth;
-    private double[] minMax;
-    private double classNumber;
-    private double classNumberGen;
-    private double interval;
-    private double opacity;
-    private List<double[]> seuilList;
-    private int nbSeuil;
-    private int nbSeuilMax;
-    protected EventListenerList listenerList = new EventListenerList();
-    private int pixDelta;
+    /** The map stroke object */
     private PenStroke stroke;
+    /** The  number of class */
+    private double classNumber;
+    /** The original number of class */
+    private double classNumberGen;
+    /** The map opacity */
+    private double opacity;
+    /** The list of chart threshold */
+    private List<List<Double>> thresholdList;
+    /** The number of chart threshold */
+    private int thresholdNumber;
+    /** The maximal number of chart threshold */
+    private int thresholdNumberMax;
+    /** The list of event listener */
+    protected EventListenerList listenerList = new EventListenerList();
+    /** The pixel delta to catch a chart range */
+    private int pixDelta;
 
     /**
      * FreqChartDataModel constructor
-     *
+     * @param data the data
      */
-    public FreqChartDataModel() {
-    }
-
-    /**
-     * FreqChartDataModel constructor
-     *
-     * @param data
-     *            the data
-     */
-    public FreqChartDataModel(List<String> fields, double[] data) {
+    public FreqChartDataModel(double[] data) {
         this.data = data;
 
-        this.colorInit = new Color[2];
-        this.colorInit[0] = Color.BLUE;
-        this.colorInit[1] = Color.RED;
+        this.colorInit = new ArrayList<Color>();
+        this.colorInit.add(Color.BLUE);
+        this.colorInit.add(Color.RED);
 
         this.cng = new YuleGenerator();
         this.classNumber = cng.getClassNumber(data.length);
@@ -83,8 +87,8 @@ public class FreqChartDataModel {
         this.label = new ArrayList<String>();
 
         this.pixDelta = 10;
-        this.nbSeuil = 5;
-        this.nbSeuilMax = 10;
+        this.thresholdNumber = 5;
+        this.thresholdNumberMax = 10;
         this.opacity = 100;
 
         this.stroke = new PenStroke();
@@ -96,211 +100,211 @@ public class FreqChartDataModel {
     }
 
     /**
-     * setData set the data
-     * @param data
+     * Set the chart row data
+     * @param data the chart row data
      */
     public void setData(double[] data) {
         this.data = data;
     }
 
     /**
-     * setClassNumberGenerator
-     * @param cng
+     * Set the number of class generator
+     * @param cng the number of class generator
      */
     public void setClassNumberGenerator(ClassNumberGenerator cng) {
         this.cng = cng;
     }
 
     /**
-     * setClassNumber
-     * @param classNumber
+     * Set the number of class
+     * @param classNumber the number of class
      */
     public void setClassNumber(int classNumber) {
         this.classNumber = classNumber;
     }
 
     /**
-     * getClassNumber
-     * @return classNumber
+     * Get the number of class
+     * @return classNumber the number of class
      */
     public int getClassNumber() {
         return (int) classNumber;
     }
 
     /**
-     * getClassNumberGen
-     * @return classNumber
+     * Get the generated number of class
+     * @return classNumber the original generated number of class
      */
     public int getClassNumberGen() {
         return (int) classNumberGen;
     }
 
     /**
-     * setNbSeuil
-     * @param nbSeuil
+     * Set the number of threshold
+     * @param thresholdNumber the number of threshold
      */
-    public void setNbSeuil(int nbSeuil) {
-        this.nbSeuil = nbSeuil;
+    public void setThresholdNumber(int thresholdNumber) {
+        this.thresholdNumber = thresholdNumber;
     }
 
     /**
-     * getNbSeuil
-     * @return nb seuil
+     * Get the number of threshold
+     * @return thresholdNumber the number of threshold
      */
-    public int getNbSeuil() {
-        return nbSeuil;
+    public int getThresholdNumber() {
+        return thresholdNumber;
     }
 
     /**
-     * getMaxSeuil
-     * @return max seuil
+     * Get the number of threshold max
+     * @return thresholdNumberMax the number of threshold max
      */
-    public int getMaxSeuil() {
-        return nbSeuilMax;
+    public int getMaxThreshold() {
+        return thresholdNumberMax;
     }
 
     /**
-     * getSeuilList
-     * @return seuilList
+     * Get the threshold list
+     * @return thresholdList the threshold list
      */
-    public List<double[]> getSeuilList() {
-        return seuilList;
+    public List<List<Double>> getThresholdList() {
+        return thresholdList;
     }
 
     /**
-     * setSeuilList
-     * @param list
+     * Set the threshold list
+     * @param list the threshold list
      */
-    public void setSeuilList(List<double[]> list) {
-        this.seuilList = list;
+    public void setThresholdList(List<List<Double>> thresholdList) {
+        this.thresholdList = thresholdList;
     }
 
     /**
-     * getBornesList
-     * @return bornesList
+     * Get the list of border
+     * @return borderList the list of border
      */
-    public List<double[]> getBornesList() {
-        return bornesList;
+    public List<List<Double>> getBorderList() {
+        return borderList;
     }
 
     /**
-     * getRange
+     * Get the Range
      * @return the Range tab
      */
     public Range[] getRange() {
-        Range[] ranges = new Range[seuilList.size()];
-        double[] seuil;
-        for (int i = 1; i <= seuilList.size(); i++) {
+        Range[] ranges = new Range[thresholdList.size()];
+        List<Double> threshold;
+        for (int i = 1; i <= thresholdList.size(); i++) {
             Range range = new Range();
-            seuil = seuilList.get(i - 1);
-            range.setMinRange(seuil[0]);
-            range.setMinRange(seuil[1]);
+            threshold = thresholdList.get(i - 1);
+            range.setMinRange(threshold.get(0));
+            range.setMinRange(threshold.get(1));
             ranges[i - 1] = range;
         }
         return ranges;
     }
 
     /**
-     * setColorInit
-     * @param col
+     * Set the initial color list
+     * @param col the initial color list
      */
-    public void setColorInit(Color[] col) {
+    public void setColorInit(List<Color> col) {
         this.colorInit = col;
     }
 
     /**
-     * getColorInit
-     * @return colorInit
+     * Get the initial color list
+     * @return colorInit the initial color list
      */
-    public Color[] getColorInit() {
+    public List<Color> getColorInit() {
         return colorInit;
     }
 
     /**
-     * setSerieColor
-     * @param i
-     * @param color
+     * Set an element of the color list
+     * @param i the list index
+     * @param color the color
      */
-    public void setSerieColor(int i, Color newColor) {
+    public void setColorListElem(int i, Color newColor) {
         color.set(i, newColor);
     }
 
     /**
-     * getColor
-     * @return color
+     * Get the color list
+     * @return color the color list
      */
     public List<Color> getColor() {
         return color;
     }
 
     /**
-     * setLabel
-     * @param i
-     * @param string
+     * Set a label in the label list
+     * @param i the list index
+     * @param string the label
      */
     public void setLabel(int i, String string) {
         label.set(i, string);
     }
 
     /**
-     * getLabel
-     * @return label
+     * Get the label list
+     * @return label the label list
      */
     public List<String> getLabel() {
         return label;
     }
 
     /**
-     * getHistogramDataset
-     * @return intervalList
+     * Get the dataset histogram
+     * @return intervalList the dataset histogram
      */
-    public List<SimpleIntervalXYDataset> getHistogramDataset() {
+    public List<MonoIntervalXYDataset> getHistogramDataset() {
         return intervalList;
     }
 
     /**
-     * setPixRangeDelta
-     * @param pixDelta
+     * Set the pixel delta for range selection
+     * @param pixDelta the pixel delta for range selection
      */
     public void setPixRangeDelta(int pixDelta) {
         this.pixDelta = pixDelta;
     }
 
     /**
-     * getPixRangeDelta
-     * @return pixDelta
+     * Get the pixel delta for range selection
+     * @return pixDelta the pixel delta for range selection
      */
     public int getPixRangeDelta() {
         return pixDelta;
     }
 
     /**
-     * setOpacity
-     * @param opacityValue
+     * Set the opacity of the map
+     * @param opacityValue the opacity of the map
      */
     public void setOpacity(double opacityValue) {
         this.opacity = opacityValue;
     }
 
     /**
-     * getOpacity
-     * @return opacity
+     * Get the opacity of the map
+     * @return opacity of the map
      */
     public double getOpacity() {
         return opacity;
     }
 
     /**
-     * setStroke
-     * @param strokeValue
+     * Set the map stroke object
+     * @param strokeValue the map stroke object
      */
     public void setStroke(PenStroke strokeValue) {
         this.stroke = strokeValue;
     }
 
     /**
-     * getStroke
-     * @return stroke
+     * Get the map stroke object
+     * @return stroke the map stroke object
      */
     public PenStroke getStroke() {
         this.stroke.setFill(new SolidFill(strokeColor, 1.0));
@@ -309,141 +313,138 @@ public class FreqChartDataModel {
     }
 
     /**
-     * getStrokeColor
-     * @return strokeColor
+     * Get the map stroke color
+     * @return strokeColor the map stroke color
      */
     public Color getStrokeColor() {
         return strokeColor;
     }
 
     /**
-     * setStrokeColor
-     * @param strokeColor
+     * Set the map stroke color
+     * @param strokeColor the map stroke color
      */
     public void setStrokeColor(Color strokeColor) {
         this.strokeColor = strokeColor;
     }
 
     /**
-     * getStrokeWidth
-     * @return stroke width
+     * Get the map stroke width
+     * @return strokeWidth the map stroke width
      */
     public double getStrokeWidth() {
         return strokeWidth;
     }
 
     /**
-     * setStrokeWidth
-     * @param strokeWidth
+     * Set the map stroke width
+     * @param strokeWidth the map stroke width
      */
     public void setStrokeWidth(double strokeWidth) {
         this.strokeWidth = strokeWidth;
     }
 
     /**
-     * generateChartData
+     * Generate the chart data
      */
     public void generateChartData() {
-        minMax = findMinMax(data);
-        interval = (minMax[1] - minMax[0]) / Math.round(classNumber);
-        bornesList = findBornes(minMax[0], classNumber, interval);
-        seuilList = findSeuil(minMax[0], minMax[1], nbSeuil);
+        List<Double> minMax = findMinMax(data);
+        double min = minMax.get(0);
+        double max = minMax.get(1);
+        double interval = (max - min) / Math.round(classNumber);
+        borderList = findBorders(min, classNumber, interval);
+        thresholdList = findThreshold(min, max, thresholdNumber);
         computeChartData();
     }
 
     /**
-     * findMinMax
+     * Find the min and the max of the raw data tab
      * @return the min and the max value
      */
-    public double[] findMinMax(double[] rawData) {
+    public List<Double> findMinMax(double[] rawData) {
         double xMin = Double.MAX_VALUE;
         double xMax = 0;
 
         for (int i = 1; i <= rawData.length; i++) {
             double value = rawData[i - 1];
-            if (value < xMin) {
-                xMin = value;
-            }
-            if (value > xMax) {
-                xMax = value;
-            }
+            xMin = Math.min(xMin, value);
+            xMax = Math.max(xMax, value);
         }
-        double[] minMaxVal = new double[2];
-        minMaxVal[0] = xMin;
-        minMaxVal[1] = xMax;
+        List<Double> minMaxVal = new ArrayList<Double>();
+        minMaxVal.add(xMin);
+        minMaxVal.add(xMax);
         return minMaxVal;
     }
 
     /**
-     * findSeuil
-     * @param min
-     * @param max
-     * @param seuilNb
-     * @return seuilList
+     * Find the threshold
+     * @param min the min of the raw data
+     * @param max the max of the raw data
+     * @param thresholdNumber the number of threshold
+     * @return thresholdListLocal the threshold list
      */
-    public List<double[]> findSeuil(double min, double max, int seuilNb) {
-        List<double[]> seuilListLocal = new ArrayList<double[]>();
+    public List<List<Double>> findThreshold(double min, double max, int thresholdNumber) {
+        List<List<Double>> thresholdListLocal = new ArrayList<List<Double>>();
 
-        double startSeuil = min;
-        double stopSeuil;
-        double seuil = (max - min) / seuilNb;
-        for (int j = 1; j <= seuilNb; j++) {
-            stopSeuil = startSeuil + seuil;
-            double[] borne = new double[2];
-            borne[0] = startSeuil;
-            borne[1] = stopSeuil;
-            seuilListLocal.add(borne);
-            startSeuil = stopSeuil;
+        double startThreshold = min;
+        double stopThreshold;
+        double threshold = (max - min) / thresholdNumber;
+        for (int j = 1; j <= thresholdNumber; j++) {
+            stopThreshold = startThreshold + threshold;
+            List<Double> border = new ArrayList<Double>();
+            border.add(startThreshold);
+            border.add(stopThreshold);
+            thresholdListLocal.add(border);
+            startThreshold = stopThreshold;
         }
-        return seuilListLocal;
+        return thresholdListLocal;
     }
 
     /**
-     * findBornes
-     * @param min
-     * @param classNb
-     * @param inter
-     * @return bornes
+     * Find the borders
+     * @param min the min of the raw data
+     * @param classNb number of class
+     * @param inter the average interval bewteen range
+     * @return borders the border list
      */
-    public List<double[]> findBornes(double min, double classNb, double inter) {
-        List<double[]> bornes = new ArrayList<double[]>();
+    public List<List<Double>> findBorders(double min, double classNb, double inter) {
+        List<List<Double>> borders = new ArrayList<List<Double>>();
 
-        double startBorne = min;
-        double stopBorne;
+        double startBorder = min;
+        double stopBorder;
         for (int j = 1; j <= Math.round(classNb); j++) {
-            stopBorne = startBorne + inter;
-            double[] borne = new double[2];
-            borne[0] = startBorne;
-            borne[1] = stopBorne;
-            bornes.add(borne);
-            startBorne = stopBorne;
+            stopBorder = startBorder + inter;
+            List<Double> border = new ArrayList<Double>();
+            border.add(startBorder);
+            border.add(stopBorder);
+            borders.add(border);
+            startBorder = stopBorder;
         }
-
-        return bornes;
+        return borders;
     }
 
     /**
-     * createLabel
-     * @param label
-     * @return label
+     * Create the label
+     * @param label the current label list
+     * @return label the new label list
      */
     public List<String> createLabel(List<String> label) {
-        if (label.size() > nbSeuil) {
-            for (int i = nbSeuil; i < label.size(); i++) {
+        if (label.size() > thresholdNumber) {
+            for (int i = thresholdNumber; i < label.size(); i++) {
                 label.remove(i - 1);
             }
         } else {
-            for (int i = label.size(); i < nbSeuil; i++) {
-                double[] seuil = seuilList.get(i);
+            for (int i = label.size(); i < thresholdNumber; i++) {
+                List<Double> threshold = thresholdList.get(i);
                 DecimalFormat df = new DecimalFormat("#.#");
-                label.add(df.format(seuil[0]) + " - " + df.format(seuil[1]));
+                label.add(df.format(threshold.get(0)) + " - " + df.format(threshold.get(1)));
             }
         }
         return label;
     }
 
     /**
-     * computeChartData
+     * Compute the chart data
      */
     public void computeChartData() {
 
@@ -452,101 +453,100 @@ public class FreqChartDataModel {
         Map<String, Integer> map = new TreeMap<String, Integer>(
                 new MapCompare() {
                 });
-        Integer ONE = new Integer(1);
+        int ONE = 1;
         for (int i = 1; i <= data.length; i++) {
             double dataEch = data[i - 1];
-            for (int j = 1; j <= bornesList.size(); j++) {
-                double[] bornes = bornesList.get(j - 1);
-                if (dataEch >= bornes[0] && dataEch < bornes[1]) {
-                    String borneStr = bornes[0] + " " + bornes[1];
-                    Integer frequency = (Integer) map.get(borneStr);
-                    if (frequency == null) {
+            for (int j = 1; j <= borderList.size(); j++) {
+                List<Double> borders = borderList.get(j - 1);
+                if (dataEch >= borders.get(0) && dataEch < borders.get(1)) {
+                    String bordersStr = borders.get(0) + " " + borders.get(1);
+                    int frequency;
+                    if (map.get(bordersStr) == null) {
                         frequency = ONE;
                     } else {
-                        int valueBorne = frequency.intValue();
-                        frequency = new Integer(valueBorne + 1);
+                        int valueBorder = map.get(bordersStr);
+                        frequency = valueBorder + 1;
                     }
 
-                    map.put(borneStr, frequency);
+                    map.put(bordersStr, frequency);
                 }
             }
-
         }
 
         // Parse map
 
-        int indexMax = Math.max(map.size(), seuilList.size());
+        int indexMax = Math.max(map.size(), thresholdList.size());
 
-        int indexBorne = 0;
-        int indexSeuil = 0;
+        int indexBorder = 0;
+        int indexThreshold = 0;
 
-        String[] tempBorne;
-        double borne;
-        double seuil;
+        String[] tempBorder;
+        double border;
+        double threshold;
         double oldElem;
         int elemRange;
 
-        intervalList = new ArrayList<SimpleIntervalXYDataset>();
+        intervalList = new ArrayList<MonoIntervalXYDataset>();
         Iterator<Entry<String, Integer>> it = map.entrySet().iterator();
         Entry<String, Integer> entree = (Entry<String, Integer>) it.next();
 
-        oldElem = seuilList.get(0)[0];
+        oldElem = thresholdList.get(0).get(0);
 
-        while ((indexBorne < indexMax) && (indexSeuil < indexMax)) {
-            tempBorne = entree.getKey().split(" ");
-            borne = Double.parseDouble(tempBorne[1]);
+        while ((indexBorder < indexMax) && (indexThreshold < indexMax)) {
+            tempBorder = entree.getKey().split(" ");
+            border = Double.parseDouble(tempBorder[1]);
 
-            if (indexSeuil < seuilList.size()) {
-                seuil = seuilList.get(indexSeuil)[1];
+            if (indexThreshold < thresholdList.size()) {
+                threshold = thresholdList.get(indexThreshold).get(1);
                 elemRange = entree.getValue();
 
-                SimpleIntervalXYDataset dataInterval;
+                MonoIntervalXYDataset dataInterval;
 
-                if (borne < seuil) {
-                    dataInterval = new SimpleIntervalXYDataset(oldElem, borne,
-                            elemRange, intervalList.size() + 1);
+                if (border < threshold) {
+                    dataInterval = new MonoIntervalXYDataset(oldElem, border,
+                            elemRange);
                     if (it.hasNext()) {
                         entree = (Entry<String, Integer>) it.next();
                     }
-                    oldElem = borne;
-                    indexBorne++;
+                    oldElem = border;
+                    indexBorder++;
                 } else {
-                    dataInterval = new SimpleIntervalXYDataset(oldElem, seuil,
-                            elemRange, intervalList.size() + 1);
-                    oldElem = seuil;
-                    indexSeuil++;
+                    dataInterval = new MonoIntervalXYDataset(oldElem, threshold,
+                            elemRange);
+                    oldElem = threshold;
+                    indexThreshold++;
                 }
                 intervalList.add(dataInterval);
             } else {
-                indexSeuil++;
+                indexThreshold++;
             }
         }
 
-        color = generateColor(color, colorInit[0], colorInit[1], nbSeuil);
+        color = generateColor(color, colorInit.get(0), colorInit.get(1), thresholdNumber);
         label = createLabel(label);
     }
 
     /**
-     * generateColor
-     * @param colorList
-     * @param colorStart
-     * @param colorStop
-     * @param seuilNb
-     * @return colorList
+     * Generate the color list
+     * @param colorList the list of color of the color gradient
+     * @param colorStart the first color of the color gradientt
+     * @param colorStop the last color of the color gradient
+     * @param thresholdNumber the number of color of the color gradientt
+     * @return colorList the generated the color list
      */
     public List<Color> generateColor(List<Color> colorList, Color colorStart,
-            Color colorStop, int seuilNb) {
+            Color colorStop, int thresholdNumber) {
         int red = colorStart.getRed();
         int green = colorStart.getGreen();
         int blue = colorStart.getBlue();
         double rstep = (colorStop.getRed() - colorStart.getRed())
-                / (double) (seuilNb - 1);
+                / (double) (thresholdNumber - 1);
         double gstep = (colorStop.getGreen() - colorStart.getGreen())
-                / (double) (seuilNb - 1);
+                / (double) (thresholdNumber - 1);
         double bstep = (colorStop.getBlue() - colorStart.getBlue())
-                / (double) (seuilNb - 1);
+                / (double) (thresholdNumber - 1);
         colorList.clear();
-        for (int i = 1; i <= seuilNb; i++) {
+        for (int i = 1; i <= thresholdNumber; i++) {
             colorList.add(new Color((int) (red + ((i - 1) * rstep)),
                     (int) (green + ((i - 1) * gstep)),
                     (int) (blue + ((i - 1) * bstep))));
@@ -570,44 +570,44 @@ public class FreqChartDataModel {
     }
 
     /**
-     * addAxisListener
+     * Add an axis listener
      * This methods allows classes to register for Axis Changed
-     * @param listener
+     * @param listener an axis listener
      */
     public void addAxisListener(AxisListener listener) {
         listenerList.add(AxisListener.class, listener);
     }
 
     /**
-     * removeAxisListener
+     * Remove an axis listener
      * This methods allows classes to unregister for Axis Changed
-     * @param listener
+     * @param listener an axis listener
      */
     public void removeAxisListener(AxisListener listener) {
         listenerList.remove(AxisListener.class, listener);
     }
 
     /**
-     * addDataListener
+     * Add an data listener
      * This methods allows classes to register for DataChanged
-     * @param dcl
+     * @param dcl a data change listener
      */
     public void addDataListener(DataChangeListener dcl) {
         listenerList.add(DataChangeListener.class, dcl);
     }
 
     /**
-     * removeDataListener
+     * Remove an data listener
      * This methods allows classes to unregister for DataChanged
-     * @param dcl
+     * @param dcl a data change listener
      */
     public void removeDataListener(DataChangeListener dcl) {
         listenerList.remove(DataChangeListener.class, dcl);
     }
 
     /**
-     * fireEvent
-     * @param axisChanged
+     * Fire an event
+     * @param axisChanged an axis changed event
      */
     public void fireEvent(AxisChanged axisChanged) {
         Object[] listeners = listenerList.getListenerList();
@@ -632,8 +632,8 @@ public class FreqChartDataModel {
     }
 
     /**
-     * fireDataEvent
-     * @param dataChanged
+     * Fire a data event
+     * @param dataChanged an data changed event
      */
     public void fireDataEvent(DataChanged dataChanged) {
         Object[] listeners = listenerList.getListenerList();

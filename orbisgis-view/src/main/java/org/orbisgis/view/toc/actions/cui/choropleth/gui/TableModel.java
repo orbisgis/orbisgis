@@ -12,63 +12,62 @@ import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
  */
 class TableModel extends AbstractTableModel {
 
+    /** The list of the range table elements */
     private final List<RangeTab> rangesTab = new ArrayList<RangeTab>();
-    private final String[] entetes = {"Color", "Alias"};
+    /** The header of the table */
+    private final String[] header = {"Color", "Alias"};
 
     /**
      * TableModel constructor
-     * @param freqChartDataModel the data to model draw
+     * @param freqChartDataModel The frequence chart data model
      */
     public TableModel(FreqChartDataModel freqChartDataModel) {
         super();
 
-        List<double[]> seuil = freqChartDataModel.getSeuilList();
+        List<List<Double>> threshold = freqChartDataModel.getThresholdList();
         List<Color> colors = freqChartDataModel.getColor();
         List<String> aliases = freqChartDataModel.getLabel();
 
-
-        for (int i = 1; i <= seuil.size(); i++) {
+        for (int i = 1; i <= threshold.size(); i++) {
             rangesTab.add(new RangeTab(colors.get(i - 1), aliases.get(i - 1)));
         }
     }
 
     /**
-     * getRowCount
+     * Get the count of row
      * @return the row count
      */
+    @Override
     public int getRowCount() {
         return rangesTab.size();
     }
 
     /**
-     * getColumnCount
-     *
+     * Get the count of column
      * @return the column count
      */
+    @Override
     public int getColumnCount() {
-        return entetes.length;
+        return header.length;
     }
 
     /**
-     * getColumnName
-     *
-     * @param columnIndex
-     *            the index of the selected column
+     * Get column header name
+     * @param columnIndex The index of the selected column
      * @return the name of the selected column
      */
+    @Override
     public String getColumnName(int columnIndex) {
-        return entetes[columnIndex];
+        return header[columnIndex];
     }
 
     /**
-     * getValueAt
-     *
-     * @param rowIndex
-     *            the index of the selected row
-     * @param columnIndex
-     *            the index of the selected column
+     * Get the value from the range
+     * @param rowIndex The index of the selected row
+     * @param columnIndex The index of the selected column
      * @return the object in the selected row/column
      */
+    @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         switch (columnIndex) {
             case 0:
@@ -76,10 +75,15 @@ class TableModel extends AbstractTableModel {
             case 1:
                 return rangesTab.get(rowIndex).getAlias();
             default:
-                return null; // Ne devrait jamais arriver
-            }
+                throw new ArrayIndexOutOfBoundsException();
+        }
     }
 
+    /**
+     * Get the column class type
+     * @param columnIndex The index of the selected column
+     * @return the class type
+     */
     @Override
     public Class getColumnClass(int columnIndex) {
         switch (columnIndex) {
@@ -92,6 +96,12 @@ class TableModel extends AbstractTableModel {
         }
     }
 
+    /**
+     * Test if the cell is editable
+     * @param rowIndex The index of the selected row
+     * @param columnIndex The index of the selected column
+     * @return a boolean that test if the cell is editable
+     */
     @Override
     public boolean isCellEditable(int rowIndex, int columnIndex) {
         if (columnIndex == 0) {
@@ -100,6 +110,12 @@ class TableModel extends AbstractTableModel {
         return true;
     }
 
+    /**
+     * Set the value of the table element
+     * @param aValue The value of the selected column
+     * @param rowIndex The index of the selected row
+     * @param columnIndex The index of the selected column
+     */
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
         if (aValue != null) {
@@ -117,8 +133,8 @@ class TableModel extends AbstractTableModel {
     }
 
     /**
-     * Add a range to tab
-     * @param range
+     * Add an element to table
+     * @param range an element of the table
      */
     public void addRanges(RangeTab range) {
         rangesTab.add(range);
@@ -126,8 +142,8 @@ class TableModel extends AbstractTableModel {
     }
 
     /**
-     * Remove a range to tab
-     * @param rowIndex
+     * Remove an element to tab
+     * @param rowIndex The index of the selected row
      */
     public void removeRanges(int rowIndex) {
         rangesTab.remove(rowIndex);
@@ -135,18 +151,17 @@ class TableModel extends AbstractTableModel {
     }
 
     /**
-     * refreshData Refresh the table range elements
-     *
-     * @param freqChartDataModel the data to model draw
+     * Refresh the table range elements
+     * @param freqChartDataModel The frequence chart data model
      */
     public void refreshDatas(FreqChartDataModel freqChartDataModel) {
-        List<double[]> seuil = freqChartDataModel.getSeuilList();
+        List<List<Double>> threshold = freqChartDataModel.getThresholdList();
         List<Color> colors = freqChartDataModel.getColor();
         List<String> aliases = freqChartDataModel.getLabel();
 
         rangesTab.removeAll(rangesTab);
 
-        for (int i = 1; i <= seuil.size(); i++) {
+        for (int i = 1; i <= threshold.size(); i++) {
             rangesTab.add(new RangeTab(colors.get(i - 1), aliases.get(i - 1)));
         }
     }

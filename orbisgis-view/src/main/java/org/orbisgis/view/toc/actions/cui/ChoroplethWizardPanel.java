@@ -20,20 +20,22 @@ import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.core.sif.UIFactory;
-import org.orbisgis.core.sif.UIPanel;
-import org.orbisgis.core.ui.choropleth.dataModel.ChoroplethDataModel;
-import org.orbisgis.core.ui.choropleth.gui.ChoroplethDistInputPanel;
-import org.orbisgis.core.ui.choropleth.gui.ChoroplethRangeTabPanel;
-import org.orbisgis.core.ui.choropleth.gui.ChoroplethSymbInputPanel;
-import org.orbisgis.core.ui.choropleth.listener.DataChangeListener;
-import org.orbisgis.core.ui.choropleth.listener.RangeAxisListener;
-import org.orbisgis.core.ui.freqChart.FreqChart;
-import org.orbisgis.core.ui.freqChart.dataModel.FreqChartDataModel;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
+
+import org.orbisgis.view.toc.actions.cui.choropleth.dataModel.ChoroplethDataModel;
+import org.orbisgis.view.toc.actions.cui.choropleth.gui.ChoroplethDistInputPanel;
+import org.orbisgis.view.toc.actions.cui.choropleth.gui.ChoroplethRangeTabPanel;
+import org.orbisgis.view.toc.actions.cui.choropleth.gui.ChoroplethSymbInputPanel;
+import org.orbisgis.view.toc.actions.cui.choropleth.listener.DataChangeListener;
+import org.orbisgis.view.toc.actions.cui.choropleth.listener.RangeAxisListener;
+import org.orbisgis.view.toc.actions.cui.freqChart.FreqChart;
+import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
+
 
 /**
  * Choropleth class
- * @author sennj
+ * @author maxence
  */
 public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
@@ -42,7 +44,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
     /**
      * Choropleth constructor
-     * @param layer
+     * @param layer the display panel
      */
     public ChoroplethWizardPanel(ILayer layer) {
         initChoropleth(layer);
@@ -50,7 +52,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
     /**
      * initChoropleth init the choropleth
-     * @param layer
+     * @param layer the display panel
      */
     private void initChoropleth(ILayer layer) {
 
@@ -60,7 +62,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
         choroplethDataModel.setField(fields.get(0));
         double[] data = choroplethDataModel.getData();
 
-        freqChartDataModel = new FreqChartDataModel(fields, data);
+        freqChartDataModel = new FreqChartDataModel(data);
 
         FreqChart freqChart = new FreqChart(freqChartDataModel);
 
@@ -74,7 +76,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
         freqChart.addAxisListener(new RangeAxisListener(freqChart,
                 freqChartDataModel));
-        freqChart.addDataListener(new DataChangeListener(dist, freqChartDataModel));
+        freqChart.addDataListener(new DataChangeListener(dist));
 
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab("Distribution", dist);
@@ -145,7 +147,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
         Categorize2Color choropleth = null;
 
         Range[] ranges = freqChartDataModel.getRange();
-        choropleth = new Categorize2Color(new ColorLiteral(freqChartDataModel.getColorInit()[0]), new ColorLiteral(freqChartDataModel.getColorInit()[1]), new RealAttribute(choroplethDataModel.getField()));
+        choropleth = new Categorize2Color(new ColorLiteral(freqChartDataModel.getColorInit().get(0)), new ColorLiteral(freqChartDataModel.getColorInit().get(1)), new RealAttribute(choroplethDataModel.getField()));
         for (int i = 1; i <= ranges.length; i++) {
             choropleth.addClass(new RealLiteral(ranges[i - 1].getMinRange()), new ColorLiteral(freqChartDataModel.getColor().get(i - 1)));
         }
@@ -158,3 +160,4 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
         return as;
     }
 }
+

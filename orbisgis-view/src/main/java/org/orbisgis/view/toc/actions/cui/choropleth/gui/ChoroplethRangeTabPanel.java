@@ -9,46 +9,46 @@ import org.orbisgis.view.toc.actions.cui.choropleth.listener.TableListener;
 import org.orbisgis.view.toc.actions.cui.freqChart.FreqChart;
 import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
 
-
-
 /**
  * Panel with the range table
  * @author sennj
  */
 public class ChoroplethRangeTabPanel extends JPanel {
 
+    /** The model of the table */
     private TableModel tableModel;
-    private JTable tableau;
+    /** The range table JTable */
+    private JTable table;
 
     /**
      * ChoroplethRangeTabPanel Constructor
-     * @param freqChart 
-     * @param freqChartDataModel the data to model draw
+     * @param freqChartDataModel The frequence chart data model
+     * @param freqChart The frequency chart panel
      */
     public ChoroplethRangeTabPanel(FreqChartDataModel freqChartDataModel, FreqChart freqChart) {
 
         JPanel tab = new JPanel();
         tableModel = new TableModel(freqChartDataModel);
-        tableau = new JTable(tableModel);
-        tableModel.addTableModelListener(new TableListener(tableau, freqChartDataModel, freqChart));
+        table = new JTable(tableModel);
+        tableModel.addTableModelListener(new TableListener(table, freqChartDataModel, freqChart));
 
-        tableau.setDefaultRenderer(Color.class, new ColorCellRenderer());
+        table.setDefaultRenderer(Color.class, new ColorCellRenderer());
 
         tab.setLayout(new BorderLayout());
-        tab.add(tableau.getTableHeader(), BorderLayout.NORTH);
-        tab.add(tableau, BorderLayout.CENTER);
+        tab.add(table.getTableHeader(), BorderLayout.NORTH);
+        tab.add(table, BorderLayout.CENTER);
         tab.setPreferredSize(new Dimension(300, 180));
 
         this.add(tab);
     }
 
     /**
-     * refresh the range table
-     * @param freqChartDataModel the data model
+     * Refresh the range table
+     * @param freqChartDataModel The frequence chart data model
      */
     public void refresh(FreqChartDataModel freqChartDataModel) {
-        tableau.removeAll();
+        table.removeAll();
         tableModel.refreshDatas(freqChartDataModel);
-        tableau.repaint();
+        table.repaint();
     }
 }

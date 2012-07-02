@@ -3,13 +3,12 @@ package org.orbisgis.view.toc.actions.cui.freqChart.dataModel.classNumberGen;
 /**
  * SturgeGenerator Implement the Sturge class number generator
  * @author sennj
- *
  */
 public class SturgeGenerator extends ClassNumberGenerator {
 
     @Override
     /**
-     * getClassNumber
+     * Get the class number
      * @param elem the total number of element
      * @return the number of class
      */

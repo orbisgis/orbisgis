@@ -8,15 +8,14 @@ import java.awt.Color;
  */
 class RangeTab {
 
+    /** The table element color*/
     private Color color;
+    /** The table element alias label*/
     private String alias;
 
     /**
      * RangeTab Constructor
      * @param color the table element color
-     * @param valueMin the minimal value of the range
-     * @param valueMax the max value of the range
-     * @param delta the delta value of the range
      * @param alias the table element alias
      */
     public RangeTab(Color color, String alias) {
@@ -25,7 +24,7 @@ class RangeTab {
     }
 
     /**
-     * getAlias
+     * Get the alias
      * @return the alias
      */
     public String getAlias() {
@@ -33,7 +32,7 @@ class RangeTab {
     }
 
     /**
-     * setAlias
+     * Set the alias
      * @param alias the element alias
      */
     public void setAlias(String alias) {
@@ -41,7 +40,7 @@ class RangeTab {
     }
 
     /**
-     * getColor
+     * Get the color
      * @return the element color
      */
     public Color getColor() {
@@ -49,7 +48,7 @@ class RangeTab {
     }
 
     /**
-     * setColor
+     * Set the color
      * @param color the element color
      */
     public void setColor(Color color) {

@@ -9,7 +9,6 @@ import org.orbisgis.view.toc.actions.cui.freqChart.chartListener.FreqChartListen
 import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
 import org.orbisgis.view.toc.actions.cui.freqChart.render.FreqChartRender;
 
-
 /**
  * FreqChart the frequence chart
  * 
@@ -18,20 +17,26 @@ import org.orbisgis.view.toc.actions.cui.freqChart.render.FreqChartRender;
  */
 public class FreqChart {
 
+    /** The frequence chart data model */
     private FreqChartDataModel freqChartDataModel;
+    /** The frequence chart display render */
     private FreqChartRender freqChartRender;
+    /** The frequence chart event listener */
     private FreqChartListener freqChartListener;
-    private String titre;
+    /** The frequence chart title */
+    private String title;
+    /** The frequence chart x label */
     private String labelX;
+    /** The frequence chart y label */
     private String labelY;
+    /** Boolean for displaying label */
     private boolean displayLabel;
+    /** The frequence chart panel */
     private ChartPanel chartPanel;
 
     /**
      * FreqChart constructor
-     *
-     * @param freqChartDataModel
-     *            the data model to draw
+     * @param freqChartDataModel The frequence chart data model
      */
     public FreqChart(FreqChartDataModel freqChartDataModel) {
         this.freqChartDataModel = freqChartDataModel;
@@ -39,68 +44,77 @@ public class FreqChart {
     }
 
     /**
-     * setTitre set the graph titre
-     *
-     * @param titre
-     *            the graph titre
+     * Set the graph title
+     * @param titre The graph title
      */
-    public void setTitre(String titre) {
-        this.titre = titre;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     /**
-     * setLabelX set the graph X label
-     *
-     * @param labelX
-     *            the graph X label
+     * Set the graph X label
+     * @param labelX The graph X label
      */
     public void setLabelX(String labelX) {
         this.labelX = labelX;
     }
 
     /**
-     * setLabelY set the graph Y label
-     *
-     * @param labelY
-     *            the graph Y label
+     * Set the graph Y label
+     * @param labelY The graph Y label
      */
     public void setLabelY(String labelY) {
         this.labelY = labelY;
     }
 
     /**
-     * setDisplayLabel
+     * Set display the label
      * @param displayLabel
      */
     public void setDisplayLabel(boolean displayLabel) {
         this.displayLabel = displayLabel;
     }
 
+    /**
+     * Add an axis listener
+     * @param ral The range axis listener
+     */
     public void addAxisListener(RangeAxisListener ral) {
         freqChartDataModel.addAxisListener(ral);
     }
 
+    /**
+     * Remove an axis listener
+     * @param ral The range axis listener
+     */
     public void removeAxisListener(RangeAxisListener ral) {
         freqChartDataModel.removeAxisListener(ral);
     }
 
+    /**
+     * Add a data listener
+     * @param dcl The data change listener
+     */
     public void addDataListener(DataChangeListener dcl) {
         freqChartDataModel.addDataListener(dcl);
     }
 
+    /**
+     * Remove a data listener
+     * @param dcl The data change listener
+     */
     public void removeDataListener(DataChangeListener dcl) {
         freqChartDataModel.removeDataListener(dcl);
     }
 
     /**
-     * getPanel return the chart panel
-     *
-     * @return the ChartPanel
+     * Return the chart panel
+     * @return the chart panel
      */
     public ChartPanel getPanel() {
         freqChartDataModel.generateChartData();
 
-        freqChartRender.init(titre, labelX, labelY, displayLabel);
+        freqChartRender.init(title, labelX, labelY, displayLabel);
 
         JFreeChart chart = freqChartRender.repaint(freqChartDataModel);
 
@@ -115,9 +129,9 @@ public class FreqChart {
 
         return chartPanel;
     }
-    
+
     /**
-     * clearData clear all plot data
+     * Clear all plot data
      */
     public void clearData() {
         freqChartRender.clear();
@@ -126,7 +140,7 @@ public class FreqChart {
     }
 
     /**
-     * repaint the component
+     * Repaint the component
      */
     public void repaint() {
         freqChartDataModel.computeChartData();

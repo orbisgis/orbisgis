@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.List;
 import javax.swing.JCheckBox;
 import javax.swing.JColorChooser;
 import javax.swing.JComboBox;
@@ -18,25 +19,30 @@ import javax.swing.event.ChangeListener;
 import org.orbisgis.view.toc.actions.cui.freqChart.FreqChart;
 import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
 
-
 /**
  * Choropleth symbology input panel
  * @author sennj
  */
 public class ChoroplethSymbInputPanel extends JPanel {
 
+    /** The frequence chart data model */
     private FreqChartDataModel freqChartDataModel;
+    /** The frequency chart panel */
     private FreqChart freqChart;
+    /** The choropleth range table panel */
     private ChoroplethRangeTabPanel choroplethRangeTabPanel;
+    /** The color stroke JPanel */
     private JPanel pnlColorStroke;
+    /** The color begin JPanel */
     private JPanel pnlColorBegin;
+    /** The color end JPanel */
     private JPanel pnlColorEnd;
 
     /**
      * ChoroplethSymbInputPanel constructor
-     * @param freqChartDataModel
-     * @param freqChart
-     * @param choroplethRangeTabPanel
+     * @param freqChartDataModel The frequence chart data model
+     * @param freqChart The frequency chart panel
+     * @param choroplethRangeTabPanel The choropleth range table panel
      */
     public ChoroplethSymbInputPanel(FreqChartDataModel freqChartDataModel, FreqChart freqChart, ChoroplethRangeTabPanel choroplethRangeTabPanel) {
         this.freqChartDataModel = freqChartDataModel;
@@ -46,9 +52,25 @@ public class ChoroplethSymbInputPanel extends JPanel {
     }
 
     /**
-     * initialization of the panel
+     * Initialization of the panel
      */
     private void initPanel() {
+
+        JPanel north = initNorthPanel();
+        JPanel center = initCenterPanel();
+        JPanel south = new JPanel();
+        south.add(choroplethRangeTabPanel);
+
+        this.setLayout(new BorderLayout());
+        this.add(north, BorderLayout.NORTH);
+        this.add(center, BorderLayout.CENTER);
+        this.add(south, BorderLayout.SOUTH);
+    }
+
+    /**
+     * Init the North Symbology Panel
+     */
+    private JPanel initNorthPanel() {
         JPanel north = new JPanel();
 
         String[] styleCmbStr = {"Area/SolidFill/Color", "Area/HachedFill/Color", "Point/centroid/Marks/Sf/Color", "Point/centroid/Marks/Vb/Width"};
@@ -56,13 +78,36 @@ public class ChoroplethSymbInputPanel extends JPanel {
 
         north.add(styleCmb);
 
+        return north;
+    }
+
+    /**
+     * Init the Center Symbology Panel
+     */
+    private JPanel initCenterPanel() {
         JPanel center = new JPanel();
         center.setLayout(new BorderLayout());
 
+        JPanel centerGlobal = initCenterGlobalPanel();
+        center.add(centerGlobal, BorderLayout.NORTH);
+
+        JPanel centerStroke = initCenterStrokePanel();
+        center.add(centerStroke, BorderLayout.CENTER);
+
+        JPanel centerFill = initCenterFillPanel();
+        center.add(centerFill, BorderLayout.SOUTH);
+
+        return center;
+    }
+
+    /**
+     * Init the Center Global Symbology Panel
+     */
+    private JPanel initCenterGlobalPanel() {
         JPanel centerGlobal = new JPanel();
         centerGlobal.setLayout(new BorderLayout());
 
-        JLabel lblGlobal = new JLabel(" _ Global _________________________________________________________");
+        JLabel lblGlobal = new JLabel("Global");
         lblGlobal.setPreferredSize(new Dimension(280, 25));
 
         JPanel centerGlobalInput = new JPanel();
@@ -81,12 +126,17 @@ public class ChoroplethSymbInputPanel extends JPanel {
         centerGlobal.add(lblGlobal, BorderLayout.NORTH);
         centerGlobal.add(centerGlobalInput, BorderLayout.CENTER);
 
-        center.add(centerGlobal, BorderLayout.NORTH);
+        return centerGlobal;
+    }
 
+    /**
+     * Init the Center Stroke Symbology Panel
+     */
+    private JPanel initCenterStrokePanel() {
         JPanel centerStroke = new JPanel();
         centerStroke.setLayout(new BorderLayout());
 
-        JLabel lblStroke = new JLabel(" _ Stroke _________________________________________________________");
+        JLabel lblStroke = new JLabel("Stroke");
         lblStroke.setPreferredSize(new Dimension(280, 25));
 
         JPanel centerStrokeInput = new JPanel();
@@ -104,7 +154,7 @@ public class ChoroplethSymbInputPanel extends JPanel {
             @Override
             public void stateChanged(ChangeEvent e) {
                 JSpinner currentSpinner = (JSpinner) (e.getSource());
-                double value = Double.parseDouble(currentSpinner.getModel().getValue().toString())*100;
+                double value = Double.parseDouble(currentSpinner.getModel().getValue().toString()) * 100;
                 freqChartDataModel.setStrokeWidth(value);
             }
         });
@@ -132,12 +182,16 @@ public class ChoroplethSymbInputPanel extends JPanel {
         centerStroke.add(lblStroke, BorderLayout.NORTH);
         centerStroke.add(centerStrokeInput, BorderLayout.CENTER);
 
-        center.add(centerStroke, BorderLayout.CENTER);
+        return centerStroke;
+    }
 
+    /**
+     * Init the Center Fill Symbology Panel
+     */
+    private JPanel initCenterFillPanel() {
         JPanel centerFill = new JPanel();
         centerFill.setLayout(new BorderLayout());
-
-        JLabel lblFill = new JLabel(" _ Fill ___________________________________________________________");
+        JLabel lblFill = new JLabel("Fill");
         lblFill.setPreferredSize(new Dimension(280, 25));
 
         centerFill.add(lblFill, BorderLayout.NORTH);
@@ -146,7 +200,6 @@ public class ChoroplethSymbInputPanel extends JPanel {
         centerFillInput.setLayout(new BorderLayout());
 
         JPanel centerFillInputOP = new JPanel();
-
         JLabel lblOpacity = new JLabel("Opacity");
 
         SpinnerModel modelOpacity =
@@ -158,7 +211,7 @@ public class ChoroplethSymbInputPanel extends JPanel {
             @Override
             public void stateChanged(ChangeEvent e) {
                 JSpinner currentSpinner = (JSpinner) (e.getSource());
-                double value = Double.parseDouble(currentSpinner.getModel().getValue().toString())*100;
+                double value = Double.parseDouble(currentSpinner.getModel().getValue().toString()) * 100;
                 freqChartDataModel.setOpacity(value);
             }
         });
@@ -169,7 +222,7 @@ public class ChoroplethSymbInputPanel extends JPanel {
 
         pnlColorBegin = new JPanel();
         pnlColorBegin.setName("COLOR_BEGIN");
-        pnlColorBegin.setBackground(freqChartDataModel.getColorInit()[0]);
+        pnlColorBegin.setBackground(freqChartDataModel.getColorInit().get(0));
         pnlColorBegin.addMouseListener(new MouseAdapter() {
 
             @Override
@@ -181,7 +234,7 @@ public class ChoroplethSymbInputPanel extends JPanel {
         JLabel lblEnd = new JLabel("End");
         pnlColorEnd = new JPanel();
         pnlColorEnd.setName("COLOR_END");
-        pnlColorEnd.setBackground(freqChartDataModel.getColorInit()[1]);
+        pnlColorEnd.setBackground(freqChartDataModel.getColorInit().get(1));
         pnlColorEnd.addMouseListener(new MouseAdapter() {
 
             @Override
@@ -200,9 +253,7 @@ public class ChoroplethSymbInputPanel extends JPanel {
         centerFillInput.add(centerFillInputOP, BorderLayout.NORTH);
 
         JPanel centerFillInputSch = new JPanel();
-
         JLabel lblScheme = new JLabel("Scheme");
-
         String[] schemeCmbStr = {"blue2red"};
         JComboBox schemeCmb = new JComboBox(schemeCmbStr);
 
@@ -217,34 +268,24 @@ public class ChoroplethSymbInputPanel extends JPanel {
 
         centerFill.add(centerFillInput, BorderLayout.CENTER);
 
-        center.add(centerFill, BorderLayout.SOUTH);
-
-        JPanel south = new JPanel();
-
-        south.add(choroplethRangeTabPanel);
-
-        this.setLayout(new BorderLayout());
-        this.add(north, BorderLayout.NORTH);
-        this.add(center, BorderLayout.CENTER);
-        this.add(south, BorderLayout.SOUTH);
-
+        return centerFill;
     }
 
     /**
-     * the changeColor graphic element
-     * @param sender the name of the graphic element
+     * The changeColor graphic element
+     * @param sender The name of the graphic element
      */
     private void changeColor(JPanel sender) {
-        Color[] color = freqChartDataModel.getColorInit();
+        List<Color> color = freqChartDataModel.getColorInit();
         if (sender.getName().equals("COLOR_BEGIN")) {
-            color[0] = JColorChooser.showDialog(sender, "Pick a begin color", freqChartDataModel.getColorInit()[0]);
+            color.set(0,JColorChooser.showDialog(sender, "Pick a begin color", freqChartDataModel.getColorInit().get(0)));
             freqChartDataModel.setColorInit(color);
-            pnlColorBegin.setBackground(color[0]);
+            pnlColorBegin.setBackground(color.get(0));
             pnlColorBegin.invalidate();
         } else {
-            color[1] = JColorChooser.showDialog(sender, "Pick an end color", freqChartDataModel.getColorInit()[1]);
+            color.set(1,JColorChooser.showDialog(sender, "Pick an end color", freqChartDataModel.getColorInit().get(1)));
             freqChartDataModel.setColorInit(color);
-            pnlColorEnd.setBackground(color[1]);
+            pnlColorEnd.setBackground(color.get(1));
             pnlColorEnd.invalidate();
         }
 

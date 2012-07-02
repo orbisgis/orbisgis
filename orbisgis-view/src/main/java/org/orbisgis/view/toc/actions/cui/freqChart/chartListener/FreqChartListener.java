@@ -13,7 +13,6 @@ import org.jfree.chart.plot.XYPlot;
 import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
 import org.orbisgis.view.toc.actions.cui.freqChart.render.FreqChartRender;
 
-
 /**
  * FreqChartListener
  * @author sennj
@@ -21,19 +20,22 @@ import org.orbisgis.view.toc.actions.cui.freqChart.render.FreqChartRender;
 public class FreqChartListener implements ChartMouseListener,
         MouseMotionListener {
 
+     /** The frequence chart panel */
     private ChartPanel chartPanel;
+    /** The frequence chart data model */
     private FreqChartDataModel freqChartDataModel;
+    /** The frequence chart display render */
     private FreqChartRender freqChartRender;
-    private int selectSeuilOld;
+    /** The old selected threshold */
+    private int selectThresholdOld;
 
     /**
      * FreqChartListener constructor
      * @param chartPanel the ChartPanel object
-     * @param freqChartDataModel the data model to draw
+     * @param freqChartDataModel The frequence chart data model
      * @param choroplethRangeTabPanel the range panel
      */
-    public FreqChartListener(ChartPanel chartPanel,
-            FreqChartDataModel freqChartDataModel,
+    public FreqChartListener(ChartPanel chartPanel, FreqChartDataModel freqChartDataModel,
             FreqChartRender freqChartRender) {
         this.chartPanel = chartPanel;
         this.freqChartDataModel = freqChartDataModel;
@@ -52,28 +54,28 @@ public class FreqChartListener implements ChartMouseListener,
 
         Point2D point = new Point2D.Double(chartX, chartY);
 
-        List<double[]> seuil = freqChartDataModel.getSeuilList();
+        List<List<Double>> threshold = freqChartDataModel.getThresholdList();
 
-        double seuilMax;
-        int selectSeuil = 0;
+        double thresholdMax;
+        int selectThreshold = 0;
         boolean found = false;
 
-        for (int i = 1; i < seuil.size(); i++) {
-            seuilMax = seuil.get(i - 1)[1];
-            if (seuilMax <= chartX + 1 && seuilMax >= chartX - 1) {
-                selectSeuil = i;
+        for (int i = 1; i < threshold.size(); i++) {
+            thresholdMax = threshold.get(i - 1).get(1);
+            if (thresholdMax <= chartX + 1 && thresholdMax >= chartX - 1) {
+                selectThreshold = i;
                 found = true;
             }
         }
         if (!found) {
-            selectSeuil = 0;
+            selectThreshold = 0;
         }
         if (found) {
             freqChartDataModel.fireEvent(new AxisChanged(this,
-                    AxisChangedType.RANGEPRESSED, selectSeuil, point));
+                    AxisChangedType.RANGEPRESSED, selectThreshold, point));
         }
         freqChartDataModel.fireEvent(new AxisChanged(this,
-                AxisChangedType.CHARTPRESSED, selectSeuil, point));
+                AxisChangedType.CHARTPRESSED, selectThreshold, point));
     }
 
     @Override
@@ -89,12 +91,11 @@ public class FreqChartListener implements ChartMouseListener,
 
         Point2D point = new Point2D.Double(chartX, chartY);
         freqChartDataModel.fireEvent(new AxisChanged(this,
-                AxisChangedType.CHARTDRAG, selectSeuilOld, point));
+                AxisChangedType.CHARTDRAG, selectThresholdOld, point));
     }
 
     @Override
     public void mouseMoved(MouseEvent arg0) {
-        // TODO Auto-generated method stub
     }
 
     @Override
@@ -115,40 +116,41 @@ public class FreqChartListener implements ChartMouseListener,
 
         Point2D point = new Point2D.Double(chartX, chartY);
 
-        List<double[]> seuil = freqChartDataModel.getSeuilList();
+        List<List<Double>> threshold = freqChartDataModel.getThresholdList();
 
-        double seuilMax;
-        int selectSeuil = 0;
+        double thresholdMax;
+        int selectThreshold = 0;
         boolean found = false;
 
-        for (int i = 1; i < seuil.size(); i++) {
-            seuilMax = seuil.get(i - 1)[1];
-            if (seuilMax <= chartXMax && seuilMax >= chartXMin) {
-                selectSeuil = i;
+        for (int i = 1; i < threshold.size(); i++) {
+            thresholdMax = threshold.get(i - 1).get(1);
+            if (thresholdMax <= chartXMax && thresholdMax >= chartXMin) {
+                selectThreshold = i;
                 found = true;
             }
         }
         if (!found) {
-            selectSeuil = 0;
+            selectThreshold = 0;
         }
 
-        freqChartRender.setSelectedSeuil(selectSeuil);
-        if (selectSeuilOld != selectSeuil) {
+        freqChartRender.setSelectedThreshold(selectThreshold);
+        if (selectThresholdOld != selectThreshold) {
             freqChartRender.drawAxes(plot, freqChartDataModel);
             if (found) {
                 freqChartDataModel.fireEvent(new AxisChanged(this,
-                        AxisChangedType.RANGESUP, selectSeuil, point));
+                        AxisChangedType.RANGESUP, selectThreshold, point));
             } else {
                 freqChartDataModel.fireEvent(new AxisChanged(this,
-                        AxisChangedType.RANGESDOWN, selectSeuilOld, point));
+                        AxisChangedType.RANGESDOWN, selectThresholdOld, point));
             }
         }
         freqChartDataModel.fireEvent(new AxisChanged(this,
-                AxisChangedType.CHARTMOVE, selectSeuil, point));
-        selectSeuilOld = selectSeuil;
+                AxisChangedType.CHARTMOVE, selectThreshold, point));
+        selectThresholdOld = selectThreshold;
     }
 
-    /** Data change type enumeration
+    /**
+     * Data change type enumeration
      */
     public enum AxisChangedType {
 
@@ -158,7 +160,7 @@ public class FreqChartListener implements ChartMouseListener,
     public class AxisChanged extends EventObject {
 
         public AxisChangedType dataType;
-        public int selectSeuil;
+        public int selectThreshold;
         public Point2D point;
 
         public AxisChanged(Object source, AxisChangedType datachangedtype) {
@@ -166,10 +168,10 @@ public class FreqChartListener implements ChartMouseListener,
         }
 
         public AxisChanged(Object source, AxisChangedType datachangedtype,
-                int selectSeuilId, Point2D point) {
+                int selectThresholdId, Point2D point) {
             super(source);
             this.dataType = datachangedtype;
-            this.selectSeuil = selectSeuilId;
+            this.selectThreshold = selectThresholdId;
             this.point = point;
         }
     }

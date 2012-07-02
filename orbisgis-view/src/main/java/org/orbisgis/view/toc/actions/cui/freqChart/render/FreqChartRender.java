@@ -12,44 +12,38 @@ import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.ui.RectangleAnchor;
 import org.jfree.ui.TextAnchor;
 import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
-import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.SimpleIntervalXYDataset;
+import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.MonoIntervalXYDataset;
 
 /**
  * FreqChartRender the chart render
- * 
  * @author sennj
- * 
  */
 public class FreqChartRender {
 
+    /** The chart object */
     private JFreeChart chart;
-    private int selectSeuil = 0;
+    /** The chart selected threshold */
+    private int selectThreshold = 0;
+    /** Display or not the label */
     private boolean displayLabel;
 
     /**
-     * FreqChartRender constructor
-     */
-    public FreqChartRender() {
-    }
-
-    /**
-     * init
-     * initialyze the render
-     * @param titre the title of the chart
+     * Initialyze the render
+     * @param title the title of the chart
      * @param labelX the x label of the chart
      * @param labelY the y label of the chart
      * @param displayLabel display or not the label
      */
-    public void init(String titre, String labelX, String labelY,
+    public void init(String title, String labelX, String labelY,
             boolean displayLabel) {
         this.displayLabel = displayLabel;
-        chart = ChartFactory.createXYBarChart(titre, labelX, false, labelY,
+        chart = ChartFactory.createXYBarChart(title, labelX, false, labelY,
                 null, PlotOrientation.VERTICAL, true, true, false);
         chart.getLegend().setVisible(false);
     }
 
     /**
-     * clear
+     * Clear
      * clear the plot dataset
      */
     public void clear() {
@@ -62,14 +56,13 @@ public class FreqChartRender {
     }
 
     /**
-     * repaint show Create the chart panel
-     * @param freqChartDataModel
-     *            the data model to draw
+     * Repaint show Create the chart panel
+     * @param freqChartDataModel The frequence chart data model
      */
     public JFreeChart repaint(FreqChartDataModel freqChartDataModel) {
 
-        List<SimpleIntervalXYDataset> dataset = freqChartDataModel.getHistogramDataset();
-        List<double[]> seuil = freqChartDataModel.getSeuilList();
+        List<MonoIntervalXYDataset> dataset = freqChartDataModel.getHistogramDataset();
+        List<List<Double>> threshold = freqChartDataModel.getThresholdList();
         List<Color> color = freqChartDataModel.getColor();
 
         XYPlot plot = (XYPlot) chart.getPlot();
@@ -79,17 +72,17 @@ public class FreqChartRender {
         XYBarRenderer.setDefaultShadowsVisible(false);
         XYBarRenderer.setDefaultBarPainter(new StandardXYBarPainter());
 
-        SimpleIntervalXYDataset dataSerie;
+        MonoIntervalXYDataset dataSerie;
 
         int j = 1;
         for (int i = 1; i <= dataset.size(); i++) {
             dataSerie = dataset.get(i - 1);
             plot.setDataset(i - 1, dataSerie);
-            double[] seuilColor = seuil.get(j - 1);
+            List<Double> thresholdColor = threshold.get(j - 1);
             XYBarRenderer rendererData = new XYBarRenderer();
             rendererData.setPaint(color.get(j - 1));
             plot.setRenderer(i - 1, rendererData);
-            if (!(dataSerie.getStartX(0, 0).doubleValue() >= seuilColor[0] && dataSerie.getEndX(0, 0).doubleValue() < seuilColor[1])) {
+            if (!(dataSerie.getStartX(0, 0).doubleValue() >= thresholdColor.get(0) && dataSerie.getEndX(0, 0).doubleValue() < thresholdColor.get(1))) {
                 j++;
             }
         }
@@ -100,23 +93,20 @@ public class FreqChartRender {
     }
 
     /**
-     * drawAxes Draw the axis on the plot
-     *
-     * @param plot
-     *            The plot
-     * @param freqChartDataModel
-     *            the data model to draw
+     * Draw the axis on the plot
+     * @param plot the plot
+     * @param freqChartDataModel The frequence chart data model
      */
     public void drawAxes(XYPlot plot, FreqChartDataModel freqChartDataModel) {
         plot.clearDomainMarkers();
 
-        List<double[]> seuil = freqChartDataModel.getSeuilList();
+        List<List<Double>> threshold = freqChartDataModel.getThresholdList();
         List<String> labels = freqChartDataModel.getLabel();
 
-        double[] borne;
-        for (int i = 1; i <= seuil.size(); i++) {
-            borne = seuil.get(i - 1);
-            ValueMarker marker = new ValueMarker(borne[0]);
+        List<Double> border;
+        for (int i = 1; i <= threshold.size(); i++) {
+            border = threshold.get(i - 1);
+            ValueMarker marker = new ValueMarker(border.get(0));
             if (displayLabel) {
                 marker.setLabel(labels.get(i - 1));
                 marker.setLabelAnchor(RectangleAnchor.TOP);
@@ -125,15 +115,15 @@ public class FreqChartRender {
             if (i == 1) {
                 marker.setPaint(Color.BLACK);
                 plot.addDomainMarker(marker);
-            } else if (i - 1 == selectSeuil) {
+            } else if (i - 1 == selectThreshold) {
                 marker.setPaint(Color.WHITE);
                 plot.addDomainMarker(marker);
             } else {
                 marker.setPaint(Color.RED);
                 plot.addDomainMarker(marker);
             }
-            if (i == seuil.size()) {
-                marker = new ValueMarker(borne[1]);
+            if (i == threshold.size()) {
+                marker = new ValueMarker(border.get(1));
                 marker.setPaint(Color.BLACK);
                 plot.addDomainMarker(marker);
             }
@@ -141,11 +131,10 @@ public class FreqChartRender {
     }
 
     /**
-     * setSelectedSeuil
-     *
-     * @param selectSeuil
+     * Set the selected threshold
+     * @param selectThreshold
      */
-    public void setSelectedSeuil(int selectSeuil) {
-        this.selectSeuil = selectSeuil;
+    public void setSelectedThreshold(int selectThreshold) {
+        this.selectThreshold = selectThreshold;
     }
 }

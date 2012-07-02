@@ -3,12 +3,11 @@ package org.orbisgis.view.toc.actions.cui.freqChart.dataModel.classNumberGen;
 /**
  * ClassNumberGenerator the abstract class number generator
  * @author sennj
- *
  */
 public abstract class ClassNumberGenerator {
 
     /**
-     * getClassNumber
+     * Get the class number
      * @param elem the total number of element
      * @return the number of class
      */

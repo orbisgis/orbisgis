@@ -115,6 +115,11 @@
                         <artifactId>orbisgis-core-monomap</artifactId>
                         <version>${project.version}</version>
                 </dependency>
+                <dependency>
+                        <groupId>${project.groupId}</groupId>
+                        <artifactId>legend-monomap</artifactId>
+                        <version>0.1-SNAPSHOT</version>
+                </dependency>
         </dependencies>
         <pluginRepositories>
                 <pluginRepository>
