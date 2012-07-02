@@ -155,9 +155,11 @@ public class Layer extends BeanLayer {
 	public void open() throws LayerException {
 		try {
 			dataSource.open();
-                        initStyles();
-                        Style s = new Style(this, true);
-                        getStyles().add(s);
+                        if (getStyles().isEmpty()) {
+                                // special case: no style were ever set
+                                // let's go for a default style
+                                getStyles().add(new Style(this, true));
+                        }
 			// Create a legend for each spatial field
 			Metadata metadata = dataSource.getMetadata();
 			for (int i = 0; i < metadata.getFieldCount(); i++) {

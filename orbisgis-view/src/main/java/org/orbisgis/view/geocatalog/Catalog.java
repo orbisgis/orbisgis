@@ -34,6 +34,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.File;
+import java.net.URI;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
 import org.apache.log4j.Logger;
@@ -48,7 +50,6 @@ import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.*;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.context.SourceContext.SourceContext;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
@@ -126,7 +127,7 @@ public class Catalog extends JPanel implements DockingPanel {
         /**
          * Default constructor
          */
-        public Catalog(SourceContext sourceContext) {
+        public Catalog() {
                 super(new BorderLayout());
                 dockingParameters.setName("geocatalog");
                 dockingParameters.setTitle(I18N.tr("GeoCatalog"));
@@ -134,7 +135,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 dockingParameters.setCloseable(true);
                 //Add the Source List in a Scroll Pane, 
                 //then add the scroll pane in this panel
-                add(new JScrollPane(makeSourceList(sourceContext)), BorderLayout.CENTER);
+                add(new JScrollPane(makeSourceList()), BorderLayout.CENTER);
                 //Init the filter factory manager
                 filterFactoryManager = new FilterFactoryManager<IFilter>();
                 //Set the factory that must be shown when the user click on add filter button
@@ -161,6 +162,22 @@ public class Catalog extends JPanel implements DockingPanel {
                 registerFilterFactories();
         }
 
+        /**
+         * Use service to return the data manager
+         * @return DataManager instance
+         */
+        private DataManager getDataManager() {
+                return Services.getService(DataManager.class);
+        }
+        /**
+         * DataSource URI drop
+         * @param uriDrop Uniform Resource Identifier
+         */
+        public void onDropURI(List<URI> uriDrop) {
+                for(URI uri : uriDrop) {
+                        getDataManager().getSourceManager().nameAndRegister(uri);
+                }
+        }
         /**
          * For JUnit purpose, return the filter factory manager
          *
@@ -230,10 +247,10 @@ public class Catalog extends JPanel implements DockingPanel {
          * selected files.
          */
         public void onMenuAddFile() {
-                SourceContext srcContext = sourceListContent.getSourceContext();
+                SourceManager sourceManager = getDataManager().getSourceManager();
                 //Create the SIF panel
                 OpenGdmsFilePanel openDialog = new OpenGdmsFilePanel(I18N.tr("Select the file to add"),
-                        srcContext.getSourceManager().getDriverManager());
+                        sourceManager.getDriverManager());
 
                 //Ask SIF to open the dialog
                 if (UIFactory.showDialog(openDialog, true, true)) {
@@ -243,11 +260,11 @@ public class Catalog extends JPanel implements DockingPanel {
                                 File file = files[i];
                                 //If there is a driver compatible with
                                 //this file extensions
-                                if (srcContext.isFileCanBeRegistered(file)) {
+                                if (sourceManager.getDriverManager().isFileSupported(file)) {
                                         //Try to add the data source
                                         try {
-                                                String name = srcContext.getSourceManager().getUniqueName(FileUtils.getFileNameWithoutExtensionU(file));
-                                                srcContext.getSourceManager().register(name, file);
+                                                String name = sourceManager.getUniqueName(FileUtils.getFileNameWithoutExtensionU(file));
+                                                sourceManager.register(name, file);
                                         } catch (SourceAlreadyExistsException e) {
                                                 LOGGER.error(I18N.tr("This source was already registered"), e);
                                         }
@@ -261,8 +278,7 @@ public class Catalog extends JPanel implements DockingPanel {
          * Connect to a database and add one or more tables in the geocatalog.
          */
         public void onMenuAddFromDataBase() {
-                SourceContext srcContext = sourceListContent.getSourceContext();
-                SourceManager sm = srcContext.getSourceManager();
+                SourceManager sm = getDataManager().getSourceManager();
                 final ConnectionPanel firstPanel = new ConnectionPanel(sm);
                 final TableSelectionPanel secondPanel = new TableSelectionPanel(
                         firstPanel);
@@ -293,8 +309,7 @@ public class Catalog extends JPanel implements DockingPanel {
          * The user can remove added source from the geocatalog
          */
         public void onMenuRemoveSource() {
-                SourceContext srcContext = sourceListContent.getSourceContext();
-                SourceManager sm = srcContext.getSourceManager();
+                SourceManager sm = getDataManager().getSourceManager();
                 String[] res = getSelectedSources();
                 for (String resource : res) {
                         try {
@@ -310,10 +325,9 @@ public class Catalog extends JPanel implements DockingPanel {
          * The user can export a source in a file.
          */
         public void onMenuSaveInfile() {
-                SourceContext srcContext = sourceListContent.getSourceContext();
-                SourceManager sm = srcContext.getSourceManager();
                 String[] res = getSelectedSources();
                 DataManager dm = Services.getService(DataManager.class);
+                SourceManager sm = dm.getSourceManager();
                 DataSourceFactory dsf = dm.getDataSourceFactory();
                 DriverManager driverManager = sm.getDriverManager();
                 for (String source : res) {
@@ -370,7 +384,6 @@ public class Catalog extends JPanel implements DockingPanel {
          * The user can load several files from a folder
          */
         public void onMenuAddFilesFromFolder() {
-                final SourceContext srcContext = sourceListContent.getSourceContext();
                 final OpenGdmsFolderPanel folderPanel = new OpenGdmsFolderPanel(I18N.tr("Add files from a folder"));
                 if (UIFactory.showDialog(folderPanel, true,true)) {
                         File[] files = folderPanel.getSelectedFiles();
@@ -388,7 +401,7 @@ public class Catalog extends JPanel implements DockingPanel {
 
                                         @Override
                                         public void run(org.orbisgis.progress.ProgressMonitor pm) {
-                                                processFolder(file, folderPanel.getSelectedFilter(), srcContext, pm);
+                                                processFolder(file, folderPanel.getSelectedFilter(), pm);
                                         }
                                 });
 
@@ -403,19 +416,20 @@ public class Catalog extends JPanel implements DockingPanel {
          * @param file
          * @param pm
          */
-        private void processFolder(File file, FileFilter filter, SourceContext srcContext, org.orbisgis.progress.ProgressMonitor pm) {
+        private void processFolder(File file, FileFilter filter, org.orbisgis.progress.ProgressMonitor pm) {
                 if (file.isDirectory()) {
                         pm.startTask(file.getName(), 100);
                         for (File content : file.listFiles()) {
                                 if (pm.isCancelled()) {
                                         break;
                                 }
-                                processFolder(content, filter, srcContext, pm);
+                                processFolder(content, filter, pm);
                         }
                         pm.endTask();
                 } else {
-                        if (filter.accept(file) && srcContext.isFileCanBeRegistered(file)) {
-                                DataManager dm = (DataManager) Services.getService(DataManager.class);
+                        DataManager dm = Services.getService(DataManager.class);
+                        DriverManager dr = dm.getSourceManager().getDriverManager();
+                        if (filter.accept(file) && dr.isFileSupported(file)) {
                                 SourceManager sourceManager = dm.getSourceManager();
                                 try {
                                         String name = sourceManager.getUniqueName(FileUtils.getFileNameWithoutExtensionU(file));
@@ -435,7 +449,27 @@ public class Catalog extends JPanel implements DockingPanel {
          */
         private JPopupMenu makePopupMenu() {
                 JPopupMenu rootMenu = new JPopupMenu();
-
+                SourceManager sm = getDataManager().getSourceManager();
+                //Popup:ClearGeocatalog (added if the datasource manager is not empty)
+                if (!sm.isEmpty(true)) {
+                        JMenuItem clearCatalogItem = new JMenuItem(I18N.tr("Clear the GeoCatalog"),
+                                OrbisGISIcon.getIcon("bin_closed"));
+                        clearCatalogItem.addActionListener(EventHandler.create(ActionListener.class,
+                                this,
+                                "onMenuClearGeoCatalog"));
+                        rootMenu.add(clearCatalogItem);
+                }
+                
+                //Add function to remove a source
+                if(!sourceList.isSelectionEmpty()) {
+                    JMenuItem removeSourceItem = new JMenuItem(
+                                    I18N.tr("Remove the source"),
+                                    OrbisGISIcon.getIcon("remove"));
+                    removeSourceItem.addActionListener(EventHandler.create(ActionListener.class,
+                            this,
+                            "onMenuRemoveSource"));
+                    rootMenu.add(removeSourceItem);
+                }
                 //Popup:Add
                 JMenu addMenu = new JMenu(I18N.tr("Add"));
                 rootMenu.add(addMenu);
@@ -495,7 +529,9 @@ public class Catalog extends JPanel implements DockingPanel {
                 rootMenu.addSeparator();
 
                 //Popup:ClearGeocatalog (added if the datasource manager is not empty)
-                if (!sourceListContent.getSourceContext().isDataSourceManagerEmpty()) {
+                DataManager dm = Services.getService(DataManager.class);
+                SourceManager dr = dm.getSourceManager();
+                if (!dr.isEmpty()) {
                         JMenuItem clearCatalogItem = new JMenuItem(I18N.tr("Clear the GeoCatalog"),
                                 OrbisGISIcon.getIcon("bin_closed"));
                         clearCatalogItem.addActionListener(EventHandler.create(ActionListener.class,
@@ -532,7 +568,7 @@ public class Catalog extends JPanel implements DockingPanel {
         /**
          * Create the Source List ui component
          */
-        private JList makeSourceList(SourceContext sourceContext) {
+        private JList makeSourceList() {
                 sourceList = new JList();
                 //Set the list content renderer
                 sourceList.setCellRenderer(new DataSourceListCellRenderer());
@@ -542,10 +578,14 @@ public class Catalog extends JPanel implements DockingPanel {
                         "onMouseActionOnSourceList",
                         "")); //This method ask the event data as argument
                 //Create the list content manager
-                sourceListContent = new SourceListModel(sourceContext);
+                sourceListContent = new SourceListModel();
                 //Replace the default model by the GeoCatalog model
                 sourceList.setModel(sourceListContent);
-                sourceList.setTransferHandler(new SourceListTransferHandler());
+                SourceListTransferHandler transferHandler = new SourceListTransferHandler();
+                //Call the method this.onDropURI when the user drop uri(like files) on the list control
+                transferHandler.getDropListenerHandler().addListener(this,
+                        EventHandler.create(Listener.class, this, "onDropURI","uriList"));
+                sourceList.setTransferHandler(transferHandler);
                 sourceList.setDragEnabled(true);
                 //Attach the content to the DataSource instance
                 sourceListContent.setListeners();
