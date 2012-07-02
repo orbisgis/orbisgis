@@ -113,6 +113,38 @@ public final class DriverManager {
         }
 
         /**
+        * Read all supported extensions in all drivers registered in the driver manager.
+        * Then compare to the specified file extension.
+        * @param sourceFile The file name.
+        * @return True if this file can be registered through a file driver.
+        */
+        public boolean isFileCanBeRegistered(File sourceFile) {
+                return getSuitableFileDriver(sourceFile)!=null;
+        }
+        
+        /**
+         * Find the appropriate driver for the provided file name
+         * @return Null if not found, the driver instance otherwise
+         */
+        private FileDriver getSuitableFileDriver(File file) {         
+                String[] names = getDriverNames();
+                for (int i = 0; i < names.length; i++) {
+                        Driver driver = getDriver(names[i]);
+                        if (driver instanceof FileDriver) {
+                                FileDriver fileDriver = (FileDriver) driver;
+                                String[] extensions = fileDriver.getFileExtensions();
+                                for (String extension : extensions) {
+                                        if (file.getAbsolutePath().toLowerCase().endsWith(
+                                                extension.toLowerCase())) {
+                                                return fileDriver;
+                                        }
+                                }
+                        }
+                }
+                return null;
+        }
+        
+        /**
          * Get a driver suitable for the {@code File} file. If the {@code File} has already
          * been treated by this manager, and if it has not been removed, the same
          * {@code Driver} instance is returned. If it's the first time we meet
@@ -129,27 +161,18 @@ public final class DriverManager {
                         return fdr.getDriver(file);
                 } else {
                         //we must try to retrieve a ew suitable driver.
-                        String[] names = getDriverNames();
-                        for (int i = 0; i < names.length; i++) {
-                                Driver driver = getDriver(names[i]);
-                                if (driver instanceof FileDriver) {
-                                        FileDriver fileDriver = (FileDriver) driver;
-                                        String[] extensions = fileDriver.getFileExtensions();
-                                        for (String extension : extensions) {
-                                                if (file.getAbsolutePath().toLowerCase().endsWith(
-                                                        extension.toLowerCase())) {
-                                                        try {
-                                                                fileDriver.setFile(file);
-                                                        } catch (DriverException ex) {
-                                                                throw new DriverLoadException(ex);
-                                                        }
-                                                        fdr.addFile(file, fileDriver);
-                                                        return fileDriver;
-                                                }
-                                        }
+                        FileDriver driver = getSuitableFileDriver(file);
+                        if(driver==null) {
+                                throw new DriverLoadException("No suitable driver for " + file.getAbsolutePath());
+                        } else {
+                                try {
+                                        driver.setFile(file);
+                                } catch (DriverException ex) {
+                                        throw new DriverLoadException(ex);
                                 }
+                                fdr.addFile(file, driver);
+                                return driver;
                         }
-                        throw new DriverLoadException("No suitable driver for " + file.getAbsolutePath());
                 }
         }
 
