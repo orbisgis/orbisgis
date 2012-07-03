@@ -46,7 +46,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import net.opengis.ows._2.BoundingBoxType;
 import net.opengis.ows_context.*;
 import org.apache.log4j.Logger;
@@ -521,6 +524,16 @@ public final class OwsMapContext extends BeanMapContext {
                                 try {
                                         ILayer leafLayer = createLayer(layerSource);
                                         leafLayer.setDescription(new Description(lt));
+                                        //Parse styles
+                                        if(lt.isSetStyleList()) {
+                                                for(StyleType st : lt.getStyleList().getStyle()) {
+                                                        if(st.isSetSLD()) {
+                                                                if(st.getSLD().isSetAbstractStyle()) {
+                                                                        leafLayer.addStyle(new Style((JAXBElement<net.opengis.se._2_0.core.StyleType>)st.getSLD().getAbstractStyle(), leafLayer));
+                                                                }
+                                                        }
+                                                }
+                                        }
                                         parentLayer.addLayer(leafLayer);
                                 } catch (InvalidStyle ex) {
                                         throw new LayerException(I18N.tr("Unable to load the description of the layer {0}",lt.getTitle().toString()), ex);
