@@ -37,131 +37,100 @@
 package org.orbisgis.view.toc;
 
 import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.io.IOException;
 import java.util.EventObject;
-import javax.swing.*;
+import javax.swing.JTree;
 import javax.swing.event.CellEditorListener;
 import javax.swing.tree.TreeCellEditor;
-import org.gdms.driver.DriverException;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
-import org.orbisgis.sif.CRFlowLayout;
+import org.orbisgis.core.renderer.se.Style;
 
-public class TocTreeEditor extends TocAbstractRenderer implements TreeCellEditor {
-	private EditorPanel editorPanel;
-
+public class TocTreeEditor implements TreeCellEditor {
 	private JTree tree;
-
-	public class EditorPanel extends JPanel {
-		private static final long serialVersionUID = 1L;
-
-		private JCheckBox check;
-
-		private JLabel iconAndLabel;
-
-		private JTextField textField;
-
-		public EditorPanel() {
-			FlowLayout fl = new FlowLayout(CRFlowLayout.LEADING);
-			fl.setHgap(0);
-			setLayout(fl);
-			check = new JCheckBox();
-			iconAndLabel = new JLabel();
-			textField = new JTextField(14);
-			textField.addKeyListener(new KeyAdapter() {
-
-				@Override
-				public void keyTyped(KeyEvent e) {
-					if (e.getKeyChar() == KeyEvent.VK_ENTER) {
-						tree.stopEditing();
-					}
-				}
-
-			});
-			add(check);
-			add(iconAndLabel);
-			add(textField);
-		}
-
-		public void setNodeCosmetic(JTree tree, ILayer node,
-				boolean isSelected, boolean expanded, boolean leaf, int row) {
-			check.setVisible(true);
-			check.setSelected(node.isVisible());
-
-			Icon icon = null;
-			try {
-				icon = getLayerIcon(node);
-			} catch (DriverException e) {
-			} catch (IOException e) {
-			}
-			if (null != icon) {
-				iconAndLabel.setIcon(icon);
-			}
-			iconAndLabel.setVisible(true);
-
-			textField.setText(node.getName());
-			textField.selectAll();
-		}
-
-	}
-
+        private TocTreeEditorPanel lastEditedCell;
+        private final static Logger LOGGER = Logger.getLogger("gui." + TocTreeEditor.class);
+        
 	public TocTreeEditor(JTree toc) {
-		editorPanel = new EditorPanel();
 		this.tree = toc;
 	}
 
+        @Override
 	public Component getTreeCellEditorComponent(JTree tree, Object value,
 			boolean isSelected, boolean expanded, boolean leaf, int row) {
-		editorPanel.setNodeCosmetic(tree, (ILayer) value, isSelected, expanded,
-				leaf, row);
-		return editorPanel;
+                if(value instanceof ILayer) {
+                        TocTreeEditorLayerPanel editedCell = new TocTreeEditorLayerPanel(tree,(ILayer) value);
+                        lastEditedCell = editedCell;
+                        return editedCell;
+                } else if(value instanceof Style) {
+                        TocTreeEditorStylePanel editedCell = new TocTreeEditorStylePanel(tree,(Style) value);
+                        lastEditedCell = editedCell;
+                        return editedCell;                        
+                } else {
+                        return null;
+                }
 	}
 
+        @Override
 	public void addCellEditorListener(CellEditorListener l) {
 
 	}
 
+        @Override
 	public void cancelCellEditing() {
 
 	}
 
+        @Override
 	public Object getCellEditorValue() {
-		return editorPanel.textField.getText();
+                if(lastEditedCell!=null) {
+                        return lastEditedCell.getLabel();
+                } else {
+                        return "";
+                }
 	}
 
+        @Override
 	public boolean isCellEditable(EventObject anEvent) {
-		if (anEvent instanceof MouseEvent) {
-			MouseEvent me = (MouseEvent) anEvent;
-			if (me.getClickCount() >= 2) {
-				return true;
-			}
-		}
-		return false;
+		return true;
 	}
 
+        @Override
 	public void removeCellEditorListener(CellEditorListener l) {
 
 	}
 
+        @Override
 	public boolean shouldSelectCell(EventObject anEvent) {
 		return false;
 	}
 
+        @Override
 	public boolean stopCellEditing() {
-		if (editorPanel.textField.getText().length() == 0) {
-			return false;
-		} else {
-			ILayer l = (ILayer) tree.getEditingPath().getLastPathComponent();
-			try {
-				l.setName(editorPanel.textField.getText());
-			} catch (LayerException e) {
-				return false;
-			}
-			return true;
-		}
+                if(lastEditedCell!=null) {
+                        if (lastEditedCell.getLabel().isEmpty()) {
+                                return false;
+                        } else {
+                                if(lastEditedCell.getValue() instanceof ILayer) {
+                                        ILayer l = (ILayer)lastEditedCell.getValue();
+                                        try {
+                                                l.setName(lastEditedCell.getLabel());
+                                        } catch (LayerException e) {
+                                                return false;
+                                        }
+                                        return true;
+                                } else if(lastEditedCell.getValue() instanceof Style) {
+                                        ((Style)lastEditedCell.getValue()).setName(lastEditedCell.getLabel());
+                                        return true;
+                                } else {
+                                        //Unkown type
+                                        LOGGER.debug("Unknown tree editor value");
+                                        return false;
+                                }
+                        }
+                } else {
+                        return false;
+                }
 	}
 }

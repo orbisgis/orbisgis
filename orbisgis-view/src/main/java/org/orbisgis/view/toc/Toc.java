@@ -28,7 +28,9 @@
  */
 package org.orbisgis.view.toc;
 
+import com.vividsolutions.jts.geom.Envelope;
 import java.awt.BorderLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -38,6 +40,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.xml.bind.JAXBElement;
@@ -62,6 +65,7 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.OpenFilePanel;
 import org.orbisgis.sif.SaveFilePanel;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.docking.DockingPanelParameters;
@@ -72,14 +76,12 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.EditableTransferEvent;
 import org.orbisgis.view.map.MapEditor;
 import org.orbisgis.view.map.MapElement;
+import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.LegendsPanel;
 import org.orbisgis.view.toc.actions.cui.legend.EPLegendHelper;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-import com.vividsolutions.jts.geom.Envelope;
-import org.orbisgis.sif.UIPanel;
-import org.orbisgis.view.toc.actions.cui.LegendUIController;
 
 
 /**
@@ -95,6 +97,7 @@ public class Toc extends JPanel implements EditorDockable {
         private MapContext mapContext = null;
         private JTree tree;
         private TocTreeModel treeModel;
+        private TocRenderer treeRenderer;
         //When this boolean is false, the selection event is not fired
         private AtomicBoolean fireSelectionEvent = new AtomicBoolean(true);
         //Listen for map context changes
@@ -171,8 +174,9 @@ public class Toc extends JPanel implements EditorDockable {
                 tree.setShowsRootHandles(true);
                 tree.setEditable(true);
                 setEmptyLayerModel(tree);
-                tree.setCellRenderer(new TocRenderer(this));
-                tree.setCellEditor(new TocTreeEditor(tree));
+                treeRenderer = new TocRenderer(this);
+                tree.setCellRenderer(treeRenderer);
+                tree.setCellEditor(new DefaultTreeCellEditor(tree, treeRenderer,new TocTreeEditor(tree)));
                 tree.addMouseListener(new PopupMouselistener());
                 //Add a tree selection listener
                 tree.getSelectionModel().addTreeSelectionListener(EventHandler.create(TreeSelectionListener.class, this, "onTreeSelectionChange"));
@@ -784,10 +788,50 @@ public class Toc extends JPanel implements EditorDockable {
         }
 
         /**
-         * Implements Popup action on JTree
+         * Implements Popup action on JTree,
+         * and checkbox activation on single click (override Look&Feel)
+         * 
          */
         private class PopupMouselistener extends MouseAdapter {
 
+                /**
+                 * Show/Hide Layer if the checkbox is selected
+                 * override Look&Feel behaviour
+                 * @param e 
+                 */
+                @Override
+                public void mouseClicked(MouseEvent e) {
+                        final int x = e.getX();
+                        final int y = e.getY();
+                        final int mouseButton = e.getButton();
+                        TreePath path = tree.getPathForLocation(x, y);
+                        Rectangle layerNodeLocation = tree.getPathBounds(path);
+
+                        if (path != null) {
+                                Rectangle checkBoxBounds = treeRenderer.getCheckBoxBounds();
+                                checkBoxBounds.translate(
+                                        (int) layerNodeLocation.getX(),
+                                        (int) layerNodeLocation.getY());
+                                if ((checkBoxBounds.contains(e.getPoint()))
+                                        && (MouseEvent.BUTTON1 == mouseButton)
+                                        && (1 == e.getClickCount())) {
+                                        // mouse click inside checkbox
+                                        if (path.getLastPathComponent() instanceof ILayer) {
+                                                ILayer layer = (ILayer) path.getLastPathComponent();
+                                                try {
+                                                        layer.setVisible(!layer.isVisible());
+                                                } catch (LayerException e1) {
+                                                        LOGGER.error(e1);
+                                                }
+                                        } else if(path.getLastPathComponent() instanceof Style) {
+                                                Style style = (Style) path.getLastPathComponent();
+                                                style.setVisible(!style.isVisible());
+                                        }
+                                }                                
+                        }
+                }
+
+                
                 @Override
                 public void mousePressed(MouseEvent e) {
                         maybeShowPopup(e);
