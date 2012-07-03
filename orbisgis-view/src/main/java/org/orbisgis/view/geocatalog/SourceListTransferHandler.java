@@ -28,17 +28,126 @@
  */
 package org.orbisgis.view.geocatalog;
 
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.File;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.TransferHandler;
+import org.apache.log4j.Logger;
+import org.orbisgis.core.events.EventException;
+import org.orbisgis.core.events.ListenerContainer;
 
 /**
  * Swing Handler for dragging data source list items
  */
 
 public class SourceListTransferHandler extends TransferHandler{
+        private static final Logger LOGGER = Logger.getLogger("gui."+SourceListTransferHandler.class);
+        private DataFlavor uriListFlavor = null;
+        private ListenerContainer<DropUriEventObject> dropListenerHandler = new ListenerContainer<DropUriEventObject>();
 
+        public SourceListTransferHandler() {
+                try {
+                        uriListFlavor = new DataFlavor("text/uri-list;class=java.lang.String");
+                } catch (ClassNotFoundException ex) {
+                        LOGGER.error("Uri flavor not supported",ex);
+                }
+        }
+
+        public ListenerContainer<DropUriEventObject> getDropListenerHandler() {
+                return dropListenerHandler;
+        }
+        
+        
+        /**
+         * Manage import of files
+         * @param ts
+         * @return 
+         */
+        @Override
+        public boolean canImport(TransferSupport ts) {
+                boolean isFileList = ts.isDataFlavorSupported(DataFlavor.javaFileListFlavor);
+                boolean isUriList = false;
+                if(uriListFlavor!=null) {
+                        isUriList = ts.isDataFlavorSupported(uriListFlavor);
+                }
+                return isFileList || isUriList;
+        }
+        
+        private boolean dropDataSource(List<URI> dataList) {
+                try {
+                        dropListenerHandler.callListeners(new DropUriEventObject(dataList, this));
+                        return true;
+                } catch (EventException ex) {
+                        LOGGER.error(ex);
+                        return false;
+                }
+        }
+        /**
+         * Manage drop of files
+         * @param ts
+         * @return 
+         */
+        @Override
+        public boolean importData(TransferSupport ts) {
+                //Native javaFileList used in priority
+                if(ts.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+                        try {
+                                List<File> files = (List<File>)ts.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
+                                //Construct URI list from files
+                                List<URI> uriList = new ArrayList<URI>(files.size());
+                                for(File file : files) {
+                                        uriList.add(file.toURI());
+                                }                                
+                                return dropDataSource(uriList);
+                        } catch (UnsupportedFlavorException ex) {
+                                LOGGER.error(ex);
+                                return false;
+                        } catch (IOException ex) {
+                                LOGGER.error(ex);
+                                return false;
+                        }
+                } else {
+                        try {
+                                String filesChain = (String)ts.getTransferable().getTransferData(uriListFlavor);
+                                String lineSep = System.getProperty("line.separator"); //RFC 2483 says that lines are terminated with a CRLF pair
+                                List<URI> uriList = new ArrayList<URI>();
+                                for(StringTokenizer stringTokenizer = new StringTokenizer(filesChain, lineSep); stringTokenizer.hasMoreTokens();)
+                                {
+                                        String line = stringTokenizer.nextToken();
+                                        //If the URI line is not a comment
+                                        if(!(line.startsWith("#") || line.isEmpty()))
+                                        {
+                                                try {
+                                                        URI dataUri = new URI(line.trim());
+                                                        uriList.add(dataUri);
+                                                } catch (URISyntaxException ex) {
+                                                        LOGGER.debug(ex);
+                                                        continue;
+                                                }
+                                        }
+                                 }
+                                return dropDataSource(uriList);
+                        } catch (UnsupportedFlavorException ex) {
+                                LOGGER.error(ex);
+                                return false;
+                        } catch (IOException ex) {
+                                LOGGER.error(ex);
+                                return false;
+                        }
+                }
+        }
+
+        
+        
     @Override
     public int getSourceActions(JComponent jc) {
         return COPY;
