@@ -11,9 +11,7 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.view.toc.actions.cui.ConstraintSymbolFilter;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
-import org.orbisgis.view.toc.actions.cui.SymbolFilter;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
@@ -110,10 +108,6 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
         public String getInfoText() {
                 return "Configure a line to be displayed as a unique symbol.";
         }
-
-	private SymbolFilter getSymbolFilter() {
-		return new ConstraintSymbolFilter(new Type[]{TypeFactory.createType(Type.GEOMETRY)});
-	}
 
         @Override
         public Legend copyLegend() {

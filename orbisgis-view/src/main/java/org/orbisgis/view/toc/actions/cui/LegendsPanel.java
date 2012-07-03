@@ -55,16 +55,15 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
+import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.thematic.factory.LegendFactory;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
-import org.orbisgis.view.toc.actions.cui.legend.ISymbolEditor;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.view.toc.wrapper.RuleWrapper;
 import org.orbisgis.view.toc.wrapper.StyleWrapper;
-import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.thematic.factory.LegendFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -102,7 +101,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         private StyleWrapper styleWrapper;
 
         public void init(MapTransform mt, Type gc, Style style, ILegendPanel[] availableLegends,
-                ISymbolEditor[] availableEditors, ILayer layer) {
+                    ILayer layer) {
                 this.mt = mt;
                 this.gc = gc;
                 this.layer = layer;
@@ -338,11 +337,6 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         @Override
         public MapTransform getCurrentMapTransform() {
                 return mt;
-        }
-
-        @Override
-        public ISymbolEditor[] getAvailableSymbolEditors() {
-                return new ISymbolEditor[0];
         }
 
         public StyleWrapper getStyleWrapper() {

@@ -6,19 +6,14 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-
 import javax.imageio.ImageIO;
-
-import org.gdms.data.DataSource;
 import org.gvsig.remoteClient.exceptions.ServerErrorException;
 import org.gvsig.remoteClient.exceptions.WMSException;
 import org.gvsig.remoteClient.wms.WMSStatus;
 import org.orbisgis.core.layerModel.WMSConnection;
-import org.orbisgis.core.renderer.symbol.Symbol;
-
 
 @Deprecated
-public class WMSLegend extends AbstractLegend {
+public class WMSLegend {
 
 	private WMSConnection wmsConnection;
 	private String layerName;
@@ -29,7 +24,6 @@ public class WMSLegend extends AbstractLegend {
 		this.layerName = layerName;
 	}
 
-	@Override
 	public void drawImage(Graphics2D g) {
 		if ((wmsConnection != null) || (layerName != null)) {
 			BufferedImage img = getWMSLegend(wmsConnection, layerName);
@@ -40,7 +34,6 @@ public class WMSLegend extends AbstractLegend {
 		}
 	}
 
-	@Override
 	public int[] getImageSize(Graphics2D g) {
 		if ((wmsConnection != null) || (layerName != null)) {
 			BufferedImage img = getWMSLegend(wmsConnection, layerName);
@@ -54,43 +47,22 @@ public class WMSLegend extends AbstractLegend {
 		}
 	}
 
-	@Override
 	public String getJAXBContext() {
 		return null;
 	}
 
-	@Override
 	public Object getJAXBObject() {
 		return null;
 	}
 
-	@Override
 	public String getLegendTypeId() {
 		return "org.orbisgis.legend.WMSLegend";
 	}
 
-	@Override
 	public String getLegendTypeName() {
 		return "WMS";
 	}
 
-	@Override
-	public Symbol getSymbol(DataSource sds, long row)
-			throws RenderException {
-		return null;
-	}
-
-	@Override
-	public int getSymbolsToUpdateOnRowModification() {
-		return ONLY_AFFECTED;
-	}
-
-	@Override
-	public Legend newInstance() {
-		return new WMSLegend(null, null);
-	}
-
-	@Override
 	public void setJAXBObject(Object jaxbObject) {
 
 	}

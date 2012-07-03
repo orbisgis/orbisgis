@@ -40,7 +40,6 @@ import org.gdms.data.types.GeometryTypeConstraint;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
-import org.orbisgis.view.toc.actions.cui.legend.ISymbolEditor;
 
 public interface LegendContext {
 
@@ -94,10 +93,4 @@ public interface LegendContext {
 	 */
 	MapTransform getCurrentMapTransform();
 
-	/**
-	 * Gets all the available symbol editors
-	 * 
-	 * @return
-	 */
-	ISymbolEditor[] getAvailableSymbolEditors();
 }

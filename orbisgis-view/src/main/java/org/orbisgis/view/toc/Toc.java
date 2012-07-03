@@ -75,7 +75,6 @@ import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.toc.actions.cui.LegendsPanel;
 import org.orbisgis.view.toc.actions.cui.legend.EPLegendHelper;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
-import org.orbisgis.view.toc.actions.cui.legend.ISymbolEditor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 import com.vividsolutions.jts.geom.Envelope;
@@ -599,8 +598,7 @@ public class Toc extends JPanel implements EditorDockable {
                                 LegendsPanel pan = new LegendsPanel();
                                 Style copy = new Style(jest, layer);
                                 ILegendPanel[] legends = EPLegendHelper.getLegendPanels(pan);
-                                ISymbolEditor[] symbolEditors = EPLegendHelper.getSymbolPanels();
-                                pan.init(mt, typ, copy, legends, symbolEditors, layer);
+                                pan.init(mt, typ, copy, legends, layer);
                                 if (UIFactory.showDialog(pan)) {
                                         try {
                                                 layer.setStyle(0, pan.getStyleWrapper().getStyle());
