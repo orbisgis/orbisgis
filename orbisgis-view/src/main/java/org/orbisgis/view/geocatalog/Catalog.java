@@ -449,27 +449,6 @@ public class Catalog extends JPanel implements DockingPanel {
          */
         private JPopupMenu makePopupMenu() {
                 JPopupMenu rootMenu = new JPopupMenu();
-                SourceManager sm = getDataManager().getSourceManager();
-                //Popup:ClearGeocatalog (added if the datasource manager is not empty)
-                if (!sm.isEmpty(true)) {
-                        JMenuItem clearCatalogItem = new JMenuItem(I18N.tr("Clear the GeoCatalog"),
-                                OrbisGISIcon.getIcon("bin_closed"));
-                        clearCatalogItem.addActionListener(EventHandler.create(ActionListener.class,
-                                this,
-                                "onMenuClearGeoCatalog"));
-                        rootMenu.add(clearCatalogItem);
-                }
-                
-                //Add function to remove a source
-                if(!sourceList.isSelectionEmpty()) {
-                    JMenuItem removeSourceItem = new JMenuItem(
-                                    I18N.tr("Remove the source"),
-                                    OrbisGISIcon.getIcon("remove"));
-                    removeSourceItem.addActionListener(EventHandler.create(ActionListener.class,
-                            this,
-                            "onMenuRemoveSource"));
-                    rootMenu.add(removeSourceItem);
-                }
                 //Popup:Add
                 JMenu addMenu = new JMenu(I18N.tr("Add"));
                 rootMenu.add(addMenu);
@@ -531,7 +510,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 //Popup:ClearGeocatalog (added if the datasource manager is not empty)
                 DataManager dm = Services.getService(DataManager.class);
                 SourceManager dr = dm.getSourceManager();
-                if (!dr.isEmpty()) {
+                if (!dr.isEmpty(true)) {
                         JMenuItem clearCatalogItem = new JMenuItem(I18N.tr("Clear the GeoCatalog"),
                                 OrbisGISIcon.getIcon("bin_closed"));
                         clearCatalogItem.addActionListener(EventHandler.create(ActionListener.class,
