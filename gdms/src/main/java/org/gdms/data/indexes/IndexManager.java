@@ -74,7 +74,7 @@ import org.gdms.sql.engine.UnknownFieldException;
 public class IndexManager {
 
         private static final String TEMPINDEXPREFIX = "tempindex";
-        private static final Logger logger = Logger.getLogger(IndexManager.class);
+        private static final Logger LOG = Logger.getLogger(IndexManager.class);
         public static final String INDEX_PROPERTY_PREFIX = "org.gdms.index";
         public static final String RTREE_SPATIAL_INDEX = "org.gdms.rtree";
         public static final String BTREE_ALPHANUMERIC_INDEX = "org.gdms.btree";
@@ -206,7 +206,7 @@ public class IndexManager {
                         try {
                                 src.deleteProperty(propertyName);
                         } catch (IOException e1) {
-                                logger.debug("Cannot create index and remove property", e1);
+                                LOG.debug("Cannot create index and remove property", e1);
                         }
                         throw new IndexException("Cannot create an "
                                 + "index with that field type: " + Arrays.toString(fieldNames), e);
@@ -216,7 +216,7 @@ public class IndexManager {
                         try {
                                 src.deleteProperty(propertyName);
                         } catch (IOException e1) {
-                                logger.debug("Cannot create index and remove property", e1);
+                                LOG.debug("Cannot create index and remove property", e1);
                         }
                         throw new IndexException("Cannot access data to index", e);
                 } catch (NoSuchTableException e) {
@@ -481,7 +481,7 @@ public class IndexManager {
                         DataSource ds = (DataSource) src;
                         return getIndex(ds.getName(), fieldName);
                 } else {
-                        String code = TEMPINDEXPREFIX + String.valueOf(src.hashCode());
+                        String code = TEMPINDEXPREFIX + src.hashCode();
                         IndexDefinition def = new IndexDefinition(code, fieldName);
                         return indexCache.get(def);
                 }

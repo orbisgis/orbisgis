@@ -37,5 +37,5 @@ import org.gdms.data.values.ValueCollection;
 
 public interface OriginalEditionInfo extends EditionInfo {
 
-	public abstract ValueCollection getPK();
+	ValueCollection getPK();
 }

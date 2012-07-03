@@ -31,38 +31,48 @@
  */
 package org.gdms.driver.ply;
 
+import java.io.BufferedOutputStream;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.StringReader;
+import java.io.UnsupportedEncodingException;
+import java.io.Writer;
+
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
-import java.io.*;
+import org.apache.log4j.Logger;
+
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.btree.DiskBTree;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DiskBufferDriver;
 import org.gdms.driver.DriverException;
-import org.gdms.data.schema.DefaultMetadata;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class PlyExporter {
 
+        private static final Logger LOG = Logger.getLogger(PlyExporter.class);
         private final DataSet dataSet;
         private final File file;
         private boolean binary = false;
-        int dataType = 1;
-        int FLOAT_DATA_TYPE = 1;
-        int DOUBLE_DATA_TYPE = 2;
         private final DataSourceFactory dsf;
-        double X_REFERENCE = 0;
-        double Y_REFERENCE = 0;
+        private double X_REFERENCE = 0;
+        private double Y_REFERENCE = 0;
         private final Coordinate coordRef;
-        int coordSize = 0;
+        private int coordSize = 0;
         private int numFaces = 0;
 
         public PlyExporter(DataSourceFactory dsf, DataSet dataSet, File file) {
@@ -74,10 +84,6 @@ public class PlyExporter {
 
         public void setBinary(boolean binary) {
                 this.binary = binary;
-        }
-
-        public void setDataType(int dataType) {
-                this.dataType = dataType;
         }
 
         /**
@@ -109,7 +115,7 @@ public class PlyExporter {
                                 }
                         }
 
-                        writeData(writer, bos);
+                        writeData(writer);
 
 
 
@@ -117,12 +123,13 @@ public class PlyExporter {
                         try {
                                 bos.close();
                         } catch (IOException e) {
+                                LOG.error("Failed to close output stream", e);
                         }
                 }
 
         }
 
-        private void writeData(Writer writer, BufferedOutputStream bos) throws DriverException, IOException {
+        private void writeData(Writer writer) throws DriverException, IOException {
 
                 long count = dataSet.getRowCount();
                 int fieldIndex = dataSet.getSpatialFieldIndex();
@@ -177,7 +184,7 @@ public class PlyExporter {
                         writer.write("property " + "float" + " y\n");
                         writer.write("property " + "float" + " z\n");
                 } else {
-                        throw new RuntimeException("The dataset doesn't contain any vertexes.");
+                        throw new DriverException("The dataset doesn't contain any vertexes.");
                 }
                 if (numFaces > 0) {
                         writer.write("element face " + count + "\n");
@@ -187,8 +194,6 @@ public class PlyExporter {
                 writer.flush();
 
                 //Write data
-
-                writer = new OutputStreamWriter(bos, "UTF-8");
 
                 //Write nodes
                 nodes.open();

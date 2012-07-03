@@ -34,8 +34,10 @@
 package org.gdms.sql.function.system;
 
 import java.io.File;
-import java.util.logging.Level;
-import org.apache.log4j.Logger;
+
+import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.utils.FileUtils;
+
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
@@ -46,20 +48,15 @@ import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.executor.AbstractExecutorFunction;
 import org.gdms.sql.function.executor.ExecutorFunctionSignature;
-import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.utils.FileUtils;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class ImportCall extends AbstractExecutorFunction {
 
-        private static final Logger LOG = Logger.getLogger(ImportCall.class);
-
         @Override
         public void evaluate(DataSourceFactory dsf, DataSet[] tables, Value[] values, ProgressMonitor pm) throws FunctionException {
-                LOG.trace("Evaluating");
                 try {
                         final SourceManager sourceManager = dsf.getSourceManager();
                         if (values.length == 1) {

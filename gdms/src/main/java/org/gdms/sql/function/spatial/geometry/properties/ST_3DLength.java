@@ -42,7 +42,7 @@ import org.gdms.sql.function.FunctionException;
 
 /**
  *
- * @author ebocher IRSTV FR CNRS 2488
+ * @author Erwan Bocher IRSTV FR CNRS 2488
  */
 public class ST_3DLength extends AbstractSpatialPropertyFunction {
 

@@ -44,7 +44,7 @@
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  * Previous computer developer : Pierre-Yves FADET, computer engineer,
-Thomas LEDUC, scientific researcher, Fernando GONZALEZ
+ Thomas LEDUC, scientific researcher, Fernando GONZALEZ
  * CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
@@ -97,6 +97,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode {
 
         /**
          * Create a new BTreeInteriorNode.
+         *
          * @param tree The containing tree
          * @param address The address of this node in the file
          * @param parentAddress The address of this node's parent in the file
@@ -108,6 +109,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode {
 
         /**
          * Create a new BTreeInteriorNode.
+         *
          * @param tree The containing tree
          * @param address The address of this node in the file
          * @param parentAddress The address of this node's parent in the file
@@ -145,6 +147,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode {
 
         /**
          * get the BTreeNode stored at index i in children.
+         *
          * @param i
          * @return
          * @throws IOException
@@ -302,7 +305,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode {
          */
         public boolean mergeWithNeighbour(BTreeNode node) throws IOException {
                 int index = getIndexOf(node);
-                AbstractBTreeNode smallest = null;
+                AbstractBTreeNode smallest;
                 AbstractBTreeNode rightNeighbour = getRightNeighbour(index);
                 AbstractBTreeNode leftNeighbour = getLeftNeighbour(index);
 
@@ -342,7 +345,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode {
 
         @Override
         public void mergeWithRight(BTreeNode rightNode) throws IOException {
-                BTreeInteriorNode node = checkTreeNode(rightNode) ;
+                BTreeInteriorNode node = checkTreeNode(rightNode);
                 // values.add(values.size(), rightNode.getSmallestValueNotIn(this));
                 int first = values.size();
                 for (int i = 0; i < node.values.size(); i++) {
@@ -395,7 +398,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode {
          *
          * @param node
          * @return true if it is possible to move from a neighbor and false
-         *         otherwise
+         * otherwise
          * @throws IOException
          */
         public boolean moveFromNeighbour(BTreeNode node) throws IOException {
@@ -478,6 +481,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode {
          * Check whether this node is valid or not. It is valid if
          * it is the root, and it has between 1 and n children, or if it is an interior node
          * and it has between (n-1)/2 and n children, where n is the order of the tree.
+         *
          * @param valueCount
          * @return
          * @throws IOException
@@ -579,17 +583,16 @@ public class BTreeInteriorNode extends AbstractBTreeNode {
                                 // Check validity
                                 if (!child.isValid()) {
                                         // move from neighbour
-                                        if (!moveFromNeighbour(child)) {
-                                                if (!mergeWithNeighbour(child)) {
-                                                        // If we cannot merge create new root
-                                                        tree.removeNode(this.address);
-                                                        getChild(0).setParentAddress(-1);
-                                                } else if ((getParentAddress() == -1) && (!isValid())) {
-                                                        tree.removeNode(this.address);
-                                                        getChild(0).setParentAddress(-1);
-                                                }
+                                        if (!moveFromNeighbour(child) && !mergeWithNeighbour(child)) {
+                                                // If we cannot merge create new root
+                                                tree.removeNode(this.address);
+                                                getChild(0).setParentAddress(-1);
+                                        } else if ((getParentAddress() == -1) && (!isValid())) {
+                                                tree.removeNode(this.address);
+                                                getChild(0).setParentAddress(-1);
                                         }
                                 }
+
                                 return true;
                         } else {
                                 index++;
@@ -770,7 +773,7 @@ public class BTreeInteriorNode extends AbstractBTreeNode {
         public int[] query(RangeComparator[] comparators) throws IOException {
                 RangeComparator minComparator = comparators[0];
                 RangeComparator maxComparator = comparators[1];
-                
+
                 int[] minChildRange = minComparator.getRange(this);
                 int[] maxChildRange = maxComparator.getRange(this);
 
@@ -798,12 +801,12 @@ public class BTreeInteriorNode extends AbstractBTreeNode {
 
                 return ret;
         }
-        
+
         @Override
         public void query(RangeComparator[] comparators, IndexVisitor<Value> visitor) throws IOException {
                 RangeComparator minComparator = comparators[0];
                 RangeComparator maxComparator = comparators[1];
-                
+
                 int[] minChildRange = minComparator.getRange(this);
                 int[] maxChildRange = maxComparator.getRange(this);
 

@@ -40,27 +40,27 @@ import ij.ImagePlus;
 
 public final class ConstraintFactory {
 
-        private static final Map<Integer, Constraint> samples = new HashMap<Integer, Constraint>();
+        private static final Map<Integer, Constraint> SAMPLES = new HashMap<Integer, Constraint>();
 
         static {
-                samples.put(Constraint.AUTO_INCREMENT, new AutoIncrementConstraint());
-                samples.put(Constraint.DIMENSION_3D_GEOMETRY, new Dimension3DConstraint(2));
-                samples.put(Constraint.LENGTH, new LengthConstraint(3));
-                samples.put(Constraint.MAX, new MaxConstraint(3));
-                samples.put(Constraint.MIN, new MinConstraint(3));
-                samples.put(Constraint.NOT_NULL, new NotNullConstraint());
-                samples.put(Constraint.CRS, new CRSConstraint());
-                samples.put(Constraint.PATTERN, new PatternConstraint(""));
-                samples.put(Constraint.PK, new PrimaryKeyConstraint());
-                samples.put(Constraint.FK, new ForeignKeyConstraint());
-                samples.put(Constraint.PRECISION, new PrecisionConstraint(2));
-                samples.put(Constraint.RASTER_TYPE, new RasterTypeConstraint(
+                SAMPLES.put(Constraint.AUTO_INCREMENT, new AutoIncrementConstraint());
+                SAMPLES.put(Constraint.DIMENSION_3D_GEOMETRY, new Dimension3DConstraint(2));
+                SAMPLES.put(Constraint.LENGTH, new LengthConstraint(3));
+                SAMPLES.put(Constraint.MAX, new MaxConstraint(3));
+                SAMPLES.put(Constraint.MIN, new MinConstraint(3));
+                SAMPLES.put(Constraint.NOT_NULL, new NotNullConstraint());
+                SAMPLES.put(Constraint.CRS, new CRSConstraint());
+                SAMPLES.put(Constraint.PATTERN, new PatternConstraint(""));
+                SAMPLES.put(Constraint.PK, new PrimaryKeyConstraint());
+                SAMPLES.put(Constraint.FK, new ForeignKeyConstraint());
+                SAMPLES.put(Constraint.PRECISION, new PrecisionConstraint(2));
+                SAMPLES.put(Constraint.RASTER_TYPE, new RasterTypeConstraint(
                         ImagePlus.COLOR_256));
-                samples.put(Constraint.READONLY, new ReadOnlyConstraint());
-                samples.put(Constraint.SCALE, new ScaleConstraint(2));
-                samples.put(Constraint.UNIQUE, new UniqueConstraint());
-                samples.put(Constraint.DIMENSION_2D_GEOMETRY, new GeometryDimensionConstraint(1));
-                samples.put(Constraint.DEFAULT_STRING_VALUE,
+                SAMPLES.put(Constraint.READONLY, new ReadOnlyConstraint());
+                SAMPLES.put(Constraint.SCALE, new ScaleConstraint(2));
+                SAMPLES.put(Constraint.UNIQUE, new UniqueConstraint());
+                SAMPLES.put(Constraint.DIMENSION_2D_GEOMETRY, new GeometryDimensionConstraint(1));
+                SAMPLES.put(Constraint.DEFAULT_STRING_VALUE,
                         new DefaultStringConstraint(""));
         }
 
@@ -207,7 +207,7 @@ public final class ConstraintFactory {
          * @return
          */
         public static int getType(int constraintCode) {
-                Constraint sampleConstraint = samples.get(constraintCode);
+                Constraint sampleConstraint = SAMPLES.get(constraintCode);
                 return sampleConstraint.getType();
         }
 
@@ -222,7 +222,7 @@ public final class ConstraintFactory {
          *             CONSTRAINT_TYPE_CHOICE
          */
         public static String[] getChoiceStrings(int constraintCode) {
-                Constraint sampleConstraint = samples.get(constraintCode);
+                Constraint sampleConstraint = SAMPLES.get(constraintCode);
                 return sampleConstraint.getChoiceStrings();
         }
 
@@ -237,7 +237,7 @@ public final class ConstraintFactory {
          *             CONSTRAINT_TYPE_CHOICE
          */
         public static int[] getChoiceCodes(int constraintCode) {
-                Constraint sampleConstraint = samples.get(constraintCode);
+                Constraint sampleConstraint = SAMPLES.get(constraintCode);
                 return sampleConstraint.getChoiceCodes();
         }
 

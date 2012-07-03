@@ -49,7 +49,7 @@ import org.orbisgis.progress.NullProgressMonitor;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class TestCreateTIN extends FunctionTest {
 

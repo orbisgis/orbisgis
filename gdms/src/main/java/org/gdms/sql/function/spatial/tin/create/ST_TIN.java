@@ -1,4 +1,4 @@
-/* 
+/**
  * TANATO  is a library dedicated to the modelling of water pathways based on 
  * triangulate irregular network. TANATO takes into account anthropogenic and 
  * natural artifacts to evaluate their impacts on the watershed response. 
@@ -15,9 +15,9 @@
  * (ANR) under contract ANR-07-VULN-01.
  * 
  * TANATO is distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Jean-Yves MARTIN
- * Copyright (C) 2011 Erwan BOCHER, , Alexis GUEGANNO, Jean-Yves MARTIN
+ * the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2010-2012 IRSTV FR CNRS 2488
  * 
  * TANATO is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -31,11 +31,13 @@
  * You should have received a copy of the GNU General Public License along with
  * TANATO. If not, see <http://www.gnu.org/licenses/>.
  * 
- * For more information, please consult: <http://trac.orbisgis.org/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
  * info_at_ orbisgis.org
  */
 package org.gdms.sql.function.spatial.tin.create;
+
+import org.orbisgis.progress.ProgressMonitor;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.Metadata;
@@ -51,17 +53,19 @@ import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
 import org.gdms.sql.function.table.TableDefinition;
 import org.gdms.sql.function.table.TableFunctionSignature;
-import org.orbisgis.progress.ProgressMonitor;
 
 /**
- * This class designs a table function for GDMS. The goal of the function is to process
- * a delaunay or constrained delaunay triangulation from the geometry given in input.
- * The function returns a set of triangles.
+ * Delaunay triangulation function.
+ * 
+ * The goal of the function is to process a delaunay or constrained delaunay triangulation 
+ * from the geometry given in input. The function returns a set of triangles.
  * If the user wants to return a planar straight line graph it must use the ST_PSLGTIN function.
  * 
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class ST_TIN extends AbstractTableFunction {
+        
+        private DiskBufferDriver triangles;
 
         @Override
         public DataSet evaluate(DataSourceFactory dsf, DataSet[] tables, Value[] values, ProgressMonitor pm) throws FunctionException {
@@ -73,7 +77,7 @@ public class ST_TIN extends AbstractTableFunction {
                                 tinBuilder.setFlatTriangles(values[1].getAsBoolean());
                         }
                         tinBuilder.build();
-                        DiskBufferDriver triangles = tinBuilder.getTriangles(dsf);
+                        triangles = tinBuilder.getTriangles(dsf);
                         triangles.open();
                         return triangles;
                 } catch (DriverException ex) {
@@ -111,5 +115,12 @@ public class ST_TIN extends AbstractTableFunction {
         @Override
         public String getSqlOrder() {
                 return "SELECT * FROM  ST_TIN(source_table[, false, true])";
+        }
+        
+        @Override
+        public void workFinished() throws DriverException {
+                if (triangles != null) {
+                        triangles.close();
+                }
         }
 }

@@ -48,7 +48,7 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
 /**
  * A function to reduce the geometry precision
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class ST_PrecisionReducer extends AbstractScalarSpatialFunction {
 

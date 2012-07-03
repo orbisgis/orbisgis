@@ -979,10 +979,8 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                 // Check special case of auto-increment not-null fields
                 Type type = getMetadata().getFieldType(fieldId);
                 boolean autoIncrement = type.getBooleanConstraint(Constraint.AUTO_INCREMENT);
-                if (autoIncrement && type.getBooleanConstraint(Constraint.NOT_NULL)) {
-                        if (value.isNull()) {
-                                return null;
-                        }
+                if (autoIncrement && type.getBooleanConstraint(Constraint.NOT_NULL) && value.isNull()) {
+                        return null;
                 }
                 int fieldType = type.getTypeCode();
                 //Test geometry types.

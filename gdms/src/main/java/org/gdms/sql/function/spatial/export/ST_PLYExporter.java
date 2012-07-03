@@ -31,16 +31,20 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.driver.ply;
+package org.gdms.sql.function.spatial.export;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+
+import org.orbisgis.progress.ProgressMonitor;
+
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.ply.PlyExporter;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.ScalarArgument;
@@ -48,17 +52,15 @@ import org.gdms.sql.function.executor.AbstractExecutorFunction;
 import org.gdms.sql.function.executor.ExecutorFunctionSignature;
 import org.gdms.sql.function.table.TableArgument;
 import org.gdms.sql.function.table.TableDefinition;
-import org.orbisgis.progress.ProgressMonitor;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class ST_PLYExporter extends AbstractExecutorFunction {
 
         @Override
         public void evaluate(DataSourceFactory dsf, DataSet[] tables, Value[] args, ProgressMonitor pm) throws FunctionException {
-
                 if (args[0] != null) {
                         try {
                                 PlyExporter plyExporter = new PlyExporter(dsf, tables[0], new File(args[0].getAsString()));

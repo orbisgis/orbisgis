@@ -33,12 +33,27 @@
  */
 package org.gdms.sql.function.spatial.tin.analysis;
 
-/***********************************
+/**
+ * *********************************
  * ANR EvalPDU
  * IFSTTAR 11_05_2011
+ *
  * @author Nicolas FORTIN, Judicaël PICAUT
- ***********************************/
+ **********************************
+ */
+
+import java.util.Deque;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.Polygon;
+import org.orbisgis.progress.ProgressMonitor;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;
@@ -48,8 +63,9 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
 import org.gdms.driver.DataSet;
+import org.gdms.driver.DiskBufferDriver;
+import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
@@ -58,24 +74,14 @@ import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
 import org.gdms.sql.function.table.TableDefinition;
 import org.gdms.sql.function.table.TableFunctionSignature;
-import org.gdms.driver.DiskBufferDriver;
-import org.orbisgis.progress.ProgressMonitor;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.Polygon;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
 
 /**
- * Split triangle into area within the specified range values
+ * Split triangle into area within the specified range values.
  */
 public class ST_TriangleContouring extends AbstractTableFunction {
 
         private static final double EPSILON = 1E-15;
-        GeometryFactory factory = new GeometryFactory();
+        private GeometryFactory factory = new GeometryFactory();
 
         private static boolean isoEqual(double isoValue1, double isoValue2) {
                 return Math.abs(isoValue1 - isoValue2) < EPSILON * isoValue2;
@@ -148,27 +154,27 @@ public class ST_TriangleContouring extends AbstractTableFunction {
          * Return the splitting of a triangle in three parts. This function return
          * always triangles in the counter-clockwise orientation of vertices (if the
          * triangle provided is in the same orientation)
-         * 
+         *
          * @param sideStart Start side of the splitting segment [0-2]
-         * 
+         *
          * @param sideStop End side of the splitting segment [0-2] (must be >
          * sideStart)
-         * 
+         *
          * @param posIsoStart Start coordinate of the splitting segment
-         * 
+         *
          * @param posIsoStop End coordinate of the splitting segment
-         * 
+         *
          * @param isoLvl Iso value of the splitting segment
-         * 
+         *
          * @param currentTriangle Input triangle
-         * 
+         *
          * @param[out] aloneTri Splitted triangle, the side of the shared vertex of
          * sideStart and sideStop
-         * 
+         *
          * @param[out] firstTwinTri Splitted triangle
-         * 
+         *
          * @param[out] secondTwinTri Splitted triangle
-         * 
+         *
          * @return The shared vertex index [0-2]
          */
         private static short getSplittedTriangle(short sideStart, short sideStop,
@@ -176,7 +182,9 @@ public class ST_TriangleContouring extends AbstractTableFunction {
                 TriMarkers currentTriangle, TriMarkers aloneTri,
                 TriMarkers firstTwinTri, TriMarkers secondTwinTri)
                 throws FunctionException {
-                short sharedVertex = -1, secondVertex = -1, thirdVertex = -1;
+                short sharedVertex = -1;
+                short secondVertex;
+                short thirdVertex;
                 if (sideStart == 0 && sideStop == 2) {
                         sharedVertex = 0;
                         secondVertex = 1;
@@ -230,20 +238,20 @@ public class ST_TriangleContouring extends AbstractTableFunction {
 
         /**
          * Use interval to split the triangle into severals ones
-         * 
+         *
          * @param[in] beginIncluded Begin of iso level value
          * @param[in] endExcluded End of iso level value
          * @param[in] currentTriangle Triangle to process
          * @param[out] outsideTriangles Split triangles outside of the region
          * @param[out] intervalTriangles Split triangles covered by the region
          * @return False if the entire geometry is outside of the region, true if
-         *         outsideTriangles or intervalTriangles has been updated.
+         * outsideTriangles or intervalTriangles has been updated.
          * @throws ExecutionException
          */
         private static boolean splitInterval(Double beginIncluded, Double endExcluded,
                 TriMarkers currentTriangle,
-                LinkedList<TriMarkers> outsideTriangles,
-                LinkedList<TriMarkers> intervalTriangles) throws FunctionException {
+                Deque<TriMarkers> outsideTriangles,
+                Deque<TriMarkers> intervalTriangles) throws FunctionException {
                 if ((beginIncluded > currentTriangle.m1
                         && beginIncluded > currentTriangle.m2 && beginIncluded > currentTriangle.m3)
                         || // If triangles vertices ALL outside inferior
@@ -369,7 +377,7 @@ public class ST_TriangleContouring extends AbstractTableFunction {
                 } else if (((vertIso1Start != -1 || sideIso1Start != -1) && !((vertIso2Start != -1 || sideIso2Start != -1))) // Range
                         // begin found,  but not range end
                         || ((vertIso2Start != -1 || sideIso2Start != -1) && !(vertIso1Start != -1 || sideIso1Start != -1))) // Range
-                        // begin notfound but
+                // begin notfound but
                 {
                         // Side to side
                         if (sideIso1Start != -1 && sideIso1Stop != -1) {
@@ -528,7 +536,7 @@ public class ST_TriangleContouring extends AbstractTableFunction {
                         // Begin and end range inside the triangle
 
                         // First step, make outside inferior triangle
-                        LinkedList<TriMarkers> insideTriangles = new LinkedList<TriMarkers>();
+                        Deque<TriMarkers> insideTriangles = new LinkedList<TriMarkers>();
                         splitInterval(beginIncluded, Double.POSITIVE_INFINITY,
                                 currentTriangle, outsideTriangles, insideTriangles);
                         // distribute inside and outside superior triangle from the end iso
@@ -553,23 +561,23 @@ public class ST_TriangleContouring extends AbstractTableFunction {
         /**
          *
          * @param triangleData Triangle Coordinates and Marker values
-         * @param iso_lvls Iso level to extract.
+         * @param isoLvls Iso level to extract.
          * @return processedTriangles Return sub-triangle corresponding to iso levels. iso level are stored in markers (same for m0,m1,m2)
          * @throws FunctionException
          */
-        public static HashMap<Short, LinkedList<TriMarkers>> processTriangle(TriMarkers triangleData, List<Double> iso_lvls) throws FunctionException {
+        static Map<Short, Deque<TriMarkers>> processTriangle(TriMarkers triangleData, List<Double> isoLvls) throws FunctionException {
                 TriMarkers currentTriangle = triangleData;
-                HashMap<Short, LinkedList<TriMarkers>> toDriver = new HashMap<Short, LinkedList<TriMarkers>>();
+                Map<Short, Deque<TriMarkers>> toDriver = new HashMap<Short, Deque<TriMarkers>>();
                 // For each iso interval
-                LinkedList<TriMarkers> triangleToProcess = new LinkedList<TriMarkers>();
+                Deque<TriMarkers> triangleToProcess = new LinkedList<TriMarkers>();
                 triangleToProcess.add(currentTriangle);
 
                 do {
                         currentTriangle = triangleToProcess.pop();
                         Double beginInterval = Double.NEGATIVE_INFINITY;
                         short isolvl = 0;
-                        for (Double endInterval : iso_lvls) {
-                                LinkedList<TriMarkers> triangleToDriver;
+                        for (Double endInterval : isoLvls) {
+                                Deque<TriMarkers> triangleToDriver;
 
                                 if (!toDriver.containsKey(isolvl)) {
                                         triangleToDriver = new LinkedList<TriMarkers>();
@@ -597,11 +605,11 @@ public class ST_TriangleContouring extends AbstractTableFunction {
                         final DataSet sds = tables[0];
                         // Open source and Destination tables
 
-                        String isolevels_str = values[0].getAsString();
+                        String isolevelsStr = values[0].getAsString();
                         int spatialFieldIndex = sds.getSpatialFieldIndex();
 
-                        LinkedList<Double> iso_lvls = new LinkedList<Double>();
-                        for (String isolvl : isolevels_str.split(",")) {
+                        List<Double> iso_lvls = new LinkedList<Double>();
+                        for (String isolvl : isolevelsStr.split(",")) {
                                 iso_lvls.add(Double.valueOf(isolvl));
                                 spatialFieldIndex = sds.getSpatialFieldIndex();
                         }
@@ -630,9 +638,9 @@ public class ST_TriangleContouring extends AbstractTableFunction {
                                                 pts[1].z,
                                                 pts[2].z);
 
-                                        HashMap<Short, LinkedList<TriMarkers>> triangleToDriver = processTriangle(currentTriangle, iso_lvls);
+                                        Map<Short, Deque<TriMarkers>> triangleToDriver = processTriangle(currentTriangle, iso_lvls);
 
-                                        for (Entry<Short, LinkedList<TriMarkers>> entry : triangleToDriver.entrySet()) {
+                                        for (Entry<Short, Deque<TriMarkers>> entry : triangleToDriver.entrySet()) {
                                                 for (TriMarkers triExport : entry.getValue()) {
 
                                                         final Value[] newValues = new Value[fieldCount + 1];

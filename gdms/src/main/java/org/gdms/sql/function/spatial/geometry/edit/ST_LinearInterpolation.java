@@ -50,7 +50,7 @@ import org.gdms.sql.function.ScalarArgument;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class ST_LinearInterpolation extends AbstractScalarFunction {
 

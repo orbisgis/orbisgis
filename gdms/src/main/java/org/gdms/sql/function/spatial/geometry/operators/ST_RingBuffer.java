@@ -57,7 +57,7 @@ public final class ST_RingBuffer extends AbstractScalarSpatialFunction {
         private static final String CAP_STYLE_SQUARE = "square";
         private static final String CAP_STYLE_BUTT = "butt";
         private static final String CAP_STYLE_ROUND = "round";
-        private static final GeometryFactory gf = new GeometryFactory();
+        private static final GeometryFactory GF = new GeometryFactory();
 
         @Override
         public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
@@ -98,7 +98,7 @@ public final class ST_RingBuffer extends AbstractScalarSpatialFunction {
                         buffers.add(geomBufferExternal);
                         previous = newBuffer;
                 }
-                return gf.createGeometryCollection(buffers.toArray(new Geometry[buffers.size()]));
+                return GF.createGeometryCollection(buffers.toArray(new Geometry[buffers.size()]));
 
         }
 

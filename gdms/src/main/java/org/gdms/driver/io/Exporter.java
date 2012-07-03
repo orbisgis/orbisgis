@@ -33,9 +33,7 @@
  */
 package org.gdms.driver.io;
 
-import org.orbisgis.progress.ProgressMonitor;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;

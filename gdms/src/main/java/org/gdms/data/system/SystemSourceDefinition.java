@@ -34,8 +34,6 @@
 package org.gdms.data.system;
 
 import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;

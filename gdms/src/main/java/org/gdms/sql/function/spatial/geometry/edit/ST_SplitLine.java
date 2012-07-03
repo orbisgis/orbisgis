@@ -62,7 +62,7 @@ import org.gdms.sql.function.table.TableFunctionSignature;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class ST_SplitLine extends AbstractTableFunction {
 

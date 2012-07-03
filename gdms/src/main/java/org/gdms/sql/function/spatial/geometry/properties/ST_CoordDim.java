@@ -44,7 +44,7 @@ import org.gdms.sql.function.FunctionException;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class ST_CoordDim extends AbstractSpatialPropertyFunction {
 

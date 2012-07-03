@@ -46,7 +46,7 @@ import org.gdms.geometryUtils.filter.CoordinateSequenceDimensionFilter;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class GeometryTypeUtilTest {
 

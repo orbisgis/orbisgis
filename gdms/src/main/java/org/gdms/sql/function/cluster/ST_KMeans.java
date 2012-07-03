@@ -307,7 +307,7 @@ public class ST_KMeans extends AbstractTableFunction {
          * @throws NoSuchTableException
          * @throws DataSourceCreationException
          */
-        private Value[] computeStatistics() throws ParseException, SemanticException, DriverLoadException, DriverException, NoSuchTableException, DataSourceCreationException {
+        private Value[] computeStatistics() throws ParseException, DriverException, NoSuchTableException, DataSourceCreationException {
 
                 // build the sql query
                 final StringBuilder queryAvgSb = new StringBuilder();

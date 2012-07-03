@@ -42,7 +42,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class GeometryConvertTest {
 

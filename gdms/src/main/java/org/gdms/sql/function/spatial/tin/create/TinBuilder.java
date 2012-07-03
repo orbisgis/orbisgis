@@ -1,4 +1,4 @@
-/* 
+/**
  * TANATO  is a library dedicated to the modelling of water pathways based on 
  * triangulate irregular network. TANATO takes into account anthropogenic and 
  * natural artifacts to evaluate their impacts on the watershed response. 
@@ -15,9 +15,9 @@
  * (ANR) under contract ANR-07-VULN-01.
  * 
  * TANATO is distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Jean-Yves MARTIN
- * Copyright (C) 2011 Erwan BOCHER, , Alexis GUEGANNO, Jean-Yves MARTIN
+ * the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2010-2012 IRSTV FR CNRS 2488
  * 
  * TANATO is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
@@ -31,11 +31,15 @@
  * You should have received a copy of the GNU General Public License along with
  * TANATO. If not, see <http://www.gnu.org/licenses/>.
  * 
- * For more information, please consult: <http://trac.orbisgis.org/>
+ * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
  * info_at_ orbisgis.org
  */
 package org.gdms.sql.function.spatial.tin.create;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.CoordinateSequence;
@@ -48,9 +52,12 @@ import com.vividsolutions.jts.geom.MultiPoint;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import org.jdelaunay.delaunay.ConstrainedMesh;
+import org.jdelaunay.delaunay.error.DelaunayError;
+import org.jdelaunay.delaunay.geometries.DEdge;
+import org.jdelaunay.delaunay.geometries.DPoint;
+import org.jdelaunay.delaunay.geometries.DTriangle;
+
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -59,22 +66,17 @@ import org.gdms.driver.DiskBufferDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.spatial.tin.model.TINMetadataFactory;
-import org.jdelaunay.delaunay.ConstrainedMesh;
-import org.jdelaunay.delaunay.error.DelaunayError;
-import org.jdelaunay.delaunay.geometries.DEdge;
-import org.jdelaunay.delaunay.geometries.DPoint;
-import org.jdelaunay.delaunay.geometries.DTriangle;
 
 /**
  *
- * @author ebocher, agueganno
+ * @author Erwan Bocher, Alexis Guéganno
  */
 public class TinBuilder {
 
         private final DataSet ds;
-        boolean intersection = true;
-        boolean flatTriangles = false;
-        private ConstrainedMesh mesh = null;
+        private boolean intersection = true;
+        private boolean flatTriangles = false;
+        private ConstrainedMesh mesh;
 
         public TinBuilder(DataSet ds) {
                 this.ds = ds;
@@ -83,7 +85,7 @@ public class TinBuilder {
         public void build() throws DriverException, FunctionException {
                 int geomFieldIndex = ds.getSpatialFieldIndex();
                 if (geomFieldIndex != -1) {
-                        Geometry geom = null;
+                        Geometry geom;
                         long count = ds.getRowCount();
                         //We prepare our input structures.
                         List<DPoint> pointsToAdd = new ArrayList<DPoint>();

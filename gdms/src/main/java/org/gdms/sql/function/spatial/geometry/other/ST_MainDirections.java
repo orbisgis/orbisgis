@@ -67,7 +67,7 @@ import org.gdms.sql.function.table.TableDefinition;
 import org.gdms.sql.function.table.TableFunctionSignature;
 
 public final class ST_MainDirections extends AbstractTableFunction {
-	private static final GeometryFactory geometryFactory = new GeometryFactory();
+	private static final GeometryFactory GF = new GeometryFactory();
 
         @Override
 	public DataSet evaluate(DataSourceFactory dsf, DataSet[] tables,
@@ -126,7 +126,7 @@ public final class ST_MainDirections extends AbstractTableFunction {
 			for (Map.Entry<Integer, Double> entry : distancesAccumulations.entrySet()) {
 				final double theta = (entry.getKey() + 0.5) * subdivisionOfAngle;
 				final double percent = entry.getValue() / sum;
-				final LineString edge = geometryFactory
+				final LineString edge = GF
 						.createLineString(new Coordinate[] {
 								origin,
 								polar2cartesian(origin, entry.getValue(), theta) });

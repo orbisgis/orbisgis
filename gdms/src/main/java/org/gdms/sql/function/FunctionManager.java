@@ -42,7 +42,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import org.gdms.data.InitializationException;
-import org.gdms.driver.ply.ST_PLYExporter;
+import org.gdms.sql.function.spatial.export.ST_PLYExporter;
 import org.gdms.sql.function.alphanumeric.AutoNumeric;
 import org.gdms.sql.function.alphanumeric.Average;
 import org.gdms.sql.function.alphanumeric.Count;

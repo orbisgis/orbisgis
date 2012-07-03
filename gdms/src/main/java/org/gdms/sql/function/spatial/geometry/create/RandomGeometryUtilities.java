@@ -49,12 +49,12 @@ import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.geom.Polygon;
 
 /**
- * Utility class for generating random Geometry objects
+ * Utility class for generating random Geometry objects.
  */
 public final class RandomGeometryUtilities {
 
         private static final Random RAND = new Random();
-        private static final GeometryFactory gf = new GeometryFactory();
+        private static final GeometryFactory GF = new GeometryFactory();
         private int maxHeight = 80;
         private int maxNodesPerLineMinus3;
 
@@ -120,7 +120,7 @@ public final class RandomGeometryUtilities {
          * @return
          */
         public Point nextPoint() {
-                return gf.createPoint(nextCoordinate());
+                return GF.createPoint(nextCoordinate());
         }
 
         /**
@@ -129,7 +129,7 @@ public final class RandomGeometryUtilities {
          * @return
          */
         public Point nextPoint(final Envelope envelope) {
-                return gf.createPoint(nextCoordinate(envelope));
+                return GF.createPoint(nextCoordinate(envelope));
         }
 
         /**
@@ -176,7 +176,7 @@ public final class RandomGeometryUtilities {
                 while (n > nodes.size()) {
                         nodes.add(nextCoordinate());
                 }
-                return gf.createLineString(nodes.toArray(new Coordinate[nodes.size()]));
+                return GF.createLineString(nodes.toArray(new Coordinate[nodes.size()]));
         }
 
         /**
@@ -190,7 +190,7 @@ public final class RandomGeometryUtilities {
                 while (n > nodes.size()) {
                         nodes.add(nextCoordinate(envelope));
                 }
-                return gf.createLineString(nodes.toArray(new Coordinate[nodes.size()]));
+                return GF.createLineString(nodes.toArray(new Coordinate[nodes.size()]));
         }
 
         /**
@@ -215,7 +215,7 @@ public final class RandomGeometryUtilities {
                 do {
                         final CoordinateList cl = new CoordinateList(nextLineString().getCoordinates());
                         cl.closeRing();
-                        result = gf.createLinearRing(cl.toCoordinateArray());
+                        result = GF.createLinearRing(cl.toCoordinateArray());
                 } while (!result.isValid());
                 return result;
         }
@@ -231,7 +231,7 @@ public final class RandomGeometryUtilities {
                         final CoordinateList cl = new CoordinateList(nextLineString(
                                 envelope).getCoordinates());
                         cl.closeRing();
-                        result = gf.createLinearRing(cl.toCoordinateArray());
+                        result = GF.createLinearRing(cl.toCoordinateArray());
                 } while (!result.isValid());
                 return result;
         }
@@ -254,7 +254,7 @@ public final class RandomGeometryUtilities {
          * @return
          */
         public Polygon nextNoHolePolygon() {
-                return gf.createPolygon(nextLinearRing(), null);
+                return GF.createPolygon(nextLinearRing(), null);
         }
 
         /**
@@ -263,7 +263,7 @@ public final class RandomGeometryUtilities {
          * @return
          */
         public Polygon nextNoHolePolygon(final Envelope envelope) {
-                return gf.createPolygon(nextLinearRing(envelope), null);
+                return GF.createPolygon(nextLinearRing(envelope), null);
         }
 
         /**
@@ -292,7 +292,7 @@ public final class RandomGeometryUtilities {
                                 holes[i] = nextLinearRing(shell.getEnvelopeInternal());
                         } while (!shell.contains(holes[i]));
                 }
-                return gf.createPolygon(shell, holes);
+                return GF.createPolygon(shell, holes);
         }
 
         /**

@@ -35,7 +35,7 @@ package org.gdms.data.indexes.btree;
 
 import org.gdms.data.values.Value;
 
-class GreaterEqualComparator extends AbstractGreaterComparator implements RangeComparator {
+class GreaterEqualComparator extends AbstractGreaterComparator {
 
         GreaterEqualComparator(Value value) {
                 super(value);

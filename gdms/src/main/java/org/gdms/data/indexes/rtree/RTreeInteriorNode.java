@@ -44,7 +44,7 @@
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  * Previous computer developer : Pierre-Yves FADET, computer engineer,
-Thomas LEDUC, scientific researcher, Fernando GONZALEZ
+ Thomas LEDUC, scientific researcher, Fernando GONZALEZ
  * CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
@@ -111,6 +111,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode {
 
         /**
          * Add a node to this' children.
+         *
          * @param node
          */
         private void addChild(RTreeNode node) {
@@ -122,6 +123,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode {
 
         /**
          * Insert the node node at the index i.
+         *
          * @param i
          * @param node
          */
@@ -134,6 +136,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode {
 
         /**
          * This element is not a leaf. Return false.
+         *
          * @return
          */
         @Override
@@ -220,6 +223,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode {
 
         /**
          * get the child stored at index i.
+         *
          * @param i
          * @return
          * @throws IOException
@@ -243,6 +247,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode {
 
         /**
          * {@inheritDoc }
+         *
          * @param v {@inheritDoc }
          * @param rowIndex {@inheritDoc }
          * @return the inserted Envelope, i.e. <tt>v</tt>
@@ -306,7 +311,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode {
 
         public int getRow(Envelope value) {
                 throw new UnsupportedOperationException("Cannot get the row "
-                        + "in an interior node");
+                        + "in an interior node.");
         }
 
         @Override
@@ -376,7 +381,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode {
          */
         public boolean mergeWithNeighbour(RTreeNode node) throws IOException {
                 int index = getIndexOf(node);
-                RTreeNode smallest = null;
+                RTreeNode smallest;
                 RTreeNode rightNeighbour = getRightNeighbour(index);
                 RTreeNode leftNeighbour = getLeftNeighbour(index);
 
@@ -452,7 +457,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode {
          *
          * @param index
          * @return true if it is possible to move from a neighbor and false
-         *         otherwise
+         * otherwise
          * @throws IOException
          */
         public boolean moveFromNeighbour(int index) throws IOException {
@@ -522,9 +527,10 @@ public class RTreeInteriorNode extends AbstractRTreeNode {
 
         /**
          * Check whether this node is valid or not. It is valid if and only if
-         *  - It is the root, and its number of children is greater than 1 and lesser than n
-         *  - It is not the root, and its number of children is between (n+1)/2 and n.
+         * - It is the root, and its number of children is greater than 1 and lesser than n
+         * - It is not the root, and its number of children is between (n+1)/2 and n.
          * Where n is the order of the tree.
+         *
          * @return
          * @throws IOException
          */
@@ -536,6 +542,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode {
         /**
          * This node can give one of its children if and only if it is still a
          * valid node with one child less.
+         *
          * @return
          * @throws IOException
          */
@@ -546,9 +553,10 @@ public class RTreeInteriorNode extends AbstractRTreeNode {
 
         /**
          * Check whether this node is valid or not. It is valid if and only if
-         *  - It is the root, and valuecount of children is greater than 1 and lesser than n
-         *  - It is not the root, and valueCount is between (n+1)/2 and n.
+         * - It is the root, and valuecount of children is greater than 1 and lesser than n
+         * - It is not the root, and valueCount is between (n+1)/2 and n.
          * Where n is the order of the tree.
+         *
          * @param valueCount
          * @return
          * @throws IOException
@@ -605,8 +613,8 @@ public class RTreeInteriorNode extends AbstractRTreeNode {
                                 children.get(i).setEnvelope(null);
                                 invalidateEnvelope();
                                 if (!getChild(i).isValid() && !moveFromNeighbour(i)) {
-                                        // move from neighbour
                                         if (!mergeWithNeighbour(getChild(i))) {
+                                                // move from neighbour
                                                 // If we cannot merge create new root
                                                 tree.removeNode(this.address);
                                                 getChild(0).setParentAddress(-1);
@@ -786,7 +794,7 @@ public class RTreeInteriorNode extends AbstractRTreeNode {
 
                 return ret;
         }
-        
+
         @Override
         public void query(Envelope value, IndexVisitor<Envelope> v) throws IOException {
                 for (int i = 0; i < children.size(); i++) {

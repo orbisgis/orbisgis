@@ -38,7 +38,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import ij.process.ImageProcessor;
-import org.apache.log4j.Logger;
 import org.grap.model.GeoRaster;
 import org.orbisgis.progress.ProgressMonitor;
 
@@ -63,12 +62,9 @@ import org.gdms.sql.function.table.TableFunctionSignature;
 
 public final class ST_RasterToXYZ extends AbstractTableFunction {
 
-        private static final Logger logger = Logger.getLogger(ST_RasterToXYZ.class);
-
         @Override
         public DataSet evaluate(DataSourceFactory dsf, DataSet[] tables,
                 Value[] values, ProgressMonitor pm) throws FunctionException {
-                logger.trace("Evaluating");
                 final DataSet sds = tables[0];
                 final int spatialFieldIndex;
                 try {

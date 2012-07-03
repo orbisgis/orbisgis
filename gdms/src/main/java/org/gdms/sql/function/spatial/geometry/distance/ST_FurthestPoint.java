@@ -49,7 +49,7 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class ST_FurthestPoint extends AbstractScalarSpatialFunction {
 

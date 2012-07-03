@@ -34,15 +34,17 @@
 
 package org.gdms.sql.function.spatial.tin.analysis;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import java.util.HashMap;
+import java.util.Deque;
 import java.util.LinkedList;
 import java.util.Map;
+
+import com.vividsolutions.jts.geom.Coordinate;
 import junit.framework.TestCase;
-import org.gdms.sql.function.FunctionException;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import org.gdms.sql.function.FunctionException;
 
 /**
  * Unit test of ST_TriangleContouring
@@ -68,8 +70,8 @@ public class ST_TriangleContouringTest  extends TestCase{
                 iso_lvls.add(Double.valueOf(isolvl));
         }
         //Split the triangle into multiple triangles
-        HashMap<Short,LinkedList<TriMarkers>> triangleToDriver=ST_TriangleContouring.processTriangle(triangleData, iso_lvls);
-        for(Map.Entry<Short,LinkedList<TriMarkers>> entry : triangleToDriver.entrySet()) {
+        Map<Short,Deque<TriMarkers>> triangleToDriver=ST_TriangleContouring.processTriangle(triangleData, iso_lvls);
+        for(Map.Entry<Short,Deque<TriMarkers>> entry : triangleToDriver.entrySet()) {
            subdividedTri+=entry.getValue().size();
         }
         assertTrue(subdividedTri==5);

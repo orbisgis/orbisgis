@@ -44,7 +44,7 @@
  *  User support leader : Gwendall Petit, geomatic engineer.
  *
  * Previous computer developer : Pierre-Yves FADET, computer engineer,
-Thomas LEDUC, scientific researcher, Fernando GONZALEZ
+ Thomas LEDUC, scientific researcher, Fernando GONZALEZ
  * CORTES, computer engineer.
  *
  * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
@@ -192,6 +192,7 @@ public class RTreeLeaf extends AbstractRTreeNode {
 
         /**
          * {@inheritDoc }
+         *
          * @param v {@inheritDoc }
          * @param rowIndex {@inheritDoc }
          * @return the inserted Envelope, i.e. <tt>v</tt>
@@ -431,14 +432,13 @@ public class RTreeLeaf extends AbstractRTreeNode {
 
         @Override
         public Envelope getEnvelope() {
-                if (envelope == null) {
-                        if (!geometries.isEmpty()) {
-                                envelope = new Envelope(geometries.get(0));
-                                for (int i = 1; i < geometries.size(); i++) {
-                                        envelope.expandToInclude(geometries.get(i));
-                                }
+                if (envelope == null && !geometries.isEmpty()) {
+                        envelope = new Envelope(geometries.get(0));
+                        for (int i = 1; i < geometries.size(); i++) {
+                                envelope.expandToInclude(geometries.get(i));
                         }
                 }
+                
                 return envelope;
         }
 

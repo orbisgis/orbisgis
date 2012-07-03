@@ -46,9 +46,9 @@ import com.vividsolutions.jts.geom.Triangle;
  * IFSTTAR 11_05_2011
  * @author Nicolas FORTIN, Judicaël PICAUT
  */
-public final class TriMarkers extends Triangle {
+final class TriMarkers extends Triangle {
 
-	public TriMarkers() {
+	TriMarkers() {
 		super(new Coordinate(), new Coordinate(), new Coordinate());
 		this.m1 = 0;
 		this.m2 = 0;
@@ -60,7 +60,7 @@ public final class TriMarkers extends Triangle {
             return "TriMarkers{" + "p1=" + p0 + ", p2=" + p1 + ", p3=" + p2 + " m1=" + m1 + ", m2=" + m2 + ", m3=" + m3 + "}";
         }
 
-	public TriMarkers(Coordinate p0, Coordinate p1, Coordinate p2, double m1,
+	TriMarkers(Coordinate p0, Coordinate p1, Coordinate p2, double m1,
 			double m2, double m3) {
 		super(p0, p1, p2);
 
@@ -75,15 +75,15 @@ public final class TriMarkers extends Triangle {
 		this.m2 = m2;
 	}
 
-	public double m1, m2, m3;
+	double m1, m2, m3;
 
-	public void setMarkers(double m1, double m2, double m3) {
+	void setMarkers(double m1, double m2, double m3) {
 		this.m1 = m1;
 		this.m2 = m2;
 		this.m3 = m3;
 	}
 
-	public void setAll(Coordinate p0, Coordinate p1, Coordinate p2, double m1,
+	void setAll(Coordinate p0, Coordinate p1, Coordinate p2, double m1,
 			double m2, double m3) {
 		setCoordinates(p0, p1, p2);
 		setMarkers(m1, m2, m3);
@@ -94,11 +94,11 @@ public final class TriMarkers extends Triangle {
 		}
 	}
 
-	public double getMinMarker() {
+	double getMinMarker() {
 		return getMinMarker((short) -1);
 	}
 
-	public double getMinMarker(short exception) {
+	double getMinMarker(short exception) {
 		double minval = Double.POSITIVE_INFINITY;
 		if (exception != 0) {
 			minval = Math.min(minval, this.m1);
@@ -112,11 +112,11 @@ public final class TriMarkers extends Triangle {
 		return minval;
 	}
 
-	public double getMaxMarker() {
+	double getMaxMarker() {
 		return getMaxMarker((short) -1);
 	}
 
-	public double getMaxMarker(short exception) {
+	double getMaxMarker(short exception) {
 		double maxval = Double.NEGATIVE_INFINITY;
 		if (exception != 0) {
 			maxval = Math.max(maxval, this.m1);
@@ -130,34 +130,33 @@ public final class TriMarkers extends Triangle {
 		return maxval;
 	}
 
-	public void setCoordinates(Coordinate p0, Coordinate p1, Coordinate p2) {
+	void setCoordinates(Coordinate p0, Coordinate p1, Coordinate p2) {
 		this.p0 = p0;
 		this.p1 = p1;
 		this.p2 = p2;
 	}
 
-	public Coordinate[] getRing() {
-		Coordinate[] ring = { p0, p1, p2, p0 };
-		return ring;
+	Coordinate[] getRing() {
+		return new Coordinate[] { p0, p1, p2, p0 };
 	}
 
 	Coordinate getVertice(short idvert) {
 		if (idvert == 0) {
-			return this.p0;
+			return p0;
 		} else if (idvert == 1) {
-			return this.p1;
+			return p1;
 		} else {
-			return this.p2;
+			return p2;
 		}
 	}
 
 	double getMarker(short idvert) {
 		if (idvert == 0) {
-			return this.m1;
+			return m1;
 		} else if (idvert == 1) {
-			return this.m2;
+			return m2;
 		} else {
-			return this.m3;
+			return m3;
 		}
 	}
 }

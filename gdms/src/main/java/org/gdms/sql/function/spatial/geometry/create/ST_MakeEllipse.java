@@ -49,13 +49,10 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class ST_MakeEllipse extends AbstractScalarSpatialFunction {
 
-    /**
-     * Create an ellipse 
-     */
     @Override
     public Value evaluate(DataSourceFactory dsf, Value... values) throws FunctionException {
 
@@ -85,13 +82,13 @@ public class ST_MakeEllipse extends AbstractScalarSpatialFunction {
 
     }
 
-    public Value createPolygonEllipse(double centerX, double centerY, double semi_minor_axis, double semi_major_axis, double orientRad) {
-        if (semi_minor_axis > 0 && semi_major_axis > 0) {
+    public Value createPolygonEllipse(double centerX, double centerY, double semiMinorAxis, double semiMajorAxis, double orientRad) {
+        if (semiMinorAxis > 0 && semiMajorAxis > 0) {
             Coordinate centre = new Coordinate(centerX, centerY);
             GeometricShapeFactory gsf = new GeometricShapeFactory();
             gsf.setCentre(centre);
-            gsf.setWidth(semi_major_axis);
-            gsf.setHeight(semi_minor_axis);
+            gsf.setWidth(semiMajorAxis);
+            gsf.setHeight(semiMinorAxis);
             gsf.setRotation(orientRad);
             Polygon ellipse = gsf.createCircle();
             return ValueFactory.createValue(ellipse);

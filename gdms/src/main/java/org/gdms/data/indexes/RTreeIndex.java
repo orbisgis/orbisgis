@@ -81,7 +81,7 @@ public class RTreeIndex implements DataSourceIndex<Envelope> {
                         if (indexFile != null) {
                                 index.newIndex(indexFile);
                         }
-                        
+
                         for (int i = 0; i < rowCount; i++) {
                                 if (i >= 1000 && i % 1000 == 0) {
                                         if (pm.isCancelled()) {
@@ -92,11 +92,9 @@ public class RTreeIndex implements DataSourceIndex<Envelope> {
                                 Value fieldValue = dataSource.getFieldValue(i, fieldId);
                                 if (fieldValue.getType() != Type.NULL) {
                                         Geometry g = fieldValue.getAsGeometry();
-                                        if (g != null) {
-                                                if (!g.isEmpty()) {
-                                                        index.insert(g.getEnvelopeInternal(),
-                                                                Integer.valueOf(i));
-                                                }
+                                        if (g != null && !g.isEmpty()) {
+                                                index.insert(g.getEnvelopeInternal(),
+                                                        Integer.valueOf(i));
                                         }
                                 }
                         }
@@ -144,7 +142,7 @@ public class RTreeIndex implements DataSourceIndex<Envelope> {
                                 + "query the index", e);
                 }
         }
-        
+
         @Override
         public void query(IndexQuery query, IndexVisitor<Envelope> visitor)
                 throws IndexException, IndexQueryException {
@@ -168,10 +166,7 @@ public class RTreeIndex implements DataSourceIndex<Envelope> {
                 try {
                         if (newGeometry.isNull()) {
                                 index.updateRows(row, 1);
-                                /*
-                                 * The index cannot hold null geometries
-                                 */
-                                return;
+                                // the index cannot hold null geometriesd
                         } else {
                                 Geometry g = newGeometry.getAsGeometry();
                                 index.insert(g.getEnvelopeInternal(), row);
