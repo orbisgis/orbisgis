@@ -30,20 +30,13 @@ package org.orbisgis.view.geocatalog.sourceWizards.db;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-
 import org.gdms.data.db.DBSource;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.Driver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.DBDriverFilter;
 import org.gdms.source.SourceManager;
-import org.orbisgis.sif.multiInputPanel.CheckBoxChoice;
-import org.orbisgis.sif.multiInputPanel.ComboBoxChoice;
-import org.orbisgis.sif.multiInputPanel.InputType;
-import org.orbisgis.sif.multiInputPanel.IntType;
-import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
-import org.orbisgis.sif.multiInputPanel.PasswordType;
-import org.orbisgis.sif.multiInputPanel.StringType;
+import org.orbisgis.sif.multiInputPanel.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
