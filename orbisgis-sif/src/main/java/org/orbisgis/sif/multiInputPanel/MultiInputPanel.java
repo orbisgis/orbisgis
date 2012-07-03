@@ -99,7 +99,7 @@ public class MultiInputPanel implements SQLUIPanel {
 	 *            unique identifier to make the content persistent.
 	 * @param title
 	 *            of the panel.
-	 * @param showFavorites
+	 * @param isShowFavorites
 	 *            option to manage or not favorites.
 	 */
 	public MultiInputPanel(String id, String title, boolean showFavorites) {
@@ -351,7 +351,7 @@ public class MultiInputPanel implements SQLUIPanel {
 		return null;
 	}
 
-	public boolean showFavorites() {
+	public boolean isShowFavorites() {
 		return showFavourites;
 	}
 
