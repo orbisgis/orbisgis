@@ -5,7 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JPanel;
 import javax.swing.JTable;
-import org.orbisgis.view.toc.actions.cui.choropleth.listener.TableListener;
 import org.orbisgis.view.toc.actions.cui.freqChart.FreqChart;
 import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
 
@@ -30,8 +29,6 @@ public class ChoroplethRangeTabPanel extends JPanel {
         JPanel tab = new JPanel();
         tableModel = new TableModel(freqChartDataModel);
         table = new JTable(tableModel);
-        tableModel.addTableModelListener(new TableListener(table, freqChartDataModel, freqChart));
-
         table.setDefaultRenderer(Color.class, new ColorCellRenderer());
 
         tab.setLayout(new BorderLayout());

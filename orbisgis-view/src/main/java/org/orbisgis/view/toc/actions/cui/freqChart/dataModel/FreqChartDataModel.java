@@ -429,16 +429,11 @@ public class FreqChartDataModel {
      * @return label the new label list
      */
     public List<String> createLabel(List<String> label) {
-        if (label.size() > thresholdNumber) {
-            for (int i = thresholdNumber; i < label.size(); i++) {
-                label.remove(i - 1);
-            }
-        } else {
-            for (int i = label.size(); i < thresholdNumber; i++) {
-                List<Double> threshold = thresholdList.get(i);
-                DecimalFormat df = new DecimalFormat("#.#");
-                label.add(df.format(threshold.get(0)) + " - " + df.format(threshold.get(1)));
-            }
+        label.clear();
+        for (int i = 1; i <= thresholdList.size(); i++) {
+            List<Double> threshold = thresholdList.get(i - 1);
+            DecimalFormat df = new DecimalFormat("#.#");
+            label.add(df.format(threshold.get(0)) + " - " + df.format(threshold.get(1)));
         }
         return label;
     }
