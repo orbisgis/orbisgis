@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * The table range TableModel
@@ -12,10 +14,13 @@ import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
  */
 class TableModel extends AbstractTableModel {
 
+    /** I18n */
+    private final static I18n I18N = I18nFactory.getI18n(TableModel.class);
+
     /** The list of the range table elements */
     private final List<RangeTab> rangesTab = new ArrayList<RangeTab>();
     /** The header of the table */
-    private final String[] header = {"Color", "Alias"};
+    private final String[] header = {I18N.tr("Color"), I18N.tr("Alias")};
 
     /**
      * TableModel constructor

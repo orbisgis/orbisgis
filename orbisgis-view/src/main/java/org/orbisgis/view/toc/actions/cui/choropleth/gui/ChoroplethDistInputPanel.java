@@ -23,12 +23,17 @@ import javax.swing.event.ChangeListener;
 import org.orbisgis.view.toc.actions.cui.choropleth.dataModel.ChoroplethDataModel;
 import org.orbisgis.view.toc.actions.cui.freqChart.FreqChart;
 import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Choropleth distribution input panel
  * @author sennj
  */
 public class ChoroplethDistInputPanel extends JPanel {
+
+    /** I18n */
+    private final static I18n I18N = I18nFactory.getI18n(ChoroplethDistInputPanel.class);
 
     /** The frequence chart data model */
     private FreqChartDataModel freqChartDataModel;
@@ -52,6 +57,15 @@ public class ChoroplethDistInputPanel extends JPanel {
     private JCheckBox yule;
     /** The current number of row */
     private int nbRow;
+
+    /** The first combobox field element */
+    private String firstCmbFieldElem = I18N.tr("1st num attrib");
+
+    /** The method string name*/
+    private String quantileStr = I18N.tr("quantile");
+    private String meanStr = I18N.tr("mean");
+    private String jenksStr = I18N.tr("jenks");
+    private String manualStr = I18N.tr("manual");
 
     /**
      * ChoroplethDistInputPanel constructor
@@ -94,7 +108,7 @@ public class ChoroplethDistInputPanel extends JPanel {
     private JPanel initNorthPanel() {
         JPanel north = new JPanel(new SpringLayout());
 
-        JLabel lblField = new JLabel("LookupValue");
+        JLabel lblField = new JLabel(I18N.tr("LookupValue"));
         cmbField = new JComboBox();
         cmbField.addActionListener(new ActionListener() {
 
@@ -102,7 +116,7 @@ public class ChoroplethDistInputPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 String fields = String.valueOf(cmbField.getSelectedItem());
 
-                if (fields.equals("1st num attrib")) {
+                if (fields.equals(firstCmbFieldElem)) {
                     statModel.setField(statModel.getFields().get(0));
                     freqChartDataModel.setData(statModel.getData());
                 } else {
@@ -117,13 +131,13 @@ public class ChoroplethDistInputPanel extends JPanel {
             }
         });
 
-        JLabel lblClass = new JLabel("Nb classes");
+        JLabel lblClass = new JLabel(I18N.tr("Nb classes"));
         cmbClass = new JComboBox();
         cmbClassListener = new CmbClassListener();
         cmbClass.addActionListener(cmbClassListener);
 
-        JLabel lblMethod = new JLabel("Method");
-        String[] cmbMethodString = {"quantile", "mean", "jenks", "manual"};
+        JLabel lblMethod = new JLabel(I18N.tr("Method"));
+        String[] cmbMethodString = {quantileStr, meanStr, jenksStr, manualStr};
         cmbMethod = new JComboBox(cmbMethodString);
         cmbMethod.setSelectedIndex(3);
         cmbMethod.addActionListener(new CmbMethodListener());
@@ -147,7 +161,7 @@ public class ChoroplethDistInputPanel extends JPanel {
         JPanel center = new JPanel();
         center.setLayout(new BorderLayout());
 
-        JLabel lblHistogram = new JLabel("Histogram");
+        JLabel lblHistogram = new JLabel(I18N.tr("Histogram"));
         lblHistogram.setPreferredSize(new Dimension(280, 25));
 
         JPanel centerInputPanel = new JPanel();
@@ -236,7 +250,7 @@ public class ChoroplethDistInputPanel extends JPanel {
     private void updateComboField() {
         List<String> fields = statModel.getFields();
 
-        cmbField.addItem("1st num attrib");
+        cmbField.addItem(firstCmbFieldElem);
 
         for (int i = 0; i < fields.size(); i++) {
             cmbField.addItem(fields.get(i));
@@ -327,13 +341,13 @@ public class ChoroplethDistInputPanel extends JPanel {
 
             ChoroplethDataModel.StatisticMethod methode = ChoroplethDataModel.StatisticMethod.MANUAL;
 
-            if (method.equals("quantile")) {
+            if (method.equals(quantileStr)) {
                 methode = ChoroplethDataModel.StatisticMethod.QUANTILES;
-            } else if (method.equals("mean")) {
+            } else if (method.equals(meanStr)) {
                 methode = ChoroplethDataModel.StatisticMethod.MEAN;
-            } else if (method.equals("jenks")) {
+            } else if (method.equals(jenksStr)) {
                 methode = ChoroplethDataModel.StatisticMethod.JENKS;
-            } else if (method.equals("manual")) {
+            } else if (method.equals(manualStr)) {
                 methode = ChoroplethDataModel.StatisticMethod.MANUAL;
             }
 
@@ -343,7 +357,7 @@ public class ChoroplethDistInputPanel extends JPanel {
             for (int i = 0; i < allowed.length; i++) {
                 cmbClass.addItem(allowed[i]);
             }
-            if (method.equals("mean")) {
+            if (method.equals(meanStr)) {
                 cmbClass.setSelectedIndex(1);
             } else {
                 cmbClass.setSelectedIndex(4);

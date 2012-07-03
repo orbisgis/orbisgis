@@ -3,12 +3,16 @@ package org.orbisgis.view.toc.actions.cui.freqChart.dataModel;
 import org.jfree.data.general.DatasetChangeListener;
 import org.jfree.data.xy.AbstractIntervalXYDataset;
 import org.jfree.data.xy.IntervalXYDataset;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Mono interval dataset
  */
 public class MonoIntervalXYDataset extends AbstractIntervalXYDataset implements IntervalXYDataset {
 
+    /** I18n */
+    private final static I18n I18N = I18nFactory.getI18n(MonoIntervalXYDataset.class);
     /** The start value */
     private double xStart;
     /** The end value */
@@ -44,7 +48,7 @@ public class MonoIntervalXYDataset extends AbstractIntervalXYDataset implements 
      */
     @Override
     public String getSeriesKey(int series) {
-        return "Series 0";
+        return I18N.tr("Series 0");
     }
 
     /**

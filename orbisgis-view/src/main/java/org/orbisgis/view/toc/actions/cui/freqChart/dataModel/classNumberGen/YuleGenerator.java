@@ -13,6 +13,6 @@ public class YuleGenerator extends ClassNumberGenerator {
      * @return the number of class
      */
     public double getClassNumber(int elem) {
-        return (double) (2.5f * Math.pow(elem, 0.25));
+        return 2.5f * Math.pow(elem, 0.25);
     }
 }

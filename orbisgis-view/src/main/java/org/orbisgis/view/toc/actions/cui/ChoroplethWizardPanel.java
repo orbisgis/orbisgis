@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.List;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import org.apache.log4j.Logger;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.classification.Range;
@@ -31,6 +32,8 @@ import org.orbisgis.view.toc.actions.cui.choropleth.listener.DataChangeListener;
 import org.orbisgis.view.toc.actions.cui.choropleth.listener.RangeAxisListener;
 import org.orbisgis.view.toc.actions.cui.freqChart.FreqChart;
 import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 
 /**
@@ -38,6 +41,11 @@ import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
  * @author maxence
  */
 public class ChoroplethWizardPanel extends JPanel implements UIPanel {
+
+    /** Logger */
+    private static final Logger LOGGER = Logger.getLogger(ChoroplethWizardPanel.class);
+    /** I18n */
+    private final static I18n I18N = I18nFactory.getI18n(ChoroplethWizardPanel.class);
 
     private ChoroplethDataModel choroplethDataModel;
     private FreqChartDataModel freqChartDataModel;
@@ -79,8 +87,8 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
         freqChart.addDataListener(new DataChangeListener(dist));
 
         JTabbedPane tabbedPane = new JTabbedPane();
-        tabbedPane.addTab("Distribution", dist);
-        tabbedPane.addTab("Symbology", symb);
+        tabbedPane.addTab(I18N.tr("Distribution"), dist);
+        tabbedPane.addTab(I18N.tr("Symbology"), symb);
 
         this.add(tabbedPane);
 
@@ -98,7 +106,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
     @Override
     public String initialize() {
-        System.out.println("***initialize***");
+        LOGGER.info(I18N.tr("***initialize***"));
         Container parent = this.getParent();
         if (parent != null) {
         }
@@ -112,7 +120,6 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
     @Override
     public String validateInput() {
-        // Todo make sure the choropleth is valid !
         return null;
     }
 

@@ -13,6 +13,6 @@ public class SturgeGenerator extends ClassNumberGenerator {
      * @return the number of class
      */
     public double getClassNumber(int elem) {
-        return (double) (1 + (3.3 * Math.log10(elem)));
+        return 1 + (3.3 * Math.log10(elem));
     }
 }

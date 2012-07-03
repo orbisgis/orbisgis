@@ -18,12 +18,17 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import org.orbisgis.view.toc.actions.cui.freqChart.FreqChart;
 import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Choropleth symbology input panel
  * @author sennj
  */
 public class ChoroplethSymbInputPanel extends JPanel {
+
+    /** I18n */
+    private final static I18n I18N = I18nFactory.getI18n(ChoroplethSymbInputPanel.class);
 
     /** The frequence chart data model */
     private FreqChartDataModel freqChartDataModel;
@@ -107,17 +112,17 @@ public class ChoroplethSymbInputPanel extends JPanel {
         JPanel centerGlobal = new JPanel();
         centerGlobal.setLayout(new BorderLayout());
 
-        JLabel lblGlobal = new JLabel("Global");
+        JLabel lblGlobal = new JLabel(I18N.tr("Global"));
         lblGlobal.setPreferredSize(new Dimension(280, 25));
 
         JPanel centerGlobalInput = new JPanel();
 
-        JLabel lblUnit = new JLabel("Units");
+        JLabel lblUnit = new JLabel(I18N.tr("Units"));
 
         String[] unitsCmbStr = {"Pixel"};
         JComboBox unitsCmb = new JComboBox(unitsCmbStr);
 
-        JLabel lblParam = new JLabel("Other param");
+        JLabel lblParam = new JLabel(I18N.tr("Other param"));
 
         centerGlobalInput.add(lblUnit);
         centerGlobalInput.add(unitsCmb);
@@ -136,12 +141,12 @@ public class ChoroplethSymbInputPanel extends JPanel {
         JPanel centerStroke = new JPanel();
         centerStroke.setLayout(new BorderLayout());
 
-        JLabel lblStroke = new JLabel("Stroke");
+        JLabel lblStroke = new JLabel(I18N.tr("Stroke"));
         lblStroke.setPreferredSize(new Dimension(280, 25));
 
         JPanel centerStrokeInput = new JPanel();
 
-        JLabel lblWidth = new JLabel("Width");
+        JLabel lblWidth = new JLabel(I18N.tr("Width"));
 
         SpinnerModel modelWidth =
                 new SpinnerNumberModel(0.5, 0, 0.5, 0.5);
@@ -159,7 +164,7 @@ public class ChoroplethSymbInputPanel extends JPanel {
             }
         });
 
-        JLabel lblColor = new JLabel("Color");
+        JLabel lblColor = new JLabel(I18N.tr("Color"));
 
         pnlColorStroke = new JPanel();
         pnlColorStroke.setBackground(Color.BLACK);
@@ -167,7 +172,7 @@ public class ChoroplethSymbInputPanel extends JPanel {
 
             @Override
             public void mousePressed(MouseEvent me) {
-                Color color = JColorChooser.showDialog(pnlColorStroke, "Pick a begin color", Color.BLACK);
+                Color color = JColorChooser.showDialog(pnlColorStroke, I18N.tr("Pick a stroke color"), Color.BLACK);
                 pnlColorStroke.setBackground(color);
                 freqChartDataModel.setStrokeColor(color);
                 pnlColorStroke.invalidate();
@@ -191,7 +196,7 @@ public class ChoroplethSymbInputPanel extends JPanel {
     private JPanel initCenterFillPanel() {
         JPanel centerFill = new JPanel();
         centerFill.setLayout(new BorderLayout());
-        JLabel lblFill = new JLabel("Fill");
+        JLabel lblFill = new JLabel(I18N.tr("Fill"));
         lblFill.setPreferredSize(new Dimension(280, 25));
 
         centerFill.add(lblFill, BorderLayout.NORTH);
@@ -200,7 +205,7 @@ public class ChoroplethSymbInputPanel extends JPanel {
         centerFillInput.setLayout(new BorderLayout());
 
         JPanel centerFillInputOP = new JPanel();
-        JLabel lblOpacity = new JLabel("Opacity");
+        JLabel lblOpacity = new JLabel(I18N.tr("Opacity"));
 
         SpinnerModel modelOpacity =
                 new SpinnerNumberModel(1, 0, 1, 0.1);
@@ -218,7 +223,7 @@ public class ChoroplethSymbInputPanel extends JPanel {
         spinnerOpacity.setModel(modelOpacity);
         spinnerOpacity.setPreferredSize(new Dimension(50, 25));
 
-        JLabel lblStart = new JLabel("Start");
+        JLabel lblStart = new JLabel(I18N.tr("Start"));
 
         pnlColorBegin = new JPanel();
         pnlColorBegin.setName("COLOR_BEGIN");
@@ -231,7 +236,7 @@ public class ChoroplethSymbInputPanel extends JPanel {
             }
         });
 
-        JLabel lblEnd = new JLabel("End");
+        JLabel lblEnd = new JLabel(I18N.tr("End"));
         pnlColorEnd = new JPanel();
         pnlColorEnd.setName("COLOR_END");
         pnlColorEnd.setBackground(freqChartDataModel.getColorInit().get(1));
@@ -253,11 +258,11 @@ public class ChoroplethSymbInputPanel extends JPanel {
         centerFillInput.add(centerFillInputOP, BorderLayout.NORTH);
 
         JPanel centerFillInputSch = new JPanel();
-        JLabel lblScheme = new JLabel("Scheme");
+        JLabel lblScheme = new JLabel(I18N.tr("Scheme"));
         String[] schemeCmbStr = {"blue2red"};
         JComboBox schemeCmb = new JComboBox(schemeCmbStr);
 
-        JCheckBox revert = new JCheckBox("revert");
+        JCheckBox revert = new JCheckBox(I18N.tr("revert"));
         revert.setSelected(true);
 
         centerFillInputSch.add(lblScheme);
@@ -278,12 +283,12 @@ public class ChoroplethSymbInputPanel extends JPanel {
     private void changeColor(JPanel sender) {
         List<Color> color = freqChartDataModel.getColorInit();
         if (sender.getName().equals("COLOR_BEGIN")) {
-            color.set(0,JColorChooser.showDialog(sender, "Pick a begin color", freqChartDataModel.getColorInit().get(0)));
+            color.set(0,JColorChooser.showDialog(sender, I18N.tr("Pick a begin color"), freqChartDataModel.getColorInit().get(0)));
             freqChartDataModel.setColorInit(color);
             pnlColorBegin.setBackground(color.get(0));
             pnlColorBegin.invalidate();
         } else {
-            color.set(1,JColorChooser.showDialog(sender, "Pick an end color", freqChartDataModel.getColorInit().get(1)));
+            color.set(1,JColorChooser.showDialog(sender, I18N.tr("Pick a end color"), freqChartDataModel.getColorInit().get(1)));
             freqChartDataModel.setColorInit(color);
             pnlColorEnd.setBackground(color.get(1));
             pnlColorEnd.invalidate();

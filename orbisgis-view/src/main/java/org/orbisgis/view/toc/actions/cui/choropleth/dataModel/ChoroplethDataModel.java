@@ -2,7 +2,6 @@ package org.orbisgis.view.toc.actions.cui.choropleth.dataModel;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
