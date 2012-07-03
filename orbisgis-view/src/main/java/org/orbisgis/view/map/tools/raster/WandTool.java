@@ -58,10 +58,6 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.renderer.legend.carto.LegendFactory;
-import org.orbisgis.core.renderer.legend.carto.UniqueSymbolLegend;
-import org.orbisgis.core.renderer.symbol.Symbol;
-import org.orbisgis.core.renderer.symbol.SymbolFactory;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
@@ -74,13 +70,6 @@ public class WandTool extends AbstractPointTool {
 			.getService(DataManager.class)).getDataSourceFactory();
         private static Logger UILOGGER = Logger.getLogger("gui."+WandTool.class);
 	private final static GeometryFactory geometryFactory = new GeometryFactory();
-	private final static UniqueSymbolLegend uniqueSymbolLegend = LegendFactory
-			.createUniqueSymbolLegend();
-	static {
-		Symbol polygonSymbol = SymbolFactory.createPolygonSymbol(null,
-				Color.ORANGE);
-		uniqueSymbolLegend.setSymbol(polygonSymbol);
-	}
 
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
 		try {
