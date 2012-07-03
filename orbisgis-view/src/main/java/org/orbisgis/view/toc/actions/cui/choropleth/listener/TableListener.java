@@ -134,7 +134,7 @@ public class TableListener extends AbstractAction implements
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         row = table.convertRowIndexToModel(table.getEditingRow());
         column = table.convertColumnIndexToModel(table.getEditingColumn());
         oldValue = table.getModel().getValueAt(row, column);
