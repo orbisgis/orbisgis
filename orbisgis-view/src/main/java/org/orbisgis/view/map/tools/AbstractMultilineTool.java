@@ -36,21 +36,19 @@
  */
 package org.orbisgis.view.map.tools;
 
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.DrawingException;
 import org.orbisgis.view.map.tool.FinishedAutomatonException;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.tools.generated.Multiline;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
 
 public abstract class AbstractMultilineTool extends Multiline implements
 		InsertionTool {
@@ -63,8 +61,9 @@ public abstract class AbstractMultilineTool extends Multiline implements
 			throws FinishedAutomatonException, TransitionException {
 		points = ToolUtilities.removeDuplicated(points);
 		if (((points.size() < 2) && (points.size() > 0))
-				|| ((points.size() == 0) && (lines.size() == 0)))
-			throw new TransitionException(I18N.tr("Lines must have at least two points")); //$NON-NLS-1$
+				|| ((points.isEmpty()) && (lines.isEmpty()))) {
+                        throw new TransitionException(I18N.tr("Lines must have at least two points"));
+                }
 		if (points.size() > 0) {
 			addLine();
 		}
@@ -72,13 +71,13 @@ public abstract class AbstractMultilineTool extends Multiline implements
 		MultiLineString mls = gf.createMultiLineString(lines
 				.toArray(new LineString[0]));
 		if (!mls.isValid()) {
-			throw new TransitionException(I18N.tr("Invalid multiline")); //$NON-NLS-1$
+			throw new TransitionException(I18N.tr("Invalid multiline"));
 		}
 
 		multilineDone(mls, vc, tm);
 
 		lines.clear();
-		transition("init"); //$NON-NLS-1$
+		transition(Code.INIT);
 	}
 
 	protected abstract void multilineDone(MultiLineString mls, MapContext vc,
@@ -104,18 +103,19 @@ public abstract class AbstractMultilineTool extends Multiline implements
 	public void transitionTo_Line(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
 		points = ToolUtilities.removeDuplicated(points);
-		if (points.size() < 2)
-			throw new TransitionException(I18N.tr("Lines must have at least two points")); //$NON-NLS-1$
+		if (points.size() < 2) {
+                        throw new TransitionException(I18N.tr("Lines must have at least two points"));
+                }
 
 		addLine();
 
-		transition("init"); //$NON-NLS-1$
+		transition(Code.INIT);
 	}
 
 	protected void addLine() throws TransitionException {
 		LineString ls = gf.createLineString(points.toArray(new Coordinate[0]));
 		if (!ls.isValid()) {
-			throw new TransitionException(I18N.tr("Invalid multiline")); //$NON-NLS-1$
+			throw new TransitionException(I18N.tr("Invalid multiline"));
 		}
 		lines.add(ls);
 	}
@@ -150,8 +150,9 @@ public abstract class AbstractMultilineTool extends Multiline implements
 					.toArray(new Coordinate[0])));
 		}
 
-		if (tempLines.size() == 0)
-			return;
+		if (tempLines.isEmpty()) {
+                        return;
+                }
 
 		MultiLineString mls = gf.createMultiLineString(tempLines
 				.toArray(new LineString[0]));
@@ -159,7 +160,7 @@ public abstract class AbstractMultilineTool extends Multiline implements
 		tm.addGeomToDraw(mls);
 
 		if (!mls.isValid()) {
-			throw new DrawingException(I18N.tr("Invalid multiline")); //$NON-NLS-1$
+			throw new DrawingException(I18N.tr("Invalid multiline"));
 		}
 	}
 

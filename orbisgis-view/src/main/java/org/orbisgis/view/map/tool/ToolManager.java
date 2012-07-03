@@ -38,19 +38,10 @@
 package org.orbisgis.view.map.tool;
 
 import com.vividsolutions.jts.geom.*;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
+import com.vividsolutions.jts.geom.Polygon;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
-import java.awt.Image;
 import java.awt.Point;
-import java.awt.Toolkit;
-import java.awt.Transparency;
+import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
@@ -70,12 +61,7 @@ import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.LayerListener;
-import org.orbisgis.core.layerModel.LayerListenerAdapter;
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.layerModel.MapContextListener;
-import org.orbisgis.core.layerModel.SelectionEvent;
+import org.orbisgis.core.layerModel.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
 import org.orbisgis.core.renderer.AllowAllRenderContext;
@@ -87,6 +73,7 @@ import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.view.map.tool.Automaton.Code;
 import org.orbisgis.view.map.tools.PanTool;
 import org.orbisgis.view.map.tools.ToolUtilities;
 import org.orbisgis.view.map.tools.ZoomInTool;
@@ -101,10 +88,6 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class ToolManager implements MouseListener,MouseWheelListener,MouseMotionListener {
 
-        public static final String TERMINATE = "t";
-        public static final String RELEASE = "release";
-        public static final String PRESS = "press";
-        public static final String POINT = "point";
         public static GeometryFactory toolsGeometryFactory = new GeometryFactory();
         
         protected final static I18n I18N = I18nFactory.getI18n(ToolManager.class);
@@ -247,9 +230,9 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
                         if (e.getClickCount() == 2) {
-                                leftClickTransition(e, TERMINATE);
+                                leftClickTransition(e, Code.TERMINATE);
                         } else {
-                                leftClickTransition(e, POINT);
+                                leftClickTransition(e, Code.POINT);
                         }
                 } else if (e.getButton() == MouseEvent.BUTTON3) {
                         if (showPopup) {
@@ -268,16 +251,16 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                         } else {
                                 setTool(new ZoomOutTool());
                         }
-                        leftClickTransition(e, PRESS);
-                        leftClickTransition(e, RELEASE);
-                        leftClickTransition(e, POINT);
+                        leftClickTransition(e, Code.PRESS);
+                        leftClickTransition(e, Code.RELEASE);
+                        leftClickTransition(e, Code.POINT);
                         setTool(oldTool);
                 } catch (TransitionException e1) {
-                        UILOGGER.error(I18N.tr("Cannot set the automaton"), e1); //$NON-NLS-1$
+                        UILOGGER.error(I18N.tr("Cannot set the automaton"), e1);
                 }
         }
 
-        private void leftClickTransition(MouseEvent e, String transitionCode) {
+        private void leftClickTransition(MouseEvent e, Code transitionCode) {
                 try {
                         Point2D p = e.getPoint();
                         if (worldAdjustedPoint != null) {
@@ -320,13 +303,13 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         @Override
         public void mousePressed(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                        leftClickTransition(e, PRESS);
+                        leftClickTransition(e, Code.PRESS);
                 } else if (e.getButton() == MouseEvent.BUTTON2) {
                         try {
                                 setTool(new PanTool());
-                                leftClickTransition(e, PRESS);
+                                leftClickTransition(e, Code.PRESS);
                         } catch (TransitionException e1) {
-                                UILOGGER.error(I18N.tr("Cannot set the automaton"), e1); //$NON-NLS-1$
+                                UILOGGER.error(I18N.tr("Cannot set the automaton"), e1);
                         }
                 }
         }
@@ -335,7 +318,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         public void mouseReleased(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1
                         || e.getButton() == MouseEvent.BUTTON2) {
-                        leftClickTransition(e, RELEASE);
+                        leftClickTransition(e, Code.RELEASE);
                 }
         }
 
@@ -461,7 +444,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                         Graphics2D g = image.createGraphics();
                         g.setTransform(AffineTransform.getTranslateInstance(16, 16));
                         drawCursor(g);
-                        Cursor crossCursor = Toolkit.getDefaultToolkit().createCustomCursor(image, new Point(16, 16), "crossCursor"); //$NON-NLS-1$
+                        Cursor crossCursor = Toolkit.getDefaultToolkit().createCustomCursor(image, new Point(16, 16), "crossCursor");
 
                         c = crossCursor;
                 } else {
@@ -476,7 +459,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
 
                         Point hotSpot = getTool().getHotSpotOffset();
                         hotSpot = new Point(hotSpot.x + xOffset, hotSpot.y + yOffset);
-                        c = Toolkit.getDefaultToolkit().createCustomCursor(bi, hotSpot, ""); //$NON-NLS-1$
+                        c = Toolkit.getDefaultToolkit().createCustomCursor(bi, hotSpot, "");
                 }
 
                 component.setCursor(c);
@@ -507,14 +490,14 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
          * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#setUITolerance(int)
          */
         public void setUITolerance(int tolerance) {
-                UILOGGER.info("setting uiTolerance: " + tolerance); //$NON-NLS-1$
+                UILOGGER.info("setting uiTolerance: " + tolerance);
                 uiTolerance = tolerance;
         }
 
         /**
          * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#transition(java.lang.String)
          */
-        public void transition(String code) throws NoSuchTransitionException,
+        public void transition(Code code) throws NoSuchTransitionException,
                 TransitionException {
                 if (!currentTool.isEnabled(mapContext, this)
                         && (!currentTool.getClass().equals(defaultTool))) {
@@ -558,21 +541,21 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 } else {
                         showPopup = true;
                         String[] labels = currentTool.getTransitionLabels();
-                        String[] codes = currentTool.getTransitionCodes();
+                        Code[] codes = currentTool.getTransitionCodes();
                         toolPopUp = new JPopupMenu();
                         for (int i = 0; i < codes.length; i++) {
                                 JMenuItem item = new JMenuItem(labels[i]);
-                                item.setActionCommand(codes[i]);
+                                item.setActionCommand(codes[i].toString().toUpperCase());
                                 item.addActionListener(new ActionListener() {
 
                                         @Override
                                         public void actionPerformed(ActionEvent e) {
                                                 try {
-                                                        transition(e.getActionCommand());
+                                                        transition(Code.valueOf(e.getActionCommand().toUpperCase()));
                                                         component.repaint();
                                                 } catch (NoSuchTransitionException e1) {
                                                         UILOGGER.error(
-                                                                I18N.tr("Error in the tool."), e1); //$NON-NLS-1$
+                                                                I18N.tr("Error in the tool."), e1);
                                                 } catch (TransitionException e1) {
                                                         fireToolError(e1);
                                                 }
@@ -691,7 +674,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                         }
                 } catch (DriverException e) {
                         UILOGGER.warn(
-                                I18N.tr("Cannot recalculate the handlers"), e); //$NON-NLS-1$
+                                I18N.tr("Cannot recalculate the handlers"), e);
                 }
         }
 

@@ -89,7 +89,7 @@ public class VertexAdditionTool extends VertexAddition {
                         throw new TransitionException(e);
                 }
 
-                transition("init"); //$NON-NLS-1$
+                transition(Code.INIT);
         }
 
         @Override
