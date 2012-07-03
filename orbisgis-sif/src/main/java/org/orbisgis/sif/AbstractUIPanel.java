@@ -56,7 +56,7 @@ public abstract class AbstractUIPanel implements UIPanel {
 		return null;
 	}
 
-	public boolean showFavorites() {
+	public boolean isShowFavorites() {
 		return showFavorites;
 	}
 

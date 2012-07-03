@@ -227,8 +227,8 @@ public class PersistentPanelDecorator implements SQLUIPanel {
 		return panel.postProcess();
 	}
 
-	public boolean showFavorites() {
-		return panel.showFavorites();
+	public boolean isShowFavorites() {
+		return panel.isShowFavorites();
 	}
 
 }

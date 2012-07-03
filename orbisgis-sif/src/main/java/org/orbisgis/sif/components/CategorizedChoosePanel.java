@@ -155,7 +155,7 @@ public class CategorizedChoosePanel extends JPanel implements SQLUIPanel {
 
 
     @Override
-    public boolean showFavorites() {
+    public boolean isShowFavorites() {
         return false;
     }
 
