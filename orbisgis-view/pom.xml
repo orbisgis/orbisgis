@@ -101,9 +101,9 @@
                         <type>jar</type>
                 </dependency>
                 <dependency>
-                        <groupId>jfree</groupId>
-                        <artifactId>jfreechart</artifactId>
-                        <version>1.0.0</version>
+                    <groupId>org.jfree</groupId>
+                    <artifactId>jfreechart</artifactId>
+                    <version>1.0.14</version>
                 </dependency>
                 <dependency>
                         <groupId>${project.groupId}</groupId>
