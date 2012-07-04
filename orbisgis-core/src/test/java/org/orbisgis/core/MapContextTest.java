@@ -40,8 +40,10 @@ package org.orbisgis.core;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.GraphicsEnvironment;
-import java.io.*;
-import net.opengis.ows_context.OWSContextType;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
@@ -53,7 +55,6 @@ import org.orbisgis.core.map.export.MapExportManager;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
-@Deprecated
 public class MapContextTest extends AbstractTest {
 
 	@Override

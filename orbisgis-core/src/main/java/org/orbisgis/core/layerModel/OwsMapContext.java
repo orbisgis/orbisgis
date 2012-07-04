@@ -497,7 +497,7 @@ public final class OwsMapContext extends BeanMapContext {
          */
         private void parseJaxbLayer(LayerType lt,ILayer parentLayer) throws LayerException {
                 //Test if lt is a group
-                if(!lt.getLayer().isEmpty() || (lt.getStyleList()==null && lt.getDataURL()==null )) {
+                if(!lt.getLayer().isEmpty() || (lt.getDataURL()==null )) {
                         //it will create a LayerCollection
                         parseJaxbLayerCollection(lt,parentLayer);
                 }else{
