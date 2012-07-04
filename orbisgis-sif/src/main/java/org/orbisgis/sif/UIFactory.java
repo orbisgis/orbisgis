@@ -37,6 +37,10 @@ import org.gdms.data.DataSourceFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+/**
+ * UIFactory is a factory to build SIF dialog.
+ * @author ebocher
+ */
 
 public class UIFactory {
         protected final static I18n i18n = I18nFactory.getI18n(UIFactory.class);
@@ -112,8 +116,20 @@ public class UIFactory {
 	public static boolean showDialog(UIPanel[] panels) {
 		return showDialog(panels, true);
 	}
+        
+        public static boolean showDialog(UIPanel[] panels, boolean okCancel) {
+                return showDialog(panels, okCancel, false);
+        }
 
-	public static boolean showDialog(UIPanel[] panels, boolean okCancel) {
+        /**Create a dialog and 
+         * specify if the dialog shows the ok cancel buttons and if
+         * its on top of all swing GUI.
+         * @param panels
+         * @param okCancel
+         * @param onTop
+         * @return 
+         */
+	public static boolean showDialog(UIPanel[] panels, boolean okCancel, boolean onTop) {
 		AbstractOutsideFrame dlg;
 		if (panels.length == 0) {
 			throw new IllegalArgumentException(
@@ -131,10 +147,15 @@ public class UIFactory {
 		dlg.pack();
 		dlg.setLocationRelativeTo(mainFrame);
 		dlg.setVisible(true);
+                dlg.setAlwaysOnTop(onTop);
 
 		return dlg.isAccepted();
 	}
 
+        public static boolean showDialog(UIPanel panel, boolean  okCancel, boolean onTop) {
+		return showDialog(new UIPanel[] { panel }, okCancel,onTop);
+	}
+        
 	public static boolean showDialog(UIPanel panel) {
 		return showDialog(new UIPanel[] { panel }, true);
 	}
