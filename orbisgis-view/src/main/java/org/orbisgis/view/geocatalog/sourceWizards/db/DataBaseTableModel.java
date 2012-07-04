@@ -32,9 +32,12 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.TableDescription;
 import org.gdms.source.SourceManager;
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -70,7 +73,8 @@ public class DataBaseTableModel extends AbstractTableModel {
                         schemas = dbDriver.getSchemas(connection);
                         tables = dbDriver.getTables(connection);
                         SourceManager sourceManager = firstPanel.getSourceManager();
-
+                        DataManager dm = (DataManager) Services.getService(DataManager.class);
+                        DataSourceFactory dsf = dm.getDataSourceFactory();
                         columnNames = new String[]{"Table name", "Schema", "PK", "Spatial field", "EPSG code", "Export"};
                         for (String sourceName : sourceNames) {
                                 int type = sourceManager.getSource(sourceName).getType();
@@ -78,6 +82,7 @@ public class DataBaseTableModel extends AbstractTableModel {
                                         DataBaseRow row = new DataBaseRow(sourceName, "public", "gid", "the_geom", -1, Boolean.TRUE);
                                         data.add(row);
                                 } else if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
+                                        dsf.getDataSource(sourceName).getCRS();
                                         DataBaseRow row = new DataBaseRow(sourceName, "public", "gid", "the_geom", -1, Boolean.TRUE);
                                         row.setIsSpatial(true);
                                         data.add(row);
@@ -169,7 +174,7 @@ public class DataBaseTableModel extends AbstractTableModel {
          */
         public boolean isSourceExist(String source) {
                 for (DataBaseRow row : data) {
-                        if (row.getSourceName().equals(source)) {
+                        if (row.getInputSourceName().equals(source)) {
                                 return true;
                         }
                 }

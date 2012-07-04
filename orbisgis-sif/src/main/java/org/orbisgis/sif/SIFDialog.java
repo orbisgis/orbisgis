@@ -35,7 +35,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.HashMap;
-
 import javax.swing.JButton;
 import javax.swing.JPanel;
 

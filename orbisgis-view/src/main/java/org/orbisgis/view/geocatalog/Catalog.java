@@ -72,6 +72,7 @@ import org.orbisgis.view.geocatalog.filters.factories.SourceTypeIs;
 import org.orbisgis.view.geocatalog.io.ExportInFileOperation;
 import org.orbisgis.view.geocatalog.renderer.DataSourceListCellRenderer;
 import org.orbisgis.view.geocatalog.sourceWizards.db.ConnectionPanel;
+import org.orbisgis.view.geocatalog.sourceWizards.db.TableExportPanel;
 import org.orbisgis.view.geocatalog.sourceWizards.db.TableSelectionPanel;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
@@ -378,6 +379,17 @@ public class Catalog extends JPanel implements DockingPanel {
          * The user can save a source in a database
          */
         public void onMenuSaveInDB() {
+                DataManager dm = Services.getService(DataManager.class);
+                SourceManager sm = dm.getSourceManager();
+                String[] res = getSelectedSources();
+                final ConnectionPanel firstPanel = new ConnectionPanel(sm);
+                TableExportPanel tableExportPanel = new TableExportPanel(firstPanel, res);
+                if (UIFactory.showDialog(new UIPanel[] { firstPanel,
+				tableExportPanel }, true, true)) {
+                        
+                        
+                        
+                }
         }
 
         /**

@@ -30,14 +30,16 @@ package org.orbisgis.view.geocatalog.sourceWizards.db;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.gdms.driver.DataSet;
 
 /**
  *
- *    @author ebocher
+ * @author ebocher
  */
 public class DataBaseRow {
 
-        private String sourceName;
+        private String intputSourceName;
+        private String outPutsourceName;
         private String schema;
         private String pk = "gid";
         private int epsg_code;
@@ -45,14 +47,14 @@ public class DataBaseRow {
         private boolean isSpatial = false;
         private String spatialField = "the_geom";
         Pattern pattern = Pattern.compile("[^a-zA-Z]", Pattern.CASE_INSENSITIVE);
-        private String errorMessage=null;
+        private String errorMessage = null;
 
         /*
-         *    Create a row object that stores all informations to export in a
+         * Create a row object that stores all informations to export in a
          * database
          */
         public DataBaseRow(String sourceName, String schema, String pk, String spatialField, int epsg_code, Boolean export) {
-                this.sourceName = sourceName;
+                this.intputSourceName = sourceName;
                 this.schema = schema;
                 this.pk = pk;
                 this.spatialField = spatialField;
@@ -61,81 +63,81 @@ public class DataBaseRow {
         }
 
         /*
-         *    Specify if the input source is spatial
+         * Specify if the input source is spatial
          */
         public boolean isIsSpatial() {
                 return isSpatial;
         }
 
         /*
-         *    Set if the input source is spatial
+         * Set if the input source is spatial
          */
         public void setIsSpatial(boolean isSpatial) {
                 this.isSpatial = isSpatial;
         }
 
         /*
-         *    Return the spatial field
+         * Return the spatial field
          */
         public String getSpatialField() {
                 return spatialField;
         }
 
         /**
-         *    Return the EPSG code
+         * Return the EPSG code
          *
-         *    @return
+         * @return
          */
         public int getEpsg_code() {
                 return epsg_code;
         }
 
         /**
-         *    Specify if the input source can be exported
+         * Specify if the input source can be exported
          *
-         *    @return
+         * @return
          */
         public Boolean isExport() {
                 return export;
         }
 
         /**
-         *    Return the list of all primary key
+         * Return the list of all primary key
          *
-         *    @return
+         * @return
          */
         public String getPK() {
                 return pk;
         }
 
         /**
-         *    Return the name of the schema
+         * Return the name of the schema
          *
-         *    @return
+         * @return
          */
         public String getSchema() {
                 return schema;
         }
 
         /**
-         *    Return the name of the input source
+         * Return the name of the input source
          *
-         *    @return
+         * @return
          */
-        public String getSourceName() {
-                return sourceName;
+        public String getInputSourceName() {
+                return intputSourceName;
         }
 
         /**
-         *    Return the value of the cell
+         * Return the value of the cell
          *
-         *    @param col
-         *    @return
+         * @param col
+         * @return
          */
         public Object getValue(int col) {
                 switch (col) {
                         case 0:
-                                return getSourceName();
+                                return getInputSourceName();
                         case 1:
                                 return getSchema();
                         case 2:
@@ -152,15 +154,15 @@ public class DataBaseRow {
         }
 
         /**
-         *    Set a value to the cell
+         * Set a value to the cell
          *
-         *    @param aValue
-         *    @param col
+         * @param aValue
+         * @param col
          */
         public void setValue(Object aValue, int col) {
                 switch (col) {
                         case 0:
-                                setSourceName(String.valueOf(aValue));
+                                setInputSourceName(String.valueOf(aValue));
                                 break;
                         case 1:
                                 setSchema(String.valueOf(aValue));
@@ -172,12 +174,12 @@ public class DataBaseRow {
                                 setSpatialField(String.valueOf(aValue));
                                 break;
                         case 4:
-                                try{
+                                try {
                                         Integer value = Integer.valueOf(aValue.toString());
                                         setEpsg_code(value);
                                         setErrorMessage(null);
                                 } catch (NumberFormatException e) {
-                                        setErrorMessage("Cannot format the EPSG code into an int. The default code will be used." );
+                                        setErrorMessage("Cannot format the EPSG code into an int. The default code will be used.");
                                 }
                                 break;
 
@@ -191,74 +193,74 @@ public class DataBaseRow {
         }
 
         /**
-         *   Change the input source name
+         * Change the input source name
          *
-         *   @param sourceName
+         * @param sourceName
          */
-        private void setSourceName(String sourceName) {
-                this.sourceName = sourceName;
+        private void setInputSourceName(String sourceName) {
+                this.intputSourceName = sourceName;
         }
 
         /**
-         *    Change the EPSG code
+         * Change the EPSG code
          *
-         *    @param epsg_code
+         * @param epsg_code
          */
         public void setEpsg_code(int epsg_code) {
                 this.epsg_code = epsg_code;
         }
 
         /**
-         *    Change the status to export the source
+         * Change the status to export the source
          *
-         *    @param export
+         * @param export
          */
         public void setExport(Boolean export) {
                 this.export = export;
         }
 
         /**
-         *    Change the name of the primary key
+         * Change the name of the primary key
          *
-         *    @param pk
+         * @param pk
          */
         public void setPk(String pk) {
                 this.pk = pk;
         }
 
         /**
-         *    Change the schema name
+         * Change the schema name
          *
-         *    @param schema
+         * @param schema
          */
         public void setSchema(String schema) {
                 this.schema = schema;
         }
 
         /**
-         *    Set a new spatial field
+         * Set a new spatial field
          *
-         *    @param spatialField
+         * @param spatialField
          */
         public void setSpatialField(String spatialField) {
                 this.spatialField = spatialField;
         }
 
         /**
-         *    Return all cell values as a list of objects
+         * Return all cell values as a list of objects
          *
-         *    @return
+         * @return
          */
         public Object[] getObjects() {
-                return new Object[]{getSourceName(), getSchema(), getPK(), getSpatialField(), getEpsg_code(), isExport()};
+                return new Object[]{getInputSourceName(), getSchema(), getPK(), getSpatialField(), getEpsg_code(), isExport()};
         }
 
         /**
-         *   Check if the value contains special characters in it
+         * Check if the value contains special characters in it
          *
-         *   @param value
-         *   @return value
-         *   @throws DBExporterException
+         * @param value
+         * @return value
+         * @throws DBExporterException
          */
         public String checkString(String value) throws DBExporterException {
                 Matcher matcher = pattern.matcher(value);
@@ -270,13 +272,33 @@ public class DataBaseRow {
 
         }
 
+        public void setOutPutsourceName(String outPutsourceName) {
+                this.outPutsourceName = outPutsourceName;
+        }
+
+        public String getOutPutsourceName() {
+                return outPutsourceName;
+        }
+
         private void setErrorMessage(String errorMessage) {
-                this.errorMessage= errorMessage;
+                this.errorMessage = errorMessage;
         }
 
         public String getErrorMessage() {
                 return errorMessage;
         }
-        
-        
+
+        public String toSQL(DataSet dataSet) {
+                StringBuilder sb = new StringBuilder();
+                sb.append("SELECT ");
+                if (getEpsg_code() == -1) {
+                        sb.append("*");
+                } else {
+                        sb.append("ST_Transform()");
+                }
+                sb.append(" FROM ");
+                sb.append(getInputSourceName());
+                sb.append(";");
+                return sb.toString();
+        }
 }

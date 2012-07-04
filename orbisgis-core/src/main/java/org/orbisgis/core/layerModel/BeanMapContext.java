@@ -39,7 +39,6 @@ package org.orbisgis.core.layerModel;
 import com.vividsolutions.jts.geom.Envelope;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import org.jproj.CoordinateReferenceSystem;
 import org.orbisgis.core.renderer.se.Style;
 
 /**
@@ -56,27 +55,26 @@ public abstract class BeanMapContext implements MapContext {
         protected Style[] selectedStyles = new Style[]{};
         protected ILayer activeLayer = null;
         protected ILayer layerModel;
-        private CoordinateReferenceSystem coordinateReferenceSystem = null;
+        protected int epsg_code = -1;
 
         /**
-         * Get the value of coordinateReferenceSystem
+         * Get the value of the EPSG code
          *
-         * @return the value of coordinateReferenceSystem
+         * @return the value of the EPSG code
          */
-        public CoordinateReferenceSystem getCoordinateReferenceSystem() {
-                return coordinateReferenceSystem;
+        public int getCoordinateReferenceSystem() {
+                return epsg_code;
         }
 
         /**
-         * Set the value of coordinateReferenceSystem
+         * Set the value of the EPSG code
          *
-         * @param coordinateReferenceSystem new value of
-         * coordinateReferenceSystem
+         * @param coordinateReferenceSystem new value of the EPSG code
          */
-        public void setCoordinateReferenceSystem(CoordinateReferenceSystem coordinateReferenceSystem) {
-                CoordinateReferenceSystem oldCoordinateReferenceSystem = this.coordinateReferenceSystem;
-                this.coordinateReferenceSystem = coordinateReferenceSystem;
-                propertyChangeSupport.firePropertyChange(PROP_COORDINATEREFERENCESYSTEM, oldCoordinateReferenceSystem, coordinateReferenceSystem);
+        public void setCoordinateReferenceSystem(int epsg) {
+                int oldEPSG_code = this.epsg_code;
+                this.epsg_code = oldEPSG_code;
+                propertyChangeSupport.firePropertyChange(PROP_COORDINATEREFERENCESYSTEM, oldEPSG_code, epsg);
         } 
        
         

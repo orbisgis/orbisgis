@@ -117,7 +117,7 @@ public class TableExportPanel extends JPanel implements UIPanel {
                                         infoMessage = error;
                                         break;
                                 } else {
-                                        String sourceName = row.getSourceName();
+                                        String sourceName = row.getInputSourceName();
                                         String schema = row.getSchema();
                                         if (sourceName.length() == 0) {
                                                 validateInput = I18N.tr("The name of the table cannot be null");
