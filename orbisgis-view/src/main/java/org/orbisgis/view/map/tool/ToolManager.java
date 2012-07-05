@@ -800,12 +800,12 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 lineSymbolizer = new LineSymbolizer();
                 PenStroke ps = (PenStroke)lineSymbolizer.getStroke();
                 ((SolidFill)(ps).getFill()).setColor(new ColorLiteral(col));
-                ps.setWidth(new RealLiteral(2));
+                ps.setWidth(new RealLiteral(0.1));
                 //And finally, the AreaSymbolizer...
                 areaSymbolizer = new AreaSymbolizer();
                 PenStroke psa = (PenStroke)areaSymbolizer.getStroke();
                 ((SolidFill)(psa).getFill()).setColor(new ColorLiteral(col));
-                psa.setWidth(new RealLiteral(2));
+                psa.setWidth(new RealLiteral(0.1));
                 ((SolidFill)areaSymbolizer.getFill()).setColor(new ColorLiteral(Color.YELLOW));
         }
 
