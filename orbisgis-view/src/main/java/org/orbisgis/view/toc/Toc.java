@@ -176,7 +176,7 @@ public class Toc extends JPanel implements EditorDockable {
                 setEmptyLayerModel(tree);
                 treeRenderer = new TocRenderer(this);
                 tree.setCellRenderer(treeRenderer);
-                tree.setCellEditor(new DefaultTreeCellEditor(tree, treeRenderer,new TocTreeEditor(tree)));
+                tree.setCellEditor(new TocTreeEditor(tree));
                 tree.addMouseListener(new PopupMouselistener());
                 //Add a tree selection listener
                 tree.getSelectionModel().addTreeSelectionListener(EventHandler.create(TreeSelectionListener.class, this, "onTreeSelectionChange"));

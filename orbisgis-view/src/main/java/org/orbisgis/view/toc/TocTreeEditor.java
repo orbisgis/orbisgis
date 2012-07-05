@@ -93,7 +93,13 @@ public class TocTreeEditor implements TreeCellEditor {
 
         @Override
 	public boolean isCellEditable(EventObject anEvent) {
-		return true;
+		if (anEvent instanceof MouseEvent) {
+			MouseEvent me = (MouseEvent) anEvent;
+			if (me.getClickCount() >= 2) {
+                                return true;
+                        }
+		}
+		return false;
 	}
 
         @Override

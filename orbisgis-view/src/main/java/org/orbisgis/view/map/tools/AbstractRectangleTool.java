@@ -81,7 +81,7 @@ public abstract class AbstractRectangleTool extends ZoomIn {
 			rectangleDone(rect, false, vc, tm);
 		}
 
-		transition("init"); //$NON-NLS-1$
+		transition(Code.INIT);
 	}
 
 	protected Rectangle2D buildRectangleOnPoint(ToolManager tm, double x,

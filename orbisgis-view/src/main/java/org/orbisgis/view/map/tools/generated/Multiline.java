@@ -38,7 +38,6 @@
 package org.orbisgis.view.map.tools.generated;
 
 import java.awt.Graphics;
-import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
@@ -50,7 +49,7 @@ public abstract class Multiline implements Automaton {
         protected final static I18n I18N = I18nFactory.getI18n(Multiline.class);
 	private static Logger logger = Logger.getLogger(Multiline.class);
 
-	private String status = "Standby";
+	private Status status = Status.STANDBY;
 
 	private MapContext ec;
 
@@ -63,52 +62,26 @@ public abstract class Multiline implements Automaton {
 
         @Override
 	public String[] getTransitionLabels() {
-		ArrayList<String> ret = new ArrayList<String>();
-
-		if ("Standby".equals(status)) {
-			
-			ret.add(I18N.tr("Cancel"));
-
-			ret.add(I18N.tr("Terminate multiline"));
-
-		}
-
-		if ("Point".equals(status)) {
-
-			ret.add(I18N.tr("Cancel"));
-
-			ret.add(I18N.tr("Terminate line"));
-
-			ret.add(I18N.tr("Terminate multiline"));
-
-		}
-
-		return ret.toArray(new String[0]);
+                switch(status){
+                        case STANDBY:
+                                return new String[]{I18N.tr("Cancel"),I18N.tr("Terminate multiline")};
+                        case POINT:
+                                return new String[]{I18N.tr("Cancel"),I18N.tr("Terminate line"),I18N.tr("Terminate multiline")};
+                        default:
+                                return new String[0];
+                }
 	}
 
         @Override
-	public String[] getTransitionCodes() {
-		ArrayList<String> ret = new ArrayList<String>();
-
-		if ("Standby".equals(status)) {
-
-			ret.add("esc");
-
-			ret.add("t");
-
-		}
-
-		if ("Point".equals(status)) {
-
-			ret.add("esc");
-
-			ret.add("l");
-
-			ret.add("t");
-
-		}
-
-		return ret.toArray(new String[0]);
+	public Code[] getTransitionCodes() {
+                switch(status){
+                        case STANDBY:
+                                return new Code[]{Code.ESC, Code.TERMINATE};
+                        case POINT:
+                                return new Code[]{Code.ESC, Code.L, Code.TERMINATE};
+                        default:
+                                return new Code[0];
+                }
 	}
 
         @Override
@@ -117,7 +90,7 @@ public abstract class Multiline implements Automaton {
 		logger.info("status: " + status);
 		this.ec = ec;
 		this.tm = tm;
-		status = "Standby";
+		status = Status.STANDBY;
 		transitionTo_Standby(ec, tm);
 		if (isFinished(status)) {
 			throw new FinishedAutomatonException();
@@ -125,236 +98,188 @@ public abstract class Multiline implements Automaton {
 	}
 
         @Override
-	public void transition(String code) throws NoSuchTransitionException,
+	public void transition(Code code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
 		logger.info("transition code: " + code);
-
-		if ("Standby".equals(status)) {
-
-			if ("press".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "Point";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_Point(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-			if ("t".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "Done";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_Done(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-		}
-
-		if ("Point".equals(status)) {
-
-			if ("press".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "Point";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_Point(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-			if ("l".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "Line";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_Line(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-			if ("t".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "Done";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_Done(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-		}
-
-		if ("Line".equals(status)) {
-
-			if ("init".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "Standby";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_Standby(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-		}
-
-		if ("Done".equals(status)) {
-
-			if ("init".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "Standby";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_Standby(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-		}
-
-
-		if ("esc".equals(code)) {
-			status = "Cancel";
-			transitionTo_Cancel(ec, tm);
-			if (isFinished(status)) {
-				throw new FinishedAutomatonException();
-			}
-			return;
-		}
-
-		throw new NoSuchTransitionException(code);
+                Status preStatus;
+                switch(status){
+                        case STANDBY:
+                                if (Code.PRESS.equals(code)) {
+                                        preStatus = status;
+                                        try {
+                                                status = Status.POINT;
+                                                logger.info("status: " + status);
+                                                double[] v = tm.getValues();
+                                                for (int i = 0; i < v.length; i++) {
+                                                        logger.info("value: " + v[i]);
+                                                }
+                                                transitionTo_Point(ec, tm);
+                                                if (isFinished(status)) {
+                                                        throw new FinishedAutomatonException();
+                                                }
+                                        } catch (TransitionException e) {
+                                                status = preStatus;
+                                                throw e;
+                                        }
+                                } else if (Code.TERMINATE.equals(code)) {
+                                        preStatus = status;
+                                        try {
+                                                status = Status.DONE;
+                                                logger.info("status: " + status);
+                                                double[] v = tm.getValues();
+                                                for (int i = 0; i < v.length; i++) {
+                                                        logger.info("value: " + v[i]);
+                                                }
+                                                transitionTo_Done(ec, tm);
+                                                if (isFinished(status)) {
+                                                        throw new FinishedAutomatonException();
+                                                }
+                                        } catch (TransitionException e) {
+                                                status = preStatus;
+                                                throw e;
+                                        }
+                                }
+                                break;
+                        case POINT:
+                                if (Code.PRESS.equals(code)) {
+                                        preStatus = status;
+                                        try {
+                                                status = Status.POINT;
+                                                logger.info("status: " + status);
+                                                double[] v = tm.getValues();
+                                                for (int i = 0; i < v.length; i++) {
+                                                        logger.info("value: " + v[i]);
+                                                }
+                                                transitionTo_Point(ec, tm);
+                                                if (isFinished(status)) {
+                                                        throw new FinishedAutomatonException();
+                                                }
+                                        } catch (TransitionException e) {
+                                                status = preStatus;
+                                                throw e;
+                                        }
+                                }else if (Code.L.equals(code)) {
+                                        preStatus = status;
+                                        try {
+                                                status = Status.LINE;
+                                                logger.info("status: " + status);
+                                                double[] v = tm.getValues();
+                                                for (int i = 0; i < v.length; i++) {
+                                                        logger.info("value: " + v[i]);
+                                                }
+                                                transitionTo_Line(ec, tm);
+                                                if (isFinished(status)) {
+                                                        throw new FinishedAutomatonException();
+                                                }
+                                        } catch (TransitionException e) {
+                                                status = preStatus;
+                                                throw e;
+                                        }
+                                }else if (Code.TERMINATE.equals(code)) {
+                                        preStatus = status;
+                                        try {
+                                                status = Status.DONE;
+                                                logger.info("status: " + status);
+                                                double[] v = tm.getValues();
+                                                for (int i = 0; i < v.length; i++) {
+                                                        logger.info("value: " + v[i]);
+                                                }
+                                                transitionTo_Done(ec, tm);
+                                                if (isFinished(status)) {
+                                                        throw new FinishedAutomatonException();
+                                                }
+                                        } catch (TransitionException e) {
+                                                status = preStatus;
+                                                throw e;
+                                        }
+                                }
+                                break;
+                        case LINE:
+                                if (Code.INIT.equals(code)) {
+                                        preStatus = status;
+                                        try {
+                                                status = Status.STANDBY;
+                                                logger.info("status: " + status);
+                                                double[] v = tm.getValues();
+                                                for (int i = 0; i < v.length; i++) {
+                                                        logger.info("value: " + v[i]);
+                                                }
+                                                transitionTo_Standby(ec, tm);
+                                                if (isFinished(status)) {
+                                                        throw new FinishedAutomatonException();
+                                                }
+                                        } catch (TransitionException e) {
+                                                status = preStatus;
+                                                throw e;
+                                        }
+                                }
+                                break;
+                        case DONE :
+                                if (Code.INIT.equals(code)) {
+                                        preStatus = status;
+                                        try {
+                                                status = Status.STANDBY;
+                                                logger.info("status: " + status);
+                                                double[] v = tm.getValues();
+                                                for (int i = 0; i < v.length; i++) {
+                                                        logger.info("value: " + v[i]);
+                                                }
+                                                transitionTo_Standby(ec, tm);
+                                                if (isFinished(status)) {
+                                                        throw new FinishedAutomatonException();
+                                                }
+                                        } catch (TransitionException e) {
+                                                status = preStatus;
+                                                throw e;
+                                        }
+                                }
+                                break;
+                        default:
+                                if (Code.ESC.equals(code)) {
+                                        status = Status.CANCEL;
+                                        transitionTo_Cancel(ec, tm);
+                                        if (isFinished(status)) {
+                                                throw new FinishedAutomatonException();
+                                        }
+                                } else {
+                                        throw new NoSuchTransitionException(code.toString());
+                                }
+                }
 	}
 
-	public boolean isFinished(String status) {
-
-		if ("Standby".equals(status)) {
-
-			return false;
-
-		}
-
-		if ("Point".equals(status)) {
-
-			return false;
-
-		}
-
-		if ("Line".equals(status)) {
-
-			return false;
-
-		}
-
-		if ("Done".equals(status)) {
-
-			return false;
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-			return true;
-
-		}
-
-		throw new RuntimeException("Invalid status: " + status);
+	public boolean isFinished(Status status) {
+                switch(status){
+                        case STANDBY:
+                        case POINT:
+                        case LINE:
+                        case DONE:
+                                return false;
+                        case CANCEL:
+                                return true;
+                        default:
+                                throw new RuntimeException("Invalid status: " + status);
+                }
 	}
 
         @Override
 	public void draw(Graphics g) throws DrawingException {
-
-		if ("Standby".equals(status)) {
-			drawIn_Standby(g, ec, tm);
-		}
-
-		if ("Point".equals(status)) {
-			drawIn_Point(g, ec, tm);
-		}
-
-		if ("Line".equals(status)) {
-			drawIn_Line(g, ec, tm);
-		}
-
-		if ("Done".equals(status)) {
-			drawIn_Done(g, ec, tm);
-		}
-
-		if ("Cancel".equals(status)) {
-			drawIn_Cancel(g, ec, tm);
-		}
+                switch(status){
+                        case STANDBY:
+                                drawIn_Standby(g, ec, tm);
+                                break;
+                        case POINT:
+                                drawIn_Point(g, ec, tm);
+                                break;
+                        case LINE:
+                                drawIn_Line(g, ec, tm);
+                                break;
+                        case DONE:
+                                drawIn_Done(g, ec, tm);
+                                break;
+                        case CANCEL:
+                                drawIn_Cancel(g, ec, tm);
+                                break;
+                }
 
 	}
 
@@ -388,11 +313,11 @@ public abstract class Multiline implements Automaton {
 	public abstract void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException;
 
-	protected void setStatus(String status) throws NoSuchTransitionException {
+	protected void setStatus(Status status) throws NoSuchTransitionException {
 		this.status = status;
 	}
 
-	public String getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 
@@ -402,29 +327,19 @@ public abstract class Multiline implements Automaton {
 	}
 
 	public String getMessage() {
-
-		if ("Standby".equals(status)) {
-			return I18N.tr("Select the first point terminate multiline");
-		}
-
-		if ("Point".equals(status)) {
-			return I18N.tr("Select the next point terminate line terminate multiline");
-		}
-
-		if ("Line".equals(status)) {
-			return "";
-		}
-
-		if ("Done".equals(status)) {
-			return "";
-		}
-
-		if ("Cancel".equals(status)) {
-			return "";
-		}
-
-		throw new RuntimeException();
-	}
+                switch(status){
+                        case STANDBY:
+                                return I18N.tr("Select the first point terminate multiline");
+                        case POINT:
+                                return I18N.tr("Select the next point terminate line terminate multiline");
+                        case LINE:
+                        case DONE:
+                        case CANCEL:
+                                return "";
+                        default:
+                                throw new RuntimeException();
+                }
+        }
 
 	public String getConsoleCommand() {
 		return "multiline";
@@ -454,10 +369,8 @@ public abstract class Multiline implements Automaton {
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
-		if ("Point".equals(status)) {
-
-                    transition("t");
-
+		if (Status.POINT.equals(status)) {
+                    transition(Code.TERMINATE);
 		}
 	}
 

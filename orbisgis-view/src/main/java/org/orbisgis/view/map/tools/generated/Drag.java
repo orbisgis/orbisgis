@@ -50,7 +50,7 @@ public abstract class Drag implements Automaton {
         protected final static I18n I18N = I18nFactory.getI18n(Drag.class);
 	private static Logger logger = Logger.getLogger(Drag.class);
 
-	private String status = "Standby";
+	private Status status = Status.STANDBY;
 
 	private MapContext ec;
 
@@ -62,8 +62,8 @@ public abstract class Drag implements Automaton {
 	}
 
         @Override
-	public String[] getTransitionCodes() {
-		return new String[0];
+	public Code[] getTransitionCodes() {
+		return new Code[0];
 	}
 
         @Override
@@ -72,7 +72,7 @@ public abstract class Drag implements Automaton {
 		logger.info("status: " + status);
 		this.ec = ec;
 		this.tm = tm;
-		status = "Standby";
+		status = Status.STANDBY;
 		transitionTo_Standby(ec, tm);
 		if (isFinished(status)) {
 			throw new FinishedAutomatonException();
@@ -80,122 +80,100 @@ public abstract class Drag implements Automaton {
 	}
 
         @Override
-	public void transition(String code) throws NoSuchTransitionException,
+	public void transition(Code code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
 		logger.info("transition code: " + code);
-
-		if ("Standby".equals(status)) {
-
-			if ("press".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "MouseDown";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_MouseDown(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-		}
-
-		if ("MouseDown".equals(status)) {
-
-			if ("release".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "MouseReleased";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_MouseReleased(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-		}
-
-		if ("MouseReleased".equals(status)) {
-
-			if ("finished".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "Standby";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_Standby(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-		}
-
-		throw new NoSuchTransitionException(code);
+                Status preStatus;
+                switch(status){
+                        case STANDBY:
+                                if (Code.PRESS.equals(code)) {
+                                        preStatus = status;
+                                        try {
+                                                status = Status.MOUSE_DOWN;
+                                                logger.info("status: " + status);
+                                                double[] v = tm.getValues();
+                                                for (int i = 0; i < v.length; i++) {
+                                                        logger.info("value: " + v[i]);
+                                                }
+                                                transitionTo_MouseDown(ec, tm);
+                                                if (isFinished(status)) {
+                                                        throw new FinishedAutomatonException();
+                                                }
+                                        } catch (TransitionException e) {
+                                                status = preStatus;
+                                                throw e;
+                                        }
+                                }
+                                break;
+                        case MOUSE_DOWN:
+                                if (Code.RELEASE.equals(code)) {
+                                        preStatus = status;
+                                        try {
+                                                status = Status.MOUSE_RELEASED;
+                                                logger.info("status: " + status);
+                                                double[] v = tm.getValues();
+                                                for (int i = 0; i < v.length; i++) {
+                                                        logger.info("value: " + v[i]);
+                                                }
+                                                transitionTo_MouseReleased(ec, tm);
+                                                if (isFinished(status)) {
+                                                        throw new FinishedAutomatonException();
+                                                }
+                                        } catch (TransitionException e) {
+                                                status = preStatus;
+                                                throw e;
+                                        }
+                                }
+                                break;
+                        case MOUSE_RELEASED:
+                                if (Code.FINISHED.equals(code)) {
+                                        preStatus = status;
+                                        try {
+                                                status = Status.STANDBY;
+                                                logger.info("status: " + status);
+                                                double[] v = tm.getValues();
+                                                for (int i = 0; i < v.length; i++) {
+                                                        logger.info("value: " + v[i]);
+                                                }
+                                                transitionTo_Standby(ec, tm);
+                                                if (isFinished(status)) {
+                                                        throw new FinishedAutomatonException();
+                                                }
+                                        } catch (TransitionException e) {
+                                                status = preStatus;
+                                                throw e;
+                                        }
+                                }
+                                break;
+                        default:
+                                throw new NoSuchTransitionException(code.toString());
+                }
 	}
 
-	public boolean isFinished(String status) {
-
-		if ("Standby".equals(status)) {
-
-			return false;
-
-		}
-
-		if ("MouseDown".equals(status)) {
-
-			return false;
-
-		}
-
-		if ("MouseReleased".equals(status)) {
-
-			return false;
-
-		}
-
-		throw new RuntimeException("Invalid status: " + status);
+	public boolean isFinished(Status status) {
+                switch(status){
+                        case STANDBY:
+                        case MOUSE_DOWN:
+                        case MOUSE_RELEASED:
+                                return false;
+                        default:
+                                throw new RuntimeException("Invalid status: " + status);
+                }
 	}
 
         @Override
 	public void draw(Graphics g) throws DrawingException {
-
-		if ("Standby".equals(status)) {
-			drawIn_Standby(g, ec, tm);
-		}
-
-		if ("MouseDown".equals(status)) {
-			drawIn_MouseDown(g, ec, tm);
-		}
-
-		if ("MouseReleased".equals(status)) {
-			drawIn_MouseReleased(g, ec, tm);
-		}
+                switch(status){
+                        case STANDBY:
+                                drawIn_Standby(g, ec, tm);
+                                break;
+                        case MOUSE_DOWN:
+                                drawIn_MouseDown(g, ec, tm);
+                                break;
+                        case MOUSE_RELEASED:
+                                drawIn_MouseReleased(g, ec, tm);
+                                break;
+                }
 
 	}
 
@@ -218,29 +196,25 @@ public abstract class Drag implements Automaton {
 	public abstract void drawIn_MouseReleased(Graphics g, MapContext vc,
 			ToolManager tm) throws DrawingException;
 
-	protected void setStatus(String status) throws NoSuchTransitionException {
+	protected void setStatus(Status status) throws NoSuchTransitionException {
 		this.status = status;
 	}
 
-	public String getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 
         public String getMessage() {
-
-		if ("Standby".equals(status)) {
-			return I18N.tr("Select start point");
-		}
-
-		if ("MouseDown".equals(status)) {
-			return I18N.tr("Drag to destination point");
-		}
-
-		if ("MouseReleased".equals(status)) {
-			return "";
-		}
-
-		throw new RuntimeException();
+                switch(status){
+                        case STANDBY:
+                                return I18N.tr("Select start point");
+                        case MOUSE_DOWN:
+                                return I18N.tr("Drag to destination point");
+                        case MOUSE_RELEASED:
+                                return "";
+                        default:
+                                throw new RuntimeException("Invalid status: " + status);
+                }
 	}
 
 	public String getConsoleCommand() {
