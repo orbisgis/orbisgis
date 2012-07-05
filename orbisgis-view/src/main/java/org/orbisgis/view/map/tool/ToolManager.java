@@ -824,11 +824,11 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                         throws IOException, DriverException, ParameterException {
                 if(geometry instanceof com.vividsolutions.jts.geom.Point ||
                         geometry instanceof  MultiPoint){
-                        pointSymbolizer.draw(graphics, null, -1, true, mapTransform, geometry, allowAllRenderContext);
+                        pointSymbolizer.draw(graphics, null, -1, false, mapTransform, geometry, allowAllRenderContext);
                 } else if(geometry instanceof LineString || geometry instanceof MultiLineString){
-                        lineSymbolizer.draw(graphics, null, -1, true, mapTransform, geometry, allowAllRenderContext);
+                        lineSymbolizer.draw(graphics, null, -1, false, mapTransform, geometry, allowAllRenderContext);
                 } else if(geometry instanceof Polygon || geometry instanceof MultiPolygon){
-                        areaSymbolizer.draw(graphics, null, -1, true, mapTransform, geometry, allowAllRenderContext);
+                        areaSymbolizer.draw(graphics, null, -1, false, mapTransform, geometry, allowAllRenderContext);
                 } else {
                         //We are dealing with a geoemtry collection
                         GeometryCollection gc = (GeometryCollection) geometry;
