@@ -87,13 +87,13 @@ public abstract class AbstractSelectionTool extends Selection {
         protected ArrayList<Handler> selected = new ArrayList<Handler>();
 
         /**
-         * @see org.orbisgis.plugins.org.orbisgis.plugins.core.ui.editors.table.estouro.tools.generated.Selection#transitionTo_Standby()
+         * @see org.orbisgis.view.map.tools.generated.Selection#transitionTo_Standby()
          */
         @Override
         public void transitionTo_Standby(MapContext vc, ToolManager tm)
                 throws TransitionException {
                 if (ToolUtilities.activeSelectionGreaterThan(vc, 0)) {
-                        setStatus("Selection"); //$NON-NLS-1$
+                        setStatus(Status.SELECTION);
                 }
         }
 
@@ -123,7 +123,6 @@ public abstract class AbstractSelectionTool extends Selection {
         /**
          * @throws FinishedAutomatonException
          * @throws
-         * @see org.estouro.tools.generated.Selection#transitionTo_OnePoint()
          */
         @Override
         public void transitionTo_OnePoint(MapContext mc, ToolManager tm)
@@ -148,9 +147,9 @@ public abstract class AbstractSelectionTool extends Selection {
                                                         mc.checkSelectionRefresh(newSel, activeLayer.getSelection(), ds);
                                                         activeLayer.setSelection(newSel);
                                                         if (newSel.length > 0) {
-                                                                transition("selection"); //$NON-NLS-1$
+                                                                transition(Code.SELECTION);
                                                         } else {
-                                                                transition("init"); //$NON-NLS-1$
+                                                                transition(Code.INIT);
                                                         }
 
                                                         return;
@@ -158,17 +157,17 @@ public abstract class AbstractSelectionTool extends Selection {
                                                         int[] newSelection = new int[]{rowIndex};
                                                         mc.checkSelectionRefresh(newSelection, activeLayer.getSelection(), ds);
                                                         activeLayer.setSelection(newSelection);
-                                                        transition("selection"); //$NON-NLS-1$
+                                                        transition(Code.SELECTION);
                                                         return;
                                                 }
                                         }
                                 }
                         }
 
-                        transition("no-selection"); //$NON-NLS-1$
+                        transition(Code.NO_SELECTION);
                         rect.setRect(tm.getValues()[0], tm.getValues()[1], 0, 0);
                 } catch (DriverException e) {
-                        transition("no-selection"); //$NON-NLS-1$
+                        transition(Code.NO_SELECTION);
                         throw new TransitionException(e);
                 }
         }
@@ -187,7 +186,7 @@ public abstract class AbstractSelectionTool extends Selection {
         }
 
         /**
-         * @see org.orbisgis.plugins.org.orbisgis.plugins.core.ui.editors.table.estouro.tools.generated.Selection#transitionTo_OnePointLeft()
+         * @see org.orbisgis.view.map.tools.generated.Selection#transitionTo_OnePointLeft()
          */
         @Override
         public void transitionTo_OnePointLeft(MapContext vc, ToolManager tm)
@@ -195,7 +194,7 @@ public abstract class AbstractSelectionTool extends Selection {
         }
 
         /**
-         * @see org.orbisgis.plugins.org.orbisgis.plugins.core.ui.editors.table.estouro.tools.generated.Selection#transitionTo_TwoPoints()
+         * @see org.orbisgis.view.map.tools.generated.Selection#transitionTo_TwoPoints()
          */
         @Override
         public void transitionTo_TwoPoints(MapContext mc, ToolManager tm)
@@ -247,18 +246,18 @@ public abstract class AbstractSelectionTool extends Selection {
                         }
 
                         if (activeLayer.getSelection().length == 0) {
-                                transition("no-selection"); //$NON-NLS-1$
+                                transition(Code.NO_SELECTION);
                         } else {
-                                transition("selection"); //$NON-NLS-1$
+                                transition(Code.SELECTION);
                         }
                 } catch (DriverException e) {
-                        transition("no-selection"); //$NON-NLS-1$
+                        transition(Code.NO_SELECTION);
                         throw new TransitionException(e);
                 }
         }
 
         /**
-         * @see org.orbisgis.plugins.org.orbisgis.plugins.core.ui.editors.table.estouro.tools.generated.Selection#transitionTo_Selection()
+         * @see org.orbisgis.view.map.tools.generated.Selection#transitionTo_Selection()
          */
         @Override
         public void transitionTo_Selection(MapContext vc, ToolManager tm)
@@ -267,7 +266,7 @@ public abstract class AbstractSelectionTool extends Selection {
         }
 
         /**
-         * @see org.orbisgis.plugins.org.orbisgis.plugins.core.ui.editors.table.estouro.tools.generated.Selection#transitionTo_PointWithSelection()
+         * @see org.orbisgis.view.map.tools.generated.Selection#transitionTo_PointWithSelection()
          */
         @Override
         public void transitionTo_PointWithSelection(MapContext mc, ToolManager tm)
@@ -290,7 +289,7 @@ public abstract class AbstractSelectionTool extends Selection {
                         if (p.distance(handler.getPoint()) < tm.getTolerance()) {
                                 if (!ToolUtilities.isActiveLayerEditable(mc)) {
                                         throw new TransitionException(
-                                                I18N.tr("Cannot modify the theme")); //$NON-NLS-1$
+                                                I18N.tr("Cannot modify the theme"));
                                 }
                                 selected.add(handler);
                                 geom.set(handler.getGeometryIndex());
@@ -298,15 +297,15 @@ public abstract class AbstractSelectionTool extends Selection {
                 }
 
                 if (selected.isEmpty()) {
-                        transition("out-handler"); //$NON-NLS-1$
+                        transition(Code.OUT_HANDLER);
                         rect.setRect(tm.getValues()[0], tm.getValues()[1], 0, 0);
                 } else {
-                        transition("in-handler"); //$NON-NLS-1$
+                        transition(Code.IN_HANDLER);
                 }
         }
 
         /**
-         * @see org.orbisgis.plugins.org.orbisgis.plugins.core.ui.editors.table.estouro.tools.generated.Selection#transitionTo_Movement()
+         * @see org.orbisgis.view.map.tools.generated.Selection#transitionTo_Movement()
          */
         @Override
         public void transitionTo_Movement(MapContext vc, ToolManager tm)
@@ -314,7 +313,7 @@ public abstract class AbstractSelectionTool extends Selection {
         }
 
         /**
-         * @see org.orbisgis.plugins.org.orbisgis.plugins.core.ui.editors.table.estouro.tools.generated.Selection#transitionTo_MakeMove()
+         * @see org.orbisgis.view.map.tools.generated.Selection#transitionTo_MakeMove()
          */
         @Override
         public void transitionTo_MakeMove(MapContext mc, ToolManager tm)
@@ -336,11 +335,11 @@ public abstract class AbstractSelectionTool extends Selection {
 			}
 		}
 
-		transition("empty"); //$NON-NLS-1$
+		transition(Code.EMPTY);
 	}
 
         /**
-         * @see org.orbisgis.plugins.org.orbisgis.plugins.core.ui.editors.table.estouro.tools.generated.Selection#drawIn_Standby(java.awt.Graphics)
+         * @see org.orbisgis.view.map.tools.generated.Selection#drawIn_Standby(java.awt.Graphics)
          */
         @Override
         public void drawIn_Standby(Graphics g, MapContext vc, ToolManager tm)
@@ -348,14 +347,14 @@ public abstract class AbstractSelectionTool extends Selection {
         }
 
         /**
-         * @see org.orbisgis.plugins.org.orbisgis.plugins.core.ui.editors.table.estouro.tools.generated.Selection#drawIn_OnePoint(java.awt.Graphics)
+         * @see org.orbisgis.view.map.tools.generated.Selection#drawIn_OnePoint(java.awt.Graphics)
          */
         @Override
         public void drawIn_OnePoint(Graphics g, MapContext vc, ToolManager tm) {
         }
 
         /**
-         * @see org.orbisgis.plugins.org.orbisgis.plugins.core.ui.editors.table.estouro.tools.generated.Selection#drawIn_OnePointLeft(java.awt.Graphics)
+         * @see org.orbisgis.view.map.tools.generated.Selection#drawIn_OnePointLeft(java.awt.Graphics)
          */
         @Override
         public void drawIn_OnePointLeft(Graphics g, MapContext vc, ToolManager tm) {
@@ -386,21 +385,21 @@ public abstract class AbstractSelectionTool extends Selection {
         }
 
         /**
-         * @see org.orbisgis.plugins.org.orbisgis.plugins.core.ui.editors.table.estouro.tools.generated.Selection#drawIn_TwoPoints(java.awt.Graphics)
+         * @see org.orbisgis.view.map.tools.generated.Selection#drawIn_TwoPoints(java.awt.Graphics)
          */
         @Override
         public void drawIn_TwoPoints(Graphics g, MapContext vc, ToolManager tm) {
         }
 
         /**
-         * @see org.orbisgis.plugins.org.orbisgis.plugins.core.ui.editors.table.estouro.tools.generated.Selection#drawIn_Selection(java.awt.Graphics)
+         * @see org.orbisgis.view.map.tools.generated.Selection#drawIn_Selection(java.awt.Graphics)
          */
         @Override
         public void drawIn_Selection(Graphics g, MapContext vc, ToolManager tm) {
         }
 
         /**
-         * @see org.orbisgis.plugins.org.orbisgis.plugins.core.ui.editors.table.estouro.tools.generated.Selection#drawIn_PointWithSelection(java.awt.Graphics)
+         * @see org.orbisgis.view.map.tools.generated.Selection#drawIn_PointWithSelection(java.awt.Graphics)
          */
         @Override
         public void drawIn_PointWithSelection(Graphics g, MapContext vc,
@@ -408,7 +407,7 @@ public abstract class AbstractSelectionTool extends Selection {
         }
 
         /**
-         * @see org.orbisgis.plugins.org.orbisgis.plugins.core.ui.editors.table.estouro.tools.generated.Selection#drawIn_Movement(java.awt.Graphics)
+         * @see org.orbisgis.view.map.tools.generated.Selection#drawIn_Movement(java.awt.Graphics)
          */
         @Override
         public void drawIn_Movement(Graphics g, MapContext vc, ToolManager tm)
@@ -422,12 +421,12 @@ public abstract class AbstractSelectionTool extends Selection {
                         }
                 } catch (CannotChangeGeometryException e) {
                         throw new DrawingException(
-                                I18N.tr("Cannot move {0}",e.getMessage())); //$NON-NLS-1$
+                                I18N.tr("Cannot move {0}",e.getMessage()));
                 }
         }
 
         /**
-         * @see org.orbisgis.plugins.org.orbisgis.plugins.core.ui.editors.table.estouro.tools.generated.Selection#drawIn_MakeMove(java.awt.Graphics)
+         * @see org.orbisgis.view.map.tools.generated.Selection#drawIn_MakeMove(java.awt.Graphics)
          */
         @Override
         public void drawIn_MakeMove(Graphics g, MapContext vc, ToolManager tm) {

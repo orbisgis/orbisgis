@@ -85,7 +85,7 @@ public class VertexDeletionTool extends VertexDeletion {
                                 }
                         }
                 }
-                transition("init"); //$NON-NLS-1$
+                transition(Code.INIT);
         }
 
         @Override
@@ -110,7 +110,7 @@ public class VertexDeletionTool extends VertexDeletion {
                                 }
                         } catch (GeometryException e) {
                                 throw new DrawingException(
-                                        I18N.tr("Cannot delete vertex")); //$NON-NLS-1$
+                                        I18N.tr("Cannot delete vertex"));
                         }
                 }
         }

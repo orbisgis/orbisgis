@@ -62,21 +62,53 @@ package org.orbisgis.view.map.tool;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.Observer;
-
-import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
-
 import org.orbisgis.core.layerModel.MapContext;
 
 public interface Automaton extends Observer {
+
+        public static enum Status{
+                CANCEL,
+                DONE,
+                LINE,
+                MAKE_MOVE,
+                MOUSE_DOWN,
+                MOUSE_RELEASED,
+                MOVEMENT,
+                ONE_POINT,
+                ONE_POINT_LEFT,
+                POINT,
+                POINT_WITH_SELECTION,
+                RECTANGLE_DONE,
+                SELECTION,
+                STANDBY,
+                THREE_POINTS,
+                TWO_POINTS;
+        }
+        public static enum Code {
+                EMPTY,
+                ESC,
+                FINISHED,
+                INIT,
+                IN_HANDLER,
+                L,
+                NO_SELECTION,
+                OUT_HANDLER,
+                P,
+                POINT,
+                PRESS,
+                RELEASE,
+                SELECTION,
+                TERMINATE;
+        }
 	public void init(MapContext vc, ToolManager tm) throws TransitionException,
 			FinishedAutomatonException;
 
 	public String[] getTransitionLabels();
 
-	public String[] getTransitionCodes();
+	public Code[] getTransitionCodes();
 
-	public void transition(String code) throws NoSuchTransitionException,
+	public void transition(Code code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException;
 
 	public void draw(Graphics g) throws DrawingException;

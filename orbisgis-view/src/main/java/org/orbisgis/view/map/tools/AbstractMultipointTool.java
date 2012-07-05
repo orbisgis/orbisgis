@@ -85,7 +85,7 @@ public abstract class AbstractMultipointTool extends Multipoint implements
 		multipointDone(g, vc, tm);
 
 		point = new ArrayList<Coordinate>();
-		transition("init"); //$NON-NLS-1$
+		transition(Code.INIT);
 	}
 
 	protected abstract void multipointDone(MultiPoint mp, MapContext vc,

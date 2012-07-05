@@ -80,17 +80,18 @@ public abstract class AbstractLineTool extends Line implements InsertionTool {
 	public void transitionTo_Done(MapContext vc, ToolManager tm)
 			throws FinishedAutomatonException, TransitionException {
 		points = ToolUtilities.removeDuplicated(points);
-		if (points.size() < 2)
-			throw new TransitionException(I18N.tr("Lines must have at least two points")); //$NON-NLS-1$
+		if (points.size() < 2) {
+                        throw new TransitionException(I18N.tr("Lines must have at least two points"));
+                }
 		LineString ls = new GeometryFactory().createLineString(points
 				.toArray(new Coordinate[0]));
 		com.vividsolutions.jts.geom.Geometry g = ls;
 		if (!g.isValid()) {
-			throw new TransitionException(I18N.tr("Invalid line")); //$NON-NLS-1$
+			throw new TransitionException(I18N.tr("Invalid line"));
 		}
 		lineDone(ls, vc, tm);
 
-		transition("init"); //$NON-NLS-1$
+		transition(Code.INIT);
 	}
 
 	protected abstract void lineDone(LineString ls, MapContext vc,
@@ -104,7 +105,7 @@ public abstract class AbstractLineTool extends Line implements InsertionTool {
 		tm.addGeomToDraw(ls);
 
 		if (!ls.isValid()) {
-			throw new DrawingException(I18N.tr("Invalid line")); //$NON-NLS-1$
+			throw new DrawingException(I18N.tr("Invalid line"));
 		}
 	}
 

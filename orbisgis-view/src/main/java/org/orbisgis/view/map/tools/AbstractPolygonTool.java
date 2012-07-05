@@ -79,7 +79,7 @@ public abstract class AbstractPolygonTool extends Polygon implements
         points = ToolUtilities.removeDuplicated(points);
         if (points.size() < 3) {
             throw new TransitionException(
-                    I18N.tr("Polygons must have more than two points")); //$NON-NLS-1$
+                    I18N.tr("Polygons must have more than two points"));
         }
         ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points.clone();
         double firstX = points.get(0).x;
@@ -90,11 +90,11 @@ public abstract class AbstractPolygonTool extends Polygon implements
 
         if (!pol.isValid()) {
             throw new TransitionException(
-                    I18N.tr("Invalid polygon")); //$NON-NLS-1$
+                    I18N.tr("Invalid polygon"));
         }
         polygonDone(pol, vc, tm);
 
-        transition("init"); //$NON-NLS-1$
+        transition(Code.INIT);
     }
 
 
@@ -135,7 +135,7 @@ public abstract class AbstractPolygonTool extends Polygon implements
 
             if (!geom.isValid()) {
                 throw new DrawingException(
-                        I18N.tr("Invalid polygon")); //$NON-NLS-1$
+                        I18N.tr("Invalid polygon"));
             }
         }
     }

@@ -111,7 +111,7 @@ public class ZoomOutTool extends ZoomOut {
 				- height / 2, y + height / 2);
 		mapTransform.setExtent(newExtent);
 
-		transition("init"); //$NON-NLS-1$
+		transition(Code.INIT);
 	}
 
 	@Override
