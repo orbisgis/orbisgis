@@ -79,7 +79,9 @@ import org.orbisgis.view.toc.actions.cui.legend.ISymbolEditor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 import com.vividsolutions.jts.geom.Envelope;
+import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.view.toc.actions.cui.ChoroplethWizardPanel;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
 
 
@@ -492,6 +494,46 @@ public class Toc extends JPanel implements EditorDockable {
                 }
                 mapContext.setBoundingBox(env);
         }
+
+        /**
+         * The user click on choropleth menu item.
+         */
+        public void onChoroplethWizard() {
+
+        ILayer[] selectedResources = mapContext.getSelectedLayers();
+
+        ILayer layer = selectedResources[0];
+
+        ChoroplethWizardPanel choropleph = new ChoroplethWizardPanel(layer);
+
+        // 2) Show the panel:
+        // This method will return true only if the user click on OK
+        // and pan.validateInput() return null (i.e. content is valid)
+        if (UIFactory.showDialog(choropleph)) {
+            try {
+                // Fetch the new Rule
+                Rule r = choropleph.getRule();
+                if (r != null) {
+
+                    //OLD ORBISGIS VERSION
+                    // Add the rule in the current featureTypeStyle
+                    /*layer.getFeatureTypeStyle().clear();
+                    layer.getFeatureTypeStyle().addRule(r);
+                    // And finally redraw the map
+                    layer.fireStyleChangedPublic();*/
+
+                    //MONOMAP VERSION
+                    Style choro = layer.getStyle(0);
+                    choro.addRule(r);
+                    layer.addStyle(choro);
+                    LOGGER.info(I18N.tr("Apply choropleth style"));
+                }
+            } catch (DriverException ex) {
+                LOGGER.error(I18N.tr("Driver Exception"), ex);
+            }
+        }
+    }
+
 
         /**
          * The user choose to delete a style through the dedicated menu.
