@@ -72,6 +72,7 @@ import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.view.map.tool.Automaton.Code;
 import org.orbisgis.view.map.tools.PanTool;
@@ -364,12 +365,12 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                         }
                         Graphics2D g2 = (Graphics2D) g;
                         for (int i = 0; i < geomToDraw.size(); i++) {
-                        Geometry geometry = geomToDraw.get(i);
-                        BufferedImage bi = new BufferedImage(mapTransform.getWidth(),
-                                mapTransform.getHeight(), BufferedImage.TYPE_INT_ARGB);
-                        Graphics2D graphics = bi.createGraphics();
-                        drawFeature(graphics, geometry, mapTransform, new AllowAllRenderContext());
-                        g2.drawImage(bi, 0, 0, null);
+                                Geometry geometry = geomToDraw.get(i);
+                                BufferedImage bi = new BufferedImage(mapTransform.getWidth(),
+                                        mapTransform.getHeight(), BufferedImage.TYPE_INT_ARGB);
+                                Graphics2D graphics = bi.createGraphics();
+                                drawFeature(graphics, geometry, mapTransform, new AllowAllRenderContext());
+                                g2.drawImage(bi, 0, 0, null);
                         }
                         if (adjustedPoint != null) {
                                 g2.setStroke(new BasicStroke(2, BasicStroke.CAP_ROUND,
@@ -781,19 +782,30 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
          * symbolizers we want to customize.
          */
         private void buildSymbolizers(){
+                //Let's retrieve the values we want to set to our color to the
+                //selected items
+                int alpha = 255;
+                int r = Color.YELLOW.getRed();
+                int g = Color.YELLOW.getGreen();
+                int b = Color.YELLOW.getBlue();
+                Color col = new Color(r,g,b,alpha);
                 //The point symbolizer first...
                 pointSymbolizer = new PointSymbolizer();
                 //From here, I just want to retrieve the color of the line and
                 //the color of the fill of the mark graphic. Let's go...
                 MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getGraphic(0);
-                ((SolidFill)mg.getFill()).setColor(new ColorLiteral(Color.YELLOW));
-                ((SolidFill)((PenStroke)mg.getStroke()).getFill()).setColor(new ColorLiteral(Color.YELLOW));
+                ((SolidFill)mg.getFill()).setColor(new ColorLiteral(col));
+                ((SolidFill)((PenStroke)mg.getStroke()).getFill()).setColor(new ColorLiteral(col));
                 //Next, the line symbolizer
                 lineSymbolizer = new LineSymbolizer();
-                ((SolidFill)((PenStroke)lineSymbolizer.getStroke()).getFill()).setColor(new ColorLiteral(Color.YELLOW));
+                PenStroke ps = (PenStroke)lineSymbolizer.getStroke();
+                ((SolidFill)(ps).getFill()).setColor(new ColorLiteral(col));
+                ps.setWidth(new RealLiteral(2));
                 //And finally, the AreaSymbolizer...
                 areaSymbolizer = new AreaSymbolizer();
-                ((SolidFill)((PenStroke)areaSymbolizer.getStroke()).getFill()).setColor(new ColorLiteral(Color.YELLOW));
+                PenStroke psa = (PenStroke)areaSymbolizer.getStroke();
+                ((SolidFill)(psa).getFill()).setColor(new ColorLiteral(col));
+                psa.setWidth(new RealLiteral(2));
                 ((SolidFill)areaSymbolizer.getFill()).setColor(new ColorLiteral(Color.YELLOW));
         }
 

@@ -149,6 +149,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private JToolBar createToolBar(boolean useButtonText) {
         JToolBar toolBar = new JToolBar();
         ButtonGroup autoSelection = new ButtonGroup();
+        //Selection button
+        autoSelection.add(addButton(toolBar, new SelectionTool(), useButtonText));
         //Navigation Tools
         autoSelection.add(addButton(toolBar,new ZoomInTool(),useButtonText));
         autoSelection.add(addButton(toolBar,new ZoomOutTool(),useButtonText));

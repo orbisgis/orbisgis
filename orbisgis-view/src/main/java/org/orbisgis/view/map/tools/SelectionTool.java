@@ -60,10 +60,8 @@
 package org.orbisgis.view.map.tools;
 
 import java.util.Observable;
-
 import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
-
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
@@ -105,6 +103,7 @@ public class SelectionTool extends AbstractSelectionTool {
 		return false;
 	}
 
+        @Override
 	public boolean isVisible(MapContext vc, ToolManager tm) {
 		return true;
 	}

@@ -62,18 +62,22 @@ public class MesureLineTool extends AbstractLineTool {
 		this.button = button;
 	}
 
+        @Override
 	public void update(Observable o, Object arg) {
 		//PlugInContext.checkTool(this);
 	}
 
+        @Override
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
 		return vc.getLayerModel().getLayerCount() > 0;
 	}
 
+        @Override
 	public boolean isVisible(MapContext vc, ToolManager tm) {
 		return true;
 	}
 
+        @Override
 	protected void lineDone(LineString ls, MapContext vc, ToolManager tm)
 			throws TransitionException {
                 GUI_LOGGER.info(I18N.tr("Distance : {0}",getLength(ls)));
@@ -83,6 +87,7 @@ public class MesureLineTool extends AbstractLineTool {
 		return new DecimalFormat("0.000").format(ls.getLength());
 	}
 
+        @Override
 	public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException {
 		super.drawIn_Point(g, vc, tm);
