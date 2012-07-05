@@ -420,8 +420,12 @@ public class Toc extends JPanel implements EditorDockable {
                         JMenuItem zoomToLayer = new JMenuItem(I18N.tr("Zoom to"), OrbisGISIcon.getIcon("magnifier"));
                         zoomToLayer.setToolTipText(I18N.tr("Zoom to the layer bounding box"));
                         zoomToLayer.addActionListener(EventHandler.create(ActionListener.class, this, "zoomToLayer"));
+                        JMenuItem choroplethWizard = new JMenuItem(I18N.tr("Choropleth"), OrbisGISIcon.getIcon("wizard"));
+                        choroplethWizard.setToolTipText(I18N.tr("Open the Choropleth Wizard"));
+                        choroplethWizard.addActionListener(EventHandler.create(ActionListener.class, this, "choroplethWizard"));
                         popup.add(zoomToLayer);
                         popup.add(deleteLayer);
+                        popup.add(choroplethWizard);
                         if (tree.getSelectionCount() == 1) {
                                 //display the menu to add a style from a file
                                 JMenuItem importStyle = new JMenuItem(I18N.tr("Import style"), OrbisGISIcon.getIcon("add"));

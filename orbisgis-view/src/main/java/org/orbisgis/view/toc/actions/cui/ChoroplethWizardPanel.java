@@ -5,19 +5,18 @@
 package org.orbisgis.view.toc.actions.cui;
 
 import java.awt.Component;
+import java.awt.Container;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.List;
 import javax.swing.JPanel;
-import org.gdms.data.schema.Metadata;
+import javax.swing.JTabbedPane;
+import org.apache.log4j.Logger;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.classification.Range;
-import org.orbisgis.core.renderer.classification.RangeMethod;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
@@ -25,107 +24,147 @@ import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 
+import org.orbisgis.view.toc.actions.cui.choropleth.dataModel.ChoroplethDataModel;
+import org.orbisgis.view.toc.actions.cui.choropleth.gui.ChoroplethDistInputPanel;
+import org.orbisgis.view.toc.actions.cui.choropleth.gui.ChoroplethRangeTabPanel;
+import org.orbisgis.view.toc.actions.cui.choropleth.gui.ChoroplethSymbInputPanel;
+import org.orbisgis.view.toc.actions.cui.choropleth.listener.DataChangeListener;
+import org.orbisgis.view.toc.actions.cui.choropleth.listener.RangeAxisListener;
+import org.orbisgis.view.toc.actions.cui.freqChart.FreqChart;
+import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
+
+
 /**
- *
+ * Choropleth class
  * @author maxence
  */
 public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
-	private ILayer layer;
+    /** Logger */
+    private static final Logger LOGGER = Logger.getLogger(ChoroplethWizardPanel.class);
+    /** I18n */
+    private final static I18n I18N = I18nFactory.getI18n(ChoroplethWizardPanel.class);
 
-	/*
-	 * Create a Choropleth wizard panel
-	 * @param layer the layer to create a choropleth for
-	 */
-	public ChoroplethWizardPanel(ILayer layer) {
-		super();
-		this.layer = layer;
-	}
+    private ChoroplethDataModel choroplethDataModel;
+    private FreqChartDataModel freqChartDataModel;
 
-	@Override
-	public URL getIconURL() {
-		return UIFactory.getDefaultIcon();
-	}
+    /**
+     * Choropleth constructor
+     * @param layer the display panel
+     */
+    public ChoroplethWizardPanel(ILayer layer) {
+        initChoropleth(layer);
+    }
 
-	@Override
-	public String getTitle() {
-		return "Choropleth Wizard";
-	}
+    /**
+     * initChoropleth init the choropleth
+     * @param layer the display panel
+     */
+    private void initChoropleth(ILayer layer) {
 
-	@Override
-	public String initialize() {
-		return null;
-	}
+        choroplethDataModel = new ChoroplethDataModel(layer);
 
-	@Override
-	public String postProcess() {
-		return null;
-	}
+        List<String> fields = choroplethDataModel.getFields();
+        choroplethDataModel.setField(fields.get(0));
+        double[] data = choroplethDataModel.getData();
 
-	@Override
-	public String validateInput() {
-		// Todo make sure the choropleth is valid !
-		return null;
-	}
+        freqChartDataModel = new FreqChartDataModel(data);
 
-	@Override
-	public Component getComponent() {
-		return this;
-	}
+        FreqChart freqChart = new FreqChart(freqChartDataModel);
 
-	@Override
-	public String getInfoText() {
-		return UIFactory.getDefaultOkMessage();
-	}
+        freqChart.getPanel();
 
-	/*
-	 * Is called after the panel has been closed (and validated)
-	 * This method return a new se:Rule based on the wizard values
-	 */
-	public Rule getRule() throws DriverException {
+        ChoroplethRangeTabPanel choroplethRangeTabPanel = new ChoroplethRangeTabPanel(freqChartDataModel, freqChart);
 
+        ChoroplethDistInputPanel dist = new ChoroplethDistInputPanel(freqChartDataModel, choroplethDataModel, freqChart, choroplethRangeTabPanel);
 
-		Metadata metadata = layer.getDataSource().getMetadata();
+        ChoroplethSymbInputPanel symb = new ChoroplethSymbInputPanel(freqChartDataModel, freqChart, choroplethRangeTabPanel);
 
-		// Quick (and hugly) step to fetch the first numeric attribute
-		String retainedFiledName = null;
-		for (int i = 0; i < metadata.getFieldCount(); i++) {
-			int currentType = metadata.getFieldType(i).getTypeCode();
+        freqChart.addAxisListener(new RangeAxisListener(freqChart,
+                freqChartDataModel));
+        freqChart.addDataListener(new DataChangeListener(dist));
 
-			if (currentType == 4 || (currentType >= 16 && currentType <= 256)) {
-				retainedFiledName = metadata.getFieldName(i);
-				break;
-			}
-		}
+        JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.addTab(I18N.tr("Distribution"), dist);
+        tabbedPane.addTab(I18N.tr("Symbology"), symb);
 
+        this.add(tabbedPane);
 
-		if (retainedFiledName != null) {
-			try {
-				RealAttribute field = new RealAttribute(retainedFiledName);
-				RangeMethod rangesHelper = new RangeMethod(layer.getDataSource(), field, 4);
+    }
 
-				rangesHelper.disecMean();
-				Range[] ranges = rangesHelper.getRanges();
+    @Override
+    public URL getIconURL() {
+        return UIFactory.getDefaultIcon();
+    }
 
-				// Create a 4-class red-progression choropleth
-				Categorize2Color choropleth = new Categorize2Color(new ColorLiteral("#dd0000"), new ColorLiteral("#FFFF00"), field);
-				choropleth.addClass(new RealLiteral(ranges[0].getMaxRange()), new ColorLiteral("#aa0000"));
-				choropleth.addClass(new RealLiteral(ranges[1].getMaxRange()), new ColorLiteral("#770000"));
-				choropleth.addClass(new RealLiteral(ranges[2].getMaxRange()), new ColorLiteral("#330000"));
+    @Override
+    public String getTitle() {
+        return "Choropleth Wizard";
+    }
 
-				SolidFill choroplethFill = new SolidFill();
-				choroplethFill.setColor(choropleth);
-				AreaSymbolizer as = new AreaSymbolizer();
-				as.setFill(choroplethFill);
-				Rule r = new Rule();
-				r.setName("Choropleth (" + retainedFiledName + ")");
-				r.getCompositeSymbolizer().addSymbolizer(as);
-				return r;
-			} catch (ParameterException ex) {
-				Logger.getLogger(ChoroplethWizardPanel.class.getName()).log(Level.SEVERE, null, ex);
-				return null;
-			}
-		}
-		return null;
-	}
+    @Override
+    public String initialize() {
+        LOGGER.info(I18N.tr("***initialize***"));
+        Container parent = this.getParent();
+        if (parent != null) {
+        }
+        return null;
+    }
+
+    @Override
+    public String postProcess() {
+        return null;
+    }
+
+    @Override
+    public String validateInput() {
+        return null;
+    }
+
+    @Override
+    public Component getComponent() {
+        return this;
+    }
+
+    @Override
+    public String getInfoText() {
+        return UIFactory.getDefaultOkMessage();
+    }
+
+    /*
+     * Is called after the panel has been closed (and validated)
+     * This method return a new se:Rule based on the wizard values
+     */
+    public Rule getRule() throws DriverException {
+        Rule r = new Rule();
+        r.setName("Choropleth");
+        r.getCompositeSymbolizer().addSymbolizer(this.draw());
+        return r;
+    }
+
+    /**
+     * Is called by the getRule() method
+     * Creates an AreaSymbolizer with ranges and colors
+     * @return AreaSymbolizer
+     */
+    private AreaSymbolizer draw() {
+        AreaSymbolizer as = new AreaSymbolizer();
+        Categorize2Color choropleth = null;
+
+        Range[] ranges = freqChartDataModel.getRange();
+        choropleth = new Categorize2Color(new ColorLiteral(freqChartDataModel.getColorInit().get(0)), new ColorLiteral(freqChartDataModel.getColorInit().get(1)), new RealAttribute(choroplethDataModel.getField()));
+        for (int i = 1; i <= ranges.length; i++) {
+            choropleth.addClass(new RealLiteral(ranges[i - 1].getMinRange()), new ColorLiteral(freqChartDataModel.getColor().get(i - 1)));
+        }
+
+        SolidFill choroplethFill = new SolidFill();
+        choroplethFill.setColor(choropleth);
+        choroplethFill.setOpacity(new RealLiteral(freqChartDataModel.getOpacity()));
+        as.setStroke(freqChartDataModel.getStroke());
+        as.setFill(choroplethFill);
+        return as;
+    }
 }
+
