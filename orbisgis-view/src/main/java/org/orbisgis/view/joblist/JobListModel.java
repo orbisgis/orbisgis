@@ -31,8 +31,7 @@ package org.orbisgis.view.joblist;
 
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.AbstractListModel;
 import javax.swing.SwingUtilities;
@@ -51,6 +50,13 @@ public class JobListModel extends AbstractListModel {
         private List<JobListItem> shownJobs = new ArrayList<JobListItem>();
         private AtomicBoolean awaitingRefresh=new AtomicBoolean(false); 
         private PropertyChangeListener labelUpdateListener;
+        
+        //Store Job events
+        private List<Job> jobAdded = Collections.synchronizedList(new LinkedList<Job>());
+        private List<Job> jobRemoved = Collections.synchronizedList(new LinkedList<Job>());
+        private List<Job> jobUpdated = Collections.synchronizedList(new LinkedList<Job>());
+        
+        
         /*!< If true a swing runnable is pending to refresh the content of
           the JobListModel
          */
@@ -61,7 +67,8 @@ public class JobListModel extends AbstractListModel {
          */
         public JobListModel listenToBackgroundManager() {
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.addBackgroundListener(EventHandler.create(BackgroundListener.class,this,"onJobListChange"));
+                //bm.addBackgroundListener(EventHandler.create(BackgroundListener.class,this,"onJobListChange"));
+                bm.addBackgroundListener(new JobListBackgroundListener());
                 labelUpdateListener = EventHandler.create(PropertyChangeListener.class, this, "onJobItemLabelChange","source");
                 return this;
         }
@@ -88,37 +95,35 @@ public class JobListModel extends AbstractListModel {
                 }
         }
         /**
-         * Update the job list
+         * Update the shown job list
          * @warning called only by ReadJobListOnSwingThread
          */
-        private void updateJobList() {                
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                //Read all active Jobs
-                List<Job> runningJobs = bm.getActiveJobs();
-                LOGGER.debug("Read list items " + runningJobs.size());
-                List<JobListItem> nextShownJobs = new ArrayList<JobListItem>();
-                //Add new Jobs
-                for(Job job : runningJobs) {
-                        if(!shownJobs.contains(new JobListItem(job))) {
-                                JobListItem addedJobItem = new JobListItem(job).listenToJob();
-                                addedJobItem.addPropertyChangeListener(ContainerItemProperties.PROP_LABEL,labelUpdateListener);
-                                nextShownJobs.add(addedJobItem);
-                        }
+        private void updateJobList() {
+                while(!jobAdded.isEmpty()) {
+                        Job job = jobAdded.remove(0);
+                        //Added
+                        JobListItem addedJobItem = new JobListItem(job).listenToJob();
+                        addedJobItem.addPropertyChangeListener(ContainerItemProperties.PROP_LABEL,labelUpdateListener);
+                        shownJobs.add(addedJobItem);
+                        fireIntervalAdded(addedJobItem, shownJobs.size() - 1, shownJobs.size() - 1);
+                        LOGGER.debug("JobListModel:jobAdded");
                 }
-                //Release closed jobs
-                for(JobListItem jobItem : shownJobs) {
-                        if(!runningJobs.contains(jobItem.getJob())) {
-                                jobItem.dispose();
-                                jobItem.removePropertyChangeListener(labelUpdateListener);
-                        } else {
-                                nextShownJobs.add(jobItem);
-                        }
+                //Removed
+                while(!jobRemoved.isEmpty()) {
+                        Job job = jobRemoved.remove(0);
+                        JobListItem jobId = new JobListItem(job);
+                        int jobIndex = shownJobs.indexOf(jobId);
+                        shownJobs.remove(jobId);
+                        fireIntervalRemoved(jobId, jobIndex, jobIndex);
+                        LOGGER.debug("JobListModel:jobRemoved");
                 }
-                //Update the jobs to show
-                shownJobs = nextShownJobs;
-                fireIntervalRemoved(this, 0, shownJobs.size());
-                fireIntervalAdded(this, 0, shownJobs.size());
-                LOGGER.debug("Generate list items " + shownJobs.size());
+                //Updated
+                while(!jobUpdated.isEmpty()) {
+                        Job job = jobUpdated.remove(0);
+                        JobListItem changedJobItem = new JobListItem(job).listenToJob();
+                        fireContentsChanged(changedJobItem, 0, 0);
+                        LOGGER.debug("JobListModel:jobReplaced");
+                }                        
         }
         
         
@@ -133,6 +138,28 @@ public class JobListModel extends AbstractListModel {
                 public void run() {
                         awaitingRefresh.set(false);
                         updateJobList();
+                }
+                
+        }
+        
+        private class JobListBackgroundListener implements BackgroundListener {
+
+                @Override
+                public void jobAdded(Job job) {
+                        jobAdded.add(job);
+                        onJobListChange();
+                }
+
+                @Override
+                public void jobRemoved(Job job) {
+                        jobRemoved.add(job);
+                        onJobListChange();
+                }
+
+                @Override
+                public void jobReplaced(Job job) {
+                        jobUpdated.add(job);
+                        onJobListChange();
                 }
                 
         }
