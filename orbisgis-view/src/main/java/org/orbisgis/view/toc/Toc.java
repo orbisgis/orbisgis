@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.toc;
 
+import com.vividsolutions.jts.geom.Envelope;
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -62,6 +63,7 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.OpenFilePanel;
 import org.orbisgis.sif.SaveFilePanel;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.docking.DockingPanelParameters;
@@ -72,14 +74,12 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.EditableTransferEvent;
 import org.orbisgis.view.map.MapEditor;
 import org.orbisgis.view.map.MapElement;
+import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.LegendsPanel;
 import org.orbisgis.view.toc.actions.cui.legend.EPLegendHelper;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-import com.vividsolutions.jts.geom.Envelope;
-import org.orbisgis.sif.UIPanel;
-import org.orbisgis.view.toc.actions.cui.LegendUIController;
 
 
 /**
