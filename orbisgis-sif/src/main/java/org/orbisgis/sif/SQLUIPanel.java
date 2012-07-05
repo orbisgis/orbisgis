@@ -101,6 +101,6 @@ public interface SQLUIPanel extends UIPanel {
 	/**
 	 * @return True if the dialog have to show the favorites panel or not
 	 */
-	boolean showFavorites();
+	boolean isShowFavorites();
 
 }
