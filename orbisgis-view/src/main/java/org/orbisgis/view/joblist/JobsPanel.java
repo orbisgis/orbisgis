@@ -64,7 +64,7 @@ public class JobsPanel extends JPanel implements DockingPanel {
         private void makeJobList() {
                 jobList = new JList();
                 jobList.setCellRenderer(new JobListCellRenderer());
-                jobList.setModel(new JobListModel());
+                jobList.setModel(new JobListModel().listenToBackgroundManager());
         }
         @Override
         public DockingPanelParameters getDockingParameters() {

@@ -45,6 +45,7 @@ public class JobListCellRenderer implements ListCellRenderer {
 
         @Override
         public Component getListCellRendererComponent(JList jlist, Object o, int i, boolean bln, boolean bln1) {
+                JobListItem item = (JobListItem) o;
                 //The panel show the background of the DataSource Item
                 JPanel jobPanel = new JPanel();
                 FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
@@ -52,6 +53,7 @@ public class JobListCellRenderer implements ListCellRenderer {
                 jobPanel.setLayout(fl);
                 //The label show the text of the DataSource Item
                 JLabel jobLabel = new JLabel();
+                jobLabel.setText(item.getLabel());
                 //Add the label into the Panel
                 jobPanel.add(jobLabel);
                 return jobPanel;

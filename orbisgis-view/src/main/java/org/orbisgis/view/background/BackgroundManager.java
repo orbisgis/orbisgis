@@ -28,6 +28,8 @@
  */
 package org.orbisgis.view.background;
 
+import java.util.List;
+
 /**
  * The BackGround Manager process GUI operation on parrallel Swing thread
  */
@@ -91,4 +93,9 @@ public interface BackgroundManager {
          */
         void processFinished(JobId id);
 
+        /**
+         * Get the active jobs
+         * @return Jobs managed by this instance
+         */
+        List<Job> getActiveJobs();
 }

@@ -38,6 +38,8 @@
 package org.orbisgis.view.background;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 
@@ -173,5 +175,10 @@ public class JobQueue implements BackgroundManager {
 	public void nonBlockingBackgroundOperation(JobId processId, BackgroundJob lp) {
 		add(processId, lp, false);
 	}
+
+        @Override
+        public List<Job> getActiveJobs() {
+                return Arrays.asList(getJobs());
+        }
 
 }
