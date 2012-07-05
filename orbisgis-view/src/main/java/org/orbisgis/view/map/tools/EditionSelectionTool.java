@@ -79,7 +79,7 @@ public class EditionSelectionTool extends AbstractSelectionTool {
                         }
                 }
 
-                transition("empty"); //$NON-NLS-1$
+                transition(Code.EMPTY);
         }
 
         /**
@@ -97,7 +97,7 @@ public class EditionSelectionTool extends AbstractSelectionTool {
                         }
                 } catch (CannotChangeGeometryException e) {
                         throw new DrawingException(
-                                I18N.tr("Cannot update the geometry {0}",e.getMessage())); //$NON-NLS-1$
+                                I18N.tr("Cannot update the geometry {0}",e.getMessage()));
                 }
         }
 

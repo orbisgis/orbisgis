@@ -59,7 +59,7 @@ import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.gdms.data.indexes.*;
+import org.gdms.data.indexes.FullIterator;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gvsig.remoteClient.exceptions.ServerErrorException;
@@ -199,7 +199,6 @@ public abstract class Renderer {
                         pm.startTask("Filtering (spatial)...", 100);
                         pm.progressTo(0);
                         Iterator<Integer> it = new FullIterator(sds);
-                        //  int[] featureInExtent = featureInExtent(mt, sds, pm);
                         pm.progressTo(ONE_HUNDRED_I);
                         pm.endTask();
                         if (it.hasNext()) {
@@ -225,8 +224,6 @@ public abstract class Renderer {
                                                 fieldID = ShapeHelper.getGeometryFieldId(sds);
                                         } catch (ParameterException ex) {
                                         }
-
-
                                         int i = 0;
                                         //If we want all the rules to be displayed, we must come back, here,
                                         //to the beginning of the input DataSource. Indeed, we may have reached
@@ -412,10 +409,7 @@ public abstract class Renderer {
                         } else {
                                 ILayer layer = layers[i];
                                 if (layer.isVisible() && extent.intersects(layer.getEnvelope())) {
-                                        //logger.println(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.drawing") + layer.getName()); //$NON-NLS-1$
-                                        // long t1 = System.currentTimeMillis();
                                         if (layer.isWMS()) {
-                                                System.out.println("   -> WMS Layer...");
                                                 // Iterate over next layers to make only one call to the
                                                 // WMS server
                                                 WMSStatus status = (WMSStatus) layer.getWMSConnection().getStatus().clone();
@@ -448,23 +442,15 @@ public abstract class Renderer {
                                                                 }
                                                         } catch (DriverException e) {
                                                                 LOGGER.error(
-                                                                        I18N.tr("Layer {0} not drawn",layer.getName()), e); //$NON-NLS-1$
+                                                                        I18N.tr("Layer {0} not drawn",layer.getName()), e); 
                                                         }
                                                         pm.progressTo(ONE_HUNDRED_I
                                                                 - (ONE_HUNDRED_I * i) / layers.length);
                                                 }
                                         }
-                                        // long t2 = System.currentTimeMillis();
-                                        //logger.println(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.renderingTime") + (t2 - t1)); //$NON-NLS-1$
                                 }
                         }
                 }
-
-                // long total2 = System.currentTimeMillis();
-                // logger.println(I18N.getString("orbisgis-core.orbisgis.org.orbisgis.renderer.totalRenderingTime") + (total2 - total1)); //$NON-NLS-1$
-
-
-
         }
 
         private boolean sameServer(ILayer layer, ILayer layer2) {

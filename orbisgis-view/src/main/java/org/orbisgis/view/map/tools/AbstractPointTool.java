@@ -36,16 +36,14 @@
  */
 package org.orbisgis.view.map.tools;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import java.awt.Graphics;
-
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.DrawingException;
 import org.orbisgis.view.map.tool.FinishedAutomatonException;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.tools.generated.Point;
-
-import com.vividsolutions.jts.geom.Coordinate;
 
 public abstract class AbstractPointTool extends Point implements InsertionTool {
 
@@ -56,8 +54,7 @@ public abstract class AbstractPointTool extends Point implements InsertionTool {
 				tm.getValues()[1], vc);
 		pointDone(ToolManager.toolsGeometryFactory.createPoint(coordinate), vc,
 				tm);
-
-		transition("init"); //$NON-NLS-1$
+		transition(Code.INIT);
 	}
 
 	private Coordinate newCoordinate(double x, double y, MapContext mapContext) {

@@ -79,15 +79,15 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
         points = ToolUtilities.removeDuplicated(points);
         if (points.size() < 3) {
             throw new TransitionException(
-                    I18N.tr("Polygons must have more than two points")); //$NON-NLS-1$
+                    I18N.tr("Polygons must have more than two points"));
         }
         addPolygon(vc);
 
-        transition("init"); //$NON-NLS-1$
+        transition(Code.INIT);
     }
 
 
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     private void addPolygon(MapContext mapContext) throws TransitionException {
         ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points.clone();
         tempPoints.add(newCoordinate(points.get(0).x, points.get(0).y,
@@ -97,7 +97,7 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
                                      new LinearRing[0]);
         if (!p.isValid()) {
             throw new TransitionException(
-                    I18N.tr("Invalid multipolygon")); //$NON-NLS-1$
+                    I18N.tr("Invalid multipolygon"));
         }
         polygons.add(p);
     }
@@ -121,7 +121,7 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
         if (((points.size() < 3) && (points.size() > 0))
                 || ((points.isEmpty()) && (polygons.isEmpty()))) {
             throw new TransitionException(
-                    I18N.tr("Polygons must have more than two points")); //$NON-NLS-1$
+                    I18N.tr("Polygons must have more than two points"));
         }
         if (points.size() > 0) {
             addPolygon(vc);
@@ -129,12 +129,12 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
         MultiPolygon mp = gf.createMultiPolygon(polygons.toArray(new Polygon[0]));
         if (!mp.isValid()) {
             throw new TransitionException(
-                    I18N.tr("Invalid multipolygon")); //$NON-NLS-1$
+                    I18N.tr("Invalid multipolygon"));
         }
         multipolygonDone(mp, vc, tm);
 
         polygons.clear();
-        transition("init"); //$NON-NLS-1$
+        transition(Code.INIT);
     }
 
 
@@ -155,7 +155,7 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
     }
 
 
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
+    @SuppressWarnings("unchecked")
     @Override
     public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
             throws DrawingException {
@@ -179,7 +179,7 @@ public abstract class AbstractMultipolygonTool extends Multipolygon implements
 
         if (!mp.isValid()) {
             throw new DrawingException(
-                    I18N.tr("Invalid multipolygon")); //$NON-NLS-1$
+                    I18N.tr("Invalid multipolygon"));
         }
     }
 

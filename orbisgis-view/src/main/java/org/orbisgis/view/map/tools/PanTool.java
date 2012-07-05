@@ -108,7 +108,7 @@ public class PanTool extends AbstractDragTool {
 						extent.getMinY() + dy, extent.getMaxY() + dy));
 
                 // we're done, this will get us back to StandBy
-		transition("finished"); //$NON-NLS-1$
+		transition(Code.FINISHED);
 	}
 
 	@Override
