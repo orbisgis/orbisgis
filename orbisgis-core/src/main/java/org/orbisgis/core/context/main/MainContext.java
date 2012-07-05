@@ -56,15 +56,30 @@ public class MainContext {
     private DataManager dataManager;
     private boolean debugMode;
     private LevelRangeFilter consoleFilter;
+    
+    /**
+     * Single parameter constructor
+     * Take use.home as a default application folder
+     * @param debugMode 
+     */
+    public MainContext(boolean debugMode) {
+            this(debugMode,null);
+    }
     /**
      * Constructor of the workspace
      * @param debugMode Use the Debug logging on console output
+     * @param customWorkspace Do not use a default folders for
+     * application initialisation
      */
-    public MainContext(boolean debugMode) {
+    public MainContext(boolean debugMode, CoreWorkspace customWorkspace ) {
         this.debugMode = debugMode;
+        if(customWorkspace!=null) {
+                coreWorkspace = customWorkspace;
+        } else {
+                coreWorkspace = new CoreWorkspace();
+        }
         //Redirect root logging to console
-        initConsoleLogger();      
-        coreWorkspace = new CoreWorkspace();
+        initConsoleLogger();
         initFileLogger(coreWorkspace);
         dataSourceFactory = new DataSourceFactory(coreWorkspace.getSourceFolder(), coreWorkspace.getTempFolder(), coreWorkspace.getPluginFolder());
         dataManager = new DefaultDataManager(dataSourceFactory);
