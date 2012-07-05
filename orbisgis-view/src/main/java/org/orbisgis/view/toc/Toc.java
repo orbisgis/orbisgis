@@ -421,7 +421,7 @@ public class Toc extends JPanel implements EditorDockable {
                         zoomToLayer.addActionListener(EventHandler.create(ActionListener.class, this, "zoomToLayer"));
                         JMenuItem choroplethWizard = new JMenuItem(I18N.tr("Choropleth"), OrbisGISIcon.getIcon("wizard"));
                         choroplethWizard.setToolTipText(I18N.tr("Open the Choropleth Wizard"));
-                        choroplethWizard.addActionListener(EventHandler.create(ActionListener.class, this, "choroplethWizard"));
+                        choroplethWizard.addActionListener(EventHandler.create(ActionListener.class, this, "onChoroplethWizard"));
                         popup.add(zoomToLayer);
                         popup.add(deleteLayer);
                         popup.add(choroplethWizard);
