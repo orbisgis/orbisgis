@@ -82,7 +82,13 @@ public class JobListItem extends ContainerItemProperties {
                         if(now - lastTimeUpdatedLabel > updateLabelInterval) {
                                 lastTimeUpdatedLabel = now;
                                 StringBuilder sb = new StringBuilder();
+                                sb.append("<html>");
                                 sb.append(job.getTaskName());
+                                sb.append(" (");
+                                sb.append(job.getOverallProgress());
+                                sb.append(" %)");
+                                sb.append("<br>&nbsp;");
+                                sb.append(job.getCurrentTaskName());
                                 sb.append(" (");
                                 sb.append(job.getCurrentProgress());
                                 sb.append(" %)");

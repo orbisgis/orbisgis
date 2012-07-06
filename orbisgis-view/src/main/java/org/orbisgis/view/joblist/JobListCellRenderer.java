@@ -28,7 +28,9 @@
  */
 package org.orbisgis.view.joblist;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.FlowLayout;
+import java.awt.Point;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
