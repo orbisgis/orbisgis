@@ -44,32 +44,13 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  */
 
 public class JobListCellRenderer implements ListCellRenderer {
-        private JLabel jobCancelLabel;
-        
-        private JPanel makeRow(JobListItem item) {
-                //The panel show the background of the DataSource Item
-                JPanel jobPanel = new JPanel();
-                FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
-                fl.setHgap(5);
-                fl.setVgap(0);
-                jobPanel.setLayout(fl);
-                jobCancelLabel = new JLabel(OrbisGISIcon.getIcon("cancel"));
-                //The label show the text of the DataSource Item
-                JLabel jobLabel = new JLabel();
-                jobLabel.setText(item.getLabel());
-                jobPanel.add(jobCancelLabel);
-                //Add the label into the Panel
-                jobPanel.add(jobLabel);
-                return jobPanel;
-        }
-        
         /**
          * Return true if the position provided is on the 
          * @param position
          * @return 
          */
-        public boolean isPositionOnCancelImage(Point position) {
-                
+        public boolean isPositionOnCancelImage(JobListItem jobItem, Point position) {
+                JLabel jobCancelLabel = jobItem.getItemPanel().getJobCancelLabel();
                 if(jobCancelLabel!=null) {
                         return jobCancelLabel.getBounds().contains(position);
                 } else {
@@ -80,7 +61,8 @@ public class JobListCellRenderer implements ListCellRenderer {
         public Component getListCellRendererComponent(JList list, Object value, int index,
       boolean isSelected, boolean cellHasFocus) {
                 JobListItem item = (JobListItem) value;
-                return makeRow(item);
+                item.onJobUpdate();
+                return item.getItemPanel();                
         }
         
 }

@@ -99,10 +99,9 @@ public class JobsPanel extends JPanel implements DockingPanel {
                 @Override
                 public void mouseClicked(MouseEvent me) {
                         //If the user click on the cancel image
-                        if(jobListRender.isPositionOnCancelImage(me.getPoint())){
-                                int rowIndex = jobList.locationToIndex(me.getPoint());
-                                if(rowIndex!=1) {
-                                        LOGGER.debug("Cancel the JOBS..");
+                        int rowIndex = jobList.locationToIndex(me.getPoint());
+                        if(rowIndex!=1) {
+                                if(jobListRender.isPositionOnCancelImage((JobListItem)jobList.getModel().getElementAt(rowIndex),me.getPoint())){
                                         onCancelJob(rowIndex);
                                 }
                         }
