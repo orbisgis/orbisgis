@@ -28,11 +28,11 @@
  */
 package org.orbisgis.view.joblist;
 
-import java.awt.Component;
-import java.awt.FlowLayout;
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
-import javax.swing.*;
+import java.awt.*;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
@@ -42,27 +42,43 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  */
 
 public class JobListCellRenderer implements ListCellRenderer {
-
-        @Override
-        public Component getListCellRendererComponent(JList jlist, Object o, int i, boolean bln, boolean bln1) {
-                JobListItem item = (JobListItem) o;
+        private JLabel jobCancelLabel;
+        
+        private JPanel makeRow(JobListItem item) {
                 //The panel show the background of the DataSource Item
                 JPanel jobPanel = new JPanel();
                 FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
                 fl.setHgap(5);
                 fl.setVgap(0);
                 jobPanel.setLayout(fl);
-                //Add a JButton to the right to cancel the Job
-                JButton jobCancel = new JButton();
-                //jobCancel.addActionListener(EventHandler.create(ActionListener.class,item,"onCancel"));
-                jobCancel.setIcon(OrbisGISIcon.getIcon("cancel"));
+                jobCancelLabel = new JLabel(OrbisGISIcon.getIcon("cancel"));
                 //The label show the text of the DataSource Item
                 JLabel jobLabel = new JLabel();
                 jobLabel.setText(item.getLabel());
-                jobPanel.add(jobCancel);
+                jobPanel.add(jobCancelLabel);
                 //Add the label into the Panel
                 jobPanel.add(jobLabel);
                 return jobPanel;
+        }
+        
+        /**
+         * Return true if the position provided is on the 
+         * @param position
+         * @return 
+         */
+        public boolean isPositionOnCancelImage(Point position) {
+                
+                if(jobCancelLabel!=null) {
+                        return jobCancelLabel.getBounds().contains(position);
+                } else {
+                        return false;
+                }
+        }
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index,
+      boolean isSelected, boolean cellHasFocus) {
+                JobListItem item = (JobListItem) value;
+                return makeRow(item);
         }
         
 }

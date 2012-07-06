@@ -29,13 +29,13 @@
 package org.orbisgis.view.joblist;
 
 import java.awt.BorderLayout;
-import java.beans.EventHandler;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.Services;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -51,6 +51,7 @@ public class JobsPanel extends JPanel implements DockingPanel {
         private static final Logger LOGGER = Logger.getLogger("gui."+JobsPanel.class);
         private DockingPanelParameters dockingParameters = new DockingPanelParameters();
         private JList jobList;
+        private JobListCellRenderer jobListRender;
         
         public JobsPanel() {
                 super(new BorderLayout());
@@ -63,16 +64,49 @@ public class JobsPanel extends JPanel implements DockingPanel {
         
         private void makeJobList() {
                 jobList = new JList();
-                jobList.setCellRenderer(new JobListCellRenderer());
+                jobListRender = new JobListCellRenderer();
+                jobList.setCellRenderer(jobListRender);
                 jobList.setModel(new JobListModel().listenToBackgroundManager());
+                jobList.addMouseListener(new CancelButtonMouseListener());
         }
         @Override
         public DockingPanelParameters getDockingParameters() {
                 return dockingParameters;
         }
         
+        /**
+         * The user cancel the job shown at the specified position
+         * @param listIndex 
+         */
+        private void onCancelJob(int listIndex) {
+                if(listIndex<jobList.getModel().getSize()) {
+                        JobListItem item = (JobListItem)(jobList.getModel().getElementAt(listIndex));
+                        item.onCancel();
+                }
+        }
+        
         @Override
         public JComponent getComponent() {
                 return this;
+        }
+        
+        private class CancelButtonMouseListener extends MouseAdapter {
+
+                /**
+                 * The user clicked on the list, 
+                 * @param me 
+                 */
+                @Override
+                public void mouseClicked(MouseEvent me) {
+                        //If the user click on the cancel image
+                        if(jobListRender.isPositionOnCancelImage(me.getPoint())){
+                                int rowIndex = jobList.locationToIndex(me.getPoint());
+                                if(rowIndex!=1) {
+                                        LOGGER.debug("Cancel the JOBS..");
+                                        onCancelJob(rowIndex);
+                                }
+                        }
+                }
+                
         }
 }
