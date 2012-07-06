@@ -37,12 +37,12 @@
                 <dependency>
                         <groupId>com.fifesoft</groupId>
                         <artifactId>autocomplete</artifactId>
-                        <version>2.0.2</version>
+                        <version>2.0.3</version>
                 </dependency>
                 <dependency>
                         <groupId>com.fifesoft</groupId>
                         <artifactId>rsyntaxtextarea</artifactId>
-                        <version>2.0.2</version>
+                        <version>2.0.3</version>
                 </dependency>
                 <dependency>
                         <groupId>org.orbisgis</groupId>
@@ -52,13 +52,7 @@
                 <dependency>
                         <groupId>com.fifesoft</groupId>
                         <artifactId>languagesupport</artifactId>
-                        <version>0.7</version>
-                        <exclusions>
-                                <exclusion>
-                                        <groupId>com.fifesoft</groupId>
-                                        <artifactId>autocomplete</artifactId>
-                                </exclusion>
-                        </exclusions>
+                        <version>0.8</version>
                 </dependency>
         </dependencies>
         <build>

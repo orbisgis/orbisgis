@@ -29,15 +29,8 @@
 package org.orbisgis.core;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.net.URLClassLoader;
-import java.util.Arrays;
-import java.util.HashSet;
 
 import org.apache.log4j.Logger;
-import org.gdms.data.InitializationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.WarningListener;
 import org.gdms.plugins.GdmsPlugIn;
@@ -47,8 +40,6 @@ import org.orbisgis.core.configuration.DefaultBasicConfiguration;
 import org.orbisgis.core.errorManager.ErrorManager;
 import org.orbisgis.core.geocognition.DefaultGeocognition;
 import org.orbisgis.core.geocognition.Geocognition;
-import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.DefaultJavaManager;
-import org.orbisgis.core.ui.plugins.views.beanShellConsole.javaManager.JavaManager;
 import org.orbisgis.core.ui.plugins.views.sqlConsole.language.SQLMetadataManager;
 import org.orbisgis.core.workspace.DefaultOGWorkspace;
 import org.orbisgis.core.workspace.IOGWorkspace;
@@ -70,13 +61,6 @@ public class OrbisgisUIServices {
                 // installWorkspaceServices();
 
                 installGeocognitionService();
-
-                try {
-                        installJavaServices();
-                } catch (IOException e) {
-                        throw new InitializationException("Cannot initialize Java manager",
-                                e);
-                }
         }
 
         private static void installApplicationInfoServices() {
@@ -172,34 +156,5 @@ public class OrbisgisUIServices {
                 Services.registerService(BasicConfiguration.class,
                         "Manages the basic configurations (key, value)", bc);
                 bc.load();
-        }
-
-        public static void installJavaServices() throws IOException {
-                HashSet<File> buildPath = new HashSet<File>();
-                ClassLoader cl = OrbisgisUIServices.class.getClassLoader();
-                while (cl != null) {
-                        if (cl instanceof URLClassLoader) {
-                                URLClassLoader loader = (URLClassLoader) cl;
-                                URL[] urls = loader.getURLs();
-                                for (URL url : urls) {
-                                        try {
-                                                if (url.getProtocol().equals("file")) {
-                                                        File file = new File(url.toURI());
-                                                        buildPath.add(file);
-                                                } else {
-                                                }
-                                        } catch (URISyntaxException e) {
-                                                logger.error("Cannot add classpath url: " + url, e);
-                                        }
-                                }
-                        }
-                        cl = cl.getParent();
-                }
-
-                DefaultJavaManager javaManager = new DefaultJavaManager();
-                Services.registerService(JavaManager.class,
-                        "Execution of java code and java scripts", javaManager);
-                javaManager.addFilesToClassPath(Arrays.asList(buildPath.toArray(new File[buildPath.size()])));
-
         }
 }

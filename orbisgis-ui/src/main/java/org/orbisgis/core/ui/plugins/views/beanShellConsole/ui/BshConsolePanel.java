@@ -61,6 +61,7 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
 
 import javax.swing.JButton;
@@ -69,7 +70,11 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.Timer;
 import javax.swing.text.BadLocationException;
+
+import org.fife.rsta.ac.LanguageSupportFactory;
+import org.fife.rsta.ac.java.JavaLanguageSupport;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
@@ -77,7 +82,6 @@ import org.orbisgis.core.ui.components.findReplace.FindReplaceDialog;
 import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
 
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshActionsListener;
-import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshCompletionKeyListener;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshConsoleAction;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshConsoleListener;
 import org.orbisgis.utils.I18N;
@@ -158,11 +162,18 @@ public class BshConsolePanel extends JPanel {
 
         private RTextScrollPane getCenterPanel() {
                 if (centerPanel == null) {
+                        LanguageSupportFactory lsf = LanguageSupportFactory.get();
+                        JavaLanguageSupport jls = (JavaLanguageSupport) lsf.getSupportFor(SyntaxConstants.SYNTAX_STYLE_JAVA);
+                        try {
+                                jls.getJarManager().addCurrentJreClassFileSource();
+                        } catch (IOException ioe) {
+                                throw new RuntimeException(ioe);
+                        }
                         scriptPanel = new RSyntaxTextArea();
-                        scriptPanel.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_JAVA);
                         scriptPanel.getDocument().addDocumentListener(actionAndKeyListener);
                         scriptPanel.setLineWrap(true);
-                        scriptPanel.addKeyListener(new BshCompletionKeyListener(this));
+                        lsf.register(scriptPanel);
+                        scriptPanel.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_JAVA);
                         centerPanel = new RTextScrollPane(scriptPanel);
                 }
                 return centerPanel;
@@ -303,6 +314,7 @@ public class BshConsolePanel extends JPanel {
 
         /**
          * Returns the beanshell interpreter
+         *
          * @return
          */
         public Interpreter getInterpreter() {
@@ -311,12 +323,12 @@ public class BshConsolePanel extends JPanel {
 
         /**
          * Retruns the ouptputstream
+         *
          * @return
          */
         public ByteArrayOutputStream getScriptOutput() {
                 return scriptOutput;
         }
-
 
         /**
          * Open one instanceof the find replace dialog
