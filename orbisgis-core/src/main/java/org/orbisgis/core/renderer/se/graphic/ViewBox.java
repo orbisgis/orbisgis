@@ -46,6 +46,7 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -178,6 +179,14 @@ public final class ViewBox implements SymbolizerNode {
             }
 
             return hs;
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+            UsedAnalysis ua = new UsedAnalysis();
+            ua.include(x);
+            ua.include(y);
+            return ua;
         }
 
         /**

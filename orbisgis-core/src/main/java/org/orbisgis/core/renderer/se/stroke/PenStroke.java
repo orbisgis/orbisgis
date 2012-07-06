@@ -59,6 +59,7 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -242,7 +243,6 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     @Override
     public HashSet<String> dependsOnFeature() {
         HashSet<String> result = new HashSet<String>();
-
         if (fill != null) {
             result.addAll(fill.dependsOnFeature());
         }
@@ -255,7 +255,24 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         if (width != null) {
             result.addAll(width.dependsOnFeature());
         }
+        return result;
+    }
 
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis result = new UsedAnalysis();
+        if (fill != null) {
+            result.merge(fill.getUsedAnalysis());
+        }
+        if (dashOffset != null) {
+            result.include(dashOffset);
+        }
+        if (dashArray != null) {
+            result.include(dashArray);
+        }
+        if (width != null) {
+            result.include(width);
+        }
         return result;
     }
 

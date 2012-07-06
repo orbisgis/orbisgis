@@ -22,6 +22,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * A {@code LineLabel} is a text of some kinf associated to a Line (polygon or not).
@@ -223,5 +224,13 @@ public class LineLabel extends Label {
             return getLabel().dependsOnFeature();
         }
         return new HashSet<String>();
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        if (getLabel() != null) {
+            return getLabel().getUsedAnalysis();
+        }
+        return new UsedAnalysis();
     }
 }

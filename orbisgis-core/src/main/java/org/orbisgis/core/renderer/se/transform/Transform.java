@@ -17,6 +17,7 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  *
@@ -238,6 +239,15 @@ public class Transform implements SymbolizerNode, UomNode {
                 HashSet<String> result = new HashSet<String>();
                 for (Transformation t : this.transformations) {
                         result.addAll(t.dependsOnFeature());
+                }
+                return result;
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis result = new UsedAnalysis();
+                for (Transformation t : this.transformations) {
+                        result.merge(t.getUsedAnalysis());
                 }
                 return result;
         }

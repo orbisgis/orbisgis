@@ -6,6 +6,7 @@ import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -147,6 +148,22 @@ public class Slice implements SymbolizerNode, FillNode {
                 }
                 if (gap != null) {
                         result.addAll(gap.dependsOnFeature());
+                }
+
+                return result;
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis result = new UsedAnalysis();
+                if (fill != null) {
+                        result.merge(fill.getUsedAnalysis());
+                }
+                if (value != null) {
+                        result.include(value);
+                }
+                if (gap != null) {
+                        result.include(gap);
                 }
 
                 return result;

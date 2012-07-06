@@ -51,6 +51,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.LineLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * {@code TexteStroke} is used to render text labels along a line. It is useful 
@@ -146,6 +147,15 @@ public final class TextStroke extends Stroke {
         @Override
         public HashSet<String> dependsOnFeature() {
                 return lineLabel.dependsOnFeature();
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis ua = new UsedAnalysis();
+                if(lineLabel != null){
+                    ua.merge(lineLabel.getUsedAnalysis());
+                }
+                return ua;
         }
 
         @Override

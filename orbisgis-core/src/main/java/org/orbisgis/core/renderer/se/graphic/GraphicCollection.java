@@ -57,6 +57,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -320,6 +321,15 @@ public final class GraphicCollection implements SymbolizerNode {
         HashSet<String> result = new HashSet<String>();
         for (Graphic g : this.graphics) {
             result.addAll(g.dependsOnFeature());
+        }
+        return result;
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis result = new UsedAnalysis();
+        for (Graphic g : this.graphics) {
+            result.merge(g.getUsedAnalysis());
         }
         return result;
     }

@@ -54,6 +54,7 @@ import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -463,6 +464,15 @@ public final class CompoundStroke extends Stroke implements UomNode {
             result.addAll(elem.dependsOnFeature());
         }
 
+        return result;
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis result = new UsedAnalysis();
+        for (CompoundStrokeElement elem : elements) {
+            result.merge(elem.getUsedAnalysis());
+        }
         return result;
     }
 

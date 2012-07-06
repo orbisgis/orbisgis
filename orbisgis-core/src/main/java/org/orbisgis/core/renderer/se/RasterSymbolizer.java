@@ -52,6 +52,7 @@ import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
 import org.orbisgis.core.renderer.se.parameter.color.Interpolate2Color;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -244,5 +245,10 @@ public class RasterSymbolizer extends Symbolizer {
     public HashSet<String> dependsOnFeature() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
 }

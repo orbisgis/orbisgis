@@ -15,6 +15,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -318,7 +319,20 @@ public final class Matrix implements Transformation {
         }
 
         @Override
-        public AffineTransform getAffineTransform(DataSource sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
+        public UsedAnalysis getUsedAnalysis() {
+            UsedAnalysis result = new UsedAnalysis();
+            result.include(a);
+            result.include(b);
+            result.include(c);
+            result.include(d);
+            result.include(e);
+            result.include(f);
+            return result;
+        }
+
+        @Override
+        public AffineTransform getAffineTransform(DataSource sds, long fid, Uom uom,
+            MapTransform mt, Double width, Double height) throws ParameterException {
                 return new AffineTransform(
                         //Uom.toPixel(a.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
                         a.getValue(sds, fid),

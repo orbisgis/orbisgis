@@ -143,41 +143,6 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         this.level = level;
     }
 
-    /**
-     * Get the field where to retrieve the geometry in the associated data.
-     * @return 
-     * A {@link GeometryAttribute} that can be used to retrieve the geometry 
-     * values in the data.
-     */
-    /*public GeometryAttribute getGeometry() {
-        return the_geom;
-    }*/
-
-    /**
-     * Set the field where to retrieve the geometry in the associated data.
-     * @param theGeom 
-     */
-/*    public void setGeometry(GeometryAttribute theGeom) {
-        this.the_geom = theGeom;
-    }
-
-    /**
-     * Get the geometry registered at index fid.
-     * @param sds
-     * @param fid
-     * @return
-     * @throws DriverException
-     * @throws ParameterException 
-     */
-/*    public Geometry getTheGeom(SpatialDataSourceDecorator sds, long fid) throws DriverException, ParameterException {
-        if (the_geom != null) {
-            return the_geom.getTheGeom(sds, fid);
-        } else {
-            int fieldId = ShapeHelper.getGeometryFieldId(sds);
-            return sds.getFieldValue(fid, fieldId).getAsGeometry();
-        }
-    }*/
-
     @Override
     public SymbolizerNode getParent() {
         return parent;

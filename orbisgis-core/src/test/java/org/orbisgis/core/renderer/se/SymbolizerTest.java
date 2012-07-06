@@ -22,6 +22,7 @@ import static org.junit.Assert.*;
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
 import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
@@ -105,6 +106,13 @@ public class SymbolizerTest extends AbstractTest {
         assertTrue(feat.size() == 2);
         assertTrue(feat.contains("PTOT99"));
         assertTrue(feat.contains("ohhai"));
-        
+    }
+
+    @Test
+    public void testRecodeUsedAnalysis() throws Exception {
+        Style style = new Style(null, "src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se");
+        LineSymbolizer ps =(LineSymbolizer) style.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        UsedAnalysis ua = ps.getUsedAnalysis();
+        assertTrue(ua.isRecodeUsed());
     }
 }

@@ -53,6 +53,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -313,6 +314,19 @@ public final class DensityFill extends Fill implements GraphicNode {
             ret.addAll(mark.dependsOnFeature());
         }
         return ret;
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+            UsedAnalysis ua = new UsedAnalysis();
+            ua.include(percentageCovered);
+            if(useHatches()){
+                    ua.include(orientation);
+                    ua.merge(hatches.getUsedAnalysis());
+            } else {
+                    ua.merge(mark.getUsedAnalysis());
+            }
+            return ua;
     }
 
     @Override

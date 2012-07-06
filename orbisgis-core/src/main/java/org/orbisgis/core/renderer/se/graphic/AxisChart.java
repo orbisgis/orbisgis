@@ -65,6 +65,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
@@ -942,6 +943,30 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                 }
                 for (Category c : categories) {
                         ret.addAll(c.dependsOnFeature());
+                }
+                return ret;
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis ret = new UsedAnalysis();
+                if (areaFill != null) {
+                        ret.merge(areaFill.getUsedAnalysis());
+                }
+                if (lineStroke != null) {
+                        ret.merge(lineStroke.getUsedAnalysis());
+                }
+                if (this.categoryGap != null) {
+                        ret.include(categoryGap);
+                }
+                if (categoryWidth != null) {
+                        ret.include(categoryWidth);
+                }
+                if (axisScale != null) {
+                        ret.merge(axisScale.getUsedAnalysis());
+                }
+                for (Category c : categories) {
+                        ret.merge(c.getUsedAnalysis());
                 }
                 return ret;
         }

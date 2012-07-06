@@ -59,6 +59,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -300,6 +301,17 @@ public final class GraphicFill extends Fill implements UomNode {
         }
 
         return sb;
+    }
+
+        @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis ua = new UsedAnalysis();
+        ua.include(gapX);
+        ua.include(gapY);
+        if(graphic != null){
+            ua.merge(graphic.getUsedAnalysis());
+        }
+        return ua;
     }
 
     @Override

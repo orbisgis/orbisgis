@@ -10,7 +10,6 @@ import java.util.HashSet;
 import net.opengis.se._2_0.core.HaloType;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -21,10 +20,10 @@ import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
-import org.orbisgis.utils.I18N;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -247,6 +246,14 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
         ret.addAll(radius.dependsOnFeature());
         ret.addAll(fill.dependsOnFeature());
         return ret;
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+            UsedAnalysis ua = new UsedAnalysis();
+            ua.include(radius);
+            ua.merge(fill.getUsedAnalysis());
+            return ua;
     }
 
     /**

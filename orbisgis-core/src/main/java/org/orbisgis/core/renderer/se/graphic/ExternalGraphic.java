@@ -18,6 +18,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.transform.Transform;
@@ -381,6 +382,25 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
         }
         if (viewBox != null) {
             ret.addAll(viewBox.dependsOnFeature());
+        }
+
+        return ret;
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis ret = new UsedAnalysis();
+        if (halo != null) {
+            ret.merge(halo.getUsedAnalysis());
+        }
+        if (opacity != null) {
+            ret.include(opacity);
+        }
+        if (transform != null) {
+            ret.merge(transform.getUsedAnalysis());
+        }
+        if (viewBox != null) {
+            ret.merge(viewBox.getUsedAnalysis());
         }
 
         return ret;

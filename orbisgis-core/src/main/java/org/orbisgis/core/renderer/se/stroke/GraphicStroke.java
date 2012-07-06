@@ -24,6 +24,7 @@ import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -336,10 +337,20 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
                 result.addAll(length.dependsOnFeature());
             }
         }
-
         return result == null ? new HashSet<String>() : result;
     }
 
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis result = new UsedAnalysis();
+        if (graphic != null) {
+            result.merge(graphic.getUsedAnalysis());
+        }
+        if (length != null) {
+                result.include(length);
+        }
+        return result;
+    }
 
     @Override
     public JAXBElement<GraphicStrokeType> getJAXBElement() {

@@ -20,6 +20,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -188,10 +189,8 @@ public final class PointLabel extends Label {
         return pl;
     }
 
-
     @Override
     public HashSet<String> dependsOnFeature() {
-
         HashSet<String> result = new HashSet<String>();
         if (getLabel() != null) {
             result.addAll(getLabel().dependsOnFeature());
@@ -202,9 +201,22 @@ public final class PointLabel extends Label {
         if (rotation != null) {
             result.addAll(rotation.dependsOnFeature());
         }
-
         return result;
     }
 
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis result = new UsedAnalysis();
+        if (getLabel() != null) {
+            result.merge(getLabel().getUsedAnalysis());
+        }
+        if (exclusionZone != null) {
+            result.merge(exclusionZone.getUsedAnalysis());
+        }
+        if (rotation != null) {
+            result.include(rotation);
+        }
+        return result;
+    }
 
 }

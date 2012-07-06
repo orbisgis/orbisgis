@@ -56,6 +56,7 @@ import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
@@ -167,6 +168,17 @@ public final class HatchedFill extends Fill implements StrokeNode {
 
     }
 
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis ua = new UsedAnalysis();
+        ua.include(angle);
+        ua.include(distance);
+        ua.include(offset);
+        if(stroke != null){
+            ua.merge(stroke.getUsedAnalysis());
+        }
+        return ua;
+    }
 
     @Override
     public void draw(Graphics2D g2, DataSource sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
@@ -559,8 +571,6 @@ public final class HatchedFill extends Fill implements StrokeNode {
     @Override
     public JAXBElement<? extends FillType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
-
-
         return of.createHatchedFill(this.getJAXBType());
     }
 

@@ -48,7 +48,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.*;
 import javax.xml.bind.util.ValidationEventCollector;
-
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.RuleType;
 import net.opengis.se._2_0.core.StyleType;
@@ -58,6 +57,7 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  *
@@ -376,6 +376,16 @@ public final class Style implements SymbolizerNode {
             hs.addAll(r.dependsOnFeature());
         }
         return hs;
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis(){
+            //We get an empty UsedAnalysis - we'll merge everything.
+            UsedAnalysis ua = new UsedAnalysis();
+            for(Rule r : rules){
+                    ua.merge(r.getUsedAnalysis());
+            }
+            return ua;
     }
 
     /**

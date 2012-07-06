@@ -4,6 +4,7 @@ import java.util.HashSet;
 import net.opengis.se._2_0.thematic.AxisScaleType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -75,7 +76,11 @@ public final class AxisScale {
 
         return scale;
     }
-    
+
+    /**
+     * Gets the feature this {@code AxisScale} depends on.
+     * @return
+     */
     public HashSet<String> dependsOnFeature() {
         HashSet<String> ret = new HashSet<String>();
         if(axisLength != null){
@@ -85,5 +90,16 @@ public final class AxisScale {
             ret.addAll(measure.dependsOnFeature());
         }
         return ret;
+    }
+
+    /**
+     * Gets the analysis that are used to build this {@code AxisScale}.
+     * @return
+     */
+    public UsedAnalysis getUsedAnalysis(){
+        UsedAnalysis ua = new UsedAnalysis();
+        ua.include(axisLength);
+        ua.include(measure);
+        return ua;
     }
 }

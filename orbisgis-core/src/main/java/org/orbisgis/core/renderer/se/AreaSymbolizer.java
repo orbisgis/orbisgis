@@ -57,6 +57,7 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -290,6 +291,24 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
                 }
                 if (perpendicularOffset != null) {
                         ret.addAll(perpendicularOffset.dependsOnFeature());
+                }
+                return ret;
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis ret = new UsedAnalysis();
+                if (translate != null) {
+                        ret.merge(translate.getUsedAnalysis());
+                }
+                if (fill != null) {
+                        ret.merge(fill.getUsedAnalysis());
+                }
+                if (perpendicularOffset != null) {
+                        ret.include(perpendicularOffset);
+                }
+                if (stroke != null) {
+                        ret.merge(stroke.getUsedAnalysis());
                 }
                 return ret;
         }

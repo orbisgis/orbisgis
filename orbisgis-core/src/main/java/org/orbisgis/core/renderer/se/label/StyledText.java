@@ -23,6 +23,7 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -634,7 +635,6 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
 
     @Override
     public HashSet<String> dependsOnFeature() {
-
         HashSet<String> result = new HashSet<String>();
         if (text != null) {
             result.addAll(text.dependsOnFeature());
@@ -651,7 +651,27 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         if (fontSize != null) {
             result.addAll(fontSize.dependsOnFeature());
         }
+        return result;
+    }
 
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis result = new UsedAnalysis();
+        if (text != null) {
+            result.include(text);
+        }
+        if (fontFamily != null) {
+            result.include(fontFamily);
+        }
+        if (fontWeight != null) {
+            result.include(fontWeight);
+        }
+        if (fontStyle != null) {
+            result.include(fontStyle);
+        }
+        if (fontSize != null) {
+            result.include(fontSize);
+        }
         return result;
     }
 }

@@ -52,6 +52,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
@@ -228,8 +229,16 @@ public final class SolidFill extends Fill {
                     ret.addAll(opacity.dependsOnFeature());
                 }
             }
-                return ret;
+            return ret;
 	}
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis ua = new UsedAnalysis();
+        ua.include(color);
+        ua.include(opacity);
+        return ua;
+    }
 
 	@Override
 	public SolidFillType getJAXBType() {

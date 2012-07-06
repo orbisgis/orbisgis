@@ -46,6 +46,7 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.SymbolizerType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * This is the entry point of the <code>Symbolizer</code>'s structure in a <code>Rule</code>
@@ -226,4 +227,13 @@ public final class CompositeSymbolizer implements SymbolizerNode {
         return ret;
     }
 
+    @Override
+    public UsedAnalysis getUsedAnalysis(){
+            //We get an empty UsedAnalysis - we'll merge everything.
+            UsedAnalysis ua = new UsedAnalysis();
+            for(Symbolizer s : symbolizers){
+                    ua.merge(s.getUsedAnalysis());
+            }
+            return ua;
+    }
 }

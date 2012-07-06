@@ -42,6 +42,7 @@ import net.opengis.se._2_0.core.StrokeElementType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -238,6 +239,24 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
                         result.addAll(stroke.dependsOnFeature());
                 }
 
+                return result;
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis result = new UsedAnalysis();
+                if (length != null) {
+                        result.include(length);
+                }
+                if (preGap != null) {
+                        result.include(preGap);
+                }
+                if (postGap != null) {
+                        result.include(postGap);
+                }
+                if (stroke != null) {
+                        result.merge(stroke.getUsedAnalysis());
+                }
                 return result;
         }
 

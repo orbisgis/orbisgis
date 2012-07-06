@@ -52,13 +52,13 @@ import net.opengis.se._2_0.thematic.DotMapFillType;
 import net.opengis.se._2_0.thematic.ObjectFactory;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.xnap.commons.i18n.I18n;
@@ -253,6 +253,17 @@ public final class DotMapFill extends Fill implements GraphicNode {
         }
 
         return ret;
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis ua = new UsedAnalysis();
+        if(mark != null){
+            ua.merge(mark.getUsedAnalysis());
+        }
+        ua.include(totalQuantity);
+        ua.include(quantityPerMark);
+        return ua;
     }
 
     @Override
