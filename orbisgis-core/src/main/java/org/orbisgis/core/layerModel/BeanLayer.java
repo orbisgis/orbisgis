@@ -101,11 +101,13 @@ public abstract class BeanLayer extends AbstractLayer {
                 //Deprectated listener
                 fireVisibilityChanged();
         }
+        @Override
         public LayerType getJAXBElement() {
                 ObjectFactory ows_context_factory = new ObjectFactory();
                 net.opengis.se._2_0.core.ObjectFactory se_of = new net.opengis.se._2_0.core.ObjectFactory();
                 LayerType layerType = ows_context_factory.createLayerType();
                 description.initJAXBType(layerType);
+                layerType.setHidden(!visible);
                 ILayer[] childrens = getChildren();
                 for(ILayer children : childrens) {
                         layerType.getLayer().add(children.getJAXBElement());
