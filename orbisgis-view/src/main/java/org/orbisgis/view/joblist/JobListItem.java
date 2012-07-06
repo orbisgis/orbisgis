@@ -60,6 +60,13 @@ public class JobListItem extends ContainerItemProperties {
         public void dispose() {
                 job.removeProgressListener(listener);
         }
+        
+        /**
+         * The user click on the cancel button
+         */
+        public void onCancel() {
+                job.cancel();
+        }
         /**
          * 
          * @return The associated Job
