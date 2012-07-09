@@ -79,11 +79,7 @@ public class ComboBoxChoice implements InputType {
 	public Component getComponent() {
 		return comp;
 	}
-
-        @Override
-	public int getType() {
-		return InputType.STRING;
-	}
+        
 
         @Override
 	public String getValue() {

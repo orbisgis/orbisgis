@@ -41,15 +41,11 @@ public class CheckBoxChoice implements InputType {
 
         }
 
+        @Override
         public Component getComponent() {
 
                 return jCheckBox;
-        }
-
-        @Override
-        public int getType() {
-                return InputType.STRING;
-        }
+        }       
 
         @Override
         public String getValue() {

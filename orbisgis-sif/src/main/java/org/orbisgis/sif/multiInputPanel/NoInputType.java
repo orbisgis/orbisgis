@@ -42,11 +42,6 @@ public class NoInputType implements InputType {
         }
 
         @Override
-        public int getType() {
-                return InputType.STRING;
-        }
-
-        @Override
         public String getValue() {
                 return null;
         }

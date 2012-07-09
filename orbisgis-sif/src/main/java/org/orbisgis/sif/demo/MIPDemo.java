@@ -32,7 +32,7 @@ import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.multiInputPanel.MIPValidation;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
-import org.orbisgis.sif.multiInputPanel.StringType;
+import org.orbisgis.sif.multiInputPanel.TextBoxType;
 
 /**
  *
@@ -45,11 +45,11 @@ public class MIPDemo {
                 MultiInputPanel multiInputPanel = new MultiInputPanel("A MIP demo");
 
                 //Add a text field
-                multiInputPanel.addInput("firstTextField", "A first text field", new StringType(10));
+                multiInputPanel.addInput("firstTextField", "A first text field", new TextBoxType(10));
 
                 //Add a another text field
 
-                multiInputPanel.addInput("secondTextField", "A second text field", new StringType(20));
+                multiInputPanel.addInput("secondTextField", "A second text field", new TextBoxType(20));
 
                 multiInputPanel.addValidation(new MIPValidation() {
 

@@ -35,6 +35,11 @@ public class PasswordType implements InputType {
 
 	private JPasswordField comp = new JPasswordField();
 
+        public PasswordType(int columns, boolean isEditable) {
+		comp.setColumns(columns);
+                comp.setEditable(isEditable);
+	}
+        
 	public PasswordType(int columns) {
 		comp.setColumns(columns);
 	}
@@ -43,14 +48,13 @@ public class PasswordType implements InputType {
 		comp.setColumns(5);
 	}
 
+        @Override
 	public Component getComponent() {
 		return comp;
 	}
+	
 
-	public int getType() {
-		return InputType.STRING;
-	}
-
+        @Override
 	public String getValue() {
 		return new String(comp.getPassword());
 	}
@@ -59,6 +63,7 @@ public class PasswordType implements InputType {
 		comp.setEditable(b);
 	}
 
+        @Override
 	public void setValue(String value) {
 		comp.setText(value);
 	}

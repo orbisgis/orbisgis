@@ -230,28 +230,6 @@ public class MultiInputPanel implements UIPanel {
                 }
         }
 
-        private class NoInputType implements InputType {
-
-                @Override
-                public Component getComponent() {
-                        return null;
-                }
-
-                @Override
-                public int getType() {
-                        return 0;
-                }
-
-                @Override
-                public String getValue() {
-                        return null;
-                }
-
-                @Override
-                public void setValue(String value) {
-                }
-        }
-
         @Override
         public SIFMessage postProcess() {
                 return new SIFMessage();

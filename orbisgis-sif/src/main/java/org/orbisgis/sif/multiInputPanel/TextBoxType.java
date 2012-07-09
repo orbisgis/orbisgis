@@ -28,18 +28,42 @@
  */
 package org.orbisgis.sif.multiInputPanel;
 
+import java.awt.Component;
+import javax.swing.JTextField;
 
-public class IntType extends AbstractTextType {
-	public IntType(int columns) {
-		super(columns);
-	}
+/**
+ *
+ * @author ebocher
+ */
+public final class TextBoxType implements InputType {
 
-	public IntType() {
-		super();
-	}
+        private JTextField comp = new JTextField();
+
+        public TextBoxType(int columns, boolean isEditable) {
+                comp.setColumns(columns);
+                comp.setEditable(isEditable);
+        }
+
+        public TextBoxType(int columns) {
+                comp.setColumns(columns);
+        }
+
+        public TextBoxType() {
+                comp.setColumns(5);
+        }
 
         @Override
-	public int getType() {
-		return InputType.INT;
-	}
+        public Component getComponent() {
+                return comp;
+        }
+
+        @Override
+        public String getValue() {
+                return comp.getText();
+        }
+
+        @Override
+        public void setValue(String value) {
+                comp.setText(value);
+        }
 }

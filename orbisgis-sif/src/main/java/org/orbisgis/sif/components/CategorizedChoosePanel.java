@@ -13,7 +13,6 @@ import javax.swing.tree.*;
 import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
-import org.orbisgis.sif.multiInputPanel.InputType;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -62,14 +61,7 @@ public class CategorizedChoosePanel extends JPanel implements UIPanel {
         public String[] getErrorMessages() {
                 return null;
         }
-
-        public String[] getFieldNames() {
-                return new String[]{"selection"};
-        }
-
-        public int[] getFieldTypes() {
-                return new int[]{InputType.STRING};
-        }
+        
 
         public String getId() {
                 return id;

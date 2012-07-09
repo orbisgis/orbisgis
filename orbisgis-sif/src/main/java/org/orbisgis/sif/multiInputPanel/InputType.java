@@ -33,18 +33,10 @@ import java.awt.Component;
 public interface InputType {
 
         public static final int STRING = 0;
-
-	public static final int INT = 1;
-
-	public static final int DOUBLE = 2;
         
-	int getType();
+        Component getComponent();
 
-	Component getComponent();
+        String getValue();
 
-	String getValue();
-
-	void setValue(String value);
-
-
+        void setValue(String value);
 }

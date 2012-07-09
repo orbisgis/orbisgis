@@ -31,7 +31,6 @@ package org.orbisgis.sif.components;
 import java.io.File;
 import javax.swing.filechooser.FileFilter;
 import org.orbisgis.sif.SIFMessage;
-import org.orbisgis.sif.multiInputPanel.InputType;
 
 /**
  * @class OpenFilePanel this class is used to import files in the geocatalog. To
@@ -80,11 +79,7 @@ public class OpenFilePanel extends AbstractOpenPanel {
         @Override
         public boolean showFoldersOnly() {
                 return false;
-        }
-
-        public int[] getFieldTypes() {
-                return new int[]{InputType.STRING, InputType.STRING};
-        }
+        }       
 
         public void setValue(String fieldName, String fieldValue) {
                 if (fieldName.equals(FIELD_NAME)) {

@@ -79,6 +79,7 @@ public class AskValue extends AbstractUIPanel  {
 		return title;
 	}
 
+        @Override
 	public SIFMessage validateInput() {
 		return new SIFMessage();
 	}
@@ -93,11 +94,7 @@ public class AskValue extends AbstractUIPanel  {
 
 	public int[] getFieldTypes() {
 		return new int[] { type };
-	}
-
-	public String[] getValidationExpressions() {
-		return sql;
-	}
+	}	
 
 	public String[] getValues() {
 		return new String[] { txtField.getText() };

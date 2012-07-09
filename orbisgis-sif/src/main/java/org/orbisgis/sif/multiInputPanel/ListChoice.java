@@ -41,14 +41,14 @@ public class ListChoice implements InputType {
                 comp = new JList(choices);
         }
 
+        @Override
         public Component getComponent() {
                 return new JScrollPane(comp);
         }
 
-        public int getType() {
-                return InputType.STRING;
-        }
+        
 
+        @Override
         public String getValue() {
                 final Object[] selectedValues = comp.getSelectedValues();
                 final StringBuilder sb = new StringBuilder();
@@ -65,6 +65,7 @@ public class ListChoice implements InputType {
                 comp.setSelectionMode(selectionMode);
         }
 
+        @Override
         public void setValue(String value) {
                 if (null != value) {
                         comp.setListData(value.split(SEPARATOR));

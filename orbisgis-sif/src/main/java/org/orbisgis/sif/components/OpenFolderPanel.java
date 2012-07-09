@@ -31,7 +31,6 @@ package org.orbisgis.sif.components;
 import java.io.File;
 import javax.swing.filechooser.FileFilter;
 import org.orbisgis.sif.SIFMessage;
-import org.orbisgis.sif.multiInputPanel.InputType;
 
 /**
  * This class handles the panel used to import the content of a folder in the
@@ -85,10 +84,7 @@ public class OpenFolderPanel extends AbstractOpenPanel {
         public String[] getFieldNames() {
                 return new String[]{FIELD_NAME, FILTER_NAME};
         }
-
-        public int[] getFieldTypes() {
-                return new int[]{InputType.STRING, InputType.STRING};
-        }
+        
 
         public void setValue(String fieldName, String fieldValue) {
                 if (fieldName.equals(FIELD_NAME)) {
