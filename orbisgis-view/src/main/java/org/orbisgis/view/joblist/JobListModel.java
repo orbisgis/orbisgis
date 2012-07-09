@@ -48,6 +48,9 @@ import org.orbisgis.view.components.ContainerItemProperties;
 public class JobListModel extends AbstractListModel {
         private static final Logger LOGGER = Logger.getLogger(JobListModel.class);
         private List<JobListItem> shownJobs = new ArrayList<JobListItem>();
+        /*!< If true a swing runnable is pending to refresh the content of
+          the JobListModel
+         */
         private AtomicBoolean awaitingRefresh=new AtomicBoolean(false); 
         private PropertyChangeListener labelUpdateListener;
         
