@@ -45,11 +45,13 @@ import org.gdms.data.db.DBSource;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.TableDescription;
+import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 public class TableSelectionPanel implements UIPanel {
+
         protected final static I18n i18n = I18nFactory.getI18n(ConnectionPanel.class);
         private ConnectionPanel firstPanel;
         private JTree tableTree;
@@ -80,20 +82,20 @@ public class TableSelectionPanel implements UIPanel {
         }
 
         @Override
-        public String initialize() {
+        public SIFMessage initialize() {
                 try {
                         tableTree = getTableTree();
                 } catch (SQLException e) {
-                        return e.getMessage();
+                        return new SIFMessage(e.getMessage(), SIFMessage.ERROR);
                 } catch (DriverException e) {
-                        return e.getMessage();
+                        return new SIFMessage(e.getMessage(), SIFMessage.ERROR);
                 }
                 if (jScrollPane == null) {
                         jScrollPane = new JScrollPane();
                 }
                 jScrollPane.setViewportView(tableTree);
 
-                return null;
+                return new SIFMessage();
         }
 
         private JTree getTableTree() throws SQLException, DriverException {
@@ -171,11 +173,11 @@ public class TableSelectionPanel implements UIPanel {
         }
 
         @Override
-        public String validateInput() {
-                String validateInput = null;
-                validateInput = (getSelectedDBSources().length == 0) ? i18n.tr("Select one table or view")
-                        : null;
-                return validateInput;
+        public SIFMessage validateInput() {
+                if (getSelectedDBSources().length == 0) {
+                        return new SIFMessage(i18n.tr("Select one table or view"), SIFMessage.ERROR);
+                }
+                return new SIFMessage();
         }
 
         @Override
@@ -184,8 +186,8 @@ public class TableSelectionPanel implements UIPanel {
         }
 
         @Override
-        public String postProcess() {
-                return null;
+        public SIFMessage postProcess() {
+                return new SIFMessage();
         }
 
         public DBSource[] getSelectedDBSources() {
@@ -217,5 +219,5 @@ public class TableSelectionPanel implements UIPanel {
                         i++;
                 }
                 return dbSources;
-        }
+        }        
 }

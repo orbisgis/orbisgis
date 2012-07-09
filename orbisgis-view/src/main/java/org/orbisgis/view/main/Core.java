@@ -103,8 +103,6 @@ public class Core {
      * Init the SIF ui factory
      */
     private void initSIF() {
-        UIFactory.setPersistencyDirectory(new File(viewWorkspace.getSIFPath()));
-        UIFactory.setTempDirectory(new File(mainContext.getCoreWorkspace().getTempFolder()));
         UIFactory.setDefaultImageIcon(OrbisGISIcon.getIcon("mini_orbisgis"));
     }
     

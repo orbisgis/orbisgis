@@ -31,7 +31,7 @@ import org.gdms.driver.Driver;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.FileDriverFilter;
-import org.orbisgis.sif.OpenFilePanel;
+import org.orbisgis.sif.components.OpenFilePanel;
 
 public class OpenGdmsFilePanel extends OpenFilePanel {
 
@@ -48,19 +48,15 @@ public class OpenGdmsFilePanel extends OpenFilePanel {
             }
 	}
 
-	@Override
 	public String[] getErrorMessages() {
 		return null;
 	}
 
-	@Override
-	public String getId() {
+	
+        public String getId() {
 		return OPEN_GDMS_FILE_PANEL;
 	}
 
-	@Override
-	public String[] getValidationExpressions() {
-		return null;
-	}
+	
 
 }

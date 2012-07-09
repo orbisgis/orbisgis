@@ -39,7 +39,7 @@ import org.gdms.driver.DataSet;
 public class DataBaseRow {
 
         private String intputSourceName;
-        private String outPutsourceName;
+        private String outputsourceName;
         private String schema;
         private String pk = "gid";
         private int epsg_code;
@@ -47,14 +47,17 @@ public class DataBaseRow {
         private boolean isSpatial = false;
         private String spatialField = "the_geom";
         Pattern pattern = Pattern.compile("[^a-zA-Z]", Pattern.CASE_INSENSITIVE);
-        private String errorMessage = null;
+        private String warningMessage = null;
+        private String inputSpatialField;
 
         /*
          * Create a row object that stores all informations to export in a
          * database
          */
-        public DataBaseRow(String sourceName, String schema, String pk, String spatialField, int epsg_code, Boolean export) {
-                this.intputSourceName = sourceName;
+        public DataBaseRow(String intputSourceName, String outputSourceName, String schema, String pk, String spatialField, int epsg_code, Boolean export) {
+                this.intputSourceName = intputSourceName;
+                this.outputsourceName = outputSourceName;
+                this.inputSpatialField=spatialField;
                 this.schema = schema;
                 this.pk = pk;
                 this.spatialField = spatialField;
@@ -139,14 +142,16 @@ public class DataBaseRow {
                         case 0:
                                 return getInputSourceName();
                         case 1:
-                                return getSchema();
+                                return getOutPutsourceName();
                         case 2:
-                                return getPK();
+                                return getSchema();
                         case 3:
-                                return getSpatialField();
+                                return getPK();
                         case 4:
-                                return String.valueOf(getEpsg_code());
+                                return getSpatialField();
                         case 5:
+                                return String.valueOf(getEpsg_code());
+                        case 6:
                                 return isExport();
                         default:
                                 return null;
@@ -161,19 +166,19 @@ public class DataBaseRow {
          */
         public void setValue(Object aValue, int col) {
                 switch (col) {
-                        case 0:
-                                setInputSourceName(String.valueOf(aValue));
-                                break;
                         case 1:
-                                setSchema(String.valueOf(aValue));
+                                setOutPutsourceName(String.valueOf(aValue));
                                 break;
                         case 2:
-                                setPk(String.valueOf(aValue));
+                                setSchema(String.valueOf(aValue));
                                 break;
                         case 3:
-                                setSpatialField(String.valueOf(aValue));
+                                setPk(String.valueOf(aValue));
                                 break;
                         case 4:
+                                setSpatialField(String.valueOf(aValue));
+                                break;
+                        case 5:
                                 try {
                                         Integer value = Integer.valueOf(aValue.toString());
                                         setEpsg_code(value);
@@ -184,7 +189,7 @@ public class DataBaseRow {
                                 break;
 
 
-                        case 5:
+                        case 6:
                                 setExport(Boolean.valueOf(aValue.toString()));
                                 break;
                         default:
@@ -252,7 +257,7 @@ public class DataBaseRow {
          * @return
          */
         public Object[] getObjects() {
-                return new Object[]{getInputSourceName(), getSchema(), getPK(), getSpatialField(), getEpsg_code(), isExport()};
+                return new Object[]{getInputSourceName(), getOutPutsourceName(), getSchema(), getPK(), getSpatialField(), getEpsg_code(), isExport()};
         }
 
         /**
@@ -273,28 +278,38 @@ public class DataBaseRow {
         }
 
         public void setOutPutsourceName(String outPutsourceName) {
-                this.outPutsourceName = outPutsourceName;
+                this.outputsourceName = outPutsourceName;
         }
 
         public String getOutPutsourceName() {
-                return outPutsourceName;
+                return outputsourceName;
+        }
+        
+        public String getInputSpatialField(){
+                return  inputSpatialField;
         }
 
+        public void setInputSpatialField(String inputSpatialField) {
+                this.inputSpatialField = inputSpatialField;
+        }
+        
+        
+
         private void setErrorMessage(String errorMessage) {
-                this.errorMessage = errorMessage;
+                this.warningMessage = errorMessage;
         }
 
         public String getErrorMessage() {
-                return errorMessage;
+                return warningMessage;
         }
 
         public String toSQL(DataSet dataSet) {
-                StringBuilder sb = new StringBuilder();
+                StringBuilder sb = new StringBuilder();                
                 sb.append("SELECT ");
-                if (getEpsg_code() == -1) {
-                        sb.append("*");
-                } else {
-                        sb.append("ST_Transform()");
+                sb.append("* EXCEPT(+").append(getPK()).append(") ").append(getPK());
+                if (getEpsg_code() != -1) {
+                        sb.append(" , ST_Transform(").append(getInputSpatialField()).append(", ").
+                                append(getEpsg_code()).append(") as ").append(getSpatialField());
                 }
                 sb.append(" FROM ");
                 sb.append(getInputSourceName());

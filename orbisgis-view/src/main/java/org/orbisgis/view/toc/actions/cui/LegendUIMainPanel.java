@@ -49,13 +49,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import org.orbisgis.core.renderer.se.Style;
+import javax.swing.*;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 
@@ -167,8 +164,8 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 	}
 
 	@Override
-	public String validateInput() {
-		return null;
+	public SIFMessage validateInput() {
+		return new SIFMessage();
 	}
 
 	@Override
@@ -182,13 +179,13 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 	}
 
 	@Override
-	public String initialize() {
-		return null;
+	public SIFMessage initialize() {
+		 return new SIFMessage();
 	}
 
 	@Override
-	public String postProcess() {
-		return null;
+	public SIFMessage postProcess() {
+		return  new SIFMessage();
 	}
 
 	@Override
@@ -200,6 +197,8 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 	public String getInfoText() {
 		return UIFactory.getDefaultOkMessage();
 	}
+
+      
 
 	private class ActionListenerImpl implements ActionListener {
 

@@ -4,12 +4,16 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.net.URL;
 import javax.swing.JPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
+import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
@@ -25,7 +29,6 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
          * be unique symbol (ie constant) Legends.
          */
         private UniqueSymbolArea uniqueArea;
-        
 
         @Override
         public Component getComponent() {
@@ -39,7 +42,7 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
 
         @Override
         public void setLegend(Legend legend) {
-                if(legend instanceof UniqueSymbolArea){
+                if (legend instanceof UniqueSymbolArea) {
                         uniqueArea = (UniqueSymbolArea) legend;
                         initPreview();
                         this.initializeLegendFields();
@@ -49,20 +52,19 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
                 }
         }
 
-	/**
-	 * Initialize the panel. This method is called just after the panel
-	 * creation.</p>
-         * <p>WARNING : the panel will be empty after calling this method. Indeed,
-         * there won't be any {@code Legend} instance associated to it. Use the
+        /**
+         * Initialize the panel. This method is called just after the panel
+         * creation.</p> <p>WARNING : the panel will be empty after calling this
+         * method. Indeed, there won't be any {@code Legend} instance associated
+         * to it. Use the
          * {@code setLegend} method to achieve this goal.
-	 *
-	 * @param lc
-	 *            LegendContext is useful to get some information about the
-	 *            layer in edition.
-	 */
+         *
+         * @param lc LegendContext is useful to get some information about the
+         * layer in edition.
+         */
         @Override
         public void initialize(LegendContext lc) {
-                if(uniqueArea == null){
+                if (uniqueArea == null) {
                         setLegend(new UniqueSymbolArea());
                 }
         }
@@ -78,13 +80,13 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
         }
 
         @Override
-        public String validateInput() {
-                return null;
+        public SIFMessage validateInput() {
+                return new SIFMessage();
         }
 
         @Override
         public URL getIconURL() {
-		return UIFactory.getDefaultIcon();
+                return UIFactory.getDefaultIcon();
         }
 
         @Override
@@ -93,13 +95,13 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
         }
 
         @Override
-        public String initialize() {
-                return null;
+        public SIFMessage initialize() {
+                return new SIFMessage();
         }
 
         @Override
-        public String postProcess() {
-                return null;
+        public SIFMessage postProcess() {
+                return new SIFMessage();
         }
 
         @Override
@@ -114,7 +116,7 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
                 return ret;
         }
 
-        private void initializeLegendFields(){
+        private void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel();
                 GridBagLayout grid = new GridBagLayout();
@@ -138,4 +140,6 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
                 glob.add(getPreview(), gbc);
                 this.add(glob);
         }
+
+        
 }

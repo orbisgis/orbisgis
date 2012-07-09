@@ -21,7 +21,6 @@ import javax.swing.tree.TreeSelectionModel;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.StringType;
-import org.orbisgis.sif.RadioButtonPanel;
 import org.orbisgis.view.toc.actions.cui.components.LegendPicker;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
@@ -30,6 +29,9 @@ import org.orbisgis.view.toc.wrapper.RuleWrapper;
 import org.orbisgis.view.toc.wrapper.StyleWrapper;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.legend.Legend;
+import org.orbisgis.sif.SIFMessage;
+import org.orbisgis.sif.components.RadioButtonPanel;
+import org.orbisgis.sif.multiInputPanel.MIPValidation;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -354,7 +356,21 @@ public class LegendTree extends JPanel {
                 //end of the list.
                 MultiInputPanel mip = new MultiInputPanel("LegendTreeMip", "Choose a name for your rule", false);
                 mip.addInput("RuleName", "Name of the Rule : ", new StringType(10));
-                mip.addValidationExpression("RuleName IS NOT NULL AND RuleName != ''", "Enter a name.");
+                
+                
+                mip.addValidation(new MIPValidation() {
+
+                        @Override
+                        public SIFMessage validate(MultiInputPanel mid) {
+                                String ruleName = mid.getInput("RuleName");
+                                if (ruleName==null && ruleName.isEmpty()){
+                                        return new SIFMessage("Rule name cannot be null or empty.", SIFMessage.ERROR);
+                                }
+                                return new SIFMessage();
+                                
+                        }
+                });
+                
                 if(UIFactory.showDialog(mip)){
                         String s = mip.getValues()[0];
                         RuleWrapper cur = getSelectedRule();

@@ -36,11 +36,13 @@ import org.gdms.driver.Driver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.DBDriverFilter;
 import org.gdms.source.SourceManager;
+import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.multiInputPanel.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 public class ConnectionPanel extends MultiInputPanel {
+
         protected final static I18n i18n = I18nFactory.getI18n(ConnectionPanel.class);
         private final static int LENGTH = 20;
         public static final String DBTYPE = "dbtype";
@@ -58,24 +60,46 @@ public class ConnectionPanel extends MultiInputPanel {
                 setInfoText(i18n.tr("Connection parameters"));
                 addInput(DBTYPE, i18n.tr("Type of database"),
                         getDriverInput());
-                addValidationExpression(DBTYPE + " is not null", i18n.tr("Database chooser"));
                 addInput(HOST, i18n.tr("Host"),
                         "127.0.0.1", new StringType(LENGTH));
-                addValidationExpression(HOST + " is not null", i18n.tr("Host name"));
                 addInput(PORT, i18n.tr("Default port"),
                         "0", new IntType(LENGTH));
-
-                addValidationExpression("(" + PORT + " >= 0) and (" + PORT
-                        + " <= 32767)", i18n.tr("Port"));
                 addInput(DBNAME, i18n.tr("Database name"),
                         "database_name", new StringType(LENGTH));
-                addValidationExpression(DBNAME + " is not null", i18n.tr("The database name is mandatory"));
                 addInput(USER, i18n.tr("User name"),
                         "postgres", new StringType(LENGTH));
                 addInput(PASSWORD, i18n.tr("Password"), "",
                         new PasswordType(LENGTH));
 
                 addInput(SSL, i18n.tr("SSL"), new CheckBoxChoice(false));
+
+                addValidation(new MIPValidation() {
+
+                        @Override
+                        public SIFMessage validate(MultiInputPanel mid) {
+
+                                //Validation
+                                if (mid.getInput(DBNAME) == null) {
+                                        return new SIFMessage(i18n.tr("The database name is mandatory"), SIFMessage.ERROR);
+                                }
+
+                                if (mid.getInput(HOST) == null) {
+                                        return new SIFMessage(i18n.tr("The host cannot be null"), SIFMessage.ERROR);
+                                }
+                                
+                                 if (mid.getInput(PORT) == null) {
+                                        // addValidationExpression("(" + PORT + " >= 0) and (" + PORT
+                                        //+ " <= 32767)", i18n.tr("Port"));
+                                        //return new SIFMessage(i18n.tr("The host cannot be null"), SIFMessage.ERROR);
+                                }
+                                 
+                                 return new SIFMessage();
+
+                                
+                        }
+                });
+
+
         }
 
         private InputType getDriverInput() {
@@ -95,24 +119,24 @@ public class ConnectionPanel extends MultiInputPanel {
         }
 
         @Override
-        public String postProcess() {
+        public SIFMessage postProcess() {
                 try {
                         Connection connection = getConnection();
                         connection.close();
-                        return null;
+                        return new SIFMessage();
                 } catch (SQLException e) {
-                        return i18n.tr("Cannot connect {0}",e);
+                        return new SIFMessage(i18n.tr("Cannot connect {0}", e), SIFMessage.ERROR);
                 }
         }
 
         public Connection getConnection() throws SQLException {
                 DBSource dbSource = getDBSource();
                 DBDriver dr = getDBDriver();
-               
+
                 String cs = dr.getConnectionString(dbSource.getHost(),
-                                dbSource.getPort(), dbSource.isSsl(),dbSource.getDbName(), dbSource.getUser(),
-                                dbSource.getPassword());
-                return  dr.getConnection(cs);
+                        dbSource.getPort(), dbSource.isSsl(), dbSource.getDbName(), dbSource.getUser(),
+                        dbSource.getPassword());
+                return dr.getConnection(cs);
         }
 
         public DBDriver getDBDriver() {
@@ -123,8 +147,8 @@ public class ConnectionPanel extends MultiInputPanel {
         }
 
         @Override
-        public String validateInput() {
-                return null;
+        public SIFMessage validateInput() {
+                return new SIFMessage();
         }
 
         public DBSource getDBSource() {
@@ -147,7 +171,8 @@ public class ConnectionPanel extends MultiInputPanel {
 
         /**
          * Return the sourceManager
-         * @return 
+         *
+         * @return
          */
         public SourceManager getSourceManager() {
                 return sourceManager;

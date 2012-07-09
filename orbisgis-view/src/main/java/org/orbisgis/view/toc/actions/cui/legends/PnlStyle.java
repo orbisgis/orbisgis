@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.xnap.commons.i18n.I18n;
@@ -91,7 +92,7 @@ public class PnlStyle extends JPanel implements ISELegendPanel {
         }
 
         @Override
-        public String validateInput() {
+        public SIFMessage validateInput() {
                 return null;
         }
 

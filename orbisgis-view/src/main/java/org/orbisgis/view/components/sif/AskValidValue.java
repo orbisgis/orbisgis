@@ -1,0 +1,60 @@
+package org.orbisgis.view.components.sif;
+
+import java.text.ParseException;
+
+import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
+import org.orbisgis.sif.SIFMessage;
+
+public class AskValidValue extends AskValue {
+
+        private DataSource ds;
+        private int fieldIndex;
+        private int fieldType;
+
+        public AskValidValue(DataSource ds, int fieldIndex) throws DriverException {
+                super("Field '" + ds.getFieldName(fieldIndex) + "'", null, null);
+                this.ds = ds;
+                this.fieldIndex = fieldIndex;
+                this.fieldType = ds.getFieldType(fieldIndex).getTypeCode();
+        }
+
+        @Override
+        public SIFMessage validateInput() {
+                try {
+                        return validateValue(ds, inputToValue(getValue(), fieldType),
+                                fieldIndex, fieldType);
+                } catch (ParseException e) {
+                        return new SIFMessage(e.getMessage(), SIFMessage.ERROR);
+                }
+        }
+
+        public static SIFMessage validateValue(DataSource ds, Value inputValue,
+                int fieldIndex, int fieldType) {
+                try {
+                        String error = ds.check(fieldIndex, inputValue);
+                        if (error != null) {
+                                return new SIFMessage(error, SIFMessage.ERROR);
+                        }
+                } catch (NumberFormatException e) {
+                        return new SIFMessage("Invalid number" + e.getMessage(), SIFMessage.ERROR);
+                } catch (DriverException e) {
+                        return new SIFMessage(e.getMessage(), SIFMessage.ERROR);
+                }
+
+                return new SIFMessage();
+        }
+
+        public Value getUserValue() throws ParseException {
+                String userInput = getValue();
+                return inputToValue(userInput, fieldType);
+        }
+
+        public static Value inputToValue(String userInput, int fieldType)
+                throws ParseException {
+                Value value = ValueFactory.createValueByType(userInput, fieldType);
+                return value;
+        }
+}

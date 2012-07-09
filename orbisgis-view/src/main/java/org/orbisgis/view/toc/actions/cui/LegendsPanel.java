@@ -47,6 +47,7 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
+import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
@@ -58,6 +59,7 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.factory.LegendFactory;
+import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
@@ -70,18 +72,17 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * This {@code Panel} contains all the needed informations to build an UI that
  * will let the user edit the legends. It is built with the following properties
- * :</p> <ul><li>Legends are displayed in the {@code LegendList}.</li> 
- * <li>An inner list of available legends. It may be initialized using
+ * :</p> <ul><li>Legends are displayed in the {@code LegendList}.</li> <li>An
+ * inner list of available legends. It may be initialized using
  * {@code EPLegendHelper. It is used to validate a given {@code Legend}, in
- * order to determine if it can be edited or not.</li> 
- * <li>A {@code CardLayout} that is used to switch fast between the {@code
- * Legend} instances stored in {@code legends}</li> 
- * <li>Two text fields : one for the min scale, the other for the max scale.</li>
- * <li>Two buttons that are used to fastly set the min and/or max scales to
- * the current one.</li>
- * <li>A {@code MapTransform} that represents the current state of the map</li>
- * <li>A {@code Type} instance (should be the type of the {@code DataSource}
- * associated to the layer associated to the legend we want to edit.</li> </ul>
+ * order to determine if it can be edited or not.</li> <li>A {@code CardLayout}
+ * that is used to switch fast between the {@code
+ * Legend} instances stored in {@code legends}</li> <li>Two text fields : one
+ * for the min scale, the other for the max scale.</li> <li>Two buttons that are
+ * used to fastly set the min and/or max scales to the current one.</li> <li>A {@code MapTransform}
+ * that represents the current state of the map</li> <li>A {@code Type} instance
+ * (should be the type of the {@code DataSource} associated to the layer
+ * associated to the legend we want to edit.</li> </ul>
  *
  * @author alexis, others...
  */
@@ -101,7 +102,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         private StyleWrapper styleWrapper;
 
         public void init(MapTransform mt, Type gc, Style style, ILegendPanel[] availableLegends,
-                    ILayer layer) {
+                ILayer layer) {
                 this.mt = mt;
                 this.gc = gc;
                 this.layer = layer;
@@ -295,33 +296,34 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         }
 
         @Override
-        public String initialize() {
-                return null;
+        public SIFMessage initialize() {
+                return new SIFMessage();
         }
 
         @Override
-        public String postProcess() {
-                return null;
+        public SIFMessage postProcess() {
+                return new SIFMessage();
         }
 
         @Override
-        public String validateInput() {
+        public SIFMessage validateInput() {
                 if (!legendTree.hasLegend()) {
-                        return I18N.tr("You must create almost one legend");
+                        return new SIFMessage(I18N.tr("You must create almost one legend"), SIFMessage.ERROR);
                 }
-                List<String> errors = styleWrapper.validateInput();
+                List<SIFMessage> errors = styleWrapper.validateInput();
                 StringBuilder sb = new StringBuilder();
-                for (String s : errors) {
-                        if (s != null && !s.isEmpty()) {
-                                sb.append(s);
+                for (SIFMessage s : errors) {
+                        String message = s.getMessage();
+                        if (message != null && !message.isEmpty()) {
+                                sb.append(message);
                                 sb.append("\n");
                         }
                 }
                 String err = sb.toString();
                 if (err != null && !err.isEmpty()) {
-                        return err;
+                        return new SIFMessage(err, SIFMessage.ERROR);
                 }
-                return null;
+                return new SIFMessage();
         }
 
         @Override
@@ -342,4 +344,6 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         public StyleWrapper getStyleWrapper() {
                 return styleWrapper;
         }
+
+     
 }

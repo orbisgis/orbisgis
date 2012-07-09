@@ -9,6 +9,7 @@ import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JPanel;
+import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
 import org.gdms.data.schema.Metadata;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
@@ -22,6 +23,7 @@ import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 
@@ -53,19 +55,19 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 	}
 
 	@Override
-	public String initialize() {
-		return null;
+	public SIFMessage initialize() {
+		return new SIFMessage();
 	}
 
 	@Override
-	public String postProcess() {
-		return null;
+	public SIFMessage postProcess() {
+		return  new SIFMessage();
 	}
 
 	@Override
-	public String validateInput() {
+	public SIFMessage validateInput() {
 		// Todo make sure the choropleth is valid !
-		return null;
+		return  new SIFMessage();
 	}
 
 	@Override
@@ -128,4 +130,6 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 		}
 		return null;
 	}
+
+       
 }

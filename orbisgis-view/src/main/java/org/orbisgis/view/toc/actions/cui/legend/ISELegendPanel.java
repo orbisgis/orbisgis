@@ -5,6 +5,7 @@
 package org.orbisgis.view.toc.actions.cui.legend;
 
 import java.awt.Component;
+import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 
 /**
@@ -55,6 +56,6 @@ public interface ISELegendPanel {
 	 * @return {@code null} if the status of the edited legend is ok. An error message
 	 *         if the legend cannot be created
 	 */
-	String validateInput();
+	SIFMessage validateInput();
 
 }

@@ -32,10 +32,13 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.TableDescription;
 import org.gdms.source.SourceManager;
+import org.jproj.CoordinateReferenceSystem;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.xnap.commons.i18n.I18n;
@@ -56,10 +59,13 @@ public class DataBaseTableModel extends AbstractTableModel {
         private final String[] sourceNames;
         String[] columnNames;
         private ArrayList<DataBaseRow> data = new ArrayList<DataBaseRow>();
+        private final TableExportPanel tableExportPanel;
 
-        public DataBaseTableModel(ConnectionPanel firstPanel, String[] sourceNames) {
+        public DataBaseTableModel(TableExportPanel tableExportPanel, ConnectionPanel firstPanel, String[] sourceNames) {
                 this.sourceNames = sourceNames;
+                this.tableExportPanel=tableExportPanel;
                 init(firstPanel);
+                
         }
 
         /**
@@ -75,15 +81,23 @@ public class DataBaseTableModel extends AbstractTableModel {
                         SourceManager sourceManager = firstPanel.getSourceManager();
                         DataManager dm = (DataManager) Services.getService(DataManager.class);
                         DataSourceFactory dsf = dm.getDataSourceFactory();
-                        columnNames = new String[]{"Table name", "Schema", "PK", "Spatial field", "EPSG code", "Export"};
+                        columnNames = new String[]{"Source name", "Table name", "Schema", "PK", "Spatial field", "EPSG code", "Export"};
                         for (String sourceName : sourceNames) {
                                 int type = sourceManager.getSource(sourceName).getType();
                                 if (((SourceManager.VECTORIAL | SourceManager.RASTER | SourceManager.WMS | SourceManager.SYSTEM_TABLE) & type) == 0) {
-                                        DataBaseRow row = new DataBaseRow(sourceName, "public", "gid", "the_geom", -1, Boolean.TRUE);
+                                        DataBaseRow row = new DataBaseRow(sourceName, sourceName, "public", "gid", "the_geom", -1, Boolean.TRUE);
                                         data.add(row);
                                 } else if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
-                                        dsf.getDataSource(sourceName).getCRS();
-                                        DataBaseRow row = new DataBaseRow(sourceName, "public", "gid", "the_geom", -1, Boolean.TRUE);
+                                        DataSource ds = dsf.getDataSource(sourceName);
+                                        ds.open();
+                                        String geomField = ds.getFieldName(ds.getSpatialFieldIndex());
+                                        CoordinateReferenceSystem crs = ds.getCRS();                                        
+                                        int epsgCode = -1;
+                                        if(crs!=null){
+                                             epsgCode = crs.getEPSGCode();   
+                                        }
+                                        ds.close();
+                                        DataBaseRow row = new DataBaseRow(sourceName,sourceName, "public", "gid", geomField, epsgCode, Boolean.TRUE);
                                         row.setIsSpatial(true);
                                         data.add(row);
                                 }
@@ -110,8 +124,11 @@ public class DataBaseTableModel extends AbstractTableModel {
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
+                if(columnIndex==0){
+                        return false;
+                }
                 if (!data.get(rowIndex).isIsSpatial()) {
-                        if ((columnIndex == 3) || (columnIndex == 4)) {
+                        if ((columnIndex == 4) || (columnIndex == 5)) {
                                 return false;
                         }
                 }
@@ -124,6 +141,7 @@ public class DataBaseTableModel extends AbstractTableModel {
                 row.setValue(aValue, columnIndex);                
                 data.set(rowIndex, row);
                 fireTableCellUpdated(rowIndex, columnIndex);
+                tableExportPanel.validateInput("Salut");
 
         }
 

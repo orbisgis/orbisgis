@@ -34,76 +34,90 @@
  *    fergonco _at_ gmail.com
  *    thomas.leduc _at_ cerma.archi.fr
  */
-package org.orbisgis.view.toc.actions.cui;
+package org.orbisgis.view.components.sif;
 
 import java.awt.Component;
-import javax.swing.JLabel;
-import org.orbisgis.legend.Legend;
+import javax.swing.JTextField;
+import org.orbisgis.sif.AbstractUIPanel;
 import org.orbisgis.sif.SIFMessage;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
+import org.orbisgis.sif.multiInputPanel.InputType;
 
+public class AskValue extends AbstractUIPanel {
 
-public class NoPanel implements ILegendPanel {
-    protected final static I18n I18N = I18nFactory.getI18n(NoPanel.class);
+	private JTextField txtField;
+	private String[] sql;
+	private String title;
+	private String[] error;
+	private String initialValue;
+	private int type;
 
-	private Legend legend;
-
-	public NoPanel(Legend legend) {
-		this.legend = legend;
+	public AskValue(String title, String sql, String error) {
+		this(title, sql, error, "");
 	}
 
-	@Override
-	public boolean acceptsGeometryType(int geometryType) {
-		return true;
+	public AskValue(String title, String sql, String error, String initialValue) {
+		this(title, sql, error, initialValue, InputType.STRING);
 	}
 
-	@Override
+	public AskValue(String title, String sql, String error,
+			String initialValue, int type) {
+		this.title = title;
+		this.sql = (sql == null) ? null : new String[] { sql };
+		this.error = (error == null) ? null : new String[] { error };
+		this.initialValue = initialValue;
+		this.type = type;
+	}
+
+        @Override
 	public Component getComponent() {
-		return new JLabel(I18N.tr("No suitable editor for this legend"));
+		txtField = new JTextField(initialValue);
+		return txtField;
 	}
 
-	@Override
-	public Legend getLegend() {
-		return legend;
+        @Override
+	public String getTitle() {
+		return title;
 	}
 
-	public String getLegendTypeName() {
-		throw new RuntimeException(I18N.tr("bug !"));
-	}
-
-	@Override
-	public ILegendPanel newInstance() {
-		throw new RuntimeException(I18N.tr("bug !"));
-	}
-
-	@Override
-	public void setLegend(Legend legend) {
-		this.legend = legend;
-	}
-
-	@Override
-	public void initialize(LegendContext lc) {
-
-	}
-
-	@Override
+        @Override
 	public SIFMessage validateInput() {
 		return new SIFMessage();
 	}
 
-        @Override
-        public String getId(){
-                return "NoPanel";
-        }
-        @Override
-        public void setId(String id){
-        }
+	public String[] getErrorMessages() {
+		return error;
+	}
 
-        @Override
-        public Legend copyLegend() {
-                return null;
-        }
+	public String[] getFieldNames() {
+		return new String[] { "txt" };
+	}
+
+	public int[] getFieldTypes() {
+		return new int[] { type };
+	}
+
+	public String[] getValidationExpressions() {
+		return sql;
+	}
+
+	public String[] getValues() {
+		return new String[] { txtField.getText() };
+	}
+
+	public String getValue() {
+		return getValues()[0];
+	}
+
+	public String getId() {
+		return null;
+	}
+
+	public void setValue(String fieldName, String fieldValue) {
+		txtField.setText(fieldValue);
+	}
+
+	public void setType(int type) {
+		this.type = type;
+	}
 
 }

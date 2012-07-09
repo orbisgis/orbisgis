@@ -30,14 +30,13 @@ package org.orbisgis.view.geocatalog.sourceWizards.db;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.net.URL;
-import java.util.ArrayList;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import org.apache.log4j.Logger;
+import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
 import org.gdms.driver.TableDescription;
+import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -54,6 +53,7 @@ public class TableExportPanel extends JPanel implements UIPanel {
         private JScrollPane jScrollPane;
         private JTable jtableExporter;
         private String infoMessage = null;
+        private String message;
 
         public TableExportPanel(final ConnectionPanel firstPanel,
                 String[] layerNames) {
@@ -72,36 +72,37 @@ public class TableExportPanel extends JPanel implements UIPanel {
         }
 
         @Override
-        public String initialize() {
+        public SIFMessage initialize() {
                 if (jScrollPane == null) {
                         this.setLayout(new BorderLayout());
                         jtableExporter = new JTable();
                         jtableExporter.setRowHeight(20);
-                        DataBaseTableModel dataBaseTableModel = new DataBaseTableModel(firstPanel, sourceNames);
+                        DataBaseTableModel dataBaseTableModel = new DataBaseTableModel(this, firstPanel, sourceNames);
                         jtableExporter.setModel(dataBaseTableModel);
                         jtableExporter.setDefaultRenderer(Object.class, new org.orbisgis.view.geocatalog.sourceWizards.db.TableCellRenderer());
-                        TableColumn schemaColumn = jtableExporter.getColumnModel().getColumn(1);
+                        TableColumn schemaColumn = jtableExporter.getColumnModel().getColumn(2);
                         JComboBox comboBox = new JComboBox(dataBaseTableModel.getSchemas());
                         schemaColumn.setCellEditor(new DefaultCellEditor(comboBox));
                         initColumnSizes(jtableExporter);
                         jScrollPane = new JScrollPane(jtableExporter);
                         this.add(jScrollPane, BorderLayout.CENTER);
                 }
-                return null;
+                return new SIFMessage();
+        }
+
+        
+        @Override
+        public SIFMessage postProcess() {
+                return new SIFMessage();
         }
 
         /**
-         * The postProcess is override to ensure that all source can be exported
+         * The postProcess is override to ensure that all sources can be exported
          *
          * @return
          */
         @Override
-        public String postProcess() {
-                return null;
-        }
-
-        @Override
-        public String validateInput() {
+        public SIFMessage validateInput() {
                 String validateInput = null;
                 DataBaseTableModel model = (DataBaseTableModel) jtableExporter.getModel();
                 if (!model.isOneRowSelected()) {
@@ -131,7 +132,7 @@ public class TableExportPanel extends JPanel implements UIPanel {
                                 }
                         }
                 }
-                return validateInput;
+                return new SIFMessage();
         }
 
         @Override
@@ -186,5 +187,10 @@ public class TableExportPanel extends JPanel implements UIPanel {
                         }
                 }
                 return exists;
+        }
+
+        void validateInput(String salut) {
+               message = salut;
+               validateInput();
         }
 }

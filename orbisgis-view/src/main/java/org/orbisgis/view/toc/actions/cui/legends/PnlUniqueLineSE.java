@@ -9,11 +9,10 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.net.URL;
 import javax.swing.JPanel;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
+import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
@@ -82,8 +81,8 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         }
 
         @Override
-        public String validateInput() {
-                return null;
+        public SIFMessage validateInput() {
+                return new SIFMessage();
         }
 
         @Override
@@ -97,13 +96,13 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         }
 
         @Override
-        public String initialize() {
-                return null;
+        public SIFMessage initialize() {
+                return new SIFMessage();
         }
 
         @Override
-        public String postProcess() {
-                return null;
+        public SIFMessage postProcess() {
+                return new SIFMessage();
         }
 
         @Override
@@ -136,4 +135,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 glob.add(getPreview(), gbc);
                 this.add(glob);
         }
+
+        
 }

@@ -53,7 +53,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
-import org.orbisgis.sif.SaveFilePanel;
+import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.utils.CollectionUtils;
@@ -165,20 +165,24 @@ public class Catalog extends JPanel implements DockingPanel {
 
         /**
          * Use service to return the data manager
+         *
          * @return DataManager instance
          */
         private DataManager getDataManager() {
                 return Services.getService(DataManager.class);
         }
+
         /**
          * DataSource URI drop
+         *
          * @param uriDrop Uniform Resource Identifier
          */
         public void onDropURI(List<URI> uriDrop) {
-                for(URI uri : uriDrop) {
+                for (URI uri : uriDrop) {
                         getDataManager().getSourceManager().nameAndRegister(uri);
                 }
         }
+
         /**
          * For JUnit purpose, return the filter factory manager
          *
@@ -335,7 +339,6 @@ public class Catalog extends JPanel implements DockingPanel {
                         final SaveFilePanel outfilePanel = new SaveFilePanel(
                                 "org.orbisgis.core.ui.plugins.views.geocatalog.SaveInFile",
                                 I18N.tr("Save the source : " + source));
-                        outfilePanel.setShowFavorites(false);
                         int type = sm.getSource(source).getType();
                         DriverFilter filter;
                         if ((type & SourceManager.VECTORIAL) == sm.VECTORIAL) {
@@ -384,11 +387,8 @@ public class Catalog extends JPanel implements DockingPanel {
                 String[] res = getSelectedSources();
                 final ConnectionPanel firstPanel = new ConnectionPanel(sm);
                 TableExportPanel tableExportPanel = new TableExportPanel(firstPanel, res);
-                if (UIFactory.showDialog(new UIPanel[] { firstPanel,
-				tableExportPanel }, true, true)) {
-                        
-                        
-                        
+                if (UIFactory.showDialog(new UIPanel[]{firstPanel,
+                                tableExportPanel}, true, true)) {
                 }
         }
 
@@ -397,7 +397,7 @@ public class Catalog extends JPanel implements DockingPanel {
          */
         public void onMenuAddFilesFromFolder() {
                 final OpenGdmsFolderPanel folderPanel = new OpenGdmsFolderPanel(I18N.tr("Add files from a folder"));
-                if (UIFactory.showDialog(folderPanel, true,true)) {
+                if (UIFactory.showDialog(folderPanel, true, true)) {
                         File[] files = folderPanel.getSelectedFiles();
                         for (final File file : files) {
                                 // for each folder, we apply the method processFolder.
@@ -575,7 +575,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 SourceListTransferHandler transferHandler = new SourceListTransferHandler();
                 //Call the method this.onDropURI when the user drop uri(like files) on the list control
                 transferHandler.getDropListenerHandler().addListener(this,
-                        EventHandler.create(Listener.class, this, "onDropURI","uriList"));
+                        EventHandler.create(Listener.class, this, "onDropURI", "uriList"));
                 sourceList.setTransferHandler(transferHandler);
                 sourceList.setDragEnabled(true);
                 //Attach the content to the DataSource instance
