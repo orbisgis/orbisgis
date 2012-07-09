@@ -59,7 +59,7 @@ public class OpenFilePanel extends AbstractOpenPanel {
                 } else if (!file.exists()) {
                         return new SIFMessage(i18n.tr("The file must exists"), SIFMessage.ERROR);
                 } else {
-                        return null;
+                        return new SIFMessage();
                 }
         }
 

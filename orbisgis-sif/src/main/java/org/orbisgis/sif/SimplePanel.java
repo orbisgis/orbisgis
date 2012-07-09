@@ -108,7 +108,7 @@ public class SimplePanel extends JPanel {
         }
 
         public void initialize() {
-                SIFMessage err = null;
+                SIFMessage err ;
                 try {
                         err = panel.initialize();
                 } catch (Exception e) {
@@ -117,7 +117,7 @@ public class SimplePanel extends JPanel {
                         logger.error(msg, e);
                         err = new SIFMessage(msg + ": " + e.getMessage(), SIFMessage.ERROR);
                 }
-                if (err == null) {
+                if (err.getMessageType()==SIFMessage.OK) {
                         validateInput();
                 } else {
                         msgPanel.setError("Panel initialisation error");
@@ -126,7 +126,7 @@ public class SimplePanel extends JPanel {
         }
 
         public void validateInput() {
-                SIFMessage err = new SIFMessage();
+                SIFMessage err = panel.validateInput();
                 if (err.getMessageType() == SIFMessage.ERROR) {
                         msgPanel.setError(err.getMessage());
                         frame.cannotContinue();
