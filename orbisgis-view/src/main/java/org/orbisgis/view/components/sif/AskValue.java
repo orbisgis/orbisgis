@@ -40,84 +40,60 @@ import java.awt.Component;
 import javax.swing.JTextField;
 import org.orbisgis.sif.AbstractUIPanel;
 import org.orbisgis.sif.SIFMessage;
-import org.orbisgis.sif.multiInputPanel.InputType;
 
 public class AskValue extends AbstractUIPanel {
 
-	private JTextField txtField;
-	private String[] sql;
-	private String title;
-	private String[] error;
-	private String initialValue;
-	private int type;
+        private JTextField txtField;
+        private String[] sql;
+        private String title;
+        private String[] error;
+        private String initialValue;
 
-	public AskValue(String title, String sql, String error) {
-		this(title, sql, error, "");
-	}
+        public AskValue(String title, String sql, String error) {
+                this(title, sql, error, "");
+        }
 
-	public AskValue(String title, String sql, String error, String initialValue) {
-		this(title, sql, error, initialValue, InputType.STRING);
-	}
-
-	public AskValue(String title, String sql, String error,
-			String initialValue, int type) {
-		this.title = title;
-		this.sql = (sql == null) ? null : new String[] { sql };
-		this.error = (error == null) ? null : new String[] { error };
-		this.initialValue = initialValue;
-		this.type = type;
-	}
+        public AskValue(String title, String sql, String error,
+                String initialValue) {
+                this.title = title;
+                this.sql = (sql == null) ? null : new String[]{sql};
+                this.error = (error == null) ? null : new String[]{error};
+                this.initialValue = initialValue;
+        }
 
         @Override
-	public Component getComponent() {
-		txtField = new JTextField(initialValue);
-		return txtField;
-	}
+        public Component getComponent() {
+                txtField = new JTextField(initialValue);
+                return txtField;
+        }
 
         @Override
-	public String getTitle() {
-		return title;
-	}
+        public String getTitle() {
+                return title;
+        }
 
         @Override
-	public SIFMessage validateInput() {
-		return new SIFMessage();
-	}
+        public SIFMessage validateInput() {
+                return new SIFMessage();
+        }
 
-	public String[] getErrorMessages() {
-		return error;
-	}
+        public String[] getErrorMessages() {
+                return error;
+        }
 
-	public String[] getFieldNames() {
-		return new String[] { "txt" };
-	}
+        public String[] getValues() {
+                return new String[]{txtField.getText()};
+        }
 
-	public int[] getFieldTypes() {
-		return new int[] { type };
-	}
+        public String getValue() {
+                return getValues()[0];
+        }
 
-	public String[] getValidationExpressions() {
-		return sql;
-	}
+        public String getId() {
+                return null;
+        }
 
-	public String[] getValues() {
-		return new String[] { txtField.getText() };
-	}
-
-	public String getValue() {
-		return getValues()[0];
-	}
-
-	public String getId() {
-		return null;
-	}
-
-	public void setValue(String fieldName, String fieldValue) {
-		txtField.setText(fieldValue);
-	}
-
-	public void setType(int type) {
-		this.type = type;
-	}
-
+        public void setValue(String fieldName, String fieldValue) {
+                txtField.setText(fieldValue);
+        }
 }

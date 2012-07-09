@@ -34,7 +34,6 @@ import java.net.URL;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
 import org.gdms.driver.TableDescription;
 import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIPanel;

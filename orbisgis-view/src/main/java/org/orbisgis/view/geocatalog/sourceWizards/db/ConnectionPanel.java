@@ -55,19 +55,19 @@ public class ConnectionPanel extends MultiInputPanel {
         private final SourceManager sourceManager;
 
         public ConnectionPanel(SourceManager sourceManager) {
-                super("orbisgis.view.geocatalog.sourceWizards.db.FirstUIPanel", i18n.tr("Connect"));
+                super(i18n.tr("Connect"));
                 this.sourceManager = sourceManager;
                 setInfoText(i18n.tr("Connection parameters"));
                 addInput(DBTYPE, i18n.tr("Type of database"),
                         getDriverInput());
                 addInput(HOST, i18n.tr("Host"),
-                        "127.0.0.1", new StringType(LENGTH));
+                        "127.0.0.1", new TextBoxType(LENGTH));
                 addInput(PORT, i18n.tr("Default port"),
-                        "0", new IntType(LENGTH));
+                        "0", new TextBoxType(LENGTH));
                 addInput(DBNAME, i18n.tr("Database name"),
-                        "database_name", new StringType(LENGTH));
+                        "database_name", new TextBoxType(LENGTH));
                 addInput(USER, i18n.tr("User name"),
-                        "postgres", new StringType(LENGTH));
+                        "postgres", new TextBoxType(LENGTH));
                 addInput(PASSWORD, i18n.tr("Password"), "",
                         new PasswordType(LENGTH));
 
@@ -79,23 +79,23 @@ public class ConnectionPanel extends MultiInputPanel {
                         public SIFMessage validate(MultiInputPanel mid) {
 
                                 //Validation
-                                if (mid.getInput(DBNAME) == null) {
+                                if (mid.getInput(DBNAME).isEmpty()) {
                                         return new SIFMessage(i18n.tr("The database name is mandatory"), SIFMessage.ERROR);
                                 }
 
-                                if (mid.getInput(HOST) == null) {
+                                if (mid.getInput(HOST).isEmpty()) {
                                         return new SIFMessage(i18n.tr("The host cannot be null"), SIFMessage.ERROR);
                                 }
-                                
-                                 if (mid.getInput(PORT) == null) {
+
+                                if (mid.getInput(PORT).isEmpty()) {
                                         // addValidationExpression("(" + PORT + " >= 0) and (" + PORT
                                         //+ " <= 32767)", i18n.tr("Port"));
                                         //return new SIFMessage(i18n.tr("The host cannot be null"), SIFMessage.ERROR);
                                 }
-                                 
-                                 return new SIFMessage();
 
-                                
+                                return new SIFMessage();
+
+
                         }
                 });
 

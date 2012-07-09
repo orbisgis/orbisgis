@@ -7,7 +7,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
-import org.orbisgis.sif.multiInputPanel.StringType;
+import org.orbisgis.sif.multiInputPanel.TextBoxType;
 
 public class AskValidRow extends MultiInputPanel {
 
@@ -22,7 +22,7 @@ public class AskValidRow extends MultiInputPanel {
 		this.types = new int[fieldCount];
 		for (int i = 0; i < fieldCount; i++) {
 			types[i] = ds.getFieldType(i).getTypeCode();
-			addInput("f" + i, ds.getFieldName(i), new StringType());
+			addInput("f" + i, ds.getFieldName(i), new TextBoxType());
 		}
 	}
 
