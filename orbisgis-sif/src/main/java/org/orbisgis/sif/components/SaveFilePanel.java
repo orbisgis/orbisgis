@@ -26,14 +26,18 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
-package org.orbisgis.sif;
+package org.orbisgis.sif.components;
 
+import org.orbisgis.sif.components.OpenFilePanel;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.FileChooserUI;
 import javax.swing.plaf.basic.BasicFileChooserUI;
+import org.orbisgis.sif.SIFMessage;
+import org.orbisgis.sif.SimplePanel;
+import org.orbisgis.sif.UIFactory;
 
 public class SaveFilePanel extends OpenFilePanel {
 
@@ -77,18 +81,18 @@ public class SaveFilePanel extends OpenFilePanel {
         }
 
         @Override
-        public String validateInput() {
+        public SIFMessage validateInput() {
                 File file = getSelectedFile();
                 if (file == null) {
-                        return i18n.tr("A file must be selected");
+                        return new SIFMessage(i18n.tr("A file must be selected"), SIFMessage.ERROR);
                 } else if (fileMustNotExist) {
                         if (getSelectedFile().exists()) {
-                                return i18n.tr("The file already exists");
+                                return new SIFMessage(i18n.tr("The file already exists"),SIFMessage.ERROR);
                         } else {
-                                return null;
+                                return new SIFMessage();
                         }
                 } else {
-                        return null;
+                        return new SIFMessage();
                 }
         }
 
@@ -102,7 +106,7 @@ public class SaveFilePanel extends OpenFilePanel {
         }
 
         @Override
-        public String postProcess() {
+        public SIFMessage postProcess() {
                 if (getSelectedFile().exists()) {
                         int ret = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(), i18n.tr("sif.file.fileAlreadyExists")
                                 + " " + i18n.tr("sif.file.overwrite"), i18n.tr("sif.file.existing"),
@@ -110,9 +114,9 @@ public class SaveFilePanel extends OpenFilePanel {
                         if (ret == JOptionPane.NO_OPTION || ret == JOptionPane.CLOSED_OPTION) {
                                 // just do nothing...
                                 // still, this isn't clean code...
-                                return SimplePanel.CANCELED_ACTION;
+                                return new SIFMessage(SimplePanel.CANCELED_ACTION, SIFMessage.OK);
                         }
                 }
-                return null;
+                return new SIFMessage();
         }
 }

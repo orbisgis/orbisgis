@@ -36,7 +36,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.util.HashMap;
-
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -191,12 +190,12 @@ public class SIFWizard extends AbstractOutsideFrame {
 		buildMainPanel(panels);
 		this.add(mainPanel, BorderLayout.CENTER);
 		listen(this);
-		loadInput(inputs);
 		getPanel().initialize();
 		this.setIconImage(getPanel().getIconImage());
 		setDefaultButton();
 	}
 
+        @Override
 	public void canContinue() {
 		enableByPosition();
 		visualizeByPosition();
@@ -235,6 +234,7 @@ public class SIFWizard extends AbstractOutsideFrame {
 		}
 	}
 
+        @Override
 	public void cannotContinue() {
 		enableByPosition();
 		visualizeByPosition();
@@ -248,20 +248,7 @@ public class SIFWizard extends AbstractOutsideFrame {
 		return panels[index];
 	}
 
-	protected void loadInput(HashMap<String, String> inputs) {
-		test = true;
-		for (SimplePanel panel : panels) {
-			if (!panel.loadInput(inputs)) {
-				test = false;
-			}
-		}
-	}
-
-	@Override
-	protected void saveInput() {
-		for (SimplePanel panel : panels) {
-			panel.saveInput();
-		}
-	}
+        
+	
 
 }

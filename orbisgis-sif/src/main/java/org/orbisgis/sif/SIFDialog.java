@@ -105,7 +105,8 @@ public class SIFDialog extends AbstractOutsideFrame {
 		this.simplePanel = simplePanel;
 		this.add(simplePanel, BorderLayout.CENTER);
 		listen(this);
-		loadInput(inputs);
+                //TODO are you sure ?
+		//loadInput(inputs);
 		getPanel().initialize();
 		this.setIconImage(getPanel().getIconImage());
 	}
@@ -124,18 +125,4 @@ public class SIFDialog extends AbstractOutsideFrame {
 	protected SimplePanel getPanel() {
 		return simplePanel;
 	}
-
-	@Override
-	protected void saveInput() {
-		simplePanel.saveInput();
-	}
-
-	protected void loadInput(HashMap<String, String> inputs) {
-		if (simplePanel.loadInput(inputs)) {
-			test = true;
-		} else {
-			test = false;
-		}
-	}
-
 }

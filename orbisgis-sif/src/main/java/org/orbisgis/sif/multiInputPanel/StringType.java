@@ -28,7 +28,6 @@
  */
 package org.orbisgis.sif.multiInputPanel;
 
-import org.orbisgis.sif.SQLUIPanel;
 
 public class StringType extends AbstractTextType {
 	public StringType(int columns, boolean active) {
@@ -45,6 +44,6 @@ public class StringType extends AbstractTextType {
 	}
 
 	public int getType() {
-		return SQLUIPanel.STRING;
+		return InputType.STRING;
 	}
 }

@@ -37,13 +37,12 @@
 package org.orbisgis.sif.components;
 
 import java.awt.Component;
-
 import javax.swing.JTextField;
-
 import org.orbisgis.sif.AbstractUIPanel;
-import org.orbisgis.sif.SQLUIPanel;
+import org.orbisgis.sif.SIFMessage;
+import org.orbisgis.sif.multiInputPanel.InputType;
 
-public class AskValue extends AbstractUIPanel implements SQLUIPanel {
+public class AskValue extends AbstractUIPanel  {
 
 	private JTextField txtField;
 	private String[] sql;
@@ -57,7 +56,7 @@ public class AskValue extends AbstractUIPanel implements SQLUIPanel {
 	}
 
 	public AskValue(String title, String sql, String error, String initialValue) {
-		this(title, sql, error, initialValue, STRING);
+		this(title, sql, error, initialValue, InputType.STRING);
 	}
 
 	public AskValue(String title, String sql, String error,
@@ -69,17 +68,19 @@ public class AskValue extends AbstractUIPanel implements SQLUIPanel {
 		this.type = type;
 	}
 
+        @Override
 	public Component getComponent() {
 		txtField = new JTextField(initialValue);
 		return txtField;
 	}
 
+        @Override
 	public String getTitle() {
 		return title;
 	}
 
-	public String validateInput() {
-		return null;
+	public SIFMessage validateInput() {
+		return new SIFMessage();
 	}
 
 	public String[] getErrorMessages() {

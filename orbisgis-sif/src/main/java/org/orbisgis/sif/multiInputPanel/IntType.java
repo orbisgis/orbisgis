@@ -28,7 +28,6 @@
  */
 package org.orbisgis.sif.multiInputPanel;
 
-import org.orbisgis.sif.SQLUIPanel;
 
 public class IntType extends AbstractTextType {
 	public IntType(int columns) {
@@ -39,7 +38,8 @@ public class IntType extends AbstractTextType {
 		super();
 	}
 
+        @Override
 	public int getType() {
-		return SQLUIPanel.INT;
+		return InputType.INT;
 	}
 }

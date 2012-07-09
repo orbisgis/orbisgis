@@ -34,7 +34,7 @@ import java.util.HashMap;
 import java.util.Map;
 import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
-import org.orbisgis.sif.ColorPicker;
+import org.orbisgis.sif.components.ColorPicker;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

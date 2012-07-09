@@ -31,7 +31,6 @@ package org.orbisgis.sif.multiInputPanel;
 import java.awt.Component;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
-import org.orbisgis.sif.SQLUIPanel;
 
 public class ListChoice implements InputType {
 	public static final String SEPARATOR = "#";
@@ -46,7 +45,7 @@ public class ListChoice implements InputType {
 	}
 
 	public int getType() {
-		return SQLUIPanel.STRING;
+		return InputType.STRING;
 	}
 
 	public String getValue() {

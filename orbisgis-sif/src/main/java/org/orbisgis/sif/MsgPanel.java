@@ -32,12 +32,15 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
+/**
+ * This class is used to inform the user with a message.
+ * @author ebocher
+ */
 public class MsgPanel extends JPanel {
 
 	private CRFlowLayout layout = new CRFlowLayout();
@@ -123,9 +126,29 @@ public class MsgPanel extends JPanel {
 		return image.getImage().getHeight(null);
 	}
 
-	public void setError(String text) {
+        /**
+         * This method is used to display a message on the panel
+         * @param text 
+         */
+	public void setMessage(String text, Color color) {
 		msg.setText(text);
 		msg.setFont(errorFont);
 		msg.setForeground(Color.red);
+	}
+        
+        /**
+         * This method is used to display an error message on the panel
+         * @param text 
+         */
+	public void setError(String text) {
+		setMessage(text, Color.red);
+	}
+        
+        /**
+         * This method is used to display a warning message on the panel
+         * @param text 
+         */
+	public void setWarning(String text) {
+		setMessage(text, Color.black);
 	}
 }

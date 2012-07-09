@@ -26,32 +26,56 @@
  * or contact directly:
  * info _at_ orbisgis.org
  */
+
 package org.orbisgis.sif;
 
-import java.net.URL;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
+/**
+ *
+ * @author ebocher
+ */
 
-public abstract class AbstractUIPanel implements UIPanel {
-        protected final static I18n i18n = I18nFactory.getI18n(AbstractUIPanel.class);
+
+public class SIFMessage {
+        public static int ERROR = 3;
+        public static int WARNING = 2;
+        public static int OK = 1;
+        private final String message;
+        private final int messageType;
         
-	@Override
-	public URL getIconURL() {
-		return UIFactory.getDefaultIcon();
-	}
+        /*
+         * Create a SIFMessage to the corresponding status
+         */
+        public SIFMessage(String message, int messageType){
+                this.message =message;
+                this.messageType = messageType;
+        }
+        
+        /**
+         * Create a default SIFMessage that corresponds to OK.
+         */
+        public SIFMessage(){
+                this.message =null;
+                this.messageType = OK;
+        }
 
-	@Override
-	public String getInfoText() {
-		return UIFactory.getDefaultOkMessage();
-	}
-
-	@Override
-	public SIFMessage postProcess() {
-		return new SIFMessage();
-	}
-
-	@Override
-	public SIFMessage initialize() {
-		return new SIFMessage();
-	}
+        /**
+         * Get the message
+         * @return 
+         */
+        public String getMessage() {
+                return message;
+        }
+        
+        /**
+         * Get the message type.
+         * 3 types are allowed :
+         * 1 = OK
+         * 2 = Warning
+         * 3 = Error
+         * SIF message type is used to lock or not the OK - CANCEL buttons in a SIFPanel.
+         * @return 
+         */
+        public int getMessageType() {
+                return messageType;
+        }
 }

@@ -30,7 +30,6 @@ package org.orbisgis.sif.multiInputPanel;
 
 import java.awt.Component;
 import javax.swing.JTextField;
-import org.orbisgis.sif.SQLUIPanel;
 
 public class DoubleType implements InputType {
 
@@ -49,18 +48,22 @@ public class DoubleType implements InputType {
 		comp.setColumns(5);
 	}
 
+        @Override
 	public Component getComponent() {
 		return comp;
 	}
 
+        @Override
 	public int getType() {
-		return SQLUIPanel.DOUBLE;
+		return InputType.DOUBLE;
 	}
 
+        @Override
 	public String getValue() {
 		return comp.getText();
 	}
 
+        @Override
 	public void setValue(String value) {
 		comp.setText(value);
 	}

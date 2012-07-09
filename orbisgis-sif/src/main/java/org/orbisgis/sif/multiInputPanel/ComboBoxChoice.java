@@ -34,7 +34,6 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
-import org.orbisgis.sif.SQLUIPanel;
 
 public class ComboBoxChoice implements InputType {
 
@@ -76,22 +75,27 @@ public class ComboBoxChoice implements InputType {
 		}
 	}
 
+        @Override
 	public Component getComponent() {
 		return comp;
 	}
 
+        @Override
 	public int getType() {
-		return SQLUIPanel.STRING;
+		return InputType.STRING;
 	}
 
+        @Override
 	public String getValue() {
 		return (String) comp.getSelectedItem();
 	}
 
+        @Override
 	public void setValue(String value) {
 		comp.setSelectedItem(value);
 	}
 
+        @Override
 	public boolean isPersistent() {
 		return true;
 	}

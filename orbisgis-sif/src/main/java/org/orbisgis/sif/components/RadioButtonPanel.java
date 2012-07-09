@@ -13,6 +13,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import org.orbisgis.sif.AbstractUIPanel;
+import org.orbisgis.sif.SIFMessage;
 
 /**
  * An {@code UIPanel} that will let the user choose one option in a list of
@@ -43,13 +44,13 @@ public class RadioButtonPanel extends AbstractUIPanel{
         }
 
         @Override
-        public String validateInput() {
+        public SIFMessage validateInput() {
                 for(String s : choices){
                         if(s == null){
-                                return "Must not contain null Strings";
+                                return new SIFMessage("Must not contain null Strings",SIFMessage.ERROR);
                         }
                 }
-                return null;
+                return new SIFMessage();
         }
 
         @Override

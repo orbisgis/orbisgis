@@ -27,27 +27,26 @@
  * info _at_ orbisgis.org
  */
 
-package org.orbisgis.sif;
+package org.orbisgis.sif.components;
 
 import java.awt.Component;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
+import org.orbisgis.sif.AbstractUIPanel;
 
 /**
  * Contains utility methods by both OpenFilePanel and OpenFolderPanel.
  * @author alexis
  */
-public abstract class AbstractOpenPanel extends AbstractUIPanel implements SQLUIPanel {
+public abstract class AbstractOpenPanel extends AbstractUIPanel {
 
 	private JFileChooser fileChooser;
 
 	private String title;
 
-	private String id;
 
 	public AbstractOpenPanel(String id, String title) {
-		this.id = id;
 		this.title = title;
 	}
 
@@ -79,12 +78,7 @@ public abstract class AbstractOpenPanel extends AbstractUIPanel implements SQLUI
 	@Override
 	public Component getComponent() {
 		return getFileChooser();
-	}
-
-	@Override
-	public String getId() {
-		return id;
-	}
+	}	
 
 	/**
 	 * This method returns the FileChooser attached to this. It creates a new one
@@ -109,29 +103,14 @@ public abstract class AbstractOpenPanel extends AbstractUIPanel implements SQLUI
 	 */
 	public abstract boolean showFoldersOnly();
 
-	@Override
-	public int[] getFieldTypes() {
-		return new int[] { SQLUIPanel.STRING, SQLUIPanel.STRING };
-	}
+	
 
 	@Override
 	public String getTitle() {
 		return title;
 	}
 
-	@Override
-	public String[] getValues() {
-		String ret = "";
-		File[] selectedFiles = getSelectedFiles();
-		String separator = "";
-		for (File file : selectedFiles) {
-			ret = ret + separator + file.getAbsolutePath();
-			separator = "||";
-		}
-
-		return new String[] { ret,
-				getFileChooser().getFileFilter().getDescription() };
-	}
+	
 
 	public File getSelectedFile() {
 		return fileChooser.getSelectedFile();
@@ -197,16 +176,6 @@ public abstract class AbstractOpenPanel extends AbstractUIPanel implements SQLUI
 				}
 			}
 		}
-	}
-
-	@Override
-	public String[] getErrorMessages() {
-		return null;
-	}
-
-	@Override
-	public String[] getValidationExpressions() {
-		return null;
 	}
 
 	public void setSelectedFile(File file) {

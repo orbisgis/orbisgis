@@ -30,7 +30,6 @@ package org.orbisgis.sif.multiInputPanel;
 
 import java.awt.Component;
 import javax.swing.JCheckBox;
-import org.orbisgis.sif.SQLUIPanel;
 
 public class CheckBoxChoice implements InputType {
 
@@ -47,20 +46,22 @@ public class CheckBoxChoice implements InputType {
 		return jCheckBox;
 	}
 
+        @Override
 	public int getType() {
-
-		return SQLUIPanel.STRING;
+		return InputType.STRING;
 	}
 
+        @Override
 	public String getValue() {
 		return Boolean.toString(jCheckBox.isSelected());
 	}
 
+        @Override
 	public boolean isPersistent() {
-
 		return true;
 	}
 
+        @Override
 	public void setValue(String value) {
 		jCheckBox.setSelected(Boolean.parseBoolean(value));
 

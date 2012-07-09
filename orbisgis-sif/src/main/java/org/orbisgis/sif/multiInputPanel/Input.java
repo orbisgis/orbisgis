@@ -28,7 +28,7 @@
  */
 package org.orbisgis.sif.multiInputPanel;
 
-class Input {
+public class Input {
 	private String text;
 	private String initialValue;
 	private InputType type;

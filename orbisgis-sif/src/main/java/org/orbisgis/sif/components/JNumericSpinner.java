@@ -1,4 +1,4 @@
-package org.orbisgis.sif;
+package org.orbisgis.sif.components;
 
 import java.awt.BorderLayout;
 import java.awt.Insets;
@@ -14,6 +14,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import org.orbisgis.sif.CRFlowLayout;
+import org.orbisgis.sif.CarriageReturn;
 import org.orbisgis.sif.icons.SifIcon;
 
 /**

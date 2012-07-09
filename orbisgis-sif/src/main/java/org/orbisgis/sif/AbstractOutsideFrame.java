@@ -135,7 +135,7 @@ public abstract class AbstractOutsideFrame extends JDialog implements
 	void exit(boolean ok) {
 		if (ok) {
 			if (getPanel().postProcess()) {
-				saveInput();
+				
 			} else {
 				return;
 			}
@@ -145,7 +145,6 @@ public abstract class AbstractOutsideFrame extends JDialog implements
 		dispose();
 	}
 
-	protected abstract void saveInput();
 
 	public void mouseClicked(MouseEvent e) {
 		getPanel().validateInput();

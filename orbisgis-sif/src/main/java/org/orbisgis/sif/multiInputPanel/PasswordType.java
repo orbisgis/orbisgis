@@ -30,7 +30,6 @@ package org.orbisgis.sif.multiInputPanel;
 
 import java.awt.Component;
 import javax.swing.JPasswordField;
-import org.orbisgis.sif.SQLUIPanel;
 
 public class PasswordType implements InputType {
 
@@ -49,7 +48,7 @@ public class PasswordType implements InputType {
 	}
 
 	public int getType() {
-		return SQLUIPanel.STRING;
+		return InputType.STRING;
 	}
 
 	public String getValue() {
