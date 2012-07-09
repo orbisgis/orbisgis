@@ -83,6 +83,7 @@ public class JobListItemPanel extends JPanel {
                         sb.append(job.getCurrentProgress());
                         sb.append(" %)");
                 }
+                sb.append("</html>");
                 return sb.toString();
         }
 }
