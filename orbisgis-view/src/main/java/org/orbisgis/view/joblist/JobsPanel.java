@@ -31,10 +31,12 @@ package org.orbisgis.view.joblist;
 import java.awt.BorderLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.beans.EventHandler;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.event.ListDataListener;
 import org.apache.log4j.Logger;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
@@ -68,6 +70,15 @@ public class JobsPanel extends JPanel implements DockingPanel {
                 jobList.setCellRenderer(jobListRender);
                 jobList.setModel(new JobListModel().listenToBackgroundManager());
                 jobList.addMouseListener(new CancelButtonMouseListener());
+                jobList.getModel().addListDataListener(EventHandler.create(ListDataListener.class,this,"onListContentChanged"));
+        }
+        
+        /**
+         * The list content has been updated,
+         * the panel title label must be updated
+         */
+        public void onListContentChanged() {
+                dockingParameters.setTitle(I18N.tr("Running jobs ({0})",jobList.getModel().getSize()));
         }
         @Override
         public DockingPanelParameters getDockingParameters() {
