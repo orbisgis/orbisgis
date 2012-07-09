@@ -62,6 +62,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 /**
  *
  * @author maxence
+ * @author alexis
  */
 public final class Style implements SymbolizerNode {
 
@@ -70,7 +71,14 @@ public final class Style implements SymbolizerNode {
     private ArrayList<Rule> rules;
     private ILayer layer;
     private boolean visible = true;
-    
+
+    /**
+     * Create a new {@code Style} associated to the given {@code ILayer}. If the
+     * given boolean is tru, a default {@code Rule} will be added to the Style.
+     * If not, the {@code Style} will be let empty.
+     * @param layer
+     * @param addDefaultRule
+     */
     public Style(ILayer layer, boolean addDefaultRule) {
         rules = new ArrayList<Rule>();
         this.layer = layer;
@@ -80,6 +88,14 @@ public final class Style implements SymbolizerNode {
         }
     }
 
+    /**
+     * Build a new {@code Style} from the given se file and associated to the
+     * given {@code ILayer}.
+     * @param layer
+     * @param seFile
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     * If the SE file can't be read or is not valid against the XML schemas.
+     */
     public Style(ILayer layer, String seFile) throws InvalidStyle {
         rules = new ArrayList<Rule>();
         this.layer = layer;
@@ -124,12 +140,26 @@ public final class Style implements SymbolizerNode {
 
     }
 
+    /**
+     * Build a new {@code Style} associated to the given {@code ILayer} from the
+     * given {@code JAXBElement<StyleType>}.
+     * @param ftst
+     * @param layer
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     */
     public Style(JAXBElement<StyleType> ftst, ILayer layer) throws InvalidStyle {
         rules = new ArrayList<Rule>();
         this.layer = layer;
         this.setFromJAXB(ftst);
     }
 
+    /**
+     * Build a new {@code Style} associated to the given {@code ILayer} from the
+     * given {@code StyleType}.
+     * @param fts
+     * @param layer
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     */
     public Style(StyleType fts, ILayer layer) throws InvalidStyle {
         rules = new ArrayList<Rule>();
         this.layer = layer;
@@ -194,6 +224,10 @@ public final class Style implements SymbolizerNode {
         this.rules.clear();
     }
 
+    /**
+     * Export this {@code Style} to the given SE file, in XML format.
+     * @param seFile
+     */
     public void export(String seFile) {
         try {
             JAXBContext jaxbContext = Services.JAXBCONTEXT;
@@ -207,6 +241,10 @@ public final class Style implements SymbolizerNode {
         }
     }
 
+    /**
+     * Gets a JAXB representation of this {@code Style}.
+     * @return
+     */
     public JAXBElement<StyleType> getJAXBElement() {
         StyleType ftst = new StyleType();
 
@@ -286,10 +324,18 @@ public final class Style implements SymbolizerNode {
         }
     }
 
+    /**
+     * Gets the {@code Layer} associated to this {@code Style}.
+     * @return
+     */
     public ILayer getLayer() {
         return layer;
     }
 
+    /**
+     * Sets the {@code Layer} associated to this {@code Style}.
+     * @param layer
+     */
     public void setLayer(ILayer layer) {
         this.layer = layer;
     }
@@ -309,18 +355,35 @@ public final class Style implements SymbolizerNode {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * Gets the name of this Style.
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+    * Sets the name of this Style.
+    * @param name
+    */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Gets the list of {@link Rule} contained in this Style.
+     * @return
+     */
     public List<Rule> getRules() {
         return rules;
     }
 
+    /**
+     * Moves the ith {@link Rule} to position i-1 in the list of rules.
+     * @param i
+     * @return
+     */
     public boolean moveRuleUp(int i) {
         try {
             if (i > 0) {
@@ -333,6 +396,11 @@ public final class Style implements SymbolizerNode {
         return false;
     }
 
+    /**
+     * Moves the ith {@link Rule} to position i+1 in the list of rules.
+     * @param i
+     * @return
+     */
     public boolean moveRuleDown(int i) {
         try {
             if (i < rules.size() - 1) {
@@ -346,6 +414,10 @@ public final class Style implements SymbolizerNode {
         return false;
     }
 
+    /**
+     * Add a {@link Rule} to this {@code Style}.
+     * @param r
+     */
     public void addRule(Rule r) {
         if (r != null) {
             r.setParent(this);
@@ -353,6 +425,11 @@ public final class Style implements SymbolizerNode {
         }
     }
 
+    /**
+     * Add a {@link Rule} to this {@code Style} at position {@code index}.
+     * @param index
+     * @param r
+     */
     public void addRule(int index, Rule r) {
         if (r != null) {
             r.setParent(this);
@@ -360,6 +437,11 @@ public final class Style implements SymbolizerNode {
         }
     }
 
+    /**
+     * Delete the ith {@link Rule} from this {@code Style}.
+     * @param i
+     * @return
+     */
     public boolean deleteRule(int i) {
         try {
             rules.remove(i);
