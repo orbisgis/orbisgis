@@ -67,9 +67,6 @@ public class DoubleType implements InputType {
 	public void setValue(String value) {
 		comp.setText(value);
 	}
-
-	public boolean isPersistent() {
-		return true;
-	}
+	
 
 }

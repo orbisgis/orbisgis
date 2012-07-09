@@ -29,21 +29,16 @@
 package org.orbisgis.sif.multiInputPanel;
 
 import java.awt.Component;
-import javax.swing.JCheckBox;
 
-public class CheckBoxChoice implements InputType {
+/**
+ *
+ * @author ebocher
+ */
+public class NoInputType implements InputType {
 
-        private JCheckBox jCheckBox;
-
-        public CheckBoxChoice(boolean b) {
-                jCheckBox = new JCheckBox();
-                jCheckBox.setSelected(b);
-
-        }
-
+        @Override
         public Component getComponent() {
-
-                return jCheckBox;
+                return null;
         }
 
         @Override
@@ -53,11 +48,10 @@ public class CheckBoxChoice implements InputType {
 
         @Override
         public String getValue() {
-                return Boolean.toString(jCheckBox.isSelected());
+                return null;
         }
 
         @Override
         public void setValue(String value) {
-                jCheckBox.setSelected(Boolean.parseBoolean(value));
         }
 }

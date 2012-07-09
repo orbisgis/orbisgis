@@ -46,6 +46,5 @@ public interface InputType {
 
 	void setValue(String value);
 
-	boolean isPersistent();
 
 }

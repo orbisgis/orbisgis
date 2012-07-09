@@ -29,7 +29,14 @@
 package org.orbisgis.sif;
 
 public interface OutsideFrame {
+        
+        /**
+         * The panel can be closed.
+         */
 	public void canContinue();
 
+        /**
+         * The panel is locked.
+         */
 	public void cannotContinue();
 }

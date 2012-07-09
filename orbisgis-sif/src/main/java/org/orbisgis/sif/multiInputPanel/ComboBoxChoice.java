@@ -95,9 +95,4 @@ public class ComboBoxChoice implements InputType {
 		comp.setSelectedItem(value);
 	}
 
-        @Override
-	public boolean isPersistent() {
-		return true;
-	}
-
 }

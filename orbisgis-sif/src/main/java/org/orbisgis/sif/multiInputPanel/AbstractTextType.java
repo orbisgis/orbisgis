@@ -57,10 +57,6 @@ public abstract class AbstractTextType implements InputType {
 		comp.setText(value);
 	}
 
-        @Override
-	public boolean isPersistent() {
-		return true;
-	}
 
 	public void setEditable(boolean b) {
 		comp.setEditable(b);

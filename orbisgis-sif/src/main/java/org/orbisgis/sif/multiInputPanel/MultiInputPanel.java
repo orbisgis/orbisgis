@@ -42,19 +42,9 @@ import org.orbisgis.sif.UIPanel;
  * input.
  *
  *
- * Example :
- *
- * MultiInputPanel mip = new MultiInputPanel( "org.myPanel", "AddValue
- * initialization", false); mip.addInput("AddValue1", "Value1 to add", "1", new
- * IntType()); mip.addInput("AddValue2", "Value2 to add", "0", new IntType());
- * mip.addValidationExpression("AddValue1 > 0 or AddValue2 <12","Invalid input
- * values : Value1 > 0 and Value2 < 12 "); mip.group("Values", new
- * String[]{"AddValue1","AddValue2"});
- *
  */
 public class MultiInputPanel implements UIPanel {
 
-        private String id;
         private URL url;
         private String title;
         private ArrayList<Input> inputs = new ArrayList<Input>();
@@ -68,17 +58,6 @@ public class MultiInputPanel implements UIPanel {
          * @param title of the panel
          */
         public MultiInputPanel(String title) {
-                this(null, title);
-        }
-
-
-        /**
-         *
-         * @param id unique identifier to make the content persistent.
-         * @param title of the panel.
-         */
-        public MultiInputPanel(String id, String title ) {
-                this.id = id;
                 this.title = title;
         }
 
@@ -167,31 +146,6 @@ public class MultiInputPanel implements UIPanel {
                 return infoText;
         }
 
-        public String[] getFieldNames() {
-                ArrayList<String> ret = new ArrayList<String>();
-                for (Input input : inputs) {
-                        if (input.getType().isPersistent()) {
-                                ret.add(input.getName());
-                        }
-                }
-
-                return ret.toArray(new String[ret.size()]);
-        }
-
-        public int[] getFieldTypes() {
-                String[] fieldNames = getFieldNames();
-                int[] ret = new int[fieldNames.length];
-                for (int i = 0; i < ret.length; i++) {
-                        ret[i] = nameInput.get(fieldNames[i]).getType().getType();
-                }
-
-                return ret;
-        }
-
-        public String getId() {
-                return id;
-        }
-
         /**
          *
          * @return
@@ -206,15 +160,6 @@ public class MultiInputPanel implements UIPanel {
                         }
                 }
                 return new SIFMessage();
-        }
-
-        public String[] getValues() {
-                String[] fieldNames = getFieldNames();
-                String[] ret = new String[fieldNames.length];
-                for (int i = 0; i < ret.length; i++) {
-                        ret[i] = nameInput.get(fieldNames[i]).getType().getValue();
-                }
-                return ret;
         }
 
         public void setValue(String fieldName, String fieldValue) {
@@ -303,11 +248,6 @@ public class MultiInputPanel implements UIPanel {
                 }
 
                 @Override
-                public boolean isPersistent() {
-                        return false;
-                }
-
-                @Override
                 public void setValue(String value) {
                 }
         }
@@ -316,5 +256,4 @@ public class MultiInputPanel implements UIPanel {
         public SIFMessage postProcess() {
                 return new SIFMessage();
         }
-      
 }

@@ -55,10 +55,6 @@ public class PasswordType implements InputType {
 		return new String(comp.getPassword());
 	}
 
-	public boolean isPersistent() {
-		return false;
-	}
-
 	public void setEditable(boolean b) {
 		comp.setEditable(b);
 	}
