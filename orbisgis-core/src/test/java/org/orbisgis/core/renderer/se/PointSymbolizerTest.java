@@ -37,6 +37,7 @@ public class PointSymbolizerTest extends AbstractTest {
             PointSymbolizer ps =(PointSymbolizer) style.getRules().get(1).getCompositeSymbolizer().getSymbolizerList().get(0);
             UsedAnalysis ua = ps.getUsedAnalysis();
             assertTrue(ua.isInterpolateUsed());
+            assertTrue(ua.getAnalysis().size()==1);
         }
 
 }

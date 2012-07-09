@@ -33,6 +33,7 @@ public class UsedAnalysisTest {
         assertTrue(ua.isCategorizeUsed());
         assertFalse(ua.isRecodeUsed());
         assertFalse(ua.isInterpolateUsed());
+        assertTrue(ua.getAnalysis().size()==2);
     }
 
     @Test
@@ -46,6 +47,7 @@ public class UsedAnalysisTest {
         assertTrue(ua.isRecodeUsed());
         assertFalse(ua.isCategorizeUsed());
         assertFalse(ua.isInterpolateUsed());
+        assertTrue(ua.getAnalysis().size()==2);
     }
 
     @Test
@@ -59,5 +61,6 @@ public class UsedAnalysisTest {
         assertTrue(ua.isInterpolateUsed());
         assertFalse(ua.isCategorizeUsed());
         assertFalse(ua.isRecodeUsed());
+        assertTrue(ua.getAnalysis().size()==2);
     }
 }

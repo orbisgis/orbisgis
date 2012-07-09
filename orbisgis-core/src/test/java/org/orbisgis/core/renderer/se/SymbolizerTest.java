@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.util.HashSet;
 import javax.swing.JPanel;
-import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.ValidationEvent;
@@ -26,7 +25,6 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
 import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 
 /**
  *
@@ -114,5 +112,6 @@ public class SymbolizerTest extends AbstractTest {
         LineSymbolizer ps =(LineSymbolizer) style.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UsedAnalysis ua = ps.getUsedAnalysis();
         assertTrue(ua.isRecodeUsed());
+        assertTrue(ua.getAnalysis().size()==1);
     }
 }

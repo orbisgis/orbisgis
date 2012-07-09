@@ -54,5 +54,6 @@ public class AreaSymbolizerTest {
         AreaSymbolizer ps =(AreaSymbolizer) style.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UsedAnalysis ua = ps.getUsedAnalysis();
         assertTrue(ua.isCategorizeUsed());
+        assertTrue(ua.getAnalysis().size()==1);
     }
 }

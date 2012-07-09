@@ -50,7 +50,6 @@ public class GeometryAttribute extends ValueReference {
     public GeometryType getJAXBGeometryType() {
         GeometryType gt = new GeometryType();
         gt.setValueReference(this.getColumnName());
-        //throw new UnsupportedOperationException("Not supported yet.");
         return gt;
     }
 
