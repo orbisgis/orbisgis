@@ -55,12 +55,7 @@ public class JobListModel extends AbstractListModel {
         private List<Job> jobAdded = Collections.synchronizedList(new LinkedList<Job>());
         private List<Job> jobRemoved = Collections.synchronizedList(new LinkedList<Job>());
         private List<Job> jobUpdated = Collections.synchronizedList(new LinkedList<Job>());
-        
-        
-        /*!< If true a swing runnable is pending to refresh the content of
-          the JobListModel
-         */
-        
+                
         /**
          * Attach listeners to the BackgroundManager
          * @return itself

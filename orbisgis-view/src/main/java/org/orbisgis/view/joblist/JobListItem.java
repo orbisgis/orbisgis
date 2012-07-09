@@ -50,6 +50,9 @@ public class JobListItem extends ContainerItemProperties {
                                     this,
                                     "onJobUpdate");
         private JobListItemPanel itemPanel;
+        /*!< If true a swing runnable is pending to refresh the content of
+          the job item
+         */
         private AtomicBoolean awaitingItemUpdate = new AtomicBoolean(false);
         
         public JobListItemPanel getItemPanel() {
