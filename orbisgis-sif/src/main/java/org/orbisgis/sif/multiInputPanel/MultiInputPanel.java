@@ -32,6 +32,7 @@ import java.awt.Component;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIPanel;
 
@@ -61,7 +62,6 @@ public class MultiInputPanel implements UIPanel {
         private HashMap<String, Input> nameInput = new HashMap<String, Input>();
         private InputPanel comp;
         private String infoText;
-        private boolean showFavourites;
 
         /**
          *
@@ -71,25 +71,15 @@ public class MultiInputPanel implements UIPanel {
                 this(null, title);
         }
 
-        /**
-         *
-         * @param id unique identifier to make the content persistent
-         * @param title of panel
-         */
-        public MultiInputPanel(String id, String title) {
-                this(id, title, true);
-        }
 
         /**
          *
          * @param id unique identifier to make the content persistent.
          * @param title of the panel.
-         * @param isShowFavorites option to manage or not favorites.
          */
-        public MultiInputPanel(String id, String title, boolean showFavorites) {
+        public MultiInputPanel(String id, String title ) {
                 this.id = id;
-                this.setTitle(title);
-                this.showFavourites = showFavorites;
+                this.title = title;
         }
 
         /**
@@ -208,12 +198,12 @@ public class MultiInputPanel implements UIPanel {
          */
         @Override
         public SIFMessage validateInput() {
-                for (MIPValidation validator : validation) {
+                for (Iterator<MIPValidation> it = validation.iterator(); it.hasNext();) {
+                        MIPValidation validator = it.next();
                         SIFMessage sifMessage = validator.validate(this);
                         if (sifMessage.getMessageType() != SIFMessage.OK) {
                                 return sifMessage;
                         }
-
                 }
                 return new SIFMessage();
         }
@@ -224,7 +214,6 @@ public class MultiInputPanel implements UIPanel {
                 for (int i = 0; i < ret.length; i++) {
                         ret[i] = nameInput.get(fieldNames[i]).getType().getValue();
                 }
-
                 return ret;
         }
 

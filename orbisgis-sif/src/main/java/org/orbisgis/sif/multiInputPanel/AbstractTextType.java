@@ -42,18 +42,22 @@ public abstract class AbstractTextType implements InputType {
 		comp.setColumns(5);
 	}
 
+        @Override
 	public Component getComponent() {
 		return comp;
 	}
 
+        @Override
 	public String getValue() {
 		return comp.getText();
 	}
 
+        @Override
 	public void setValue(String value) {
 		comp.setText(value);
 	}
 
+        @Override
 	public boolean isPersistent() {
 		return true;
 	}

@@ -43,6 +43,7 @@ public class StringType extends AbstractTextType {
 		super();
 	}
 
+        @Override
 	public int getType() {
 		return InputType.STRING;
 	}
