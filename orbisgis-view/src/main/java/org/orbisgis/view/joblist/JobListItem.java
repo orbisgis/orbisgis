@@ -29,13 +29,9 @@
 package org.orbisgis.view.joblist;
 
 
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
 import java.beans.EventHandler;
-import javax.swing.ImageIcon;
-import javax.swing.JPanel;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.SwingUtilities;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.ProgressListener;
 import org.orbisgis.view.components.ContainerItemProperties;
@@ -47,13 +43,14 @@ import org.orbisgis.view.components.ContainerItemProperties;
 public class JobListItem extends ContainerItemProperties {
         //Minimal interval of refreshing label in ms
         private static final long updateLabelInterval = 50; 
+        private long lastTimeUpdatedItem = 0;
         private Job job;
         private ProgressListener listener = 
                 EventHandler.create(ProgressListener.class,
                                     this,
                                     "onJobUpdate");
         private JobListItemPanel itemPanel;
-        private long lastTimeUpdatedItem = 0;
+        private AtomicBoolean awaitingItemUpdate = new AtomicBoolean(false);
         
         public JobListItemPanel getItemPanel() {
                 return itemPanel;
@@ -86,18 +83,33 @@ public class JobListItem extends ContainerItemProperties {
         public void onCancel() {
                 job.cancel();
         }
+        
         /**
-         * Update the JobPanel content and the item text
+         * Read the job to update labels and controls
          */
-        public void onJobUpdate() {
+        private void updateJob() {
                 if(itemPanel!=null) {
                         long now = System.currentTimeMillis();
+                        //It is useless to update the controls on each
+                        //job progression increment,
+                        //then a minimal update interval is set
                         if(now - lastTimeUpdatedItem > updateLabelInterval) {
                                 lastTimeUpdatedItem = now;
                                 itemPanel.readJob();
                                 setLabel(itemPanel.getText());
+                        } else {
+                                //Update the Job later
+                                onJobUpdate();
                         }
-                }                
+                }   
+        }
+        /**
+         * Update the JobPanel content and the item text later
+         */
+        public void onJobUpdate() {     
+                if(!awaitingItemUpdate.getAndSet(true)) {
+                        SwingUtilities.invokeLater(new UpdateItemProperties());
+                }
         }
         /**
          * 
@@ -105,5 +117,15 @@ public class JobListItem extends ContainerItemProperties {
          */
         public Job getJob() {
                 return job;
+        }
+        
+        private class UpdateItemProperties implements Runnable {
+
+                @Override
+                public void run() {
+                        awaitingItemUpdate.set(false);
+                        updateJob();
+                }
+                
         }
 }
