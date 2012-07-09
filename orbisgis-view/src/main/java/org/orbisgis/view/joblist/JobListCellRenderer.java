@@ -29,13 +29,10 @@
 package org.orbisgis.view.joblist;
 
 import java.awt.Component;
-import java.awt.FlowLayout;
 import java.awt.Point;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
-import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  * @brief Renderer of the JobList

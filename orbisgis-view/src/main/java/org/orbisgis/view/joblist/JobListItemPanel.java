@@ -2,6 +2,8 @@
 package org.orbisgis.view.joblist;
 
 import java.awt.FlowLayout;
+import java.awt.event.MouseListener;
+import java.beans.EventHandler;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
@@ -32,6 +34,10 @@ public class JobListItemPanel extends JPanel {
                 jobProgressBar.setIndeterminate(true);
                 //The cancel label
                 jobCancelLabel = new JLabel(OrbisGISIcon.getIcon("cancel"));
+                //When the user click on the label, the job is canceled
+                jobCancelLabel.addMouseListener(
+                        EventHandler.create(MouseListener.class,job,
+                                      "cancel",null,"mouseClicked"));
                 //The label show the text of the DataSource Item
                 jobLabel = new JLabel();
                 add(jobProgressBar);
@@ -85,5 +91,5 @@ public class JobListItemPanel extends JPanel {
                 }
                 sb.append("</html>");
                 return sb.toString();
-        }
+        }        
 }

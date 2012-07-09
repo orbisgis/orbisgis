@@ -31,7 +31,10 @@ package org.orbisgis.view.joblist;
 
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.AbstractListModel;
 import javax.swing.SwingUtilities;
