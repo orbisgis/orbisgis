@@ -29,9 +29,12 @@
 package org.orbisgis.view.map;
 
 import java.awt.BorderLayout;
+import java.awt.Insets;
 import javax.swing.*;
+import org.jproj.CRSFactory;
 import org.jproj.CoordinateReferenceSystem;
 import org.jproj.util.CRSCache;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -46,14 +49,16 @@ import org.xnap.commons.i18n.I18nFactory;
 public class MapStatusBar extends JPanel {
         protected final static I18n I18N = I18nFactory.getI18n(MapStatusBar.class);
         private JPanel horizontalBar;
+        //Scale
         private JLabel scaleLabel;
         private JTextField scaleField;
+        //CRS
         private JLabel projectionLabel;
         
         //Layout parameters
-        private final static int OUTER_BAR_BORDER = 2;
+        private final static int OUTER_BAR_BORDER = 1;
         private final static int HORIZONTAL_EMPTY_BORDER = 4;
-        private final static int SCALE_FIELD_COLUMNS = 10;
+        private final static int SCALE_FIELD_COLUMNS = 6;
 
         public final void setProjection(CoordinateReferenceSystem projection) {
                 projectionLabel.setText(I18N.tr("Projection : {0}",projection));
@@ -66,7 +71,7 @@ public class MapStatusBar extends JPanel {
          */
         public final void setScaleDenominator(double scaleDenominator) {
                 //scaleLabel.setText();
-                scaleField.setText(Long.toString(Math.round(scaleDenominator)));
+                scaleField.setText(I18N.tr("1:{0}",Math.round(scaleDenominator)));
         }
 
         private void addComponent(JComponent component) {
@@ -94,10 +99,16 @@ public class MapStatusBar extends JPanel {
                 //Coordinates
                 
                 // Projection
-                projectionLabel = new JLabel(I18N.tr("Projection :"));
+                projectionLabel = new JLabel();
                 addComponent(projectionLabel);
+                JButton changeProjection = new JButton(OrbisGISIcon.getIcon("world"));
+                changeProjection.setToolTipText(I18N.tr("Change coordinate reference system"));
+                changeProjection.setMargin(new Insets(0, 0, 0, 0));
+                changeProjection.setBorderPainted(false);
+                //changeProjection.setContentAreaFilled(false);
+                addComponent(changeProjection,false);
                 // Scale
-                scaleLabel = new JLabel(I18N.tr("Scale 1:"));
+                scaleLabel = new JLabel(I18N.tr("Scale :"));
                 scaleField = new JTextField();
                 scaleField.setEditable(false);
                 scaleField.setColumns(SCALE_FIELD_COLUMNS);
@@ -105,7 +116,7 @@ public class MapStatusBar extends JPanel {
                 addComponent(scaleField,false);
                 
                 setScaleDenominator(1);
-                setProjection(CoordinateReferenceSystem.CS_GEO);
+                setProjection(new CRSFactory().createFromName("EPSG:4326"));
         }
 
         
