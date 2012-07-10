@@ -37,7 +37,7 @@
                 <dependency>
                         <groupId>com.fifesoft</groupId>
                         <artifactId>languagesupport</artifactId>
-                        <version>0.8</version>
+                        <version>0.8-1</version>
                 </dependency>
         </dependencies>
         <build>
