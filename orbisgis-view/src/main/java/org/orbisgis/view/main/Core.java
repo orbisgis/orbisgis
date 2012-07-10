@@ -49,6 +49,7 @@ import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.joblist.JobsPanel;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.map.MapElement;
@@ -159,6 +160,13 @@ public class Core {
         //Add the view as a new Docking Panel
         dockManager.show(geoCatalog);
     }
+    
+    /**
+     * Create the Job processing information and control panel
+     */
+    private void makeJobsPanel() {
+            dockManager.show(new JobsPanel());
+    }
     /**
      * Load the built-ins editors factories
      */
@@ -205,6 +213,9 @@ public class Core {
         //Load the log panels
         makeLoggingPanels();
         
+        //Load the Job Panel
+        makeJobsPanel();
+        
         //Load the editor factories manager
         editors = new EditorManager(dockManager);
         
@@ -232,6 +243,7 @@ public class Core {
         /**
         * Change the state of the main frame in the swing thread
         */
+        @Override
         public void run(){
                 mainFrame.setVisible( true );                
                 backgroundManager.backgroundOperation(new ReadMapContextProcess());
@@ -292,6 +304,7 @@ public class Core {
     }
     private class ReadMapContextProcess implements BackgroundJob {
 
+                @Override
                 public void run(ProgressMonitor pm) {                        
                         //Create an empty map context
                         MapContext mapContext = new OwsMapContext();
@@ -316,6 +329,7 @@ public class Core {
                         editors.openEditable(editableMap); 
                 }
 
+                @Override
                 public String getTaskName() {
                         return I18N.tr("Open the map context");
                 }
