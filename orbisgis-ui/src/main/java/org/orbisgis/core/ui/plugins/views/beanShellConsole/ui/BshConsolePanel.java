@@ -55,12 +55,12 @@
  */
 package org.orbisgis.core.ui.plugins.views.beanShellConsole.ui;
 
-import bsh.EvalError;
-import bsh.Interpreter;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
 import java.io.PrintStream;
 
 import javax.swing.JButton;
@@ -69,15 +69,23 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.Timer;
 import javax.swing.text.BadLocationException;
+
+import bsh.EvalError;
+import bsh.Interpreter;
+import org.fife.rsta.ac.LanguageSupportFactory;
+import org.fife.rsta.ac.java.JarManager;
+import org.fife.rsta.ac.java.JavaLanguageSupport;
+import org.fife.rsta.ac.java.buildpath.DirLibraryInfo;
+import org.fife.rsta.ac.java.buildpath.JarLibraryInfo;
+import org.fife.rsta.ac.java.buildpath.LibraryInfo;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
+import org.fife.ui.rsyntaxtextarea.SyntaxConstants;
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.components.findReplace.FindReplaceDialog;
 import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
-
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshActionsListener;
-import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshCompletionKeyListener;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshConsoleAction;
 import org.orbisgis.core.ui.plugins.views.beanShellConsole.actions.BshConsoleListener;
 import org.orbisgis.utils.I18N;
@@ -158,14 +166,48 @@ public class BshConsolePanel extends JPanel {
 
         private RTextScrollPane getCenterPanel() {
                 if (centerPanel == null) {
+                        LanguageSupportFactory lsf = LanguageSupportFactory.get();
+                        JavaLanguageSupport jls = (JavaLanguageSupport) lsf.getSupportFor(SyntaxConstants.SYNTAX_STYLE_JAVA);
+                        try {
+                                setCurrentLibraryInfos(jls.getJarManager());
+                                
+                        } catch (IOException ioe) {
+                                throw new RuntimeException(ioe);
+                        }
                         scriptPanel = new RSyntaxTextArea();
-                        scriptPanel.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_JAVA);
                         scriptPanel.getDocument().addDocumentListener(actionAndKeyListener);
                         scriptPanel.setLineWrap(true);
-                        scriptPanel.addKeyListener(new BshCompletionKeyListener(this));
+                        lsf.register(scriptPanel);
+                        scriptPanel.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_JAVA);
+                        scriptPanel.clearParsers();
                         centerPanel = new RTextScrollPane(scriptPanel);
                 }
                 return centerPanel;
+        }
+        
+        private void setCurrentLibraryInfos(JarManager jls) throws IOException {
+                // current JRE
+                jls.addCurrentJreClassFileSource();
+                
+                String cp = System.getProperty("java.class.path");
+                String ps = System.getProperty("path.separator");
+                System.out.println("\"" + cp + "\"");
+                
+                String[] paths = cp.split(ps);
+                for (int i = 0; i < paths.length; i++) {
+                        File p = new File(paths[i]);
+                        LibraryInfo l;
+                        if (p.getName().toLowerCase().endsWith(".jar")) {
+                                // this is a jar file
+                                l = new JarLibraryInfo(p);
+                                jls.addClassFileSource(l);
+                        } else if (p.isDirectory()) {
+                                // this is a folder
+                                l = new DirLibraryInfo(p);
+                                jls.addClassFileSource(l);
+                        }
+                        // else we just ignore it
+                }
         }
 
         private JToolBar getStatusToolBar() {
@@ -303,6 +345,7 @@ public class BshConsolePanel extends JPanel {
 
         /**
          * Returns the beanshell interpreter
+         *
          * @return
          */
         public Interpreter getInterpreter() {
@@ -311,12 +354,12 @@ public class BshConsolePanel extends JPanel {
 
         /**
          * Retruns the ouptputstream
+         *
          * @return
          */
         public ByteArrayOutputStream getScriptOutput() {
                 return scriptOutput;
         }
-
 
         /**
          * Open one instanceof the find replace dialog
