@@ -8,6 +8,8 @@ scalaVersion := "2.9.2"
 
 externalPom()
 
+javacOptions ++= Seq("-target", "1.6", "-source", "1.6")
+
 resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
 
 resolvers += "IRSTV" at "http://repo.orbisgis.org"
