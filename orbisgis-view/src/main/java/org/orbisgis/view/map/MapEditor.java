@@ -30,10 +30,9 @@ package org.orbisgis.view.map;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.Point;
+import java.awt.event.*;
+import java.awt.geom.Point2D;
 import java.beans.EventHandler;
 import javax.swing.*;
 import org.apache.log4j.Logger;
@@ -73,6 +72,12 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private DockingPanelParameters dockingPanelParameters;
     private MapTransferHandler dragDropHandler;
     private MapStatusBar mapStatusBar = new MapStatusBar();
+    //This timer will fetch the cursor component coordinates
+    //Then translate to the map coordinates and send it to
+    //the MapStatusBar
+    private Timer CursorCoordinateLookupTimer;
+    private final static int CURSOR_COORDINATE_LOOKUP_INTERVAL = 50; //Ms
+    private Point lastCursorPosition = new Point();
     /**
      * Constructor
      */
@@ -87,6 +92,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         dockingPanelParameters.setCloseable(false);
         add(mapControl, BorderLayout.CENTER);
         add(mapStatusBar, BorderLayout.PAGE_END);
+        mapControl.addMouseMotionListener(EventHandler.create(MouseMotionListener.class,this,"onMouseMove","point","mouseMoved"));
         mapControl.setDefaultTool(new ZoomInTool());
         //Declare Tools of Map Editors
         //For debug purpose, also add the toolbar in the frame
@@ -137,6 +143,9 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             mapControl.getMapTransform().setExtent(mapContext.getBoundingBox());
             mapControl.setElement(this);
             mapControl.initMapControl();
+            CursorCoordinateLookupTimer = new Timer(CURSOR_COORDINATE_LOOKUP_INTERVAL,EventHandler.create(ActionListener.class,this,"onReadCursorMapCoordinate"));
+            CursorCoordinateLookupTimer.setRepeats(false);
+            CursorCoordinateLookupTimer.start();
             repaint();
         } catch (IllegalStateException ex) {
             GUILOGGER.error(ex);
@@ -144,6 +153,26 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             GUILOGGER.error(ex);
         }        
     }
+    
+    /**
+     * MouseMove event on the MapControl
+     * @param mousePoition x,y position of the event relative to the MapControl component.
+     */
+    public void onMouseMove(Point mousePoition) {
+            lastCursorPosition = mousePoition;
+    }
+    /**
+     * This method is called by the timer called CursorCoordinateLookupTimer
+     * This function fetch the cursor coordinates (pixel)
+     * then translate to the map coordinates and send it to
+     * the MapStatusBar
+     */
+    public void onReadCursorMapCoordinate() {
+            Point2D mapCoordinate = mapControl.getMapTransform().toMapPoint(lastCursorPosition.x, lastCursorPosition.y);
+            mapStatusBar.setCursorCoordinates(mapCoordinate);
+            CursorCoordinateLookupTimer.start();
+    }
+    
     /**
      * Create a toolbar corresponding to the current state of the Editor
      * @return 

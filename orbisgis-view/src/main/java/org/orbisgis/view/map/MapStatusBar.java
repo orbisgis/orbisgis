@@ -56,7 +56,7 @@ public class MapStatusBar extends JPanel {
         private JLabel projectionLabel;
         //Coordinates
         private JLabel mouseCoordinatesLabel;
-        
+        private Point2D mouseCoordinates = new Point2D.Double();
         //Layout parameters
         private final static int OUTER_BAR_BORDER = 1;
         private final static int HORIZONTAL_EMPTY_BORDER = 4;
@@ -108,7 +108,10 @@ public class MapStatusBar extends JPanel {
          * @param coordinate 
          */
         public final void setCursorCoordinates(Point2D cursorCoordinate) {
-                mouseCoordinatesLabel.setText(I18N.tr("Cursor Coordinate : {0},{1}",cursorCoordinate.getX(),cursorCoordinate.getY()));
+                if(!mouseCoordinates.equals(cursorCoordinate)) {
+                        mouseCoordinates=cursorCoordinate;
+                        mouseCoordinatesLabel.setText(I18N.tr("Coordinate {0};{1}",cursorCoordinate.getX(),cursorCoordinate.getY()));
+                }
         }
         /**
          * Set the value of scaleDenominator
