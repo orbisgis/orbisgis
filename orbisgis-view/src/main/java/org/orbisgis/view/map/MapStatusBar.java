@@ -28,13 +28,8 @@
  */
 package org.orbisgis.view.map;
 
-import com.vividsolutions.jts.geom.Envelope;
-import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import org.orbisgis.core.layerModel.MapContext;
+import java.awt.BorderLayout;
+import javax.swing.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -75,11 +70,15 @@ public class MapStatusBar extends JPanel {
         
         
         public MapStatusBar() {
+                super(new BorderLayout());
                 horizontalBar = new JPanel();
                 horizontalBar.setLayout(new BoxLayout(horizontalBar, BoxLayout.X_AXIS));
                 add(horizontalBar);
                 scaleLabel = new JLabel();
-                add(scaleLabel);
+                horizontalBar.add(Box.createHorizontalGlue());
+                horizontalBar.add(scaleLabel);
+                horizontalBar.setBorder(BorderFactory.createEtchedBorder());
+                add(horizontalBar,BorderLayout.CENTER);
                 setScaleDenominator(1);
         }
 
