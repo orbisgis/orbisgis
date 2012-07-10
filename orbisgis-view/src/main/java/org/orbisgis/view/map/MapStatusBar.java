@@ -28,7 +28,15 @@
  */
 package org.orbisgis.view.map;
 
+import com.vividsolutions.jts.geom.Envelope;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
+import javax.swing.BoxLayout;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import org.orbisgis.core.layerModel.MapContext;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * @brief Area at the bottom of the MapEditor
@@ -39,5 +47,42 @@ import javax.swing.JPanel;
  */
 
 public class MapStatusBar extends JPanel {
+        protected final static I18n I18N = I18nFactory.getI18n(MapStatusBar.class);
+        private JPanel horizontalBar;
+        private double scaleDenominator;
+        private JLabel scaleLabel;
+
+        /**
+         * Get the value of scaleDenominator
+         *
+         * @return the value of scaleDenominator
+         */
+        public double getScaleDenominator() {
+                return scaleDenominator;
+        }
+
+        /**
+         * Set the value of scaleDenominator
+         *
+         * @param scaleDenominator new value of scaleDenominator
+         */
+        public final void setScaleDenominator(double scaleDenominator) {
+                this.scaleDenominator = scaleDenominator;
+                scaleLabel.setText(I18N.tr("Scale 1:{0}",scaleDenominator));
+        }
+
+        
+        
+        
+        public MapStatusBar() {
+                horizontalBar = new JPanel();
+                horizontalBar.setLayout(new BoxLayout(horizontalBar, BoxLayout.X_AXIS));
+                add(horizontalBar);
+                scaleLabel = new JLabel();
+                add(scaleLabel);
+                setScaleDenominator(1);
+        }
+
+        
         
 }

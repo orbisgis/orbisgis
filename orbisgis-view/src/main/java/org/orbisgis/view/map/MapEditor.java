@@ -72,7 +72,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private MapElement mapEditable;
     private DockingPanelParameters dockingPanelParameters;
     private MapTransferHandler dragDropHandler;
-    
+    private MapStatusBar mapStatusBar = new MapStatusBar();
     /**
      * Constructor
      */
@@ -85,7 +85,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         dockingPanelParameters.setMinimizable(false);
         dockingPanelParameters.setExternalizable(false);
         dockingPanelParameters.setCloseable(false);
-        this.add(mapControl, BorderLayout.CENTER);
+        add(mapControl, BorderLayout.CENTER);
+        add(mapStatusBar, BorderLayout.PAGE_END);
         mapControl.setDefaultTool(new ZoomInTool());
         //Declare Tools of Map Editors
         //For debug purpose, also add the toolbar in the frame
@@ -276,8 +277,10 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             return mapControl;
     }
 
+    @Override
     public void extentChanged(Envelope oldExtent, MapTransform mapTransform) {
-        //do nothing
+            //Update the scale in the MapEditor status bar
+            mapStatusBar.setScaleDenominator(mapTransform.getScaleDenominator());
     }
 
     public void imageSizeChanged(int oldWidth, int oldHeight, MapTransform mapTransform) {
