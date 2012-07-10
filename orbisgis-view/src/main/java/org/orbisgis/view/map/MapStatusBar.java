@@ -30,6 +30,8 @@ package org.orbisgis.view.map;
 
 import java.awt.BorderLayout;
 import javax.swing.*;
+import org.jproj.CoordinateReferenceSystem;
+import org.jproj.util.CRSCache;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -44,16 +46,17 @@ import org.xnap.commons.i18n.I18nFactory;
 public class MapStatusBar extends JPanel {
         protected final static I18n I18N = I18nFactory.getI18n(MapStatusBar.class);
         private JPanel horizontalBar;
-        private double scaleDenominator;
         private JLabel scaleLabel;
+        private JTextField scaleField;
+        private JLabel projectionLabel;
+        
+        //Layout parameters
+        private final static int OUTER_BAR_BORDER = 2;
+        private final static int HORIZONTAL_EMPTY_BORDER = 4;
+        private final static int SCALE_FIELD_COLUMNS = 10;
 
-        /**
-         * Get the value of scaleDenominator
-         *
-         * @return the value of scaleDenominator
-         */
-        public double getScaleDenominator() {
-                return scaleDenominator;
+        public final void setProjection(CoordinateReferenceSystem projection) {
+                projectionLabel.setText(I18N.tr("Projection : {0}",projection));
         }
 
         /**
@@ -62,24 +65,47 @@ public class MapStatusBar extends JPanel {
          * @param scaleDenominator new value of scaleDenominator
          */
         public final void setScaleDenominator(double scaleDenominator) {
-                this.scaleDenominator = scaleDenominator;
-                scaleLabel.setText(I18N.tr("Scale 1:{0}",scaleDenominator));
+                //scaleLabel.setText();
+                scaleField.setText(Long.toString(Math.round(scaleDenominator)));
         }
 
-        
+        private void addComponent(JComponent component) {
+                addComponent(component,true);
+        }
+        private void addComponent(JComponent component,boolean addSeparator) {
+                if(addSeparator && horizontalBar.getComponentCount()!=0) {
+                        JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
+                        horizontalBar.add(Box.createHorizontalStrut(HORIZONTAL_EMPTY_BORDER));
+                        horizontalBar.add(separator);
+                        horizontalBar.add(Box.createHorizontalStrut(HORIZONTAL_EMPTY_BORDER));
+                }
+                horizontalBar.add(component);
+        }
         
         
         public MapStatusBar() {
                 super(new BorderLayout());
                 horizontalBar = new JPanel();
                 horizontalBar.setLayout(new BoxLayout(horizontalBar, BoxLayout.X_AXIS));
-                add(horizontalBar);
-                scaleLabel = new JLabel();
-                horizontalBar.add(Box.createHorizontalGlue());
-                horizontalBar.add(scaleLabel);
-                horizontalBar.setBorder(BorderFactory.createEtchedBorder());
-                add(horizontalBar,BorderLayout.CENTER);
+                setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),BorderFactory.createEmptyBorder(OUTER_BAR_BORDER, OUTER_BAR_BORDER, OUTER_BAR_BORDER, OUTER_BAR_BORDER)));
+                add(horizontalBar,BorderLayout.EAST);                
+                ////////
+                //Add bar components
+                //Coordinates
+                
+                // Projection
+                projectionLabel = new JLabel(I18N.tr("Projection :"));
+                addComponent(projectionLabel);
+                // Scale
+                scaleLabel = new JLabel(I18N.tr("Scale 1:"));
+                scaleField = new JTextField();
+                scaleField.setEditable(false);
+                scaleField.setColumns(SCALE_FIELD_COLUMNS);
+                addComponent(scaleLabel);
+                addComponent(scaleField,false);
+                
                 setScaleDenominator(1);
+                setProjection(CoordinateReferenceSystem.CS_GEO);
         }
 
         

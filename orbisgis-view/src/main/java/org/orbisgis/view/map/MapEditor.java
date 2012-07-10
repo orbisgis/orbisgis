@@ -135,6 +135,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             element.setMapEditor(this);
             mapControl.setMapContext(mapContext);
             mapControl.getMapTransform().setExtent(mapContext.getBoundingBox());
+            mapControl.setElement(this);
             mapControl.initMapControl();
             repaint();
         } catch (IllegalStateException ex) {
