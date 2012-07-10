@@ -30,10 +30,10 @@ package org.orbisgis.view.map;
 
 import java.awt.BorderLayout;
 import java.awt.Insets;
+import java.awt.geom.Point2D;
 import javax.swing.*;
 import org.jproj.CRSFactory;
 import org.jproj.CoordinateReferenceSystem;
-import org.jproj.util.CRSCache;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -54,40 +54,14 @@ public class MapStatusBar extends JPanel {
         private JTextField scaleField;
         //CRS
         private JLabel projectionLabel;
+        //Coordinates
+        private JLabel mouseCoordinatesLabel;
         
         //Layout parameters
         private final static int OUTER_BAR_BORDER = 1;
         private final static int HORIZONTAL_EMPTY_BORDER = 4;
         private final static int SCALE_FIELD_COLUMNS = 6;
 
-        public final void setProjection(CoordinateReferenceSystem projection) {
-                projectionLabel.setText(I18N.tr("Projection : {0}",projection));
-        }
-
-        /**
-         * Set the value of scaleDenominator
-         *
-         * @param scaleDenominator new value of scaleDenominator
-         */
-        public final void setScaleDenominator(double scaleDenominator) {
-                //scaleLabel.setText();
-                scaleField.setText(I18N.tr("1:{0}",Math.round(scaleDenominator)));
-        }
-
-        private void addComponent(JComponent component) {
-                addComponent(component,true);
-        }
-        private void addComponent(JComponent component,boolean addSeparator) {
-                if(addSeparator && horizontalBar.getComponentCount()!=0) {
-                        JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
-                        horizontalBar.add(Box.createHorizontalStrut(HORIZONTAL_EMPTY_BORDER));
-                        horizontalBar.add(separator);
-                        horizontalBar.add(Box.createHorizontalStrut(HORIZONTAL_EMPTY_BORDER));
-                }
-                horizontalBar.add(component);
-        }
-        
-        
         public MapStatusBar() {
                 super(new BorderLayout());
                 horizontalBar = new JPanel();
@@ -97,7 +71,8 @@ public class MapStatusBar extends JPanel {
                 ////////
                 //Add bar components
                 //Coordinates
-                
+                mouseCoordinatesLabel = new JLabel();
+                addComponent(mouseCoordinatesLabel);
                 // Projection
                 projectionLabel = new JLabel();
                 addComponent(projectionLabel);
@@ -114,10 +89,60 @@ public class MapStatusBar extends JPanel {
                 scaleField.setColumns(SCALE_FIELD_COLUMNS);
                 addComponent(scaleLabel);
                 addComponent(scaleField,false);
-                
+                //Set initial value
                 setScaleDenominator(1);
                 setProjection(new CRSFactory().createFromName("EPSG:4326"));
+                setCursorCoordinates(new Point2D.Double());
         }
+        /**
+         * Set the new Projection of the Map
+         * @param projection 
+         */
+        public final void setProjection(CoordinateReferenceSystem projection) {
+                
+                projectionLabel.setText(I18N.tr("Projection : {0}",projection));
+        }
+
+        /**
+         * Set the mouse coordinate in the Coordinate reference system
+         * @param coordinate 
+         */
+        public final void setCursorCoordinates(Point2D cursorCoordinate) {
+                mouseCoordinatesLabel.setText(I18N.tr("Cursor Coordinate : {0},{1}",cursorCoordinate.getX(),cursorCoordinate.getY()));
+        }
+        /**
+         * Set the value of scaleDenominator
+         *
+         * @param scaleDenominator new value of scaleDenominator
+         */
+        public final void setScaleDenominator(double scaleDenominator) {
+                //scaleLabel.setText();
+                scaleField.setText(I18N.tr("1:{0}",Math.round(scaleDenominator)));
+        }
+
+        /**
+         * Append a component on the right of the status bar
+         * @param component 
+         */
+        private void addComponent(JComponent component) {
+                addComponent(component,true);
+        }
+        /**
+         * Append a component on the right of the status bar
+         * @param component 
+         * @param addSeparator Add a separator at the left of the component
+         */
+        private void addComponent(JComponent component,boolean addSeparator) {
+                if(addSeparator && horizontalBar.getComponentCount()!=0) {
+                        JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
+                        horizontalBar.add(Box.createHorizontalStrut(HORIZONTAL_EMPTY_BORDER));
+                        horizontalBar.add(separator);
+                        horizontalBar.add(Box.createHorizontalStrut(HORIZONTAL_EMPTY_BORDER));
+                }
+                horizontalBar.add(component);
+        }
+        
+        
 
         
         
