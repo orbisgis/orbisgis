@@ -119,7 +119,6 @@ public class MapStatusBar extends JPanel {
          * @param scaleDenominator new value of scaleDenominator
          */
         public final void setScaleDenominator(double scaleDenominator) {
-                //scaleLabel.setText();
                 scaleField.setText(I18N.tr("1:{0}",Math.round(scaleDenominator)));
         }
 

@@ -76,8 +76,9 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     //Then translate to the map coordinates and send it to
     //the MapStatusBar
     private Timer CursorCoordinateLookupTimer;
-    private final static int CURSOR_COORDINATE_LOOKUP_INTERVAL = 50; //Ms
+    private final static int CURSOR_COORDINATE_LOOKUP_INTERVAL = 100; //Ms
     private Point lastCursorPosition = new Point();
+    private Point lastTranslatedCursorPosition = new Point();
     /**
      * Constructor
      */
@@ -161,6 +162,16 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     public void onMouseMove(Point mousePoition) {
             lastCursorPosition = mousePoition;
     }
+
+        @Override
+        public void removeNotify() {
+                super.removeNotify();
+                CursorCoordinateLookupTimer.stop();
+                CursorCoordinateLookupTimer=null;
+        }
+    
+    
+    
     /**
      * This method is called by the timer called CursorCoordinateLookupTimer
      * This function fetch the cursor coordinates (pixel)
@@ -168,9 +179,14 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
      * the MapStatusBar
      */
     public void onReadCursorMapCoordinate() {
-            Point2D mapCoordinate = mapControl.getMapTransform().toMapPoint(lastCursorPosition.x, lastCursorPosition.y);
-            mapStatusBar.setCursorCoordinates(mapCoordinate);
-            CursorCoordinateLookupTimer.start();
+            if(!lastTranslatedCursorPosition.equals(lastCursorPosition)) {
+                lastTranslatedCursorPosition=lastCursorPosition;
+                Point2D mapCoordinate = mapControl.getMapTransform().toMapPoint(lastCursorPosition.x, lastCursorPosition.y);
+                mapStatusBar.setCursorCoordinates(mapCoordinate);
+            }
+            if(CursorCoordinateLookupTimer!=null) {
+                CursorCoordinateLookupTimer.start();
+            }
     }
     
     /**
