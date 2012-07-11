@@ -63,13 +63,15 @@ public class RunnableBackgroundJob implements Runnable {
 		this.jobQueue = jobQueue;
 	}
 
+        @Override
 	public synchronized void run() {
 		try {
 			job.run(pm);
 		} catch (Throwable t) {
-			LOGGER.error(t.getMessage(), t);
-		}
-		jobQueue.processFinished(job.getId());
+			LOGGER.error(t);
+		} finally {
+                        jobQueue.processFinished(job.getId());
+                }
 	}
 
 }
