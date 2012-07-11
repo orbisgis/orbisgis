@@ -29,11 +29,23 @@
 package org.orbisgis.view.map;
 
 import java.awt.BorderLayout;
-import java.awt.Insets;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusListener;
 import java.awt.geom.Point2D;
+import java.beans.EventHandler;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.beans.VetoableChangeSupport;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.util.Locale;
+import java.util.logging.Level;
 import javax.swing.*;
+import org.apache.log4j.Logger;
 import org.jproj.CRSFactory;
 import org.jproj.CoordinateReferenceSystem;
+import org.orbisgis.view.components.button.CustomButton;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -48,10 +60,17 @@ import org.xnap.commons.i18n.I18nFactory;
 
 public class MapStatusBar extends JPanel {
         protected final static I18n I18N = I18nFactory.getI18n(MapStatusBar.class);
+        private static final Logger LOGGER = Logger.getLogger(MapStatusBar.class);
+        public static final String PROP_USER_DEFINED_SCALE_DENOMINATOR = "userDefinedScaleDenominator";
+   
+        
+        
         private JPanel horizontalBar;
         //Scale
         private JLabel scaleLabel;
         private JTextField scaleField;
+        private double scaleValue; //Valid scale defined by the MapEditor
+        private long userDefinedScaleDenominator; //Last User scale set
         //CRS
         private JLabel projectionLabel;
         //Coordinates
@@ -60,7 +79,6 @@ public class MapStatusBar extends JPanel {
         //Layout parameters
         private final static int OUTER_BAR_BORDER = 1;
         private final static int HORIZONTAL_EMPTY_BORDER = 4;
-        private final static int SCALE_FIELD_COLUMNS = 6;
 
         public MapStatusBar() {
                 super(new BorderLayout());
@@ -76,17 +94,17 @@ public class MapStatusBar extends JPanel {
                 // Projection
                 projectionLabel = new JLabel();
                 addComponent(projectionLabel);
-                JButton changeProjection = new JButton(OrbisGISIcon.getIcon("world"));
+                JButton changeProjection = new CustomButton(OrbisGISIcon.getIcon("world"));
                 changeProjection.setToolTipText(I18N.tr("Change coordinate reference system"));
-                changeProjection.setMargin(new Insets(0, 0, 0, 0));
-                changeProjection.setBorderPainted(false);
                 //changeProjection.setContentAreaFilled(false);
                 addComponent(changeProjection,false);
                 // Scale
                 scaleLabel = new JLabel(I18N.tr("Scale :"));
                 scaleField = new JTextField();
-                scaleField.setEditable(false);
-                scaleField.setColumns(SCALE_FIELD_COLUMNS);
+                scaleField.addFocusListener(EventHandler.create(FocusListener.class,this,"readScaleTextInput",null,"focusLost"));
+                scaleField.addActionListener(EventHandler.create(ActionListener.class,this,"readScaleTextInput"));
+                scaleField.setInputVerifier(new FormattedTextFieldVerifier());
+                //scaleField.setColumns(SCALE_FIELD_COLUMNS);
                 addComponent(scaleLabel);
                 addComponent(scaleField,false);
                 //Set initial value
@@ -94,6 +112,21 @@ public class MapStatusBar extends JPanel {
                 setProjection(new CRSFactory().createFromName("EPSG:4326"));
                 setCursorCoordinates(new Point2D.Double());
         }
+        
+
+        /**
+         * Set the value of userDefinedScaleDenominator
+         *
+         * @param userDefinedScaleDenominator new value of
+         * userDefinedScaleDenominator
+         * @throws java.beans.PropertyVetoException
+         */
+        public void setUserDefinedScaleDenominator(long userDefinedScaleDenominator) throws java.beans.PropertyVetoException {
+                long oldUserDefinedScaleDenominator = this.userDefinedScaleDenominator;
+                fireVetoableChange(PROP_USER_DEFINED_SCALE_DENOMINATOR, oldUserDefinedScaleDenominator, userDefinedScaleDenominator);
+                this.userDefinedScaleDenominator = userDefinedScaleDenominator;
+                firePropertyChange(PROP_USER_DEFINED_SCALE_DENOMINATOR, oldUserDefinedScaleDenominator, userDefinedScaleDenominator);
+        }           
         /**
          * Set the new Projection of the Map
          * @param projection 
@@ -111,7 +144,9 @@ public class MapStatusBar extends JPanel {
         public final void setCursorCoordinates(Point2D cursorCoordinate) {
                 if(!mouseCoordinates.equals(cursorCoordinate)) {
                         mouseCoordinates=cursorCoordinate;
-                        mouseCoordinatesLabel.setText(I18N.tr("Coordinate {0};{1}",cursorCoordinate.getX(),cursorCoordinate.getY()));
+                        NumberFormat f = DecimalFormat.getInstance(new Locale("en"));
+                        f.setGroupingUsed(false);
+                        mouseCoordinatesLabel.setText(I18N.tr("X:{0} Y:{1}",f.format(cursorCoordinate.getX()),f.format(cursorCoordinate.getY())));
                 }
         }
         /**
@@ -145,8 +180,43 @@ public class MapStatusBar extends JPanel {
                 horizontalBar.add(component);
         }
         
-        
+        private class FormattedTextFieldVerifier extends InputVerifier {
 
-        
-        
+                private void invalidateUserInput() {
+                        setScaleDenominator(scaleValue);
+                }
+                @Override
+                public boolean verify(JComponent input) {
+                        if (input instanceof JTextField) {
+                                JTextField ftf = (JTextField) input;
+                                String text = ftf.getText();
+                                NumberFormat ft = NumberFormat.getIntegerInstance(); //Use default locale
+                                String[] scaleParts = text.split(":");
+                                if(scaleParts.length!=2) {
+                                        //More or Less than a single ':' character
+                                        invalidateUserInput();
+                                } else {
+                                        try {
+                                                if(ft.parse(scaleParts[0]).intValue()==1) {
+                                                        try {
+                                                                setUserDefinedScaleDenominator(ft.parse(scaleParts[1]).longValue());
+                                                        } catch (PropertyVetoException ex) {
+                                                                //Vetoed by the MapEditor
+                                                                invalidateUserInput();
+                                                        }
+                                                }
+                                        } catch( ParseException ex) {
+                                                LOGGER.error(I18N.tr("The format of a scale is 1:number"),ex);
+                                                invalidateUserInput();
+                                        }
+                                }
+                        }
+                        return true;
+                }
+
+                @Override
+                public boolean shouldYieldFocus(JComponent input) {
+                        return verify(input);
+                }
+        }
 }
