@@ -34,6 +34,8 @@ import java.awt.Point;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.beans.EventHandler;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import javax.swing.*;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.DataManager;
@@ -93,7 +95,6 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         dockingPanelParameters.setCloseable(false);
         add(mapControl, BorderLayout.CENTER);
         add(mapStatusBar, BorderLayout.PAGE_END);
-        mapControl.addMouseMotionListener(EventHandler.create(MouseMotionListener.class,this,"onMouseMove","point","mouseMoved"));
         mapControl.setDefaultTool(new ZoomInTool());
         //Declare Tools of Map Editors
         //For debug purpose, also add the toolbar in the frame
@@ -106,6 +107,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         dragDropHandler = new MapTransferHandler();        
         this.setTransferHandler(dragDropHandler);
     }
+    
+    public void onUserSetScaleDenominator(long newScale) throws PropertyVetoException {
+            //mapControl.getMapTransform().setScaleDenominator((double)newScale);
+    }
+    
     /**
      * Notifies this component that it now has a parent component.
      * When this method is invoked, the chain of parent 
@@ -116,6 +122,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         super.addNotify();
         //Register listener
         dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(Listener.class, this, "onDropEditable","editableList"));
+        mapControl.addMouseMotionListener(EventHandler.create(MouseMotionListener.class,this,"onMouseMove","point","mouseMoved"));
+        mapStatusBar.addVetoableChangeListener(
+                MapStatusBar.PROP_USER_DEFINED_SCALE_DENOMINATOR,
+                EventHandler.create(VetoableChangeListener.class, this,
+                "onUserSetScaleDenominator","newValue"));
     }
     
     
@@ -358,6 +369,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         /**
          * Used with Toggle Button (new state can be DESELECTED)
          */
+                @Override
         public void itemStateChanged(ItemEvent ie) {
             if(ie.getStateChange() == ItemEvent.SELECTED) {
                 onToolSelected(automaton);

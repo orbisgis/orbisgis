@@ -30,7 +30,6 @@ package org.orbisgis.view.map;
 
 import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusListener;
 import java.awt.geom.Point2D;
 import java.beans.EventHandler;
 import java.beans.PropertyVetoException;
@@ -40,7 +39,6 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.util.Locale;
-import java.util.logging.Level;
 import javax.swing.*;
 import org.apache.log4j.Logger;
 import org.jproj.CRSFactory;
@@ -63,8 +61,7 @@ public class MapStatusBar extends JPanel {
         private static final Logger LOGGER = Logger.getLogger(MapStatusBar.class);
         public static final String PROP_USER_DEFINED_SCALE_DENOMINATOR = "userDefinedScaleDenominator";
    
-        
-        
+        protected VetoableChangeSupport vetoableChangeSupport = new VetoableChangeSupport(this);
         private JPanel horizontalBar;
         //Scale
         private JLabel scaleLabel;
@@ -101,9 +98,9 @@ public class MapStatusBar extends JPanel {
                 // Scale
                 scaleLabel = new JLabel(I18N.tr("Scale :"));
                 scaleField = new JTextField();
-                scaleField.addFocusListener(EventHandler.create(FocusListener.class,this,"readScaleTextInput",null,"focusLost"));
-                scaleField.addActionListener(EventHandler.create(ActionListener.class,this,"readScaleTextInput"));
+                scaleField.addActionListener(EventHandler.create(ActionListener.class,this,"validateInputScale"));
                 scaleField.setInputVerifier(new FormattedTextFieldVerifier());
+                scaleField.setEditable(false);
                 //scaleField.setColumns(SCALE_FIELD_COLUMNS);
                 addComponent(scaleLabel);
                 addComponent(scaleField,false);
@@ -112,7 +109,10 @@ public class MapStatusBar extends JPanel {
                 setProjection(new CRSFactory().createFromName("EPSG:4326"));
                 setCursorCoordinates(new Point2D.Double());
         }
-        
+
+        public void validateInputScale() {
+                scaleField.requestFocus(false);                
+        }
 
         /**
          * Set the value of userDefinedScaleDenominator
@@ -121,8 +121,9 @@ public class MapStatusBar extends JPanel {
          * userDefinedScaleDenominator
          * @throws java.beans.PropertyVetoException
          */
-        public void setUserDefinedScaleDenominator(long userDefinedScaleDenominator) throws java.beans.PropertyVetoException {
+        public void setUserDefinedScaleDenominator(long userDefinedScaleDenominator) throws PropertyVetoException {
                 long oldUserDefinedScaleDenominator = this.userDefinedScaleDenominator;
+                vetoableChangeSupport.fireVetoableChange(PROP_USER_DEFINED_SCALE_DENOMINATOR, oldUserDefinedScaleDenominator, userDefinedScaleDenominator);
                 fireVetoableChange(PROP_USER_DEFINED_SCALE_DENOMINATOR, oldUserDefinedScaleDenominator, userDefinedScaleDenominator);
                 this.userDefinedScaleDenominator = userDefinedScaleDenominator;
                 firePropertyChange(PROP_USER_DEFINED_SCALE_DENOMINATOR, oldUserDefinedScaleDenominator, userDefinedScaleDenominator);
@@ -133,10 +134,17 @@ public class MapStatusBar extends JPanel {
          */
         public final void setProjection(CoordinateReferenceSystem projection) {
                 String projectLabel = projection.toString();
-                projectLabel = "TODO"; //TODO read map context project                        
+                //projectLabel = "TODO"; //TODO read map context project                        
                 projectionLabel.setText(I18N.tr("Projection : {0}",projectLabel));
         }
-
+        /**
+         * Add a VetoableChangeListener for a specific property.
+         * @param listener 
+         */
+        public void addVetoableChangeListener(String property, VetoableChangeListener listener )
+        {
+                vetoableChangeSupport.addVetoableChangeListener(property, listener );
+        }
         /**
          * Set the mouse coordinate in the Coordinate reference system
          * @param coordinate 
@@ -188,6 +196,7 @@ public class MapStatusBar extends JPanel {
                 @Override
                 public boolean verify(JComponent input) {
                         if (input instanceof JTextField) {
+                                LOGGER.debug("Verify scale user input..");
                                 JTextField ftf = (JTextField) input;
                                 String text = ftf.getText();
                                 NumberFormat ft = NumberFormat.getIntegerInstance(); //Use default locale
@@ -204,6 +213,7 @@ public class MapStatusBar extends JPanel {
                                                                 //Vetoed by the MapEditor
                                                                 invalidateUserInput();
                                                         }
+                                                        LOGGER.debug("User scale input accepted..");
                                                 }
                                         } catch( ParseException ex) {
                                                 LOGGER.error(I18N.tr("The format of a scale is 1:number"),ex);
