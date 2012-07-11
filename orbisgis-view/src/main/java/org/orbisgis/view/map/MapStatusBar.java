@@ -99,8 +99,9 @@ public class MapStatusBar extends JPanel {
          * @param projection 
          */
         public final void setProjection(CoordinateReferenceSystem projection) {
-                
-                projectionLabel.setText(I18N.tr("Projection : {0}",projection));
+                String projectLabel = projection.toString();
+                projectLabel = "TODO"; //TODO read map context project                        
+                projectionLabel.setText(I18N.tr("Projection : {0}",projectLabel));
         }
 
         /**
