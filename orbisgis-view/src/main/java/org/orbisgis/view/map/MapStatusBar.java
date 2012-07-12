@@ -208,23 +208,25 @@ public class MapStatusBar extends JPanel {
                                 String[] scaleParts = text.split(":");
                                 if(scaleParts.length!=2) {
                                         //More or Less than a single ':' character
+                                        LOGGER.error(I18N.tr("The format of a scale is 1:number"));
                                         invalidateUserInput();
                                 } else {
                                         try {
                                                 if(ft.parse(scaleParts[0]).intValue()==1) {
                                                         try {
                                                                 setUserDefinedScaleDenominator(ft.parse(scaleParts[1]).longValue());
-                                                        } catch (java.beans.PropertyVetoException ex) {
+                                                                LOGGER.debug("User scale input accepted..");
+                                                        } catch (PropertyVetoException ex) {
                                                                 //Vetoed by the MapEditor
                                                                 invalidateUserInput();
-                                                                return true;
                                                         }
-                                                        LOGGER.debug("User scale input accepted..");
+                                                } else {
+                                                        throw new ParseException(I18N.tr("The only accepted value on nominator is 1"), 0);
                                                 }
                                         } catch( ParseException ex) {
-                                                LOGGER.error(I18N.tr("The format of a scale is 1:number"),ex);
+                                                //Do not send the exception, the user has not to see the traceback
+                                                LOGGER.error(ex.getLocalizedMessage());
                                                 invalidateUserInput();
-                                                return true;
                                         }
                                 }
                         }
