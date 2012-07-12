@@ -72,6 +72,39 @@
                                         </descriptors>
                                 </configuration>
                         </plugin>
+                        <plugin>
+                                <groupId>org.codehaus.mojo</groupId>
+                                <artifactId>webstart-maven-plugin</artifactId>
+                                <version>1.0-beta-3</version>
+                                <configuration>
+                                        <outputDirectoryName>webstart</outputDirectoryName>
+                                        <excludeTransitive>false</excludeTransitive>
+                                        <jnlp>
+                                                <mainClass>org.orbisgis.view.main.Main</mainClass>
+                                        </jnlp>
+                                        <sign>
+                                                <keystore>/tmp/myappkeystore</keystore>
+                                                <keypass>m2m2m2</keypass>
+                                                <storepass>m2m2m2</storepass>
+                                                <alias>foobar</alias>
+                                                <validity>3650</validity>
+	 
+                                                <dnameCn>IRSTV</dnameCn>
+                                                <dnameOu>Atelier SIG</dnameOu>
+                                                <dnameO>IRSTV</dnameO>
+                                                <dnameL>Nantes</dnameL>
+                                                <dnameSt>Pays de la Loire</dnameSt>
+                                                <dnameC>FR</dnameC>
+                                                <verify>false</verify>
+                                                <keystoreConfig>
+                                                        <delete>true</delete>
+                                                        <gen>true</gen>
+                                                </keystoreConfig>
+                                        </sign>
+                                        <unsign>true</unsign>
+                                        <verifyjar>false</verifyjar>
+                                </configuration>
+                        </plugin>    
                 </plugins>
         </build>  
         <properties>
