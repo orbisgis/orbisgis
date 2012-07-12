@@ -110,8 +110,11 @@ public class MapStatusBar extends JPanel {
                 setCursorCoordinates(new Point2D.Double());
         }
 
+        /**
+         * Called by the VK_ENTER of the textField
+         */
         public void validateInputScale() {
-                scaleField.requestFocus(false);                
+                scaleField.getInputVerifier().verify(scaleField);           
         }
 
         /**
@@ -164,6 +167,7 @@ public class MapStatusBar extends JPanel {
          */
         public final void setScaleDenominator(double scaleDenominator) {
                 scaleField.setText(I18N.tr("1:{0}",Math.round(scaleDenominator)));
+                validate();
         }
 
         /**
