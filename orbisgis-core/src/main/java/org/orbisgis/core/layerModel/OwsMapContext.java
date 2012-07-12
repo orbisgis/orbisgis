@@ -524,6 +524,7 @@ public final class OwsMapContext extends BeanMapContext {
                                 try {
                                         ILayer leafLayer = createLayer(layerSource);
                                         leafLayer.setDescription(new Description(lt));
+                                        leafLayer.setVisible(!lt.isHidden());
                                         //Parse styles
                                         if(lt.isSetStyleList()) {
                                                 for(StyleType st : lt.getStyleList().getStyle()) {
