@@ -66,7 +66,7 @@ public class MapStatusBar extends JPanel {
         //Scale
         private JLabel scaleLabel;
         private JTextField scaleField;
-        private double scaleValue; //Valid scale defined by the MapEditor
+        private double scaleValue=1; //Valid scale defined by the MapEditor
         private long userDefinedScaleDenominator; //Last User scale set
         //CRS
         private JLabel projectionLabel;
@@ -166,8 +166,9 @@ public class MapStatusBar extends JPanel {
          * @param scaleDenominator new value of scaleDenominator
          */
         public final void setScaleDenominator(double scaleDenominator) {
+                scaleValue = scaleDenominator;
                 scaleField.setText(I18N.tr("1:{0}",Math.round(scaleDenominator)));
-                validate();
+                validate(); // Resize and layout controls
         }
 
         /**
@@ -213,15 +214,17 @@ public class MapStatusBar extends JPanel {
                                                 if(ft.parse(scaleParts[0]).intValue()==1) {
                                                         try {
                                                                 setUserDefinedScaleDenominator(ft.parse(scaleParts[1]).longValue());
-                                                        } catch (PropertyVetoException ex) {
+                                                        } catch (java.beans.PropertyVetoException ex) {
                                                                 //Vetoed by the MapEditor
                                                                 invalidateUserInput();
+                                                                return true;
                                                         }
                                                         LOGGER.debug("User scale input accepted..");
                                                 }
                                         } catch( ParseException ex) {
                                                 LOGGER.error(I18N.tr("The format of a scale is 1:number"),ex);
                                                 invalidateUserInput();
+                                                return true;
                                         }
                                 }
                         }
