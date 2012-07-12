@@ -96,7 +96,7 @@ public class TableExportPanel extends JPanel implements UIPanel {
         }
 
         /**
-         * The postProcess is override to ensure that all sources can be exported
+         * The validateInput is override to ensure that all sources can be exported
          *
          * @return
          */
