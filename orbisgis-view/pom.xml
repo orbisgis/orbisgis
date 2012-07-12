@@ -77,10 +77,10 @@
                                 <artifactId>webstart-maven-plugin</artifactId>
                                 <version>1.0-beta-3</version>
                                 <configuration>
-                                        <outputDirectoryName>webstart</outputDirectoryName>
                                         <excludeTransitive>false</excludeTransitive>
                                         <jnlp>
                                                 <mainClass>org.orbisgis.view.main.Main</mainClass>
+                                                <outputFile>monomap.jnlp</outputFile>
                                         </jnlp>
                                         <sign>
                                                 <keystore>/tmp/myappkeystore</keystore>
@@ -101,7 +101,7 @@
                                                         <gen>true</gen>
                                                 </keystoreConfig>
                                         </sign>
-                                        <unsign>true</unsign>
+                                        <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
                                         <verifyjar>false</verifyjar>
                                 </configuration>
                         </plugin>    

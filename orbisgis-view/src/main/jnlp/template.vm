@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?> 
-<jnlp codebase="http://www.orbisgis.org/store/releases/orbisgis-monomap-4.0-SNAPSHOT" href="launch.jnlp"> 
+<jnlp codebase="http://www.orbisgis.org/store/releases/orbisgis-monomap-4.0-SNAPSHOT" href="$outputFile"> 
         <information> 
                 <title>OrbisGIS Monomap 4.0-SNAPSHOT</title> 
                 <vendor>IRSTV - Atelier SIG</vendor> 
