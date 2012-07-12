@@ -34,12 +34,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-
 import org.apache.log4j.Logger;
 import org.gdms.data.db.DBSource;
 import org.gdms.driver.DBDriver;
@@ -67,6 +65,7 @@ public class TableSelectionPanel implements UIPanel {
         public Component getComponent() {
                 if (null == jScrollPane) {
                         jScrollPane = new JScrollPane();
+                        initialize();
                 }
                 return jScrollPane;
         }
@@ -81,21 +80,20 @@ public class TableSelectionPanel implements UIPanel {
                 return i18n.tr("Select a table or a view");
         }
 
-        @Override
-        public SIFMessage initialize() {
+        
+        public void initialize() {
                 try {
                         tableTree = getTableTree();
                 } catch (SQLException e) {
-                        return new SIFMessage(e.getMessage(), SIFMessage.ERROR);
+                        LOGGER.error(e.getMessage());
                 } catch (DriverException e) {
-                        return new SIFMessage(e.getMessage(), SIFMessage.ERROR);
+                        LOGGER.error(e.getMessage());
                 }
                 if (jScrollPane == null) {
                         jScrollPane = new JScrollPane();
                 }
                 jScrollPane.setViewportView(tableTree);
 
-                return new SIFMessage();
         }
 
         private JTree getTableTree() throws SQLException, DriverException {
@@ -185,10 +183,7 @@ public class TableSelectionPanel implements UIPanel {
                 return null;
         }
 
-        @Override
-        public SIFMessage postProcess() {
-                return new SIFMessage();
-        }
+        
 
         public DBSource[] getSelectedDBSources() {
                 List<TableNode> tables = new ArrayList<TableNode>();

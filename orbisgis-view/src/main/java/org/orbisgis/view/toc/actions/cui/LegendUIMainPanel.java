@@ -179,16 +179,6 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 	}
 
 	@Override
-	public SIFMessage initialize() {
-		 return new SIFMessage();
-	}
-
-	@Override
-	public SIFMessage postProcess() {
-		return  new SIFMessage();
-	}
-
-	@Override
 	public Component getComponent() {
 		return this;
 	}

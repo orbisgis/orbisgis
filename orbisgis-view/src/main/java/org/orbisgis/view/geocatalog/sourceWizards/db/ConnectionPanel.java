@@ -118,16 +118,7 @@ public class ConnectionPanel extends MultiInputPanel {
                 return combo;
         }
 
-        @Override
-        public SIFMessage postProcess() {
-                try {
-                        Connection connection = getConnection();
-                        connection.close();
-                        return new SIFMessage();
-                } catch (SQLException e) {
-                        return new SIFMessage(i18n.tr("Cannot connect {0}", e), SIFMessage.ERROR);
-                }
-        }
+       
 
         public Connection getConnection() throws SQLException {
                 DBSource dbSource = getDBSource();

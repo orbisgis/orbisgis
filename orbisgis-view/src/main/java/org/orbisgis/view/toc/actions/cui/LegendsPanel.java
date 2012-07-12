@@ -295,15 +295,6 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                 return I18N.tr("Legend edition");
         }
 
-        @Override
-        public SIFMessage initialize() {
-                return new SIFMessage();
-        }
-
-        @Override
-        public SIFMessage postProcess() {
-                return new SIFMessage();
-        }
 
         @Override
         public SIFMessage validateInput() {

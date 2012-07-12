@@ -58,6 +58,7 @@ public class TableExportPanel extends JPanel implements UIPanel {
                 String[] layerNames) {
                 this.firstPanel = firstPanel;
                 this.sourceNames = layerNames;
+                initialize();
         }
 
         @Override
@@ -70,8 +71,8 @@ public class TableExportPanel extends JPanel implements UIPanel {
                 return I18N.tr("View to export sources in the database : " + firstPanel.getDBSource().getDbName());
         }
 
-        @Override
-        public SIFMessage initialize() {
+       
+        public void initialize() {
                 if (jScrollPane == null) {
                         this.setLayout(new BorderLayout());
                         jtableExporter = new JTable();
@@ -86,14 +87,8 @@ public class TableExportPanel extends JPanel implements UIPanel {
                         jScrollPane = new JScrollPane(jtableExporter);
                         this.add(jScrollPane, BorderLayout.CENTER);
                 }
-                return new SIFMessage();
         }
-
-        
-        @Override
-        public SIFMessage postProcess() {
-                return new SIFMessage();
-        }
+       
 
         /**
          * The validateInput is override to ensure that all sources can be exported

@@ -54,15 +54,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 		return "Choropleth Wizard";
 	}
 
-	@Override
-	public SIFMessage initialize() {
-		return new SIFMessage();
-	}
-
-	@Override
-	public SIFMessage postProcess() {
-		return  new SIFMessage();
-	}
+	
 
 	@Override
 	public SIFMessage validateInput() {
