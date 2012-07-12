@@ -29,7 +29,8 @@
 package org.orbisgis.sif;
 
 import java.awt.Window;
-import java.awt.event.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
@@ -37,8 +38,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 public abstract class AbstractOutsideFrame extends JDialog implements
-        KeyListener,
-        ActionListener {
+        KeyListener {
 
         protected final static I18n i18n = I18nFactory.getI18n(AbstractOutsideFrame.class);
         private boolean accepted = false;
@@ -46,8 +46,6 @@ public abstract class AbstractOutsideFrame extends JDialog implements
         public AbstractOutsideFrame(Window owner) {
                 super(owner);
         }
-
-               
 
         @Override
         public void keyPressed(KeyEvent e) {
@@ -60,7 +58,6 @@ public abstract class AbstractOutsideFrame extends JDialog implements
 
         @Override
         public void keyReleased(KeyEvent e) {
-              
         }
 
         protected abstract SimplePanel getPanel();
@@ -75,39 +72,40 @@ public abstract class AbstractOutsideFrame extends JDialog implements
          * @param ok
          */
         void exit(boolean ok) {
-                boolean closePanel = false;
+                boolean closePanel = true;
                 if (ok) {
                         closePanel = validateInput();
 
                 }
-                accepted = ok;
-                setVisible(closePanel);
                 if (!closePanel) {
+                        setVisible(true);
+                } else {
+                        setVisible(false);
                         dispose();
                 }
+                accepted = ok;
         }
 
+        /**
+         * A method to validate the current panel
+         *
+         * @return
+         */
         public boolean validateInput() {
                 SIFMessage err = getPanel().getUIPanel().validateInput();
                 if (err.getMessageType() == SIFMessage.ERROR) {
-                        JOptionPane.showMessageDialog(rootPane, err.getMessage());                        
-                        return true;
+                        JOptionPane.showMessageDialog(rootPane, err.getMessage());
+                        return false;
                 } else if (err.getMessageType() == SIFMessage.WARNING) {
-                        JOptionPane.showMessageDialog(rootPane, err.getMessage());                        
-                        return false;
-                } else {                        
-                        return false;
+                        JOptionPane.showMessageDialog(rootPane, err.getMessage());
+                        return true;
+                } else {
+                        return true;
                 }
         }
 
-        
-
         public boolean isAccepted() {
                 return accepted;
-        }
-
-        public void actionPerformed(ActionEvent e) {
-                //getPanel().validateInput();
         }
 
         public void stateChanged(ChangeEvent evt) {

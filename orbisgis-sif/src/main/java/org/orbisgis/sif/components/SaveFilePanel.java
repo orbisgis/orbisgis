@@ -28,16 +28,12 @@
  */
 package org.orbisgis.sif.components;
 
-import org.orbisgis.sif.components.OpenFilePanel;
 import java.io.File;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.FileChooserUI;
 import javax.swing.plaf.basic.BasicFileChooserUI;
 import org.orbisgis.sif.SIFMessage;
-import org.orbisgis.sif.SimplePanel;
-import org.orbisgis.sif.UIFactory;
 
 public class SaveFilePanel extends OpenFilePanel {
 
@@ -105,6 +101,7 @@ public class SaveFilePanel extends OpenFilePanel {
                 this.fileMustNotExist = fileMustNotExist;
         }
 
+        /**TODO
         @Override
         public SIFMessage postProcess() {
                 if (getSelectedFile().exists()) {
@@ -118,5 +115,5 @@ public class SaveFilePanel extends OpenFilePanel {
                         }
                 }
                 return new SIFMessage();
-        }
+        }*/
 }

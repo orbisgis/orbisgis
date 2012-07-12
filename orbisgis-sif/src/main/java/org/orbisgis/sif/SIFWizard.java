@@ -108,7 +108,7 @@ public class SIFWizard extends AbstractOutsideFrame {
 
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
-                                        if (!validateInput()) {
+                                        if (validateInput()) {
                                                 index++;
                                                 layout.next(mainPanel);
                                                 setDefaultButton();

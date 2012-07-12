@@ -44,14 +44,4 @@ public abstract class AbstractUIPanel implements UIPanel {
 	public String getInfoText() {
 		return UIFactory.getDefaultOkMessage();
 	}
-
-	@Override
-	public SIFMessage postProcess() {
-		return new SIFMessage();
-	}
-
-	@Override
-	public SIFMessage initialize() {
-		return new SIFMessage();
-	}
 }

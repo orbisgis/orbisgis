@@ -56,8 +56,7 @@ public class UIPanelDemo {
 
                 public SimpleDemoUIPanel() {
                         panel = new JPanel();
-                        textField = new JTextField("Du texte",12);                    
-                        
+                        textField = new JTextField("Du texte",12); 
                         panel.add(textField);
                 }
 
@@ -73,7 +72,10 @@ public class UIPanelDemo {
 
                 @Override
                 public SIFMessage validateInput() {
-                        return new SIFMessage("Big an error !", SIFMessage.ERROR);
+                        if(textField.getText().isEmpty()){
+                                return new SIFMessage("Big an error !", SIFMessage.ERROR);
+                        }
+                        return new SIFMessage();
                 }
 
                 @Override
