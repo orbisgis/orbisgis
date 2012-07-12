@@ -28,7 +28,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          * be unique symbol (ie constant) Legends.
          */
         private UniqueSymbolLine uniqueLine;
-        
 
         @Override
         public Component getComponent() {
@@ -42,7 +41,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
         @Override
         public void setLegend(Legend legend) {
-                if(legend instanceof UniqueSymbolLine){
+                if (legend instanceof UniqueSymbolLine) {
                         uniqueLine = (UniqueSymbolLine) legend;
                         initPreview();
                         initializeLegendFields();
@@ -52,20 +51,19 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 }
         }
 
-	/**
-	 * Initialize the panel. This method is called just after the panel
-	 * creation.</p>
-         * <p>WARNING : the panel will be empty after calling this method. Indeed,
-         * there won't be any {@code Legend} instance associated to it. Use the
+        /**
+         * Initialize the panel. This method is called just after the panel
+         * creation.</p> <p>WARNING : the panel will be empty after calling this
+         * method. Indeed, there won't be any {@code Legend} instance associated
+         * to it. Use the
          * {@code setLegend} method to achieve this goal.
-	 *
-	 * @param lc
-	 *            LegendContext is useful to get some information about the
-	 *            layer in edition.
-	 */
+         *
+         * @param lc LegendContext is useful to get some information about the
+         * layer in edition.
+         */
         @Override
         public void initialize(LegendContext lc) {
-                if(uniqueLine == null){
+                if (uniqueLine == null) {
                         setLegend(new UniqueSymbolLine());
                 }
         }
@@ -87,22 +85,12 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
         @Override
         public URL getIconURL() {
-		return UIFactory.getDefaultIcon();
+                return UIFactory.getDefaultIcon();
         }
 
         @Override
         public String getTitle() {
                 return "Unique symbol for lines.";
-        }
-
-        @Override
-        public SIFMessage initialize() {
-                return new SIFMessage();
-        }
-
-        @Override
-        public SIFMessage postProcess() {
-                return new SIFMessage();
         }
 
         @Override
@@ -119,7 +107,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 return usl;
         }
 
-        private void initializeLegendFields(){
+        private void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel();
                 GridBagLayout grid = new GridBagLayout();
@@ -135,6 +123,4 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 glob.add(getPreview(), gbc);
                 this.add(glob);
         }
-
-        
 }

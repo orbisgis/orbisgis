@@ -95,16 +95,6 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
         }
 
         @Override
-        public SIFMessage initialize() {
-                return new SIFMessage();
-        }
-
-        @Override
-        public SIFMessage postProcess() {
-                return new SIFMessage();
-        }
-
-        @Override
         public String getInfoText() {
                 return "Configure a line to be displayed as a unique symbol.";
         }
