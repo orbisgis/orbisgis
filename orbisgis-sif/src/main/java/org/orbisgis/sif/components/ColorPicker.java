@@ -52,11 +52,11 @@ public class ColorPicker extends JPanel implements UIPanel {
          * Creates new form ColorPicker
          */
         public ColorPicker() {
-                initComponents();
+                initComponents(null);
         }
 
-        public ColorPicker(Color color) {
-                throw new UnsupportedOperationException("Not yet implemented");
+        public ColorPicker(Color initialColor) {
+                initComponents(initialColor);
         }
 
         /**
@@ -66,8 +66,12 @@ public class ColorPicker extends JPanel implements UIPanel {
          */
         // <editor-fold defaultstate="collapsed" desc=" Generated Code
         // ">//GEN-BEGIN:initComponents
-        private void initComponents() {
-                jColorChooser1 = new javax.swing.JColorChooser();
+        private void initComponents(Color initialColor) {
+                if (initialColor == null) {
+                        jColorChooser1 = new javax.swing.JColorChooser();
+                } else {
+                        jColorChooser1 = new javax.swing.JColorChooser(initialColor);
+                }
 
                 javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
                 this.setLayout(layout);
@@ -95,10 +99,12 @@ public class ColorPicker extends JPanel implements UIPanel {
                 return jColorChooser1.getColor();
         }
 
+        @Override
         public Component getComponent() {
                 return this;
         }
 
+        @Override
         public URL getIconURL() {
                 return null;
         }

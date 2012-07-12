@@ -50,16 +50,16 @@ public class SimplePanel extends JPanel {
         public static final String CANCELED_ACTION = String.valueOf(
                 Integer.MAX_VALUE);
         private MsgPanel msgPanel;
-        private UIPanel panel;
-        private OutsideFrame frame;
+        private UIPanel uiPanel;
+        private OutsideFrame outsideFrame;
         private Component firstFocus;
 
         /**
          * This is the default constructor
          */
         public SimplePanel(OutsideFrame frame, UIPanel panel) {
-                this.panel = panel;
-                this.frame = frame;
+                this.uiPanel = panel;
+                this.outsideFrame = frame;
                 initialize(panel);
         }
 
@@ -69,18 +69,18 @@ public class SimplePanel extends JPanel {
          * @return void
          */
         private void initialize(UIPanel panel) {
-                JPanel uiPanel = new JPanel();
-                uiPanel.setLayout(new BorderLayout());
+                JPanel centerPanel = new JPanel();
+                centerPanel.setLayout(new BorderLayout());
                 Component comp = panel.getComponent();
                 fillFirstComponent(comp);
-                uiPanel.add(comp, BorderLayout.CENTER);
+                centerPanel.add(comp, BorderLayout.CENTER);
                 msgPanel = new MsgPanel(getIcon());
                 msgPanel.setTitle(panel.getTitle());
 
                 this.setLayout(new BorderLayout());
                 this.add(msgPanel, BorderLayout.NORTH);
 
-                this.add(uiPanel, BorderLayout.CENTER);
+                this.add(centerPanel, BorderLayout.CENTER);
         }
 
         private boolean fillFirstComponent(Component comp) {
@@ -108,39 +108,38 @@ public class SimplePanel extends JPanel {
         }
 
         public void initialize() {
-                SIFMessage err ;
+                SIFMessage err;
                 try {
-                        err = panel.initialize();
+                       err = uiPanel.initialize();
                 } catch (Exception e) {
                         String msg = i18n.tr(
-                                "sif.simplePanel.cannotInitializeDialog");
+                                "Cannot initialize the dialog");
                         logger.error(msg, e);
                         err = new SIFMessage(msg + ": " + e.getMessage(), SIFMessage.ERROR);
                 }
-                if (err.getMessageType()==SIFMessage.OK) {
-                        validateInput();
-                } else {
+                if (err.getMessageType() != SIFMessage.OK) {
                         msgPanel.setError("Panel initialisation error");
-                        frame.cannotContinue();
+                        outsideFrame.cannotContinue();
                 }
         }
 
         public void validateInput() {
-                SIFMessage err = panel.validateInput();
+                SIFMessage err = uiPanel.validateInput();
                 if (err.getMessageType() == SIFMessage.ERROR) {
                         msgPanel.setError(err.getMessage());
-                        frame.cannotContinue();
+                        //On met le message ici
+                        outsideFrame.cannotContinue();
                 } else if (err.getMessageType() == SIFMessage.WARNING) {
                         msgPanel.setWarning(err.getMessage());
-                        frame.canContinue();
+                        outsideFrame.canContinue();
                 } else {
-                        msgPanel.setText(panel.getInfoText());
-                        frame.canContinue();
+                        msgPanel.setText(uiPanel.getInfoText());
+                        outsideFrame.canContinue();
                 }
         }
 
         public ImageIcon getIcon() {
-                URL iconURL = panel.getIconURL();
+                URL iconURL = uiPanel.getIconURL();
                 if (iconURL == null) {
                         iconURL = UIFactory.getDefaultIcon();
                 }
@@ -162,8 +161,8 @@ public class SimplePanel extends JPanel {
         }
 
         public boolean postProcess() {
-                SIFMessage ret = panel.postProcess();
-                if (ret.getMessageType()==SIFMessage.OK) {
+                SIFMessage ret = uiPanel.postProcess();
+                if (ret.getMessageType() == SIFMessage.OK) {
                         return true;
                 } else if (ret.getMessage().equals(CANCELED_ACTION)) {
                         // no message, just cancel the action!
@@ -173,4 +172,16 @@ public class SimplePanel extends JPanel {
                         return false;
                 }
         }
+
+        public UIPanel getUIPanel() {
+                return uiPanel;
+        }
+
+        public OutsideFrame getOutsideFrame() {
+                return outsideFrame;
+        }
+        
+        
+        
+        
 }

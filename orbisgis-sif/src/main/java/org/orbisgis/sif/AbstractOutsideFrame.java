@@ -34,155 +34,178 @@ import java.awt.Window;
 import java.awt.event.*;
 import javax.swing.JComboBox;
 import javax.swing.JDialog;
+import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 public abstract class AbstractOutsideFrame extends JDialog implements
-		OutsideFrame, ContainerListener, KeyListener, MouseListener,
-		ActionListener, FocusListener {
+        OutsideFrame, ContainerListener, KeyListener, MouseListener,
+        ActionListener, FocusListener {
+
         protected final static I18n i18n = I18nFactory.getI18n(AbstractOutsideFrame.class);
-	private boolean accepted = false;
+        private boolean accepted = false;
 
-	public AbstractOutsideFrame(Window owner) {
-		super(owner);
-	}
+        public AbstractOutsideFrame(Window owner) {
+                super(owner);
+        }
 
-	protected void listen(Component c) {
-		// To be on the safe side, try to remove KeyListener first just in case
-		// it has been added before.
-		// If not, it won't do any harm
-		c.removeKeyListener(this);
-		c.removeMouseListener(this);
-		c.removeFocusListener(this);
-		if (c instanceof JComboBox) {
-			((JComboBox) c).removeActionListener(this);
-		}
-		// Add KeyListener to the Component passed as an argument
-		c.addKeyListener(this);
-		c.addMouseListener(this);
-		c.addFocusListener(this);
-		if (c instanceof JComboBox) {
-			((JComboBox) c).addActionListener(this);
-		}
+        protected void listen(Component c) {
+                // To be on the safe side, try to remove KeyListener first just in case
+                // it has been added before.
+                // If not, it won't do any harm
+                c.removeKeyListener(this);
+                c.removeMouseListener(this);
+                c.removeFocusListener(this);
+                if (c instanceof JComboBox) {
+                        ((JComboBox) c).removeActionListener(this);
+                }
+                // Add KeyListener to the Component passed as an argument
+                c.addKeyListener(this);
+                c.addMouseListener(this);
+                c.addFocusListener(this);
+                if (c instanceof JComboBox) {
+                        ((JComboBox) c).addActionListener(this);
+                }
 
-		if (c instanceof Container) {
+                if (c instanceof Container) {
 
-			// Component c is a Container. The following cast is safe.
-			Container cont = (Container) c;
+                        // Component c is a Container. The following cast is safe.
+                        Container cont = (Container) c;
 
-			// To be on the safe side, try to remove ContainerListener first
-			// just in case it has been added before.
-			// If not, it won't do any harm
-			cont.removeContainerListener(this);
-			// Add ContainerListener to the Container.
-			cont.addContainerListener(this);
+                        // To be on the safe side, try to remove ContainerListener first
+                        // just in case it has been added before.
+                        // If not, it won't do any harm
+                        cont.removeContainerListener(this);
+                        // Add ContainerListener to the Container.
+                        cont.addContainerListener(this);
 
-			// Get the Container's array of children Components.
-			Component[] children = cont.getComponents();
+                        // Get the Container's array of children Components.
+                        Component[] children = cont.getComponents();
 
-			// For every child repeat the above operation.
-			for (int i = 0; i < children.length; i++) {
-				listen(children[i]);
-			}
-		}
-	}
+                        // For every child repeat the above operation.
+                        for (int i = 0; i < children.length; i++) {
+                                listen(children[i]);
+                        }
+                }
+        }
 
-	protected void unlisten(Component c) {
-		c.removeKeyListener(this);
-		c.removeMouseListener(this);
+        protected void unlisten(Component c) {
+                c.removeKeyListener(this);
+                c.removeMouseListener(this);
 
-		if (c instanceof Container) {
+                if (c instanceof Container) {
 
-			Container cont = (Container) c;
+                        Container cont = (Container) c;
 
-			cont.removeContainerListener(this);
+                        cont.removeContainerListener(this);
 
-			Component[] children = cont.getComponents();
+                        Component[] children = cont.getComponents();
 
-			for (int i = 0; i < children.length; i++) {
-				unlisten(children[i]);
-			}
-		}
-	}
+                        for (int i = 0; i < children.length; i++) {
+                                unlisten(children[i]);
+                        }
+                }
+        }
 
-	public void componentAdded(ContainerEvent e) {
-		listen(e.getChild());
-	}
+        @Override
+        public void componentAdded(ContainerEvent e) {
+                listen(e.getChild());
+        }
 
-	public void componentRemoved(ContainerEvent e) {
-		unlisten(e.getChild());
-		getPanel().validateInput();
-	}
+        @Override
+        public void componentRemoved(ContainerEvent e) {
+                unlisten(e.getChild());
+                getPanel().validateInput();
+        }
 
-	public void keyPressed(KeyEvent e) {
-		int code = e.getKeyCode();
-		if (code == KeyEvent.VK_ESCAPE) {
-			// Key pressed is the ESCAPE key. Hide this Dialog.
-			exit(false);
-		}
-	}
+        @Override
+        public void keyPressed(KeyEvent e) {
+                int code = e.getKeyCode();
+                if (code == KeyEvent.VK_ESCAPE) {
+                        // Key pressed is the ESCAPE key. Hide this Dialog.
+                        exit(false);
+                }
+        }
 
-	public void keyReleased(KeyEvent e) {
-		getPanel().validateInput();
-	}
+        @Override
+        public void keyReleased(KeyEvent e) {
+                // getPanel().validateInput();
+        }
 
-	protected abstract SimplePanel getPanel();
+        protected abstract SimplePanel getPanel();
 
-	public void keyTyped(KeyEvent e) {
-	}
+        @Override
+        public void keyTyped(KeyEvent e) {
+        }
 
-	void exit(boolean ok) {
-		if (ok) {
-			if (getPanel().postProcess()) {
-				
-			} else {
-				return;
-			}
-		}
-		accepted = ok;
-		setVisible(false);
-		dispose();
-	}
+        /**
+         * Method to valid the panel
+         *
+         * @param ok
+         */
+        void exit(boolean ok) {
+                boolean closePanel = false;
+                if (ok) {
+                        closePanel = validateInput();
 
+                }
+                accepted = ok;
+                setVisible(closePanel);
+                if (!closePanel) {
+                        dispose();
+                }
+        }
 
-	public void mouseClicked(MouseEvent e) {
-		getPanel().validateInput();
-	}
+        public boolean validateInput() {
+                SIFMessage err = getPanel().getUIPanel().validateInput();
+                if (err.getMessageType() == SIFMessage.ERROR) {
+                        JOptionPane.showMessageDialog(rootPane, err.getMessage());
+                        getPanel().getOutsideFrame().cannotContinue();
+                        return true;
+                } else if (err.getMessageType() == SIFMessage.WARNING) {
+                        JOptionPane.showMessageDialog(rootPane, err.getMessage());
+                        getPanel().getOutsideFrame().canContinue();
+                        return false;
+                } else {
+                        getPanel().getOutsideFrame().canContinue();
+                        return false;
+                }
+        }
 
-	public void mouseEntered(MouseEvent e) {
-	}
+        public void mouseClicked(MouseEvent e) {
+                //getPanel().validateInput();
+        }
 
-	public void mouseExited(MouseEvent e) {
-	}
+        public void mouseEntered(MouseEvent e) {
+        }
 
-	public void mousePressed(MouseEvent e) {
-	}
+        public void mouseExited(MouseEvent e) {
+        }
 
-	public void mouseReleased(MouseEvent e) {
-	}
+        public void mousePressed(MouseEvent e) {
+        }
 
-	public boolean isAccepted() {
-		return accepted;
-	}
+        public void mouseReleased(MouseEvent e) {
+        }
 
-	public void actionPerformed(ActionEvent e) {
-		getPanel().validateInput();
-	}
+        public boolean isAccepted() {
+                return accepted;
+        }
 
-	@Override
-	public void focusGained(FocusEvent e) {
-		getPanel().validateInput();
-	}
+        public void actionPerformed(ActionEvent e) {
+                //getPanel().validateInput();
+        }
 
-	@Override
-	public void focusLost(FocusEvent e) {
-	}
-	
-	public void stateChanged(ChangeEvent evt) { 
-		
-		
-	}
-	
+        @Override
+        public void focusGained(FocusEvent e) {
+                //  getPanel().validateInput();
+        }
 
+        @Override
+        public void focusLost(FocusEvent e) {
+        }
+
+        public void stateChanged(ChangeEvent evt) {
+        }
 }
