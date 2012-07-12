@@ -44,6 +44,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.view.components.ContainerItemProperties;
+import org.orbisgis.view.components.button.CustomButton;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -324,11 +325,8 @@ public class FilterFactoryManager<FilterInterface> {
      */
     private JButton makeRemoveFilterButton() {
         //Create a compact button
-        JButton removeFilterButton = new JButton(OrbisGISIcon.getIcon("delete"));
+        JButton removeFilterButton = new CustomButton(OrbisGISIcon.getIcon("delete"));
         removeFilterButton.setToolTipText(i18n.tr("Delete this filter"));
-        removeFilterButton.setMargin(new Insets(0, 0, 0, 0));
-        removeFilterButton.setBorderPainted(false);
-        removeFilterButton.setContentAreaFilled(false);
         return removeFilterButton;
     }
     /**
@@ -340,10 +338,7 @@ public class FilterFactoryManager<FilterInterface> {
         //This JPanel set the button at the top
         JPanel buttonAlignement = new JPanel(new BorderLayout());
         //Create a compact button
-        JButton addFilterButton = new JButton(OrbisGISIcon.getIcon("add_filter"));
-        addFilterButton.setMargin(new Insets(0, 0, 0, 0));
-        addFilterButton.setBorderPainted(false);
-        addFilterButton.setContentAreaFilled(false);
+        JButton addFilterButton = new CustomButton(OrbisGISIcon.getIcon("add_filter"));
         buttonAlignement.add(addFilterButton,BorderLayout.NORTH);
         //Toottip
         addFilterButton.setToolTipText(i18n.tr("Add a new filter"));

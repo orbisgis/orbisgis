@@ -395,6 +395,22 @@ public class MapTransform implements PointTransformation {
         }
 
         /**
+         * Sets the scale denominator, the Map extent is updated
+         */
+        public void setScaleDenominator(double denominator) throws IllegalArgumentException {
+                if (adjustedExtent != null) {
+                        
+                }
+        }
+        /**
+         * 
+         * @return The Image width in meter
+         */
+        private double getImageMeters() {
+                double metersByPixel = 0.0254 / dpi;
+                return getWidth() * metersByPixel;
+        }
+        /**
          * Gets the scale denominator. If the scale is 1:1000 this method returns
          * 1000. The scale is not absolutely precise and errors of 2% have been
          * measured.
@@ -405,10 +421,7 @@ public class MapTransform implements PointTransformation {
                 if (adjustedExtent == null) {
                         return 0;
                 } else {
-                        double metersByPixel = 0.0254 / dpi;
-                        double imageMeters = getWidth() * metersByPixel;
-
-                        return adjustedExtent.getWidth() / imageMeters;
+                        return adjustedExtent.getWidth() / getImageMeters();
                 }
         }
 

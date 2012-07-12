@@ -30,11 +30,12 @@ package org.orbisgis.view.map;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.Point;
+import java.awt.event.*;
+import java.awt.geom.Point2D;
 import java.beans.EventHandler;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import javax.swing.*;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.DataManager;
@@ -72,7 +73,14 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private MapElement mapEditable;
     private DockingPanelParameters dockingPanelParameters;
     private MapTransferHandler dragDropHandler;
-    
+    private MapStatusBar mapStatusBar = new MapStatusBar();
+    //This timer will fetch the cursor component coordinates
+    //Then translate to the map coordinates and send it to
+    //the MapStatusBar
+    private Timer CursorCoordinateLookupTimer;
+    private final static int CURSOR_COORDINATE_LOOKUP_INTERVAL = 100; //Ms
+    private Point lastCursorPosition = new Point();
+    private Point lastTranslatedCursorPosition = new Point();
     /**
      * Constructor
      */
@@ -85,7 +93,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         dockingPanelParameters.setMinimizable(false);
         dockingPanelParameters.setExternalizable(false);
         dockingPanelParameters.setCloseable(false);
-        this.add(mapControl, BorderLayout.CENTER);
+        add(mapControl, BorderLayout.CENTER);
+        add(mapStatusBar, BorderLayout.PAGE_END);
         mapControl.setDefaultTool(new ZoomInTool());
         //Declare Tools of Map Editors
         //For debug purpose, also add the toolbar in the frame
@@ -98,6 +107,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         dragDropHandler = new MapTransferHandler();        
         this.setTransferHandler(dragDropHandler);
     }
+    
+    public void onUserSetScaleDenominator(long newScale) throws PropertyVetoException {
+            //mapControl.getMapTransform().setScaleDenominator((double)newScale);
+    }
+    
     /**
      * Notifies this component that it now has a parent component.
      * When this method is invoked, the chain of parent 
@@ -108,6 +122,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         super.addNotify();
         //Register listener
         dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(Listener.class, this, "onDropEditable","editableList"));
+        mapControl.addMouseMotionListener(EventHandler.create(MouseMotionListener.class,this,"onMouseMove","point","mouseMoved"));
+        mapStatusBar.addVetoableChangeListener(
+                MapStatusBar.PROP_USER_DEFINED_SCALE_DENOMINATOR,
+                EventHandler.create(VetoableChangeListener.class, this,
+                "onUserSetScaleDenominator","newValue"));
     }
     
     
@@ -134,7 +153,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             element.setMapEditor(this);
             mapControl.setMapContext(mapContext);
             mapControl.getMapTransform().setExtent(mapContext.getBoundingBox());
+            mapControl.setElement(this);
             mapControl.initMapControl();
+            CursorCoordinateLookupTimer = new Timer(CURSOR_COORDINATE_LOOKUP_INTERVAL,EventHandler.create(ActionListener.class,this,"onReadCursorMapCoordinate"));
+            CursorCoordinateLookupTimer.setRepeats(false);
+            CursorCoordinateLookupTimer.start();
             repaint();
         } catch (IllegalStateException ex) {
             GUILOGGER.error(ex);
@@ -142,6 +165,41 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             GUILOGGER.error(ex);
         }        
     }
+    
+    /**
+     * MouseMove event on the MapControl
+     * @param mousePoition x,y position of the event relative to the MapControl component.
+     */
+    public void onMouseMove(Point mousePoition) {
+            lastCursorPosition = mousePoition;
+    }
+
+        @Override
+        public void removeNotify() {
+                super.removeNotify();
+                CursorCoordinateLookupTimer.stop();
+                CursorCoordinateLookupTimer=null;
+        }
+    
+    
+    
+    /**
+     * This method is called by the timer called CursorCoordinateLookupTimer
+     * This function fetch the cursor coordinates (pixel)
+     * then translate to the map coordinates and send it to
+     * the MapStatusBar
+     */
+    public void onReadCursorMapCoordinate() {
+            if(!lastTranslatedCursorPosition.equals(lastCursorPosition)) {
+                lastTranslatedCursorPosition=lastCursorPosition;
+                Point2D mapCoordinate = mapControl.getMapTransform().toMapPoint(lastCursorPosition.x, lastCursorPosition.y);
+                mapStatusBar.setCursorCoordinates(mapCoordinate);
+            }
+            if(CursorCoordinateLookupTimer!=null) {
+                CursorCoordinateLookupTimer.start();
+            }
+    }
+    
     /**
      * Create a toolbar corresponding to the current state of the Editor
      * @return 
@@ -276,8 +334,10 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             return mapControl;
     }
 
+    @Override
     public void extentChanged(Envelope oldExtent, MapTransform mapTransform) {
-        //do nothing
+            //Update the scale in the MapEditor status bar
+            mapStatusBar.setScaleDenominator(mapTransform.getScaleDenominator());
     }
 
     public void imageSizeChanged(int oldWidth, int oldHeight, MapTransform mapTransform) {
@@ -309,6 +369,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         /**
          * Used with Toggle Button (new state can be DESELECTED)
          */
+                @Override
         public void itemStateChanged(ItemEvent ie) {
             if(ie.getStateChange() == ItemEvent.SELECTED) {
                 onToolSelected(automaton);
