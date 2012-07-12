@@ -109,7 +109,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     }
     
     public void onUserSetScaleDenominator(long newScale) throws PropertyVetoException {
-            //mapControl.getMapTransform().setScaleDenominator((double)newScale);
+            mapControl.getMapTransform().setScaleDenominator((double)newScale);
     }
     
     /**

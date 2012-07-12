@@ -100,7 +100,7 @@ public class MapStatusBar extends JPanel {
                 scaleField = new JTextField();
                 scaleField.addActionListener(EventHandler.create(ActionListener.class,this,"validateInputScale"));
                 scaleField.setInputVerifier(new FormattedTextFieldVerifier());
-                scaleField.setEditable(false);
+                //scaleField.setEditable(false);
                 //scaleField.setColumns(SCALE_FIELD_COLUMNS);
                 addComponent(scaleLabel);
                 addComponent(scaleField,false);
