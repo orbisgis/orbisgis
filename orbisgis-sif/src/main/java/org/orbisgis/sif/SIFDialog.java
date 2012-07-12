@@ -30,10 +30,7 @@ package org.orbisgis.sif;
 
 import java.awt.BorderLayout;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
+import java.awt.event.*;
 import java.util.HashMap;
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -47,7 +44,7 @@ public class SIFDialog extends AbstractOutsideFrame {
 
 	private SimplePanel simplePanel;
 
-	private boolean test;
+	
 
 	public SIFDialog(Window owner, boolean okCancel) {
 		super(owner);
@@ -83,46 +80,24 @@ public class SIFDialog extends AbstractOutsideFrame {
 		if (okCancel) {
 			pnlButtons.add(btnCancel);
 		}
-
 		this.add(pnlButtons, BorderLayout.SOUTH);
-
-		this.addComponentListener(new ComponentAdapter() {
-
-			@Override
-			public void componentShown(ComponentEvent e) {
-				if (test) {
-					exit(true);
-				}
-			}
-
-		});
+		
 
 		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 	}
 
-	public void setComponent(SimplePanel simplePanel,
-			HashMap<String, String> inputs) {
+	public void setComponent(SimplePanel simplePanel) {
 		this.simplePanel = simplePanel;
 		this.add(simplePanel, BorderLayout.CENTER);
-		listen(this);
-                //TODO are you sure ?
-		//loadInput(inputs);
-		getPanel().initialize();
 		this.setIconImage(getPanel().getIconImage());
 	}
 
-	@Override
-	public void canContinue() {
-		btnOk.setEnabled(true);
-	}
-
-	@Override
-	public void cannotContinue() {
-		btnOk.setEnabled(false);
-	}
+	
 
 	@Override
 	protected SimplePanel getPanel() {
 		return simplePanel;
 	}
+
+       
 }

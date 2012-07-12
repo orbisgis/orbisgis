@@ -33,9 +33,6 @@ import java.awt.CardLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.util.HashMap;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -47,7 +44,6 @@ public class SIFWizard extends AbstractOutsideFrame {
         private JButton btnFinish;
         private JButton btnCancel;
         private JPanel mainPanel;
-        private boolean test;
         private SimplePanel[] panels;
         private int index = 0;
         private CardLayout layout = new CardLayout();
@@ -60,17 +56,7 @@ public class SIFWizard extends AbstractOutsideFrame {
         private void init() {
                 this.setLayout(new BorderLayout());
 
-                this.add(getWizardButtons(), BorderLayout.SOUTH);
-
-                this.addComponentListener(new ComponentAdapter() {
-
-                        @Override
-                        public void componentShown(ComponentEvent e) {
-                                if (test) {
-                                        exit(true);
-                                }
-                        }
-                });
+                this.add(getWizardButtons(), BorderLayout.SOUTH);              
 
                 this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         }
@@ -122,10 +108,9 @@ public class SIFWizard extends AbstractOutsideFrame {
 
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
-                                        if (getPanel().postProcess()) {
+                                        if (!validateInput()) {
                                                 index++;
                                                 layout.next(mainPanel);
-                                                getPanel().initialize();
                                                 setDefaultButton();
                                         }
                                 }
@@ -175,66 +160,16 @@ public class SIFWizard extends AbstractOutsideFrame {
                 return btnCancel;
         }
 
-        public void setComponent(SimplePanel[] panels,
-                HashMap<String, String> inputs) {
+        public void setComponent(SimplePanel[] panels) {
                 this.panels = panels;
                 this.index = 0;
-                panels[0].validateInput();
                 buildMainPanel(panels);
-                this.add(mainPanel, BorderLayout.CENTER);
-                listen(this);
-                getPanel().initialize();
+                this.add(mainPanel, BorderLayout.CENTER);             
                 this.setIconImage(getPanel().getIconImage());
                 setDefaultButton();
         }
 
-        @Override
-        public void canContinue() {
-                enableByPosition();
-                visualizeByPosition();
-
-                btnNext.setEnabled(true);
-                btnFinish.setEnabled(true);
-        }
-
-        private void visualizeByPosition() {
-                if (panels != null) {
-                        if (index == panels.length - 1) {
-                                btnFinish.setVisible(true);
-                                btnNext.setVisible(false);
-                        } else {
-                                btnFinish.setVisible(false);
-                                btnNext.setVisible(true);
-                        }
-                }
-        }
-
-        private void enableByPosition() {
-                if (panels != null) {
-                        if (index == 0) {
-                                btnPrevious.setEnabled(false);
-                        } else {
-                                btnPrevious.setEnabled(true);
-                        }
-
-                        if (index < panels.length - 1) {
-                                btnNext.setEnabled(true);
-                                btnFinish.setEnabled(false);
-                        } else {
-                                btnNext.setEnabled(false);
-                                btnFinish.setEnabled(true);
-                        }
-                }
-        }
-
-        @Override
-        public void cannotContinue() {
-                enableByPosition();
-                visualizeByPosition();
-
-                btnNext.setEnabled(false);
-                btnFinish.setEnabled(false);
-        }
+       
 
         @Override
         protected SimplePanel getPanel() {

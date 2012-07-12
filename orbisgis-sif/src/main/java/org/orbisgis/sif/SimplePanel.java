@@ -36,7 +36,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.net.URL;
 import javax.swing.ImageIcon;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.xnap.commons.i18n.I18n;
@@ -46,18 +45,14 @@ public class SimplePanel extends JPanel {
 
         protected final static I18n i18n = I18nFactory.getI18n(SimplePanel.class);
         private static final Logger logger = Logger.getLogger(SimplePanel.class);
-        // a somehow difficult to stumble upon constant, to represent a canceled action
-        public static final String CANCELED_ACTION = String.valueOf(
-                Integer.MAX_VALUE);
-        private MsgPanel msgPanel;
         private UIPanel uiPanel;
-        private OutsideFrame outsideFrame;
+        private AbstractOutsideFrame outsideFrame;
         private Component firstFocus;
 
         /**
          * This is the default constructor
          */
-        public SimplePanel(OutsideFrame frame, UIPanel panel) {
+        public SimplePanel(AbstractOutsideFrame frame, UIPanel panel) {
                 this.uiPanel = panel;
                 this.outsideFrame = frame;
                 initialize(panel);
@@ -74,11 +69,8 @@ public class SimplePanel extends JPanel {
                 Component comp = panel.getComponent();
                 fillFirstComponent(comp);
                 centerPanel.add(comp, BorderLayout.CENTER);
-                msgPanel = new MsgPanel(getIcon());
-                msgPanel.setTitle(panel.getTitle());
 
                 this.setLayout(new BorderLayout());
-                this.add(msgPanel, BorderLayout.NORTH);
 
                 this.add(centerPanel, BorderLayout.CENTER);
         }
@@ -107,37 +99,6 @@ public class SimplePanel extends JPanel {
                 }
         }
 
-        public void initialize() {
-                SIFMessage err;
-                try {
-                       err = uiPanel.initialize();
-                } catch (Exception e) {
-                        String msg = i18n.tr(
-                                "Cannot initialize the dialog");
-                        logger.error(msg, e);
-                        err = new SIFMessage(msg + ": " + e.getMessage(), SIFMessage.ERROR);
-                }
-                if (err.getMessageType() != SIFMessage.OK) {
-                        msgPanel.setError("Panel initialisation error");
-                        outsideFrame.cannotContinue();
-                }
-        }
-
-        public void validateInput() {
-                SIFMessage err = uiPanel.validateInput();
-                if (err.getMessageType() == SIFMessage.ERROR) {
-                        msgPanel.setError(err.getMessage());
-                        //On met le message ici
-                        outsideFrame.cannotContinue();
-                } else if (err.getMessageType() == SIFMessage.WARNING) {
-                        msgPanel.setWarning(err.getMessage());
-                        outsideFrame.canContinue();
-                } else {
-                        msgPanel.setText(uiPanel.getInfoText());
-                        outsideFrame.canContinue();
-                }
-        }
-
         public ImageIcon getIcon() {
                 URL iconURL = uiPanel.getIconURL();
                 if (iconURL == null) {
@@ -160,28 +121,11 @@ public class SimplePanel extends JPanel {
                 }
         }
 
-        public boolean postProcess() {
-                SIFMessage ret = uiPanel.postProcess();
-                if (ret.getMessageType() == SIFMessage.OK) {
-                        return true;
-                } else if (ret.getMessage().equals(CANCELED_ACTION)) {
-                        // no message, just cancel the action!
-                        return false;
-                } else {
-                        JOptionPane.showMessageDialog(UIFactory.getMainFrame(), ret);
-                        return false;
-                }
-        }
-
         public UIPanel getUIPanel() {
                 return uiPanel;
         }
 
-        public OutsideFrame getOutsideFrame() {
+        public AbstractOutsideFrame getOutsideFrame() {
                 return outsideFrame;
         }
-        
-        
-        
-        
 }

@@ -43,12 +43,10 @@ import org.orbisgis.sif.UIPanel;
 public class UIPanelDemo {
 
         public static void main(String[] args) {
-                SimpleDemoUIPanel sdp = new SimpleDemoUIPanel();
-                
+                SimpleDemoUIPanel sdp = new SimpleDemoUIPanel();                
                 if (UIFactory.showDialog(sdp)){
                         System.out.println("The panel has been opened.");
                 }
-
         }
 
         private static class SimpleDemoUIPanel implements UIPanel {
@@ -58,7 +56,8 @@ public class UIPanelDemo {
 
                 public SimpleDemoUIPanel() {
                         panel = new JPanel();
-                        textField = new JTextField("Du texte");
+                        textField = new JTextField("Du texte",12);                    
+                        
                         panel.add(textField);
                 }
 
@@ -70,16 +69,6 @@ public class UIPanelDemo {
                 @Override
                 public String getTitle() {
                         return "A demonstration.";
-                }
-
-                @Override
-                public SIFMessage initialize() {
-                        return new SIFMessage();
-                }
-
-                @Override
-                public SIFMessage postProcess() {
-                        return new SIFMessage();
                 }
 
                 @Override

@@ -117,15 +117,7 @@ public class CategorizedChoosePanel extends JPanel implements UIPanel {
                 return UIFactory.getDefaultOkMessage();
         }
 
-        @Override
-        public SIFMessage initialize() {
-                return new SIFMessage();
-        }
-
-        @Override
-        public SIFMessage postProcess() {
-                return new SIFMessage();
-        }
+        
 
         /**
          * Returns the id of the currently selected option if it's valid. If

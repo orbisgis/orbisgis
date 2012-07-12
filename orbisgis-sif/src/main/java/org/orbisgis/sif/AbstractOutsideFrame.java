@@ -28,11 +28,8 @@
  */
 package org.orbisgis.sif;
 
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Window;
 import java.awt.event.*;
-import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
@@ -40,8 +37,8 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 public abstract class AbstractOutsideFrame extends JDialog implements
-        OutsideFrame, ContainerListener, KeyListener, MouseListener,
-        ActionListener, FocusListener {
+        KeyListener,
+        ActionListener {
 
         protected final static I18n i18n = I18nFactory.getI18n(AbstractOutsideFrame.class);
         private boolean accepted = false;
@@ -50,74 +47,7 @@ public abstract class AbstractOutsideFrame extends JDialog implements
                 super(owner);
         }
 
-        protected void listen(Component c) {
-                // To be on the safe side, try to remove KeyListener first just in case
-                // it has been added before.
-                // If not, it won't do any harm
-                c.removeKeyListener(this);
-                c.removeMouseListener(this);
-                c.removeFocusListener(this);
-                if (c instanceof JComboBox) {
-                        ((JComboBox) c).removeActionListener(this);
-                }
-                // Add KeyListener to the Component passed as an argument
-                c.addKeyListener(this);
-                c.addMouseListener(this);
-                c.addFocusListener(this);
-                if (c instanceof JComboBox) {
-                        ((JComboBox) c).addActionListener(this);
-                }
-
-                if (c instanceof Container) {
-
-                        // Component c is a Container. The following cast is safe.
-                        Container cont = (Container) c;
-
-                        // To be on the safe side, try to remove ContainerListener first
-                        // just in case it has been added before.
-                        // If not, it won't do any harm
-                        cont.removeContainerListener(this);
-                        // Add ContainerListener to the Container.
-                        cont.addContainerListener(this);
-
-                        // Get the Container's array of children Components.
-                        Component[] children = cont.getComponents();
-
-                        // For every child repeat the above operation.
-                        for (int i = 0; i < children.length; i++) {
-                                listen(children[i]);
-                        }
-                }
-        }
-
-        protected void unlisten(Component c) {
-                c.removeKeyListener(this);
-                c.removeMouseListener(this);
-
-                if (c instanceof Container) {
-
-                        Container cont = (Container) c;
-
-                        cont.removeContainerListener(this);
-
-                        Component[] children = cont.getComponents();
-
-                        for (int i = 0; i < children.length; i++) {
-                                unlisten(children[i]);
-                        }
-                }
-        }
-
-        @Override
-        public void componentAdded(ContainerEvent e) {
-                listen(e.getChild());
-        }
-
-        @Override
-        public void componentRemoved(ContainerEvent e) {
-                unlisten(e.getChild());
-                getPanel().validateInput();
-        }
+               
 
         @Override
         public void keyPressed(KeyEvent e) {
@@ -130,7 +60,7 @@ public abstract class AbstractOutsideFrame extends JDialog implements
 
         @Override
         public void keyReleased(KeyEvent e) {
-                // getPanel().validateInput();
+              
         }
 
         protected abstract SimplePanel getPanel();
@@ -160,34 +90,17 @@ public abstract class AbstractOutsideFrame extends JDialog implements
         public boolean validateInput() {
                 SIFMessage err = getPanel().getUIPanel().validateInput();
                 if (err.getMessageType() == SIFMessage.ERROR) {
-                        JOptionPane.showMessageDialog(rootPane, err.getMessage());
-                        getPanel().getOutsideFrame().cannotContinue();
+                        JOptionPane.showMessageDialog(rootPane, err.getMessage());                        
                         return true;
                 } else if (err.getMessageType() == SIFMessage.WARNING) {
-                        JOptionPane.showMessageDialog(rootPane, err.getMessage());
-                        getPanel().getOutsideFrame().canContinue();
+                        JOptionPane.showMessageDialog(rootPane, err.getMessage());                        
                         return false;
-                } else {
-                        getPanel().getOutsideFrame().canContinue();
+                } else {                        
                         return false;
                 }
         }
 
-        public void mouseClicked(MouseEvent e) {
-                //getPanel().validateInput();
-        }
-
-        public void mouseEntered(MouseEvent e) {
-        }
-
-        public void mouseExited(MouseEvent e) {
-        }
-
-        public void mousePressed(MouseEvent e) {
-        }
-
-        public void mouseReleased(MouseEvent e) {
-        }
+        
 
         public boolean isAccepted() {
                 return accepted;
@@ -195,15 +108,6 @@ public abstract class AbstractOutsideFrame extends JDialog implements
 
         public void actionPerformed(ActionEvent e) {
                 //getPanel().validateInput();
-        }
-
-        @Override
-        public void focusGained(FocusEvent e) {
-                //  getPanel().validateInput();
-        }
-
-        @Override
-        public void focusLost(FocusEvent e) {
         }
 
         public void stateChanged(ChangeEvent evt) {

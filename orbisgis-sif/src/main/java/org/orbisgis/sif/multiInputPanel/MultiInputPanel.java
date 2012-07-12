@@ -188,11 +188,6 @@ public class MultiInputPanel implements UIPanel {
                 return title;
         }
 
-        @Override
-        public SIFMessage initialize() {
-                return new SIFMessage();
-        }
-
         /**
          *
          * @param inputName the name of the component
@@ -228,10 +223,5 @@ public class MultiInputPanel implements UIPanel {
                 for (String inputName : inputs) {
                         nameInput.get(inputName).setGroup(title);
                 }
-        }
-
-        @Override
-        public SIFMessage postProcess() {
-                return new SIFMessage();
         }
 }

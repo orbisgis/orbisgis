@@ -43,7 +43,6 @@ import org.xnap.commons.i18n.I18nFactory;
 public class UIFactory {
 
         protected final static I18n i18n = I18nFactory.getI18n(UIFactory.class);
-        private static HashMap<String, String> inputs = new HashMap<String, String>();
         private static URL defaultIconURL;
         private static ImageIcon defaultIcon;
         private static String okMessage;
@@ -65,7 +64,7 @@ public class UIFactory {
                 boolean okCancel) {
                 SIFDialog dlg = new SIFDialog(owner, okCancel);
                 SimplePanel simplePanel = new SimplePanel(dlg, panel);
-                dlg.setComponent(simplePanel, inputs);
+                dlg.setComponent(simplePanel);
                 return dlg;
         }
 
@@ -79,7 +78,7 @@ public class UIFactory {
                 for (int i = 0; i < simplePanels.length; i++) {
                         simplePanels[i] = new SimplePanel(dlg, panels[i]);
                 }
-                dlg.setComponent(simplePanels, inputs);
+                dlg.setComponent(simplePanels);
                 return dlg;
         }
 
@@ -135,10 +134,7 @@ public class UIFactory {
                 showDialog(new UIPanel[]{panel}, false);
         }
 
-        public static void setInputFor(String id, String inputName) {
-                inputs.put(id, inputName);
-        }
-
+       
         public static URL getDefaultIcon() {
                 return defaultIconURL;
         }

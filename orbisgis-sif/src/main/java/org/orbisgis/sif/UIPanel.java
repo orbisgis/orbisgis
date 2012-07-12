@@ -53,25 +53,7 @@ public interface UIPanel {
          */
         String getTitle();
 
-        /**
-         * Performs any initialization. This method is called before the dialog
-         * is shown. In a wizard context, all previous steps have been
-         * accomplished
-         *
-         * @return An error description if something goes wrong or null if
-         * everything is ok
-         */
-        SIFMessage initialize();
-
-        /**
-         * When the user accepts the dialog or wizard this method is called to
-         * make a last validation before closing the dialog or going to next
-         * step in the wizard. If the user cancels this method is not called
-         *
-         * @return An error description if the validation fails or null if
-         * everything is ok
-         */
-        SIFMessage postProcess();
+        
 
         /**
          * A method invoked regularly to validate the contents of the interface

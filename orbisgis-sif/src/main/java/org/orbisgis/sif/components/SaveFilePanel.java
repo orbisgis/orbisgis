@@ -114,7 +114,7 @@ public class SaveFilePanel extends OpenFilePanel {
                         if (ret == JOptionPane.NO_OPTION || ret == JOptionPane.CLOSED_OPTION) {
                                 // just do nothing...
                                 // still, this isn't clean code...
-                                return new SIFMessage(SimplePanel.CANCELED_ACTION, SIFMessage.OK);
+                                //return new SIFMessage(SimplePanel.CANCELED_ACTION, SIFMessage.OK);
                         }
                 }
                 return new SIFMessage();

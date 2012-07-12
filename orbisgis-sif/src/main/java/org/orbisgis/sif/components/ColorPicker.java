@@ -119,15 +119,7 @@ public class ColorPicker extends JPanel implements UIPanel {
                 return i18n.tr("sif.ColorPicker.Title");
         }
 
-        @Override
-        public SIFMessage initialize() {
-                return new SIFMessage();
-        }
-
-        @Override
-        public SIFMessage postProcess() {
-                return new SIFMessage();
-        }
+        
 
         @Override
         public SIFMessage validateInput() {
