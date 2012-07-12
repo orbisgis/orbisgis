@@ -29,6 +29,7 @@
 
 package org.orbisgis.view.main.frames;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.beans.EventHandler;
@@ -67,6 +68,7 @@ public class MainFrame extends JFrame {
          * @param dockingManager 
 	 */
 	public MainFrame(){
+                getContentPane().setLayout(new BorderLayout());
 		setTitle( i18n.tr("OrbisGIS version {0} La Rochelle {1}", getClass().getPackage().getImplementationVersion(),Locale.getDefault().getCountry()));
                 setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
 		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis")); 
@@ -100,13 +102,13 @@ public class MainFrame extends JFrame {
         }
         /**
          * 
-         * @return The menubar manager
+         * @return The menu bar manager
          */
         public MenuBarManager getMenuBarManager() {
             return menuBar;
         }
         /**
-         * The user click on preferencies menu item
+         * The user click on preferences menu item
          */
         public void onMenuShowPreferencies() {
             dockingManager.showPreferenceDialog();
