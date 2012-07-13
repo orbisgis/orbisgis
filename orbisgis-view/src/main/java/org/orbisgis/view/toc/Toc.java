@@ -173,8 +173,8 @@ public class Toc extends JPanel implements EditorDockable {
                 tree.setShowsRootHandles(true);
                 tree.setEditable(true);
                 setEmptyLayerModel(tree);
-                treeRenderer = new TocRenderer(this);
-                tree.setCellRenderer(treeRenderer);
+                TocRenderer.install(tree); //Set the TreeCellEditorRenderer
+                treeRenderer = (TocRenderer)tree.getCellRenderer();
                 tree.setCellEditor(new TocTreeEditor(tree));
                 tree.addMouseListener(new PopupMouselistener());
                 //Add a tree selection listener
@@ -300,26 +300,42 @@ public class Toc extends JPanel implements EditorDockable {
          * model. This method do nothing if the fireSelectionEvent is false
          */
         public void onTreeSelectionChange() {
-                if (fireSelectionEvent.get()) {
-                        fireSelectionEvent.set(false);
+                if (fireSelectionEvent.getAndSet(false)) {
                         try {
-                                TreePath[] selectedPaths = tree.getSelectionPaths();
-                                if (selectedPaths != null) {
-                                        ArrayList<Style> styles = getSelectedStyles(selectedPaths);
-                                        mapContext.setSelectedStyles(styles);
-                                        if (!styles.isEmpty()) {
-                                                mapContext.setSelectedLayers(new ILayer[0]);
-                                        } else {
-                                                ArrayList<ILayer> layers = getSelectedLayers(selectedPaths);
-                                                if (!layers.isEmpty()) {
-                                                        mapContext.setSelectedLayers(layers.toArray(new ILayer[0]));
+                                //Update the mapcontext selection model
+                                //There are selection constraint, then
+                                //update also the jtree selection model
+                                List<Style> styles = new ArrayList<Style>();
+                                List<ILayer> layers = new ArrayList<ILayer>();
+                                List<TreePath> keptSelection = new ArrayList<TreePath>();
+                                TreePath[] paths = tree.getSelectionPaths();
+                                if(paths!=null) {
+                                        for(TreePath path : paths) {
+                                                Object node = path.getLastPathComponent();
+                                                if(node instanceof ILayer) {
+                                                        //Do not mix the selection
+                                                        if(styles.isEmpty()) {
+                                                                keptSelection.add(path);
+                                                                layers.add((ILayer)node);
+                                                        }
+                                                } else if(node instanceof Style) {
+                                                        //Do not mix the selection
+                                                        if(layers.isEmpty()) {
+                                                                keptSelection.add(path);
+                                                                styles.add((Style)node);
+                                                        }
                                                 }
                                         }
                                 }
+                                //Update the two selection model
+                                tree.getSelectionModel().setSelectionPaths(keptSelection.toArray(new TreePath[0]));
+                                mapContext.setSelectedLayers(layers.toArray(new ILayer[0]));
+                                mapContext.setSelectedStyles(styles.toArray(new Style[0]));
                         } finally {
                                 fireSelectionEvent.set(true);
                         }
                 }
+                LOGGER.debug("There are "+mapContext.getSelectedLayers().length+" selected layers.");
         }
 
         private void setEmptyLayerModel(JTree jTree) {
