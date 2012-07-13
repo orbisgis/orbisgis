@@ -399,7 +399,12 @@ public class MapTransform implements PointTransformation {
          */
         public void setScaleDenominator(double denominator) throws IllegalArgumentException {
                 if (adjustedExtent != null) {
-                        
+                        double currentScale = getScaleDenominator();
+                        Coordinate center = getExtent().centre();
+                        double expandFactor = (denominator/currentScale);
+                        Envelope nextScaleEnvelope = new Envelope(center);
+                        nextScaleEnvelope.expandBy(expandFactor*getExtent().getWidth()/2.,expandFactor*getExtent().getHeight()/2.);
+                        setExtent(nextScaleEnvelope);
                 }
         }
         /**
