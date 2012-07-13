@@ -182,8 +182,10 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         @Override
         public void removeNotify() {
                 super.removeNotify();
-                CursorCoordinateLookupTimer.stop();
-                CursorCoordinateLookupTimer=null;
+                if(CursorCoordinateLookupTimer!=null) {
+                        CursorCoordinateLookupTimer.stop();
+                        CursorCoordinateLookupTimer=null;
+                }
         }
     
     
