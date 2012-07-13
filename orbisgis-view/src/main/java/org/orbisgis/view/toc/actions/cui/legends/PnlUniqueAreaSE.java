@@ -4,7 +4,10 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.net.URL;
 import javax.swing.JPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;

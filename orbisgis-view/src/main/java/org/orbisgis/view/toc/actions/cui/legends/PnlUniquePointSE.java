@@ -7,8 +7,6 @@ package org.orbisgis.view.toc.actions.cui.legends;
 import java.awt.*;
 import java.net.URL;
 import javax.swing.JPanel;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
@@ -71,7 +69,7 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
 
         @Override
         public boolean acceptsGeometryType(int geometryType) {
-                return geometryType == GeometryProperties.POINT;
+                return (geometryType & GeometryProperties.ALL) != 0;
         }
 
         @Override

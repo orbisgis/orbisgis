@@ -9,8 +9,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.net.URL;
 import javax.swing.JPanel;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
@@ -73,7 +71,8 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
         @Override
         public boolean acceptsGeometryType(int geometryType) {
-                return geometryType == GeometryProperties.LINE;
+                return geometryType == GeometryProperties.LINE ||
+                        geometryType == GeometryProperties.POLYGON;
         }
 
         @Override

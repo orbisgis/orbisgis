@@ -18,18 +18,18 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import org.orbisgis.legend.Legend;
+import org.orbisgis.sif.RadioButtonPanel;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.StringType;
-import org.orbisgis.sif.RadioButtonPanel;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.toc.actions.cui.components.LegendPicker;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.LegendTreeModel;
 import org.orbisgis.view.toc.wrapper.RuleWrapper;
 import org.orbisgis.view.toc.wrapper.StyleWrapper;
-import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.legend.Legend;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -310,22 +310,21 @@ public class LegendTree extends JPanel {
          */
         private void addLegend(){
                 StyleWrapper sw = legendsPanel.getStyleWrapper();
-		ArrayList<String> paneNames = new ArrayList<String>();
-		ArrayList<ILegendPanel> ids = new ArrayList<ILegendPanel>();
-		ILegendPanel[] legends = legendsPanel.getAvailableLegends();
-		for (int i = 0; i < legends.length; i++) {
-			ILegendPanel legendPanelUI = legends[i];
-			if (legendPanelUI.acceptsGeometryType(legendsPanel
-					.getGeometryType())) {
-				paneNames.add(legendPanelUI.getLegend().getLegendTypeName());
-				ids.add(legendPanelUI);
-			}
-		}
-		LegendPicker legendPicker = new LegendPicker(
+                ArrayList<String> paneNames = new ArrayList<String>();
+                ArrayList<ILegendPanel> ids = new ArrayList<ILegendPanel>();
+                ILegendPanel[] legends = legendsPanel.getAvailableLegends();
+                for (int i = 0; i < legends.length; i++) {
+                    ILegendPanel legendPanelUI = legends[i];
+                    if (legendPanelUI.acceptsGeometryType(legendsPanel.getGeometryType())) {
+                        paneNames.add(legendPanelUI.getLegend().getLegendTypeName());
+                        ids.add(legendPanelUI);
+                    }
+                }
+                LegendPicker legendPicker = new LegendPicker(
                         paneNames.toArray(new String[paneNames.size()]),
                         ids.toArray(new ILegendPanel[ids.size()]));
 
-		if (UIFactory.showDialog(legendPicker)) {
+                if (UIFactory.showDialog(legendPicker)) {
                         //We retrieve the legend we want to add
                         ILegendPanel ilp = (ILegendPanel) legendPicker.getSelected();
                         Legend leg = ilp.copyLegend();
