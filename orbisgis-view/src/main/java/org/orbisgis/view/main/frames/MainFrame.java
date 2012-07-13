@@ -74,6 +74,7 @@ public class MainFrame extends JFrame {
 		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis")); 
                 createMenu();
                 this.setJMenuBar(menuBar.getRootBar());
+                getContentPane().add(new MainFrameStatusBar(),BorderLayout.SOUTH);
 	}
 
         public void setDockingManager(DockingManager dockingManager) {

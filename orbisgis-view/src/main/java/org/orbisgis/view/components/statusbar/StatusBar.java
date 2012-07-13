@@ -45,12 +45,10 @@ import javax.swing.*;
  */
 public class StatusBar extends JPanel {
         protected JPanel horizontalBar;
-        private final int outerBarBorder;
         private final int horizontalEmptyBorder;
 
         public StatusBar(int outerBarBorder, int horizontalEmptyBorder) {
                 super(new BorderLayout());
-                this.outerBarBorder = outerBarBorder;
                 this.horizontalEmptyBorder = horizontalEmptyBorder;                horizontalBar = new JPanel();
                 horizontalBar.setLayout(new BoxLayout(horizontalBar, BoxLayout.X_AXIS));
                 setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),BorderFactory.createEmptyBorder(outerBarBorder, outerBarBorder, outerBarBorder, outerBarBorder)));
