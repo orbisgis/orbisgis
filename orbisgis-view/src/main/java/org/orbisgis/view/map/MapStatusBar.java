@@ -44,6 +44,7 @@ import org.apache.log4j.Logger;
 import org.jproj.CRSFactory;
 import org.jproj.CoordinateReferenceSystem;
 import org.orbisgis.view.components.button.CustomButton;
+import org.orbisgis.view.components.statusbar.StatusBar;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -56,13 +57,13 @@ import org.xnap.commons.i18n.I18nFactory;
  * - A projection selection button
  */
 
-public class MapStatusBar extends JPanel {
+public class MapStatusBar extends StatusBar {
         protected final static I18n I18N = I18nFactory.getI18n(MapStatusBar.class);
         private static final Logger LOGGER = Logger.getLogger(MapStatusBar.class);
         public static final String PROP_USER_DEFINED_SCALE_DENOMINATOR = "userDefinedScaleDenominator";
    
         protected VetoableChangeSupport vetoableChangeSupport = new VetoableChangeSupport(this);
-        private JPanel horizontalBar;
+
         //Scale
         private JLabel scaleLabel;
         private JTextField scaleField;
@@ -78,11 +79,7 @@ public class MapStatusBar extends JPanel {
         private final static int HORIZONTAL_EMPTY_BORDER = 4;
 
         public MapStatusBar() {
-                super(new BorderLayout());
-                horizontalBar = new JPanel();
-                horizontalBar.setLayout(new BoxLayout(horizontalBar, BoxLayout.X_AXIS));
-                setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),BorderFactory.createEmptyBorder(OUTER_BAR_BORDER, OUTER_BAR_BORDER, OUTER_BAR_BORDER, OUTER_BAR_BORDER)));
-                add(horizontalBar,BorderLayout.EAST);                
+                super(OUTER_BAR_BORDER,HORIZONTAL_EMPTY_BORDER);
                 ////////
                 //Add bar components
                 //Coordinates
@@ -153,6 +150,7 @@ public class MapStatusBar extends JPanel {
         {
                 vetoableChangeSupport.addVetoableChangeListener(property, listener );
         }
+        
         /**
          * Set the mouse coordinate in the Coordinate reference system
          * @param coordinate 
@@ -165,6 +163,7 @@ public class MapStatusBar extends JPanel {
                         mouseCoordinatesLabel.setText(I18N.tr("X:{0} Y:{1}",f.format(cursorCoordinate.getX()),f.format(cursorCoordinate.getY())));
                 }
         }
+        
         /**
          * Set the value of scaleDenominator
          *
@@ -174,28 +173,6 @@ public class MapStatusBar extends JPanel {
                 scaleValue = scaleDenominator;
                 scaleField.setText(I18N.tr("1:{0}",Math.round(scaleDenominator)));
                 validate(); // Resize and layout controls
-        }
-
-        /**
-         * Append a component on the right of the status bar
-         * @param component 
-         */
-        private void addComponent(JComponent component) {
-                addComponent(component,true);
-        }
-        /**
-         * Append a component on the right of the status bar
-         * @param component 
-         * @param addSeparator Add a separator at the left of the component
-         */
-        private void addComponent(JComponent component,boolean addSeparator) {
-                if(addSeparator && horizontalBar.getComponentCount()!=0) {
-                        JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
-                        horizontalBar.add(Box.createHorizontalStrut(HORIZONTAL_EMPTY_BORDER));
-                        horizontalBar.add(separator);
-                        horizontalBar.add(Box.createHorizontalStrut(HORIZONTAL_EMPTY_BORDER));
-                }
-                horizontalBar.add(component);
         }
         
         private class FormattedTextFieldVerifier extends InputVerifier {
