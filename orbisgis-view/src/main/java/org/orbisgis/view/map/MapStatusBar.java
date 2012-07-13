@@ -66,8 +66,8 @@ public class MapStatusBar extends JPanel {
         //Scale
         private JLabel scaleLabel;
         private JTextField scaleField;
-        private double scaleValue; //Valid scale defined by the MapEditor
-        private long userDefinedScaleDenominator; //Last User scale set
+        private double scaleValue=1; //Valid scale defined by the MapEditor
+        private long userDefinedScaleDenominator=1; //Last User scale set
         //CRS
         private JLabel projectionLabel;
         //Coordinates
@@ -100,7 +100,7 @@ public class MapStatusBar extends JPanel {
                 scaleField = new JTextField();
                 scaleField.addActionListener(EventHandler.create(ActionListener.class,this,"validateInputScale"));
                 scaleField.setInputVerifier(new FormattedTextFieldVerifier());
-                scaleField.setEditable(false);
+                //scaleField.setEditable(false);
                 //scaleField.setColumns(SCALE_FIELD_COLUMNS);
                 addComponent(scaleLabel);
                 addComponent(scaleField,false);
@@ -110,8 +110,11 @@ public class MapStatusBar extends JPanel {
                 setCursorCoordinates(new Point2D.Double());
         }
 
+        /**
+         * Called by the VK_ENTER of the textField
+         */
         public void validateInputScale() {
-                scaleField.requestFocus(false);                
+                scaleField.getInputVerifier().verify(scaleField);           
         }
 
         /**
@@ -123,8 +126,13 @@ public class MapStatusBar extends JPanel {
          */
         public void setUserDefinedScaleDenominator(long userDefinedScaleDenominator) throws PropertyVetoException {
                 long oldUserDefinedScaleDenominator = this.userDefinedScaleDenominator;
-                vetoableChangeSupport.fireVetoableChange(PROP_USER_DEFINED_SCALE_DENOMINATOR, oldUserDefinedScaleDenominator, userDefinedScaleDenominator);
-                fireVetoableChange(PROP_USER_DEFINED_SCALE_DENOMINATOR, oldUserDefinedScaleDenominator, userDefinedScaleDenominator);
+                try {
+                        vetoableChangeSupport.fireVetoableChange(PROP_USER_DEFINED_SCALE_DENOMINATOR, oldUserDefinedScaleDenominator, userDefinedScaleDenominator);
+                        fireVetoableChange(PROP_USER_DEFINED_SCALE_DENOMINATOR, oldUserDefinedScaleDenominator, userDefinedScaleDenominator);
+                } catch( RuntimeException ex) {
+                        //Something has converted the PropertyVetoException into a runtime exception
+                        throw (PropertyVetoException)ex.getCause();
+                }
                 this.userDefinedScaleDenominator = userDefinedScaleDenominator;
                 firePropertyChange(PROP_USER_DEFINED_SCALE_DENOMINATOR, oldUserDefinedScaleDenominator, userDefinedScaleDenominator);
         }           
@@ -163,7 +171,9 @@ public class MapStatusBar extends JPanel {
          * @param scaleDenominator new value of scaleDenominator
          */
         public final void setScaleDenominator(double scaleDenominator) {
+                scaleValue = scaleDenominator;
                 scaleField.setText(I18N.tr("1:{0}",Math.round(scaleDenominator)));
+                validate(); // Resize and layout controls
         }
 
         /**
@@ -203,20 +213,25 @@ public class MapStatusBar extends JPanel {
                                 String[] scaleParts = text.split(":");
                                 if(scaleParts.length!=2) {
                                         //More or Less than a single ':' character
+                                        LOGGER.error(I18N.tr("The format of a scale is 1:number"));
                                         invalidateUserInput();
                                 } else {
                                         try {
                                                 if(ft.parse(scaleParts[0]).intValue()==1) {
-                                                        try {
-                                                                setUserDefinedScaleDenominator(ft.parse(scaleParts[1]).longValue());
-                                                        } catch (PropertyVetoException ex) {
-                                                                //Vetoed by the MapEditor
-                                                                invalidateUserInput();
-                                                        }
+                                                        setUserDefinedScaleDenominator(ft.parse(scaleParts[1]).longValue());
                                                         LOGGER.debug("User scale input accepted..");
+                                                } else {
+                                                        invalidateUserInput();
+                                                        throw new ParseException(I18N.tr("The only accepted value on nominator is 1"), 0);
                                                 }
                                         } catch( ParseException ex) {
-                                                LOGGER.error(I18N.tr("The format of a scale is 1:number"),ex);
+                                                //Do not send the exception, the user has not to see the traceback
+                                                LOGGER.error(ex.getLocalizedMessage());
+                                                invalidateUserInput();
+                                        } catch (PropertyVetoException ex) {
+                                                //Don't know why but something catch the 
+                                                //Vetoed by the MapEditor
+                                                LOGGER.error(ex.getLocalizedMessage());
                                                 invalidateUserInput();
                                         }
                                 }

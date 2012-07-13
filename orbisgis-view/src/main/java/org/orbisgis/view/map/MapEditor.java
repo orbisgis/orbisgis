@@ -34,6 +34,7 @@ import java.awt.Point;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import javax.swing.*;
@@ -108,8 +109,12 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         this.setTransferHandler(dragDropHandler);
     }
     
-    public void onUserSetScaleDenominator(long newScale) throws PropertyVetoException {
-            //mapControl.getMapTransform().setScaleDenominator((double)newScale);
+    public void onUserSetScaleDenominator(PropertyChangeEvent pce) throws PropertyVetoException {
+            long newScale = (Long)pce.getNewValue();
+            if(newScale<1) {
+                    throw new PropertyVetoException(I18N.tr("The value of the scale denominator must be equal or greater than 1"),pce);
+            }
+            mapControl.getMapTransform().setScaleDenominator(newScale);
     }
     
     /**
@@ -126,7 +131,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         mapStatusBar.addVetoableChangeListener(
                 MapStatusBar.PROP_USER_DEFINED_SCALE_DENOMINATOR,
                 EventHandler.create(VetoableChangeListener.class, this,
-                "onUserSetScaleDenominator","newValue"));
+                "onUserSetScaleDenominator",""));
     }
     
     
@@ -306,10 +311,12 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
      * docking system
      * @return The panel parameter instance
      */
+    @Override
     public DockingPanelParameters getDockingParameters() {
         return dockingPanelParameters;
     }
 
+    @Override
     public JComponent getComponent() {
         return this;
     }
