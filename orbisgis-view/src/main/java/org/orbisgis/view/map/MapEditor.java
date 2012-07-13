@@ -114,7 +114,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             if(newScale<1) {
                     throw new PropertyVetoException(I18N.tr("The value of the scale denominator must be equal or greater than 1"),pce);
             }
-            mapControl.getMapTransform().setScaleDenominator((double)newScale);
+            mapControl.getMapTransform().setScaleDenominator(newScale);
     }
     
     /**
