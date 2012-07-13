@@ -40,9 +40,13 @@ import java.awt.Component;
 import java.awt.Rectangle;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import java.io.IOException;
+import javax.swing.Icon;
 import javax.swing.JTree;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import org.apache.log4j.Logger;
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.se.Style;
 
@@ -93,12 +97,27 @@ public class TocRenderer extends TocAbstractRenderer {
 			boolean hasFocus) {
                 Component nativeRendererComp = look_and_feel_renderer.getTreeCellRendererComponent(
                         tree, value, selected, expanded, leaf, row, hasFocus); 
-		if (value instanceof ILayer) {
-                        ILayer layerNode = (ILayer) value;
-		} else if(value instanceof Style)  {
-			Style styleNode = (Style) value;
-
-		}
+                if(nativeRendererComp instanceof DefaultTreeCellRenderer) {
+                        DefaultTreeCellRenderer rendererComponent = (DefaultTreeCellRenderer) nativeRendererComp;
+                        try {
+                                if (value instanceof ILayer) {
+                                        ILayer layerNode = (ILayer) value;
+                                        Icon layerIcon = TocAbstractRenderer.getLayerIcon(layerNode);
+                                        rendererComponent.setIcon(layerIcon);
+                                        rendererComponent.setText(layerNode.getName());
+                                        //panel.add(new JCheckBox("",layerNode.isVisible()));
+                                } else if(value instanceof Style)  {
+                                        Style styleNode = (Style) value;
+                                        rendererComponent.setIcon(null);
+                                        rendererComponent.setText(styleNode.getName());
+                                        //panel.add(new JCheckBox("",styleNode.isVisible()));
+                                }
+                        } catch (DriverException ex) {
+                                UILOGGER.error(ex);
+                        } catch (IOException ex) {
+                                UILOGGER.error(ex);
+                        }
+                }
                 return nativeRendererComp;
 	}
 
