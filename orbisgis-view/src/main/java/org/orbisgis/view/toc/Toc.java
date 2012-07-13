@@ -40,7 +40,6 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.DefaultTreeCellEditor;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import javax.xml.bind.JAXBElement;

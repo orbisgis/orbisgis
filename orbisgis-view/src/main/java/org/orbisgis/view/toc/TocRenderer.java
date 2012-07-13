@@ -89,26 +89,16 @@ public class TocRenderer extends TocAbstractRenderer implements
                                                 tree, layer, styleNode,
                                                 selected, expanded, leaf, row, hasFocus);
 					return ourJPanel.getJPanel();
-				}
-
-//				else if (layer.isWMS()) {
-//					WMSLegendRenderPanel ourJPanel = new WMSLegendRenderPanel();
-//					ourJPanel.setNodeCosmetic(tree, layer,
-//							ruleNode.getRuleIndex(), selected, expanded,
-//							leaf, row, hasFocus);
-//					return ourJPanel.getJPanel();
-//				}
-				
-				else {
-					RasterLegendRenderPanel ourJPanel = new RasterLegendRenderPanel();
-					ourJPanel.setNodeCosmetic(tree, layer,
+				} else {
+					RasterLegendRenderPanel rasterJPanel = new RasterLegendRenderPanel();
+					rasterJPanel.setNodeCosmetic(tree, layer,
 							styleNode, selected, expanded,
 							leaf, row, hasFocus);
-					return ourJPanel.getJPanel();
+					return rasterJPanel.getJPanel();
 				}
 				
 			} catch (DriverException e) {
-				e.printStackTrace();
+				UILOGGER.error(e);
 			}
 
 		}
