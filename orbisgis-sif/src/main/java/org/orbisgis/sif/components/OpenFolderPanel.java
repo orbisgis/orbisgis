@@ -30,7 +30,6 @@ package org.orbisgis.sif.components;
 
 import java.io.File;
 import javax.swing.filechooser.FileFilter;
-import org.orbisgis.sif.SIFMessage;
 
 /**
  * This class handles the panel used to import the content of a folder in the
@@ -58,16 +57,16 @@ public class OpenFolderPanel extends AbstractOpenPanel {
          * @return
          */
         @Override
-        public SIFMessage validateInput() {
+        public String validateInput() {
                 File file = getSelectedFile();
                 if (file == null) {
-                        return new SIFMessage(i18n.tr("sif.folderMustBeSelected"), SIFMessage.ERROR);
+                        return i18n.tr("sif.folderMustBeSelected");
                 } else if (!file.exists()) {
-                        return new SIFMessage(i18n.tr("sif.folderMustExist"), SIFMessage.ERROR);
+                        return i18n.tr("sif.folderMustExist");
                 } else if (!file.isDirectory()) {
-                        return new SIFMessage(i18n.tr("sif.folderMustBeDirectory"), SIFMessage.ERROR);
+                        return i18n.tr("sif.folderMustBeDirectory");
                 } else {
-                        return new SIFMessage();
+                        return null;
                 }
         }
 

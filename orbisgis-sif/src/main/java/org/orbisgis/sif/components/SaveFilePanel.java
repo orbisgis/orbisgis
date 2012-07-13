@@ -33,7 +33,6 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.FileChooserUI;
 import javax.swing.plaf.basic.BasicFileChooserUI;
-import org.orbisgis.sif.SIFMessage;
 
 public class SaveFilePanel extends OpenFilePanel {
 
@@ -77,18 +76,18 @@ public class SaveFilePanel extends OpenFilePanel {
         }
 
         @Override
-        public SIFMessage validateInput() {
+        public String validateInput() {
                 File file = getSelectedFile();
                 if (file == null) {
-                        return new SIFMessage(i18n.tr("A file must be selected"), SIFMessage.ERROR);
+                        return i18n.tr("A file must be selected");
                 } else if (fileMustNotExist) {
                         if (getSelectedFile().exists()) {
-                                return new SIFMessage(i18n.tr("The file already exists"),SIFMessage.ERROR);
+                                return i18n.tr("The file already exists");
                         } else {
-                                return new SIFMessage();
+                                return null;
                         }
                 } else {
-                        return new SIFMessage();
+                        return null;
                 }
         }
 
@@ -100,20 +99,4 @@ public class SaveFilePanel extends OpenFilePanel {
         public void setFileMustNotExist(boolean fileMustNotExist) {
                 this.fileMustNotExist = fileMustNotExist;
         }
-
-        /**TODO
-        @Override
-        public SIFMessage postProcess() {
-                if (getSelectedFile().exists()) {
-                        int ret = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(), i18n.tr("sif.file.fileAlreadyExists")
-                                + " " + i18n.tr("sif.file.overwrite"), i18n.tr("sif.file.existing"),
-                                JOptionPane.YES_NO_OPTION);
-                        if (ret == JOptionPane.NO_OPTION || ret == JOptionPane.CLOSED_OPTION) {
-                                // just do nothing...
-                                // still, this isn't clean code...
-                                //return new SIFMessage(SimplePanel.CANCELED_ACTION, SIFMessage.OK);
-                        }
-                }
-                return new SIFMessage();
-        }*/
 }

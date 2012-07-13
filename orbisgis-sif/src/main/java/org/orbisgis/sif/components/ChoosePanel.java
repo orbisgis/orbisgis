@@ -44,7 +44,6 @@ import javax.swing.*;
 import org.orbisgis.sif.AbstractUIPanel;
 import org.orbisgis.sif.CRFlowLayout;
 import org.orbisgis.sif.CarriageReturn;
-import org.orbisgis.sif.SIFMessage;
 
 public class ChoosePanel extends AbstractUIPanel {
 
@@ -125,12 +124,11 @@ public class ChoosePanel extends AbstractUIPanel {
         }
 
         @Override
-        public SIFMessage validateInput() {
+        public String validateInput() {
                 if (lst.getSelectedIndex() == -1) {
-                        return new SIFMessage(i18n.tr("An item must be selected. "), SIFMessage.ERROR);
+                        return i18n.tr("An item must be selected. ");
                 }
-
-                return new SIFMessage();
+                return null;
         }
 
         public Object getSelected() {

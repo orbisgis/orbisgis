@@ -32,7 +32,6 @@ import java.awt.Color;
 import java.awt.Component;
 import java.net.URL;
 import javax.swing.JPanel;
-import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -118,11 +117,10 @@ public class ColorPicker extends JPanel implements UIPanel {
         public String getTitle() {
                 return i18n.tr("sif.ColorPicker.Title");
         }
-
         
 
         @Override
-        public SIFMessage validateInput() {
-                return new SIFMessage();
+        public String validateInput() {
+                return null;
         }
 }

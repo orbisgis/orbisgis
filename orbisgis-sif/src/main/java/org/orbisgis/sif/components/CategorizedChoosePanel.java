@@ -10,7 +10,6 @@ import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.*;
-import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.xnap.commons.i18n.I18n;
@@ -97,14 +96,14 @@ public class CategorizedChoosePanel extends JPanel implements UIPanel {
         }
 
         @Override
-        public SIFMessage validateInput() {
+        public String validateInput() {
                 TreePath selectionPath = tree.getSelectionPath();
                 if ((selectionPath == null)
                         || (((Option) selectionPath.getLastPathComponent()).isCategory())) {
-                        return new SIFMessage(i18n.tr("An item must be selected."), SIFMessage.ERROR);
+                        return i18n.tr("An item must be selected.");
                 }
 
-                return new SIFMessage();
+                return null;
         }
 
         @Override

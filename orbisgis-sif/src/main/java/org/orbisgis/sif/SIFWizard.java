@@ -165,14 +165,16 @@ public class SIFWizard extends AbstractOutsideFrame {
                 this.index = 0;
                 buildMainPanel(panels);
                 this.add(mainPanel, BorderLayout.CENTER);             
-                this.setIconImage(getPanel().getIconImage());
+                this.setIconImage(getSimplePanel().getIconImage());
                 setDefaultButton();
         }
 
        
 
         @Override
-        protected SimplePanel getPanel() {
+        protected SimplePanel getSimplePanel() {
                 return panels[index];
         }
+
+        
 }

@@ -56,15 +56,7 @@ public abstract class AbstractOutsideFrame extends JDialog implements
                 }
         }
 
-        @Override
-        public void keyReleased(KeyEvent e) {
-        }
-
-        protected abstract SimplePanel getPanel();
-
-        @Override
-        public void keyTyped(KeyEvent e) {
-        }
+        protected abstract SimplePanel getSimplePanel();
 
         /**
          * Method to valid the panel
@@ -92,13 +84,10 @@ public abstract class AbstractOutsideFrame extends JDialog implements
          * @return
          */
         public boolean validateInput() {
-                SIFMessage err = getPanel().getUIPanel().validateInput();
-                if (err.getMessageType() == SIFMessage.ERROR) {
-                        JOptionPane.showMessageDialog(rootPane, err.getMessage());
+                String err = getSimplePanel().getUIPanel().validateInput();
+                if (err != null) {
+                        JOptionPane.showMessageDialog(rootPane, err);
                         return false;
-                } else if (err.getMessageType() == SIFMessage.WARNING) {
-                        JOptionPane.showMessageDialog(rootPane, err.getMessage());
-                        return true;
                 } else {
                         return true;
                 }
@@ -109,5 +98,13 @@ public abstract class AbstractOutsideFrame extends JDialog implements
         }
 
         public void stateChanged(ChangeEvent evt) {
+        }
+
+        @Override
+        public void keyTyped(KeyEvent ke) {
+        }
+
+        @Override
+        public void keyReleased(KeyEvent ke) {
         }
 }

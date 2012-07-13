@@ -30,8 +30,9 @@ package org.orbisgis.sif;
 
 import java.awt.BorderLayout;
 import java.awt.Window;
-import java.awt.event.*;
-import java.util.HashMap;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
@@ -89,15 +90,23 @@ public class SIFDialog extends AbstractOutsideFrame {
 	public void setComponent(SimplePanel simplePanel) {
 		this.simplePanel = simplePanel;
 		this.add(simplePanel, BorderLayout.CENTER);
-		this.setIconImage(getPanel().getIconImage());
+		this.setIconImage(getSimplePanel().getIconImage());
 	}
 
 	
 
 	@Override
-	protected SimplePanel getPanel() {
+	protected SimplePanel getSimplePanel() {
 		return simplePanel;
 	}
+
+        @Override
+        public void keyTyped(KeyEvent ke) {
+        }
+
+        @Override
+        public void keyReleased(KeyEvent ke) {
+        }
 
        
 }

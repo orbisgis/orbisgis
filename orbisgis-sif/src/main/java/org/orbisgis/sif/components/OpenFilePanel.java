@@ -30,7 +30,6 @@ package org.orbisgis.sif.components;
 
 import java.io.File;
 import javax.swing.filechooser.FileFilter;
-import org.orbisgis.sif.SIFMessage;
 
 /**
  * @class OpenFilePanel this class is used to import files in the geocatalog. To
@@ -51,14 +50,14 @@ public class OpenFilePanel extends AbstractOpenPanel {
          * @return
          */
         @Override
-        public SIFMessage validateInput() {
+        public String validateInput() {
                 File file = getSelectedFile();
                 if (file == null) {
-                        return new SIFMessage(i18n.tr("A file must be selected"), SIFMessage.ERROR);
+                        return i18n.tr("A file must be selected");
                 } else if (!file.exists()) {
-                        return new SIFMessage(i18n.tr("The file must exists"), SIFMessage.ERROR);
+                        return i18n.tr("The file must exists");
                 } else {
-                        return new SIFMessage();
+                        return null;
                 }
         }
 

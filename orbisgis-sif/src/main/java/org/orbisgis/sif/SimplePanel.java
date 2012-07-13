@@ -37,14 +37,9 @@ import java.awt.event.ComponentEvent;
 import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
-import org.apache.log4j.Logger;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
 
 public class SimplePanel extends JPanel {
 
-        protected final static I18n i18n = I18nFactory.getI18n(SimplePanel.class);
-        private static final Logger logger = Logger.getLogger(SimplePanel.class);
         private UIPanel uiPanel;
         private AbstractOutsideFrame outsideFrame;
         private Component firstFocus;

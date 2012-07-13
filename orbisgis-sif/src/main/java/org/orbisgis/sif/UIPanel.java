@@ -56,12 +56,12 @@ public interface UIPanel {
         
 
         /**
-         * A method invoked regularly to validate the contents of the interface
+         * A method invoked when the user click on the ok or next button to validate the contents of the interface
          *
-         * @return A SIFMessage An error description if the validation fails, a
+         * @return A String An error description if the validation fails, a
          * warning or null if everything is ok
          */
-        SIFMessage validateInput();
+        String validateInput();
 
         /**
          * Gets the swing component to show in the dialog

@@ -32,7 +32,6 @@ import java.awt.Component;
 import java.net.URL;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
-import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 
@@ -71,11 +70,14 @@ public class UIPanelDemo {
                 }
 
                 @Override
-                public SIFMessage validateInput() {
+                public String validateInput() {
                         if(textField.getText().isEmpty()){
-                                return new SIFMessage("Big an error !", SIFMessage.ERROR);
+                                return "Big an error !";
                         }
-                        return new SIFMessage();
+                        else if(textField.getText().length()< 5){
+                                return "You must write more than 5 caracters !";
+                        }
+                        return null;
                 }
 
                 @Override

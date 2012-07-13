@@ -33,7 +33,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIPanel;
 
 /**
@@ -147,19 +146,19 @@ public class MultiInputPanel implements UIPanel {
         }
 
         /**
-         *
-         * @return
+         * Valid the input of panel
+         * @return a string message
          */
         @Override
-        public SIFMessage validateInput() {
+        public String validateInput() {
                 for (Iterator<MIPValidation> it = validation.iterator(); it.hasNext();) {
                         MIPValidation validator = it.next();
-                        SIFMessage sifMessage = validator.validate(this);
-                        if (sifMessage.getMessageType() != SIFMessage.OK) {
-                                return sifMessage;
+                        String message = validator.validate(this);
+                        if (message != null) {
+                                return message;
                         }
                 }
-                return new SIFMessage();
+                return null;
         }
 
         public void setValue(String fieldName, String fieldValue) {

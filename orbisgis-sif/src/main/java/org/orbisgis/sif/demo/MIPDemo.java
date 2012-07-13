@@ -28,7 +28,6 @@
  */
 package org.orbisgis.sif.demo;
 
-import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.multiInputPanel.MIPValidation;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
@@ -54,11 +53,15 @@ public class MIPDemo {
                 multiInputPanel.addValidation(new MIPValidation() {
 
                         @Override
-                        public SIFMessage validate(MultiInputPanel mid) {
+                        public String validate(MultiInputPanel mid) {
                                 if (mid.getInput("firstTextField").isEmpty()) {
-                                        return new SIFMessage("The text cannot be null", SIFMessage.ERROR);
+                                        return "The text cannot be null";
+                                } else if (mid.getInput("firstTextField").length() > 0) {
+                                        return "The text is " + mid.getInput("firstTextField");
+                                } else {
+
+                                        return null;
                                 }
-                                return new SIFMessage();
                         }
                 });
 
