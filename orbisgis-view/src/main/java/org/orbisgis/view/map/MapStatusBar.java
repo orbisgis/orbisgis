@@ -198,7 +198,6 @@ public class MapStatusBar extends StatusBar {
                                                         setUserDefinedScaleDenominator(ft.parse(scaleParts[1]).longValue());
                                                         LOGGER.debug("User scale input accepted..");
                                                 } else {
-                                                        invalidateUserInput();
                                                         throw new ParseException(I18N.tr("The only accepted value on nominator is 1"), 0);
                                                 }
                                         } catch( ParseException ex) {
