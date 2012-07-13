@@ -55,7 +55,7 @@ public class JobListItem extends ContainerItemProperties {
         private JobListItemPanel itemPanel;
         private AtomicBoolean progressionModified = new AtomicBoolean(true);
         private Timer fetchProgressionTimer;
-        private final static int progressionTimerInterval = 50;
+        private final static int PROGRESSION_TIMER_INTERVAL = 50;
 
         public JobListItemPanel getItemPanel() {
                 return itemPanel;
@@ -73,7 +73,7 @@ public class JobListItem extends ContainerItemProperties {
                 job.addProgressListener(listener);    
                 itemPanel = new JobListItemPanel(job);
                 onJobUpdate();
-                fetchProgressionTimer = new Timer(progressionTimerInterval,new TimerFetchListener());
+                fetchProgressionTimer = new Timer(PROGRESSION_TIMER_INTERVAL,new TimerFetchListener());
                 fetchProgressionTimer.start();
                 return this;
         }
