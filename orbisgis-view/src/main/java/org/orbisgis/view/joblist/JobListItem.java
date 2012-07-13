@@ -29,9 +29,12 @@
 package org.orbisgis.view.joblist;
 
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.ProgressListener;
 import org.orbisgis.view.components.ContainerItemProperties;
@@ -50,11 +53,10 @@ public class JobListItem extends ContainerItemProperties {
                                     this,
                                     "onJobUpdate");
         private JobListItemPanel itemPanel;
-        /*!< If true a swing runnable is pending to refresh the content of
-          the job item
-         */
-        private AtomicBoolean awaitingItemUpdate = new AtomicBoolean(false);
-        
+        private AtomicBoolean progressionModified = new AtomicBoolean(true);
+        private Timer fetchProgressionTimer;
+        private final static int progressionTimerInterval = 50;
+
         public JobListItemPanel getItemPanel() {
                 return itemPanel;
         }
@@ -71,13 +73,18 @@ public class JobListItem extends ContainerItemProperties {
                 job.addProgressListener(listener);    
                 itemPanel = new JobListItemPanel(job);
                 onJobUpdate();
+                fetchProgressionTimer = new Timer(progressionTimerInterval,new TimerFetchListener());
+                fetchProgressionTimer.start();
                 return this;
         }
         /**
-         * Stop listening to the job
+         * Stop listening to the job and the timer
          */
         public void dispose() {
                 job.removeProgressListener(listener);
+                if(fetchProgressionTimer!=null) {
+                        fetchProgressionTimer.stop();
+                }
         }
         
         /**
@@ -110,9 +117,7 @@ public class JobListItem extends ContainerItemProperties {
          * Update the JobPanel content and the item text later
          */
         public void onJobUpdate() {     
-                if(!awaitingItemUpdate.getAndSet(true)) {
-                        SwingUtilities.invokeLater(new UpdateItemProperties());
-                }
+                progressionModified.set(true);
         }
         /**
          * 
@@ -121,13 +126,17 @@ public class JobListItem extends ContainerItemProperties {
         public Job getJob() {
                 return job;
         }
-        
-        private class UpdateItemProperties implements Runnable {
+        /**
+         * Listen to timer events
+         */
+        private class TimerFetchListener implements ActionListener {
 
                 @Override
-                public void run() {
-                        awaitingItemUpdate.set(false);
-                        updateJob();
+                public void actionPerformed(ActionEvent ae) {
+                        //Update the job if the progression has been updated
+                        if(progressionModified.getAndSet(false)) {
+                                updateJob();
+                        }
                 }
                 
         }

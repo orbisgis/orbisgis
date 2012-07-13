@@ -34,6 +34,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import org.apache.log4j.Logger;
 
 /**
  * A panel that manage a list of subpanel.
@@ -47,7 +48,8 @@ public class JobListPanel extends JPanel {
         private ListCellRenderer listRenderer;
         private BoxLayout cellsStack;
         private ModelListener modelListener = new ModelListener();
-
+        private static final Logger LOGGER = Logger.getLogger(JobListPanel.class);
+        
         public JobListPanel() {
                 cellsStack = new BoxLayout(this, BoxLayout.Y_AXIS);
                 setLayout(cellsStack);
@@ -94,10 +96,17 @@ public class JobListPanel extends JPanel {
                 add(listRenderer.getListCellRendererComponent(null, listModel.getElementAt(index), index, true, true));
                 repaint();
         }
-        
+        /**
+         * Remove the Swing component
+         * @param index 
+         */
         private void onRemoveRow(int index) {
-                remove(index);
-                repaint();
+                try {
+                        remove(index);
+                        repaint();
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                        LOGGER.error(ex);
+                }
         }
         
         private class ModelListener implements ListDataListener {

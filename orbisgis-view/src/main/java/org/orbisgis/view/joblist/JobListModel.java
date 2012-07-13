@@ -61,7 +61,19 @@ public class JobListModel extends AbstractListModel {
         private List<Job> jobAdded = Collections.synchronizedList(new LinkedList<Job>());
         private List<Job> jobRemoved = Collections.synchronizedList(new LinkedList<Job>());
         private List<Job> jobUpdated = Collections.synchronizedList(new LinkedList<Job>());
-                
+
+        /**
+         * Remove all items before the release of this object
+         */
+        public void dispose() {
+                while(!shownJobs.isEmpty()) {
+                        shownJobs.remove(0).dispose();
+                }
+        }
+              
+        
+        
+        
         /**
          * Attach listeners to the BackgroundManager
          * @return itself
@@ -114,9 +126,14 @@ public class JobListModel extends AbstractListModel {
                         Job job = jobRemoved.remove(0);
                         JobListItem jobId = new JobListItem(job);
                         int jobIndex = shownJobs.indexOf(jobId);
-                        shownJobs.remove(jobId);
-                        fireIntervalRemoved(jobId, jobIndex, jobIndex);
-                        LOGGER.debug("JobListModel:jobRemoved");
+                        if(jobIndex!=-1) {
+                                shownJobs.get(jobIndex).dispose();
+                                shownJobs.remove(jobId);
+                                fireIntervalRemoved(jobId, jobIndex, jobIndex);
+                                LOGGER.debug("JobListModel:jobRemoved");
+                        } else {
+                                LOGGER.debug("JobListModel:jobRemoved fail to found the job");
+                        }
                 }
                 //Updated
                 while(!jobUpdated.isEmpty()) {

@@ -51,6 +51,7 @@ public class JobsPanel extends JPanel implements DockingPanel {
         private DockingPanelParameters dockingParameters = new DockingPanelParameters();
         private JobListPanel jobList;
         private JobListCellRenderer jobListRender;
+        private JobListModel jobListModel;
         
         public JobsPanel() {
                 super(new BorderLayout());
@@ -60,12 +61,21 @@ public class JobsPanel extends JPanel implements DockingPanel {
                 makeJobList();
                 add(new JScrollPane(jobList), BorderLayout.CENTER);             
         }
+
+        @Override
+        public void removeNotify() {
+                jobListModel.dispose();
+                super.removeNotify();
+        }
+        
+        
         
         private void makeJobList() {
                 jobList = new JobListPanel();
                 jobListRender = new JobListCellRenderer();
                 jobList.setRenderer(jobListRender);
-                jobList.setModel(new JobListModel().listenToBackgroundManager());
+                jobListModel = new JobListModel().listenToBackgroundManager();
+                jobList.setModel(jobListModel);
                 jobList.getModel().addListDataListener(EventHandler.create(ListDataListener.class,this,"onListContentChanged"));
         }
         
