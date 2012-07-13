@@ -44,10 +44,12 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.AreaSymbolizerType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -218,16 +220,16 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
                 List<Shape> shapes = new LinkedList<Shape>();
                 shapes.add(mt.getShape(the_geom, true));
-
+                Map<String,Value> map = getFeaturesMap(sds, fid);
                 if (shapes != null) {
                         for (Shape shp : shapes) {
                                 if (this.getTranslate() != null) {
-                                        shp = getTranslate().getAffineTransform(sds, fid, getUom(), mt,
+                                        shp = getTranslate().getAffineTransform(map, getUom(), mt,
                                                 (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shp);
                                 }
                                 if (shp != null) {
                                         if (fill != null) {
-                                                fill.draw(g2, sds, fid, shp, selected, mt);
+                                                fill.draw(g2, map, shp, selected, mt);
                                         }
 
                                         if (stroke != null) {
@@ -236,7 +238,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
                                                         offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
                                                                 getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                                                 }
-                                                stroke.draw(g2, sds, fid, shp, selected, mt, offset);
+                                                stroke.draw(g2, map, shp, selected, mt, offset);
                                         }
                                 }
                         }

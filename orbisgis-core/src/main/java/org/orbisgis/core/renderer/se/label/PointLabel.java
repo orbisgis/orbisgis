@@ -10,10 +10,11 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.PointLabelType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -127,7 +128,7 @@ public final class PointLabel extends Label {
 
 
     @Override
-    public void draw(Graphics2D g2, DataSource sds, long fid,
+    public void draw(Graphics2D g2, Map<String, Value> map,
             Shape shp, boolean selected, MapTransform mt, RenderContext perm)
             throws ParameterException, IOException {
         double x;
@@ -137,19 +138,19 @@ public final class PointLabel extends Label {
         double deltaX = 0;
         double deltaY = 0;
 
-        Rectangle2D bounds = getLabel().getBounds(g2, sds, fid, mt);
+        Rectangle2D bounds = getLabel().getBounds(g2, map, mt);
         x = shp.getBounds2D().getCenterX() + bounds.getWidth() / 2;
         y = shp.getBounds2D().getCenterY() - bounds.getHeight() / 2;
 
         if (this.exclusionZone != null) {
             if (this.exclusionZone instanceof ExclusionRadius) {
-                double radius = ((ExclusionRadius) (this.exclusionZone)).getRadius().getValue(sds, fid);
+                double radius = ((ExclusionRadius) (this.exclusionZone)).getRadius().getValue(map);
                 radius = Uom.toPixel(radius, getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 deltaX = radius;
                 deltaY = radius;
             } else {
-                deltaX = ((ExclusionRectangle) (this.exclusionZone)).getX().getValue(sds, fid);
-                deltaY = ((ExclusionRectangle) (this.exclusionZone)).getY().getValue(sds, fid);
+                deltaX = ((ExclusionRectangle) (this.exclusionZone)).getX().getValue(map);
+                deltaY = ((ExclusionRectangle) (this.exclusionZone)).getY().getValue(map);
 
                 deltaX = Uom.toPixel(deltaX, getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 deltaY = Uom.toPixel(deltaY, getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
@@ -158,7 +159,7 @@ public final class PointLabel extends Label {
 
         AffineTransform at = AffineTransform.getTranslateInstance(x + deltaX, y + deltaY);
 
-        getLabel().draw(g2, sds, fid, selected, mt, at, perm);
+        getLabel().draw(g2, map, selected, mt, at, perm);
     }
 
 

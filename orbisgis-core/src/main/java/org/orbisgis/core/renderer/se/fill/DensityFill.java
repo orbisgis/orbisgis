@@ -43,10 +43,11 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.thematic.DensityFillType;
 import net.opengis.se._2_0.thematic.ObjectFactory;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -216,23 +217,23 @@ public final class DensityFill extends Fill implements GraphicNode {
     }
 
     @Override
-    public void draw(Graphics2D g2, DataSource sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Map<String,Value> map, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
         if (isHatched) {
             double alpha = HatchedFill.DEFAULT_ALPHA;
             double pDist;
 
             if (this.orientation != null) {
-                alpha = this.orientation.getValue(sds, fid);
+                alpha = this.orientation.getValue(map);
             }
 
             // Stroke width
-            double sWidth = hatches.getWidthInPixel(sds, fid, mt);
+            double sWidth = hatches.getWidthInPixel(map, mt);
 
             double percentage = 0.0;
 
             if (percentageCovered != null) {
-                percentage = percentageCovered.getValue(sds, fid) * ONE_HUNDRED;
+                percentage = percentageCovered.getValue(map) * ONE_HUNDRED;
             }
 
             if (percentage > ONE_HUNDRED) {
@@ -243,10 +244,10 @@ public final class DensityFill extends Fill implements GraphicNode {
             // Perpendiculat dist bw two hatches
             pDist = ONE_HUNDRED * sWidth / percentage;
 
-            HatchedFill.drawHatch(g2, sds, fid, shp, selected, mt, alpha, pDist, hatches, 0.0);
+            HatchedFill.drawHatch(g2, map, shp, selected, mt, alpha, pDist, hatches, 0.0);
         } else {
 
-            Paint painter = getPaint(fid, sds, selected, mt);
+            Paint painter = getPaint(map, selected, mt);
 
             if (painter != null) {
                 g2.setPaint(painter);
@@ -256,11 +257,11 @@ public final class DensityFill extends Fill implements GraphicNode {
     }
 
     @Override
-    public Paint getPaint(long fid, DataSource sds, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public Paint getPaint(Map<String,Value> map, boolean selected, MapTransform mt) throws ParameterException, IOException {
         double percentage = 0.0;
 
         if (percentageCovered != null) {
-            percentage = percentageCovered.getValue(sds, fid) * ONE_HUNDRED;
+            percentage = percentageCovered.getValue(map) * ONE_HUNDRED;
         }
 
         if (percentage > ONE_HUNDRED) {
@@ -273,13 +274,13 @@ public final class DensityFill extends Fill implements GraphicNode {
             if (isHatched && hatches != null) {
                 return null;
             } else if (mark != null) {
-                Rectangle2D bounds = mark.getBounds(sds, fid, selected, mt);
+                Rectangle2D bounds = mark.getBounds(map, selected, mt);
 
                 double ratio = Math.sqrt(ONE_HUNDRED / percentage);
                 double gapX =  bounds.getWidth()*ratio - bounds.getWidth();
                 double gapY =  bounds.getHeight()*ratio - bounds.getHeight();
 
-                painter = GraphicFill.getPaint(fid, sds, selected, mt, mark, gapX, gapY, bounds);
+                painter = GraphicFill.getPaint(map, selected, mt, mark, gapX, gapY, bounds);
             } else {
                 throw new ParameterException("Neither marks or hatches are defined");
             }

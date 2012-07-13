@@ -1,8 +1,10 @@
 package org.orbisgis.core.renderer.se.parameter.geometry;
 
 import com.vividsolutions.jts.geom.Geometry;
+import java.util.Map;
 import net.opengis.se._2_0.core.GeometryType;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -25,7 +27,6 @@ public class GeometryAttribute extends ValueReference {
         super(geom.getValueReference());
     }
 
-
     /**
      * Retrieve the geometry registered in the {@code SpatialDataSourceDecorator}
      * at index {@code fid}.
@@ -42,6 +43,17 @@ public class GeometryAttribute extends ValueReference {
         }
     }
 
+    /**
+     * Retrieve the geometry registered in the {@code SpatialDataSourceDecorator}
+     * at index {@code fid}.
+     * @param sds
+     * @param fid
+     * @return
+     * @throws ParameterException
+     */
+    public Geometry getTheGeom(Map<String,Value> map) throws ParameterException {
+            return getFieldValue(map).getAsGeometry();
+    }
 
     /**
      * @todo This operation is currently not supported.

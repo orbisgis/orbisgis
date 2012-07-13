@@ -191,17 +191,11 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
          */
         public List<Shape> getLines(DataSource sds, long fid,
                 MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
-
                 Geometry geom = getGeometry(sds, fid, the_geom);
                 LinkedList<Shape> shapes = new LinkedList<Shape>();
-
                 LinkedList<Geometry> geom2Process = new LinkedList<Geometry>();
-
                 geom2Process.add(geom);
-
-
                 AffineTransform at = null;
-
                 while (!geom2Process.isEmpty()) {
                         geom = geom2Process.remove(0);
 
@@ -290,7 +284,8 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
          * @throws IOException
          * @throws DriverException
          */
-        public Point2D getFirstPointShape(DataSource sds, long fid, MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
+        public Point2D getFirstPointShape(DataSource sds, long fid, MapTransform mt,
+                Geometry theGeom) throws ParameterException, IOException, DriverException {
 
                 Geometry geom = getGeometry(sds, fid, theGeom);
                 AffineTransform at = mt.getAffineTransform();

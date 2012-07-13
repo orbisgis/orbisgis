@@ -44,10 +44,12 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TextSymbolizerType;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -161,21 +163,19 @@ public final class TextSymbolizer extends VectorSymbolizer {
         public void draw(Graphics2D g2, DataSource sds, long fid,
                 boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
                 throws ParameterException, IOException, DriverException {
-
                 Shape shape = this.getShape(sds, fid, mt, the_geom, false);
-
-
+                Map<String,Value> map = getFeaturesMap(sds, fid);
                 if (shape != null) {
                         List<Shape> shps;
                         if (perpendicularOffset != null) {
-                                Double pOffset = perpendicularOffset.getValue(sds, fid);
+                                Double pOffset = perpendicularOffset.getValue(map);
                                 shps = ShapeHelper.perpendicularOffset(shape, pOffset);
                         } else {
                                 shps = new LinkedList<Shape>();
                                 shps.add(shape);
                         }
                         for (Shape s : shps) {
-                                label.draw(g2, sds, fid, s, selected, mt, perm);
+                                label.draw(g2, map, s, selected, mt, perm);
                         }
                 }
 

@@ -3,10 +3,14 @@ package org.orbisgis.core.renderer.se;
 import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
 import net.opengis.se._2_0.raster.RasterSymbolizerType;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -35,6 +39,8 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
     //protected GeometryAttribute the_geom;
     private SymbolizerNode parent;
     protected int level;
+    private Set<String> features;
+    private Map<String,Value> featuresMap;
 
     /**
      * Build an empty Symbolizer, with the default name and no description.
@@ -62,7 +68,6 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         }
 
         if (t.getVersion() != null && !t.getVersion().value().equals(Symbolizer.VERSION)) {
-            System.out.println("Unsupported Style version!");
             throw new InvalidStyle("Unsupported version !");
         }
 
@@ -194,7 +199,6 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         } else if (st.getDeclaredType() == RasterSymbolizerType.class) {
             return new RasterSymbolizer((JAXBElement<RasterSymbolizerType>) st);
         } else {
-            System.out.println("NULL => " + st.getDeclaredType());
             return null;
         }
     }
@@ -235,6 +239,30 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         }
 
         return (Rule) pIt;
+    }
+
+    /**
+     * Get the faetures that are needed to build this Symbolizer in a {@code
+     * Map<String,Value>}. This method is based on {@link
+     * SymbolizerNode#dependsOnFeature()}. Using the field names retrieved with
+     * this method, we serach for {@code Values} at index {@code fid} in {@code
+     * sds}.
+     * @param sds
+     * @param fid
+     * @return
+     * @throws DriverException
+     */
+    public Map<String,Value> getFeaturesMap(DataSource sds, long fid) throws DriverException{
+        if(features==null){
+            features = dependsOnFeature();
+        }
+        if(featuresMap == null){
+            featuresMap = new HashMap<String,Value>();
+        }
+        for(String s : features){
+            featuresMap.put(s, sds.getFieldValue(fid, sds.getFieldIndexByName(s)));
+        }
+        return featuresMap;
     }
 
     /**

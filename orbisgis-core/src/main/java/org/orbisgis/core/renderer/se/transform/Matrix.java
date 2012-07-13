@@ -6,10 +6,11 @@ package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MatrixType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -331,19 +332,19 @@ public final class Matrix implements Transformation {
         }
 
         @Override
-        public AffineTransform getAffineTransform(DataSource sds, long fid, Uom uom,
+        public AffineTransform getAffineTransform(Map<String,Value> map, Uom uom,
             MapTransform mt, Double width, Double height) throws ParameterException {
                 return new AffineTransform(
                         //Uom.toPixel(a.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
-                        a.getValue(sds, fid),
-                        b.getValue(sds, fid),
-                        c.getValue(sds, fid),
+                        a.getValue(map),
+                        b.getValue(map),
+                        c.getValue(map),
                         //Uom.toPixel(b.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
                         //Uom.toPixel(c.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
                         //Uom.toPixel(d.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
-                        d.getValue(sds, fid),
-                        Uom.toPixel(e.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), width),
-                        Uom.toPixel(f.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), height));
+                        d.getValue(map),
+                        Uom.toPixel(e.getValue(map), uom, mt.getDpi(), mt.getScaleDenominator(), width),
+                        Uom.toPixel(f.getValue(map), uom, mt.getDpi(), mt.getScaleDenominator(), height));
         }
 
         @Override

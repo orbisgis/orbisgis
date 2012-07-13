@@ -42,10 +42,12 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LineSymbolizerType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -167,8 +169,8 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
                 boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
                 throws ParameterException, IOException, DriverException {
                 if (stroke != null) {
+                        Map<String,Value> map = getFeaturesMap(sds, fid);
                         Shape shp = mt.getShape(the_geom, true);
-
                         double offset = 0.0;
                         if (perpendicularOffset != null) {
                                 offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
@@ -177,7 +179,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
 
 
                         if (shp != null) {
-                                stroke.draw(g2, sds, fid, shp, selected, mt, offset);
+                                stroke.draw(g2, map, shp, selected, mt, offset);
 
                         }
                 }

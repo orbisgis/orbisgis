@@ -1,6 +1,8 @@
 package org.orbisgis.core.renderer.se.parameter.string;
 
+import java.util.Map;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 
@@ -17,8 +19,10 @@ public interface StringParameter extends SeParameter {
     
     //TODO Is (DataSource, featureId) the right way to access a feature ?
     /**
-         * Retrieve a Value using this {@code StringParameter}. It can be retrieved using
-         * the given datasource, or not, depending on the realizaton of this interface.
+         * Retrieve the {@code String} value associated to this {@code
+         * StringParameter}, using informations stored in {@code sds} at index
+         * {@code fid}. It can be retrieved using the given {@code datasource}
+         * or not depending on the realization of this interface.
          * @param sds
          * The {@code DataSource} where to search.
          * @param fid
@@ -30,6 +34,20 @@ public interface StringParameter extends SeParameter {
          * @throws ParameterException 
          */
     String getValue(DataSource sds, long fid) throws ParameterException;
+
+    /**
+     * Retrieve the {@code String} value associated to this {@code StringParameter}
+     * using the informations stored in the given map. If this parameter depends
+     * on one or more external values, they are supposed to be available in the
+     * given map through their {@code Value} representation.
+     * @param feature
+     * Values that may be needed in this {@code StringParameter}, mapped to
+     * the name of the field they come from.
+     * @return
+     * A {@code String} instance.
+     * @throws ParameterException
+     */
+    String getValue(Map<String,Value> feature) throws ParameterException;
 
     /**
      * Set the list of restrictions</p><p>

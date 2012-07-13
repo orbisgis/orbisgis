@@ -6,10 +6,11 @@ package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ScaleType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -149,17 +150,18 @@ public final class Scale implements Transformation {
 
 
     @Override
-    public AffineTransform getAffineTransform(DataSource sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
+    public AffineTransform getAffineTransform(Map<String,Value> map, Uom uom,
+            MapTransform mt, Double width, Double height) throws ParameterException {
         double sx = 1.0;
         if (x != null) {
             //sx = Uom.toPixel(x.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null);
-            sx = x.getValue(sds, fid);
+            sx = x.getValue(map);
         }
 
         double sy = 1.0;
         if (y != null) {
             //sy = Uom.toPixel(y.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null);
-            sy = y.getValue(sds, fid);
+            sy = y.getValue(map);
         }
 
         //AffineTransform.getTranslateInstance(A;, sy);

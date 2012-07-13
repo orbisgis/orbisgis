@@ -41,17 +41,13 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.CompositeGraphicType;
 import net.opengis.se._2_0.core.GraphicType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.orbisgis.core.Services;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -237,15 +233,14 @@ public final class GraphicCollection implements SymbolizerNode {
 
     /**
      * Get the minimum horizontal rectangle that contains this GraphicCollection.
-     * @param sds
-     * @param fid
+     * @param map
      * @param selected
      * @param mt
      * @return
      * @throws ParameterException
      * @throws IOException 
      */
-    public Rectangle2D getBounds(DataSource sds, long fid, boolean selected, MapTransform mt)
+    public Rectangle2D getBounds(Map<String,Value> map, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
 
         double xmin = Double.MAX_VALUE;
@@ -260,7 +255,7 @@ public final class GraphicCollection implements SymbolizerNode {
         while (it.hasNext()) {
             Graphic g = it.next();
             try {
-                Rectangle2D bounds = g.getBounds(sds, fid, mt);
+                Rectangle2D bounds = g.getBounds(map, mt);
                 if (bounds != null) {
                     double mX = bounds.getMinX();
                     double w = bounds.getWidth();
@@ -305,11 +300,11 @@ public final class GraphicCollection implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public void draw(Graphics2D g2, DataSource sds, long fid, boolean selected, MapTransform mt, AffineTransform at)
+    public void draw(Graphics2D g2, Map<String,Value> map, boolean selected, MapTransform mt, AffineTransform at)
             throws ParameterException, IOException {
         for (Graphic g : graphics) {
             try {
-                g.draw(g2, sds, fid, selected, mt, at);
+                g.draw(g2, map, selected, mt, at);
             } catch (ParameterException ex) {
                 LOGGER.error(I18N.tr("Could not render graphic"),ex);
             }

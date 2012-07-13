@@ -37,14 +37,13 @@
  */
 package org.orbisgis.core.renderer.se.parameter.real;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.FunctionType;
 import net.opengis.fes._2.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -162,49 +161,66 @@ public class RealFunction implements RealParameter {
 
     @Override
     public Double getValue(DataSource sds, long fid) throws ParameterException {
-        double result;
+        List<Double>  vals = new LinkedList<Double>();
+        for(RealParameter p : operands){
+            vals.add(p.getValue(sds, fid));
+        }
+        return getValue(vals);
+    }
 
+    @Override
+    public Double getValue(Map<String,Value> map)throws ParameterException {
+        List<Double>  vals = new LinkedList<Double>();
+        for(RealParameter p : operands){
+            vals.add(p.getValue(map));
+        }
+        return getValue(vals);
+
+    }
+
+    private Double getValue(List<Double> vals) throws ParameterException {
+        double result;
         switch (op) {
             case ADD:
                 result = 0.0;
-                for (RealParameter p : operands) {
-                    result += p.getValue(sds, fid);
+                for (Double p : vals) {
+                    result += p;
                 }
                 return result;
             case MUL:
                 result = 1.0;
-                for (RealParameter p : operands) {
-                    result *= p.getValue(sds, fid);
+                for (Double p : vals) {
+                    result *= p;
                 }
                 return result;
             case DIV:
-                if (operands.size() != 2) {
+                if (vals.size() != 2) {
                     throw new ParameterException("A division requires two arguments !");
                 }
-                return operands.get(0).getValue(sds, fid) / operands.get(1).getValue(sds, fid);
+                return vals.get(0) / vals.get(1);
             case SUB:
-                if (operands.size() != 2) {
+                if (vals.size() != 2) {
                     throw new ParameterException("A subtraction requires two arguments !");
                 }
-                return operands.get(0).getValue(sds, fid) / operands.get(1).getValue(sds, fid);
+                return vals.get(0) / vals.get(1);
             case SQRT:
-                if (operands.size() != 1) {
+                if (vals.size() != 1) {
                     throw new ParameterException("A Square-root requires one argument !");
                 }
-                return Math.sqrt(operands.get(0).getValue(sds, fid));
+                return Math.sqrt(vals.get(0));
             case LOG:
-                if (operands.size() != 1) {
+                if (vals.size() != 1) {
                     throw new ParameterException("A Log10 requires one argument !");
                 }
-                return Math.log10(operands.get(0).getValue(sds, fid));
+                return Math.log10(vals.get(0));
             case LN:
-                if (operands.size() != 1) {
+                if (vals.size() != 1) {
                     throw new ParameterException("A natural logarithm requires one argument !");
                 }
-                return Math.log(operands.get(0).getValue(sds, fid));
+                return Math.log(vals.get(0));
         }
-
         throw new ParameterException("Unknown function name: " + op.toString());
+
     }
 
     @Override

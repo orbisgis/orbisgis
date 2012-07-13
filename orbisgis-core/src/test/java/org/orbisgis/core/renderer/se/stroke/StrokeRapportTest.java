@@ -39,37 +39,36 @@
 package org.orbisgis.core.renderer.se.stroke;
 
 
-import org.junit.Before;
-import java.awt.image.RenderedImage;
-import org.orbisgis.core.renderer.se.graphic.*;
 import com.sun.media.jai.widget.DisplayJAI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.RenderedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-
 import java.io.IOException;
 import javax.imageio.ImageIO;
 import javax.media.jai.RenderableGraphics;
-
 import javax.swing.JFrame;
 import javax.xml.bind.Marshaller;
 import org.apache.log4j.Logger;
-
-import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.core.renderer.se.PointSymbolizer;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
 import org.junit.Test;
 import org.orbisgis.core.Services;
-import static org.junit.Assert.*;
+import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.PointSymbolizer;
+import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
+import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
+import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 
 /**
  *
@@ -137,7 +136,7 @@ public class StrokeRapportTest {
         Rectangle2D.Double dim = new Rectangle2D.Double(-width/2, -height/2, width, height);
         RenderableGraphics rg = new RenderableGraphics(dim);
 
-        collec.draw(rg, null, -1, false, mt, new AffineTransform());
+        collec.draw(rg, null, false, mt, new AffineTransform());
 
         rg.setPaint(Color.BLACK);
         rg.drawLine((int)rg.getMinX(), 0, (int)(rg.getMinX() + rg.getWidth()), 0);

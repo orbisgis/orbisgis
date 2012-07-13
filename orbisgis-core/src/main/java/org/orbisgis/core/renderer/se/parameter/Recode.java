@@ -49,7 +49,7 @@ import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.RecodeType;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.orbisgis.core.Services;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -236,6 +236,30 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         String key = "";
         try {
             key = lookupValue.getValue(sds, fid);
+            ToType ret = getMapItemValue(key);
+            return ret == null ? fallbackValue : ret;
+        } catch (Exception e) {
+            LOGGER.error(I18N.tr("Fallback ({0})",key),e);
+            return fallbackValue;
+        }
+    }
+
+    /**
+    * Get the value associated to the key sored in {@code map}. The needed value
+    * will be retrieved using the 
+    * @param sds
+    * @param fid
+    * @return
+    * A {@code ToType} instance. If the feature found in {@code sds} at
+    * {@code fid} does not match anything in the underlying map, the {@code
+    * fallBackValue} is returned.</p>
+    * <p>If an error of any kind is catched, the {@code fallBackValue} is
+    * returned, and a message is print using the {@code Logger}.
+    */
+    public ToType getParameter(Map<String,Value> map) {
+        String key = "";
+        try {
+            key = lookupValue.getValue(map);
             ToType ret = getMapItemValue(key);
             return ret == null ? fallbackValue : ret;
         } catch (Exception e) {

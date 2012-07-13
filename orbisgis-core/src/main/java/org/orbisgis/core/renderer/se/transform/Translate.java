@@ -6,10 +6,11 @@ package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TranslateType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -66,15 +67,16 @@ public class Translate implements Transformation {
         }
 
         @Override
-        public AffineTransform getAffineTransform(DataSource sds, long fid, Uom uom, MapTransform mt, Double width100p, Double height100p) throws ParameterException {
+        public AffineTransform getAffineTransform(Map<String,Value> map, Uom uom,
+            MapTransform mt, Double width100p, Double height100p) throws ParameterException {
                 double tx = 0.0;
                 if (x != null) {
-                        tx = Uom.toPixel(x.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), width100p);
+                        tx = Uom.toPixel(x.getValue(map), uom, mt.getDpi(), mt.getScaleDenominator(), width100p);
                 }
 
                 double ty = 0.0;
                 if (y != null) {
-                        ty = Uom.toPixel(y.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), height100p);
+                        ty = Uom.toPixel(y.getValue(map), uom, mt.getDpi(), mt.getScaleDenominator(), height100p);
                 }
 
                 return AffineTransform.getTranslateInstance(tx, ty);

@@ -44,6 +44,7 @@ import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ExtensionParameterType;
 import net.opengis.se._2_0.core.ExtensionType;
@@ -51,6 +52,7 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.PointSymbolizerType;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -159,22 +161,23 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 
             if (graphic != null && graphic.getNumGraphics() > 0) {
                 double x,y;
-            if (onVertex) {
-                List<Point2D> points = getPoints(sds, fid, mt, the_geom);
-                for (Point2D pt : points) {
-                x = pt.getX();
-                y = pt.getY();
-                graphic.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(x, y));
+                Map<String,Value> map = getFeaturesMap(sds, fid);
+                if (onVertex) {
+                    List<Point2D> points = getPoints(sds, fid, mt, the_geom);
+                    for (Point2D pt : points) {
+                    x = pt.getX();
+                    y = pt.getY();
+                    graphic.draw(g2, map, selected, mt, AffineTransform.getTranslateInstance(x, y));
+                    }
+                } else {
+                    Point2D pt = getPointShape(sds, fid, mt, the_geom);
+
+                    x = pt.getX();
+                    y = pt.getY();
+
+                    // Draw the graphic right over the point !
+                    graphic.draw(g2, map, selected, mt, AffineTransform.getTranslateInstance(x, y));
                 }
-            } else {
-                Point2D pt = getPointShape(sds, fid, mt, the_geom);
-
-                x = pt.getX();
-                y = pt.getY();
-
-                // Draw the graphic right over the point !
-                graphic.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(x, y));
-            }
         }
     }
 

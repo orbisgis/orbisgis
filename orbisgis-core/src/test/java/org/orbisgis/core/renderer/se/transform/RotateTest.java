@@ -25,7 +25,7 @@ public class RotateTest {
         @Test
     public void testRotateToAffine() throws ParameterException {
             Rotate r = new Rotate(new RealLiteral(45), new RealLiteral(8), new RealLiteral(7));
-            AffineTransform af = r.getAffineTransform(null, 0, Uom.PX, new MapTransform(), 0.0, 0.0);
+            AffineTransform af = r.getAffineTransform(null, Uom.PX, new MapTransform(), 0.0, 0.0);
             assertTrue((af.getType() & AffineTransform.TYPE_GENERAL_ROTATION) != 0);
             assertFalse((af.getType() & AffineTransform.TYPE_FLIP) != 0);
     }
