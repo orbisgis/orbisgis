@@ -36,12 +36,15 @@
  */
 package org.orbisgis.view.toc;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Rectangle;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import javax.swing.Icon;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
@@ -55,7 +58,7 @@ public class TocRenderer extends TocAbstractRenderer {
 
 	private TOCRenderPanel lastRenderedPanel;
         
-        private TreeCellRenderer look_and_feel_renderer;
+        private TreeCellRenderer lookAndFeelRenderer;
         private JTree tree;
         /**
          * Install this renderer inside the tree
@@ -72,7 +75,7 @@ public class TocRenderer extends TocAbstractRenderer {
          * @warning Using only by PropertyChangeListener on UI property
          */
         public void updateLFRenderer() {
-                look_and_feel_renderer = new JTree().getCellRenderer();
+                lookAndFeelRenderer = new JTree().getCellRenderer();
         }
         
         /**
@@ -95,23 +98,31 @@ public class TocRenderer extends TocAbstractRenderer {
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean selected, boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {
-                Component nativeRendererComp = look_and_feel_renderer.getTreeCellRendererComponent(
+                Component nativeRendererComp = lookAndFeelRenderer.getTreeCellRendererComponent(
                         tree, value, selected, expanded, leaf, row, hasFocus); 
                 if(nativeRendererComp instanceof DefaultTreeCellRenderer) {
                         DefaultTreeCellRenderer rendererComponent = (DefaultTreeCellRenderer) nativeRendererComp;
                         try {
+                                JPanel panel = new JPanel(new BorderLayout());
+                                panel.setOpaque(false);
+                                JCheckBox checkBox = new JCheckBox();
+                                checkBox.setBackground(rendererComponent.getBackground());
+                                checkBox.setBorder(rendererComponent.getBorder());
                                 if (value instanceof ILayer) {
                                         ILayer layerNode = (ILayer) value;
                                         Icon layerIcon = TocAbstractRenderer.getLayerIcon(layerNode);
                                         rendererComponent.setIcon(layerIcon);
                                         rendererComponent.setText(layerNode.getName());
-                                        //panel.add(new JCheckBox("",layerNode.isVisible()));
+                                        checkBox.setSelected(layerNode.isVisible());
                                 } else if(value instanceof Style)  {
                                         Style styleNode = (Style) value;
                                         rendererComponent.setIcon(null);
                                         rendererComponent.setText(styleNode.getName());
-                                        //panel.add(new JCheckBox("",styleNode.isVisible()));
+                                        checkBox.setSelected(styleNode.isVisible());
                                 }
+                                panel.add(checkBox,BorderLayout.WEST);
+                                panel.add(rendererComponent,BorderLayout.CENTER);
+                                return panel;
                         } catch (DriverException ex) {
                                 UILOGGER.error(ex);
                         } catch (IOException ex) {
