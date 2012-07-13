@@ -202,9 +202,9 @@ public final class OwsMapContext extends BeanMapContext {
 	}
 
 	@Override
-	public void setSelectedStyles(ArrayList<Style> selectedRules) {
+	public void setSelectedStyles(Style[] selectedStyles) {
 		checkIsOpen();
-		super.setSelectedStyles(selectedRules.toArray(new Style[0]));
+		super.setSelectedStyles(selectedStyles);
                 //DEPRECATED LISTENERS
 		for (MapContextListener listener : listeners) {
 			listener.layerSelectionChanged(this);
@@ -598,8 +598,8 @@ public final class OwsMapContext extends BeanMapContext {
                 open = true;
 		this.activeLayer = null;
                 //Read the specified jaxbMapContext
-                setSelectedLayers(new ILayer[]{});
-                setSelectedStyles(new ArrayList<Style>());
+                setSelectedLayers(new ILayer[0]);
+                setSelectedStyles(new Style[0]);
                 
                 loadOwsContext();
                 jaxbMapContext = null;
