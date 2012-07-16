@@ -106,6 +106,7 @@ public class TocRenderer extends TocAbstractRenderer {
                                 panel.setOpaque(false);
                                 JCheckBox checkBox = new JCheckBox();
                                 checkBox.setBackground(rendererComponent.getBackground());
+                                checkBox.setOpaque(rendererComponent.isOpaque());
                                 checkBox.setBorder(rendererComponent.getBorder());
                                 if (value instanceof ILayer) {
                                         ILayer layerNode = (ILayer) value;
