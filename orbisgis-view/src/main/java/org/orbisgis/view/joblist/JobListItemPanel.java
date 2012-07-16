@@ -20,11 +20,11 @@ public class JobListItemPanel extends JPanel {
         private JLabel jobCancelLabel;
         private JLabel jobLabel;
         private JProgressBar jobProgressBar;
-        private boolean simplified;
+        private boolean statusBarJob;
         
-        public JobListItemPanel(Job job,boolean simplified) {
+        public JobListItemPanel(Job job,boolean statusBarJob) {
                 this.job = job;
-                this.simplified = simplified;
+                this.statusBarJob = statusBarJob;
                 //The panel show the background of the DataSource Item
                 FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
                 fl.setHgap(5);
@@ -43,9 +43,15 @@ public class JobListItemPanel extends JPanel {
                 //The label show the text of the DataSource Item
                 jobLabel = new JLabel();
                 add(jobProgressBar);
-                add(jobCancelLabel);
+                if(!statusBarJob) {
+                        add(jobCancelLabel);
+                }
                 //Add the label into the Panel
                 add(jobLabel);
+                //On the status bar the job is aligned on the right
+                if(statusBarJob) {
+                        add(jobCancelLabel);
+                }
                 readJob();
         }
 
@@ -79,21 +85,21 @@ public class JobListItemPanel extends JPanel {
          */
         public final String getText() {
                 StringBuilder sb = new StringBuilder();
-                if(!simplified) {
+                if(!statusBarJob) {
                         sb.append("<html>");
                 }
                 sb.append(job.getTaskName());
                 sb.append(" (");
                 sb.append(job.getOverallProgress());
                 sb.append(" %)");
-                if(!simplified && job.getCurrentProgress()>0) {
+                if(!statusBarJob && job.getCurrentProgress()>0) {
                         sb.append("<br>&nbsp;");
                         sb.append(job.getCurrentTaskName());
                         sb.append(" (");
                         sb.append(job.getCurrentProgress());
                         sb.append(" %)");
                 }
-                if(!simplified) {
+                if(!statusBarJob) {
                         sb.append("</html>");
                 }
                 return sb.toString();
