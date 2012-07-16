@@ -67,7 +67,7 @@ public class JobsPanel extends JPanel implements DockingPanel {
                 jobListModel.dispose();
                 super.removeNotify();
         }
-        
+
         
         
         private void makeJobList() {

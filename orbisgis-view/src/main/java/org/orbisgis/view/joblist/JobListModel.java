@@ -115,7 +115,7 @@ public class JobListModel extends AbstractListModel {
                 while(!jobAdded.isEmpty()) {
                         Job job = jobAdded.remove(0);
                         //Added
-                        JobListItem addedJobItem = new JobListItem(job).listenToJob();
+                        JobListItem addedJobItem = new JobListItem(job).listenToJob(false);
                         addedJobItem.addPropertyChangeListener(ContainerItemProperties.PROP_LABEL,labelUpdateListener);
                         shownJobs.add(addedJobItem);
                         fireIntervalAdded(addedJobItem, shownJobs.size() - 1, shownJobs.size() - 1);
@@ -138,7 +138,7 @@ public class JobListModel extends AbstractListModel {
                 //Updated
                 while(!jobUpdated.isEmpty()) {
                         Job job = jobUpdated.remove(0);
-                        JobListItem changedJobItem = new JobListItem(job).listenToJob();
+                        JobListItem changedJobItem = new JobListItem(job).listenToJob(false);
                         fireContentsChanged(changedJobItem, 0, 0);
                         LOGGER.debug("JobListModel:jobReplaced");
                 }                        

@@ -102,8 +102,10 @@ public class JobListPanel extends JPanel {
          */
         private void onRemoveRow(int index) {
                 try {
-                        remove(index);
-                        repaint();
+                        if(index<getComponentCount()) {
+                                remove(index);
+                                repaint();
+                        }
                 } catch (ArrayIndexOutOfBoundsException ex) {
                         LOGGER.error(ex);
                 }

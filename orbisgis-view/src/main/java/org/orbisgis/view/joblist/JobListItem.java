@@ -63,15 +63,15 @@ public class JobListItem extends ContainerItemProperties {
                 
         public JobListItem(Job job) {
                 super(job.getId().toString(), job.getTaskName());
-                this.job = job;
+                this.job = job;           
         }
 
         /**
          * Update the list item on job changes and make the panel
          */
-        public JobListItem listenToJob() {
+        public JobListItem listenToJob(boolean simplifiedPanel) {
                 job.addProgressListener(listener);    
-                itemPanel = new JobListItemPanel(job);
+                itemPanel = new JobListItemPanel(job,simplifiedPanel);
                 onJobUpdate();
                 fetchProgressionTimer = new Timer(PROGRESSION_TIMER_INTERVAL,new TimerFetchListener());
                 fetchProgressionTimer.start();

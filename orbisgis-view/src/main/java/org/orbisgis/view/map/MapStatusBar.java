@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.map;
 
+import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.awt.geom.Point2D;
 import java.beans.EventHandler;
@@ -60,6 +61,7 @@ public class MapStatusBar extends StatusBar {
         protected final static I18n I18N = I18nFactory.getI18n(MapStatusBar.class);
         private static final Logger LOGGER = Logger.getLogger(MapStatusBar.class);
         public static final String PROP_USER_DEFINED_SCALE_DENOMINATOR = "userDefinedScaleDenominator";
+        private final static int STATUS_BAR_HEIGHT = 24;
         private ActionListener scaleInputActionListener = EventHandler.create(ActionListener.class,this,"validateInputScale");
         
         protected VetoableChangeSupport vetoableChangeSupport = new VetoableChangeSupport(this);
@@ -80,6 +82,8 @@ public class MapStatusBar extends StatusBar {
 
         public MapStatusBar() {
                 super(OUTER_BAR_BORDER,HORIZONTAL_EMPTY_BORDER);
+                setPreferredSize(new Dimension(-1,STATUS_BAR_HEIGHT));
+                setMinimumSize(new Dimension(1,STATUS_BAR_HEIGHT));
                 ////////
                 //Add bar components
                 //Coordinates

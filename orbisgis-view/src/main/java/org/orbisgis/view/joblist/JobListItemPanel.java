@@ -20,9 +20,11 @@ public class JobListItemPanel extends JPanel {
         private JLabel jobCancelLabel;
         private JLabel jobLabel;
         private JProgressBar jobProgressBar;
+        private boolean simplified;
         
-        public JobListItemPanel(Job job) {
+        public JobListItemPanel(Job job,boolean simplified) {
                 this.job = job;
+                this.simplified = simplified;
                 //The panel show the background of the DataSource Item
                 FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
                 fl.setHgap(5);
@@ -77,19 +79,23 @@ public class JobListItemPanel extends JPanel {
          */
         public final String getText() {
                 StringBuilder sb = new StringBuilder();
-                sb.append("<html>");
+                if(!simplified) {
+                        sb.append("<html>");
+                }
                 sb.append(job.getTaskName());
                 sb.append(" (");
                 sb.append(job.getOverallProgress());
                 sb.append(" %)");
-                if(job.getCurrentProgress()>0) {
+                if(!simplified && job.getCurrentProgress()>0) {
                         sb.append("<br>&nbsp;");
                         sb.append(job.getCurrentTaskName());
                         sb.append(" (");
                         sb.append(job.getCurrentProgress());
                         sb.append(" %)");
                 }
-                sb.append("</html>");
+                if(!simplified) {
+                        sb.append("</html>");
+                }
                 return sb.toString();
         }        
 }
