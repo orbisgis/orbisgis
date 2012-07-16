@@ -36,356 +36,108 @@
  */
 package org.orbisgis.view.toc;
 
-import java.awt.*;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Rectangle;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import javax.swing.*;
+import javax.swing.Icon;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.JTree;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.sif.CRFlowLayout;
 
-public class TocRenderer extends TocAbstractRenderer implements
-		TreeCellRenderer {
+public class TocRenderer extends TocAbstractRenderer {
         private static Logger UILOGGER = Logger.getLogger("gui."+ TocRenderer.class);
-	private static final Color SELECTED = Color.lightGray;
 
-	private static final Color DESELECTED = Color.white;
-
-	private static final Color SELECTED_FONT = Color.white;
-
-	private static final Color DESELECTED_FONT = Color.black;
-
-	private Toc toc;
-
-	private TOCRenderPanel ourJPanel;
-
-	public TocRenderer(Toc toc) {
-		this.toc = toc;
-	}
-
+        private TreeCellRenderer lookAndFeelRenderer;
+        private JTree tree;
+        private JCheckBox lastCheckBox;
+        /**
+         * Install this renderer inside the tree
+         * @param tree 
+         */
+        public static void install( JTree tree) {
+                TocRenderer tocRenderer = new TocRenderer(tree);
+                tocRenderer.initialize();
+                tree.setCellRenderer(tocRenderer);
+        }
+        
+        /**
+         * Update the native renderer
+         * @warning Using only by PropertyChangeListener on UI property
+         */
+        public void updateLFRenderer() {
+                lookAndFeelRenderer = new JTree().getCellRenderer();
+        }
+        
+        /**
+         * Listen for the arrival of Look&Feel
+         */
+        private void initialize() {
+                updateLFRenderer();
+                tree.addPropertyChangeListener("UI",
+                        EventHandler.create(PropertyChangeListener.class,this,"updateLFRenderer"));
+        }
+        /**
+         * Private constructor, use the static install method
+         * @param lfRenderer 
+         */
+        private TocRenderer(JTree tree) {
+                this.tree = tree;
+        }
+        
 	@Override
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean selected, boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {
-		if (value instanceof ILayer) {
-			ourJPanel = new LayerRenderPanel();
-			ourJPanel.setNodeCosmetic(tree, (ILayer) value, selected, expanded,
-					leaf, row, hasFocus);
-
-			return ourJPanel.getJPanel();
-		} else {
-			Style styleNode = (Style) value;
-			ILayer layer = styleNode.getLayer();
-
-			try {
-				if (layer.isVectorial()) {
-					ourJPanel = new StyleRenderPanel();
-					ourJPanel.setNodeCosmetic(
-                                                tree, layer, styleNode,
-                                                selected, expanded, leaf, row, hasFocus);
-					return ourJPanel.getJPanel();
-				}
-
-//				else if (layer.isWMS()) {
-//					WMSLegendRenderPanel ourJPanel = new WMSLegendRenderPanel();
-//					ourJPanel.setNodeCosmetic(tree, layer,
-//							ruleNode.getRuleIndex(), selected, expanded,
-//							leaf, row, hasFocus);
-//					return ourJPanel.getJPanel();
-//				}
-				
-				else {
-					RasterLegendRenderPanel ourJPanel = new RasterLegendRenderPanel();
-					ourJPanel.setNodeCosmetic(tree, layer,
-							styleNode, selected, expanded,
-							leaf, row, hasFocus);
-					return ourJPanel.getJPanel();
-				}
-				
-			} catch (DriverException e) {
-				e.printStackTrace();
-			}
-
-		}
-		return tree;
+                Component nativeRendererComp = lookAndFeelRenderer.getTreeCellRendererComponent(
+                        tree, value, selected, expanded, leaf, row, hasFocus); 
+                if(nativeRendererComp instanceof DefaultTreeCellRenderer) {
+                        DefaultTreeCellRenderer rendererComponent = (DefaultTreeCellRenderer) nativeRendererComp;
+                        try {
+                                JPanel panel = new JPanel(new BorderLayout());
+                                panel.setOpaque(false);
+                                JCheckBox checkBox = new JCheckBox();
+                                checkBox.setBackground(rendererComponent.getBackground());
+                                checkBox.setOpaque(rendererComponent.isOpaque());
+                                checkBox.setBorder(rendererComponent.getBorder());
+                                if (value instanceof ILayer) {
+                                        ILayer layerNode = (ILayer) value;
+                                        Icon layerIcon = TocAbstractRenderer.getLayerIcon(layerNode);
+                                        rendererComponent.setIcon(layerIcon);
+                                        rendererComponent.setText(layerNode.getName());
+                                        checkBox.setSelected(layerNode.isVisible());
+                                } else if(value instanceof Style)  {
+                                        Style styleNode = (Style) value;
+                                        rendererComponent.setIcon(null);
+                                        rendererComponent.setText(styleNode.getName());
+                                        checkBox.setSelected(styleNode.isVisible());
+                                }
+                                panel.add(checkBox,BorderLayout.WEST);
+                                panel.add(rendererComponent,BorderLayout.CENTER);
+                                lastCheckBox = checkBox;
+                                return panel;
+                        } catch (DriverException ex) {
+                                UILOGGER.error(ex);
+                        } catch (IOException ex) {
+                                UILOGGER.error(ex);
+                        }
+                }
+                return nativeRendererComp;
 	}
 
 	public Rectangle getCheckBoxBounds() {
-		return ourJPanel.getCheckBoxBounds();
+                if(lastCheckBox!=null) {
+                        return lastCheckBox.getBounds();
+                } else {
+                        return new Rectangle(0,0);
+                }
 	}
-
-	public class LayerRenderPanel implements TOCRenderPanel {
-		private JCheckBox check;
-
-		private JLabel iconAndLabel;
-
-		private JPanel jpanel;
-
-		public LayerRenderPanel() {
-			FlowLayout fl = new FlowLayout(CRFlowLayout.LEADING);
-			fl.setHgap(0);
-			jpanel = new JPanel();
-			jpanel.setLayout(fl);
-			check = new JCheckBox();
-			iconAndLabel = new JLabel();
-			jpanel.add(check);
-			jpanel.add(iconAndLabel);
-		}
-
-		public void setNodeCosmetic(JTree tree, ILayer node, boolean selected,
-				boolean expanded, boolean leaf, int row, boolean hasFocus) {
-			check.setVisible(true);
-			check.setSelected(node.isVisible());
-
-			Icon icon = null;
-			try {
-				icon = getLayerIcon(node);
-			} catch (DriverException e) {
-			} catch (IOException e) {
-			}
-			if (null != icon) {
-				iconAndLabel.setIcon(icon);
-			}
-			String name = node.getName();
-			DataSource dataSource = node.getDataSource();
-			if ((dataSource != null) && (dataSource.isModified())) {
-				name += "*"; //$NON-NLS-1$
-			}
-			iconAndLabel.setText(name);
-			iconAndLabel.setVisible(true);
-
-			if (toc.isActive(node)) {
-				Font font = iconAndLabel.getFont();
-				font = font.deriveFont(Font.ITALIC, font.getSize());
-				iconAndLabel.setFont(font);
-			}
-
-			if (selected) {
-				jpanel.setBackground(SELECTED);
-				check.setBackground(SELECTED);
-				iconAndLabel.setForeground(SELECTED_FONT);
-			} else {
-				jpanel.setBackground(DESELECTED);
-				check.setBackground(DESELECTED);
-				iconAndLabel.setForeground(DESELECTED_FONT);
-			}
-		}
-
-                @Override
-		public Rectangle getCheckBoxBounds() {
-			return check.getBounds();
-		}
-
-		@Override
-		public Component getJPanel() {
-
-			return jpanel;
-		}
-
-		@Override
-		public void setNodeCosmetic(JTree tree, ILayer layer, Style s,
-				boolean selected, boolean expanded, boolean leaf, int row,
-				boolean hasFocus) {
-		}
-
-	}
-
-	public class StyleRenderPanel implements TOCRenderPanel {
-
-		private JCheckBox check;
-
-		private JLabel label;
-
-		private JPanel jpanel;
-
-		private JPanel pane;
-
-		public StyleRenderPanel() {
-			jpanel = new JPanel();
-			check = new JCheckBox();
-			check.setAlignmentY(Component.TOP_ALIGNMENT);
-			label = new JLabel();
-			label.setAlignmentY(Component.TOP_ALIGNMENT);
-			pane = new JPanel();
-			pane.setLayout(new BoxLayout(pane, BoxLayout.X_AXIS));
-			pane.add(check);
-			pane.add(label);
-			pane.setBackground(DESELECTED);
-			check.setBackground(DESELECTED);
-			jpanel.add(pane); // really useful ?
-		}
-
-		@Override
-		public void setNodeCosmetic(JTree tree, ILayer node, Style style,
-				boolean selected, boolean expanded, boolean leaf, int row,
-				boolean hasFocus) {
-
-			check.setVisible(true);
-
-			try {
-				check.setSelected(style.isVisible());
-				jpanel.setBackground(DESELECTED);
-
-				//Graphics2D dummyGraphics = new BufferedImage(10, 10,
-				//		BufferedImage.TYPE_INT_ARGB).createGraphics();
-
-
-				if (selected) {
-					jpanel.setBackground(SELECTED);
-					check.setBackground(SELECTED);
-					pane.setBackground(SELECTED);
-					label.setForeground(SELECTED_FONT);
-				} else {
-					jpanel.setBackground(DESELECTED);
-					check.setBackground(DESELECTED);
-					pane.setBackground(DESELECTED);
-					label.setForeground(DESELECTED_FONT);
-				}
-
-				label.setText(style.getName());
-				label.setVisible(true);
-
-				// What's the best size to represent this legend ?
-				/*int[] imageSize = rule.getImageSize(dummyGraphics);
-				if ((imageSize[0] != 0) && (imageSize[1] != 0)) {
-					BufferedImage legendImage = new BufferedImage(imageSize[0],
-							imageSize[1], BufferedImage.TYPE_INT_ARGB);
-					rule.drawImage(legendImage.createGraphics());
-					ImageIcon imageIcon = new ImageIcon(legendImage);
-					lblLegend.setIcon(imageIcon);
-					lblLegend.setVisible(true);
-				}*/
-
-			} catch (Exception e) {
-				UILOGGER.error(
-                                        I18N.tr("Cannot access the legends in the layer {0}",node.getName()),
-                                        e);
-			}
-		}
-
-		@Override
-		public Rectangle getCheckBoxBounds() {
-			return check.getBounds();
-
-		}
-
-		@Override
-		public Component getJPanel() {
-			return jpanel;
-		}
-
-		@Override
-		public void setNodeCosmetic(JTree tree, ILayer value, boolean selected,
-				boolean expanded, boolean leaf, int row, boolean hasFocus) {
-
-		}
-	}
-
-	public class RasterLegendRenderPanel {
-
-		private JLabel lblLegend;
-		private JPanel jpanel;
-
-		public RasterLegendRenderPanel() {
-			FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
-			fl.setHgap(0);
-			jpanel = new JPanel();
-			jpanel.setLayout(fl);
-			lblLegend = new JLabel();
-			jpanel.add(lblLegend);
-		}
-
-		public void setNodeCosmetic(JTree tree, ILayer node, Style style,
-				boolean selected, boolean expanded, boolean leaf, int row,
-				boolean hasFocus) {
-//			try {
-				jpanel.setBackground(DESELECTED);
-				Graphics2D dummyGraphics = new BufferedImage(10, 10,
-						BufferedImage.TYPE_INT_ARGB).createGraphics();
-//				Legend legend = node.getRenderingLegend()[legendIndex];
-				int[] imageSize = getImageSize(dummyGraphics);
-				if ((imageSize[0] != 0) && (imageSize[1] != 0)) {
-					BufferedImage legendImage = new BufferedImage(imageSize[0],
-							imageSize[1], BufferedImage.TYPE_INT_ARGB);
-					drawImage(legendImage.createGraphics());
-					ImageIcon imageIcon = new ImageIcon(legendImage);
-					lblLegend.setIcon(imageIcon);
-				}
-//			} catch (DriverException e) {
-//				Services.getErrorManager().error(
-//                                        I18N.getString("orbisgis.org.orbisgis.ui.toc.tocRenderer.cannotAccessLegendsLayer")
-//                                        + node.getName(), e);
-//			}
-		}
-
-		public Component getJPanel() {
-			return jpanel;
-		}
-
-	}
-	public int[] getImageSize(Graphics g) {
-		FontMetrics fm = g.getFontMetrics();
-		Rectangle2D stringBounds = fm.getStringBounds("line", g);
-		int width = 35 + (int) stringBounds.getWidth();
-
-		return new int[] { width, (int) Math.max(stringBounds.getHeight(), 20) };
-	}
-
-	public void drawImage(Graphics g) {
-		g.setColor(Color.black);
-		FontMetrics fm = g.getFontMetrics();
-		Rectangle2D r = fm.getStringBounds("line", g);
-		g.drawString("line", 35, (int) (10 + r.getHeight() / 2));
-	}
-
-//	public class WMSLegendRenderPanel {
-//
-//		private JLabel lblLegend;
-//		private JPanel jpanel;
-//
-//		public WMSLegendRenderPanel() {
-//			FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
-//			fl.setHgap(0);
-//			jpanel = new JPanel();
-//			jpanel.setLayout(fl);
-//			lblLegend = new JLabel();
-//			jpanel.add(lblLegend);
-//		}
-//
-//		public void setNodeCosmetic(JTree tree, ILayer node, int legendIndex,
-//				boolean selected, boolean expanded, boolean leaf, int row,
-//				boolean hasFocus) {
-//			try {
-//				jpanel.setBackground(DESELECTED);
-//				Graphics2D dummyGraphics = new BufferedImage(10, 10,
-//						BufferedImage.TYPE_INT_ARGB).createGraphics();
-//				Legend legend = node.getRenderingLegend()[legendIndex];
-//				int[] imageSize = legend.getImageSize(dummyGraphics);
-//				if ((imageSize[0] != 0) && (imageSize[1] != 0)) {
-//					BufferedImage legendImage = new BufferedImage(imageSize[0],
-//							imageSize[1], BufferedImage.TYPE_INT_ARGB);
-//					legend.drawImage(legendImage.createGraphics());
-//					ImageIcon imageIcon = new ImageIcon(legendImage);
-//					lblLegend.setIcon(imageIcon);
-//				}
-//			} catch (DriverException e) {
-//				Services.getErrorManager().error(
-//                                        I18N.getString("orbisgis.org.orbisgis.ui.toc.tocRenderer.cannotAccessLegendsLayer") +
-//                                        node.getName(), e);
-//			}
-//		}
-//
-//		public Component getJPanel() {
-//			return jpanel;
-//		}
-//
-//	}
-
-	
-
 }
