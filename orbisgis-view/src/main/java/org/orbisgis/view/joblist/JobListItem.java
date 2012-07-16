@@ -33,7 +33,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.ProgressListener;
@@ -44,9 +43,6 @@ import org.orbisgis.view.components.ContainerItemProperties;
  */
 
 public class JobListItem extends ContainerItemProperties {
-        //Minimal interval of refreshing label in ms
-        private static final long updateLabelInterval = 50; 
-        private long lastTimeUpdatedItem = 0;
         private Job job;
         private ProgressListener listener = 
                 EventHandler.create(ProgressListener.class,
@@ -55,7 +51,7 @@ public class JobListItem extends ContainerItemProperties {
         private JobListItemPanel itemPanel;
         private AtomicBoolean progressionModified = new AtomicBoolean(true);
         private Timer fetchProgressionTimer;
-        private final static int PROGRESSION_TIMER_INTERVAL = 50;
+        private final static int PROGRESSION_TIMER_INTERVAL = 80;
 
         public JobListItemPanel getItemPanel() {
                 return itemPanel;
@@ -63,7 +59,7 @@ public class JobListItem extends ContainerItemProperties {
                 
         public JobListItem(Job job) {
                 super(job.getId().toString(), job.getTaskName());
-                this.job = job;           
+                this.job = job;
         }
 
         /**
@@ -99,18 +95,8 @@ public class JobListItem extends ContainerItemProperties {
          */
         private void updateJob() {
                 if(itemPanel!=null) {
-                        long now = System.currentTimeMillis();
-                        //It is useless to update the controls on each
-                        //job progression increment,
-                        //then a minimal update interval is set
-                        if(now - lastTimeUpdatedItem > updateLabelInterval) {
-                                lastTimeUpdatedItem = now;
-                                itemPanel.readJob();
-                                setLabel(itemPanel.getText());
-                        } else {
-                                //Update the Job later
-                                onJobUpdate();
-                        }
+                        itemPanel.readJob();
+                        setLabel(itemPanel.getText());
                 }   
         }
         /**

@@ -61,7 +61,7 @@ public class MapStatusBar extends StatusBar {
         protected final static I18n I18N = I18nFactory.getI18n(MapStatusBar.class);
         private static final Logger LOGGER = Logger.getLogger(MapStatusBar.class);
         public static final String PROP_USER_DEFINED_SCALE_DENOMINATOR = "userDefinedScaleDenominator";
-        private final static int STATUS_BAR_HEIGHT = 24;
+        private final static int STATUS_BAR_HEIGHT = 30;
         private ActionListener scaleInputActionListener = EventHandler.create(ActionListener.class,this,"validateInputScale");
         
         protected VetoableChangeSupport vetoableChangeSupport = new VetoableChangeSupport(this);
