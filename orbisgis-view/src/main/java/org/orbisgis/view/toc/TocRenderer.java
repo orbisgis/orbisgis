@@ -56,10 +56,9 @@ import org.orbisgis.core.renderer.se.Style;
 public class TocRenderer extends TocAbstractRenderer {
         private static Logger UILOGGER = Logger.getLogger("gui."+ TocRenderer.class);
 
-	private TOCRenderPanel lastRenderedPanel;
-        
         private TreeCellRenderer lookAndFeelRenderer;
         private JTree tree;
+        private JCheckBox lastCheckBox;
         /**
          * Install this renderer inside the tree
          * @param tree 
@@ -122,6 +121,7 @@ public class TocRenderer extends TocAbstractRenderer {
                                 }
                                 panel.add(checkBox,BorderLayout.WEST);
                                 panel.add(rendererComponent,BorderLayout.CENTER);
+                                lastCheckBox = checkBox;
                                 return panel;
                         } catch (DriverException ex) {
                                 UILOGGER.error(ex);
@@ -133,8 +133,8 @@ public class TocRenderer extends TocAbstractRenderer {
 	}
 
 	public Rectangle getCheckBoxBounds() {
-                if(lastRenderedPanel!=null) {
-                        return lastRenderedPanel.getCheckBoxBounds();                        
+                if(lastCheckBox!=null) {
+                        return lastCheckBox.getBounds();
                 } else {
                         return new Rectangle(0,0);
                 }
