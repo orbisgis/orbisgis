@@ -10,9 +10,11 @@ public class TocEditorFactory implements SingleEditorFactory {
         public static final String FACTORY_ID = "TocFactory";
         Toc tocPanel = null;
 
+        @Override
         public void dispose() {
         }
 
+        @Override
         public EditorDockable[] getSinglePanels() {
                 if(tocPanel==null) {
                         tocPanel = new Toc();
@@ -20,6 +22,7 @@ public class TocEditorFactory implements SingleEditorFactory {
                 return new EditorDockable[] {tocPanel};
         }
 
+        @Override
         public String getId() {
                 return FACTORY_ID;
         }
