@@ -180,14 +180,14 @@ public interface MapContext {
 	public void removeMapContextListener(MapContextListener listener);
 
 	/**
-	 * Sets the selected layers. If the specified layers are not in the map
+	 * Sets the selected styles. If the specified layers are not in the map
 	 * context they are removed from selection.
 	 *
 	 * @param selectedLayers
 	 * @throws IllegalStateException
 	 *             If the map is closed
 	 */
-	public void setSelectedStyles(ArrayList<Style> selectedStyles)
+	public void setSelectedStyles(Style[] selectedStyles)
 			throws IllegalStateException;
 
 	/**
