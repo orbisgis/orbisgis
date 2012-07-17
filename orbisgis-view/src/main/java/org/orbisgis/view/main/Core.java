@@ -44,6 +44,7 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.JobQueue;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.edition.EditorManager;
@@ -266,6 +267,15 @@ public class Core {
      * Free all resources allocated by this object
      */
     public void dispose() {
+        //Close all running jobs
+        for(Job job : backgroundManager.getActiveJobs()) {
+                try {
+                        job.cancel();
+                } catch (Throwable ex) {
+                        LOGGER.error(ex);
+                        //Cancel the next job
+                }
+        }
         //Remove all listeners created by this object
 
         //Free UI resources
