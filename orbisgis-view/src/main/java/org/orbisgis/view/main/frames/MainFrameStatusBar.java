@@ -4,13 +4,14 @@ package org.orbisgis.view.main.frames;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.event.FocusListener;
-import java.awt.event.MouseListener;
+import java.awt.Point;
+import java.awt.event.*;
 import java.beans.EventHandler;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataListener;
+import javax.swing.plaf.basic.BasicSliderUI;
 import org.orbisgis.view.components.statusbar.StatusBar;
 import org.orbisgis.view.joblist.JobListCellRenderer;
 import org.orbisgis.view.joblist.JobListItem;
@@ -67,16 +68,21 @@ public class MainFrameStatusBar extends StatusBar {
         public void onUserClickJobLabel() {
                 jobPopup = new JFrame();
                 jobPopup.setUndecorated(true);
-                jobPopup.setLocationRelativeTo(jobListBar);
                 jobPopup.setContentPane(jobList);
                 jobPopup.requestFocusInWindow();
+                //On lost focus this window must be closed
                 jobPopup.addFocusListener(
                         EventHandler.create(FocusListener.class,this,
                         "onJobPopupLostFocus",null,"focusLost"));
+                //On resize , this window must be moved
+                jobPopup.addComponentListener(
+                        EventHandler.create(ComponentListener.class,
+                        this,"onJobPopupResize",null,"componentResized"));
                 //Do size and place
                 jobPopup.setVisible(true);
                 jobPopup.pack();
-                add(jobPopup);                
+                onJobPopupResize();
+                
         }
         
         private void closeJobPopup() {
@@ -91,6 +97,17 @@ public class MainFrameStatusBar extends StatusBar {
          */
         public void onJobPopupLostFocus() {
                 closeJobPopup();
+        }
+        /**
+         * On resize , the job list window must be moved
+         * @param ce 
+         */
+        public void onJobPopupResize() {
+                if(jobPopup!=null) {
+                        Point labelLocation = jobListBar.getLocationOnScreen();
+                        jobPopup.setLocation(new Point(labelLocation.x,labelLocation.y-jobList.getHeight()));
+                }
+                
         }
         private void clearJobTitle() {
                 if(firstJob!=null) {
@@ -121,9 +138,12 @@ public class MainFrameStatusBar extends StatusBar {
                                 jobListBar.setVisible(true);
                                 jobListBar.add(firstJob.getItemPanel(),BorderLayout.CENTER);
                         }
-                        
+                        if(jobPopup!=null) {
+                                jobPopup.pack();
+                        }
                 } else {
                         clearJobTitle();
+                        closeJobPopup();
                 }
         }
 }
