@@ -78,6 +78,9 @@ public class MainContext {
         Services.registerService(DataManager.class,
                         I18N.tr("Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial"),
                         dataManager);
+        
+        Services.registerService(CoreWorkspace.class, I18N.tr("Contains folders path"),
+                        coreWorkspace);
     }
     
     /**
