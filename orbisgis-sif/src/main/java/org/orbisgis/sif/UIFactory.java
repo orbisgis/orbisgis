@@ -30,7 +30,6 @@ package org.orbisgis.sif;
 
 import java.awt.Window;
 import java.net.URL;
-import java.util.HashMap;
 import javax.swing.ImageIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -64,6 +63,7 @@ public class UIFactory {
                 boolean okCancel) {
                 SIFDialog dlg = new SIFDialog(owner, okCancel);
                 SimplePanel simplePanel = new SimplePanel(dlg, panel);
+                dlg.setTitle(panel.getTitle());
                 dlg.setComponent(simplePanel);
                 return dlg;
         }
