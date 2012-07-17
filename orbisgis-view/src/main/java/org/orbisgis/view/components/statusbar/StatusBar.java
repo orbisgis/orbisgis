@@ -49,9 +49,15 @@ public class StatusBar extends JPanel {
 
         public StatusBar(int outerBarBorder, int horizontalEmptyBorder) {
                 super(new BorderLayout());
-                this.horizontalEmptyBorder = horizontalEmptyBorder;                horizontalBar = new JPanel();
-                horizontalBar.setLayout(new BoxLayout(horizontalBar, BoxLayout.X_AXIS));
-                setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),BorderFactory.createEmptyBorder(outerBarBorder, outerBarBorder, outerBarBorder, outerBarBorder)));
+                this.horizontalEmptyBorder = horizontalEmptyBorder;
+                horizontalBar = new JPanel();
+                horizontalBar.setLayout(
+                        new BoxLayout(horizontalBar, BoxLayout.X_AXIS));
+                setBorder(
+                        BorderFactory.createCompoundBorder(
+                        BorderFactory.createEtchedBorder(),
+                        BorderFactory.createEmptyBorder(outerBarBorder,
+                        outerBarBorder, outerBarBorder, outerBarBorder)));
                 add(horizontalBar,BorderLayout.EAST);    
         }
                
