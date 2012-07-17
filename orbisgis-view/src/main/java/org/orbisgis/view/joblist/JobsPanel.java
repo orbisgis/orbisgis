@@ -84,7 +84,9 @@ public class JobsPanel extends JPanel implements DockingPanel {
          * the panel title label must be updated
          */
         public void onListContentChanged() {
-                dockingParameters.setTitle(I18N.tr("Running jobs ({0})",jobList.getModel().getSize()));
+                if(jobList!=null && jobList.getModel()!=null) {
+                        dockingParameters.setTitle(I18N.tr("Running jobs ({0})",jobList.getModel().getSize()));
+                }
         }
         @Override
         public DockingPanelParameters getDockingParameters() {

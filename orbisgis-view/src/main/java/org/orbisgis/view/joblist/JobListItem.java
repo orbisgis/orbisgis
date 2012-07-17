@@ -40,6 +40,8 @@ import org.orbisgis.view.components.ContainerItemProperties;
 
 /**
  * This list item is linked with a Job
+ * @warning This component has a Timer running when the function listenToJob is 
+ * called, always call the method dispose() when this instance is no longer used
  */
 
 public class JobListItem extends ContainerItemProperties {
