@@ -19,10 +19,10 @@ import javax.swing.event.ChangeListener;
 import org.orbisgis.legend.thematic.constant.USNumericParameter;
 import org.orbisgis.legend.thematic.constant.USParameter;
 import org.orbisgis.legend.thematic.constant.UniqueSymbol;
-import org.orbisgis.sif.components.ColorPicker;
-import org.orbisgis.sif.components.JNumericSpinner;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.sif.components.ColorPicker;
+import org.orbisgis.sif.components.JNumericSpinner;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 

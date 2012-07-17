@@ -1,12 +1,10 @@
 package org.orbisgis.view.components.sif;
 
 import java.text.ParseException;
-
 import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.orbisgis.sif.SIFMessage;
 
 public class AskValidValue extends AskValue {
 
@@ -22,29 +20,29 @@ public class AskValidValue extends AskValue {
         }
 
         @Override
-        public SIFMessage validateInput() {
+        public String validateInput() {
                 try {
                         return validateValue(ds, inputToValue(getValue(), fieldType),
                                 fieldIndex, fieldType);
                 } catch (ParseException e) {
-                        return new SIFMessage(e.getMessage(), SIFMessage.ERROR);
+                        return e.getMessage();
                 }
         }
 
-        public static SIFMessage validateValue(DataSource ds, Value inputValue,
+        public static String validateValue(DataSource ds, Value inputValue,
                 int fieldIndex, int fieldType) {
                 try {
                         String error = ds.check(fieldIndex, inputValue);
                         if (error != null) {
-                                return new SIFMessage(error, SIFMessage.ERROR);
+                                return error;
                         }
                 } catch (NumberFormatException e) {
-                        return new SIFMessage("Invalid number" + e.getMessage(), SIFMessage.ERROR);
+                        return "Invalid number" + e.getMessage();
                 } catch (DriverException e) {
-                        return new SIFMessage(e.getMessage(), SIFMessage.ERROR);
+                        return e.getMessage();
                 }
 
-                return new SIFMessage();
+                return null;
         }
 
         public Value getUserValue() throws ParseException {

@@ -30,13 +30,34 @@ package org.orbisgis.view.geocatalog.sourceWizards.db;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Properties;
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import org.apache.log4j.Logger;
+import org.gdms.driver.DBDriver;
+import org.gdms.driver.DriverException;
 import org.gdms.driver.TableDescription;
-import org.orbisgis.sif.SIFMessage;
+import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.source.SourceManager;
+import org.orbisgis.core.Services;
+import org.orbisgis.core.workspace.CoreWorkspace;
+import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.sif.multiInputPanel.MIPValidation;
+import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
+import org.orbisgis.sif.multiInputPanel.PasswordType;
+import org.orbisgis.view.geocatalog.Catalog;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -47,17 +68,29 @@ import org.xnap.commons.i18n.I18nFactory;
 public class TableExportPanel extends JPanel implements UIPanel {
 
         protected final static I18n I18N = I18nFactory.getI18n(TableExportPanel.class);
-        private final ConnectionPanel firstPanel;
+        private static final Logger LOGGER = Logger.getLogger(Catalog.class);
+        //private final ConnectionPanel firstPanel;
         private final String[] sourceNames;
         private JScrollPane jScrollPane;
         private JTable jtableExporter;
-        private String infoMessage = null;
-        private String message;
+        private JToolBar connectionToolBar;
+        private JComboBox cmbDataBaseUri;
+        private static final String dbPropertiesFile = "db_connexions.properties";
+        Properties dbProperties = new Properties();
+        private final SourceManager sourceManager;
+        private Connection connection;
+        private DBDriver dbDriver;
+        private JButton btnDisconnect;
+        private JButton btnConnect;
+        private JButton btnAddConnection;
+        private JButton btnEditConnection;
+        private JButton btnRemoveConnection;
+        private JComboBox comboBoxSchemas;
+        private String[] schemas;
 
-        public TableExportPanel(final ConnectionPanel firstPanel,
-                String[] layerNames) {
-                this.firstPanel = firstPanel;
+        public TableExportPanel(String[] layerNames, SourceManager sourceManager) {
                 this.sourceNames = layerNames;
+                this.sourceManager = sourceManager;
                 initialize();
         }
 
@@ -68,35 +101,236 @@ public class TableExportPanel extends JPanel implements UIPanel {
 
         @Override
         public String getTitle() {
-                return I18N.tr("View to export sources in the database : " + firstPanel.getDBSource().getDbName());
+                return I18N.tr("Export sources in a database");
         }
 
-       
+        /**
+         * A toolbar to manage the connexion with the database
+         *
+         * @return
+         */
+        public JToolBar connectionToolBar() {
+                if (connectionToolBar == null) {
+                        connectionToolBar = new JToolBar();
+                        connectionToolBar.setFloatable(false);
+                        connectionToolBar.setOpaque(false);
+                        loadDBProperties();
+                        Object[] dbKeys = dbProperties.keySet().toArray();
+                        boolean btnStatus = dbKeys.length > 0;
+                        cmbDataBaseUri = new JComboBox(dbKeys);
+                        cmbDataBaseUri.setEditable(false);
+
+                        btnConnect = new JButton(OrbisGISIcon.getIcon("database_connect"));
+                        btnConnect.setToolTipText(I18N.tr("Connect to the database"));
+                        btnConnect.setEnabled(btnStatus);
+                        btnConnect.addActionListener(new ActionListener() {
+
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                        String dataBaseUri = cmbDataBaseUri.getSelectedItem().toString();
+                                        if (!dataBaseUri.isEmpty()) {
+                                                MultiInputPanel passwordDialog = new MultiInputPanel(I18N.tr("Please set a password"));
+                                                passwordDialog.addInput("password", I18N.tr("Password"), "", new PasswordType());
+                                                passwordDialog.addValidation(new MIPValidation() {
+
+                                                        @Override
+                                                        public String validate(MultiInputPanel mid) {
+                                                                if (mid.getInput("password").isEmpty()) {
+                                                                        return I18N.tr("The password cannot be null");
+                                                                }
+                                                                return null;
+
+                                                        }
+                                                });
+
+                                                if (UIFactory.showDialog(passwordDialog)) {
+                                                        try {
+                                                                String passWord = passwordDialog.getInput("password");
+                                                                String properties = dbProperties.getProperty(dataBaseUri);
+                                                                createConnection(properties.split(","), passWord);
+                                                        } catch (SQLException ex) {
+                                                                JOptionPane.showMessageDialog(jScrollPane, I18N.tr("Cannot connect the database"));
+                                                                LOGGER.error(ex);
+                                                        }
+
+
+                                                }
+                                        }
+
+                                }
+                        });
+                        btnConnect.setBorderPainted(false);
+
+                        btnDisconnect = new JButton(OrbisGISIcon.getIcon("disconnect"));
+                        btnDisconnect.setToolTipText(I18N.tr("Disconnect"));
+                        btnDisconnect.setEnabled(connection != null);
+                        btnDisconnect.addActionListener(new ActionListener() {
+
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                        closeConnection();
+                                }
+                        });
+
+                        btnDisconnect.setBorderPainted(false);
+
+
+
+                        btnAddConnection = new JButton(OrbisGISIcon.getIcon("database_add"));
+                        btnAddConnection.setToolTipText(I18N.tr("Add a new connection"));
+                        btnAddConnection.addActionListener(new ActionListener() {
+
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                        MultiInputPanel mip = DBUIFactory.getConnectionPanel();
+
+                                        if (UIFactory.showDialog(mip)) {
+                                                String connectionName = mip.getInput(DBUIFactory.CONNAME);
+                                                if (!dbProperties.containsKey(connectionName)) {
+                                                        StringBuilder sb = new StringBuilder();
+                                                        sb.append(mip.getInput(DBUIFactory.DBTYPE));
+                                                        sb.append(",");
+                                                        sb.append(mip.getInput(DBUIFactory.HOST));
+                                                        sb.append(",");
+                                                        sb.append(mip.getInput(DBUIFactory.PORT));
+                                                        sb.append(",");
+                                                        sb.append(mip.getInput(DBUIFactory.SSL));
+                                                        sb.append(",");
+                                                        sb.append(mip.getInput(DBUIFactory.DBNAME));
+                                                        sb.append(",");
+                                                        sb.append(mip.getInput(DBUIFactory.USER));
+                                                        dbProperties.setProperty(connectionName, sb.toString());
+                                                        cmbDataBaseUri.addItem(connectionName);
+                                                        cmbDataBaseUri.setSelectedItem(connectionName);
+                                                        saveProperties();
+
+                                                }
+
+                                        }
+
+                                }
+                        });
+                        btnAddConnection.setBorderPainted(false);
+
+
+                        btnEditConnection = new JButton(OrbisGISIcon.getIcon("database_edit"));
+                        btnEditConnection.setToolTipText(I18N.tr("Edit a connection"));
+                        btnEditConnection.setEnabled(btnStatus);
+
+                        btnEditConnection.addActionListener(new ActionListener() {
+
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                        String dataBaseUri = cmbDataBaseUri.getSelectedItem().toString();
+                                        if (!dataBaseUri.isEmpty()) {
+                                                String property = dbProperties.getProperty(dataBaseUri);
+                                                MultiInputPanel mip = DBUIFactory.getEditConnectionPanel(dataBaseUri, property);
+                                                if (UIFactory.showDialog(mip)) {
+                                                        String connectionName = mip.getInput(DBUIFactory.CONNAME);
+
+                                                        StringBuilder sb = new StringBuilder();
+                                                        sb.append(mip.getInput(DBUIFactory.DBTYPE));
+                                                        sb.append(",");
+                                                        sb.append(mip.getInput(DBUIFactory.HOST));
+                                                        sb.append(",");
+                                                        sb.append(mip.getInput(DBUIFactory.PORT));
+                                                        sb.append(",");
+                                                        sb.append(mip.getInput(DBUIFactory.SSL));
+                                                        sb.append(",");
+                                                        sb.append(mip.getInput(DBUIFactory.DBNAME));
+                                                        sb.append(",");
+                                                        sb.append(mip.getInput(DBUIFactory.USER));
+                                                        dbProperties.setProperty(connectionName, sb.toString());
+                                                        cmbDataBaseUri.addItem(connectionName);
+                                                        cmbDataBaseUri.setSelectedItem(connectionName);
+                                                        saveProperties();
+
+                                                }
+
+
+                                        }
+                                }
+                        });
+                        btnEditConnection.setBorderPainted(false);
+
+
+                        btnRemoveConnection = new JButton(OrbisGISIcon.getIcon("database_delete"));
+                        btnRemoveConnection.setToolTipText(I18N.tr("Remove a connection"));
+                        btnRemoveConnection.setEnabled(btnStatus);
+
+                        btnRemoveConnection.addActionListener(new ActionListener() {
+
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                        String dataBaseUri = cmbDataBaseUri.getSelectedItem().toString();
+                                        if (!dataBaseUri.isEmpty()) {
+                                                cmbDataBaseUri.removeItem(dataBaseUri);
+                                                dbProperties.remove(dataBaseUri);
+                                                saveProperties();
+                                        }
+
+                                }
+                        });
+                        btnRemoveConnection.setBorderPainted(false);
+
+                        connectionToolBar.add(cmbDataBaseUri);
+                        connectionToolBar.add(btnConnect);
+                        connectionToolBar.add(btnDisconnect);
+                        connectionToolBar.add(btnAddConnection);
+                        connectionToolBar.add(btnEditConnection);
+                        connectionToolBar.add(btnRemoveConnection);
+
+
+                }
+                return connectionToolBar;
+        }
+
+        /**
+         * Create the main panel
+         */
         public void initialize() {
                 if (jScrollPane == null) {
                         this.setLayout(new BorderLayout());
                         jtableExporter = new JTable();
                         jtableExporter.setRowHeight(20);
-                        DataBaseTableModel dataBaseTableModel = new DataBaseTableModel(this, firstPanel, sourceNames);
+                        DataBaseTableModel dataBaseTableModel = new DataBaseTableModel(sourceManager, sourceNames);
                         jtableExporter.setModel(dataBaseTableModel);
                         jtableExporter.setDefaultRenderer(Object.class, new org.orbisgis.view.geocatalog.sourceWizards.db.TableCellRenderer());
                         TableColumn schemaColumn = jtableExporter.getColumnModel().getColumn(2);
-                        JComboBox comboBox = new JComboBox(dataBaseTableModel.getSchemas());
-                        schemaColumn.setCellEditor(new DefaultCellEditor(comboBox));
+                        comboBoxSchemas = new JComboBox(new String[]{"public"});
+                        schemaColumn.setCellEditor(new DefaultCellEditor(comboBoxSchemas) {
+
+                                @Override
+                                public Component getTableCellEditorComponent(JTable pTable, Object pValue, boolean pIsSelected, int pRow,
+                                        int pColumn) {
+                                        Component tableCellEditorComponent =
+                                                super.getTableCellEditorComponent(pTable, pValue, pIsSelected, pRow, pColumn);
+                                        if (2 == pColumn) {
+                                                JComboBox comboBox = (JComboBox) tableCellEditorComponent;
+                                                comboBox.removeAllItems();
+                                                for (String schema : getSchemas()) {
+                                                        comboBox.addItem(schema);
+                                                }
+                                        }
+                                        return tableCellEditorComponent;
+                                }
+                        });
+
                         initColumnSizes(jtableExporter);
                         jScrollPane = new JScrollPane(jtableExporter);
+                        this.add(connectionToolBar(), BorderLayout.NORTH);
                         this.add(jScrollPane, BorderLayout.CENTER);
                 }
         }
-       
 
         /**
-         * The validateInput is override to ensure that all sources can be exported
+         * The validateInput is override to ensure that all sources can be
+         * exported
          *
          * @return
          */
         @Override
-        public SIFMessage validateInput() {
+        public String validateInput() {
                 String validateInput = null;
                 DataBaseTableModel model = (DataBaseTableModel) jtableExporter.getModel();
                 if (!model.isOneRowSelected()) {
@@ -106,27 +340,11 @@ public class TableExportPanel extends JPanel implements UIPanel {
                 for (int i = 0; i < count; i++) {
                         DataBaseRow row = model.getRow(i);
                         if (row.isExport()) {
-                                String error = row.getErrorMessage();
-                                if (error != null) {
-                                        //TODO : Change to support message warning
-                                        infoMessage = error;
-                                        break;
-                                } else {
-                                        String sourceName = row.getInputSourceName();
-                                        String schema = row.getSchema();
-                                        if (sourceName.length() == 0) {
-                                                validateInput = I18N.tr("The name of the table cannot be null");
-                                                break;
-                                        } else if (ifTableExists(model.getTables(), sourceName, schema)) {
-                                                validateInput =
-                                                        I18N.tr("The table " + sourceName
-                                                        + " already exits in the schema " + schema);
-                                                break;
-                                        }
-                                }
+                                row.toSQL();
+
                         }
                 }
-                return new SIFMessage();
+                return validateInput;
         }
 
         @Override
@@ -172,8 +390,17 @@ public class TableExportPanel extends JPanel implements UIPanel {
                 }
         }
 
-        public boolean ifTableExists(TableDescription[] tables, String table, String schema) {
+        /**
+         * Check if the table already exists
+         *
+         * @param table
+         * @param schema
+         * @return
+         * @throws DriverException
+         */
+        public boolean ifTableExists(String table, String schema) throws DriverException {
                 boolean exists = false;
+                TableDescription[] tables = dbDriver.getTables(connection);
                 for (int i = 0; i < tables.length && !exists; i++) {
                         TableDescription tableDesc = tables[i];
                         if (tableDesc.getSchema().equals(schema) && tableDesc.getName().equals(table)) {
@@ -183,8 +410,102 @@ public class TableExportPanel extends JPanel implements UIPanel {
                 return exists;
         }
 
-        void validateInput(String salut) {
-               message = salut;
-               validateInput();
+        /**
+         * Load connection properties
+         */
+        private void loadDBProperties() {
+                CoreWorkspace ws = (CoreWorkspace) Services.getService(CoreWorkspace.class);
+                try {
+                        File propertiesFile = new File(ws.getWorkspaceFolder() + File.separator + dbPropertiesFile);
+
+                        if (propertiesFile.exists()) {
+                                dbProperties.load(new FileInputStream(propertiesFile));
+                        }
+                } catch (IOException e) {
+                        LOGGER.error(e);
+                }
+        }
+
+        /**
+         * Save connection properties
+         */
+        private void saveProperties() {
+                try {
+                        CoreWorkspace ws = (CoreWorkspace) Services.getService(CoreWorkspace.class);
+                        dbProperties.store(new FileOutputStream(ws.getWorkspaceFolder() + File.separator + dbPropertiesFile), I18N.tr("Saved with the OrbisGIS database exporter panel"));
+                } catch (IOException ex) {
+                        LOGGER.error(ex);
+                }
+
+        }
+
+        /**
+         * Close the connection to the database
+         */
+        public void closeConnection() {
+                if (connection != null) {
+                        try {
+                                connection.close();
+                                dbDriver = null;
+                                btnConnect.setEnabled(true);
+                                btnAddConnection.setEnabled(true);
+                                btnEditConnection.setEnabled(true);
+                                btnRemoveConnection.setEnabled(true);
+                                btnDisconnect.setEnabled(false);
+                        } catch (SQLException ex) {
+                                LOGGER.error(ex);
+                        }
+                }
+        }
+
+        /**
+         * Return a connection to the database
+         *
+         * @param parameters
+         * @param passWord
+         * @return
+         * @throws SQLException
+         */
+        public void createConnection(String[] parameters, String passWord) throws SQLException {
+                if (connection == null) {
+                        try {
+                                String dbType = parameters[0];
+                                createDBDriver(dbType);
+                                String cs = dbDriver.getConnectionString(parameters[1], Integer.valueOf(
+                                        parameters[2]), Boolean.valueOf(parameters[3]), parameters[4], parameters[5],
+                                        passWord);
+                                schemas = dbDriver.getSchemas(connection);
+                                connection = dbDriver.getConnection(cs);
+                                btnConnect.setEnabled(false);
+                                btnAddConnection.setEnabled(false);
+                                btnEditConnection.setEnabled(false);
+                                btnRemoveConnection.setEnabled(false);
+                                btnDisconnect.setEnabled(true);
+                                comboBoxSchemas = new JComboBox(dbDriver.getSchemas(connection));
+                                jtableExporter.repaint();
+                        } catch (DriverException ex) {
+                                LOGGER.error(ex);
+                        }
+                }
+
+        }
+
+        /*
+         * Return the dbdriver corresponding to the dataabse type
+         */
+        public void createDBDriver(String dbType) {
+                if (dbDriver == null) {
+                        DriverManager driverManager = sourceManager.getDriverManager();
+                        dbDriver = (DBDriver) driverManager.getDriver(dbType);
+                }
+        }
+
+        /**
+         * Return all schema names from the current database
+         *
+         * @return
+         */
+        public String[] getSchemas() {
+                return schemas;
         }
 }

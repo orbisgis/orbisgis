@@ -10,7 +10,6 @@ import java.util.LinkedList;
 import java.util.List;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.orbisgis.view.toc.actions.cui.legends.PnlRule;
@@ -227,12 +226,12 @@ public class RuleWrapper {
                 panel.setRule(rule);
         }
 
-        List<SIFMessage> validateInput() {
-                LinkedList<SIFMessage> ll = new LinkedList<SIFMessage>();
-                SIFMessage ps = panel.validateInput();
+        List<String> validateInput() {
+                LinkedList<String> ll = new LinkedList<String>();
+                String ps = panel.validateInput();
                 ll.add(ps);
                 for (ILegendPanel ilp : legends) {
-                        SIFMessage s = ilp.validateInput();
+                        String s = ilp.validateInput();
                         ll.add(s);
                 }
                 return ll;

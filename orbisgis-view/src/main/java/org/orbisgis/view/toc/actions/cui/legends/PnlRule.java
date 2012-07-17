@@ -13,7 +13,6 @@ import java.beans.EventHandler;
 import javax.swing.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
-import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
 import org.xnap.commons.i18n.I18n;
@@ -241,7 +240,7 @@ public class PnlRule extends JPanel implements ISELegendPanel {
         }
 
         @Override
-        public SIFMessage validateInput() {
+        public String validateInput() {
                 String minScale = txtMinScale.getText();
                 String maxScale = txtMaxScale.getText();
                 StringBuilder stringBuilder = new StringBuilder();
@@ -264,9 +263,9 @@ public class PnlRule extends JPanel implements ISELegendPanel {
                 }
                 String res = stringBuilder.toString();
                 if (res != null && !res.isEmpty()) {
-                        return new SIFMessage(res, SIFMessage.ERROR);
+                        return res;
                 } else {
-                        return new SIFMessage();
+                        return null;
                 }
         }
 

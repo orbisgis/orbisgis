@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.view.toc.actions.cui.legends.PnlStyle;
 
 /**
@@ -144,8 +143,8 @@ public class StyleWrapper {
                 return false;
         }
 
-        public List<SIFMessage> validateInput() {
-                LinkedList<SIFMessage> ll= new LinkedList<SIFMessage>();
+        public List<String> validateInput() {
+                LinkedList<String> ll= new LinkedList<String>();
                 for(RuleWrapper rw :ruleWrappers){
                       ll.addAll(rw.validateInput());
                 }

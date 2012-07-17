@@ -39,7 +39,6 @@ package org.orbisgis.view.components.sif;
 import java.awt.Component;
 import javax.swing.JTextField;
 import org.orbisgis.sif.AbstractUIPanel;
-import org.orbisgis.sif.SIFMessage;
 
 public class AskValue extends AbstractUIPanel {
 
@@ -73,8 +72,8 @@ public class AskValue extends AbstractUIPanel {
         }
 
         @Override
-        public SIFMessage validateInput() {
-                return new SIFMessage();
+        public String validateInput() {
+                return null;
         }
 
         public String[] getErrorMessages() {

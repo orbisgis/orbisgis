@@ -30,7 +30,6 @@ package org.orbisgis.view.geocatalog.sourceWizards.db;
 
 import java.awt.Color;
 import java.awt.Component;
-import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -65,5 +64,6 @@ public class TableCellRenderer extends DefaultTableCellRenderer {
 
                 return component;
 
-        }
+        }        
+        
 }

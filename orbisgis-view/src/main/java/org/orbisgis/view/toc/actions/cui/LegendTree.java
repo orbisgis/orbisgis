@@ -19,7 +19,6 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.RadioButtonPanel;
 import org.orbisgis.sif.multiInputPanel.MIPValidation;
@@ -365,12 +364,12 @@ public class LegendTree extends JPanel {
                 mip.addValidation(new MIPValidation() {
 
                         @Override
-                        public SIFMessage validate(MultiInputPanel mid) {
+                        public String validate(MultiInputPanel mid) {
                                 String ruleName = mid.getInput("RuleName");
                                 if (ruleName.isEmpty()) {
-                                        return new SIFMessage("Rule name cannot be null or empty.", SIFMessage.ERROR);
+                                        return "Rule name cannot be null or empty.";
                                 }
-                                return new SIFMessage();
+                                return null;
 
                         }
                 });

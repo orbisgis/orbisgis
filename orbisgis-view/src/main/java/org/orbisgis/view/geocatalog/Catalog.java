@@ -53,9 +53,9 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
-import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.utils.CollectionUtils;
 import org.orbisgis.utils.FileUtils;
 import org.orbisgis.view.background.BackgroundJob;
@@ -385,9 +385,8 @@ public class Catalog extends JPanel implements DockingPanel {
                 DataManager dm = Services.getService(DataManager.class);
                 SourceManager sm = dm.getSourceManager();
                 String[] res = getSelectedSources();
-                final ConnectionPanel firstPanel = new ConnectionPanel(sm);
-                TableExportPanel tableExportPanel = new TableExportPanel(firstPanel, res);
-                if (UIFactory.showDialog(new UIPanel[]{firstPanel,
+                TableExportPanel tableExportPanel = new TableExportPanel(res, sm);
+                if (UIFactory.showDialog(new UIPanel[]{
                                 tableExportPanel}, true, true)) {
                 }
         }

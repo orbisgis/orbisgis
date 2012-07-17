@@ -43,7 +43,6 @@ import org.gdms.data.db.DBSource;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.TableDescription;
-import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -171,11 +170,11 @@ public class TableSelectionPanel implements UIPanel {
         }
 
         @Override
-        public SIFMessage validateInput() {
+        public String validateInput() {
                 if (getSelectedDBSources().length == 0) {
-                        return new SIFMessage(i18n.tr("Select one table or view"), SIFMessage.ERROR);
+                        return i18n.tr("Please select one table or view");
                 }
-                return new SIFMessage();
+                return null;
         }
 
         @Override

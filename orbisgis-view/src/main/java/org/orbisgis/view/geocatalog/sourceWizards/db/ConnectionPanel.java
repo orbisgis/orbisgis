@@ -36,7 +36,6 @@ import org.gdms.driver.Driver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.DBDriverFilter;
 import org.gdms.source.SourceManager;
-import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.multiInputPanel.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -76,31 +75,38 @@ public class ConnectionPanel extends MultiInputPanel {
                 addValidation(new MIPValidation() {
 
                         @Override
-                        public SIFMessage validate(MultiInputPanel mid) {
+                        public String validate(MultiInputPanel mid) {
 
                                 //Validation
                                 if (mid.getInput(DBNAME).isEmpty()) {
-                                        return new SIFMessage(i18n.tr("The database name is mandatory"), SIFMessage.ERROR);
+                                        return i18n.tr("The database name is mandatory");
                                 }
-
-                                if (mid.getInput(HOST).isEmpty()) {
-                                        return new SIFMessage(i18n.tr("The host cannot be null"), SIFMessage.ERROR);
+                                String host = mid.getInput(HOST);
+                                if (host.isEmpty()) {
+                                        return i18n.tr("The host cannot be null");
                                 }
+                                String port = mid.getInput(PORT);
 
-                                if (mid.getInput(PORT).isEmpty()) {
-                                        // addValidationExpression("(" + PORT + " >= 0) and (" + PORT
-                                        //+ " <= 32767)", i18n.tr("Port"));
-                                        //return new SIFMessage(i18n.tr("The host cannot be null"), SIFMessage.ERROR);
+                                if (port.isEmpty()) {
+                                        try {
+                                                Integer portNumber = Integer.valueOf(port);
+                                                if (portNumber >= 0 && portNumber <= 32767) {
+                                                        return i18n.tr("The port number must be comprise between 0 and 32767");
+                                                }
+
+                                        } catch (NumberFormatException e) {
+                                                return i18n.tr("Cannot format the port code into an int");
+                                        }
                                 }
-
-                                return new SIFMessage();
+                                return null;
 
 
                         }
                 });
 
 
-        }
+        }        
+        
 
         private InputType getDriverInput() {
                 DriverManager driverManager = sourceManager.getDriverManager();
@@ -117,8 +123,6 @@ public class ConnectionPanel extends MultiInputPanel {
                 ComboBoxChoice combo = new ComboBoxChoice(ids, texts);
                 return combo;
         }
-
-       
 
         public Connection getConnection() throws SQLException {
                 DBSource dbSource = getDBSource();
@@ -138,8 +142,8 @@ public class ConnectionPanel extends MultiInputPanel {
         }
 
         @Override
-        public SIFMessage validateInput() {
-                return new SIFMessage();
+        public String validateInput() {
+                return null;
         }
 
         public DBSource getDBSource() {
@@ -156,7 +160,7 @@ public class ConnectionPanel extends MultiInputPanel {
                 if (getInput(SSL).equals("true")) {
                         ssl = true;
                 }
-
+                
                 return new DBSource(host, port, dbName, user, password, getDBDriver().getPrefixes()[0], ssl);
         }
 

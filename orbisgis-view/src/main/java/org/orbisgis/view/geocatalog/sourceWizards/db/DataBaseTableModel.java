@@ -28,15 +28,11 @@
  */
 package org.orbisgis.view.geocatalog.sourceWizards.db;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.driver.DBDriver;
-import org.gdms.driver.TableDescription;
 import org.gdms.source.SourceManager;
 import org.jproj.CoordinateReferenceSystem;
 import org.orbisgis.core.DataManager;
@@ -46,39 +42,29 @@ import org.xnap.commons.i18n.I18nFactory;
 
 /**
  *
- *      @author ebocher
+ * @author ebocher
  */
 public class DataBaseTableModel extends AbstractTableModel {
 
         private static final Logger LOGGER = Logger.getLogger(DataBaseTableModel.class);
         protected final static I18n I18N = I18nFactory.getI18n(DataBaseTableModel.class);
-        private Connection connection;
-        private DBDriver dbDriver;
-        private String[] schemas;
-        private TableDescription[] tables;
         private final String[] sourceNames;
         String[] columnNames;
         private ArrayList<DataBaseRow> data = new ArrayList<DataBaseRow>();
-        private final TableExportPanel tableExportPanel;
 
-        public DataBaseTableModel(TableExportPanel tableExportPanel, ConnectionPanel firstPanel, String[] sourceNames) {
+        public DataBaseTableModel(SourceManager sourceManager, String[] sourceNames) {
                 this.sourceNames = sourceNames;
-                this.tableExportPanel=tableExportPanel;
-                init(firstPanel);
-                
+                init(sourceManager);
+
         }
 
         /**
          * Create the panel to display the list of tables.
-         * @param firstPanel 
+         *
+         * @param firstPanel
          */
-        private void init(ConnectionPanel firstPanel) {
+        private void init(SourceManager sourceManager) {
                 try {
-                        this.dbDriver = firstPanel.getDBDriver();
-                        this.connection = firstPanel.getConnection();
-                        schemas = dbDriver.getSchemas(connection);
-                        tables = dbDriver.getTables(connection);
-                        SourceManager sourceManager = firstPanel.getSourceManager();
                         DataManager dm = (DataManager) Services.getService(DataManager.class);
                         DataSourceFactory dsf = dm.getDataSourceFactory();
                         columnNames = new String[]{"Source name", "Table name", "Schema", "PK", "Spatial field", "EPSG code", "Export"};
@@ -91,13 +77,13 @@ public class DataBaseTableModel extends AbstractTableModel {
                                         DataSource ds = dsf.getDataSource(sourceName);
                                         ds.open();
                                         String geomField = ds.getFieldName(ds.getSpatialFieldIndex());
-                                        CoordinateReferenceSystem crs = ds.getCRS();                                        
+                                        CoordinateReferenceSystem crs = ds.getCRS();
                                         int epsgCode = -1;
-                                        if(crs!=null){
-                                             epsgCode = crs.getEPSGCode();   
+                                        if (crs != null) {
+                                                epsgCode = crs.getEPSGCode();
                                         }
                                         ds.close();
-                                        DataBaseRow row = new DataBaseRow(sourceName,sourceName, "public", "gid", geomField, epsgCode, Boolean.TRUE);
+                                        DataBaseRow row = new DataBaseRow(sourceName, sourceName, "public", "gid", geomField, epsgCode, Boolean.TRUE);
                                         row.setIsSpatial(true);
                                         data.add(row);
                                 }
@@ -124,7 +110,7 @@ public class DataBaseTableModel extends AbstractTableModel {
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-                if(columnIndex==0){
+                if (columnIndex == 0) {
                         return false;
                 }
                 if (!data.get(rowIndex).isIsSpatial()) {
@@ -138,11 +124,9 @@ public class DataBaseTableModel extends AbstractTableModel {
         @Override
         public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
                 DataBaseRow row = data.get(rowIndex);
-                row.setValue(aValue, columnIndex);                
+                row.setValue(aValue, columnIndex);
                 data.set(rowIndex, row);
                 fireTableCellUpdated(rowIndex, columnIndex);
-                tableExportPanel.validateInput("Salut");
-
         }
 
         @Override
@@ -157,24 +141,25 @@ public class DataBaseTableModel extends AbstractTableModel {
 
         /**
          * Returns all cell values as a object for a given row
+         *
          * @param row
-         * @return 
+         * @return
          */
         public Object[] getObjects(int row) {
                 return data.get(row).getObjects();
         }
 
         /*
-         *   Return the row
+         * Return the row
          */
         public DataBaseRow getRow(int rowIndex) {
                 return data.get(rowIndex);
         }
 
         /**
-         *      Check if one row is selected
+         * Check if one row is selected
          *
-         *      @return
+         * @return
          */
         public boolean isOneRowSelected() {
                 for (DataBaseRow row : data) {
@@ -184,11 +169,11 @@ public class DataBaseTableModel extends AbstractTableModel {
                 }
                 return false;
         }
-        
+
         /**
-         *      Check if one source already exists
+         * Check if one source already exists
          *
-         *      @return
+         * @return
          */
         public boolean isSourceExist(String source) {
                 for (DataBaseRow row : data) {
@@ -200,29 +185,13 @@ public class DataBaseTableModel extends AbstractTableModel {
         }
 
         /**
-         * Returns all schema names avaible in the database
-         * @return 
-         */
-        public String[] getSchemas() {
-                return schemas;
-        }
-
-        /**
-         * Returns all table names avaible in the database
-         * @return 
-         */        
-        public TableDescription[] getTables() {
-                return tables;
-        }
-
-        /**
          * Returns all rows
-         * @return 
+         *
+         * @return
          */
         public ArrayList<DataBaseRow> getData() {
                 return data;
         }
         
-        
-        
+       
 }

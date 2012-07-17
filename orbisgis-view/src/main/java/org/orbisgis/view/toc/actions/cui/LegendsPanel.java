@@ -47,7 +47,6 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
-import javax.xml.crypto.dsig.keyinfo.RetrievalMethod;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryTypeConstraint;
 import org.gdms.data.types.Type;
@@ -59,7 +58,6 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.factory.LegendFactory;
-import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
@@ -297,14 +295,13 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
 
         @Override
-        public SIFMessage validateInput() {
+        public String validateInput() {
                 if (!legendTree.hasLegend()) {
-                        return new SIFMessage(I18N.tr("You must create almost one legend"), SIFMessage.ERROR);
+                        return I18N.tr("You must create almost one legend");
                 }
-                List<SIFMessage> errors = styleWrapper.validateInput();
+                List<String> errors = styleWrapper.validateInput();
                 StringBuilder sb = new StringBuilder();
-                for (SIFMessage s : errors) {
-                        String message = s.getMessage();
+                for (String message : errors) {
                         if (message != null && !message.isEmpty()) {
                                 sb.append(message);
                                 sb.append("\n");
@@ -312,9 +309,9 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                 }
                 String err = sb.toString();
                 if (err != null && !err.isEmpty()) {
-                        return new SIFMessage(err, SIFMessage.ERROR);
+                        return err;
                 }
-                return new SIFMessage();
+                return null;
         }
 
         @Override

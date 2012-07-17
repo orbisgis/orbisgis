@@ -28,9 +28,11 @@
  */
 package org.orbisgis.view.geocatalog.sourceWizards.db;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.apache.log4j.Logger;
 import org.gdms.driver.DataSet;
+import org.orbisgis.view.geocatalog.Catalog;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  *
@@ -46,9 +48,9 @@ public class DataBaseRow {
         private Boolean export;
         private boolean isSpatial = false;
         private String spatialField = "the_geom";
-        Pattern pattern = Pattern.compile("[^a-zA-Z]", Pattern.CASE_INSENSITIVE);
-        private String warningMessage = null;
         private String inputSpatialField;
+        private static final Logger LOGGER = Logger.getLogger(Catalog.class);
+        protected final static I18n I18N = I18nFactory.getI18n(Catalog.class);
 
         /*
          * Create a row object that stores all informations to export in a
@@ -57,7 +59,7 @@ public class DataBaseRow {
         public DataBaseRow(String intputSourceName, String outputSourceName, String schema, String pk, String spatialField, int epsg_code, Boolean export) {
                 this.intputSourceName = intputSourceName;
                 this.outputsourceName = outputSourceName;
-                this.inputSpatialField=spatialField;
+                this.inputSpatialField = spatialField;
                 this.schema = schema;
                 this.pk = pk;
                 this.spatialField = spatialField;
@@ -182,9 +184,8 @@ public class DataBaseRow {
                                 try {
                                         Integer value = Integer.valueOf(aValue.toString());
                                         setEpsg_code(value);
-                                        setErrorMessage(null);
                                 } catch (NumberFormatException e) {
-                                        setErrorMessage("Cannot format the EPSG code into an int. The default code will be used.");
+                                        LOGGER.error(I18N.tr("Cannot format the EPSG code into an int. The default code will be used."), e);
                                 }
                                 break;
 
@@ -260,23 +261,6 @@ public class DataBaseRow {
                 return new Object[]{getInputSourceName(), getOutPutsourceName(), getSchema(), getPK(), getSpatialField(), getEpsg_code(), isExport()};
         }
 
-        /**
-         * Check if the value contains special characters in it
-         *
-         * @param value
-         * @return value
-         * @throws DBExporterException
-         */
-        public String checkString(String value) throws DBExporterException {
-                Matcher matcher = pattern.matcher(value);
-                boolean answer = matcher.find();
-                if (answer) {
-                        throw new DBExporterException("Special characters are not supported.");
-                }
-                return value;
-
-        }
-
         public void setOutPutsourceName(String outPutsourceName) {
                 this.outputsourceName = outPutsourceName;
         }
@@ -284,27 +268,17 @@ public class DataBaseRow {
         public String getOutPutsourceName() {
                 return outputsourceName;
         }
-        
-        public String getInputSpatialField(){
-                return  inputSpatialField;
+
+        public String getInputSpatialField() {
+                return inputSpatialField;
         }
 
         public void setInputSpatialField(String inputSpatialField) {
                 this.inputSpatialField = inputSpatialField;
         }
-        
-        
 
-        private void setErrorMessage(String errorMessage) {
-                this.warningMessage = errorMessage;
-        }
-
-        public String getErrorMessage() {
-                return warningMessage;
-        }
-
-        public String toSQL(DataSet dataSet) {
-                StringBuilder sb = new StringBuilder();                
+        public String toSQL() {
+                StringBuilder sb = new StringBuilder();
                 sb.append("SELECT ");
                 sb.append("* EXCEPT(+").append(getPK()).append(") ").append(getPK());
                 if (getEpsg_code() != -1) {

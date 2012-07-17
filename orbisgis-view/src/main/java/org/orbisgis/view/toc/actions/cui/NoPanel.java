@@ -39,7 +39,6 @@ package org.orbisgis.view.toc.actions.cui;
 import java.awt.Component;
 import javax.swing.JLabel;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -89,8 +88,8 @@ public class NoPanel implements ILegendPanel {
 	}
 
 	@Override
-	public SIFMessage validateInput() {
-		return new SIFMessage();
+	public String validateInput() {
+		return null;
 	}
 
         @Override

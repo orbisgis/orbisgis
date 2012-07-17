@@ -5,7 +5,6 @@ import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
-import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
 
@@ -27,7 +26,7 @@ public class AskValidRow extends MultiInputPanel {
 	}
 
 	@Override
-	public SIFMessage validateInput() {
+	public String validateInput() {
 		try {
 			for (int i = 0; i < fieldCount; i++) {
 				String input = getInput("f" + i);
@@ -35,14 +34,14 @@ public class AskValidRow extends MultiInputPanel {
 				if (input.length() > 0) {
 					                                   inputValue = AskValidValue.inputToValue(input, types[i]);
 				}
-				SIFMessage error = AskValidValue.validateValue(ds, inputValue, i,
+				String error = AskValidValue.validateValue(ds, inputValue, i,
 						types[i]);
 				
 					return error;
 				
 			}
 		} catch (ParseException e) {
-			return new SIFMessage(e.getMessage(), SIFMessage.ERROR);
+			return e.getMessage();
 		}
 		return super.validateInput();
 	}

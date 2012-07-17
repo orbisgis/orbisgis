@@ -52,7 +52,6 @@ import java.util.logging.Logger;
 import javax.swing.*;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.sif.SIFMessage;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 
@@ -164,8 +163,8 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 	}
 
 	@Override
-	public SIFMessage validateInput() {
-		return new SIFMessage();
+	public String validateInput() {
+		return null;
 	}
 
 	@Override
