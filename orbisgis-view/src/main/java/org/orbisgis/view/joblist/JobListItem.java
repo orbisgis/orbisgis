@@ -64,6 +64,8 @@ public class JobListItem extends ContainerItemProperties {
 
         /**
          * Update the list item on job changes and make the panel
+         * @param simplifiedPanel Job displayed on a single line
+         * @return 
          */
         public JobListItem listenToJob(boolean simplifiedPanel) {
                 job.addProgressListener(listener);    

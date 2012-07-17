@@ -63,6 +63,14 @@ public class JobListPanel extends JPanel {
                 return listModel;
         }
 
+        @Override
+        public void removeNotify() {
+                super.removeNotify();
+                setModel(null);               
+        }
+
+        
+        
         /**
          * Set the model, contents change events will be ignored,
          * The component attach with the item must be updated
@@ -72,8 +80,15 @@ public class JobListPanel extends JPanel {
                 if(this.listModel!=null) {
                         this.listModel.removeListDataListener(modelListener);
                 }
-                listModel.addListDataListener(modelListener);
                 this.listModel = listModel;
+                if(listModel!=null) {
+                        listModel.addListDataListener(modelListener);
+                        //Read the content
+                        for(int rowi=0;rowi<listModel.getSize();rowi++) {
+                                onAddRow(rowi);
+                        }
+                        repaint();
+                }
         }
 
         /**
@@ -94,7 +109,6 @@ public class JobListPanel extends JPanel {
         
         private void onAddRow(int index) {
                 add(listRenderer.getListCellRendererComponent(null, listModel.getElementAt(index), index, true, true));
-                repaint();
         }
         /**
          * Remove the Swing component
@@ -104,7 +118,6 @@ public class JobListPanel extends JPanel {
                 try {
                         if(index<getComponentCount()) {
                                 remove(index);
-                                repaint();
                         }
                 } catch (ArrayIndexOutOfBoundsException ex) {
                         LOGGER.error(ex);
@@ -118,6 +131,7 @@ public class JobListPanel extends JPanel {
                         for(int index=lde.getIndex0();index<=lde.getIndex1();index++) {
                                 onAddRow(index);
                         }
+                        repaint();
                 }
 
                 @Override
@@ -125,6 +139,7 @@ public class JobListPanel extends JPanel {
                         for(int index=lde.getIndex0();index<=lde.getIndex1();index++) {
                                 onRemoveRow(index);
                         }
+                        repaint();
                 }
 
                 @Override

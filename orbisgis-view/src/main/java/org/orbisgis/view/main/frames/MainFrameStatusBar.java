@@ -5,13 +5,15 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.event.*;
+import java.awt.event.ComponentListener;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseListener;
 import java.beans.EventHandler;
+import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataListener;
-import javax.swing.plaf.basic.BasicSliderUI;
 import org.orbisgis.view.components.statusbar.StatusBar;
 import org.orbisgis.view.joblist.JobListCellRenderer;
 import org.orbisgis.view.joblist.JobListItem;
@@ -20,7 +22,6 @@ import org.orbisgis.view.joblist.JobListPanel;
 
 /**
  * The status bar of the MainFrame
- * @author fortin
  */
 public class MainFrameStatusBar extends StatusBar {
         //Layout parameters
@@ -29,7 +30,8 @@ public class MainFrameStatusBar extends StatusBar {
         private final static int STATUS_BAR_HEIGHT = 30;
         //JobLabel
         private JPanel jobListBar;     //This component contain the first job panel
-        private JobListPanel jobList;  //Popup Panel
+        //private JobListPanel jobList;  //Popup Panel
+        private JobListModel runningJobs;
         private JobListItem firstJob;  //Job[0] listener & simplified panel
         JFrame jobPopup;               //The floating frame
         
@@ -42,11 +44,8 @@ public class MainFrameStatusBar extends StatusBar {
         }
         
         private void makeJobList() {
-                jobList = new JobListPanel();
-                jobList.setRenderer(new JobListCellRenderer());
-                jobList.setModel(new JobListModel().listenToBackgroundManager());
-                jobList.getModel().addListDataListener(EventHandler.create(ListDataListener.class,this,"onListContentChanged"));
-                //jobList.addContainerListener(EventHandler.create(ContainerListener.class,this,"onListContentChanged"));
+                runningJobs = new JobListModel().listenToBackgroundManager();
+                runningJobs.addListDataListener(EventHandler.create(ListDataListener.class,this,"onListContentChanged"));
                 jobListBar = new JPanel(new BorderLayout());
                 //Set hand cursor to notify the user that a list/link can be poped-up
                 jobListBar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -59,6 +58,7 @@ public class MainFrameStatusBar extends StatusBar {
                 super.removeNotify();
                 closeJobPopup();
                 clearJobTitle();
+                runningJobs.dispose();
         }
         
         /**
@@ -66,10 +66,16 @@ public class MainFrameStatusBar extends StatusBar {
          * The JobList component must be shown and the focus set on it
          */
         public void onUserClickJobLabel() {
+                closeJobPopup();
                 jobPopup = new JFrame();
                 jobPopup.setUndecorated(true);
-                jobPopup.setContentPane(jobList);
                 jobPopup.requestFocusInWindow();
+                //Create the jobList Panel
+                JobListPanel jobList = new JobListPanel();
+                jobList.setRenderer(new JobListCellRenderer());
+                jobList.setModel(runningJobs);
+                jobList.setBorder(BorderFactory.createEtchedBorder());
+                jobPopup.setContentPane(jobList);
                 //On lost focus this window must be closed
                 jobPopup.addFocusListener(
                         EventHandler.create(FocusListener.class,this,
@@ -105,7 +111,7 @@ public class MainFrameStatusBar extends StatusBar {
         public void onJobPopupResize() {
                 if(jobPopup!=null) {
                         Point labelLocation = jobListBar.getLocationOnScreen();
-                        jobPopup.setLocation(new Point(labelLocation.x,labelLocation.y-jobList.getHeight()));
+                        jobPopup.setLocation(new Point(labelLocation.x,labelLocation.y-jobPopup.getContentPane().getHeight()));
                 }
                 
         }
@@ -127,9 +133,8 @@ public class MainFrameStatusBar extends StatusBar {
          * the panel title label must be hide/shown
          */
         public void onListContentChanged() {
-                ListModel lm = jobList.getModel();
-                if(lm.getSize()>0) {
-                        JobListItem firstItem = (JobListItem)lm.getElementAt(0);
+                if(runningJobs.getSize()>0) {
+                        JobListItem firstItem = (JobListItem)runningJobs.getElementAt(0);
                         //If the first job is not the one shown in the status bar
                         if(firstJob==null || !firstItem.equals(firstJob)) {
                                 clearJobTitle();
