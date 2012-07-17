@@ -2,8 +2,12 @@
 package org.orbisgis.view.main.frames;
 
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseListener;
 import java.beans.EventHandler;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataListener;
@@ -26,6 +30,7 @@ public class MainFrameStatusBar extends StatusBar {
         private JPanel jobListBar;     //This component contain the first job panel
         private JobListPanel jobList;  //Popup Panel
         private JobListItem firstJob;  //Job[0] listener & simplified panel
+        JFrame jobPopup;               //The floating frame
         
         public MainFrameStatusBar() {
                 super(OUTER_BAR_BORDER, HORIZONTAL_EMPTY_BORDER);
@@ -42,17 +47,51 @@ public class MainFrameStatusBar extends StatusBar {
                 jobList.getModel().addListDataListener(EventHandler.create(ListDataListener.class,this,"onListContentChanged"));
                 //jobList.addContainerListener(EventHandler.create(ContainerListener.class,this,"onListContentChanged"));
                 jobListBar = new JPanel(new BorderLayout());
+                //Set hand cursor to notify the user that a list/link can be poped-up
+                jobListBar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+                jobListBar.addMouseListener(EventHandler.create(MouseListener.class,this,"onUserClickJobLabel",null,"mouseClicked"));
                 addComponent(jobListBar);
         }
 
         @Override
         public void removeNotify() {
                 super.removeNotify();
+                closeJobPopup();
                 clearJobTitle();
         }
         
+        /**
+         * The user click on the Job label
+         * The JobList component must be shown and the focus set on it
+         */
+        public void onUserClickJobLabel() {
+                jobPopup = new JFrame();
+                jobPopup.setUndecorated(true);
+                jobPopup.setLocationRelativeTo(jobListBar);
+                jobPopup.setContentPane(jobList);
+                jobPopup.requestFocusInWindow();
+                jobPopup.addFocusListener(
+                        EventHandler.create(FocusListener.class,this,
+                        "onJobPopupLostFocus",null,"focusLost"));
+                //Do size and place
+                jobPopup.setVisible(true);
+                jobPopup.pack();
+                add(jobPopup);                
+        }
         
-        
+        private void closeJobPopup() {
+                if(jobPopup!=null) {
+                        jobPopup.dispose();
+                        jobPopup = null;
+                }
+        }
+        /**
+         * The user click outside the joblist
+         * This window need to be closed
+         */
+        public void onJobPopupLostFocus() {
+                closeJobPopup();
+        }
         private void clearJobTitle() {
                 if(firstJob!=null) {
                         firstJob.dispose();
@@ -86,5 +125,5 @@ public class MainFrameStatusBar extends StatusBar {
                 } else {
                         clearJobTitle();
                 }
-        }     
+        }
 }
