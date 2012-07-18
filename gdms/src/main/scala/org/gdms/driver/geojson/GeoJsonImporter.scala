@@ -58,7 +58,7 @@ class GeoJsonImporter extends FileImporter with Parser {
   private var file: File = _
   private val metadata = new DefaultMetadata()
   private val gf = new GeometryFactory
-  private lazy val jsonFactory = new JsonFactory()
+  private lazy val jsonFactory = loadJsonFactory
   private implicit var jp: JsonParser = _
   
   // constant values for Importer
@@ -104,5 +104,14 @@ class GeoJsonImporter extends FileImporter with Parser {
     jp = jsonFactory.createJsonParser(file)
     
     parse(rw.addValues, metadata)
+  }
+  
+  private def loadJsonFactory: JsonFactory = {
+    import JsonParser.Feature._
+    
+    (new JsonFactory)
+    .configure(ALLOW_COMMENTS, true)
+    .configure(ALLOW_SINGLE_QUOTES, true)
+    .configure(ALLOW_NON_NUMERIC_NUMBERS, true)
   }
 }

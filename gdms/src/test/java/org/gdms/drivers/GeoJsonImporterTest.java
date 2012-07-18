@@ -40,6 +40,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonParser.Feature;
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
@@ -70,10 +71,16 @@ public class GeoJsonImporterTest {
         static {
                 TestResourceHandler.init();
         }
+        
+        private JsonFactory createFactory() {
+                return new JsonFactory().configure(Feature.ALLOW_COMMENTS, true).
+                        configure(Feature.ALLOW_SINGLE_QUOTES, true).
+                        configure(Feature.ALLOW_NON_NUMERIC_NUMBERS, true);
+        }
 
         @Test
         public void testCoordinateParsing() throws Exception {
-                JsonFactory f = new JsonFactory();
+                JsonFactory f = createFactory();
                 JsonParser jp = f.createJsonParser("{\"a\": [0.12, 1.42, 2.7]}");
                 jp.nextToken(); // start object
                 jp.nextToken(); // field name
@@ -91,16 +98,16 @@ public class GeoJsonImporterTest {
 
                 assertTrue(new Coordinate(0.12, 1.42).equals2D(c));
         }
-        
+
         private List<Value[]> parseFile(String fileName) throws IOException {
-                JsonFactory f = new JsonFactory();
+                JsonFactory f = createFactory();
                 final File file = new File(TestResourceHandler.TESTRESOURCES, fileName);
                 JsonParser jp = f.createJsonParser(file);
-                
+
                 final List<Value[]> vals = new ArrayList<Value[]>();
                 DummyParser p = new DummyParser();
                 Metadata met = p.metadata(jp);
-                
+
                 jp = f.createJsonParser(file);
                 p.parse(jp, met, new RowWriter() {
 
@@ -109,7 +116,7 @@ public class GeoJsonImporterTest {
                                 vals.add(row);
                         }
                 });
-                
+
                 return vals;
         }
 

@@ -526,8 +526,7 @@ trait Parser {
     
     until(JsonToken.END_ARRAY).map { _ =>
       
-      next // field_name (type) 
-      val name = jp.getCurrentName
+      next // field_name (usually 'type', ignored here) 
       
       next // value_string
       val geomType = jp.getText
@@ -549,7 +548,7 @@ trait Parser {
               case Some(a) => a
             }
           }
-        case a => throw new DriverException("Bim: " + a)
+        case a => throw new DriverException("Malformed geojson file. Expected 'Feature', found '" + a + "'")
       }
       
       next // next feature
@@ -600,7 +599,7 @@ trait Parser {
     
       geomType match {
         case "Feature" => add(SortedMap(featureMetadata(firstParam): _*))
-        case a => throw new DriverException("Bim: " + a)
+        case a => throw new DriverException("Malformed geojson file. Expected 'Feature', found '" + a + "'")
       }
       
       next // next feature
