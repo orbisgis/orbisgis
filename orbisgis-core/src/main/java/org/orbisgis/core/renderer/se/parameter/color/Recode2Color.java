@@ -1,10 +1,12 @@
 package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.RecodeType;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.Recode;
@@ -54,5 +56,10 @@ public class Recode2Color extends Recode<ColorParameter, ColorLiteral> implement
                 //If we can't retrieve any information in sds, getParameter will provide a 
                 //default value, so we won't obtain any error.
                 return getParameter(sds, fid).getColor(sds, fid);
+        }
+
+        @Override
+        public Color getColor(Map<String,Value> map) throws ParameterException {
+                return getParameter(map).getColor(map);
         }
 }

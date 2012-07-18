@@ -1,12 +1,14 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.util.Iterator;
+import java.util.Map;
 
 import net.opengis.fes._2.LiteralType;
 import net.opengis.se._2_0.core.CategorizeType;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.ThresholdBelongsToType;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -71,14 +73,19 @@ public final class Categorize2Real extends Categorize<RealParameter, RealLiteral
 
         @Override
         public Double getValue(DataSource sds, long fid) throws ParameterException{
-
-		if (sds == null){
-			throw new ParameterException("No feature");
-		}
-
-		return getParameter(sds, fid).getValue(sds, fid);
+            if (sds == null){
+                throw new ParameterException("No feature");
+            }
+            return getParameter(sds, fid).getValue(sds, fid);
         }
 
+        @Override
+        public Double getValue(Map<String,Value> map) throws ParameterException{
+            if (map == null){
+                throw new ParameterException("No feature");
+            }
+            return getParameter(map).getValue(map);
+        }
 
 	@Override
 	public void setClassValue(int i, RealParameter value){

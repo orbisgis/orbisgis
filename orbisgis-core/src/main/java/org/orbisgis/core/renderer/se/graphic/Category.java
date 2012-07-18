@@ -10,6 +10,7 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 
@@ -207,6 +208,27 @@ public final class Category implements SymbolizerNode, FillNode, StrokeNode, Gra
 
             if (this.getMeasure() != null) {
                 ret.addAll(getMeasure().dependsOnFeature());
+            }
+            return ret;
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+            UsedAnalysis ret = new UsedAnalysis();
+            if (this.getFill() != null) {
+                ret.merge(this.getFill().getUsedAnalysis());
+            }
+
+            if (this.getStroke() != null) {
+                ret.merge(getStroke().getUsedAnalysis());
+            }
+
+            if (this.getGraphicCollection() != null) {
+                ret.merge(getGraphicCollection().getUsedAnalysis());
+            }
+
+            if (this.getMeasure() != null) {
+                ret.include(getMeasure());
             }
             return ret;
         }

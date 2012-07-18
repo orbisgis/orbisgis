@@ -43,6 +43,7 @@ import java.util.List;
 import net.opengis.se._2_0.core.AlternativeStrokeElementsType;
 import net.opengis.se._2_0.core.StrokeElementType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * {@code AlternativeStrokeElements} provides the option for the rendering system to 
@@ -98,6 +99,15 @@ public class AlternativeStrokeElements extends CompoundStrokeElement {
                 HashSet<String> result = new HashSet<String>();
                 for (StrokeElement elem : elements) {
                         result.addAll(elem.dependsOnFeature());
+                }
+                return result;
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis result = new UsedAnalysis();
+                for (StrokeElement elem : elements) {
+                        result.merge(elem.getUsedAnalysis());
                 }
                 return result;
         }

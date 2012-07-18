@@ -39,10 +39,12 @@
 package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
+import java.util.Map;
 import java.util.Random;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.parameter.Literal;
 
 /**
@@ -95,6 +97,11 @@ public class ColorLiteral extends Literal implements ColorParameter{
 
     @Override
     public Color getColor(DataSource sds, long fid){
+        return color;
+    }
+
+    @Override
+    public Color getColor(Map<String,Value> map){
         return color;
     }
 

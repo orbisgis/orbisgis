@@ -5,6 +5,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ExternalGraphicType;
 import net.opengis.se._2_0.core.GraphicType;
@@ -12,7 +13,7 @@ import net.opengis.se._2_0.core.MarkGraphicType;
 import net.opengis.se._2_0.core.PointTextGraphicType;
 import net.opengis.se._2_0.thematic.AxisChartType;
 import net.opengis.se._2_0.thematic.PieChartType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -58,7 +59,6 @@ public abstract class Graphic implements SymbolizerNode {
             }
 
         } catch (IOException ex) {
-            System.out.println ("Ex: " + ex);
             ex.printStackTrace(System.err);
             return null;
         } catch(URISyntaxException e){
@@ -85,10 +85,7 @@ public abstract class Graphic implements SymbolizerNode {
 
     /**
      * Return graphic bounds. Bounds center point shall match CRS origin !
-     *
-     *
-     * @param sds
-     * @param fid
+     * @param map
      * @param selected
      * @param mt
      * @param at
@@ -96,21 +93,20 @@ public abstract class Graphic implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract Rectangle2D getBounds(DataSource sds,
-            long fid, MapTransform mt) throws ParameterException, IOException;
+    public abstract Rectangle2D getBounds(Map<String,Value> map, MapTransform mt)
+            throws ParameterException, IOException;
 
     /**
      * Draw this graphic using {@code g2}.
      * @param g2
-     * @param sds
-     * @param fid
+     * @param map
      * @param selected
      * @param mt
      * @param at
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, DataSource sds, long fid, 
+    public abstract void draw(Graphics2D g2, Map<String,Value> map,
             boolean selected, MapTransform mt, AffineTransform at) throws ParameterException, IOException;
 
     /**

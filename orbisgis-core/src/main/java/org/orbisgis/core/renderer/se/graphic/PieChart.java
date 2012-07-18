@@ -10,12 +10,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.thematic.ObjectFactory;
 import net.opengis.se._2_0.thematic.PieChartType;
 import net.opengis.se._2_0.thematic.PieSubtypeType;
 import net.opengis.se._2_0.thematic.SliceType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
@@ -25,6 +26,7 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.label.StyledText;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -375,16 +377,16 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
     }
 
     @Override
-    public Rectangle2D getBounds(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    public Rectangle2D getBounds(Map<String,Value> map, MapTransform mt) throws ParameterException, IOException {
 
         double r = DEFAULT_RADIUS_PX;
         if (radius != null) {
-            r = Uom.toPixel(radius.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+            r = Uom.toPixel(radius.getValue(map), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
         }
 
         Rectangle2D bounds = new Rectangle2D.Double(-r, -r, 2 * r, 2 * r);
         /*if (transform != null) {
-            AffineTransform at = transform.getGraphicalAffineTransform(false, sds, fid, mt, 2 * r, 2 * r);
+            AffineTransform at = transform.getGraphicalAffineTransform(false, map, mt, 2 * r, 2 * r);
             return at.createTransformedShape(bounds).getBounds2D();
         } else {
             return bounds;
@@ -393,7 +395,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
     }
 
     @Override
-    public void draw(Graphics2D g2, DataSource sds, long fid,
+    public void draw(Graphics2D g2, Map<String,Value> map,
             boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
 
         AffineTransform at = new AffineTransform(fat);
@@ -407,25 +409,25 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
         double r = PieChart.DEFAULT_RADIUS_PX; // 30px by default
 
         if (radius != null) {
-            r = Uom.toPixel(this.getRadius().getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
+            r = Uom.toPixel(this.getRadius().getValue(map), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
         }
 
         double holeR = 0.0;
 
         Area hole = null;
         if (this.holeRadius != null) {
-            holeR = Uom.toPixel(this.getHoleRadius().getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), r);
+            holeR = Uom.toPixel(this.getHoleRadius().getValue(map), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), r);
             hole = new Area(new Arc2D.Double(-holeR, -holeR, 2 * holeR, 2 * holeR, 0, 360, Arc2D.CHORD));
         }
 
         for (int i = 0; i < nSlices; i++) {
             Slice slc = slices.get(i);
-            values[i] = slc.getValue().getValue(sds, fid);
+            values[i] = slc.getValue().getValue(map);
             total += values[i];
             stackedValues[i] = total;
             RealParameter gap = slc.getGap();
             if (gap != null) {
-                gaps[i] = Uom.toPixel(slc.getGap().getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), r);
+                gaps[i] = Uom.toPixel(slc.getGap().getValue(map), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), r);
             } else {
                 gaps[i] = 0.0;
             }
@@ -433,7 +435,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
         }
 
         if (this.getTransform() != null) {
-            at.concatenate(this.getTransform().getGraphicalAffineTransform(false, sds, fid, mt, r, r));
+            at.concatenate(this.getTransform().getGraphicalAffineTransform(false, map, mt, r, r));
         }
 
         // Now, the total is defines, we can compute percentages and slices begin/end angles
@@ -493,7 +495,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
 
 
             if (fill != null) {
-                fill.draw(g2, sds, fid, atShp, selected, mt);
+                fill.draw(g2, map, atShp, selected, mt);
             }
 
 
@@ -522,7 +524,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
 
                 Rectangle2D anchor = labelAt.createTransformedShape(new Rectangle2D.Double(0, 0, 1, 1)).getBounds2D();
 
-                label.draw(g2, sds, fid, selected, mt,
+                label.draw(g2, map, selected, mt,
                         AffineTransform.getTranslateInstance(anchor.getCenterX(), anchor.getCenterY()), null);
             }
 
@@ -531,7 +533,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
         // Stokes must be drawn after fills
         if (stroke != null) {
             for (int i = 0; i < nSlices; i++) {
-                stroke.draw(g2, sds, fid, shapes[i], selected, mt, 0.0);
+                stroke.draw(g2, map, shapes[i], selected, mt, 0.0);
             }
         }
     }
@@ -558,7 +560,27 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
         for (Slice s : slices) {
             result.addAll(s.dependsOnFeature());
         }
+        return result;
+    }
 
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis result = new UsedAnalysis();
+        if (radius != null) {
+            result.include(radius);
+        }
+        if (holeRadius != null) {
+            result.include(holeRadius);
+        }
+        if (stroke != null) {
+            result.merge(stroke.getUsedAnalysis());
+        }
+        if (this.transform != null) {
+            result.merge(transform.getUsedAnalysis());
+        }
+        for (Slice s : slices) {
+            result.merge(s.getUsedAnalysis());
+        }
         return result;
     }
 

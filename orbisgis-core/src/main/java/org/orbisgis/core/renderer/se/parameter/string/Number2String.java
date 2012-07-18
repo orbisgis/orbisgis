@@ -7,11 +7,13 @@ package org.orbisgis.core.renderer.se.parameter.string;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.FormatNumberType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -93,6 +95,12 @@ public class Number2String implements StringParameter {
         @Override
         public String getValue(DataSource sds, long fid) throws ParameterException {
                 double val = numericValue.getValue(sds, fid);
+                return formatter.format(val);
+        }
+
+        @Override
+        public String getValue(Map<String,Value> map) throws ParameterException {
+                double val = numericValue.getValue(map);
                 return formatter.format(val);
         }
 

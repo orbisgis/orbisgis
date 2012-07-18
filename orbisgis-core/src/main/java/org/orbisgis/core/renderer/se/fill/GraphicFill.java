@@ -47,11 +47,12 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.GraphicFillType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TileGapType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.UomNode;
@@ -59,6 +60,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -202,8 +204,8 @@ public final class GraphicFill extends Fill implements UomNode {
      * see Fill
      */
     @Override
-    public void draw(Graphics2D g2, DataSource sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
-        Paint stipple = this.getPaint(fid, sds, selected, mt);
+    public void draw(Graphics2D g2, Map<String,Value> map, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+        Paint stipple = this.getPaint(map, selected, mt);
 
         // TODO handle selected ! 
         if (stipple != null) {
@@ -222,32 +224,32 @@ public final class GraphicFill extends Fill implements UomNode {
      * @throws IOException
      */
     @Override
-    public Paint getPaint(long fid, DataSource sds, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public Paint getPaint(Map<String,Value> map, boolean selected, MapTransform mt) throws ParameterException, IOException {
         double gX = 0.0;
         double gY = 0.0;
 
         if (gapX != null) {
-            gX = gapX.getValue(sds, fid);
+            gX = gapX.getValue(map);
             if (gX < 0.0) {
                 gX = 0.0;
             }
         }
 
         if (gapY != null) {
-            gY = gapY.getValue(sds, fid);
+            gY = gapY.getValue(map);
             if (gY < 0.0) {
                 gY = 0.0;
             }
         }
 
-        Rectangle2D bounds = graphic.getBounds(sds, fid, selected, mt);
+        Rectangle2D bounds = graphic.getBounds(map, selected, mt);
         gX = Uom.toPixel(gX, getUom(), mt.getDpi(), mt.getScaleDenominator(), bounds.getWidth());
         gY = Uom.toPixel(gY, getUom(), mt.getDpi(), mt.getScaleDenominator(), bounds.getHeight());
 
-        return getPaint(fid, sds, selected, mt, graphic, gX, gY, bounds);
+        return getPaint(map, selected, mt, graphic, gX, gY, bounds);
     }
 
-    public static Paint getPaint(long fid, DataSource sds, boolean selected,
+    public static Paint getPaint(Map<String,Value> map, boolean selected,
             MapTransform mt, GraphicCollection graphic, double gX, double gY, Rectangle2D bounds)
             throws ParameterException, IOException {
 
@@ -271,7 +273,7 @@ public final class GraphicFill extends Fill implements UomNode {
             int iy;
             for (ix = 0; ix < 2; ix++) {
                 for (iy = 0; iy < 2; iy++) {
-                    graphic.draw(tile, sds, fid, selected, mt,
+                    graphic.draw(tile, map, selected, mt,
                             AffineTransform.getTranslateInstance(
                             -bounds.getMinX() + gX / 2.0 + deltaX + tWidth * ix,
                             -bounds.getMinY() + gY / 2.0 + deltaY + tHeight * iy));
@@ -300,6 +302,17 @@ public final class GraphicFill extends Fill implements UomNode {
         }
 
         return sb;
+    }
+
+        @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis ua = new UsedAnalysis();
+        ua.include(gapX);
+        ua.include(gapY);
+        if(graphic != null){
+            ua.merge(graphic.getUsedAnalysis());
+        }
+        return ua;
     }
 
     @Override

@@ -2,6 +2,7 @@ package org.orbisgis.core.renderer.se;
 
 import java.util.HashSet;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * SymbolizerNode allow to browse the styling tree
@@ -16,7 +17,7 @@ public interface SymbolizerNode{
      * Get the unit of measure associated with the current node.
      * @return 
      */
-    Uom getUom(); // todo extract !
+    Uom getUom();
 
     /**
      * get the parent of this current <code>SymbolizerNode</code>
@@ -38,9 +39,11 @@ public interface SymbolizerNode{
      * The names of all the needed features, in a {@code HashSet} instance.
      */
     HashSet<String> dependsOnFeature();
-    /*
-     * this methos will be used to update all cached element.
-     * It should be called after each style modification
+
+    /**
+     * Retrieve an object describing the type of analysis made in the
+     * symbolizer.
+     * @return
      */
-    //void update();
+    UsedAnalysis getUsedAnalysis();
 }

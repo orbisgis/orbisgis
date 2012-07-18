@@ -41,12 +41,14 @@
 package org.orbisgis.core.renderer.se.parameter.string;
 
 import java.util.Iterator;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
 import net.opengis.se._2_0.core.CategorizeType;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.ThresholdBelongsToType;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -114,6 +116,15 @@ public final class Categorize2String extends Categorize<StringParameter, StringL
             return getParameter(sds, fid).getValue(sds, fid);
         } catch (ParameterException ex) {
             return this.getFallbackValue().getValue( sds, fid);
+        }
+    }
+
+    @Override
+    public String getValue(Map<String, Value> map) {
+        try {
+            return getParameter(map).getValue(map);
+        } catch (ParameterException ex) {
+            return this.getFallbackValue().getValue(map);
         }
     }
 

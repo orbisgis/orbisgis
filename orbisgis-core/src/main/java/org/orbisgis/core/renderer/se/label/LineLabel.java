@@ -12,16 +12,18 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LineLabelType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * A {@code LineLabel} is a text of some kinf associated to a Line (polygon or not).
@@ -84,11 +86,11 @@ public class LineLabel extends Label {
      *
      */
     @Override
-    public void draw(Graphics2D g2, DataSource sds, long fid, 
+    public void draw(Graphics2D g2, Map<String,Value> map,
             Shape shp, boolean selected, MapTransform mt, RenderContext perm)
             throws ParameterException, IOException {
 
-        Rectangle2D bounds = getLabel().getBounds(g2, sds, fid, mt);
+        Rectangle2D bounds = getLabel().getBounds(g2, map, mt);
         double totalWidth = bounds.getWidth();
 
         // TODO, is shp a polygon ? Yes so create a line like:
@@ -172,14 +174,14 @@ public class LineLabel extends Label {
         double currentPos = startAt;
         double glyphWidth;
 
-        String text = getLabel().getText().getValue(sds, fid);
+        String text = getLabel().getText().getValue(map);
         String[] glyphs = text.split("");
 
         ArrayList<Shape> outlines = new ArrayList<Shape>();
 
         for (String glyph : glyphs) {
             if (glyph != null && !glyph.isEmpty()) {
-                Rectangle2D gBounds = getLabel().getBounds(g2, glyph, sds, fid, mt);
+                Rectangle2D gBounds = getLabel().getBounds(g2, glyph, map, mt);
 
                 glyphWidth = gBounds.getWidth()*way;
                 Point2D.Double pAt = ShapeHelper.getPointAt(shp, currentPos);
@@ -191,13 +193,13 @@ public class LineLabel extends Label {
                 AffineTransform at = AffineTransform.getTranslateInstance(pAt.x, pAt.y);
                 at.concatenate(AffineTransform.getRotateInstance(theta));
                 currentPos += glyphWidth;
-                outlines.add(getLabel().getOutline(g2, glyph, sds, fid, mt, at, perm, vA));
+                outlines.add(getLabel().getOutline(g2, glyph, map, mt, at, perm, vA));
             } else {
                 //System.out.println ("Space...");
                 //currentPos += emWidth*way;
             }
         }
-        getLabel().drawOutlines(g2, outlines, sds, fid, selected, mt);
+        getLabel().drawOutlines(g2, outlines, map, selected, mt);
     }
 
     @Override
@@ -223,5 +225,13 @@ public class LineLabel extends Label {
             return getLabel().dependsOnFeature();
         }
         return new HashSet<String>();
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        if (getLabel() != null) {
+            return getLabel().getUsedAnalysis();
+        }
+        return new UsedAnalysis();
     }
 }
