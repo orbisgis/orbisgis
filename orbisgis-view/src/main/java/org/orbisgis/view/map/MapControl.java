@@ -62,6 +62,7 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.DefaultJobId;
+import org.orbisgis.view.background.JobId;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.ToolListener;
 import org.orbisgis.view.map.tool.ToolManager;
@@ -77,8 +78,8 @@ import org.xnap.commons.i18n.I18nFactory;
 
 public class MapControl extends JComponent implements ContainerListener {
         //Minimal Time in ms between two intermediate paint of drawing process
-        private static final long IntermediateDrawPaintInterval = 200;
-    
+        private static final long INTERMEDIATE_DRAW_PAINT_INTERVAL = 200;
+        public static final String JOB_DRAWING_PREFIX_ID = "MapControl-Drawing";
         private static final Logger LOGGER = Logger.getLogger(MapControl.class);
         protected final static I18n I18N = I18nFactory.getI18n(MapControl.class);
 	private static int lastProcessId = 0;
@@ -103,6 +104,7 @@ public class MapControl extends JComponent implements ContainerListener {
 	private MapContext mapContext;
 
 	private Drawer drawer;
+        private JobId drawingId;
 
 	private boolean showCoordinates = true;
 
@@ -258,8 +260,8 @@ public class MapControl extends JComponent implements ContainerListener {
 				// now we start the actual drawer
 				drawer = new Drawer();
 				BackgroundManager bm = Services.getService(BackgroundManager.class);
-				bm.nonBlockingBackgroundOperation(new DefaultJobId(
-						"org.orbisgis.jobs.MapControl-" + processId), drawer);
+				drawingId = new DefaultJobId(JOB_DRAWING_PREFIX_ID + processId);
+                                bm.nonBlockingBackgroundOperation(drawingId, drawer);
                     } else {
                         // Currently drawing with a mix of old and new map context !
                         // Stop the drawing
@@ -303,10 +305,12 @@ public class MapControl extends JComponent implements ContainerListener {
 		public Drawer() {
 		}
 
+                @Override
 		public String getTaskName() {
 			return I18N.tr("Drawing");
 		}
 
+                @Override
 		public void run(ProgressMonitor pm) {
 			synchronized (this) {
 				this.pm = new CancellablePM(cancel, pm);
@@ -352,39 +356,47 @@ public class MapControl extends JComponent implements ContainerListener {
 			this.cancel = cancel;
 		}
 
+                @Override
 		public void endTask() {
 			decoratedPM.endTask();
 		}
 
+                @Override
 		public int getCurrentProgress() {
 			return decoratedPM.getCurrentProgress();
 		}
 
+                @Override
 		public String getCurrentTaskName() {
 			return decoratedPM.getCurrentTaskName();
 		}
 
+                @Override
 		public int getOverallProgress() {
 			return decoratedPM.getOverallProgress();
 		}
 
+                @Override
 		public void init(String taskName, long i) {
 			decoratedPM.init(taskName, i);
 		}
 
+                @Override
 		public boolean isCancelled() {
 			return cancel || decoratedPM.isCancelled();
 		}
 
+                @Override
 		public void progressTo(long progress) {
 			decoratedPM.progressTo(progress);
 		}
 
+                @Override
 		public void startTask(String taskName, long i) {
 			decoratedPM.startTask(taskName, i);
                         //Show the current state of the drawing on new task
                         long curTime = System.currentTimeMillis();
-                        if(!cancel && status != DIRTY && curTime-lastIntermediateDrawPaint > IntermediateDrawPaintInterval) {
+                        if(!cancel && status != DIRTY && curTime-lastIntermediateDrawPaint > INTERMEDIATE_DRAW_PAINT_INTERVAL) {
                             lastIntermediateDrawPaint=curTime;
                             LOGGER.debug("Task "+taskName+" paint the drawing");
                             MapControl.this.repaint();
@@ -419,6 +431,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	private class RefreshLayerListener implements LayerListener,
 			EditionListener, DataSourceListener {
+                @Override
 		public void layerAdded(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
 				addLayerListenerRecursively(layer, this);
@@ -433,6 +446,7 @@ public class MapControl extends JComponent implements ContainerListener {
 			}
 		}
 
+                @Override
 		public void layerMoved(LayerCollectionEvent listener) {
 			invalidateImage();
 		}
@@ -442,6 +456,7 @@ public class MapControl extends JComponent implements ContainerListener {
 			return true;
 		}
 
+                @Override
 		public void layerRemoved(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
 				removeLayerListenerRecursively(layer, this);
@@ -449,17 +464,21 @@ public class MapControl extends JComponent implements ContainerListener {
 			}
 		}
 
+                @Override
 		public void nameChanged(LayerListenerEvent e) {
 		}
 
+                @Override
 		public void visibilityChanged(LayerListenerEvent e) {
 			invalidateImage();
 		}
 
+                @Override
 		public void styleChanged(LayerListenerEvent e) {
 			invalidateImage();
                 }
 
+                @Override
 		public void selectionChanged(SelectionEvent e) {
                         if (mapContext.isSelectionInducedRefresh()) {
                                 invalidateImage();
@@ -467,20 +486,25 @@ public class MapControl extends JComponent implements ContainerListener {
                         }
 		}
 
+                @Override
 		public void multipleModification(MultipleEditionEvent e) {
 			invalidateImage();
 		}
 
+                @Override
 		public void singleModification(EditionEvent e) {
 			invalidateImage();
 		}
 
+                @Override
 		public void cancel(DataSource ds) {
 		}
 
+                @Override
 		public void commit(DataSource ds) {
 		}
 
+                @Override
 		public void open(DataSource ds) {
 			invalidateImage();
 		}
@@ -551,11 +575,13 @@ public class MapControl extends JComponent implements ContainerListener {
 
         private class MapControlTransformListener implements TransformListener {
             
+            @Override
             public void imageSizeChanged(int oldWidth, int oldHeight,
                             MapTransform mapTransform) {
                     invalidateImage();
             }
 
+            @Override
             public void extentChanged(Envelope oldExtent,
                             MapTransform mapTransform) {
                     invalidateImage();
@@ -568,7 +594,9 @@ public class MapControl extends JComponent implements ContainerListener {
                 @Override
                 public void transitionException(ToolManager toolManager,
                                 TransitionException e) {
-                        LOGGER.error(I18N.tr("Tool error"), e); //$NON-NLS-1$
+                        //The error has to be shown to the user,
+                        //without the stack trace
+                        LOGGER.error(I18N.tr("Tool error {0}",e.getMessage())); //$NON-NLS-1$
                 }
 
                 @Override

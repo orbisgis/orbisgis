@@ -67,12 +67,15 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.background.Job;
+import org.orbisgis.view.background.JobId;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.EditableTransferEvent;
+import org.orbisgis.view.map.MapControl;
 import org.orbisgis.view.map.MapEditor;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
@@ -250,13 +253,12 @@ public class Toc extends JPanel implements EditorDockable {
 
 
                 if (!sourceToDrop.isEmpty()) {
-                        BackgroundManager bm = (BackgroundManager) Services.getService(BackgroundManager.class);
+                        BackgroundManager bm = (BackgroundManager) Services.getService(BackgroundManager.class);                        //Cancel the drawing process
                         bm.nonBlockingBackgroundOperation(new DropDataSourceListProcess(dropNode, index, sourceToDrop));
-                        try {
-                                //Cancel running drawing on dropnode by hidding while the layers has not be dropped
-                                dropNode.setVisible(false);
-                        } catch (LayerException ex) {
-                                LOGGER.error(ex);
+                        for(Job job : bm.getActiveJobs()) {
+                                if(job.getId().toString().startsWith(MapControl.JOB_DRAWING_PREFIX_ID)) {
+                                        job.cancel();
+                                }
                         }
                 }
         }

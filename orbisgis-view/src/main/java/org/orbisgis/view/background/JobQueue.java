@@ -48,7 +48,7 @@ import org.apache.log4j.Logger;
  */
 public class JobQueue implements BackgroundManager {
 
-	private static Logger logger = Logger.getLogger("gui."+JobQueue.class);
+	private final static Logger LOGGER = Logger.getLogger("gui."+JobQueue.class);
 
 	private ArrayList<BackgroundListener> listeners = new ArrayList<BackgroundListener>();
 
@@ -57,7 +57,7 @@ public class JobQueue implements BackgroundManager {
 
 	public synchronized void add(JobId processId, BackgroundJob lp,
 			boolean blocking) {
-		logger.debug("Adding a job: " + processId);
+		LOGGER.debug("Adding a job: " + processId);
 		Job newJob = new Job(processId, lp, this, blocking);
 		// Check if it's the current process
 		if ((current != null) && (current.getId().is(processId))) {
@@ -71,7 +71,7 @@ public class JobQueue implements BackgroundManager {
 			// Substitute existing process
 			for (Job job : queue) {
 				if (job.getId().is(processId)) {
-					logger.debug("Substituting previous job: " + processId);
+					LOGGER.debug("Substituting previous job: " + processId);
 					job.setProcess(lp);
 					fireJobReplaced(job);
 					return;
@@ -79,7 +79,7 @@ public class JobQueue implements BackgroundManager {
 			}
 
 			// Add a new one
-			logger.debug("It's a new job: " + processId);
+			LOGGER.debug("It's a new job: " + processId);
 			queue.add(newJob);
 			fireJobAdded(newJob);
 			newJob.progressTo(0);
@@ -92,7 +92,7 @@ public class JobQueue implements BackgroundManager {
 	private synchronized void planify() {
 		if (current == null && queue.size() > 0) {
 			current = queue.remove(0);
-			logger.debug("Starting job: " + current.getId());
+			LOGGER.debug("Starting job: " + current.getId());
 
 			if (current.isBlocking()) {
 				SwingUtilities.invokeLater(current.getReadyRunnable());
@@ -102,13 +102,15 @@ public class JobQueue implements BackgroundManager {
 		}
 	}
 
-	public void add(BackgroundJob lp, boolean blocking) {
-		add(new UniqueJobID(), lp, blocking);
+	public JobId add(BackgroundJob lp, boolean blocking) {
+                JobId jobId = new UniqueJobID();
+		add(jobId, lp, blocking);
+                return jobId;
 	}
 
         @Override
 	public synchronized void processFinished(JobId processId) {
-		logger.debug("Job finished: " + processId);
+		LOGGER.debug("Job finished: " + processId);
 		Job finishedJob = current;
 		finishedJob.clear();
 		current = null;
@@ -129,19 +131,23 @@ public class JobQueue implements BackgroundManager {
 		}
 	}
 
-	public void backgroundOperation(BackgroundJob lp) {
+        @Override
+	public JobId backgroundOperation(BackgroundJob lp) {
 		// TODO JOB Open Job window docking and undock that
-		add(lp, true);
+		return add(lp, true);
 	}
 
+        @Override
 	public void backgroundOperation(JobId processId, BackgroundJob lp) {
 		add(processId, lp, true);
 	}
 
+        @Override
 	public void addBackgroundListener(BackgroundListener listener) {
 		listeners.add(listener);
 	}
 
+        @Override
 	public void removeBackgroundListener(BackgroundListener listener) {
 		listeners.remove(listener);
 	}
@@ -168,10 +174,12 @@ public class JobQueue implements BackgroundManager {
 		return this;
 	}
 
-	public void nonBlockingBackgroundOperation(BackgroundJob lp) {
-		add(lp, false);
+        @Override
+	public JobId nonBlockingBackgroundOperation(BackgroundJob lp) {
+		return add(lp, false);
 	}
 
+        @Override
 	public void nonBlockingBackgroundOperation(JobId processId, BackgroundJob lp) {
 		add(processId, lp, false);
 	}

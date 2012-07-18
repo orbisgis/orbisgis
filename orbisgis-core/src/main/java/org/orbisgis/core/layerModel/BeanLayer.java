@@ -85,6 +85,7 @@ public abstract class BeanLayer extends AbstractLayer {
          *
          * @return the value of visible
          */
+        @Override
         public boolean isVisible() {
                 return visible;
         }
@@ -94,6 +95,7 @@ public abstract class BeanLayer extends AbstractLayer {
          *
          * @param visible new value of visible
          */
+        @Override
         public void setVisible(boolean visible) throws LayerException  {
                 boolean oldVisible = this.visible;
                 this.visible = visible;
@@ -157,6 +159,7 @@ public abstract class BeanLayer extends AbstractLayer {
          *
          * @return the value of description
          */
+        @Override
         public Description getDescription() {
                 return description;
         }
@@ -166,6 +169,7 @@ public abstract class BeanLayer extends AbstractLayer {
          *
          * @param description new value of description
          */
+        @Override
         public void setDescription(Description description) {
                 Description oldDescription = this.description;
                 this.description = description;
@@ -178,6 +182,7 @@ public abstract class BeanLayer extends AbstractLayer {
         * @param listener The PropertyChangeListener instance
         * @note Use EventHandler.create to build the PropertyChangeListener instance
         */
+        @Override
         public void addPropertyChangeListener(PropertyChangeListener listener) {
                 propertyChangeSupport.addPropertyChangeListener(listener);
         }
@@ -189,6 +194,7 @@ public abstract class BeanLayer extends AbstractLayer {
         * @param listener The PropertyChangeListener instance
         * @note Use EventHandler.create to build the PropertyChangeListener instance
         */
+        @Override
         public void addPropertyChangeListener(String prop,PropertyChangeListener listener) {
                 propertyChangeSupport.addPropertyChangeListener(prop, listener);
         }
@@ -196,6 +202,7 @@ public abstract class BeanLayer extends AbstractLayer {
         * Remove the specified listener from the list
         * @param listener The listener instance
         */
+        @Override
         public void removePropertyChangeListener(PropertyChangeListener listener) {
                 propertyChangeSupport.removePropertyChangeListener(listener);
         }
@@ -205,6 +212,7 @@ public abstract class BeanLayer extends AbstractLayer {
         * @param prop The static property name PROP_..
         * @param listener The listener instance
         */
+        @Override
         public void removePropertyChangeListener(String prop,PropertyChangeListener listener) {
                 propertyChangeSupport.removePropertyChangeListener(prop,listener);
         }
@@ -213,6 +221,7 @@ public abstract class BeanLayer extends AbstractLayer {
 	 * 
 	 * @see org.orbisgis.core.layerModel.ILayer#getName()
 	 */
+        @Override
 	public String getName() {
 		return description.getTitle(Locale.getDefault());
 	}
@@ -222,6 +231,7 @@ public abstract class BeanLayer extends AbstractLayer {
 	 * @throws LayerException
 	 * @see org.orbisgis.core.layerModel.ILayer#setName(java.lang.String)
 	 */
+        @Override
 	public void setName(final String name) throws LayerException {
                 if(name!=null && !name.equals(getName())) {
                         //Set the localised title of this layer
