@@ -38,11 +38,13 @@
 package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.InterpolateType;
 import net.opengis.se._2_0.core.InterpolationPointType;
 import net.opengis.se._2_0.core.ModeType;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.Interpolate;
 import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
@@ -113,30 +115,55 @@ public final class Interpolate2Color extends Interpolate<ColorParameter, ColorLi
         @Override
         public Color getColor(DataSource sds, long fid) throws ParameterException {
                 double value = this.getLookupValue().getValue(sds, fid);
-
                 int numPt = getNumInterpolationPoint();
-
                 if (getInterpolationPoint(0).getData() >= value) {
                         return getInterpolationPoint(0).getValue().getColor(sds, fid);
                 }
-
                 if (getInterpolationPoint(numPt - 1).getData() <= value) {
                         return getInterpolationPoint(numPt - 1).getValue().getColor(sds, fid);
                 }
-
-
                 int k = getFirstIP(value);
-
                 InterpolationPoint<ColorParameter> ip1 = getInterpolationPoint(k);
                 InterpolationPoint<ColorParameter> ip2 = getInterpolationPoint(k + 1);
-
                 double d1 = ip1.getData();
                 double d2 = ip2.getData();
-
                 Color c1 = ip1.getValue().getColor(sds, fid);
                 Color c2 = ip2.getValue().getColor(sds, fid);
+                return computeColor(c1, c2, d1, d2, value);
 
+        }
 
+        /**
+         * Retrieve the <code>Color</code> that must be associated to the data
+         * stored in {@code map}. The resulting color is obtained by
+         * using the value from the <code>DataSource</code>, the
+         * interpolation points and the interpolation method.
+         * @param ds
+         * @param fid
+         * @return
+         * The interpolated <code>Color</code>
+         */
+        @Override
+        public Color getColor(Map<String,Value> map) throws ParameterException {
+                double value = this.getLookupValue().getValue(map);
+                int numPt = getNumInterpolationPoint();
+                if (getInterpolationPoint(0).getData() >= value) {
+                        return getInterpolationPoint(0).getValue().getColor(map);
+                }
+                if (getInterpolationPoint(numPt - 1).getData() <= value) {
+                        return getInterpolationPoint(numPt - 1).getValue().getColor(map);
+                }
+                int k = getFirstIP(value);
+                InterpolationPoint<ColorParameter> ip1 = getInterpolationPoint(k);
+                InterpolationPoint<ColorParameter> ip2 = getInterpolationPoint(k + 1);
+                double d1 = ip1.getData();
+                double d2 = ip2.getData();
+                Color c1 = ip1.getValue().getColor(map);
+                Color c2 = ip2.getValue().getColor(map);
+                return computeColor(c1, c2, d1, d2, value);
+        }
+
+        private Color computeColor(Color c1, Color c2, double d1, double d2, double value){
                 switch (this.getMode()) {
                         case CUBIC:
                                 return new Color((int) cubicInterpolation(d1, d2, value, c1.getRed(), c2.getRed(), -1.0, -1.0),

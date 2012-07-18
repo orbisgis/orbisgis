@@ -11,6 +11,7 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -129,5 +130,13 @@ public final class ExclusionRectangle extends ExclusionZone {
             }
             return result;
 	}
+
+    @Override
+    public UsedAnalysis getUsedAnalysis(){
+        UsedAnalysis ua = new UsedAnalysis();
+        ua.include(x);
+        ua.include(y);
+        return ua;
+    }
 
 }

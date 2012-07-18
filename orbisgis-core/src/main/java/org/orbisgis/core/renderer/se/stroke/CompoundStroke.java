@@ -43,10 +43,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.CompoundStrokeType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.UomNode;
@@ -54,6 +55,7 @@ import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -204,13 +206,13 @@ public final class CompoundStroke extends Stroke implements UomNode {
     }
 
     @Override
-    public Double getNaturalLength(DataSource sds, long fid, Shape shp,
+    public Double getNaturalLength(Map<String,Value> map, Shape shp,
                 MapTransform mt) throws ParameterException, IOException {
         return Double.POSITIVE_INFINITY; 
     }
 
     @Override
-    public void draw(Graphics2D g2, DataSource sds, long fid, Shape shape,
+    public void draw(Graphics2D g2, Map<String,Value> map, Shape shape,
             boolean selected, MapTransform mt, double off) throws ParameterException, IOException {
         double offset = off;
         double initGap;
@@ -232,7 +234,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
         for (Shape shp : shapes) {
 
             if (preGap != null) {
-                initGap = Uom.toPixel(preGap.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                initGap = Uom.toPixel(preGap.getValue(map), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 if (initGap > 0.0) {
                     
                     List<Shape> splitLine = ShapeHelper.splitLine(shp, initGap);
@@ -246,7 +248,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
 
             if (shp != null) {
                 if (postGap != null) {
-                    endGap = Uom.toPixel(postGap.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                    endGap = Uom.toPixel(postGap.getValue(map), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                     if (endGap > 0.0) {
                         double lineLength = ShapeHelper.getLineLength(shp);
                         shp = ShapeHelper.splitLine(shp, lineLength - endGap).get(0);
@@ -281,21 +283,21 @@ public final class CompoundStroke extends Stroke implements UomNode {
                     strokes[i] = sElem.getStroke();
 
                     if (sElem.getLength() != null) {
-                        lengths[i] = Uom.toPixel(sElem.getLength().getValue(sds, fid),
+                        lengths[i] = Uom.toPixel(sElem.getLength().getValue(map),
                                 getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                     } else {
-                        lengths[i] = sElem.getStroke().getNaturalLengthForCompound(sds, fid, shp, mt);
+                        lengths[i] = sElem.getStroke().getNaturalLengthForCompound(map, shp, mt);
                     }
 
                     if (sElem.getPreGap() != null) {
-                        preGaps[i] = Uom.toPixel(sElem.getPreGap().getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                        preGaps[i] = Uom.toPixel(sElem.getPreGap().getValue(map), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                         remainingLength -= preGaps[i];
                     } else {
                         preGaps[i] = null;
                     }
 
                     if (sElem.getPostGap() != null) {
-                        postGaps[i] = Uom.toPixel(sElem.getPostGap().getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                        postGaps[i] = Uom.toPixel(sElem.getPostGap().getValue(map), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                         remainingLength -= postGaps[i];
                     } else {
                         postGaps[i] = null;
@@ -364,7 +366,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
                         // get two lines. first is the one we'll style with i'est element
                         List<Shape> splitLine = ShapeHelper.splitLine(scrap, lengths[i]);
                         Shape seg = splitLine.remove(0);
-                        strokes[i].draw(g2, sds, fid, seg, selected, mt, offset);
+                        strokes[i].draw(g2, map, seg, selected, mt, offset);
 
                         if (splitLine.size() > 0) {
                             scrap = splitLine.remove(0);
@@ -394,7 +396,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
                     for (Shape seg : splitLineInSeg) {
                         for (StrokeAnnotationGraphic annotation : annotations) {
                             GraphicCollection graphic = annotation.getGraphic();
-                            Rectangle2D bounds = graphic.getBounds(sds, fid, selected, mt);
+                            Rectangle2D bounds = graphic.getBounds(map, selected, mt);
 
                             RelativeOrientation rOrient = annotation.getRelativeOrientation();
                             if (rOrient == null) {
@@ -419,7 +421,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
                                     break;
                             }
 
-                            double pos = (ShapeHelper.getLineLength(seg) - gLength) * annotation.getRelativePosition().getValue(sds, fid) + gLength / 2.0;
+                            double pos = (ShapeHelper.getLineLength(seg) - gLength) * annotation.getRelativePosition().getValue(map) + gLength / 2.0;
 
                             Point2D.Double pt = ShapeHelper.getPointAt(seg, pos);
 
@@ -444,7 +446,7 @@ public final class CompoundStroke extends Stroke implements UomNode {
                                 at.concatenate(AffineTransform.getRotateInstance(theta));
                             }
 
-                            graphic.draw(g2, sds, fid, selected, mt, at);
+                            graphic.draw(g2, map, selected, mt, at);
                         }
                     }
                 }*/
@@ -463,6 +465,15 @@ public final class CompoundStroke extends Stroke implements UomNode {
             result.addAll(elem.dependsOnFeature());
         }
 
+        return result;
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis result = new UsedAnalysis();
+        for (CompoundStrokeElement elem : elements) {
+            result.merge(elem.getUsedAnalysis());
+        }
         return result;
     }
 

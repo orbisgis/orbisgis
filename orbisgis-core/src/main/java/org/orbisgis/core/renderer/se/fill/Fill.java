@@ -43,6 +43,7 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.FillType;
 import net.opengis.se._2_0.core.GraphicFillType;
@@ -50,7 +51,7 @@ import net.opengis.se._2_0.core.HatchedFillType;
 import net.opengis.se._2_0.core.SolidFillType;
 import net.opengis.se._2_0.thematic.DensityFillType;
 import net.opengis.se._2_0.thematic.DotMapFillType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -121,7 +122,8 @@ public abstract class Fill implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, DataSource sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, Map<String,Value> map, Shape shp,
+            boolean selected, MapTransform mt) throws ParameterException, IOException;
 
 
     /**
@@ -136,7 +138,7 @@ public abstract class Fill implements SymbolizerNode {
      *
      * @throws ParameterException
      */
-	public abstract Paint getPaint(long fid, DataSource sds, boolean selected, MapTransform mt) throws ParameterException, IOException;
+	public abstract Paint getPaint(Map<String,Value> map, boolean selected, MapTransform mt) throws ParameterException, IOException;
 
 
     /**

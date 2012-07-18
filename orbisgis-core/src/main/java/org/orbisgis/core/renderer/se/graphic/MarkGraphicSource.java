@@ -40,7 +40,8 @@ package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.Shape;
 import java.io.IOException;
-import org.gdms.data.DataSource;
+import java.util.Map;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
@@ -64,13 +65,13 @@ public interface MarkGraphicSource {
 	 * @throws ParameterException
 	 * @throws IOException
 	 */
-    Shape getShape(ViewBox viewBox, DataSource sds,
-            long fid, Double scale, Double dpi, RealParameter markIndex, String format)
+    Shape getShape(ViewBox viewBox, Map<String,Value> map, Double scale, Double dpi,
+            RealParameter markIndex, String format)
             throws ParameterException, IOException;
 
     //public void setJAXBSource(MarkGraphicType m);
 
-    double getDefaultMaxWidth(DataSource sds, long fid, 
+    double getDefaultMaxWidth(Map<String,Value> map,
             Double scale, Double dpi, RealParameter markIndex, String mimeType)
             throws ParameterException, IOException;
 }

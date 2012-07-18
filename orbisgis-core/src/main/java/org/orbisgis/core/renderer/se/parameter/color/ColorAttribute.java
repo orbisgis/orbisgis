@@ -41,9 +41,11 @@
 package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ValueReferenceType;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.ValueReference;
@@ -79,6 +81,15 @@ public class ColorAttribute extends ValueReference implements ColorParameter {
     public Color getColor(DataSource sds, long fid) throws ParameterException {
         try {
             return Color.getColor(getFieldValue(sds, fid).getAsString());
+        } catch (Exception e) {
+            throw new ParameterException("Could not fetch feature attribute \"" + getColumnName() + "\"",e);
+        }
+    }
+
+    @Override
+    public Color getColor(Map<String,Value> map) throws ParameterException {
+        try {
+            return Color.getColor(getFieldValue(map).getAsString());
         } catch (Exception e) {
             throw new ParameterException("Could not fetch feature attribute \"" + getColumnName() + "\"",e);
         }

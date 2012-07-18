@@ -16,13 +16,13 @@
 						<Value>#ffaa99</Value>
 					</Categorize>
 				</Color>
-				<PenStroke>
-					<SolidFill>
-						<Color>#888888</Color>
-					</SolidFill>
-					<Width>0.15</Width>
-				</PenStroke>
 			</SolidFill>
+			<PenStroke>
+				<SolidFill>
+					<Color>#888888</Color>
+				</SolidFill>
+				<Width>0.15</Width>
+			</PenStroke>
 		</AreaSymbolizer>
 	</Rule>
 </Style>

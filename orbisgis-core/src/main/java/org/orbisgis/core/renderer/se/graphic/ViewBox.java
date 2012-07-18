@@ -39,13 +39,15 @@ package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.geom.Point2D;
 import java.util.HashSet;
-import org.gdms.data.DataSource;
+import java.util.Map;
 import net.opengis.se._2_0.core.ViewBoxType;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -180,27 +182,35 @@ public final class ViewBox implements SymbolizerNode {
             return hs;
         }
 
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+            UsedAnalysis ua = new UsedAnalysis();
+            ua.include(x);
+            ua.include(y);
+            return ua;
+        }
+
         /**
          * Return the final dimension described by this view box, in [px].
-         * @param ds DataSource, i.e. the layer
-         * @param fid feature id
+         * @param ds map
          * @param ratio required final ratio (if either width or height isn't defined)
          * @return
          * @throws ParameterException
          */
-        public Point2D getDimensionInPixel(DataSource sds, long fid, double height, double width, Double scale, Double dpi) throws ParameterException {
+        public Point2D getDimensionInPixel(Map<String,Value> map, double height,
+                    double width, Double scale, Double dpi) throws ParameterException {
                 double dx, dy;
 
                 double ratio = height / width;
 
                 if (x != null && y != null) {
-                        dx = x.getValue(sds, fid);
-                        dy = y.getValue(sds, fid);
+                        dx = x.getValue(map);
+                        dy = y.getValue(map);
                 } else if (x != null) {
-                        dx = x.getValue(sds, fid);
+                        dx = x.getValue(map);
                         dy = dx * ratio;
                 } else if (y != null) {
-                        dy = y.getValue(sds, fid);
+                        dy = y.getValue(map);
                         dx = dy / ratio;
                 } else { // nothing is defined
                         dx = width;

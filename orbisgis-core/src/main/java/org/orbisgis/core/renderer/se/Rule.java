@@ -26,6 +26,7 @@ import org.orbisgis.core.renderer.se.graphic.ExternalGraphic;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * Rules are used to group rendering instructions by featyre-property conditions and map scales. 
@@ -487,4 +488,12 @@ public final class Rule implements SymbolizerNode {
     public HashSet<String> dependsOnFeature() {
         return symbolizer.dependsOnFeature();
     }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+            //We get an empty UsedAnalysis - we'll merge everything.
+            return getCompositeSymbolizer().getUsedAnalysis();
+    }
+
+
 }

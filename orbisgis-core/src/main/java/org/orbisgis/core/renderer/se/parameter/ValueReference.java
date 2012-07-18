@@ -2,6 +2,7 @@ package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ObjectFactory;
 import net.opengis.fes._2.ValueReferenceType;
@@ -113,19 +114,38 @@ public abstract class ValueReference implements SeParameter {
 	}
 
         /**
-         * Get the GDMS value associated to this Reference in the given table (representing
-         * by the DataSource sds) at line fid.
+         * Get the GDMS {@code Value} associated to this Reference in the given
+         * table (represented by the {@code DataSource sds}) at line fid.
          * @param sds
          * @param fid
          * @return
          * @throws DriverException 
          */
-	public Value getFieldValue(DataSource sds, long fid) throws DriverException {
-		if (this.fieldId == -1) {
-			this.fieldId = sds.getMetadata().getFieldIndex(fieldName);
-		}
-		return sds.getFieldValue(fid, fieldId);
-	}
+    public Value getFieldValue(DataSource sds, long fid) throws DriverException {
+        if (this.fieldId == -1) {
+            this.fieldId = sds.getMetadata().getFieldIndex(fieldName);
+        }
+        return sds.getFieldValue(fid, fieldId);
+    }
+
+    /**
+     * Get the GDMS {@code Value} associated to this reference in the given
+     * {@code map}. The value returned by {@link ValueReference#getColumnName()}
+     * is used as the key.
+     * @param sds
+     * @param fid
+     * @return
+     * @throws ParameterException
+     * If the value returned by {@link ValueReference#getColumnName()} is not
+     * a key in {@code map}.
+     */
+    public Value getFieldValue(Map<String,Value> map) throws ParameterException {
+        if(map.containsKey(fieldName)){
+            return map.get(fieldName);
+        } else {
+            throw new ParameterException("The given map does not contain the needed key/value pair.");
+        }
+    }
 
 	@Override
 	public ParameterValueType getJAXBParameterValueType() {

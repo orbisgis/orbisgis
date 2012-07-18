@@ -1,9 +1,12 @@
 package org.orbisgis.core.renderer.se.parameter.string;
 
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.parameter.Literal;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
  * A {@code StringParameter} with a stored, inner {@code String} value.
@@ -40,6 +43,11 @@ public class StringLiteral extends Literal implements StringParameter{
         return v;
     }
 
+    @Override
+    public String getValue(Map<String, Value> feature){
+        return v;
+    }
+
     /**
      * Set the inner {@code String} of this {@code StringLiteral} to {@code value}.
      */
@@ -71,12 +79,12 @@ public class StringLiteral extends Literal implements StringParameter{
             return (o instanceof StringLiteral) ? v.equals(o.toString()) : false;
     }
 
-        @Override
-        public int hashCode() {
-                int hash = 7;
-                hash = 11 * hash + (this.v != null ? this.v.hashCode() : 0);
-                return hash;
-        }
+    @Override
+    public int hashCode() {
+            int hash = 7;
+            hash = 11 * hash + (this.v != null ? this.v.hashCode() : 0);
+            return hash;
+    }
 
     @Override
     public int compareTo(Object o) {

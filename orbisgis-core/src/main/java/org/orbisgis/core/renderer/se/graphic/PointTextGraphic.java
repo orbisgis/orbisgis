@@ -6,11 +6,12 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.PointTextGraphicType;
 import net.opengis.se._2_0.core.TranslateType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.UomNode;
@@ -18,6 +19,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.PointLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -105,12 +107,12 @@ public final class PointTextGraphic extends Graphic implements UomNode {
         }
 
         @Override
-        public Rectangle2D getBounds(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
+        public Rectangle2D getBounds(Map<String,Value> map, MapTransform mt) throws ParameterException, IOException {
                 throw new UnsupportedOperationException("Not supported yet.");
         }
 
         @Override
-        public void draw(Graphics2D g2, DataSource sds, long fid,
+        public void draw(Graphics2D g2, Map<String,Value> map,
                 boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
 
                 AffineTransform at = new AffineTransform(fat);
@@ -118,16 +120,16 @@ public final class PointTextGraphic extends Graphic implements UomNode {
                 double py = 0;
 
                 if (getX() != null) {
-                        px = Uom.toPixel(getX().getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                        px = Uom.toPixel(getX().getValue(map), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 }
                 if (getY() != null) {
-                        py = Uom.toPixel(getY().getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                        py = Uom.toPixel(getY().getValue(map), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 }
 
                 Rectangle2D.Double bounds = new Rectangle2D.Double(px - 5, py - 5, 10, 10);
                 Shape atShp = at.createTransformedShape(bounds);
 
-                pointLabel.draw(g2, sds, fid, atShp, selected, mt, null);
+                pointLabel.draw(g2, map, atShp, selected, mt, null);
         }
 
 
@@ -175,6 +177,17 @@ public final class PointTextGraphic extends Graphic implements UomNode {
                 }
 
                 return result;
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+            UsedAnalysis ua = new UsedAnalysis();
+            if(pointLabel != null){
+                ua.merge(pointLabel.getUsedAnalysis());
+            }
+            ua.include(x);
+            ua.include(y);
+            return ua;
         }
 
         /**

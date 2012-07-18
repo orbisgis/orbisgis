@@ -9,14 +9,16 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import net.opengis.se._2_0.core.*;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  *
@@ -120,16 +122,20 @@ public class Transform implements SymbolizerNode, UomNode {
         /**
          * Return an affine transformation for java Shape object.
          * The purpose is to transfom se.graphics
-         *
-         * @param ds
-         * @param fid
          * @param isForSpatialFeatures
-         * @return AffineTransofrm
+         * @param map
+         * @param mt
+         * @param width
+         * @param height
+         * @return
          * @throws ParameterException
+         * @throws IOException
          */
-        public AffineTransform getGraphicalAffineTransform(boolean isForSpatialFeatures, DataSource sds, long fid, MapTransform mt, Double width, Double height) throws ParameterException, IOException {
+        public AffineTransform getGraphicalAffineTransform(boolean isForSpatialFeatures, 
+                    Map<String,Value> map, MapTransform mt, Double width, Double height)
+                    throws ParameterException, IOException {
                 //return consolidateTrasformations(false).getGraphicalAffineTransform();
-                this.consolidateTransformations(sds, fid, isForSpatialFeatures, mt, width, height);
+                this.consolidateTransformations(map, isForSpatialFeatures, mt, width, height);
                 return consolidated;
         }
 
@@ -147,14 +153,14 @@ public class Transform implements SymbolizerNode, UomNode {
          * @throws ParameterException
          * @throws IOException
          */
-        public void consolidateTransformations(DataSource sds, long fid, boolean forGeometries,
+        public void consolidateTransformations(Map<String,Value> map, boolean forGeometries,
                 MapTransform mt, Double width, Double height) throws ParameterException, IOException {
 
                 // Result is Identity
                 consolidated = new AffineTransform();
                 for (Transformation t : transformations) {
                         if (!forGeometries || t.allowedForGeometries()) {
-                                AffineTransform at = t.getAffineTransform(sds, fid, this.getUom(), mt, width, height);
+                                AffineTransform at = t.getAffineTransform(map, this.getUom(), mt, width, height);
                                 consolidated.preConcatenate(at);
                         }
                 }
@@ -238,6 +244,15 @@ public class Transform implements SymbolizerNode, UomNode {
                 HashSet<String> result = new HashSet<String>();
                 for (Transformation t : this.transformations) {
                         result.addAll(t.dependsOnFeature());
+                }
+                return result;
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis result = new UsedAnalysis();
+                for (Transformation t : this.transformations) {
+                        result.merge(t.getUsedAnalysis());
                 }
                 return result;
         }

@@ -1,9 +1,11 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
+import java.util.Map;
 import net.opengis.se._2_0.core.InterpolateType;
 import net.opengis.se._2_0.core.InterpolationPointType;
 import net.opengis.se._2_0.core.ModeType;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.Interpolate;
 import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
@@ -106,6 +108,52 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
                 }
                 //as we've analyzed the three only possible cases in the switch,
                 //we're not supposed to reach this point... 
+                return 0.0;
+        }
+
+        /**
+         * Retrieve the <code>Double</code> that must be associated to the datum 
+         * stored in {@code map}.
+         * The resulting value is obtained by using the value from the  {@code
+         * DataSource}, the interpolation points and the interpolation method.
+         * @param ds
+         * @param fid The index where to search in the original source.
+         * @return
+         * The interpolated <code>Double</code> value.
+         */
+        @Override
+        public Double getValue(Map<String,Value> map) throws ParameterException {
+
+                double value = this.getLookupValue().getValue(map);
+
+                if (getInterpolationPoint(0).getData() >= value) {
+                        return getInterpolationPoint(0).getValue().getValue(map);
+                }
+
+                int numPt = getNumInterpolationPoint();
+                if (getInterpolationPoint(numPt - 1).getData() <= value) {
+                        return getInterpolationPoint(numPt - 1).getValue().getValue(map);
+                }
+
+                int k = getFirstIP(value);
+
+                InterpolationPoint<RealParameter> ip1 = getInterpolationPoint(k);
+                InterpolationPoint<RealParameter> ip2 = getInterpolationPoint(k + 1);
+
+                switch (getMode()) {
+                        case CUBIC:
+                                return cubicInterpolation(ip1.getData(), ip2.getData(), value,
+                                        ip1.getValue().getValue(map), ip2.getValue().getValue(map), -1.0, -1.0);
+                        case COSINE:
+                                return cosineInterpolation(ip1.getData(), ip2.getData(), value,
+                                        ip1.getValue().getValue(map), ip2.getValue().getValue(map));
+                        case LINEAR:
+                                return linearInterpolation(ip1.getData(), ip2.getData(), value,
+                                        ip1.getValue().getValue(map), ip2.getValue().getValue(map));
+
+                }
+                //as we've analyzed the three only possible cases in the switch,
+                //we're not supposed to reach this point...
                 return 0.0;
         }
 

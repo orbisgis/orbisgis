@@ -40,6 +40,7 @@
 
 package org.orbisgis.core.renderer.se.parameter.string;
 
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ValueReferenceType;
 import org.gdms.data.DataSource;
@@ -91,6 +92,10 @@ public class StringAttribute extends ValueReference implements StringParameter{
         }
     }
 
+    @Override
+    public String getValue(Map<String, Value> feature) throws ParameterException {
+        return getFieldValue(feature).toString();
+    }
 
     @Override
     public void setRestrictionTo(String[] list) {
