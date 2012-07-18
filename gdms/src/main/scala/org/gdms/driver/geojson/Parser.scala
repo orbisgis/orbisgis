@@ -188,7 +188,7 @@ trait Parser {
   }
   
   /**
-   * Utility method: move on token ahead.
+   * Utility method: move one token ahead.
    * 
    * This is just here for clarity.
    */
