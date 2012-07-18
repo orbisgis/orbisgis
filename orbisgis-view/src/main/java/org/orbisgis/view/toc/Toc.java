@@ -715,7 +715,7 @@ public class Toc extends JPanel implements EditorDockable {
                 @Override
                 public void styleChanged(LayerListenerEvent e) {
                         //The parameter do not contains the affected styles
-                        onLayerChanged(e.getAffectedLayer());
+                        treeModel.nodeStructureChanged(new TocTreeNodeLayer(e.getAffectedLayer()));
                 }
 
                 @Override
