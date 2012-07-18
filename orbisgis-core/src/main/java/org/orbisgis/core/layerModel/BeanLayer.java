@@ -36,6 +36,8 @@
  */
 package org.orbisgis.core.layerModel;
 
+import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.net.URI;
@@ -64,7 +66,9 @@ public abstract class BeanLayer extends AbstractLayer {
         private Description description;
         private List<Style> styleList = new ArrayList<Style>();
         private boolean visible = true;
+        private PropertyChangeListener styleListener = EventHandler.create(PropertyChangeListener.class,this,"onStyleChanged","");
         
+                
         public BeanLayer(String name) {
                 super();
                 description = new Description();
@@ -262,13 +266,37 @@ public abstract class BeanLayer extends AbstractLayer {
             return styleList.get(i);
     }
 
+    private void removeStyleListener(Style s){
+            s.removePropertyChangeListener(styleListener);
+    }
+    private void addStyleListener(Style s) {
+            s.addPropertyChangeListener(styleListener);
+    }
+    
+    /***
+     * The specified property has been updated
+     * Called by the private style property change listener
+     * @param evt 
+     */
+    public void onStyleChanged(PropertyChangeEvent evt) {
+            fireStyleChanged();
+            if(styleList!=null) {
+                int index =styleList.indexOf(evt.getSource());
+                if(index!=-1) {
+                        propertyChangeSupport.fireIndexedPropertyChange(PROP_STYLES, index, evt.getSource(), evt.getSource());
+                }
+            }
+    }
+    
     @Override
     public void setStyle(int i, Style s){
         if (styleList == null){
             styleList = new ArrayList<Style>(); //out of bound exception instead of null pointer exception
         }
         Style oldStyle = styleList.get(i);
+        removeStyleListener(oldStyle);
         styleList.set(i, s);
+        addStyleListener(s);
         propertyChangeSupport.fireIndexedPropertyChange(PROP_STYLES, i, oldStyle, s);
         this.fireStyleChanged();
     }
@@ -278,9 +306,7 @@ public abstract class BeanLayer extends AbstractLayer {
         if (styleList == null){
             styleList = new ArrayList<Style>();
         }
-        styleList.add(s);
-        propertyChangeSupport.firePropertyChange(PROP_STYLES, null, styleList);
-        this.fireStyleChanged();
+        addStyle(styleList.size(),s);
     }
 
     @Override
@@ -288,20 +314,22 @@ public abstract class BeanLayer extends AbstractLayer {
         if (styleList == null){
             styleList = new ArrayList<Style>();
         }
+        addStyleListener(s);
         styleList.add(i, s);
         propertyChangeSupport.fireIndexedPropertyChange(PROP_STYLES, i, null, s);
         this.fireStyleChanged();
     }
 
     @Override
-    public int indexOf(Style s){
-            return styleList == null ? -1 : styleList.indexOf(s);
-    }
-
-    @Override
     public void removeStyle(Style s){
+            removeStyleListener(s);
             styleList.remove(s);
             propertyChangeSupport.firePropertyChange(PROP_STYLES, s, null);
             this.fireStyleChanged();
+    }
+
+    @Override
+    public int indexOf(Style s){
+            return styleList == null ? -1 : styleList.indexOf(s);
     }
 }

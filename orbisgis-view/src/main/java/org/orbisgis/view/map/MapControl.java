@@ -91,7 +91,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	/** The map will query the data to obtain a new image. */
 	public static final int DIRTY = 1;
-        private RefreshLayerListener refreshLayerListener;
+        private RefreshLayerListener refreshLayerListener = new RefreshLayerListener();
 
 	private int status = DIRTY;
 
@@ -112,7 +112,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	Automaton defaultTool;
         
-        PropertyChangeListener boundingBoxPropertyListener = null;
+        PropertyChangeListener boundingBoxPropertyListener = EventHandler.create(PropertyChangeListener.class,this,"onMapContextBoundingBoxChange");
         
         BufferedImage updatedImage=null; /*!< The last drawn image paint, shown when the status of the mapTransform is dirty */
 
@@ -144,6 +144,11 @@ public class MapControl extends JComponent implements ContainerListener {
 		setStatus(DIRTY);
 
                 // creating objects
+                if(toolManager!=null) {
+                        removeMouseListener(toolManager);
+                        removeMouseMotionListener(toolManager);
+                        removeMouseWheelListener(toolManager);
+                }
 		toolManager = new ToolManager(defaultTool, mapContext, mapTransform,
 				this);
 
@@ -174,10 +179,6 @@ public class MapControl extends JComponent implements ContainerListener {
                         mapTransform.addTransformListener(element);
                 }
 
-                refreshLayerListener = new RefreshLayerListener();
-
-		// Add refresh listener
-		addLayerListenerRecursively(rootLayer, refreshLayerListener);
 	}
 
 	private void addLayerListenerRecursively(ILayer rootLayer,
@@ -521,7 +522,6 @@ public class MapControl extends JComponent implements ContainerListener {
 		toolManager.freeResources();
 		toolManager = null;
                 removeMapContextListener();
-                removeLayerListenerRecursively(mapContext.getLayerModel(), refreshLayerListener);
 	}
 
 	public void setShowCoordinates(boolean showCoordinates) {
@@ -554,8 +554,9 @@ public class MapControl extends JComponent implements ContainerListener {
         * Remove the property listeners
         */
         private void removeMapContextListener() {
-                if(boundingBoxPropertyListener!=null && this.mapContext!=null) {
-                        this.mapContext.removePropertyChangeListener(boundingBoxPropertyListener);
+                if(mapContext!=null) {
+                        mapContext.removePropertyChangeListener(boundingBoxPropertyListener);
+                        mapContext.getLayerModel().removeLayerListenerRecursively(refreshLayerListener);
                 }                
         }
         /**
@@ -565,7 +566,9 @@ public class MapControl extends JComponent implements ContainerListener {
 	public void setMapContext(MapContext mapContext) {
                 //Remove the property listeners
                 removeMapContextListener();
-                mapContext.addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class,this,"onMapContextBoundingBoxChange"));
+                mapContext.addPropertyChangeListener(boundingBoxPropertyListener);
+                // Add refresh listener
+                addLayerListenerRecursively(mapContext.getLayerModel(), refreshLayerListener);
 		this.mapContext = mapContext;
 	}
 
