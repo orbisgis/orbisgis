@@ -96,6 +96,7 @@ import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.dxf.DXFDriver;
 import org.gdms.driver.gdms.GdmsDriver;
+import org.gdms.driver.geojson.GeoJsonImporter;
 import org.gdms.driver.geotif.TifDriver;
 import org.gdms.driver.hsqldb.HSQLDBDriver;
 import org.gdms.driver.jpg.JPGDriver;
@@ -141,6 +142,7 @@ public final class DefaultSourceManager implements SourceManager {
                 dm.registerDriver(PngDriver.class);
                 dm.registerImporter(DXFDriver.class);
                 dm.registerImporter(MifMidDriver.class);
+                dm.registerImporter(GeoJsonImporter.class);
                 this.dsf = dsf;
                 this.baseDir = baseDir;
                 contextPaths.add("org.gdms.source.directory");
