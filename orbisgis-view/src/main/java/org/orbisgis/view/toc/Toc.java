@@ -252,6 +252,12 @@ public class Toc extends JPanel implements EditorDockable {
                 if (!sourceToDrop.isEmpty()) {
                         BackgroundManager bm = (BackgroundManager) Services.getService(BackgroundManager.class);
                         bm.nonBlockingBackgroundOperation(new DropDataSourceListProcess(dropNode, index, sourceToDrop));
+                        try {
+                                //Cancel running drawing on dropnode by hidding while the layers has not be dropped
+                                dropNode.setVisible(false);
+                        } catch (LayerException ex) {
+                                LOGGER.error(ex);
+                        }
                 }
         }
 
@@ -793,6 +799,11 @@ public class Toc extends JPanel implements EditorDockable {
                                                 throw new RuntimeException(I18N.tr("Cannot add the layer to the destination"), e);
                                         }
                                 }
+                        }
+                        try {
+                                dropNode.setVisible(true);
+                        }  catch (LayerException e) {
+                            LOGGER.error(e);
                         }
                 }
 
