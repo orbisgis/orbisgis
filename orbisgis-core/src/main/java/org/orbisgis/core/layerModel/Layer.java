@@ -205,7 +205,7 @@ public class Layer extends BeanLayer {
 
 	private void fireSelectionChanged() {
 		for (LayerListener listener : listeners) {
-			listener.selectionChanged(new SelectionEvent());
+			listener.selectionChanged(new SelectionEvent(this));
 		}
 	}
 

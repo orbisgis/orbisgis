@@ -36,6 +36,15 @@
  */
 package org.orbisgis.core.layerModel;
 
-public class SelectionEvent {
+import java.util.EventObject;
+
+/**
+ * Selection of data source rows has changed
+ */
+public class SelectionEvent extends EventObject {
+
+        public SelectionEvent(Object layer) {
+                super(layer);
+        }
 
 }

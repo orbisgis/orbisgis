@@ -110,14 +110,14 @@ public class TocRenderer extends TocAbstractRenderer {
                                 checkBox.setBackground(rendererComponent.getBackground());
                                 checkBox.setOpaque(rendererComponent.isOpaque());
                                 checkBox.setBorder(rendererComponent.getBorder());
-                                if (value instanceof ILayer) {
-                                        ILayer layerNode = (ILayer) value;
+                                if (value instanceof TocTreeNodeLayer) {
+                                        ILayer layerNode = ((TocTreeNodeLayer) value).getLayer();
                                         Icon layerIcon = TocAbstractRenderer.getLayerIcon(layerNode);
                                         rendererComponent.setIcon(layerIcon);
                                         rendererComponent.setText(layerNode.getName());
                                         checkBox.setSelected(layerNode.isVisible());
-                                } else if(value instanceof Style)  {
-                                        Style styleNode = (Style) value;
+                                } else if(value instanceof TocTreeNodeStyle)  {
+                                        Style styleNode = ((TocTreeNodeStyle) value).getStyle();
                                         rendererComponent.setIcon(null);
                                         rendererComponent.setText(styleNode.getName());
                                         checkBox.setSelected(styleNode.isVisible());
