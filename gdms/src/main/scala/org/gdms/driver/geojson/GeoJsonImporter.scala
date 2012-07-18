@@ -68,7 +68,7 @@ class GeoJsonImporter extends FileImporter with Parser {
   val getTypeDescription = "Geo-JSON file format"
   val getImporterId = "geojson"
   val getFileExtensions = Array("js", "json")
-  
+  val getSchema = new DefaultSchema("json")
   
   // initialization at object creation
   getSchema.addTable(MainTable, metadata)
@@ -86,8 +86,6 @@ class GeoJsonImporter extends FileImporter with Parser {
   }
   
   def setFile(f: File) {file = f}
-  
-  val getSchema = new DefaultSchema("json")
     
   def setDataSourceFactory(dsf: DataSourceFactory) {}
     
