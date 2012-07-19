@@ -256,9 +256,9 @@ public abstract class BeanLayer extends AbstractLayer {
     @Override
     public void setStyles(List<Style> fts) {
         List<Style> oldStyles = this.styleList;
-        this.styleList = fts;
+        styleList = new ArrayList<Style>(fts);
         propertyChangeSupport.firePropertyChange(PROP_STYLES, oldStyles, styleList);
-        super.setStyles(fts);
+        super.setStyles(styleList);
     }
 
     @Override

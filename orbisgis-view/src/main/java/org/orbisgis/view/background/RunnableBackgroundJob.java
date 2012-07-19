@@ -30,6 +30,8 @@ package org.orbisgis.view.background;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.progress.ProgressMonitor;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * This class is a basic {@link Runnable} that will do two things in its {@code
@@ -43,7 +45,7 @@ import org.orbisgis.progress.ProgressMonitor;
  * @author alexis
  */
 public class RunnableBackgroundJob implements Runnable {
-
+        protected final static I18n I18N = I18nFactory.getI18n(RunnableBackgroundJob.class);
 	private Job job;
 	private ProgressMonitor pm;
 	private BackgroundManager jobQueue;
@@ -68,7 +70,7 @@ public class RunnableBackgroundJob implements Runnable {
 		try {
 			job.run(pm);
 		} catch (Throwable t) {
-			LOGGER.error(t);
+			LOGGER.error(I18N.tr("Fatal error on the job named {0}",job.getTaskName()),t);
 		} finally {
                         jobQueue.processFinished(job.getId());
                 }

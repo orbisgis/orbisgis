@@ -35,6 +35,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.EventHandler;
+import java.beans.IndexedPropertyChangeEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -92,18 +95,20 @@ public class Toc extends JPanel implements EditorDockable {
         protected final static I18n I18N = I18nFactory.getI18n(Toc.class);
         private final static Logger LOGGER = Logger.getLogger("gui." + Toc.class);
         DockingPanelParameters dockingPanelParameters;
-        private MapContext mapContext = null;
+        private transient MapContext mapContext = null;
         private JTree tree;
-        private DefaultTreeModel treeModel;
-        private TocRenderer treeRenderer;
+        private transient DefaultTreeModel treeModel;
+        private transient TocRenderer treeRenderer;
         //When this boolean is false, the selection event is not fired
         private AtomicBoolean fireSelectionEvent = new AtomicBoolean(true);
         //Listen for map context changes
-        private TocMapContextListener tocMapContextListener = new TocMapContextListener();
+        private transient TocMapContextListener tocMapContextListener = new TocMapContextListener();
         //Listen for all layers changes
-        private TocLayerListener tocLayerListener = new TocLayerListener();
+        private transient TocLayerListener tocLayerListener = new TocLayerListener();
+        private PropertyChangeListener tocStyleListListener = EventHandler.create(PropertyChangeListener.class, this, "onStyleListChange","");
+        private PropertyChangeListener tocStyleListener = EventHandler.create(PropertyChangeListener.class,this,"onStyleChange","");
         //Loaded editable map
-        private MapElement mapElement = null;
+        private transient MapElement mapElement = null;
 
         /**
          * Constructor
@@ -338,7 +343,6 @@ public class Toc extends JPanel implements EditorDockable {
                                 fireSelectionEvent.set(true);
                         }
                 }
-                LOGGER.debug("There are "+mapContext.getSelectedLayers().length+" selected layers.");
         }
 
         private void setEmptyLayerModel(JTree jTree) {
@@ -356,7 +360,46 @@ public class Toc extends JPanel implements EditorDockable {
         public MapContext getMapContext() {
                 return mapContext;
         }
-
+        /**
+        * Recursively add property listeners to the provided node
+        * @param node 
+        */
+        private void addPropertyListeners(TreeNode node) {
+                if(node instanceof TocTreeNodeLayer) {
+                        ILayer layer =((TocTreeNodeLayer) node).getLayer();
+                        if(!layer.acceptsChilds()) {
+                                layer.addPropertyChangeListener(Layer.PROP_STYLES,tocStyleListListener);
+                                for(Style st : layer.getStyles()) {
+                                        addPropertyListeners(new TocTreeNodeStyle(st));
+                                }
+                        } else {
+                                for(ILayer subLayer : layer.getChildren()) {
+                                        addPropertyListeners(new TocTreeNodeLayer(subLayer));
+                                }
+                        }
+                } else if(node instanceof TocTreeNodeStyle) {
+                        Style st = ((TocTreeNodeStyle) node).getStyle();
+                        st.addPropertyChangeListener(tocStyleListener);
+                }
+        }
+        /**
+         * Recursively remove the property listeners of the provided node
+         * @param node 
+         */
+        private void removePropertyListeners(TreeNode node) {
+                if(node instanceof TocTreeNodeLayer) {
+                        ILayer layer =((TocTreeNodeLayer) node).getLayer();
+                        if(!layer.acceptsChilds()) {
+                                layer.removePropertyChangeListener(tocStyleListListener);
+                                for(Style st : layer.getStyles()) {
+                                        removePropertyListeners(new TocTreeNodeStyle(st));
+                                }
+                        }
+                } else if(node instanceof TocTreeNodeStyle) {
+                        Style st = ((TocTreeNodeStyle) node).getStyle();
+                        st.removePropertyChangeListener(tocStyleListener);
+                }
+        }
         /**
          * Load the specified MapElement in the toc
          *
@@ -378,6 +421,7 @@ public class Toc extends JPanel implements EditorDockable {
 
                 // Remove the listeners
                 if (this.mapContext != null) {
+                        removePropertyListeners(new TocTreeNodeLayer(this.mapContext.getLayerModel()));
                         this.mapContext.getLayerModel().removeLayerListenerRecursively(tocLayerListener);
                         this.mapContext.removeMapContextListener(tocMapContextListener);
                 }
@@ -390,8 +434,8 @@ public class Toc extends JPanel implements EditorDockable {
                         // Add the listeners to the new MapContext
                         this.mapContext.addMapContextListener(tocMapContextListener);
                         final ILayer root = this.mapContext.getLayerModel();
+                        addPropertyListeners(new TocTreeNodeLayer(root));
                         root.addLayerListenerRecursively(tocLayerListener);
-
                         //treeModel = new TocTreeModel(root, tree);
                         // Apply treeModel and clear the selection        
                         fireSelectionEvent.set(false);
@@ -654,13 +698,35 @@ public class Toc extends JPanel implements EditorDockable {
                         setEditableMap(importedMap);
                 }
         }
-
+        public void onStyleChange(PropertyChangeEvent evt) {
+                treeModel.nodeChanged(new TocTreeNodeStyle((Style)evt.getSource()));
+        }
+        public void onStyleListChange(IndexedPropertyChangeEvent evt) {
+                if(evt.getNewValue() instanceof List) {
+                        if(evt.getOldValue()!=null) {
+                                for(Style style : (List<Style>)evt.getOldValue()) {
+                                        style.removePropertyChangeListener(tocStyleListener);
+                                }
+                        }
+                        for(Style style : (List<Style>)evt.getNewValue()) {
+                                style.removePropertyChangeListener(tocStyleListener);
+                                style.addPropertyChangeListener(tocStyleListener);
+                        }
+                } else if(evt.getNewValue() instanceof Style){
+                        Style newStyle = (Style)evt.getNewValue();
+                        newStyle.removePropertyChangeListener(tocStyleListener);
+                        newStyle.addPropertyChangeListener(tocStyleListener);                        
+                }
+                treeModel.nodeStructureChanged(new TocTreeNodeLayer((ILayer)evt.getSource()));
+        }
+        
         private class TocLayerListener implements LayerListener {
 
                 @Override
                 public void layerAdded(final LayerCollectionEvent e) {
                         for (final ILayer layer : e.getAffected()) {
                                 layer.addLayerListenerRecursively(this);
+                                layer.addPropertyChangeListener(Layer.PROP_STYLES, tocStyleListListener);
                         }
                         treeModel.nodeStructureChanged(new TocTreeNodeLayer(e.getParent()));
                 }
@@ -674,24 +740,20 @@ public class Toc extends JPanel implements EditorDockable {
                 public boolean layerRemoving(LayerCollectionEvent e) {
                         // Close editors
                         for (final ILayer layer : e.getAffected()) {
-                                ILayer[] layers = new ILayer[]{layer};
-                                if (layer.acceptsChilds()) {
-                                        layers = layer.getLayersRecursively();
-                                }
-                                for (ILayer lyr : layers) {
-                                        //TODO Close editors attached to this ILayer
-                                        //Or do the job on the Editor (logic)
-                                        /*
-                                         * EditorManager em =
-                                         * Services.getService(EditorManager.class);
-                                         * IEditor[] editors = em.getEditor(new
-                                         * EditableLayer(element, lyr)); for
-                                         * (IEditor editor : editors) { if
-                                         * (!em.closeEditor(editor)) { return
-                                         * false; } }
-                                         *
-                                         */
-                                }
+                                layer.removePropertyChangeListener(tocStyleListListener);
+                                layer.removeLayerListener(this);
+                                //TODO Close editors attached to this ILayer
+                                //Or do the job on the Editor (logic)
+                                /*
+                                * EditorManager em =
+                                * Services.getService(EditorManager.class);
+                                * IEditor[] editors = em.getEditor(new
+                                * EditableLayer(element, lyr)); for
+                                * (IEditor editor : editors) { if
+                                * (!em.closeEditor(editor)) { return
+                                * false; } }
+                                *
+                                */
                         }
                         return true;
                 }
@@ -714,8 +776,7 @@ public class Toc extends JPanel implements EditorDockable {
                 }
                 @Override
                 public void styleChanged(LayerListenerEvent e) {
-                        //The parameter do not contains the affected styles
-                        treeModel.nodeStructureChanged(new TocTreeNodeLayer(e.getAffectedLayer()));
+                        //Deprecated listener
                 }
 
                 @Override
