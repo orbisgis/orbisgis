@@ -69,6 +69,7 @@ public class TocTreeEditorLayerPanel extends JPanel implements TocTreeEditorPane
                 fl.setHgap(0);
                 setLayout(fl);
                 check = new JCheckBox();
+                check.setOpaque(false);
                 iconAndLabel = new JLabel();
                 textField = new JTextField(14);
                 textField.addKeyListener(new KeyAdapter() {
