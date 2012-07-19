@@ -47,7 +47,7 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 /**
  * The controller makes a copy of the style and mount UI to edit the copy
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public final class LegendUIController {
 

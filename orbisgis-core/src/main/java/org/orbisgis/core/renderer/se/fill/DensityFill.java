@@ -59,7 +59,7 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
  * repeated mark, registered as a {@code GraphicCollection} instance.</p>
  * <p>In every cases, the needed coverage percentage must be specified. If not set,
  * It will be defaulted to {@code DEFAULT_PERCENTAGE}.
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public final class DensityFill extends Fill implements GraphicNode {
 

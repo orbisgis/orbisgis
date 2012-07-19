@@ -32,7 +32,7 @@ import org.orbisgis.core.renderer.se.graphic.Graphic;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface LegendUIGraphicComponent {
 	Graphic getGraphic();

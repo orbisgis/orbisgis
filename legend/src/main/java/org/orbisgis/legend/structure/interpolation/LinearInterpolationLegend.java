@@ -35,7 +35,7 @@ import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
  * as an interpolation on any numerci, unaltered, value.</p>
  * <p>Note that we don't care that one of the values given to compute the
  * interpolation is 0 or not. We do it, that's all.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class LinearInterpolationLegend extends InterpolationLegend {
 

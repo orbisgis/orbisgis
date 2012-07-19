@@ -32,7 +32,7 @@ import org.orbisgis.core.renderer.se.graphic.MarkGraphicSource;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface LegendUIMarkSourceComponent {
 	MarkGraphicSource getSource();

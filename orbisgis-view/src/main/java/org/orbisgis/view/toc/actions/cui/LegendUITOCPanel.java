@@ -57,7 +57,7 @@ import org.orbisgis.core.renderer.se.TextSymbolizer;
  *
  * Style edition TOC for symbolizers (1 rule)
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class LegendUITOCPanel extends JPanel implements TreeSelectionListener, LegendUIComponentListener {
 

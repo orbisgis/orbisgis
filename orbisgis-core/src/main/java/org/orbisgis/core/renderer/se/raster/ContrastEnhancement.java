@@ -30,7 +30,7 @@ package org.orbisgis.core.renderer.se.raster;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public enum ContrastEnhancement {
     HISTOGRAM, NORMALIZE

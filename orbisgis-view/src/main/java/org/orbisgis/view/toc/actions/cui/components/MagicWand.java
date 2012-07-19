@@ -134,7 +134,7 @@ public class MagicWand {
 
 		Opener opener = new Opener();
 		// load the image
-		imp = opener.openImage("/home/maxence/mercator.jpg");
+		imp = opener.openImage("/home/Maxence Laurent/mercator.jpg");
 
 		// update the ImageCanvas with the new Image
 		// store the ImageProcessor

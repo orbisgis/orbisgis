@@ -38,7 +38,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class PointSymbolizerTest extends AbstractTest {
 

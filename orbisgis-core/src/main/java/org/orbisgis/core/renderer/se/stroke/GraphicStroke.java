@@ -65,7 +65,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * a single {@code Graphic} instance. Must be positive, and is defaulted to the 
  * {@code Graphic} natural length.</li>
  * <li>A relative orientation, as defined in {@link RelativeOrientation}.</li></ul>
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class GraphicStroke extends Stroke implements GraphicNode, UomNode {
 

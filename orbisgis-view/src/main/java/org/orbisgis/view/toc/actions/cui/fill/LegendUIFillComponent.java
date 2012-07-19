@@ -32,7 +32,7 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface LegendUIFillComponent {
 	public abstract Fill getFill();

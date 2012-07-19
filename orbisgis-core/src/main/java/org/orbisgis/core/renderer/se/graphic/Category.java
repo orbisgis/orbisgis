@@ -52,7 +52,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
  * <li>A {@link GraphicCollection} to represent it.</li>
  * <li>A name (as a String).</li>
  * </ul>
- * @author maxence
+ * @author Maxence Laurent
  * @todo add support for stacked bar (means category fill / stroke are mandatory) and others are forbiden
  */
 public final class Category implements SymbolizerNode, FillNode, StrokeNode, GraphicNode {

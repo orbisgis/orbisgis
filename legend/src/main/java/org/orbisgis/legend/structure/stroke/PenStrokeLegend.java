@@ -35,7 +35,7 @@ import org.orbisgis.legend.LegendStructure;
  * A {@code LegendStructure} that gathers all the analysis that can be made inside a
  * {@code PenStroke}. When a more accurate analysis can be recognized, it's
  * really better to instanciate the corresponding specialization of this class.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class PenStrokeLegend implements LegendStructure {
 

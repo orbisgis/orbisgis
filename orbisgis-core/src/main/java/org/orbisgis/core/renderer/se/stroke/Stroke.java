@@ -43,7 +43,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 /**
  * Style description for linear features (Area or Line)
  *
- * @author maxence, alexis.
+ * @author Maxence Laurent, Alexis Guéganno.
  */
 public abstract class Stroke implements SymbolizerNode {
 

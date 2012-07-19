@@ -82,7 +82,7 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  * </p>
  * <p>{@code Slices} can be organize in this {@code PieChart}, in order to
  * change their display order
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public final class PieChart extends Graphic implements StrokeNode, UomNode,
         TransformNode {

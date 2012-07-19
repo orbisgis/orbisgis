@@ -44,7 +44,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Panel associated to {@code Rule} instances in the legend edition UI.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class PnlRule extends JPanel implements ISELegendPanel {
         protected final static I18n I18N = I18nFactory.getI18n(PnlRule.class);

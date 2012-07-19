@@ -51,7 +51,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  * <li>X</li>
  * </ul>
  *
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public enum WellKnownName implements MarkGraphicSource {
     SQUARE, CIRCLE, HALFCIRCLE, TRIANGLE, STAR, CROSS, X;

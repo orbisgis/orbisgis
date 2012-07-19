@@ -41,7 +41,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 /**
  * An {@code ExclusionZone} defines an area around a {@code PointLabel} where other 
  * labels' displaying will be forbidden.
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public abstract class ExclusionZone implements SymbolizerNode, UomNode {
         private SymbolizerNode parent;

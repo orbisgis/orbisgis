@@ -38,7 +38,7 @@ import org.orbisgis.core.renderer.se.parameter.Literal;
 /**
  * The representation of a real literal, bounded in a real context. Boundaries are set
  * using a RealParameterContext.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class RealLiteral extends Literal implements RealParameter {
 

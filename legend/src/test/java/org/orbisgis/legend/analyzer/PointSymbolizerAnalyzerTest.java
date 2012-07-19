@@ -45,7 +45,7 @@ import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
 
 /**
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
     

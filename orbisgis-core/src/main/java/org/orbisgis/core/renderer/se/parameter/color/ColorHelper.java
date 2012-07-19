@@ -36,7 +36,7 @@ import java.awt.image.BufferedImage;
  *
  * This class provides some tools for managing colors
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public final class ColorHelper {
 

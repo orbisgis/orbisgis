@@ -51,7 +51,7 @@ import org.orbisgis.view.toc.actions.cui.parameter.LegendUIRecodePanel;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class LegendUIMetaRealPanel extends LegendUIAbstractMetaPanel {
 

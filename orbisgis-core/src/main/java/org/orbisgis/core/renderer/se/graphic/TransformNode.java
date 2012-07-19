@@ -32,7 +32,7 @@ import org.orbisgis.core.renderer.se.transform.Transform;
 
 /**
  * TransformNode are graphics for which we can use {@link Transform}.
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public interface TransformNode {
 

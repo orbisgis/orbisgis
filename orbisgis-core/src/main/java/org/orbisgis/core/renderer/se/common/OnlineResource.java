@@ -66,7 +66,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  * that is sotred on disk, or in a remote location, as an image.</p>
  * <p>An online resource is directly dependant on an URL that will be used to
  * retrieve the image we need.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  * @todo implements MarkGraphicSource
  */
 public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource {

@@ -41,7 +41,7 @@ import org.orbisgis.core.renderer.se.parameter.string.*;
 
 /**
  * This class will build <code>SeParameter</code> instances using the given <code>JAXBElement</code> instances.
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public final class SeParameterFactory {
 

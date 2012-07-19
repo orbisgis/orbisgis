@@ -45,7 +45,7 @@ import org.orbisgis.view.map.tool.*;
 
 /**
  * This class permits to complete a polygon based on the geometry difference.
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class AutoCompletePolygonTool extends AbstractPolygonTool {
 

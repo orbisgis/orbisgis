@@ -47,7 +47,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
  * A categorization from {@code RealParameter} to {@code ColorParamter}
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public class Categorize2Color extends Categorize<ColorParameter, ColorLiteral> implements ColorParameter {
 

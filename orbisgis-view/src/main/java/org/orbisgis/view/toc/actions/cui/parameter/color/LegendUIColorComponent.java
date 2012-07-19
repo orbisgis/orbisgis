@@ -32,7 +32,7 @@ import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface LegendUIColorComponent {
 

@@ -42,7 +42,7 @@ import org.orbisgis.legend.LegendStructure;
  * <li></li>
  * </ul>
  * </p>
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class MarkGraphicLegend implements LegendStructure {
 

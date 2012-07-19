@@ -50,7 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 /**
  * Generic class to represent graphic symbols as defined in SE.
  * @todo create subclasses: AlternativeGraphic, GraphicReference
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class Graphic implements SymbolizerNode {
 

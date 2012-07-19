@@ -41,7 +41,7 @@ import org.orbisgis.core.Services;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class BeanshellScript {
 

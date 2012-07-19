@@ -55,7 +55,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class ChartsTest {
 

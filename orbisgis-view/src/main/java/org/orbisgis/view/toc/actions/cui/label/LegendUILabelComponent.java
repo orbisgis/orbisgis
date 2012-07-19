@@ -33,7 +33,7 @@ import org.orbisgis.core.renderer.se.label.Label;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface LegendUILabelComponent {
     Label getLabel();

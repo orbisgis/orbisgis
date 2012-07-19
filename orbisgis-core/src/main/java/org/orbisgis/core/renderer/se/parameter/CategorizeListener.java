@@ -30,7 +30,7 @@ package org.orbisgis.core.renderer.se.parameter;
 
 /**
  * Listens for modifications in a Categorize.
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface CategorizeListener {
 

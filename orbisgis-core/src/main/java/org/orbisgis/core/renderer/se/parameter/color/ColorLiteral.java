@@ -39,7 +39,7 @@ import org.orbisgis.core.renderer.se.parameter.Literal;
 
 /**
  * 
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public class ColorLiteral extends Literal implements ColorParameter{
 

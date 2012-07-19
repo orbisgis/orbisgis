@@ -46,7 +46,7 @@ import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 
 /**
  * Test that we recognize known configurations for LineSymbolizer instances.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
     private String constant = "src/test/resources/org/orbisgis/legend/uniqueLineSymbol.se";

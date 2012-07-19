@@ -51,7 +51,7 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * This class doesn't exists within XSD. Actually, it the CompositeGraphic element which has been move up
  * It is a set of graphic symbols, as defined in SE.
- * @author maxence
+ * @author Maxence Laurent
  */
 public final class GraphicCollection implements SymbolizerNode {
 

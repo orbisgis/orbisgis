@@ -39,7 +39,7 @@ import org.orbisgis.legend.structure.recode.Recode2RealLegend;
 /**
  * This class analyzes instances of {@code RealParameter} to determine if they
  * are literal values, or richer function.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class RealParameterAnalyzer extends AbstractLiteralValidator{
 

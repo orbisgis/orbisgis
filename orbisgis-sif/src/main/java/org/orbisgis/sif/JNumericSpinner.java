@@ -53,7 +53,7 @@ import org.orbisgis.sif.icons.SifIcon;
  * It is also possible to set the value to be added or removed when using one of
  * the two buttons.
  *
- * @author fergonco, alexis
+ * @author Fernando Gonzales Cortes, Alexis Guéganno
  */
 public class JNumericSpinner extends JPanel {
 

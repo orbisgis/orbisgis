@@ -42,7 +42,7 @@ import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
  * {@code PenStroke} whose only varying parameter is the width of the line.
  * This width is defined thanks to a linear interpolation made directly on the
  * raw value (i.e. we don't apply any mathematical function to the input values).
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class ProportionalLine extends ConstantColorAndDashesLine {
 

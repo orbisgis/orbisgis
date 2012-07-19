@@ -46,7 +46,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  * <p>This class embedded a set of {@code StringParameter} instances, and can
  * be seen as a simplified list. It implements {@code Iterable} to ease the
  * processing of its content.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class StringConcatenate implements StringParameter, Iterable<StringParameter> {
 

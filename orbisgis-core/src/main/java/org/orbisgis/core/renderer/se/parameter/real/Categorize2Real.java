@@ -44,7 +44,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 
 /**
  * A categorization from {@code RealParameter} to {@code RealParamter}
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public final class Categorize2Real extends Categorize<RealParameter, RealLiteral> implements RealParameter {
 

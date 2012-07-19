@@ -33,7 +33,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 /**
  * This enumeration contains all the units of measure that are allowed in 
  * Symbology Encoding.
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public enum Uom {
 

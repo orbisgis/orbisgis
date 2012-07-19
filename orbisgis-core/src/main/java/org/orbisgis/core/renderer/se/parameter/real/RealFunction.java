@@ -49,7 +49,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  *   * Square root - <code>SQRT</code><br/>
  *   * Decimal logarithm - <code>LOG</code><br/>
  *   * Neperian logarithm - <code>LN</code>
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public class RealFunction implements RealParameter {
 

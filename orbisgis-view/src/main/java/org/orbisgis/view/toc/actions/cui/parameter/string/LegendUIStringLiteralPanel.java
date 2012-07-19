@@ -41,7 +41,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  *
  * This component edit string literals
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class LegendUIStringLiteralPanel extends LegendUIComponent
         implements LegendUIStringComponent {

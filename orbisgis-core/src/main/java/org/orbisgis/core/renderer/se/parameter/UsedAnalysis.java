@@ -36,7 +36,7 @@ import java.util.List;
  * All the nodes of the tree are asked if an analysis is used. If it is, the
  * matching boolean is set to true here. In the end, the symbolizer can know
  * which analysis are used.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class UsedAnalysis {
 

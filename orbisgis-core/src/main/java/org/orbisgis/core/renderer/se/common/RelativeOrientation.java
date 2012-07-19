@@ -32,7 +32,7 @@ import net.opengis.se._2_0.core.RelativeOrientationType;
 
 /**
  * {@code RelativeOrientation} is used to display Graphic instances properly.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public enum RelativeOrientation {
 

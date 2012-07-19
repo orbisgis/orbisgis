@@ -31,7 +31,7 @@ package org.orbisgis.legend;
 /**
  * A simple base for {@code Analyzer} instances. It gathers instances of {@code
  * LegendStructure} in a {@code List}.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public abstract class AbstractAnalyzer implements Analyzer {
 

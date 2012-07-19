@@ -33,7 +33,7 @@ import org.orbisgis.view.toc.actions.cui.LegendContext;
 
 /**
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public interface ISELegendPanel {
 

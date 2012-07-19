@@ -32,7 +32,7 @@ import org.orbisgis.core.renderer.se.graphic.ViewBox;
 
 /**
  * Used for every node that can be used in a viewbox.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public interface ViewBoxNode {
 

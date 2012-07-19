@@ -31,7 +31,7 @@ package org.orbisgis.core.renderer.se.parameter;
 /**
  * <code>InterpolationPoint</code> are used to map a <code>Type</code> instance (the <b>value</b> to 
  * a <code>double</code> (the <b>data</b>.
- * @author alexis
+ * @author Alexis Guéganno
  * @param <Type> 
  */
 public class InterpolationPoint<Type> implements Comparable {

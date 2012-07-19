@@ -52,7 +52,7 @@ import org.orbisgis.view.toc.actions.cui.LegendUIController;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class LegendUIPropertyNamePanel extends LegendUIComponent
 		implements LegendUIColorComponent, LegendUIRealComponent,

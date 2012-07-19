@@ -35,7 +35,7 @@ import javax.swing.JPanel;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class ComboBoxInput extends JPanel implements ActionListener {
 

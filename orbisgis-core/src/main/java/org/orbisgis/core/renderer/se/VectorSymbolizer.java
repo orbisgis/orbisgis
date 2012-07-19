@@ -56,7 +56,7 @@ import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
  *  <li> - an affine transformation def (transform)</li>
  * </ul>
  *
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
         private final static Logger LOGGER = Logger.getLogger(VectorSymbolizer.class);

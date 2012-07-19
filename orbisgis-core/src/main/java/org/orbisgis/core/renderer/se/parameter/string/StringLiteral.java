@@ -38,7 +38,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
  * A {@code StringParameter} with a stored, inner {@code String} value.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class StringLiteral extends Literal implements StringParameter{
 

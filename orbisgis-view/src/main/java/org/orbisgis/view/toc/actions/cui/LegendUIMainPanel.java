@@ -49,7 +49,7 @@ import org.orbisgis.sif.UIPanel;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 	private LegendUIController controller;

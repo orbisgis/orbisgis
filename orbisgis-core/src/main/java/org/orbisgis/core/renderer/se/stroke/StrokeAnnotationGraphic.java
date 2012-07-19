@@ -53,7 +53,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <li>RelativeOrientation : The orientation of the graphic against the line. Must
  * be one of the {@link RelativeOrientation} value.</li>
  * </ul>
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 
 /*public final class StrokeAnnotationGraphic implements SymbolizerNode {

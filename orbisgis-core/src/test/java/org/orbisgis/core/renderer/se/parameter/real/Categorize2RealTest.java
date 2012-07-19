@@ -45,7 +45,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class Categorize2RealTest extends AbstractTest {
         

@@ -32,7 +32,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface LegendUIStrokeComponent {
 	Stroke getStroke();

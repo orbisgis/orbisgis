@@ -32,7 +32,7 @@ package org.orbisgis.core.renderer.se.parameter;
  *
  * Exception thrown when evaluation of a parameter (Color, Real or string)
  * can not be done
- * @author maxence
+ * @author Maxence Laurent
  */
 public class ParameterException extends Exception{
     private static final long serialVersionUID = 1316533289L;

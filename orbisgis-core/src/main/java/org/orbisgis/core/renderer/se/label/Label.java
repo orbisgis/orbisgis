@@ -52,7 +52,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  * a label - If not it won't be displayed.</p>
  * <p>A Label instance contains a text value (as a StyledText) and informations 
  * about its alignment, vertical or horizontal.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public abstract class Label implements SymbolizerNode, UomNode {
 

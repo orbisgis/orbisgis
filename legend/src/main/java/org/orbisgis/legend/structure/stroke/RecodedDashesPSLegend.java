@@ -34,7 +34,7 @@ import org.orbisgis.legend.LegendStructure;
 /**
  * This class is associated to instances of {@code PenStroke} where a value
  * classification is made on the dash array.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class RecodedDashesPSLegend extends PenStrokeLegend{
 

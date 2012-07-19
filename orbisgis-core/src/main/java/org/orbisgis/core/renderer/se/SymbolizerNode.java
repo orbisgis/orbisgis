@@ -38,7 +38,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  *
  * @todo extract getUom() and add void update(), then every element should implement this (even parameters)
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface SymbolizerNode{
     /**

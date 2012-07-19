@@ -39,7 +39,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * UIFactory is a factory to build SIF dialog.
- * @author ebocher
+ * @author Erwan Bocher
  */
 
 public class UIFactory {

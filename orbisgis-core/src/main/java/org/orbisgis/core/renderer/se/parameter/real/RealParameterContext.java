@@ -33,7 +33,7 @@ import java.awt.Font;
 /**
  * Instances of this define the boundaries where the value of a RealParameter can stand.
  * 
- * @author maxence
+ * @author Maxence Laurent
  */
 public class RealParameterContext {
 

@@ -30,7 +30,7 @@ package org.orbisgis.core.renderer.se;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class SeExceptions {
 

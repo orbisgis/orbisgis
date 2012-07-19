@@ -59,7 +59,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @param <ToType> One of ColorParameter, RealParameter, StringParameter
  * @param <FallbackType> the Literal implementation of <ToType>. It is needed to store 
  * a default value, when an analyzed input can't be placed in any category.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  *
  */
 public abstract class Categorize<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter, LiteralListener {

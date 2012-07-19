@@ -49,7 +49,7 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 /**
  * This renderer is a prototype. The aim is to generate rendered-layers in a way
  * that a GeoPDF can use to offer interactivity
- * @author maxence
+ * @author Maxence Laurent
  */
 public class PdfRendererWithAttributes extends Renderer {
 

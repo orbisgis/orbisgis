@@ -35,7 +35,7 @@ import javax.swing.SwingUtilities;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class LegendUIAbstractPanel extends JPanel {
 	protected LegendUIController controller;

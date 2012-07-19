@@ -75,7 +75,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * An additional parameter can be given. It is used to determine if the symbol 
  * must be drawn on the vertex of a geometry, rather than at its center.
  * 
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public final class PointSymbolizer extends VectorSymbolizer implements GraphicNode {
     private final static I18n I18N = I18nFactory.getI18n(PointSymbolizer.class);

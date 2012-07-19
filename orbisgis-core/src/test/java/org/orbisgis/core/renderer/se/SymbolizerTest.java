@@ -52,7 +52,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class SymbolizerTest extends AbstractTest {
 

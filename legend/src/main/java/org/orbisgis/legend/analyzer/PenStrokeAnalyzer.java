@@ -56,7 +56,7 @@ import org.orbisgis.legend.structure.stroke.*;
  * analysis on such a {@code Stroke} : its width, its fill, and the pattern of 
  * its dash array (if set).
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class PenStrokeAnalyzer extends AbstractAnalyzer {
 

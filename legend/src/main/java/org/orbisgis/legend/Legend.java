@@ -35,7 +35,7 @@ import org.orbisgis.core.renderer.se.Symbolizer;
  * style, and that match well-known configuration as described in the geographic
  * and cartographic literatures.
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public interface Legend extends LegendStructure {
 

@@ -34,7 +34,7 @@ import org.orbisgis.legend.structure.recode.Recode2ColorLegend;
 /**
  * A {@code Legend} that represents a {@code SolidFill} where the color is defined
  * accorgind to a {@code Recode} operation.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class RecodedSolidFillLegend extends SolidFillLegend {
 

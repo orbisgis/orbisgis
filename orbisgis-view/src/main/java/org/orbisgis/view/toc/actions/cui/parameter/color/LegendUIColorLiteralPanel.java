@@ -46,7 +46,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class LegendUIColorLiteralPanel extends LegendUIComponent implements LegendUIColorComponent {
 

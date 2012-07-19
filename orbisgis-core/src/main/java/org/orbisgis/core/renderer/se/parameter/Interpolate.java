@@ -46,7 +46,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <li>The list of interpolation points</li>
  * <li>The <code>RealParameter</code> used to retrieve the values to interpolate</li>
  * <li>The <code>FallbackType</code> value used when a data can't be processed</li>
- * @author maxence
+ * @author Maxence Laurent
  * @param <ToType> One of RealParameter or ColorParameter
  * @param <FallbackType> extends ToType (the LiteralOne, please...)
  * @todo find a nice way to compute interpolation for RealParameter and ColorParameter

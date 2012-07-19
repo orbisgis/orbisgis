@@ -35,7 +35,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
  * ComboBoxInput extension, create a jpanel which allow to choose unit
  * Uom is auto-saving
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public final class UomInput extends ComboBoxInput {
 

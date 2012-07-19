@@ -42,7 +42,7 @@ import org.orbisgis.sif.AbstractUIPanel;
  * An {@code UIPanel} that will let the user choose one option in a list of
  * {@code String} instances. Configured with a list of {@code String} and a
  * title.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class RadioButtonPanel extends AbstractUIPanel{
 

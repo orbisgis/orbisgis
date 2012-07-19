@@ -32,7 +32,7 @@ import org.orbisgis.core.renderer.se.graphic.ExternalGraphicSource;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface LegendUIExternalSourceComponent {
 	ExternalGraphicSource getSource();

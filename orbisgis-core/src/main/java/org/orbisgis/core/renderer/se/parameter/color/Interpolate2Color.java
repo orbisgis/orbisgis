@@ -45,7 +45,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 /**
  * Interpolate <code>Color</code> values from double values. Interpolation points must be
  * instances of <code>InterpolationPoint&lt;ColorParameter></code>.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class Interpolate2Color extends Interpolate<ColorParameter, ColorLiteral> implements ColorParameter {
 

@@ -43,7 +43,7 @@ import org.orbisgis.view.toc.actions.cui.legends.PnlRule;
  * specialized enough, these legends will be associated to a dedicated  edition
  * panel. This class embeds this structure, as {@code Rule} instances are
  * associated to symbolizers, not to legends.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class RuleWrapper {
 

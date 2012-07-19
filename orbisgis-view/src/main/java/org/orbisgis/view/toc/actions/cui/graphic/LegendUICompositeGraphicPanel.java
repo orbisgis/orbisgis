@@ -59,7 +59,7 @@ import org.orbisgis.view.toc.actions.cui.LegendUIController;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class LegendUICompositeGraphicPanel extends LegendUIComponent {
 

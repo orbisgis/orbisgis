@@ -50,7 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <ul><li>X : The horizontal multiplication factor</li>
  * <li>Y : The vertical multiplication factor</li></ul>
  *
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class Scale implements Transformation {
 

@@ -73,7 +73,7 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  * @todo Opacity not yet implemented !
  * 
  * @see MarkGraphic, Graphic, ViewBox
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class ExternalGraphic extends Graphic implements UomNode, TransformNode,
         ViewBoxNode {

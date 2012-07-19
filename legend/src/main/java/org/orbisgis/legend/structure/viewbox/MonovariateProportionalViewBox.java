@@ -39,7 +39,7 @@ import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;
  * and it is associated to an {@code Interpolation} that can be recognized as a
  * {@code SqrtInterpolationLegend}.
  * 
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class MonovariateProportionalViewBox extends DefaultViewBox {
         

@@ -53,7 +53,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 /**
  * A solid fill fills a shape with a solid color (+opacity)
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public final class SolidFill extends Fill {
 

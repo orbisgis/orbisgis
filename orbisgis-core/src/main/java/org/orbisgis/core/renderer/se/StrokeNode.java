@@ -33,7 +33,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 /**
  * This interface must be implemented by every <code>Symbolizer</code> that can contain
  * a <code>Stroke</code> element.
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface StrokeNode {
         /**

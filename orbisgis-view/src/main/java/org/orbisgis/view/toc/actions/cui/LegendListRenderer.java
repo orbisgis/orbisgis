@@ -37,7 +37,7 @@ import javax.swing.*;
  * As a {@code CellRenderer}, this class is used in {@code LegendList} to render
  * the elements of the list of {@code Legend}. Each time a change occur in the
  * list organization, it is called to perform the rendering.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class LegendListRenderer implements ListCellRenderer {
 

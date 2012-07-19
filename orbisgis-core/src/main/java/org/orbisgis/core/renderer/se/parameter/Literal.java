@@ -42,7 +42,7 @@ import net.opengis.se._2_0.core.ParameterValueType;
  * from a GDMS table, <code>Literal</code>s will directly embed their datum.</p>
  * <p>A <code>Literal</code> is associated with a list of listeners, in order to 
  * simplify the propagation of changes that could occur in it.
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class Literal implements SeParameter, Comparable {
 

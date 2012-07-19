@@ -34,7 +34,7 @@ import org.orbisgis.legend.Legend;
 /**
  * Common interface to all the {@code Legend} instances that represent a unique
  * symbol.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public interface UniqueSymbol extends Legend {
 

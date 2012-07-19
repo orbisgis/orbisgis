@@ -36,7 +36,7 @@ import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
 /**
  * This class gathers methods that are common to thematic analysis where
  * the {@code Stroke}, {@code Fill} and well-known name are constant.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public abstract class ConstantFormPoint extends SymbolizerLegend {
 

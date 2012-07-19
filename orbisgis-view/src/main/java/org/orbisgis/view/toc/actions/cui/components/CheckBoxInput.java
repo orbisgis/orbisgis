@@ -36,7 +36,7 @@ import javax.swing.JPanel;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class CheckBoxInput extends JPanel implements ActionListener {
 

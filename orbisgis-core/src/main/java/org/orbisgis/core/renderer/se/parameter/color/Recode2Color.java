@@ -44,7 +44,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
  * <code>Recode</code> implementation that maps input values to color values.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public class Recode2Color extends Recode<ColorParameter, ColorLiteral> implements ColorParameter {
 

@@ -38,7 +38,7 @@ import org.orbisgis.legend.NumericLegend;
  * during an analysis, it is supposed to mean that non of the other, more
  * accurate cases, has been recognized in the input {@code Interpolate2Real}
  * instanceused by the analyzer.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class InterpolationLegend implements NumericLegend {
 

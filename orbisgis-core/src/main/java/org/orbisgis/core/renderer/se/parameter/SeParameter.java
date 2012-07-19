@@ -35,7 +35,7 @@ import net.opengis.se._2_0.core.ParameterValueType;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface SeParameter{
 

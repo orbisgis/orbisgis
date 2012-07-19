@@ -60,7 +60,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * It is defined with a GraphicCollection (that will be used to draw the filling symbol), a Uom,
  * and a gap vector. The gap vector is represented by its two (X and Y) coordinates,
  * stored as <code>RealParameter</code> instances.
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public final class GraphicFill extends Fill implements UomNode {
 

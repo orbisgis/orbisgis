@@ -33,7 +33,7 @@ import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 /**
  * This interface must be implemented by each SE node that embeds a 
  * {@link GraphicCollection}.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public interface GraphicNode {
         

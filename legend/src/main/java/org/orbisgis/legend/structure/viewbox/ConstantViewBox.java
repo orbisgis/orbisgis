@@ -35,7 +35,7 @@ import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 /**
  * Represents a ViewBox that does not change, whatever the processed data is.
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class ConstantViewBox extends DefaultViewBox {
 

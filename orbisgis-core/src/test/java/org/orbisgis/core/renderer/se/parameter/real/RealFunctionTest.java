@@ -36,7 +36,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class RealFunctionTest {
 

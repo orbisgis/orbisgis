@@ -37,7 +37,7 @@ import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
  * {@code PenStroke} is defined using a {@code Width} attribute, which is a
  * RealAttribute. Consequently, it can be defined as linearly interpolated upon
  * some numeric attribute. This way, we obtain a "proportional line" analysis.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class ProportionalStrokeLegend extends PenStrokeLegend {
 

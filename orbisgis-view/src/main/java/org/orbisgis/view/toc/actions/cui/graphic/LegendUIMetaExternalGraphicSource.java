@@ -42,7 +42,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class LegendUIMetaExternalGraphicSource extends LegendUIAbstractMetaPanel {
 

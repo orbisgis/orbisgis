@@ -37,7 +37,7 @@ import org.junit.Test;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class BeanShellScriptTest {
 

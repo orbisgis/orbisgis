@@ -44,7 +44,7 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 /**
  * This {@code Analyzer} realization is dedicated to the study of {@code
  * LineSymbolizer} instances. 
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class AreaSymbolizerAnalyzer extends AbstractAnalyzer {
 

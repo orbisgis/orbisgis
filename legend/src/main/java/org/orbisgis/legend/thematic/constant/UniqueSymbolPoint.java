@@ -50,7 +50,7 @@ import org.orbisgis.legend.thematic.ConstantFormPoint;
  * <li>It is filled with a {@code SolidFill} of fixed colour and opacity.</li>
  * <li>the width and height of its {@code ViewBox} are constant.</li>
  * </ul>
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbolArea {
 

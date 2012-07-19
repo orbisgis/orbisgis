@@ -44,7 +44,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * An {@code ExclusionZone} where the forbidden area is defined as a rectangle. It is 
  * defined thanks to a x and y values. Their meaning is of course dependant of the inner
  * UOM instance.
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public final class ExclusionRectangle extends ExclusionZone {
 

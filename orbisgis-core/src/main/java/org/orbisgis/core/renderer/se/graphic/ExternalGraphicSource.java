@@ -39,7 +39,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  * @todo implement in InlineContent
  */
 public interface ExternalGraphicSource {

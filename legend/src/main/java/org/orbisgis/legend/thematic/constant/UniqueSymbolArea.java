@@ -48,7 +48,7 @@ import org.orbisgis.legend.thematic.ConstantStrokeArea;
  * constant {@code Color}.</li>
  * </ul>
  * We expect from its {@code Fill} to be a constant {@code SolidFill} instance.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class UniqueSymbolArea extends  ConstantStrokeArea implements IUniqueSymbolArea {
 

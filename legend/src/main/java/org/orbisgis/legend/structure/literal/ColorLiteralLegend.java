@@ -36,7 +36,7 @@ import org.orbisgis.legend.LegendStructure;
  * {@code LegendStructure} associated to a numeric constant, that is represented as a
  * {@code ColorLiteral} in the SE model.
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class ColorLiteralLegend implements LegendStructure {
 

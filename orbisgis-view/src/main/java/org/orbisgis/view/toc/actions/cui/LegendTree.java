@@ -60,7 +60,7 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * This class is a panel that embeds a JTree (representing the legend structure)
  * and some buttons that can be used to manage it.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class LegendTree extends JPanel {
         private static final I18n I18N = I18nFactory.getI18n(LegendTree.class);

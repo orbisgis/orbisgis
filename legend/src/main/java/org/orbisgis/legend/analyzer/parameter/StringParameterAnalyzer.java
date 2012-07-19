@@ -40,7 +40,7 @@ import org.orbisgis.legend.structure.recode.Recode2StringLegend;
 
 /**
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class StringParameterAnalyzer extends AbstractLiteralValidator {
 

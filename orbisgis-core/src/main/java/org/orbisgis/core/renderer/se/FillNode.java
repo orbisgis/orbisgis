@@ -32,7 +32,7 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 
 /**
  * Interface to be implemented by every node that can contain a <code>Fill</code> element.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public interface FillNode {
 

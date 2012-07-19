@@ -37,7 +37,7 @@ import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
 /**
  * Abstract a representation of line whose {@code Color} and dash array are
  * constant, but where the management of the width is unknown.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public abstract class ConstantColorAndDashesLine extends SymbolizerLegend {
 

@@ -37,7 +37,7 @@ import org.orbisgis.legend.structure.viewbox.ConstantViewBox;
 /**
  * A Markgraphic, defined with a well-known name, whose all parameters are
  * constant, whatever the input data.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class ConstantWKNLegend extends ConstantFormWKN{
 

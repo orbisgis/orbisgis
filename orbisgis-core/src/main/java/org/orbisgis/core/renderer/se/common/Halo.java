@@ -59,7 +59,7 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * A {@code Halo} is a type of {@code Fill} that is applied to the background of font glyphs.
  * It is mainly used to improve the readability of text labels on the map.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public final class Halo implements SymbolizerNode, UomNode, FillNode {
 

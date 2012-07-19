@@ -43,7 +43,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  * Each implementation represent an affine transformation base on RealParameter.
  * It means each transformation can depends on feature attributes
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface Transformation {
 

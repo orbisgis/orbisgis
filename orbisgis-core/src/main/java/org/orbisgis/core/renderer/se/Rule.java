@@ -59,7 +59,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  * <code>Symbolizer</code> can be a composite one. This implementation directly embedded 
  * a <code>CompositeSymbolizer</code> that will contain one -or more- actual <code>Symbolizer</code>
  * representation.
- * @author maxence
+ * @author Maxence Laurent
  */
 public final class Rule implements SymbolizerNode {
 

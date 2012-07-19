@@ -53,7 +53,7 @@ import org.orbisgis.core.renderer.se.raster.OverlapBehavior;
 
 /**
  * @ todo implements almost all...
- * @author maxence
+ * @author Maxence Laurent
  */
 public class RasterSymbolizer extends Symbolizer {
 

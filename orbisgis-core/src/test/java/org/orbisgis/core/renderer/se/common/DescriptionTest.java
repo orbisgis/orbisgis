@@ -37,7 +37,7 @@ import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.renderer.se.Style;
 /**
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class DescriptionTest extends AbstractTest {
 

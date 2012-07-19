@@ -31,7 +31,7 @@ package org.orbisgis.legend.thematic.constant;
 /**
  * Parameter of a unique symbol that embeds a numeric value. Consequently, its
  * use can be dependant upon a minimum and a maximum values.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public abstract class USNumericParameter<A extends Number> extends USParameter<A> {
 

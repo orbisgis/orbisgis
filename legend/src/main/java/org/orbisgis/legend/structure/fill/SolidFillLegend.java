@@ -36,7 +36,7 @@ import org.orbisgis.legend.LegendStructure;
  * be made on the color, for a SolidFill.</p>
  * <p>{@code SolidFill} should be monovariate elements : we should only
  * play with the color, not with the opacity.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class SolidFillLegend implements LegendStructure {
 

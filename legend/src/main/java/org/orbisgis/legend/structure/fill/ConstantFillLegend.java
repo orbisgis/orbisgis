@@ -32,7 +32,7 @@ import org.orbisgis.legend.LegendStructure;
 
 /**
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public interface ConstantFillLegend extends LegendStructure{
 

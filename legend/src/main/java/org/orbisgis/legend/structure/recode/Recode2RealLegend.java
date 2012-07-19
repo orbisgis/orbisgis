@@ -33,7 +33,7 @@ import org.orbisgis.legend.LegendStructure;
 
 /**
  * {@code LegendStructure} specialization associated to {@code Recode2Real} instances.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class Recode2RealLegend implements LegendStructure {
 

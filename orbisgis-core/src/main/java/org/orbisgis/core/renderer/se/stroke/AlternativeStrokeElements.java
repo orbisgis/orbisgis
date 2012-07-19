@@ -41,7 +41,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  * choose from different {@code StrokeElement} definitions.</p>
  * <p>Instances of this class contains a list of {@code StrokElement} that is used
  * to provide the said options.
- * @author maxence
+ * @author Maxence Laurent
  */
 public class AlternativeStrokeElements extends CompoundStrokeElement {
 

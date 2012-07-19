@@ -41,7 +41,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameter;
  * According to XSD, this color should not embed any <code>alpha</code> value !
  * Consequently, if <code>alpha</code> is defined within a ColorParameter, the value will be loosed
  * at serialization time !
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface ColorParameter extends SeParameter {
 

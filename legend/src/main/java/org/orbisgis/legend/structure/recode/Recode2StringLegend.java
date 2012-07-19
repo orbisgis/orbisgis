@@ -34,7 +34,7 @@ import org.orbisgis.legend.LegendStructure;
 /**
  * Specialization of {@code LegendStructure} that is used to represent value
  * classifications that are used as {@code StringParameter} instances.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class Recode2StringLegend implements LegendStructure{
 

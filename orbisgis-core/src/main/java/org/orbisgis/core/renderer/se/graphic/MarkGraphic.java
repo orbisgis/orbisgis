@@ -86,7 +86,7 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  * <li>A {@link Stroke}</li>
  * <li>A perpendicular offset</li>
  * </ul>
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         ViewBoxNode, UomNode, TransformNode {

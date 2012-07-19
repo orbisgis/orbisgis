@@ -65,7 +65,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
  *
  * @todo add perpendicular offset
  *
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode {
 

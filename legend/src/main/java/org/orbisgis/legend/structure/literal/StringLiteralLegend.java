@@ -33,7 +33,7 @@ import org.orbisgis.legend.LegendStructure;
 
 /**
  * LegendStructure that can be associated to a simple string literal.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class StringLiteralLegend implements LegendStructure{
 

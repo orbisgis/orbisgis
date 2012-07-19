@@ -42,7 +42,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 /**
  * An (abstract) representation of a Value in a GDMS table. 
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public abstract class ValueReference implements SeParameter {
 

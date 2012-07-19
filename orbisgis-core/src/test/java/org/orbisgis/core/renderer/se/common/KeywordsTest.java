@@ -41,7 +41,7 @@ import org.orbisgis.core.renderer.se.Style;
 
 /**
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class KeywordsTest extends AbstractTest {
 

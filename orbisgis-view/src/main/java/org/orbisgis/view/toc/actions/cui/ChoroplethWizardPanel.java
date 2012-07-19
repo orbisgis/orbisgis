@@ -51,7 +51,7 @@ import org.orbisgis.sif.UIPanel;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 

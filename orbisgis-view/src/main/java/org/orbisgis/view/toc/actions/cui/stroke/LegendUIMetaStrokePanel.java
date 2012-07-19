@@ -42,7 +42,7 @@ import org.orbisgis.core.renderer.se.stroke.TextStroke;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class LegendUIMetaStrokePanel extends LegendUIAbstractMetaPanel {
 

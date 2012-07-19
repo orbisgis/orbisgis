@@ -42,7 +42,7 @@ import org.orbisgis.legend.thematic.ConstantStrokeArea;
  * this {@code AreaSymbolizer} can be recognized as a {@link
  * RecodedSolidFillLegend}.
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class ChoroplethArea extends ConstantStrokeArea {
 

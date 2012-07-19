@@ -35,7 +35,7 @@ import org.orbisgis.legend.structure.interpolation.InterpolationLegend;
  * When using a {@code ViewBox} where both dimensions are associated with an
  * interpolation which is both linear and made on the raw values, we are working
  * with a bivariate proportional symbol.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class BivariateProportionalViewBox extends DefaultViewBox {
 

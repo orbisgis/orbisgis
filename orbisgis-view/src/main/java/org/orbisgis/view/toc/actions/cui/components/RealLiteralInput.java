@@ -41,7 +41,7 @@ import javax.swing.event.DocumentListener;
 
 /**
  * This class provide an auto-save text field for real values
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class RealLiteralInput extends JPanel {
 

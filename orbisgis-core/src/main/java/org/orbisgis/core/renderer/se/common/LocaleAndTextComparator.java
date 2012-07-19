@@ -36,7 +36,7 @@ import java.util.Locale;
  * will perform the comparison using first the {@code Locale} definition, and
  * then, if they are equal (according to the same conditions than described
  * in {@code LocaleComparator}), using the inner {@code String} value.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class LocaleAndTextComparator  implements Comparator<LocalizedText> {
 

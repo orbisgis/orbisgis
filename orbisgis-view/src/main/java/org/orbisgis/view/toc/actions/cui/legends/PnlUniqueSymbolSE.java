@@ -53,7 +53,7 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbol;
 /**
  * This class proposes some methods that will be common to all the panels built
  * for unique symbols.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel, UIPanel {
 

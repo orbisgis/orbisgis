@@ -34,7 +34,7 @@ import org.orbisgis.legend.NumericLegend;
 /**
  * {@code Legend} associated to a numeric constant, that is represented as a
  * {@code RealLiteral} in the SE model.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class RealLiteralLegend implements NumericLegend {
 

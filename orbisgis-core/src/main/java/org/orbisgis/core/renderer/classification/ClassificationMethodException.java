@@ -31,7 +31,7 @@ package org.orbisgis.core.renderer.classification;
 /**
  * Thrown if attempting to close an already closed DataSource
  * 
- * @author root
+ * @author Erwan Bocher
  * 
  */
 public class ClassificationMethodException extends RuntimeException {

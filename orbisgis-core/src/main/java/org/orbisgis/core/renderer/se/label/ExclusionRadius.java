@@ -45,7 +45,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * defined thanks to radius value. Its meaning is of course dependant of the inner
  * UOM instance. The resulting exclusion zone is a circle centered on the point associated
  * to the {@code LabelPoint}, 
- * @author maxence
+ * @author Maxence Laurent
  */
 public final class ExclusionRadius extends ExclusionZone {
 

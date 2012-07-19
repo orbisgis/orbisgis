@@ -36,7 +36,7 @@ import org.orbisgis.legend.LegendStructure;
 
 /**
  * {@code LegendStructure} that describes a color set using a {@code Categorize} instance.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class Categorize2ColorLegend implements LegendStructure {
 

@@ -41,7 +41,7 @@ import org.orbisgis.core.renderer.se.parameter.ValueReference;
 /**
  * {@code GeometryAttribute} is a {@link ValueReference} to a geometry in an
  * external file.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class GeometryAttribute extends ValueReference {
 

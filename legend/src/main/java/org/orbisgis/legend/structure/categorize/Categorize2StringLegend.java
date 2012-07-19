@@ -33,7 +33,7 @@ import org.orbisgis.legend.LegendStructure;
 
 /**
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class Categorize2StringLegend implements LegendStructure {
 

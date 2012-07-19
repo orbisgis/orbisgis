@@ -33,7 +33,7 @@ package org.orbisgis.legend;
  * realizes this interface rather than {@code LegendStructure}. Concretely, they will
  * match the deepest elements of the legend (the values of the fields, and the
  * functions that are applied on it).
- * @author alexis
+ * @author Alexis Guéganno
  */
 public interface NumericLegend extends LegendStructure {
 

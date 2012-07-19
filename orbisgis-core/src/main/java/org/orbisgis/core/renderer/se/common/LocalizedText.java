@@ -38,7 +38,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Basically a {@code String} associated to a {@code Locale} instance.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class LocalizedText {
 

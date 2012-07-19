@@ -47,7 +47,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <li>A {@code Fill} intance to render its interior (compulsory).</li>
  * <li>A gap (optional).</li>
  * </ul>
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class Slice implements SymbolizerNode, FillNode {
 

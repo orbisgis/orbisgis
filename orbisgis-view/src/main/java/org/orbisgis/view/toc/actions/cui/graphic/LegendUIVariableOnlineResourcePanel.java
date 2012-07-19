@@ -40,7 +40,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class LegendUIVariableOnlineResourcePanel extends LegendUIComponent implements LegendUIExternalSourceComponent {
 

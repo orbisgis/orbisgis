@@ -35,7 +35,7 @@ import org.orbisgis.legend.structure.literal.ColorLiteralLegend;
 /**
  * A {@code Legend} that represents a {@code SolidFill} where the color is a
  * {@code Literal} instance.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class ConstantSolidFillLegend extends SolidFillLegend implements ConstantFillLegend {
 

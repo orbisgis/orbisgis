@@ -48,7 +48,7 @@ import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import static org.junit.Assert.*;
 /**
  * test that we're able to understand what people are doing with PenStrokes.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class PenStrokeAnalyzerTest extends AnalyzerTest {
 

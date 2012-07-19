@@ -34,7 +34,7 @@ import org.orbisgis.legend.LegendStructure;
 /**
  * {@code LegendStructure} that describes a classification made by intervals on a real
  * parameter.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class Categorize2RealLegend implements LegendStructure {
 

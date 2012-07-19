@@ -63,7 +63,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * original geometry</li>
  * <li>A {@link Label} that gathers all the informations needed to print the 
  * text. This element is compulsory.</li></ul>
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public final class TextSymbolizer extends VectorSymbolizer {
 

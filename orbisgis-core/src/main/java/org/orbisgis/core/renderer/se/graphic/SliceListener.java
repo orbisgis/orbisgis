@@ -31,7 +31,7 @@ package org.orbisgis.core.renderer.se.graphic;
 
 /**
  * Used to listen to modifications about {@code Slices} in {@code Charts}.
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface SliceListener {
     /**

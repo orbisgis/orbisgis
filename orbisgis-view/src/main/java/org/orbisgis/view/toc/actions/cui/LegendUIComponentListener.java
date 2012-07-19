@@ -32,7 +32,7 @@ package org.orbisgis.view.toc.actions.cui;
  *
  * Must be implement by every class that can represented in the LegendUITOC
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface LegendUIComponentListener {
 

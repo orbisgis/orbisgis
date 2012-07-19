@@ -39,7 +39,7 @@ import org.orbisgis.legend.thematic.factory.LegendFactory;
 
 /**
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class LegendFactoryTest extends AnalyzerTest {
 

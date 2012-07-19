@@ -62,7 +62,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class StrokeRapportTest {
     private final static Logger LOGGER = Logger.getLogger(StrokeRapportTest.class);

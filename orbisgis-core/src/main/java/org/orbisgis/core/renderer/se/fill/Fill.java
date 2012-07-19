@@ -53,7 +53,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  *
  * @todo create subclasse FillReference
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class Fill implements SymbolizerNode {
 

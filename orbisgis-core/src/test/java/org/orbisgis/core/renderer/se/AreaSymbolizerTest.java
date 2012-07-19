@@ -41,7 +41,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class AreaSymbolizerTest {
 

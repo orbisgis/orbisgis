@@ -31,7 +31,7 @@ package org.orbisgis.core.renderer.se.parameter;
 /**
  * Listens to change in the name of the field where to retrieve values, in a
  * {@link ValueReference}.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public interface PropertyNameListener {
 

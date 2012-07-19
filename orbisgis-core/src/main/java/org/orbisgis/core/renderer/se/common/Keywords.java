@@ -48,7 +48,7 @@ import org.orbisgis.core.renderer.se.label.StyledText;
  * the authority is defined only with the code space (returned by the {@link
  * Keywords#getSpace() } method). The URI is not stored here. As it is used to
  * distinguish {@code Keywords} instances, this would duplicate data.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class Keywords {
 

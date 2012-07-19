@@ -40,7 +40,7 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 
 /**
  * ImageRender extends the renderer in order to produce an image
- * @author maxence
+ * @author Maxence Laurent
  */
 public class ImageRenderer extends Renderer {
 

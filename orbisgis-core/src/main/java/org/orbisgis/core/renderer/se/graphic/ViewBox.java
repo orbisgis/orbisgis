@@ -55,7 +55,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * and width.</p>
  * <p>The values given for the height and the width can be negative. If that
  * happens, the coordinate of the rendered graphic will be flipped.
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public final class ViewBox implements SymbolizerNode {
         

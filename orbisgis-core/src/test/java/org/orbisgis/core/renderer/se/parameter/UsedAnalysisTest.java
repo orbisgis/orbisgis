@@ -36,7 +36,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
 
 /**
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 
 

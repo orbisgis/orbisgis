@@ -37,7 +37,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameter;
 /**
  * A {@code RealParameter} is a SE node that contains a numeric value, or that 
  * provides a direct mechanism to retrieve one in an external source.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public interface RealParameter extends SeParameter, Comparable {
 

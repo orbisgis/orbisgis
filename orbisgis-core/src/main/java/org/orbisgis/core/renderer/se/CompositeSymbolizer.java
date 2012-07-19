@@ -43,7 +43,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  * This is the entry point of the <code>Symbolizer</code>'s structure in a <code>Rule</code>
  * A <code>CompositeSymbolize</code> is a collection that embedded other <code>Symbolizer</code>s,
  * and that is not directly associated to any rendering or representation hint.
- * @author maxence
+ * @author Maxence Laurent
  */
 public final class CompositeSymbolizer implements SymbolizerNode {
 

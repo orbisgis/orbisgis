@@ -51,7 +51,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
  * {@code Keywords} instance associated to a single authority, we map keywords
  * on this authority, ie only on the {@code URI}. The {@code CodeType} is not
  * considered meaningful in this mapping.
- * @author alexis
+ * @author Alexis Guéganno
  * @see Keywords
  */
 public class Description {

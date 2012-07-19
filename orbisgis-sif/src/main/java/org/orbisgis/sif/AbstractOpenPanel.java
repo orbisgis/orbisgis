@@ -35,7 +35,7 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * Contains utility methods by both OpenFilePanel and OpenFolderPanel.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public abstract class AbstractOpenPanel extends AbstractUIPanel implements SQLUIPanel {
 

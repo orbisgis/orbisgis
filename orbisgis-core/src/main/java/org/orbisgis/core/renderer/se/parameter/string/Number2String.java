@@ -50,7 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  * DecimalFormat} class. consequently, this class is mainly a wrapper, that
  * instanciates the appropriate {@code DecimalFormat} instance and use it to
  * format the numbers retrieved by its inner {@code RealParameter}.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class Number2String implements StringParameter {
 

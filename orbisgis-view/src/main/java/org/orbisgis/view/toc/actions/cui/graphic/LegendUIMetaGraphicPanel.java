@@ -38,7 +38,7 @@ package org.orbisgis.view.toc.actions.cui.graphic;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 /*
 public abstract class LegendUIMetaGraphicPanel extends LegendUIAbstractMetaPanel {

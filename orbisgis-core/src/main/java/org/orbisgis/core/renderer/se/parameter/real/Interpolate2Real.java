@@ -43,7 +43,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 /**
  * Interpolate a real value to a real value. Interpolation points must be
  * instances of <code>InterpolationPoint&lt;RealParameter></code>.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public final class Interpolate2Real extends Interpolate<RealParameter, RealLiteral> implements RealParameter {
 

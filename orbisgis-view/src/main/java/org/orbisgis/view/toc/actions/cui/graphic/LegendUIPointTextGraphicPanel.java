@@ -44,7 +44,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class LegendUIPointTextGraphicPanel extends LegendUIComponent implements LegendUIGraphicComponent {
     private PointTextGraphic textGraphic;

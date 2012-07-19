@@ -40,7 +40,7 @@ import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 
 /**
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
 

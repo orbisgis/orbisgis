@@ -41,7 +41,7 @@ import org.orbisgis.legend.AbstractAnalyzer;
  * instance will be valid if its classes and threshold values are {@code Literal}
  * instances. A {@code Recode} instance will be valid if its item values are
  * {@code Literal} instances.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public abstract class AbstractLiteralValidator extends AbstractAnalyzer implements
                 CategorizeValidator, RecodeValidator {

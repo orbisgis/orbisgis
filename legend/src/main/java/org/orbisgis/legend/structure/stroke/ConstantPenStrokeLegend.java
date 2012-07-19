@@ -37,7 +37,7 @@ import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 /**
  * This class is used to represent instances of {@code PenStroke} whose
  * parameters (width, fill and dahs array) are all constant.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend {
 

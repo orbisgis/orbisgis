@@ -33,7 +33,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 /**
  * Define UOM setter
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface UomNode {
         /**

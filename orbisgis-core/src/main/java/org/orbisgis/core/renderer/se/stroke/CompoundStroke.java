@@ -58,7 +58,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <li>postGap is a {@link RealParameter} that defines how far from the end of the line to stop plotting</li>
  * <li>A list of {@link CompoundStrokeElement}s. They are used to compute the style of the line.</li>
  * <li>A list of {@link StrokeAnnotationGraphic} used to decorate the line</li></ul>
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class CompoundStroke extends Stroke implements UomNode {
 

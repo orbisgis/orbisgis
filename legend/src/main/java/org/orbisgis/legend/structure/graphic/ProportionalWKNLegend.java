@@ -38,7 +38,7 @@ import org.orbisgis.legend.structure.viewbox.MonovariateProportionalViewBox;
 /**
  * This class is used to describe instances of {@link MarkGraphic} that embeds a
  * simple proportional symbol configuration, associated to a WKN graphic.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class ProportionalWKNLegend extends ConstantFormWKN {
 

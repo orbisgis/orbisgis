@@ -36,7 +36,7 @@ import javax.swing.JPanel;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class LegendUILinkToComplexPanel extends JPanel {
 	private final LegendUIComponent child;

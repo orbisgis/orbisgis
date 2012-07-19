@@ -54,7 +54,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <li>Stroke : The way to style the line, as explained in {@link Stroke} and its subclasses.
  * It is a {@link Stroke} instance. This argument is compulsory.</li>
  * </ul>
- * @author maxence
+ * @author Maxence Laurent
  */
 public final class StrokeElement extends CompoundStrokeElement implements StrokeNode {
 

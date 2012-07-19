@@ -75,7 +75,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * <li>A {@code Type} instance (should be the type of the {@code DataSource}
  * associated to the layer associated to the legend we want to edit.</li> </ul>
  *
- * @author alexis, others...
+ * @author Alexis Guéganno, others...
  */
 public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 

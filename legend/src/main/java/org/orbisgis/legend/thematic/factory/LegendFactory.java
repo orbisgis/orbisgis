@@ -40,7 +40,7 @@ import org.orbisgis.legend.analyzer.symbolizers.PointSymbolizerAnalyzer;
 /**
  * Factory dedicated to the generation of {@code Legend} instances. It uses
  * {@code Symbolizers} in input, and produce the corresponding {@code Legend}.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public final class LegendFactory {
 

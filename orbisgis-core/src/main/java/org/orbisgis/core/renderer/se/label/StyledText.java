@@ -71,7 +71,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
  * <li>A size</li>
  * <li>A stroke</li></ul>
  * Color and opacity of the text are defined using a <code>Fill</code> instance
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, UomNode {
 

@@ -40,7 +40,7 @@ import org.orbisgis.progress.ProgressMonitor;
  * <p>This class is meanginful particularly when no other threads are run by
  * the inner {@code Job}. It will indeed be easier to avoid race conditions
  * caused by some mismanagement in the {@code BackgroundManager}.</p>
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class RunnableBackgroundJob implements Runnable {
 

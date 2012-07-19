@@ -55,7 +55,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <p>Note that the matrix is filled with {@code RealParameter} instances, not 
  * with {@code double} values.
  * 
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class Matrix implements Transformation {
 

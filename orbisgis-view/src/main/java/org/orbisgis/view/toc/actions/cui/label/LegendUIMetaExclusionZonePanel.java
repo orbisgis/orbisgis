@@ -41,7 +41,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  * Meta-Panel for fill edition
  * This panel will provide the ability to select fill type
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class LegendUIMetaExclusionZonePanel extends LegendUIAbstractMetaPanel {
 

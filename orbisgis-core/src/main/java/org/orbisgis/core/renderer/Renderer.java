@@ -75,7 +75,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Graphics2D. This is an abstract class and subclasses provided effectives methods
  * according to the rendering target (e.g. bitmap image, SVG, pdf, etc.)
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class Renderer {
 

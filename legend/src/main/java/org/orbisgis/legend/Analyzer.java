@@ -38,7 +38,7 @@ package org.orbisgis.legend;
  * <li>Build, from all the informations thus gathered, a LegendNode that
  * directly describes the cartographic nature of the analyzed node. It won't
  * always be possible, though.</li></ul>
- * @author alexis
+ * @author Alexis Guéganno
  */
 public interface Analyzer {
 

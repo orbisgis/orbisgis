@@ -35,7 +35,7 @@ import java.util.List;
 /**
  * This factory provides useful methods to retrieve the {@code USParamter}
  * associated to {@code UniqueSymbol} instances.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public final class USParameterFactory {
 

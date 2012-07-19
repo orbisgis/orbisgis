@@ -41,7 +41,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
  * <code>Recode</code> implementation that maps input values to real values.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public class Recode2Real extends Recode<RealParameter, RealLiteral> implements RealParameter {
 

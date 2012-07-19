@@ -32,7 +32,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface LegendUIStringComponent {
 	StringParameter getStringParameter();

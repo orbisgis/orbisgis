@@ -48,7 +48,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class Recode2ColorTest {
 

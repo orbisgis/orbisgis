@@ -40,7 +40,7 @@ import org.orbisgis.view.toc.actions.cui.components.TextInput;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class LegendUIRulePanel extends JPanel {
 

@@ -45,7 +45,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 /**
  * A categorization from {@code RealParameter} to {@code StringParamter}
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public final class Categorize2String extends Categorize<StringParameter, StringLiteral> implements StringParameter {
 

@@ -32,7 +32,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface LegendUIRealComponent {
 

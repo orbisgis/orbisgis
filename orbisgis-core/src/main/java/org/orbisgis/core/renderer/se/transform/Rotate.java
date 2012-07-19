@@ -52,7 +52,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <li>The Y-coordinate of the rotation center. This value takes place in 
  * the coordinate system of the graphic this {@code Rotate} is used on.</li>
  * <li>The rotation angle, in clockwise degrees.</li></ul>
- * @author maxence
+ * @author Maxence Laurent
  */
 public final class Rotate implements Transformation {
 

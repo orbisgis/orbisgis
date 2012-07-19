@@ -33,7 +33,7 @@ import org.orbisgis.core.renderer.se.label.ExclusionZone;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface LegendUIExclusionZoneComponent {
     ExclusionZone getExclusionZone();

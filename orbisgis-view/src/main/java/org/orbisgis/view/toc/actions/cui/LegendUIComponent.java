@@ -48,7 +48,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  * An UI Element, which edit and manage UI for one SE element
  *
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class LegendUIComponent extends LegendUIAbstractPanel {
 

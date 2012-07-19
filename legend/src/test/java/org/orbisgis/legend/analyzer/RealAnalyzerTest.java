@@ -51,7 +51,7 @@ import static org.junit.Assert.*;
 
 /**
  * Class that test the good behaviour of the {@code RealParameterAnalyzer}.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class RealAnalyzerTest extends AnalyzerTest {
         

@@ -37,7 +37,7 @@ import org.orbisgis.view.toc.actions.cui.components.RealLiteralInput;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class LegendUISymbolizerLevelPanel extends LegendUIAbstractPanel {
 

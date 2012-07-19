@@ -52,8 +52,8 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  *
- * @author maxence
- * @author alexis
+ * @author Maxence Laurent
+ * @author Alexis Guéganno
  */
 public final class Style implements SymbolizerNode {
 

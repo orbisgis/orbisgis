@@ -34,7 +34,7 @@ import org.orbisgis.legend.LegendStructure;
 /**
  * LegendStructure associated to a {@code ColorParameter} set using a {@code
  * Recode2Color} instance.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class Recode2ColorLegend implements LegendStructure {
 

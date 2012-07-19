@@ -42,7 +42,7 @@ import org.orbisgis.view.toc.wrapper.StyleWrapper;
  * <li>Level 1 : the Rules</li>
  * <li>Level 2 : the Legends</li>
  * </ul>
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class LegendTreeModel extends  AbstractTreeModel {
 

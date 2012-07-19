@@ -46,7 +46,7 @@ import org.orbisgis.legend.structure.viewbox.MonovariateProportionalViewBox;
 
 /**
  * Test that the ViewBoxAnalyzer works well.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class ViewBoxAnalyzerTest extends AnalyzerTest {
         

@@ -32,7 +32,7 @@ package org.orbisgis.legend;
  * LegendStructure realizations represent patterns that can be found in a SE style, and
  * that match well-known configuration as described in the geographic and
  * cartographic literatures.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public interface LegendStructure {
 

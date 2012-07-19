@@ -31,7 +31,7 @@ package org.orbisgis.core.renderer.se.graphic;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface CategoryListener {
     /**

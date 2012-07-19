@@ -36,7 +36,7 @@ import org.orbisgis.core.AbstractTest;
 
 /**
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class LocalizedTextComparatorTest  extends AbstractTest {
 

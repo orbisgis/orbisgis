@@ -33,7 +33,7 @@ package org.orbisgis.legend.thematic.constant;
  * This class will give a representation of a parameter of a unique symbol,
  * giving access to its name and to its value. For instance, {@code
  * UniqueSymbolArea} will have a {@code USParameter} for its width.
- * @author alexis, antoine
+ * @author Alexis Guéganno, antoine
  */
 public abstract class USParameter<E> {
 

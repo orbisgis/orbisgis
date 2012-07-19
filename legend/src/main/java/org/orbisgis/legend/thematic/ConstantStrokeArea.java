@@ -41,7 +41,7 @@ import org.orbisgis.legend.structure.stroke.ConstantPenStrokeLegend;
  * Represent an {@code AreaSymbolizer} of which the {@code Stroke} is a constant
  * {@code PenStroke} instance, that can be recognized as a {@code
  * ConstantPenStrokeLegend}.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public abstract class ConstantStrokeArea extends SymbolizerLegend {
 

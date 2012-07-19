@@ -42,7 +42,7 @@ import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 /**
  * This {@code Analyzer} realization is dedicated to the study of {@code
  * LineSymbolizer} instances. 
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class LineSymbolizerAnalyzer extends AbstractAnalyzer {
 

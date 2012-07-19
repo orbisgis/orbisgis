@@ -65,7 +65,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
  * so that each hatch of the second {@code HatchedFill} is drawn between two hatches
  * of the first {@code HatchedFill}.</p>
  * <p>The meaning of distance and offset is of course UOM dependant.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class HatchedFill extends Fill implements StrokeNode {
 

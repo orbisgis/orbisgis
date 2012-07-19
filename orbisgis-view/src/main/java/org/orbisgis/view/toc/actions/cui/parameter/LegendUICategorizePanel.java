@@ -81,7 +81,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  * @todo BUGGY !!!!
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class LegendUICategorizePanel extends LegendUIComponent
         implements LegendUIRealComponent, LegendUIColorComponent,

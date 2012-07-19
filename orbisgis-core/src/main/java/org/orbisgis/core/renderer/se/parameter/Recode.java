@@ -47,7 +47,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Recoding is defined as the "transformation of discrete values to any other values".
  * It is a way to map values of one type to values of another (but eventually the same)
  * type.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  * @param <ToType> One of the SeParameter child types.
  * @param <FallbackType> The literal type associated to ToType. it is used to define the default value,
  * when an input value can't be processed for whatever reason.

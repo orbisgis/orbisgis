@@ -51,7 +51,7 @@ import static org.junit.Assert.*;
 /**
  * We test the good behaviour of the interpolation analyzer here. We will
  * partially rely on the files that can be found in the resources.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class InterpolationAnalyzerTest extends AnalyzerTest{
 

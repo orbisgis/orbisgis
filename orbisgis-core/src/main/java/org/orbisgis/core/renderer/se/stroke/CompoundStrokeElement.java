@@ -38,7 +38,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
  * {@code CompoundStrokeElement} is an abstract class. Thanks to it, it becomes 
  * possible to use {@code StrokeElement} and {@code AlternativeStrokeElements} 
  * instances equally in some places.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public abstract class CompoundStrokeElement implements SymbolizerNode {
 

@@ -45,7 +45,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * <code>Recode</code> implementation that maps input values to {@code String} values.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class Recode2String extends Recode<StringParameter, StringLiteral> implements StringParameter {
 

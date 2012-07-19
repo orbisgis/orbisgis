@@ -47,7 +47,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class FillAnalyzerTest extends AnalyzerTest {
 

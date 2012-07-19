@@ -37,7 +37,7 @@ import javax.swing.JRadioButton;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class RadioSwitch extends JPanel implements ActionListener {
 

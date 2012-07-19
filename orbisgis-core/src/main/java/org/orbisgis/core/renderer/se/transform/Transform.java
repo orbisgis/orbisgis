@@ -48,7 +48,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  *
  * This class contains a collection of {@code Transformation}s.
  *
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public class Transform implements SymbolizerNode, UomNode {
 

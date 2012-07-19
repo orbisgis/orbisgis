@@ -44,7 +44,7 @@ import org.orbisgis.legend.structure.graphic.ProportionalWKNLegend;
 
 /**
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class GraphicAnalyzerTest extends AnalyzerTest {
 

@@ -33,7 +33,7 @@ import org.orbisgis.legend.Legend;
 /**
  * Gathers method that are common to all the {@code Legend} realizations.
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public abstract class SymbolizerLegend implements Legend {
 

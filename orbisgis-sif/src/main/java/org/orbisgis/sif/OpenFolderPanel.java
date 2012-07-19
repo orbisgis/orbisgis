@@ -35,7 +35,7 @@ import javax.swing.filechooser.FileFilter;
 
 /**
  * This class handles the panel used to import the content of a folder in the geocatalog
- * @author alexis, jean-yves
+ * @author Alexis Guéganno, Jean-Yves Martin
  */
 public class OpenFolderPanel extends AbstractOpenPanel {
 

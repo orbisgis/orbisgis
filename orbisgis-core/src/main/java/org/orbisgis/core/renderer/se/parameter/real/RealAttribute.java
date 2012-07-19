@@ -42,7 +42,7 @@ import org.orbisgis.core.renderer.se.parameter.ValueReference;
  * {@code DataSource} as specified in {@link ValueReference ValueReference}.</p>
  * <p>Note that the {@code DataSource} is not directly attached to the class,
  * and must be specified each time you call {@code getValue}.
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public class RealAttribute extends ValueReference implements RealParameter {
 

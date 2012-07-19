@@ -80,7 +80,7 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  * <li>And as said upper, a particular type. It is optional, and defaulted to
  * ortho if not set.</li>
  * </ul>
- * @author maxence
+ * @author Maxence Laurent
  * @todo Implements drawGraphic
  */
 public final class AxisChart extends Graphic implements UomNode, FillNode,

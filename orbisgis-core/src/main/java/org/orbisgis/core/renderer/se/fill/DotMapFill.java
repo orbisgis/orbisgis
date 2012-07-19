@@ -64,7 +64,7 @@ import org.xnap.commons.i18n.I18nFactory;
  *   * The quantity represented by a single dot<br/>
  *   * The total quantity to represent<br/>
  *   * The symbol associated to each single dot.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public final class DotMapFill extends Fill implements GraphicNode {
 

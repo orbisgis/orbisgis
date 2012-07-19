@@ -35,7 +35,7 @@ import org.orbisgis.legend.structure.categorize.Categorize2ColorLegend;
 /**
  * A {@code Legend} that represents a {@code SolidFill} where the color is defined
  * accorgind to a {@code Categorize} operation.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class CategorizedSolidFillLegend extends SolidFillLegend {
 

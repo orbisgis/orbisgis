@@ -48,7 +48,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class LegendUIHatchedFillPanel extends LegendUIComponent implements LegendUIFillComponent {
 

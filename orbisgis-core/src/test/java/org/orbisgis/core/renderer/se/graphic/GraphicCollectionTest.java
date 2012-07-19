@@ -51,7 +51,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class GraphicCollectionTest {
 

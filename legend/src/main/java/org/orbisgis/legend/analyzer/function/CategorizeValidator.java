@@ -33,7 +33,7 @@ import org.orbisgis.core.renderer.se.parameter.Categorize;
 
 /**
  * Used to validate a {@code Categorize} instance against a particular property.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public interface CategorizeValidator {
 

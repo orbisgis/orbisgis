@@ -42,7 +42,7 @@ import org.gdms.driver.driverManager.DriverLoadException;
 */
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 
 /*

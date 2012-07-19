@@ -42,7 +42,7 @@ import org.orbisgis.legend.structure.recode.Recode2ColorLegend;
  * This class analyzes instances of {@code ColorParameter} to determine if they
  * are literal values, or richer functions. It is the best way to find
  * particular analysis made on the color of a symbol, whatever it is.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class ColorParameterAnalyzer extends AbstractLiteralValidator {
 

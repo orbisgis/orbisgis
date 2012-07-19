@@ -31,7 +31,7 @@ package org.orbisgis.view.toc.actions.cui.stroke;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class LegendUIAlternativeStrokeElementsPanel {
 

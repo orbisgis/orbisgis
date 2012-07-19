@@ -65,7 +65,7 @@ import org.orbisgis.core.renderer.se.transform.Translate;
  * AreaSymbolizer</code> is defined with a perpendicular offset, a <code>Stroke</code> (to draw its limit, 
  * and as a <code>StrokeNode</code>) and a <code>Fill</code> (to paint its interior, and 
  * as a <code>FillNode</code>).
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, StrokeNode {
 

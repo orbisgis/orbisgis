@@ -46,7 +46,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Provides utility methods to handle Shape instances.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class ShapeHelper {
 

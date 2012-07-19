@@ -50,7 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  * to add informations to the {@code CompoundStroke} elements.
  * It is dependant on a {@link LineLabel}, to store the text to render, and the styling
  * details used for the rendering.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class TextStroke extends Stroke {
 

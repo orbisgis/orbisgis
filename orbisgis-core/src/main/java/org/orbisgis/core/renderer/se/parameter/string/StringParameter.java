@@ -39,7 +39,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameter;
  * A String value, stored as a SE parameter.</p><p>
  * A restriction list can be associated to a {@code StringParameter}. This list is used
  * to force values of this parameter to match one of the entries of the list.
- * @author maxence, alexis.
+ * @author Maxence Laurent, Alexis Guéganno.
  * @todo implement 05-077r4 11.6.1, 11.6.2, 11.6.3 (String, number and date formating)
  */
 public interface StringParameter extends SeParameter {

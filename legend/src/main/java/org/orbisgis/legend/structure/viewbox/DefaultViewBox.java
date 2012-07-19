@@ -37,7 +37,7 @@ import org.orbisgis.legend.NumericLegend;
  * random {@code NumericLegend} instances. Consequently, this class is the base
  * legend description of {@code ViewBox}, and can be reused freely for more
  * accurate descriptions.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class DefaultViewBox implements LegendStructure{
 

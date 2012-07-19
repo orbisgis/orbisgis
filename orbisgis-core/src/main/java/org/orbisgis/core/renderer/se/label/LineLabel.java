@@ -51,7 +51,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * A {@code LineLabel} is a text of some kinf associated to a Line (polygon or not).
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  * @todo implements
  */
 public class LineLabel extends Label {

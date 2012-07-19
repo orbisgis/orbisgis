@@ -58,7 +58,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 /**
  * This class is responsible for drawing a preview of what will be rendered on
  * the map, using a particular symbolizer.
- * @author alexis, others...
+ * @author Alexis Guéganno, others...
  */
 public class CanvasSE extends JPanel {
 

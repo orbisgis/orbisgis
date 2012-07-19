@@ -38,7 +38,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 /**
  * This interface allow to fetch a mark graphic for many sources,
  *
- * @author maxence
+ * @author Maxence Laurent
  * @todo implement in InlineContent(for se InlineContent && GML), OnlineResource
  */
 public interface MarkGraphicSource {

@@ -37,7 +37,7 @@ import org.orbisgis.legend.structure.fill.ConstantSolidFillLegend;
 /**
  * Represents a {@code PenStroke} where the Color and the dash pattern are
  * constant.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public abstract class ConstantColorAndDashesPSLegend extends PenStrokeLegend {
 

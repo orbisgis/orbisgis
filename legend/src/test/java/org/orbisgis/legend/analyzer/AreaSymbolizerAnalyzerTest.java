@@ -46,7 +46,7 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 
 /**
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
 

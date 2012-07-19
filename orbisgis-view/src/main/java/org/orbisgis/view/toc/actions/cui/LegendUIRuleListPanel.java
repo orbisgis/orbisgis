@@ -49,7 +49,7 @@ import org.orbisgis.core.renderer.se.Rule;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class LegendUIRuleListPanel extends JPanel implements LegendUIComponentListener {
 	

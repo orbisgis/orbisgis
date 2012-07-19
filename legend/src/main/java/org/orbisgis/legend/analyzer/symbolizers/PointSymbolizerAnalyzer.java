@@ -44,7 +44,7 @@ import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
  * This {@code Analyzer} realization is dedicated to the study of {@code
  * PointSymbolizer} instances. It's basically searching for the configurations
  * that can be found in its inner {@code Graphic} instance.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class PointSymbolizerAnalyzer extends AbstractAnalyzer {
 

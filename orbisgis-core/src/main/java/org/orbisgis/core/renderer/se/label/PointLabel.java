@@ -56,7 +56,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <ul><li>A rotation angle, in degrees.</li>
  * <li>An exclusion zone, ie a zone around the label where no other text will be displayed.</li>
  * </ul>
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public final class PointLabel extends Label {
 

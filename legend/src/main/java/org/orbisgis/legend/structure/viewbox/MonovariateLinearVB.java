@@ -35,7 +35,7 @@ import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
 /**
  * A symbol can be said proportional is one of is dimensions variates linearly
  * upon a numeric field.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class MonovariateLinearVB extends DefaultViewBox {
 

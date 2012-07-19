@@ -32,7 +32,7 @@ import org.orbisgis.core.renderer.se.parameter.Recode;
 
 /**
  * Used to validate a {@code Recode} instance against a particular condition.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public interface RecodeValidator {
 

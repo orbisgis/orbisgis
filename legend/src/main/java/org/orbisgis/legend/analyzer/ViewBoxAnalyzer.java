@@ -43,7 +43,7 @@ import org.orbisgis.legend.structure.viewbox.*;
  * This {@code Analyzer} realization is dedicated to the study of {@code ViewBox}
  * instances. It's mainly chasing monovariate and bivariate symbols, used as
  * proportional symbols.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class ViewBoxAnalyzer  extends AbstractAnalyzer {
 

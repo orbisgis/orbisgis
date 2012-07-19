@@ -50,7 +50,7 @@ import static org.junit.Assert.*;
 
 /**
  * This tests check that we are able to analyze color nodes properly.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class ColorAnalyzerTest extends AnalyzerTest{
 

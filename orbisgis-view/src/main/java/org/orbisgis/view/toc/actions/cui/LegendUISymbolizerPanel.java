@@ -62,7 +62,7 @@ import org.orbisgis.view.toc.actions.cui.parameter.real.LegendUIMetaRealPanel;
 
 /**
  * This panel edit symbolizer
- * @author maxence
+ * @author Maxence Laurent
  */
 public class LegendUISymbolizerPanel extends LegendUIComponent {
 

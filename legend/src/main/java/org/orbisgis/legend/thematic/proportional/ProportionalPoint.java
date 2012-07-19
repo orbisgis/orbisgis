@@ -42,7 +42,7 @@ import org.orbisgis.legend.thematic.ConstantFormPoint;
  * A {@code ProportionalPoint} is a {@link ConstantFormPoint} whose {@code
  * ViewBox} is defined so that it can be recognized as a {@code
  * MonovariateProportionalViewBox}.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class ProportionalPoint extends ConstantFormPoint  {
 

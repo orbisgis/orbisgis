@@ -43,7 +43,7 @@ import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;
  * Analyzes an interpolation node. This class will try to determine which legend
  * can be associated to the interpolation method used in this interpolation and
  * to the FES function applied on the input value (if any).
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class InterpolationAnalyzer extends AbstractAnalyzer{
 

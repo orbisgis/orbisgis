@@ -70,7 +70,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
  * the pattern is expanded by repeating it twice to give an even number of values.</li>
  * <li>An offset used to know where to draw the line.</li>
  * </ul>
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class PenStroke extends Stroke implements FillNode, UomNode {
 

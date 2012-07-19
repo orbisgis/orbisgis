@@ -31,7 +31,7 @@ package org.orbisgis.core.renderer.se.parameter;
 
 /**
  * <code>LiteralListener</code> are listeners dedicated to <code>Literal</code> objects.
- * @author maxence
+ * @author Maxence Laurent
  */
 public interface LiteralListener {
         /**

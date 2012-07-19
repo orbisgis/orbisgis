@@ -41,7 +41,7 @@ import org.orbisgis.legend.structure.stroke.ConstantPenStrokeLegend;
  * of the associated {@code ViewBox}. That means the {@code Fill}, the {@code
  * Stroke} and the {@code StringParameter} containing the well-known name
  * definition are constants.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public abstract class ConstantFormWKN extends MarkGraphicLegend {
     /**

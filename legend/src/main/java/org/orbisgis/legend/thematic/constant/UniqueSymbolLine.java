@@ -47,7 +47,7 @@ import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
  * <li>To be filled with a constant {@code SolidFill}, and consequently with a
  * constant {@code Color}.</li>
  * </ul>
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUniqueSymbolLine {
 

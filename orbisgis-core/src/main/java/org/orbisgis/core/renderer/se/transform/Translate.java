@@ -47,7 +47,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 /**
  * Represents a translation in an euclidean plane. As it can be represented with
  * a 2D vector, it is defined by two <code>RealParameter</code>s.
- * @author maxence
+ * @author Maxence Laurent
  */
 public class Translate implements Transformation {
 

@@ -42,7 +42,7 @@ import org.orbisgis.legend.structure.recode.Recode2ColorLegend;
 
 /**
  * Used to make analysis and produce {@code LegendStructure} on instances of {@code Fill}.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class FillAnalyzer extends AbstractAnalyzer{
 

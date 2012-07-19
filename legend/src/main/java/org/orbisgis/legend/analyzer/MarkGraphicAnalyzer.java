@@ -48,7 +48,7 @@ import org.orbisgis.legend.structure.viewbox.MonovariateProportionalViewBox;
 
 /**
  * Analyzer dedicated to the study of {@code MarkGraphic} instances.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class MarkGraphicAnalyzer extends AbstractAnalyzer {
 

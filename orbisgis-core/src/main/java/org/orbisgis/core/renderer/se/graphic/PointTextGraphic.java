@@ -57,7 +57,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <ul><li>A x-coordinate</li>
  * <li>A y-coordinate</li>
  * <li>A {@code PointLabel}</li></ul>
- * @author alexis
+ * @author Alexis Guéganno
  */
 public final class PointTextGraphic extends Graphic implements UomNode {
 

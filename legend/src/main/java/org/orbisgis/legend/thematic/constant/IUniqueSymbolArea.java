@@ -34,7 +34,7 @@ import java.util.List;
 /**
  * Represents the symbols that contains parameters associated to the management
  * of a solid fill. This interface provides a link to all the given parameters.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public interface IUniqueSymbolArea extends IUniqueSymbolLine {
 

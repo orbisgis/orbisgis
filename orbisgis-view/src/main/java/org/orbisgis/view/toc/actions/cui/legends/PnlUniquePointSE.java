@@ -42,7 +42,7 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 
 /**
  *
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class PnlUniquePointSE extends PnlUniqueSymbolSE {
 

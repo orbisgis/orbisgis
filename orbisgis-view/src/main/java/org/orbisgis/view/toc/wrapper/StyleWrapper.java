@@ -39,7 +39,7 @@ import org.orbisgis.view.toc.actions.cui.legends.PnlStyle;
  * as {@code Rule}s are associated to {@code Symbolizer}, we must use {@code
  * RuleWrapper} instances rather than {@code Rule} instances. This class is
  * intended to makde the link.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class StyleWrapper {
 

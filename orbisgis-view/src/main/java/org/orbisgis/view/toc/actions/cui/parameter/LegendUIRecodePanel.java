@@ -66,7 +66,7 @@ import org.orbisgis.view.toc.actions.cui.parameter.string.LegendUIStringLiteralP
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class LegendUIRecodePanel extends LegendUIComponent
 		implements LegendUIRealComponent, LegendUIColorComponent, LegendUIStringComponent {
