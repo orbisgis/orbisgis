@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,10 +23,9 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
- */ 
+ * info_at_ orbisgis.org
+ */
 package org.orbisgis.view.edition;
 
 import java.util.ArrayList;
