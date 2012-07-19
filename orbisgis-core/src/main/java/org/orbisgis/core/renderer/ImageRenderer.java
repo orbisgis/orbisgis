@@ -40,9 +40,7 @@ package org.orbisgis.core.renderer;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Symbolizer;
@@ -54,37 +52,28 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 public class ImageRenderer extends Renderer {
 
     private List<BufferedImage> imgSymbs = null;
-    private Map<Integer, Graphics2D> g2Level = null;
+    private List<Symbolizer> symbols = null;
+    private List<Graphics2D> graphics = null;
 
     @Override
     protected void initGraphics2D(List<Symbolizer> symbs, Graphics2D g2, MapTransform mt) {
         imgSymbs = new ArrayList<BufferedImage>();
-        
-        g2Level = new HashMap<Integer, Graphics2D>();
-
+        symbols = symbs;
+        graphics = new ArrayList<Graphics2D>();
         /**
-         * Create one buffered image for each level present in the style. This way allows
+         * Create one buffered image for each Symbolizer present in the style. This way allows
          * to render all symbolizer in one pass without encountering layer level issues
          */
         for (Symbolizer s : symbs) {
-
-            Graphics2D sG2;
-            // Does the level of the current symbolizer already have a graphic2s ?
-            if (!g2Level.containsKey(s.getLevel())){
-                // It's a new level => create a new graphics2D
-                BufferedImage bufImg = new BufferedImage(mt.getWidth(), mt.getHeight(), BufferedImage.TYPE_INT_ARGB);
-                sG2 = bufImg.createGraphics();
-                sG2.addRenderingHints(mt.getRenderingHints());
-                imgSymbs.add(bufImg);
-                // Map the graphics with its level
-                g2Level.put(s.getLevel(), sG2);
-            }
+            BufferedImage bufImg = new BufferedImage(mt.getWidth(), mt.getHeight(), BufferedImage.TYPE_INT_ARGB);
+            graphics.add(bufImg.createGraphics());
+            imgSymbs.add(bufImg);
         }
     }
 
     @Override
     protected Graphics2D getGraphics2D(Symbolizer s) {
-        return g2Level.get(s.getLevel());
+        return graphics.get(symbols.indexOf(s));
     }
 
 
@@ -94,13 +83,10 @@ public class ImageRenderer extends Renderer {
 
     @Override
     protected void disposeLayer(Graphics2D g2) {
-        for (Integer key : g2Level.keySet()){
-            Graphics2D get = g2Level.get(key);
+        for (Graphics2D get : graphics){
             get.dispose();
         }
-
-        g2Level.clear();
-        
+        graphics.clear();
         for (BufferedImage img : imgSymbs) {
             g2.drawImage(img, null, null);
         }

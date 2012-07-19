@@ -305,8 +305,6 @@ public final class Style implements SymbolizerNode {
                 }
             }
         }
-
-        Collections.sort(layerSymbolizers);
     }
 
     public void resetSymbolizerLevels() {
