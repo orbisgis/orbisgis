@@ -21,15 +21,12 @@ public class TocTreeNodeStyle implements TreeNode  {
 
         @Override
         public boolean equals(Object obj) {
-                if (obj == null) {
+                if (obj instanceof TocTreeNodeStyle) {
+                        final TocTreeNodeStyle other = (TocTreeNodeStyle) obj;
+                        return this.style != null && this.style.equals(other.style);
+                } else {
                         return false;
                 }
-                if (!(obj instanceof TocTreeNodeStyle)) {
-                        return false;
-                }
-                final TocTreeNodeStyle other = (TocTreeNodeStyle) obj;
-                
-                return this.style != null && this.style.equals(other.style);
         }
 
         @Override

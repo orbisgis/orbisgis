@@ -48,18 +48,14 @@ public class TocTreeNodeLayer implements TreeNode {
         }
 
      
-
         @Override
         public boolean equals(Object obj) {
-                if (obj == null) {
+                if (obj instanceof TocTreeNodeLayer) {
+                        final TocTreeNodeLayer other = (TocTreeNodeLayer) obj;
+                        return this.layer != null && this.layer.equals(other.layer);
+                } else {
                         return false;
                 }
-                if (!(obj instanceof TocTreeNodeLayer)) {
-                        return false;
-                }
-                final TocTreeNodeLayer other = (TocTreeNodeLayer) obj;
-                
-                return this.layer != null && this.layer.equals(other.layer);
         }
 
         @Override
