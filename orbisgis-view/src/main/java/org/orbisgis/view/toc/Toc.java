@@ -348,7 +348,6 @@ public class Toc extends JPanel implements EditorDockable {
         private void setEmptyLayerModel(JTree jTree) {
                 //Add the treeModel
                 DataManager dataManager = (DataManager) Services.getService(DataManager.class);
-                //treeModel = new TocTreeModel(dataManager.createLayerCollection("root"), jTree);
                 jTree.setModel(new DefaultTreeModel(new TocTreeNodeLayer(dataManager.createLayerCollection("root"))));
         }
 
@@ -436,7 +435,6 @@ public class Toc extends JPanel implements EditorDockable {
                         final ILayer root = this.mapContext.getLayerModel();
                         addPropertyListeners(new TocTreeNodeLayer(root));
                         root.addLayerListenerRecursively(tocLayerListener);
-                        //treeModel = new TocTreeModel(root, tree);
                         // Apply treeModel and clear the selection        
                         fireSelectionEvent.set(false);
                         try {
