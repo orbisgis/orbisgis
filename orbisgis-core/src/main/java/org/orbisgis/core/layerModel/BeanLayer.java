@@ -250,7 +250,7 @@ public abstract class BeanLayer extends AbstractLayer {
         
     @Override
     public List<Style> getStyles() {
-        return styleList;
+        return new ArrayList<Style>(styleList);
     }
 
     @Override
