@@ -699,7 +699,7 @@ public class Toc extends JPanel implements EditorDockable {
         public void onStyleChange(PropertyChangeEvent evt) {
                 treeModel.nodeChanged(new TocTreeNodeStyle((Style)evt.getSource()));
         }
-        public void onStyleListChange(IndexedPropertyChangeEvent evt) {
+        public void onStyleListChange(PropertyChangeEvent evt) {
                 if(evt.getNewValue() instanceof List) {
                         if(evt.getOldValue()!=null) {
                                 for(Style style : (List<Style>)evt.getOldValue()) {
