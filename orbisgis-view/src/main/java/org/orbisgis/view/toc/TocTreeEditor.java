@@ -59,16 +59,16 @@ public class TocTreeEditor implements TreeCellEditor {
         @Override
 	public Component getTreeCellEditorComponent(JTree tree, Object value,
 			boolean isSelected, boolean expanded, boolean leaf, int row) {
-                if(value instanceof ILayer) {
-                        TocTreeEditorLayerPanel editedCell = new TocTreeEditorLayerPanel(tree,(ILayer) value);
+                if(value instanceof TocTreeNodeLayer) {
+                        TocTreeEditorLayerPanel editedCell = new TocTreeEditorLayerPanel(tree,((TocTreeNodeLayer) value).getLayer());
                         lastEditedCell = editedCell;
                         return editedCell;
-                } else if(value instanceof Style) {
-                        TocTreeEditorStylePanel editedCell = new TocTreeEditorStylePanel(tree,(Style) value);
+                } else if(value instanceof TocTreeNodeStyle) {
+                        TocTreeEditorStylePanel editedCell = new TocTreeEditorStylePanel(tree,((TocTreeNodeStyle) value).getStyle());
                         lastEditedCell = editedCell;
                         return editedCell;                        
                 } else {
-                        return null;
+                        throw new IllegalArgumentException("A tree cell editor for the provided node type is not found");
                 }
 	}
 
