@@ -64,6 +64,7 @@ public class TocTreeEditorStylePanel extends JPanel implements TocTreeEditorPane
 
         public TocTreeEditorStylePanel(final JTree tree,Style node) {
                 style = node;
+                setOpaque(false);
                 FlowLayout fl = new FlowLayout(CRFlowLayout.LEADING);
                 fl.setHgap(0);
                 setLayout(fl);

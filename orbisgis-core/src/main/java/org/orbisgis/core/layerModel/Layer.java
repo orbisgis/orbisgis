@@ -102,7 +102,11 @@ public class Layer extends BeanLayer {
                         if (getStyles().isEmpty()) {
                                 // special case: no style were ever set
                                 // let's go for a default style
-                                getStyles().add(new Style(this, true));
+                                // add style in the list directly
+                                // do not fire style change event
+                                Style defStyle = new Style(this, true);
+                                styleList.add(defStyle);
+                                addStyleListener(defStyle);
                         }
 			// Listen modifications to update selection
 			dataSource.addEditionListener(editionListener);

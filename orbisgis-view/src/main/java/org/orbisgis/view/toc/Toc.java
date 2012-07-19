@@ -723,9 +723,10 @@ public class Toc extends JPanel implements EditorDockable {
                 public void layerAdded(final LayerCollectionEvent e) {
                         for (final ILayer layer : e.getAffected()) {
                                 layer.addLayerListenerRecursively(this);
-                                layer.addPropertyChangeListener(Layer.PROP_STYLES, tocStyleListListener);
                         }
-                        treeModel.nodeStructureChanged(new TocTreeNodeLayer(e.getParent()));
+                        TreeNode parentNode = new TocTreeNodeLayer(e.getParent());
+                        addPropertyListeners(parentNode);
+                        treeModel.nodeStructureChanged(parentNode);
                 }
 
                 @Override

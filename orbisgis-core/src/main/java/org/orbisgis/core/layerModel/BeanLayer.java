@@ -64,7 +64,7 @@ public abstract class BeanLayer extends AbstractLayer {
 
         //bean properties
         private Description description;
-        private List<Style> styleList = new ArrayList<Style>();
+        protected List<Style> styleList = new ArrayList<Style>();
         private boolean visible = true;
         private PropertyChangeListener styleListener = EventHandler.create(PropertyChangeListener.class,this,"onStyleChanged","");
         
@@ -256,7 +256,13 @@ public abstract class BeanLayer extends AbstractLayer {
     @Override
     public void setStyles(List<Style> fts) {
         List<Style> oldStyles = this.styleList;
+        for(Style style : styleList) {
+                removeStyleListener(style);
+        }
         styleList = new ArrayList<Style>(fts);
+        for(Style style : styleList) {
+                addStyleListener(style);
+        }
         propertyChangeSupport.firePropertyChange(PROP_STYLES, oldStyles, styleList);
         super.setStyles(styleList);
     }
@@ -266,10 +272,10 @@ public abstract class BeanLayer extends AbstractLayer {
             return styleList.get(i);
     }
 
-    private void removeStyleListener(Style s){
+    protected void removeStyleListener(Style s){
             s.removePropertyChangeListener(styleListener);
     }
-    private void addStyleListener(Style s) {
+    protected void addStyleListener(Style s) {
             s.addPropertyChangeListener(styleListener);
     }
     
