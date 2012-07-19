@@ -62,7 +62,6 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.DefaultJobId;
-import org.orbisgis.view.background.JobId;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.ToolListener;
 import org.orbisgis.view.map.tool.ToolManager;
@@ -82,9 +81,9 @@ public class MapControl extends JComponent implements ContainerListener {
         public static final String JOB_DRAWING_PREFIX_ID = "MapControl-Drawing";
         private static final Logger LOGGER = Logger.getLogger(MapControl.class);
         protected final static I18n I18N = I18nFactory.getI18n(MapControl.class);
-	private static int lastProcessId = 0;
+	private static int lastMapControlId = 0;
         private AtomicBoolean awaitingDrawing=new AtomicBoolean(false); /*!< A drawing process is currently requested, it is useless to request another */
-	private int processId;
+	private int mapControlId;
 
 	/** The map will draw the last generated image without querying the data. */
 	public static final int UPDATED = 0;
@@ -104,7 +103,6 @@ public class MapControl extends JComponent implements ContainerListener {
 	private MapContext mapContext;
 
 	private Drawer drawer;
-        private JobId drawingId;
 
 	private boolean showCoordinates = true;
 
@@ -137,7 +135,7 @@ public class MapControl extends JComponent implements ContainerListener {
         
 	final public void initMapControl() throws TransitionException {
 		synchronized (this) {
-			this.processId = lastProcessId++;
+			this.mapControlId = lastMapControlId++;
 		}
 		setDoubleBuffered(true);
 		setOpaque(true);
@@ -261,8 +259,9 @@ public class MapControl extends JComponent implements ContainerListener {
 				// now we start the actual drawer
 				drawer = new Drawer();
 				BackgroundManager bm = Services.getService(BackgroundManager.class);
-				drawingId = new DefaultJobId(JOB_DRAWING_PREFIX_ID + processId);
-                                bm.nonBlockingBackgroundOperation(drawingId, drawer);
+                                bm.nonBlockingBackgroundOperation(
+                                        new DefaultJobId(JOB_DRAWING_PREFIX_ID +
+                                        mapControlId), drawer);
                     } else {
                         // Currently drawing with a mix of old and new map context !
                         // Stop the drawing

@@ -24,14 +24,12 @@ public class TocTreeNodeStyle implements TreeNode  {
                 if (obj == null) {
                         return false;
                 }
-                if (getClass() != obj.getClass()) {
+                if (!(obj instanceof TocTreeNodeStyle)) {
                         return false;
                 }
                 final TocTreeNodeStyle other = (TocTreeNodeStyle) obj;
-                if (this.style != other.style && (this.style == null || !this.style.equals(other.style))) {
-                        return false;
-                }
-                return true;
+                
+                return this.style != null && this.style.equals(other.style);
         }
 
         @Override
