@@ -170,12 +170,20 @@ public class Catalog extends JPanel implements DockingPanel {
                 return Services.getService(DataManager.class);
         }
         /**
-         * DataSource URI drop
+         * DataSource URI drop.
+         * Currently used on file drop by the {@link  SourceListTransferHandler}.
          * @param uriDrop Uniform Resource Identifier
          */
         public void onDropURI(List<URI> uriDrop) {
+                SourceManager src = getDataManager().getSourceManager();
                 for(URI uri : uriDrop) {
-                        getDataManager().getSourceManager().nameAndRegister(uri);
+                        // Use the file name as 
+                        if(uri.getScheme().equals("file")) {
+                                File file = new File(uri);
+                                src.register(src.getUniqueName(FileUtils.getFileNameWithoutExtensionU(file)),uri);
+                        } else {
+                                src.nameAndRegister(uri);
+                        }
                 }
         }
         /**
