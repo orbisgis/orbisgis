@@ -31,7 +31,7 @@ public class TransformTest {
         t.addTransformation(r);
         AffineTransform at;
         try {
-            at = t.getGraphicalAffineTransform(false, null, -1, mt, null, null);
+            at = t.getGraphicalAffineTransform(false, null, mt, null, null);
             AffineTransform rat = AffineTransform.getRotateInstance(90 * Math.PI / 180, 10.0, 10.0);
             assertEquals(at, rat);
         } catch (Exception ex) {
@@ -50,16 +50,16 @@ public class TransformTest {
         t.addTransformation(new Translate(new RealLiteral(10.0), new RealLiteral(10.0)));
 
         try {
-            AffineTransform at = t.getGraphicalAffineTransform(false, null, -1, mt, null, null);
+            AffineTransform at = t.getGraphicalAffineTransform(false, null, mt, null, null);
             AffineTransform rat = AffineTransform.getTranslateInstance(10, 10);
             assertEquals(at, rat);
 
             t.addTransformation(new Translate(new RealLiteral(10.0), new RealLiteral(10.0)));
-            at = t.getGraphicalAffineTransform(false, null, -1, mt, null, null);
+            at = t.getGraphicalAffineTransform(false, null, mt, null, null);
             rat = AffineTransform.getTranslateInstance(20, 20);
 
             t.addTransformation(new Translate(new RealLiteral(10.0), new RealLiteral(10.0)));
-            at = t.getGraphicalAffineTransform(false, null, -1, mt, null, null);
+            at = t.getGraphicalAffineTransform(false, null, mt, null, null);
             rat = AffineTransform.getTranslateInstance(30, 30);
         } catch (Exception e) {
             assertTrue(false);
@@ -75,7 +75,7 @@ public class TransformTest {
         t.setUom(Uom.PX);
         t.addTransformation(new Scale(new RealLiteral(10.0)));
         try {
-            AffineTransform at = t.getGraphicalAffineTransform(false, null, -1, mt, null, null);
+            AffineTransform at = t.getGraphicalAffineTransform(false, null, mt, null, null);
             AffineTransform rat = AffineTransform.getScaleInstance(10, 10);
             assertEquals(at, rat);
         } catch (Exception e) {

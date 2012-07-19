@@ -9,11 +9,13 @@ package org.orbisgis.core.renderer.se.transform;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * Each implementation represent an affine transformation base on RealParameter.
@@ -35,8 +37,7 @@ public interface Transformation {
     /**
      * Get the AWT {@code AffineTransform} that is represented by this {@code
      * Transformation}.
-     * @param sds
-     * @param fid
+     * @param map
      * @param uom
      * @param mt
      * @param width
@@ -45,7 +46,7 @@ public interface Transformation {
      * @throws ParameterException
      * @throws IOException
      */
-    AffineTransform getAffineTransform(DataSource sds, long fid, Uom uom, MapTransform mt, 
+    AffineTransform getAffineTransform(Map<String,Value> map, Uom uom, MapTransform mt,
             Double width, Double height) throws ParameterException, IOException;
 
     /**
@@ -69,4 +70,11 @@ public interface Transformation {
      * The features this {@code Transformation} depends on, in a {@code String}.
      */
     HashSet<String> dependsOnFeature();
+
+    /**
+     * Retrieve an object describing the type of analysis made in the
+     * symbolizer.
+     * @return
+     */
+    UsedAnalysis getUsedAnalysis();
 }

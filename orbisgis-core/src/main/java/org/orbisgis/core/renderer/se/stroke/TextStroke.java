@@ -42,15 +42,17 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TextStrokeType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.LineLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * {@code TexteStroke} is used to render text labels along a line. It is useful 
@@ -114,10 +116,10 @@ public final class TextStroke extends Stroke {
         }
 
         @Override
-        public void draw(Graphics2D g2, DataSource sds, long fid, Shape shp,
+        public void draw(Graphics2D g2, Map<String,Value> map, Shape shp,
                         boolean selected, MapTransform mt, double offset) throws ParameterException, IOException {
                 if (this.lineLabel != null) {
-                        lineLabel.draw(g2, sds, fid, shp, selected, mt, null);
+                        lineLabel.draw(g2, map, shp, selected, mt, null);
                 }
         }
 
@@ -149,9 +151,18 @@ public final class TextStroke extends Stroke {
         }
 
         @Override
-        public Double getNaturalLength(DataSource sds, long fid,
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis ua = new UsedAnalysis();
+                if(lineLabel != null){
+                    ua.merge(lineLabel.getUsedAnalysis());
+                }
+                return ua;
+        }
+
+        @Override
+        public Double getNaturalLength(Map<String,Value> map,
                         Shape shp, MapTransform mt) throws ParameterException, IOException {
-                Rectangle2D bounds = lineLabel.getLabel().getBounds(null, sds, fid, mt);
+                Rectangle2D bounds = lineLabel.getLabel().getBounds(null, map, mt);
                 return bounds.getWidth();
         }
 

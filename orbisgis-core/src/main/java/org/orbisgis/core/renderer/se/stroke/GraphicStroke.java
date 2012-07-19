@@ -9,10 +9,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.GraphicStrokeType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -24,6 +25,7 @@ import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -163,12 +165,12 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
 
 
     @Override
-    public Double getNaturalLength(DataSource sds, long fid, Shape shp, MapTransform mt) throws ParameterException, IOException {
+    public Double getNaturalLength(Map<String,Value> map, Shape shp, MapTransform mt) throws ParameterException, IOException {
         double naturalLength;
 
         if (length != null) {
             double lineLength = ShapeHelper.getLineLength(shp);
-            Double value = length.getValue(sds, fid);
+            Double value = length.getValue(map);
             if (value != null) {
                 naturalLength = Uom.toPixel(value, getUom(), mt.getDpi(), mt.getScaleDenominator(), lineLength);
                 //if (naturalLength <= GraphicStroke.MIN_LENGTH || naturalLength > lineLength) {
@@ -184,12 +186,12 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
             }
         }
 
-        return getGraphicWidth(sds, fid, mt);
+        return getGraphicWidth(map, mt);
     }
 
-    private double getGraphicWidth(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    private double getGraphicWidth(Map<String,Value> map, MapTransform mt) throws ParameterException, IOException {
         RelativeOrientation rOrient = this.getRelativeOrientation();
-        Rectangle2D bounds = graphic.getBounds(sds, fid, false, mt);
+        Rectangle2D bounds = graphic.getBounds(map, false, mt);
 
         double gWidth = bounds.getWidth();
         double gHeight = bounds.getHeight();
@@ -207,7 +209,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
 
 
     @Override
-    public void draw(Graphics2D g2, DataSource sds, long fid,
+    public void draw(Graphics2D g2, Map<String,Value> map,
             Shape shape, boolean selected, MapTransform mt, double offset)
             throws ParameterException, IOException {
 
@@ -224,9 +226,9 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
         }
 
 
-        double gWidth = getGraphicWidth(sds, fid, mt);
+        double gWidth = getGraphicWidth(map, mt);
         for (Shape shp : shapes) {
-            double segLength = getNaturalLength(sds, fid, shp, mt);
+            double segLength = getNaturalLength(map, shp, mt);
             double lineLength = ShapeHelper.getLineLength(shp);
 
             if (segLength > lineLength){
@@ -276,7 +278,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
                                 double relativePos = 0.5;
 
                                 if (relativePosition != null) {
-                                    relativePos = relativePosition.getValue(sds, fid);
+                                    relativePos = relativePosition.getValue(map);
                                 }
 
                                 if (segLength < MIN_LENGTH) {
@@ -313,7 +315,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
                                     at.concatenate(AffineTransform.getRotateInstance(theta));
                                 }
 
-                                graphic.draw(g2, sds, fid, selected, mt, at);
+                                graphic.draw(g2, map, selected, mt, at);
                             }
                         }
                     }
@@ -336,10 +338,20 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
                 result.addAll(length.dependsOnFeature());
             }
         }
-
         return result == null ? new HashSet<String>() : result;
     }
 
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis result = new UsedAnalysis();
+        if (graphic != null) {
+            result.merge(graphic.getUsedAnalysis());
+        }
+        if (length != null) {
+                result.include(length);
+        }
+        return result;
+    }
 
     @Override
     public JAXBElement<GraphicStrokeType> getJAXBElement() {

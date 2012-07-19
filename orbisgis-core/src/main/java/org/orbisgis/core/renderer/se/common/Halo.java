@@ -7,10 +7,10 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.Area;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import net.opengis.se._2_0.core.HaloType;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.orbisgis.core.Services;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -21,10 +21,10 @@ import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
-import org.orbisgis.utils.I18N;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -152,8 +152,8 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
      * @return
      * @throws ParameterException
      */
-    public double getHaloRadius(DataSource sds, long fid, MapTransform mt) throws ParameterException {
-        return Uom.toPixel(radius.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
+    public double getHaloRadius(Map<String,Value> map, MapTransform mt) throws ParameterException {
+        return Uom.toPixel(radius.getValue(map), getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // TODO 100%
     }
 
     /**
@@ -169,13 +169,13 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public void draw(Graphics2D g2, DataSource sds, long fid, boolean selected, 
+    public void draw(Graphics2D g2, Map<String,Value> map, boolean selected,
             Shape shp, MapTransform mt, boolean substract) throws ParameterException, IOException {
         if (radius != null && fill != null) {
-            double r = this.getHaloRadius(sds, fid, mt);
+            double r = this.getHaloRadius(map, mt);
             if (r > 0.0) {
                 for (Shape halo : ShapeHelper.perpendicularOffset(shp, r)) {
-                    fillHalo(halo, shp, g2, sds, fid, selected, mt, substract);
+                    fillHalo(halo, shp, g2, map, selected, mt, substract);
                 }
             }
         }
@@ -208,25 +208,25 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
      * @throws ParameterException
      * @throws IOException 
      */
-    public void drawCircle(Graphics2D g2, DataSource sds, long fid, boolean selected, 
+    public void drawCircle(Graphics2D g2, Map<String,Value> map, boolean selected,
             Arc2D shp, Shape atShp, MapTransform mt, boolean substract, 
             ViewBox viewBox, AffineTransform at) throws ParameterException, IOException {
         //We want to make a halo around a WKN.CIRCLE instance. 
         if (radius != null && fill != null) {
-            double r = this.getHaloRadius(sds, fid, mt);
+            double r = this.getHaloRadius(map, mt);
             double x = shp.getX() - r/2;
             double y = shp.getY() - r/2;
             double height = shp.getHeight() + r;
             double width = shp.getWidth() + r;
             Shape origin = new Arc2D.Double(x, y, width, height, shp.getAngleStart(), shp.getAngleExtent(), shp.getArcType());
             Shape halo = at.createTransformedShape(origin);
-            fillHalo(halo, atShp, g2, sds, fid, selected, mt, substract);
+            fillHalo(halo, atShp, g2, map, selected, mt, substract);
             
         }
     }
     
     private void fillHalo(Shape halo, Shape initialShp, Graphics2D g2, 
-                DataSource sds, long fid, boolean selected,MapTransform mt, boolean substract) 
+                Map<String,Value> map, boolean selected,MapTransform mt, boolean substract)
                 throws ParameterException, IOException {
         if (halo != null && initialShp != null) {
             Area initialArea = new Area(initialShp);
@@ -234,7 +234,7 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
             if (substract){
                 aHalo.subtract(initialArea);
             }
-            fill.draw(g2, sds, fid, aHalo, selected, mt);
+            fill.draw(g2, map, aHalo, selected, mt);
         } else {
             LOGGER.error(
                     I18N.tr("Perpendicular offset failed"));
@@ -247,6 +247,14 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
         ret.addAll(radius.dependsOnFeature());
         ret.addAll(fill.dependsOnFeature());
         return ret;
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+            UsedAnalysis ua = new UsedAnalysis();
+            ua.include(radius);
+            ua.merge(fill.getUsedAnalysis());
+            return ua;
     }
 
     /**

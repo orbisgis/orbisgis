@@ -39,7 +39,9 @@
 
 package org.orbisgis.core.renderer.se.parameter.real;
 
+import java.util.Map;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 
@@ -58,14 +60,14 @@ public interface RealParameter extends SeParameter, Comparable {
          * in the new RealParameterContext.
          * @param ctx 
          */
-	void setContext(RealParameterContext ctx);
+        void setContext(RealParameterContext ctx);
 
         /**
          * Retrieve the context (if any) associated to this RealParameter. The context 
          * can be used to determine the range of valid values.
          * @return 
          */
-	RealParameterContext getContext();
+        RealParameterContext getContext();
 
         /**
          * Tries to retrieve the value associated to this RealParameter in sds, at line fid.
@@ -78,6 +80,17 @@ public interface RealParameter extends SeParameter, Comparable {
          */
         Double getValue(DataSource sds, long fid) throws ParameterException;
 
-	@Override
-	String toString();
+        /**
+         * Tries to retrieve the value associated to this RealParameter in the map.
+         * Note that it is up to the realization to know the key used to retrieve
+         * the value in the map.
+         * @param sds
+         * @param fid
+         * @return
+         * @throws ParameterException
+         */
+        Double getValue(Map<String,Value> map) throws ParameterException;
+
+        @Override
+        String toString();
 }

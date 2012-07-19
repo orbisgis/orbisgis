@@ -49,12 +49,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.thematic.AxisChartSubtypeType;
 import net.opengis.se._2_0.thematic.AxisChartType;
 import net.opengis.se._2_0.thematic.CategoryType;
 import net.opengis.se._2_0.thematic.ObjectFactory;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -65,6 +66,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
@@ -397,16 +399,16 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
         public void updateGraphic() {
         }
 
-        private double[] getMeasuresInPixel(DataSource sds, long fid, MapTransform mt) throws ParameterException {
-                double rLength = Uom.toPixel(axisScale.getAxisLength().getValue(sds, fid),
+        private double[] getMeasuresInPixel(Map<String,Value> map, MapTransform mt) throws ParameterException {
+                double rLength = Uom.toPixel(axisScale.getAxisLength().getValue(map),
                         getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
-                double rMesure = axisScale.getMeasureValue().getValue(sds, fid);
+                double rMesure = axisScale.getMeasureValue().getValue(map);
 
                 double[] heights = new double[categories.size()];
 
                 int i = 0;
                 for (Category c : categories) {
-                        heights[i] = c.getMeasure().getValue(sds, fid) * rLength / rMesure;
+                        heights[i] = c.getMeasure().getValue(map) * rLength / rMesure;
                         i++;
                 }
 
@@ -471,20 +473,19 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
         /**
          * Draw method for polar chart
          * @param g2
-         * @param sds
-         * @param fid
+         * @param map
          * @param selected
          * @param mt
          * @param at
          * @throws ParameterException
          * @throws IOException
          */
-        private void drawOrthoChart(Graphics2D g2, DataSource sds, long fid,
+        private void drawOrthoChart(Graphics2D g2, Map<String,Value> map,
                 boolean selected, MapTransform mt, AffineTransform at)
                 throws ParameterException, IOException {
 
                 int nCat = categories.size();
-                double heights[] = getMeasuresInPixel(sds, fid, mt);
+                double heights[] = getMeasuresInPixel(map, mt);
 
                 double maxHeight = 0;
                 double minHeight = 0;
@@ -501,13 +502,13 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
 
                 double cGap = DEFAULT_GAP_PX;
                 if (categoryGap != null) {
-                        cGap = Uom.toPixel(categoryGap.getValue(sds, fid), getUom(), mt.getDpi(),
+                        cGap = Uom.toPixel(categoryGap.getValue(map), getUom(), mt.getDpi(),
                                 mt.getScaleDenominator(), null);
                 }
 
                 double cWidth = DEFAULT_WIDTH_PX;
                 if (categoryWidth != null) {
-                        cWidth = Uom.toPixel(categoryWidth.getValue(sds, fid), getUom(), mt.getDpi(),
+                        cWidth = Uom.toPixel(categoryWidth.getValue(map), getUom(), mt.getDpi(),
                                 mt.getScaleDenominator(), null);
                 }
 
@@ -519,7 +520,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
 
                 //AffineTransform at = null;
                 if (transform != null) {
-                        at.concatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, minHeight, minHeight));
+                        at.concatenate(transform.getGraphicalAffineTransform(false, map, mt, minHeight, minHeight));
                         Shape shp = at.createTransformedShape(bounds);
                         bounds.setRect(shp.getBounds2D());
                 }
@@ -551,10 +552,10 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                                         shp = at.createTransformedShape(bar);
                                 }
                                 if (c.getFill() != null) {
-                                        c.getFill().draw(g2, sds, fid, shp, selected, mt);
+                                        c.getFill().draw(g2, map, shp, selected, mt);
                                 }
                                 if (c.getStroke() != null) {
-                                        c.getStroke().draw(g2, sds, fid, shp, selected, mt, 0.0);
+                                        c.getStroke().draw(g2, map, shp, selected, mt, 0.0);
                                 }
                         }
                 }
@@ -574,7 +575,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                         if (at != null) {
                                 shp = at.createTransformedShape(area);
                         }
-                        areaFill.draw(g2, sds, fid, shp, selected, mt);
+                        areaFill.draw(g2, map, shp, selected, mt);
                 }
 
                 // then the line chart
@@ -590,7 +591,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                         if (at != null) {
                                 shp = at.createTransformedShape(line);
                         }
-                        lineStroke.draw(g2, sds, fid, shp, selected, mt, 0.0);
+                        lineStroke.draw(g2, map, shp, selected, mt, 0.0);
                 }
 
                 // and finally, points
@@ -602,7 +603,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                                         at2.concatenate(at);
                                 }
 
-                                c.getGraphicCollection().draw(g2, sds, fid, selected, mt, at2);
+                                c.getGraphicCollection().draw(g2, map, selected, mt, at2);
                         }
                 }
 
@@ -626,12 +627,12 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                 arrow.setUom(Uom.MM);
                 arrow.setFill(new SolidFill(Color.black, 100.0));
                 arrow.setViewBox(new ViewBox(new RealLiteral(20)));
-                RenderableGraphics rArrow = arrow.getRenderableGraphics(sds, fid, selected, mt);
+                RenderableGraphics rArrow = arrow.getRenderableGraphics(map, selected, mt);
                 g2.drawRenderableImage(rArrow, AffineTransform.getTranslateInstance(0, bounds.getMinY()));
                  */
         }
 
-        private void drawStackedChart(Graphics2D g2, DataSource sds, long fid,
+        private void drawStackedChart(Graphics2D g2, Map<String,Value> map,
                 boolean selected, MapTransform mt, AffineTransform at) throws ParameterException, IOException {
         }
 
@@ -639,18 +640,17 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
          *
          * Create polar chart
          *
-         * @param sds
-         * @param fid
+         * @param map
          * @param selected
          * @param mt
          * @return
          * @throws ParameterException
          * @throws IOException
          */
-        private void drawPolarChart(Graphics2D g2, DataSource sds, long fid,
+        private void drawPolarChart(Graphics2D g2, Map<String,Value> map,
                 boolean selected, MapTransform mt, AffineTransform at) throws ParameterException, IOException {
                 int nCat = categories.size();
-                double heights[] = getMeasuresInPixel(sds, fid, mt);
+                double heights[] = getMeasuresInPixel(map, mt);
 
                 double maxHeight = 0;
                 double minHeight = 0;
@@ -674,7 +674,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                 double radius = maxHeight;
 
                 if (transform != null) {
-                        at.concatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, 2 * radius, 2 * radius));
+                        at.concatenate(transform.getGraphicalAffineTransform(false, map, mt, 2 * radius, 2 * radius));
                 }
 
 
@@ -710,10 +710,10 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                         }
 
                         if (this.areaFill != null) {
-                                areaFill.draw(g2, sds, fid, shp, selected, mt);
+                                areaFill.draw(g2, map, shp, selected, mt);
                         }
                         if (this.lineStroke != null) {
-                                lineStroke.draw(g2, sds, fid, shp, selected, mt, 0.0);
+                                lineStroke.draw(g2, map, shp, selected, mt, 0.0);
                         }
                 }
 
@@ -726,7 +726,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                                         at2.concatenate(at);
                                 }
 
-                                cat.getGraphicCollection().draw(g2, sds, fid, selected, mt, at2);
+                                cat.getGraphicCollection().draw(g2, map, selected, mt, at2);
                         }
                         Shape shp;
 
@@ -742,10 +742,10 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                                         shp = at.createTransformedShape(slice);
                                 }
                                 if (cat.getFill() != null) {
-                                        cat.getFill().draw(g2, sds, fid, shp, selected, mt);
+                                        cat.getFill().draw(g2, map, shp, selected, mt);
                                 }
                                 if (cat.getStroke() != null) {
-                                        cat.getStroke().draw(g2, sds, fid, shp, selected, mt, 0.0);
+                                        cat.getStroke().draw(g2, map, shp, selected, mt, 0.0);
                                 }
                         }
 
@@ -767,42 +767,42 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
         }
 
         @Override
-        public void draw(Graphics2D g2, DataSource sds, long fid,
+        public void draw(Graphics2D g2, Map<String,Value> map,
                 boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
 
                 AffineTransform at = new AffineTransform(fat);
 
                 switch (subtype) {
                         case POLAR:
-                                drawPolarChart(g2, sds, fid, selected, mt, at);
+                                drawPolarChart(g2, map, selected, mt, at);
                                 break;
                         case STACKED:
-                                drawStackedChart(g2, sds, fid, selected, mt, at);
+                                drawStackedChart(g2, map, selected, mt, at);
                                 break;
                         case ORTHO:
                         default:
-                                drawOrthoChart(g2, sds, fid, selected, mt, at);
+                                drawOrthoChart(g2, map, selected, mt, at);
                                 break;
                 }
         }
 
-        private Rectangle2D getPolarBounds(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
-                double[] measuresInPixel = getMeasuresInPixel(sds, fid, mt);
+        private Rectangle2D getPolarBounds(Map<String,Value> map, MapTransform mt) throws ParameterException, IOException {
+                double[] measuresInPixel = getMeasuresInPixel(map, mt);
                 double max = 0.0;
                 for (double m : measuresInPixel) {
                         max = Math.max(max, m);
                 }
                 Rectangle2D bounds = new Rectangle2D.Double(-max, -max, 2 * max, 2 * max);
                 if (transform != null) {
-                        AffineTransform at = transform.getGraphicalAffineTransform(false, sds, fid, mt, 2 * max, 2 * max);
+                        AffineTransform at = transform.getGraphicalAffineTransform(false, map, mt, 2 * max, 2 * max);
                         return at.createTransformedShape(bounds).getBounds2D();
                 } else {
                         return bounds;
                 }
         }
 
-        private Rectangle2D getStackedBounds(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
-                double[] measuresInPixel = getMeasuresInPixel(sds, fid, mt);
+        private Rectangle2D getStackedBounds(Map<String,Value> map, MapTransform mt) throws ParameterException, IOException {
+                double[] measuresInPixel = getMeasuresInPixel(map, mt);
                 double sum = 0.0;
                 for (double m : measuresInPixel) {
                         if (m < 0) {
@@ -813,21 +813,21 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                 double width = AxisChart.DEFAULT_WIDTH_PX;
 
                 if (categoryWidth != null) {
-                        width = Uom.toPixel(categoryWidth.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                        width = Uom.toPixel(categoryWidth.getValue(map), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 }
                 width += AxisChart.INITIAL_GAP_PX;
 
                 Rectangle2D bounds = new Rectangle2D.Double(0, -sum, width, sum);
                 if (transform != null) {
-                        AffineTransform at = transform.getGraphicalAffineTransform(false, sds, fid, mt, width, sum);
+                        AffineTransform at = transform.getGraphicalAffineTransform(false, map, mt, width, sum);
                         return at.createTransformedShape(bounds).getBounds2D();
                 } else {
                         return bounds;
                 }
         }
 
-        private Rectangle2D getOrthoBounds(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
-                double[] measuresInPixel = getMeasuresInPixel(sds, fid, mt);
+        private Rectangle2D getOrthoBounds(Map<String,Value> map, MapTransform mt) throws ParameterException, IOException {
+                double[] measuresInPixel = getMeasuresInPixel(map, mt);
                 double max = 0.0;
                 for (double m : measuresInPixel) {
                         max += Math.abs(m);
@@ -835,14 +835,14 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                 double width = AxisChart.DEFAULT_WIDTH_PX;
 
                 if (categoryWidth != null) {
-                        width = Uom.toPixel(categoryWidth.getValue(sds, fid), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                        width = Uom.toPixel(categoryWidth.getValue(map), getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 }
                 width *= categories.size();
                 width += AxisChart.INITIAL_GAP_PX;
 
                 Rectangle2D bounds = new Rectangle2D.Double(0, -max, width, 2 * max);
                 if (transform != null) {
-                        AffineTransform at = transform.getGraphicalAffineTransform(false, sds, fid, mt, width, 2 * max);
+                        AffineTransform at = transform.getGraphicalAffineTransform(false, map, mt, width, 2 * max);
                         return at.createTransformedShape(bounds).getBounds2D();
                 } else {
                         return bounds;
@@ -850,16 +850,16 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
         }
 
         @Override
-        public Rectangle2D getBounds(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
+        public Rectangle2D getBounds(Map<String,Value> map, MapTransform mt) throws ParameterException, IOException {
 
                 switch (subtype) {
                         case POLAR:
-                                return getPolarBounds(sds, fid, mt);
+                                return getPolarBounds(map, mt);
                         case STACKED:
-                                return getStackedBounds(sds, fid, mt);
+                                return getStackedBounds(map, mt);
                         case ORTHO:
                         default:
-                                return getOrthoBounds(sds, fid, mt);
+                                return getOrthoBounds(map, mt);
                 }
         }
 
@@ -942,6 +942,30 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                 }
                 for (Category c : categories) {
                         ret.addAll(c.dependsOnFeature());
+                }
+                return ret;
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis ret = new UsedAnalysis();
+                if (areaFill != null) {
+                        ret.merge(areaFill.getUsedAnalysis());
+                }
+                if (lineStroke != null) {
+                        ret.merge(lineStroke.getUsedAnalysis());
+                }
+                if (this.categoryGap != null) {
+                        ret.include(categoryGap);
+                }
+                if (categoryWidth != null) {
+                        ret.include(categoryWidth);
+                }
+                if (axisScale != null) {
+                        ret.merge(axisScale.getUsedAnalysis());
+                }
+                for (Category c : categories) {
+                        ret.merge(c.getUsedAnalysis());
                 }
                 return ret;
         }

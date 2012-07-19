@@ -47,24 +47,21 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
 import java.io.File;
-
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.media.jai.RenderableGraphics;
-
 import javax.swing.JFrame;
-
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -107,7 +104,7 @@ public class ChartsTest {
         Rectangle2D.Double dim = new Rectangle2D.Double(-width/2, -height/2, width, height);
         RenderableGraphics rg = new RenderableGraphics(dim);
 
-        collec.draw(rg, null, -1, false, mt, new AffineTransform());
+        collec.draw(rg, null, false, mt, new AffineTransform());
 
         rg.setPaint(Color.BLACK);
         rg.drawLine((int)rg.getMinX(), 0, (int)(rg.getMinX() + rg.getWidth()), 0);

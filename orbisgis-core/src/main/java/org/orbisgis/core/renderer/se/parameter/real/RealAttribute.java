@@ -1,5 +1,6 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
+import java.util.Map;
 import net.opengis.fes._2.ValueReferenceType;
 import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
@@ -51,6 +52,19 @@ public class RealAttribute extends ValueReference implements RealParameter {
     public Double getValue(DataSource sds, long fid) throws ParameterException {
         try {
             Value value = this.getFieldValue(sds, fid);
+            if (value.isNull()) {
+                return null;
+            }
+            return value.getAsDouble();
+        } catch (Exception e) {
+            throw new ParameterException("Could not fetch feature attribute \"" + getColumnName() + "\"", e);
+        }
+    }
+
+    @Override
+    public Double getValue(Map<String,Value> map) throws ParameterException {
+        try {
+            Value value = this.getFieldValue(map);
             if (value.isNull()) {
                 return null;
             }

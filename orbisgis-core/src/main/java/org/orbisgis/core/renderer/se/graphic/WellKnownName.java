@@ -44,7 +44,8 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import org.gdms.data.DataSource;
+import java.util.Map;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
@@ -116,17 +117,17 @@ public enum WellKnownName implements MarkGraphicSource {
     }
 
     @Override
-    public Shape getShape(ViewBox viewBox, DataSource sds, 
-            long fid, Double scale, Double dpi, RealParameter markIndex,
+    public Shape getShape(ViewBox viewBox, Map<String,Value> map,
+            Double scale, Double dpi, RealParameter markIndex,
             String mimeType) throws ParameterException {
-        if (sds == null && viewBox != null && !viewBox.dependsOnFeature().isEmpty()){
+        if (map == null && viewBox != null && !viewBox.dependsOnFeature().isEmpty()){
             return null;
         }
 
         double x=DEFAULT_SIZE, y=DEFAULT_SIZE; // The size of the shape, [final unit] => [px]
 
         if (viewBox != null && viewBox.usable()) {
-            Point2D box = viewBox.getDimensionInPixel(sds, fid, MarkGraphic.DEFAULT_SIZE, MarkGraphic.DEFAULT_SIZE, scale, dpi);
+            Point2D box = viewBox.getDimensionInPixel(map, MarkGraphic.DEFAULT_SIZE, MarkGraphic.DEFAULT_SIZE, scale, dpi);
             x = box.getX();
             y = box.getY();
         }
@@ -259,7 +260,7 @@ public enum WellKnownName implements MarkGraphicSource {
     }
 
     @Override
-    public double getDefaultMaxWidth(DataSource sds, long fid, 
+    public double getDefaultMaxWidth(Map<String,Value> map,
             Double scale, Double dpi, RealParameter markIndex, String mimeType) {
         return DEFAULT_SIZE;
     }

@@ -1,14 +1,16 @@
 package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Categorization is defined as the "transformation of continuous values to distinct values.
@@ -36,6 +38,8 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
 
     private static final String SD_FACTOR_KEY = "SdFactor";
     private static final String METHOD_KEY = "method";
+    private static final Logger LOGGER = Logger.getLogger(Categorize.class);
+    private static final I18n I18N = I18nFactory.getI18n(Categorize.class);
 
     private CategorizeMethod method;
     /**
@@ -310,7 +314,32 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
             }
 
         } catch (ParameterException ex) {
-            Logger.getLogger(Categorize.class.getName()).log(Level.WARNING, "Unable to categorize the feature", ex);
+            LOGGER.warn(I18N.tr("Unable to categorize the feature"), ex);
+        }
+        return fallbackValue;
+    }
+
+    protected ToType getParameter(Map<String, Value> map) {
+        try {
+            if (getNumClasses() > 1) {
+                double value = lookupValue.getValue(map);
+                Iterator<ToType> cIt = classValues.iterator();
+                Iterator<RealLiteral> tIt = thresholds.iterator();
+                ToType classValue = this.firstClass;
+                while (cIt.hasNext()) {
+                    double threshold = tIt.next().getValue(map);
+                    if ((!succeeding && value <= threshold) || ((value < threshold))) {
+                        return classValue;
+                    }
+                    classValue = cIt.next();
+                }
+                return classValue;
+            } else { // Means nbClass == 1
+                return firstClass;
+            }
+
+        } catch (ParameterException ex) {
+           LOGGER.debug("Unable to categorize the feature", ex);
         }
         return fallbackValue;
     }

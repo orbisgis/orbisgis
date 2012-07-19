@@ -7,12 +7,13 @@ package org.orbisgis.core.renderer.se.label;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LabelType;
 import net.opengis.se._2_0.core.LineLabelType;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.PointLabelType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -314,8 +315,7 @@ public abstract class Label implements SymbolizerNode, UomNode {
     /**
      * Draw this {@code Label} in {@code g2}.
      * @param g2
-     * @param sds
-     * @param fid
+     * @param feat
      * @param shp
      * @param selected
      * @param mt
@@ -323,7 +323,7 @@ public abstract class Label implements SymbolizerNode, UomNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, DataSource sds, long fid,
+    public abstract void draw(Graphics2D g2, Map<String, Value> feat,
             Shape shp, boolean selected, MapTransform mt, RenderContext perm)
             throws ParameterException, IOException;
 

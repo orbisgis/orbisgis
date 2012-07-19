@@ -9,6 +9,8 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ConcatenateType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
+import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -51,11 +53,27 @@ public class StringConcatenate implements StringParameter, Iterable<StringParame
         }
 
         @Override
-        public String getValue(org.gdms.data.DataSource sds, long fid) throws ParameterException {
+        public String getValue(DataSource sds, long fid) throws ParameterException {
                 List<String> inputs = new LinkedList<String>();
                 int expectedSize = 0;
                 for(StringParameter sp : inputStrings){
                         String tmp = sp.getValue(sds, fid);
+                        inputs.add(tmp);
+                        expectedSize+=tmp.length();
+                }
+                StringBuilder sb = new StringBuilder(expectedSize);
+                for(String temps : inputs){
+                        sb.append(temps);
+                }
+                return sb.toString();
+        }
+
+        @Override
+        public String getValue(Map<String, Value> map) throws ParameterException {
+                List<String> inputs = new LinkedList<String>();
+                int expectedSize = 0;
+                for(StringParameter sp : inputStrings){
+                        String tmp = sp.getValue(map);
                         inputs.add(tmp);
                         expectedSize+=tmp.length();
                 }

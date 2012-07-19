@@ -1,12 +1,13 @@
 package org.orbisgis.core.renderer.se.parameter.string;
 
 import java.awt.Color;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.RecodeType;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.orbisgis.core.Services;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.Recode;
@@ -62,6 +63,16 @@ public final class Recode2String extends Recode<StringParameter, StringLiteral> 
                 } catch (ParameterException ex) {
                         LOGGER.error(I18N.tr("Fallback"), ex);
                         return getFallbackValue().getValue(sds, fid);
+                }
+        }
+
+        @Override
+        public String getValue(Map<String,Value> map) {
+                try {
+                        return getParameter(map).getValue(map);
+                } catch (ParameterException ex) {
+                        LOGGER.error(I18N.tr("Fallback"), ex);
+                        return getFallbackValue().getValue(map);
                 }
         }
 

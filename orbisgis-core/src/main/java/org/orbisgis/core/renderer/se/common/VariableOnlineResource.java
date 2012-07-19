@@ -52,6 +52,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.media.jai.InterpolationBicubic2;
@@ -61,7 +62,7 @@ import javax.media.jai.RenderedOp;
 import net.opengis.se._2_0.core.ExternalGraphicType;
 import net.opengis.se._2_0.core.MarkGraphicType;
 import net.opengis.se._2_0.core.VariableOnlineResourceType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.graphic.ExternalGraphicSource;
@@ -133,25 +134,24 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
      * @throws ParameterException
      */
     public RenderedImage getPlanarImage(ViewBox viewBox,
-                                        DataSource sds, long fid,
+                                        Map<String,Value> map,
                                         MapTransform mt, String mimeType)
             throws IOException, ParameterException {
 
         if (mimeType != null && mimeType.equalsIgnoreCase("image/svg+xml")) {
-            return getSvgImage(viewBox, sds, fid, mt, mimeType);
+            return getSvgImage(viewBox, map, mt, mimeType);
         } else {
-            return getJAIImage(viewBox, sds, fid, mt, mimeType);
+            return getJAIImage(viewBox, map, mt, mimeType);
         }
     }
 
 
     public Rectangle2D.Double getJAIBounds(ViewBox viewBox,
-                                           DataSource sds,
-                                           long fid, MapTransform mt,
+                                          Map<String,Value> map, MapTransform mt,
                                            String mimeType) throws ParameterException {
         try {
             if (rawImage == null) {
-                URL link = new URL(url.getValue(sds, fid));
+                URL link = new URL(url.getValue(map));
                 rawImage = JAI.create("url", link);
                 Logger.getLogger(VariableOnlineResource.class.getName()).log(Level.INFO, "Download ExternalGraphic from: {0}", url);
             }
@@ -163,13 +163,13 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
         double height = rawImage.getHeight();
 
         if (viewBox != null && mt != null && viewBox.usable()) {
-            if (sds == null && !viewBox.dependsOnFeature().isEmpty()) {
+            if (map == null && !viewBox.dependsOnFeature().isEmpty()) {
                 throw new ParameterException("View box depends on feature"); // TODO I18n 
             }
 
             try {
 
-                Point2D dim = viewBox.getDimensionInPixel(sds, fid, height, width, mt.getScaleDenominator(), mt.getDpi());
+                Point2D dim = viewBox.getDimensionInPixel(map, height, width, mt.getScaleDenominator(), mt.getDpi());
 
                 effectiveWidth = dim.getX();
                 effectiveHeight = dim.getY();
@@ -190,8 +190,7 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
 
 
     public Rectangle2D.Double getSvgBounds(ViewBox viewBox,
-                                           DataSource sds,
-                                           long fid, MapTransform mt,
+                                           Map<String,Value> map, MapTransform mt,
                                            String mimeType) throws ParameterException {
         try {
             /*
@@ -199,7 +198,7 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
              */
             if (svgIcon == null) {
                 svgIcon = new SVGIcon();
-                svgIcon.setSvgURI(new URI(url.getValue(sds, fid)));
+                svgIcon.setSvgURI(new URI(url.getValue(map)));
                 svgIcon.setAntiAlias(true);
 
                 this.svgInitialHeight = (double) svgIcon.getIconHeight();
@@ -207,12 +206,12 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
             }
 
             if (viewBox != null && mt != null && viewBox.usable()) {
-                if (sds == null && !viewBox.dependsOnFeature().isEmpty()) {
+                if (map == null && !viewBox.dependsOnFeature().isEmpty()) {
                     throw new ParameterException("View box depends on feature"); // TODO I18n
                 }
 
 
-                Point2D dim = viewBox.getDimensionInPixel(sds, fid, svgInitialWidth,
+                Point2D dim = viewBox.getDimensionInPixel(map, svgInitialWidth,
                         svgInitialHeight, mt.getScaleDenominator(), mt.getDpi());
 
                 effectiveWidth = dim.getX();
@@ -241,15 +240,14 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
 
     @Override
     public Rectangle2D.Double updateCacheAndGetBounds(ViewBox viewBox,
-                                                      DataSource sds,
-                                                      long fid, MapTransform mt,
+                                                      Map<String,Value> map, MapTransform mt,
                                                       String mimeType) throws ParameterException {
         effectiveWidth = null;
         effectiveHeight = null;
         if (mimeType != null && mimeType.equalsIgnoreCase("image/svg+xml")) {
-            return getSvgBounds(viewBox, sds, fid, mt, mimeType);
+            return getSvgBounds(viewBox, map, mt, mimeType);
         } else {
-            return getJAIBounds(viewBox, sds, fid, mt, mimeType);
+            return getJAIBounds(viewBox, map, mt, mimeType);
         }
     }
 
@@ -321,23 +319,23 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
      * @deprecated
      */
     public RenderedImage getSvgImage(ViewBox viewBox,
-                                     DataSource sds, long fid,
+                                     Map<String,Value> map,
                                      MapTransform mt, String mimeType)
             throws IOException, ParameterException {
         try {
             SVGIcon icon = new SVGIcon();
-            icon.setSvgURI(new URI(url.getValue(sds, fid)));
+            icon.setSvgURI(new URI(url.getValue(map)));
             BufferedImage img;
 
             if (viewBox != null && mt != null && viewBox.usable()) {
-                if (sds == null && !viewBox.dependsOnFeature().isEmpty()) {
+                if (map == null && !viewBox.dependsOnFeature().isEmpty()) {
                     throw new ParameterException("View box depends on feature"); // TODO I18n
                 }
 
                 double width = icon.getIconWidth();
                 double height = icon.getIconHeight();
 
-                Point2D dim = viewBox.getDimensionInPixel(sds, fid, height, width, mt.getScaleDenominator(), mt.getDpi());
+                Point2D dim = viewBox.getDimensionInPixel(map, height, width, mt.getScaleDenominator(), mt.getDpi());
 
                 double widthDst = dim.getX();
                 double heightDst = dim.getY();
@@ -377,7 +375,7 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
      * @throws ParameterException
      */
     public PlanarImage getJAIImage(ViewBox viewBox,
-                                   DataSource sds, long fid,
+                                   Map<String,Value> map,
                                    MapTransform mt, String mimeType)
             throws IOException, ParameterException {
 
@@ -394,7 +392,7 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
 
 
         if (viewBox != null && mt != null && viewBox.usable()) {
-            if (sds == null && !viewBox.dependsOnFeature().isEmpty()) {
+            if (map == null && !viewBox.dependsOnFeature().isEmpty()) {
                 throw new ParameterException("View box depends on feature"); // TODO I18n
             }
 
@@ -402,7 +400,7 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
                 double width = img.getWidth();
                 double height = img.getHeight();
 
-                Point2D dim = viewBox.getDimensionInPixel(sds, fid, height, width, mt.getScaleDenominator(), mt.getDpi());
+                Point2D dim = viewBox.getDimensionInPixel(map, height, width, mt.getScaleDenominator(), mt.getDpi());
 
                 double widthDst = dim.getX();
                 double heightDst = dim.getY();
@@ -444,10 +442,10 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
     }
 
 
-    public Font getFont(DataSource sds, Long fid) {
+    public Font getFont(Map<String,Value> map) {
         InputStream iStream;
         try {
-            URL u = new URL(this.url.getValue(sds, fid));
+            URL u = new URL(this.url.getValue(map));
             iStream = u.openStream();
             return Font.createFont(Font.TRUETYPE_FONT, iStream);
         } catch (FontFormatException ex) {
@@ -459,17 +457,17 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
 
 
     private Shape getTrueTypeGlyph(ViewBox viewBox,
-                                   DataSource sds, long fid,
+                                   Map<String,Value> map,
                                    Double scale, Double dpi,
                                    RealParameter markIndex) throws ParameterException, IOException {
 
         try {
-            URL u = new URL(this.url.getValue(sds, fid));
+            URL u = new URL(this.url.getValue(map));
             InputStream iStream = u.openStream();
             Font font = Font.createFont(Font.TRUETYPE_FONT, iStream);
             iStream.close();
 
-            double value = markIndex.getValue(sds, fid);
+            double value = markIndex.getValue(map);
 
             char[] data = {(char) value};
 
@@ -489,7 +487,7 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
             double height = bounds2D.getHeight();
 
             if (viewBox != null && viewBox.usable()) {
-                Point2D dim = viewBox.getDimensionInPixel(sds, fid, height, width, scale, dpi);
+                Point2D dim = viewBox.getDimensionInPixel(map, height, width, scale, dpi);
                 if (Math.abs(dim.getX()) <= 0 || Math.abs(dim.getY()) <= 0) {
                     return null;
                 }
@@ -515,13 +513,12 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
 
 
     @Override
-    public Shape getShape(ViewBox viewBox, DataSource sds,
-                          long fid, Double scale, Double dpi,
-                          RealParameter markIndex, String mimeType) throws ParameterException, IOException {
+    public Shape getShape(ViewBox viewBox, Map<String,Value> map, Double scale, 
+            Double dpi, RealParameter markIndex, String mimeType) throws ParameterException, IOException {
 
         if (mimeType != null) {
             if (mimeType.equalsIgnoreCase("application/x-font-ttf")) {
-                return getTrueTypeGlyph(viewBox, sds, fid, scale, dpi, markIndex);
+                return getTrueTypeGlyph(viewBox, map, scale, dpi, markIndex);
             }
         }
 
@@ -541,14 +538,14 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
 
 
     @Override
-    public double getDefaultMaxWidth(DataSource sds, long fid,
+    public double getDefaultMaxWidth(Map<String,Value> map,
                                      Double scale, Double dpi,
                                      RealParameter markIndex, String mimeType)
             throws IOException, ParameterException {
 
         if (mimeType != null) {
             if (mimeType.equalsIgnoreCase("application/x-font-ttf")) {
-                return getTrueTypeGlyphMaxSize(sds, fid, /*scale, dpi,*/ markIndex);
+                return getTrueTypeGlyphMaxSize(map, /*scale, dpi,*/ markIndex);
             }
         }
 
@@ -557,17 +554,16 @@ public class VariableOnlineResource implements ExternalGraphicSource, MarkGraphi
     }
 
 
-    private double getTrueTypeGlyphMaxSize(DataSource sds,
-                                           long fid,
+    private double getTrueTypeGlyphMaxSize(Map<String,Value> map,
                                            /*Double scale, Double dpi,*/ RealParameter markIndex)
             throws IOException, ParameterException {
         try {
-            URL u = new URL(url.getValue(sds, fid));
+            URL u = new URL(url.getValue(map));
             InputStream iStream = u.openStream();
             Font font = Font.createFont(Font.TRUETYPE_FONT, iStream);
             iStream.close();
 
-            double value = markIndex.getValue(sds, fid);
+            double value = markIndex.getValue(map);
             char[] data = {(char) value};
 
             String text = String.copyValueOf(data);

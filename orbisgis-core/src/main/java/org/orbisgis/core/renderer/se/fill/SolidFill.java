@@ -44,14 +44,16 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.SolidFillType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
@@ -175,12 +177,12 @@ public final class SolidFill extends Fill {
         * @throws ParameterException
         */
 	@Override
-	public Paint getPaint(long fid, DataSource sds, boolean selected, MapTransform mt) throws ParameterException {
+	public Paint getPaint(Map<String,Value> map, boolean selected, MapTransform mt) throws ParameterException {
 
         Color c, ac; // ac stands 4 colour + alpha channel
 
 		if (color != null){
-			c = color.getColor(sds, fid);
+			c = color.getColor(map);
 		} else {
                         //We must cast the colours to int values, because we want to use 
                         //GRAY50 to build RGB value - As it equals 128.0f, we need a cast
@@ -189,7 +191,7 @@ public final class SolidFill extends Fill {
         }
 
 		if (this.opacity != null) {
-		    ac = ColorHelper.getColorWithAlpha(c, this.opacity.getValue(sds, fid));
+		    ac = ColorHelper.getColorWithAlpha(c, this.opacity.getValue(map));
 		} else {
             ac = c;
         }
@@ -205,8 +207,9 @@ public final class SolidFill extends Fill {
 	}
 
 	@Override
-	public void draw(Graphics2D g2, DataSource sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException {
-		g2.setPaint(getPaint(fid, sds, selected, mt));
+	public void draw(Graphics2D g2, Map<String,Value> map, Shape shp, boolean selected,
+            MapTransform mt) throws ParameterException {
+		g2.setPaint(getPaint(map, selected, mt));
 		g2.fill(shp);
 	}
 
@@ -228,8 +231,16 @@ public final class SolidFill extends Fill {
                     ret.addAll(opacity.dependsOnFeature());
                 }
             }
-                return ret;
+            return ret;
 	}
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis ua = new UsedAnalysis();
+        ua.include(color);
+        ua.include(opacity);
+        return ua;
+    }
 
 	@Override
 	public SolidFillType getJAXBType() {
