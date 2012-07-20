@@ -60,7 +60,7 @@ public interface PlugIn extends Observer {
 
 	boolean execute(PlugInContext context) throws Exception;
 
-	boolean isEnabled() throws Exception;
+	boolean isEnabled();
 	
 	boolean isSelected();
 	

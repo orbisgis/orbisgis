@@ -31,7 +31,6 @@ package org.orbisgis.core.ui.plugins.views.geocatalog;
 import java.util.Vector;
 
 import org.gdms.source.SourceManager;
-import org.gdms.source.stream.StreamSource;
 import org.gvsig.remoteClient.wms.WMSClient;
 import org.gvsig.remoteClient.wms.WMSLayer;
 import org.orbisgis.core.DataManager;
@@ -49,6 +48,8 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.wms.SRSPan
 import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.wms.WMSConnectionPanel;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.utils.I18N;
+
+import org.gdms.data.stream.StreamSource;
 
 public class WMSGeocatalogPlugIn extends AbstractPlugIn {
 

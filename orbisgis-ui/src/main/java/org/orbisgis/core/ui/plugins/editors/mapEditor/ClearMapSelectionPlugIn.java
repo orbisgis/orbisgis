@@ -43,6 +43,8 @@ import org.orbisgis.core.ui.plugins.views.mapEditor.MapEditorPlugIn;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.utils.I18N;
 
+import org.gdms.driver.DriverException;
+
 public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 
 	private JButton btn;
@@ -84,13 +86,17 @@ public class ClearMapSelectionPlugIn extends AbstractPlugIn {
 		if ((mapEditor = getPlugInContext().getMapEditor()) != null) {
 			MapContext mc = (MapContext) mapEditor.getElement().getObject();
 			ILayer[] layers = mc.getLayerModel().getLayersRecursively();
-			for (ILayer lyr : layers) {
-				if (!lyr.isStream()) {
-					lyr.getSelection();
-					if (lyr.getSelection().length > 0)
-						isEnabled = true;
-				}
-			}
+			                     try {
+                                for (ILayer lyr : layers) {
+                                        if (!lyr.isStream()) {
+                                                lyr.getSelection();
+                                                if (lyr.getSelection().length > 0) {
+                                                        isEnabled = true;
+                                                }
+                                        }
+                                }
+                        } catch (DriverException e) {
+                        }
 		}
 		btn.setEnabled(isEnabled);
 		return true;

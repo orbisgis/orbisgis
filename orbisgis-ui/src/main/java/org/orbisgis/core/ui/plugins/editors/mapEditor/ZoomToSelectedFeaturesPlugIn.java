@@ -133,18 +133,22 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 	}
 
         @Override
-	public boolean isEnabled() throws Exception{
+	public boolean isEnabled() {
 		boolean isEnabled = false;
 		MapEditorPlugIn mapEditor = null;
 		if ((mapEditor = getPlugInContext().getMapEditor()) != null) {
 			MapContext mc = (MapContext) mapEditor.getElement().getObject();
 			ILayer[] layers = mc.getLayerModel().getLayersRecursively();
-			for (ILayer lyr : layers) {
-				if (!lyr.isStream()) {
-					if (lyr.getSelection().length > 0)
-						isEnabled = true;
-				}
-			}
+			                     try {
+                                for (ILayer lyr : layers) {
+                                        if (!lyr.isStream()) {
+                                                if (lyr.getSelection().length > 0) {
+                                                        isEnabled = true;
+                                                }
+                                        }
+                                }
+                        } catch (DriverException e) {
+                        }
 		}
 		btn.setEnabled(isEnabled);
 		return isEnabled;
