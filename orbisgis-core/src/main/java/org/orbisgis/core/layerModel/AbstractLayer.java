@@ -181,14 +181,14 @@ public abstract class AbstractLayer implements ILayer {
 	}
 
 	private void fireLayerMovedEvent(ILayer parent, ILayer layer) {
+                LayerCollectionEvent evt = new LayerCollectionEvent(parent,
+					new ILayer[] { layer });
 		for (LayerListener listener : listeners) {
-			listener.layerMoved(new LayerCollectionEvent(parent,
-					new ILayer[] { layer }));
+			listener.layerMoved(evt);
 		}
 
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void fireStyleChanged() {
 		ArrayList<LayerListener> l = (ArrayList<LayerListener>) listeners
 				.clone();
@@ -197,7 +197,6 @@ public abstract class AbstractLayer implements ILayer {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void fireLayerAddedEvent(ILayer[] added) {
 		ArrayList<LayerListener> l = (ArrayList<LayerListener>) listeners
 				.clone();
@@ -206,7 +205,6 @@ public abstract class AbstractLayer implements ILayer {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void fireLayerRemovedEvent(ILayer[] removed) {
 		ArrayList<LayerListener> l = (ArrayList<LayerListener>) listeners
 				.clone();
@@ -215,7 +213,6 @@ public abstract class AbstractLayer implements ILayer {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	protected boolean fireLayerRemovingEvent(ILayer[] toRemove) {
 		ArrayList<LayerListener> l = (ArrayList<LayerListener>) listeners
 				.clone();
@@ -229,75 +226,89 @@ public abstract class AbstractLayer implements ILayer {
 		return true;
 	}
         
-        
-        
-        
+    @Override
     public void addLayer(ILayer layer)  throws LayerException  {
         throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
     }
 
+    @Override
     public ILayer remove(ILayer layer)  throws LayerException {
         throw new IllegalArgumentException(I18N.tr("This layer does not have children")); //$NON-NLS-1$
     }
 
+    @Override
     public ILayer remove(String layerName)  throws LayerException {
         throw new IllegalArgumentException(I18N.tr("This layer does not have children")); //$NON-NLS-1$
     }
 
+    @Override
     public boolean acceptsChilds() {
         return false;
     }
 
+    @Override
     public ILayer[] getChildren() {
         return new ILayer[0];
     }
 
+    @Override
     public int getIndex(ILayer targetLayer) {
         return -1;
     }
 
+    @Override
     public void insertLayer(ILayer layer, int index) throws LayerException {
         throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
     }
 
+    @Override
     public void addLayerListenerRecursively(LayerListener listener) {
         addLayerListener(listener);
     }
 
+    @Override
     public void removeLayerListenerRecursively(LayerListener listener) {
         removeLayerListener(listener);
     }
 
+    @Override
     public void addLayer(ILayer layer, boolean isMoving) throws LayerException {
         throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
     }
 
+    @Override
     public ILayer remove(ILayer layer, boolean isMoving) throws LayerException {
         throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
     }
 
+    @Override
     public void insertLayer(ILayer layer, int index, boolean isMoving)
             throws LayerException {
         throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
     }
 
+    @Override
     public int getLayerCount() {
         return 0;
     }
 
+    @Override
     public ILayer getLayer(final int index) {
         throw new ArrayIndexOutOfBoundsException(
                 I18N.tr("This layer doesn't contain any child")); //$NON-NLS-1$
     }
 
+    @Override
     public ILayer getLayerByName(String layerName) {
         return null;
     }
 
+    @Override
     public ILayer[] getRasterLayers() throws DriverException {
         return new ILayer[0];
     }
 
+    @Override
     public ILayer[] getVectorLayers() throws DriverException {
         return new ILayer[0];
     }

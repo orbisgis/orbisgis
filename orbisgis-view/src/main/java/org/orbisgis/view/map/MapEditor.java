@@ -357,10 +357,12 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 return editableElement instanceof MapElement;
         }
 
+        @Override
         public EditableElement getEditableElement() {
                 return mapEditable;
         }
 
+        @Override
         public void setEditableElement(EditableElement editableElement) {
                 if(editableElement instanceof MapElement) {
                         loadMap((MapElement)editableElement);

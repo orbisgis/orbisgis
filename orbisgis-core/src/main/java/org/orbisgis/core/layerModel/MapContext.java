@@ -32,7 +32,6 @@ import com.vividsolutions.jts.geom.Envelope;
 import java.beans.PropertyChangeListener;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Style;
