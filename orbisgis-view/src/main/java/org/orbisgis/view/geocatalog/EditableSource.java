@@ -38,13 +38,12 @@ import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditableElementException;
 import org.orbisgis.view.table.Selection;
 import org.orbisgis.view.table.TableEditableElement;
-import org.orbisgis.view.toc.AbstractTableEditableElement;
 
-public class EditableSource extends AbstractTableEditableElement implements
-		TableEditableElement {
+public class EditableSource extends TableEditableElement {
 
 	public static final String EDITABLE_RESOURCE_TYPE = "EditableSource";
 
@@ -65,7 +64,6 @@ public class EditableSource extends AbstractTableEditableElement implements
 
 	public void close(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
-		super.close(progressMonitor);
 		try {
 			ds.close();
 			ds = null;

@@ -34,21 +34,24 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditableElementException;
 import org.orbisgis.view.edition.EditableElementListener;
+import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.table.Selection;
 import org.orbisgis.view.table.TableEditableElement;
 
-public class EditableLayer extends AbstractTableEditableElement implements
-		TableEditableElement {
+/**
+ * This editable correspond to a Layer on the {@link Toc}.
+ */
+public class EditableLayer extends TableEditableElement {
 
 	public static final String EDITABLE_LAYER_TYPE = "EditableLayer";
 
 	private ILayer layer;
-	private EditableElement element;
+	private MapElement element;
 	private MapContext mapContext;
 
 	private IdChangeListener listener;
 
-	public EditableLayer(EditableElement element, ILayer layer) {
+	public EditableLayer(MapElement element, ILayer layer) {
 		this.layer = layer;
 		this.element = element;
 		this.mapContext = (MapContext) element.getObject();

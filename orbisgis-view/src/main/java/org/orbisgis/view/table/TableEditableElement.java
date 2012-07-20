@@ -37,8 +37,14 @@ import org.orbisgis.view.edition.EditableElement;
  * by the table editor.
  * 
  */
-public interface TableEditableElement extends EditableElement {
+public abstract class TableEditableElement extends EditableElement {
 
+        // Properties names
+        public static final String PROP_SELECTION = "selection";
+        
+        // Properties
+        protected Selection selection;
+        
 	/**
 	 * Get the object that manages selection
 	 * 
@@ -68,6 +74,11 @@ public interface TableEditableElement extends EditableElement {
 	 * @return
 	 */
 	MapContext getMapContext();
+
+        @Override
+        Object getObject() throws UnsupportedOperationException {
+                return dataSource;
+        }
 	
 	
 }

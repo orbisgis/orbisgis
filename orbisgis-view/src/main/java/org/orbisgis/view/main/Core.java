@@ -350,7 +350,7 @@ public class Core {
                                 }
                         }
                         MapElement editableMap = new MapElement(mapContext,mapContextFile);
-                        editableMap.open(null);
+                        editableMap.open(pm);
                         editors.openEditable(editableMap); 
                 }
 

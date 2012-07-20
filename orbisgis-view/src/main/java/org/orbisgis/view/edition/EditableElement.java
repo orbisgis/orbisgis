@@ -27,38 +27,120 @@
  * info_at_ orbisgis.org
  */
 package org.orbisgis.view.edition;
+
+import org.orbisgis.core.common.BeanPropertyChangeSupport;
+import org.orbisgis.progress.ProgressMonitor;
+
 /**
  * Editable elements are used and moved through OrbisGIS GUI views.
+ * 
+ * This class is created thanks to the NetBeans user interface.
+ * Use the "Add property" NetBeans function to add properties easily.
+ * See documentation related to java.beans management systems
  */
-public interface EditableElement extends EditableBaseElement {
+public abstract class EditableElement extends BeanPropertyChangeSupport {
 
-	/**
-	 * Return the id of the element
-	 * 
-	 * @return
-	 */
-	String getId();
+        // Properties names
+        public static final String PROP_ID = "id";
+        public static final String PROP_MODIFIED = "modified";
+        
+        // Properties
+        protected String id = "none";
+        protected boolean modified = false;
 
-	/**
-	 * Adds a listener to this element events
-	 * 
-	 * @param listener
-	 */
-	void addElementListener(EditableElementListener listener);
+        /**
+         * Return the Id of this element (instance).
+         *
+         * @return the value of id
+         */
+        public String getId() {
+                return id;
+        }
 
-	/**
-	 * Removes a listener to this element events
-	 * 
-	 * @param listener
-	 * @return The removed listener or null if there was not such listener
-	 */
-	boolean removeElementListener(EditableElementListener listener);
+        /**
+         * Set the value of id
+         *
+         * @param id new value of id
+         */
+        protected void setId(String id) {
+                String oldId = this.id;
+                this.id = id;
+                propertyChangeSupport.firePropertyChange(PROP_ID, oldId, id);
+        }
+        
 
-	/**
-	 * Return if this element was modified since the last time save or open was
-	 * called
-	 * 
-	 * @return
-	 */
-	boolean isModified();
+        /**
+         * Get the state of the editable element
+         *
+         * @return True if this element was modified since the last time save
+         * or open was called
+         */
+        public boolean isModified() {
+                return modified;
+        }
+
+        /**
+         * Set the value of modified
+         *
+         * @param modified new value of modified
+         */
+        public void setModified(boolean modified) {
+                boolean oldModified = this.modified;
+                this.modified = modified;
+                propertyChangeSupport.firePropertyChange(PROP_MODIFIED, oldModified, modified);
+        }
+
+        /**
+         * Return an unique String that identifies the element type
+         *         
+         * @return
+         */
+        abstract String getTypeId();
+
+        /**
+         * Opens the element for edition. This method will typically be followed
+         * by some edition actions in the stored object, by calls to the save
+         * method and finally by a call to close
+         *         
+         * @param progressMonitor
+         * @throws UnsupportedOperationException if this element cannot be
+         * edited
+         * @throws EditableElementException If the operation cannot be done
+         */
+        abstract void open(ProgressMonitor progressMonitor)
+                throws UnsupportedOperationException, EditableElementException;
+
+        /**
+         * Saves the status of the element so that next call to getJAXBElement
+         * reflects the changes
+         *         
+         * @throws UnsupportedOperationException if this element cannot be
+         * edited
+         * @throws EditableElementException Indicates that the saving was
+         * successful but there were some extraordinary conditions during the
+         * saving. The saving must always be done
+         */
+        abstract void save() throws UnsupportedOperationException, EditableElementException;
+
+        /**
+         * Closes the element. All resources should be freed and all memory
+         * should be released because there may be plenty of
+         * GeocognitionElements in closed state
+         *         
+         * @param progressMonitor
+         * @throws UnsupportedOperationException if this element cannot be
+         * edited
+         * @throws EditableElementException If the closing was not done
+         */
+        abstract void close(ProgressMonitor progressMonitor)
+                throws UnsupportedOperationException, EditableElementException;
+
+        /**
+         * Gets the object stored in this element.
+         *         
+         * @return The object stored in this element or null if the element is
+         * not supported
+         * @throws UnsupportedOperationException If this element is a folder
+         */
+        abstract Object getObject() throws UnsupportedOperationException;
 }
