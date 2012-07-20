@@ -42,7 +42,7 @@ public interface BackgroundManager {
 	 * @param lp
 	 *            instance that executes the action.
 	 */
-	void backgroundOperation(BackgroundJob lp);
+	JobId backgroundOperation(BackgroundJob lp);
 
 	/**
 	 * Executes an operation in a background thread.
@@ -50,7 +50,7 @@ public interface BackgroundManager {
 	 * @param lp
 	 *            instance that executes the action.
 	 */
-	void nonBlockingBackgroundOperation(BackgroundJob lp);
+	JobId nonBlockingBackgroundOperation(BackgroundJob lp);
 
 	/**
 	 * Executes an operation in a background thread. If there already exists an

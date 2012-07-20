@@ -28,6 +28,8 @@
  */
 package org.orbisgis.core.layerModel;
 
+import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.net.URI;
@@ -54,9 +56,11 @@ public abstract class BeanLayer extends AbstractLayer {
 
         //bean properties
         private Description description;
-        private List<Style> styleList = new ArrayList<Style>();
+        protected List<Style> styleList = new ArrayList<Style>();
         private boolean visible = true;
+        private PropertyChangeListener styleListener = EventHandler.create(PropertyChangeListener.class,this,"onStyleChanged","");
         
+                
         public BeanLayer(String name) {
                 super();
                 description = new Description();
@@ -77,6 +81,7 @@ public abstract class BeanLayer extends AbstractLayer {
          *
          * @return the value of visible
          */
+        @Override
         public boolean isVisible() {
                 return visible;
         }
@@ -86,6 +91,7 @@ public abstract class BeanLayer extends AbstractLayer {
          *
          * @param visible new value of visible
          */
+        @Override
         public void setVisible(boolean visible) throws LayerException  {
                 boolean oldVisible = this.visible;
                 this.visible = visible;
@@ -149,6 +155,7 @@ public abstract class BeanLayer extends AbstractLayer {
          *
          * @return the value of description
          */
+        @Override
         public Description getDescription() {
                 return description;
         }
@@ -158,6 +165,7 @@ public abstract class BeanLayer extends AbstractLayer {
          *
          * @param description new value of description
          */
+        @Override
         public void setDescription(Description description) {
                 Description oldDescription = this.description;
                 this.description = description;
@@ -170,6 +178,7 @@ public abstract class BeanLayer extends AbstractLayer {
         * @param listener The PropertyChangeListener instance
         * @note Use EventHandler.create to build the PropertyChangeListener instance
         */
+        @Override
         public void addPropertyChangeListener(PropertyChangeListener listener) {
                 propertyChangeSupport.addPropertyChangeListener(listener);
         }
@@ -181,6 +190,7 @@ public abstract class BeanLayer extends AbstractLayer {
         * @param listener The PropertyChangeListener instance
         * @note Use EventHandler.create to build the PropertyChangeListener instance
         */
+        @Override
         public void addPropertyChangeListener(String prop,PropertyChangeListener listener) {
                 propertyChangeSupport.addPropertyChangeListener(prop, listener);
         }
@@ -188,6 +198,7 @@ public abstract class BeanLayer extends AbstractLayer {
         * Remove the specified listener from the list
         * @param listener The listener instance
         */
+        @Override
         public void removePropertyChangeListener(PropertyChangeListener listener) {
                 propertyChangeSupport.removePropertyChangeListener(listener);
         }
@@ -197,6 +208,7 @@ public abstract class BeanLayer extends AbstractLayer {
         * @param prop The static property name PROP_..
         * @param listener The listener instance
         */
+        @Override
         public void removePropertyChangeListener(String prop,PropertyChangeListener listener) {
                 propertyChangeSupport.removePropertyChangeListener(prop,listener);
         }
@@ -205,6 +217,7 @@ public abstract class BeanLayer extends AbstractLayer {
 	 * 
 	 * @see org.orbisgis.core.layerModel.ILayer#getName()
 	 */
+        @Override
 	public String getName() {
 		return description.getTitle(Locale.getDefault());
 	}
@@ -214,6 +227,7 @@ public abstract class BeanLayer extends AbstractLayer {
 	 * @throws LayerException
 	 * @see org.orbisgis.core.layerModel.ILayer#setName(java.lang.String)
 	 */
+        @Override
 	public void setName(final String name) throws LayerException {
                 if(name!=null && !name.equals(getName())) {
                         //Set the localised title of this layer
@@ -228,15 +242,21 @@ public abstract class BeanLayer extends AbstractLayer {
         
     @Override
     public List<Style> getStyles() {
-        return styleList;
+        return new ArrayList<Style>(styleList);
     }
 
     @Override
     public void setStyles(List<Style> fts) {
         List<Style> oldStyles = this.styleList;
-        this.styleList = fts;
+        for(Style style : styleList) {
+                removeStyleListener(style);
+        }
+        styleList = new ArrayList<Style>(fts);
+        for(Style style : styleList) {
+                addStyleListener(style);
+        }
         propertyChangeSupport.firePropertyChange(PROP_STYLES, oldStyles, styleList);
-        super.setStyles(fts);
+        super.setStyles(styleList);
     }
 
     @Override
@@ -244,13 +264,37 @@ public abstract class BeanLayer extends AbstractLayer {
             return styleList.get(i);
     }
 
+    protected void removeStyleListener(Style s){
+            s.removePropertyChangeListener(styleListener);
+    }
+    protected void addStyleListener(Style s) {
+            s.addPropertyChangeListener(styleListener);
+    }
+    
+    /***
+     * The specified property has been updated
+     * Called by the private style property change listener
+     * @param evt 
+     */
+    public void onStyleChanged(PropertyChangeEvent evt) {
+            fireStyleChanged();
+            if(styleList!=null) {
+                int index =styleList.indexOf(evt.getSource());
+                if(index!=-1) {
+                        propertyChangeSupport.fireIndexedPropertyChange(PROP_STYLES, index, evt.getSource(), evt.getSource());
+                }
+            }
+    }
+    
     @Override
     public void setStyle(int i, Style s){
         if (styleList == null){
             styleList = new ArrayList<Style>(); //out of bound exception instead of null pointer exception
         }
         Style oldStyle = styleList.get(i);
+        removeStyleListener(oldStyle);
         styleList.set(i, s);
+        addStyleListener(s);
         propertyChangeSupport.fireIndexedPropertyChange(PROP_STYLES, i, oldStyle, s);
         this.fireStyleChanged();
     }
@@ -260,9 +304,7 @@ public abstract class BeanLayer extends AbstractLayer {
         if (styleList == null){
             styleList = new ArrayList<Style>();
         }
-        styleList.add(s);
-        propertyChangeSupport.firePropertyChange(PROP_STYLES, null, styleList);
-        this.fireStyleChanged();
+        addStyle(styleList.size(),s);
     }
 
     @Override
@@ -270,20 +312,22 @@ public abstract class BeanLayer extends AbstractLayer {
         if (styleList == null){
             styleList = new ArrayList<Style>();
         }
+        addStyleListener(s);
         styleList.add(i, s);
         propertyChangeSupport.fireIndexedPropertyChange(PROP_STYLES, i, null, s);
         this.fireStyleChanged();
     }
 
     @Override
-    public int indexOf(Style s){
-            return styleList == null ? -1 : styleList.indexOf(s);
-    }
-
-    @Override
     public void removeStyle(Style s){
+            removeStyleListener(s);
             styleList.remove(s);
             propertyChangeSupport.firePropertyChange(PROP_STYLES, s, null);
             this.fireStyleChanged();
+    }
+
+    @Override
+    public int indexOf(Style s){
+            return styleList == null ? -1 : styleList.indexOf(s);
     }
 }

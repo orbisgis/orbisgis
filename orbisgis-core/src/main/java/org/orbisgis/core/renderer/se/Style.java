@@ -28,6 +28,8 @@
  */
 package org.orbisgis.core.renderer.se;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -57,12 +59,18 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  */
 public final class Style implements SymbolizerNode {
 
+    public static final String PROP_VISIBLE = "visible";
     private static final String DEFAULT_NAME = "Unnamed Style";
+    
+    
+    
     private String name;
     private ArrayList<Rule> rules;
     private ILayer layer;
     private boolean visible = true;
 
+    protected PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);    
+    
     /**
      * Create a new {@code Style} associated to the given {@code ILayer}. If the
      * given boolean is tru, a default {@code Rule} will be added to the Style.
@@ -473,6 +481,48 @@ public final class Style implements SymbolizerNode {
      * @param visible
      */
     public void setVisible(boolean visible) {
+        boolean oldValue = this.visible;
         this.visible = visible;
+        propertyChangeSupport.firePropertyChange(PROP_VISIBLE, oldValue, visible);
     }
+    
+
+    /**
+    * Add a property-change listener for all properties.
+    * The listener is called for all properties.
+    * @param listener The PropertyChangeListener instance
+    * @note Use EventHandler.create to build the PropertyChangeListener instance
+    */
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+    
+    /**
+    * Add a property-change listener for a specific property.
+    * The listener is called only when there is a change to 
+    * the specified property.
+    * @param prop The static property name PROP_..
+    * @param listener The PropertyChangeListener instance
+    * @note Use EventHandler.create to build the PropertyChangeListener instance
+    */
+    public void addPropertyChangeListener(String prop,PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(prop, listener);
+    }
+    
+    /**
+    * Remove the specified listener from the list
+    * @param listener The listener instance
+    */
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
+    }
+
+    /**
+    * Remove the specified listener for a specified property from the list
+    * @param prop The static property name PROP_..
+    * @param listener The listener instance
+    */
+    public void removePropertyChangeListener(String prop,PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(prop,listener);
+    }    
 }

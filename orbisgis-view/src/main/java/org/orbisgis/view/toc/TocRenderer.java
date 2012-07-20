@@ -34,10 +34,7 @@ import java.awt.Rectangle;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
-import javax.swing.Icon;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import org.apache.log4j.Logger;
@@ -47,7 +44,7 @@ import org.orbisgis.core.renderer.se.Style;
 
 public class TocRenderer extends TocAbstractRenderer {
         private static Logger UILOGGER = Logger.getLogger("gui."+ TocRenderer.class);
-
+        private final static int ROW_EMPTY_BORDER_SIZE = 2;
         private TreeCellRenderer lookAndFeelRenderer;
         private JTree tree;
         private JCheckBox lastCheckBox;
@@ -96,18 +93,23 @@ public class TocRenderer extends TocAbstractRenderer {
                         try {
                                 JPanel panel = new JPanel(new BorderLayout());
                                 panel.setOpaque(false);
+                                panel.setBorder(BorderFactory.createEmptyBorder(
+                                        ROW_EMPTY_BORDER_SIZE,
+                                        ROW_EMPTY_BORDER_SIZE,
+                                        ROW_EMPTY_BORDER_SIZE,
+                                        ROW_EMPTY_BORDER_SIZE));
                                 JCheckBox checkBox = new JCheckBox();
                                 checkBox.setBackground(rendererComponent.getBackground());
                                 checkBox.setOpaque(rendererComponent.isOpaque());
                                 checkBox.setBorder(rendererComponent.getBorder());
-                                if (value instanceof ILayer) {
-                                        ILayer layerNode = (ILayer) value;
+                                if (value instanceof TocTreeNodeLayer) {
+                                        ILayer layerNode = ((TocTreeNodeLayer) value).getLayer();
                                         Icon layerIcon = TocAbstractRenderer.getLayerIcon(layerNode);
                                         rendererComponent.setIcon(layerIcon);
                                         rendererComponent.setText(layerNode.getName());
                                         checkBox.setSelected(layerNode.isVisible());
-                                } else if(value instanceof Style)  {
-                                        Style styleNode = (Style) value;
+                                } else if(value instanceof TocTreeNodeStyle)  {
+                                        Style styleNode = ((TocTreeNodeStyle) value).getStyle();
                                         rendererComponent.setIcon(null);
                                         rendererComponent.setText(styleNode.getName());
                                         checkBox.setSelected(styleNode.isVisible());

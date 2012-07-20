@@ -32,14 +32,14 @@ public interface LayerListener {
 
 	/**
 	 * The name of the layer has changed
-	 * 
+	 * @deprecated Use the property change listener on the style property
 	 * @param e
 	 */
 	void nameChanged(LayerListenerEvent e);
 
 	/**
 	 * the layer has became visible or invisible
-	 * 
+	 * @deprecated Use the property change listener on the style property
 	 * @param e
 	 */
 	void visibilityChanged(LayerListenerEvent e);
@@ -47,6 +47,7 @@ public interface LayerListener {
 	/**
 	 * The style of the layer has changed
 	 * 
+         * @deprecated Use the property change listener on the style property
 	 * @param e
 	 */
 	void styleChanged(LayerListenerEvent e);
