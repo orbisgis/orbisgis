@@ -57,7 +57,9 @@ public class ImageRenderer extends Renderer {
          */
         for (Symbolizer s : symbs) {
             BufferedImage bufImg = new BufferedImage(mt.getWidth(), mt.getHeight(), BufferedImage.TYPE_INT_ARGB);
-            graphics.add(bufImg.createGraphics());
+            Graphics2D sG2 = bufImg.createGraphics();
+            sG2.addRenderingHints(mt.getRenderingHints());
+            graphics.add(sG2);
             imgSymbs.add(bufImg);
         }
     }
