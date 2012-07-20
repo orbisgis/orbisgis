@@ -31,7 +31,7 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.source.stream;
+package org.gdms.data.stream;
 
 import java.io.Serializable;
 

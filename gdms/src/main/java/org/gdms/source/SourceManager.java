@@ -50,7 +50,7 @@ import org.gdms.data.wms.WMSSource;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.driverManager.DriverManager;
-import org.gdms.source.stream.StreamSource;
+import org.gdms.data.stream.StreamSource;
 import org.gdms.sql.engine.ParseException;
 
 /**

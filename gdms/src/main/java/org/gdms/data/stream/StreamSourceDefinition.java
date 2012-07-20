@@ -31,8 +31,9 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.source.stream;
+package org.gdms.data.stream;
 
+import org.gdms.source.directory.StreamDefinitionType;
 import java.net.URI;
 
 import org.apache.log4j.Logger;
