@@ -42,7 +42,7 @@ import java.io.Serializable;
  */
 public class StreamSource implements Serializable {
 
-    private static final long serialVersionUID = 0L;
+    private static final long serialVersionUID = 123456789L;
     private String m_host;
     private int m_port;
     private String m_target;

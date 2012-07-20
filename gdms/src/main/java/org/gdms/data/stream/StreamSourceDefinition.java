@@ -33,7 +33,6 @@
  */
 package org.gdms.data.stream;
 
-import org.gdms.source.directory.StreamDefinitionType;
 import java.net.URI;
 
 import org.apache.log4j.Logger;
@@ -48,6 +47,7 @@ import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.*;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.directory.DefinitionType;
+import org.gdms.source.directory.StreamDefinitionType;
 
 /**
  *
