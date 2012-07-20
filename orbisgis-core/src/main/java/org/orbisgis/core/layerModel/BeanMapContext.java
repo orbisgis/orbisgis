@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
- * 
- *  Team leader Erwan BOCHER, scientific researcher,
- * 
- *  User support leader : Gwendall Petit, geomatic engineer.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,9 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info@orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.layerModel;
 
@@ -42,8 +34,8 @@ import java.beans.PropertyChangeSupport;
 import org.orbisgis.core.renderer.se.Style;
 
 /**
- * Define Map Context properties as Java Beans, add the ability to listen for
- * property change
+ * Define Map Context properties as Java Beans, add the ability to
+ * listen for property change.
  */
 public abstract class BeanMapContext implements MapContext {
 
@@ -190,11 +182,10 @@ public abstract class BeanMapContext implements MapContext {
         }
 
         /**
-         * Add a property-change listener for all properties. The listener is
-         * called for all properties.
-         *
-         * @param listener The PropertyChangeListener instance @note Use
-         * EventHandler.create to build the PropertyChangeListener instance
+         * Add a property-change listener for all properties.
+         * The listener is called for all properties.
+         * @param listener The PropertyChangeListener instance
+         * @note Use EventHandler.create to build the PropertyChangeListener instance
          */
         @Override
         public void addPropertyChangeListener(PropertyChangeListener listener) {
@@ -202,12 +193,12 @@ public abstract class BeanMapContext implements MapContext {
         }
 
         /**
-         * Add a property-change listener for a specific property. The listener
-         * is called only when there is a change to the specified property.
-         *
+         * Add a property-change listener for a specific property.
+         * The listener is called only when there is a change to
+         * the specified property.
          * @param prop The static property name PROP_..
-         * @param listener The PropertyChangeListener instance @note Use
-         * EventHandler.create to build the PropertyChangeListener instance
+         * @param listener The PropertyChangeListener instance
+         * @note Use EventHandler.create to build the PropertyChangeListener instance
          */
         @Override
         public void addPropertyChangeListener(String prop, PropertyChangeListener listener) {
@@ -216,7 +207,6 @@ public abstract class BeanMapContext implements MapContext {
 
         /**
          * Remove the specified listener from the list
-         *
          * @param listener The listener instance
          */
         @Override
@@ -226,7 +216,6 @@ public abstract class BeanMapContext implements MapContext {
 
         /**
          * Remove the specified listener for a specified property from the list
-         *
          * @param prop The static property name PROP_..
          * @param listener The listener instance
          */
@@ -234,4 +223,5 @@ public abstract class BeanMapContext implements MapContext {
         public void removePropertyChangeListener(String prop, PropertyChangeListener listener) {
                 propertyChangeSupport.removePropertyChangeListener(prop, listener);
         }
+
 }

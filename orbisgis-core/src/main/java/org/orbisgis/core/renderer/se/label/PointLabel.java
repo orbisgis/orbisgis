@@ -1,6 +1,30 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
+ *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se.label;
 
@@ -10,16 +34,18 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.PointLabelType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -30,7 +56,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <ul><li>A rotation angle, in degrees.</li>
  * <li>An exclusion zone, ie a zone around the label where no other text will be displayed.</li>
  * </ul>
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public final class PointLabel extends Label {
 
@@ -126,7 +152,7 @@ public final class PointLabel extends Label {
 
 
     @Override
-    public void draw(Graphics2D g2, DataSource sds, long fid,
+    public void draw(Graphics2D g2, Map<String, Value> map,
             Shape shp, boolean selected, MapTransform mt, RenderContext perm)
             throws ParameterException, IOException {
         double x;
@@ -136,19 +162,19 @@ public final class PointLabel extends Label {
         double deltaX = 0;
         double deltaY = 0;
 
-        Rectangle2D bounds = getLabel().getBounds(g2, sds, fid, mt);
+        Rectangle2D bounds = getLabel().getBounds(g2, map, mt);
         x = shp.getBounds2D().getCenterX() + bounds.getWidth() / 2;
         y = shp.getBounds2D().getCenterY() - bounds.getHeight() / 2;
 
         if (this.exclusionZone != null) {
             if (this.exclusionZone instanceof ExclusionRadius) {
-                double radius = ((ExclusionRadius) (this.exclusionZone)).getRadius().getValue(sds, fid);
+                double radius = ((ExclusionRadius) (this.exclusionZone)).getRadius().getValue(map);
                 radius = Uom.toPixel(radius, getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 deltaX = radius;
                 deltaY = radius;
             } else {
-                deltaX = ((ExclusionRectangle) (this.exclusionZone)).getX().getValue(sds, fid);
-                deltaY = ((ExclusionRectangle) (this.exclusionZone)).getY().getValue(sds, fid);
+                deltaX = ((ExclusionRectangle) (this.exclusionZone)).getX().getValue(map);
+                deltaY = ((ExclusionRectangle) (this.exclusionZone)).getY().getValue(map);
 
                 deltaX = Uom.toPixel(deltaX, getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 deltaY = Uom.toPixel(deltaY, getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
@@ -157,7 +183,7 @@ public final class PointLabel extends Label {
 
         AffineTransform at = AffineTransform.getTranslateInstance(x + deltaX, y + deltaY);
 
-        getLabel().draw(g2, sds, fid, selected, mt, at, perm);
+        getLabel().draw(g2, map, selected, mt, at, perm);
     }
 
 
@@ -188,10 +214,8 @@ public final class PointLabel extends Label {
         return pl;
     }
 
-
     @Override
     public HashSet<String> dependsOnFeature() {
-
         HashSet<String> result = new HashSet<String>();
         if (getLabel() != null) {
             result.addAll(getLabel().dependsOnFeature());
@@ -202,9 +226,22 @@ public final class PointLabel extends Label {
         if (rotation != null) {
             result.addAll(rotation.dependsOnFeature());
         }
-
         return result;
     }
 
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis result = new UsedAnalysis();
+        if (getLabel() != null) {
+            result.merge(getLabel().getUsedAnalysis());
+        }
+        if (exclusionZone != null) {
+            result.merge(exclusionZone.getUsedAnalysis());
+        }
+        if (rotation != null) {
+            result.include(rotation);
+        }
+        return result;
+    }
 
 }

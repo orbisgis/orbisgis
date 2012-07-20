@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
- * 
- *  Team leader Erwan BOCHER, scientific researcher,
- * 
- *  User support leader : Gwendall Petit, geomatic engineer.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,23 +23,23 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.view.background;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 
 /**
- * Manage blocking and parallel GUI Jobs
+ * Manages blocking and parallel GUI Jobs.
  */
 public class JobQueue implements BackgroundManager {
 
-	private static Logger logger = Logger.getLogger("gui."+JobQueue.class);
+	private final static Logger LOGGER = Logger.getLogger("gui."+JobQueue.class);
 
 	private ArrayList<BackgroundListener> listeners = new ArrayList<BackgroundListener>();
 
@@ -55,7 +48,7 @@ public class JobQueue implements BackgroundManager {
 
 	public synchronized void add(JobId processId, BackgroundJob lp,
 			boolean blocking) {
-		logger.debug("Adding a job: " + processId);
+		LOGGER.debug("Adding a job: " + processId);
 		Job newJob = new Job(processId, lp, this, blocking);
 		// Check if it's the current process
 		if ((current != null) && (current.getId().is(processId))) {
@@ -69,7 +62,7 @@ public class JobQueue implements BackgroundManager {
 			// Substitute existing process
 			for (Job job : queue) {
 				if (job.getId().is(processId)) {
-					logger.debug("Substituting previous job: " + processId);
+					LOGGER.debug("Substituting previous job: " + processId);
 					job.setProcess(lp);
 					fireJobReplaced(job);
 					return;
@@ -77,7 +70,7 @@ public class JobQueue implements BackgroundManager {
 			}
 
 			// Add a new one
-			logger.debug("It's a new job: " + processId);
+			LOGGER.debug("It's a new job: " + processId);
 			queue.add(newJob);
 			fireJobAdded(newJob);
 			newJob.progressTo(0);
@@ -90,7 +83,7 @@ public class JobQueue implements BackgroundManager {
 	private synchronized void planify() {
 		if (current == null && queue.size() > 0) {
 			current = queue.remove(0);
-			logger.debug("Starting job: " + current.getId());
+			LOGGER.debug("Starting job: " + current.getId());
 
 			if (current.isBlocking()) {
 				SwingUtilities.invokeLater(current.getReadyRunnable());
@@ -100,13 +93,15 @@ public class JobQueue implements BackgroundManager {
 		}
 	}
 
-	public void add(BackgroundJob lp, boolean blocking) {
-		add(new UniqueJobID(), lp, blocking);
+	public JobId add(BackgroundJob lp, boolean blocking) {
+                JobId jobId = new UniqueJobID();
+		add(jobId, lp, blocking);
+                return jobId;
 	}
 
         @Override
 	public synchronized void processFinished(JobId processId) {
-		logger.debug("Job finished: " + processId);
+		LOGGER.debug("Job finished: " + processId);
 		Job finishedJob = current;
 		finishedJob.clear();
 		current = null;
@@ -127,19 +122,23 @@ public class JobQueue implements BackgroundManager {
 		}
 	}
 
-	public void backgroundOperation(BackgroundJob lp) {
+        @Override
+	public JobId backgroundOperation(BackgroundJob lp) {
 		// TODO JOB Open Job window docking and undock that
-		add(lp, true);
+		return add(lp, true);
 	}
 
+        @Override
 	public void backgroundOperation(JobId processId, BackgroundJob lp) {
 		add(processId, lp, true);
 	}
 
+        @Override
 	public void addBackgroundListener(BackgroundListener listener) {
 		listeners.add(listener);
 	}
 
+        @Override
 	public void removeBackgroundListener(BackgroundListener listener) {
 		listeners.remove(listener);
 	}
@@ -166,12 +165,19 @@ public class JobQueue implements BackgroundManager {
 		return this;
 	}
 
-	public void nonBlockingBackgroundOperation(BackgroundJob lp) {
-		add(lp, false);
+        @Override
+	public JobId nonBlockingBackgroundOperation(BackgroundJob lp) {
+		return add(lp, false);
 	}
 
+        @Override
 	public void nonBlockingBackgroundOperation(JobId processId, BackgroundJob lp) {
 		add(processId, lp, false);
 	}
+
+        @Override
+        public List<Job> getActiveJobs() {
+                return Arrays.asList(getJobs());
+        }
 
 }

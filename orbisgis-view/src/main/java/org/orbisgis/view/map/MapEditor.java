@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,19 +23,20 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.view.map;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
+import java.awt.Point;
+import java.awt.event.*;
+import java.awt.geom.Point2D;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import javax.swing.*;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.DataManager;
@@ -72,7 +74,14 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private MapElement mapEditable;
     private DockingPanelParameters dockingPanelParameters;
     private MapTransferHandler dragDropHandler;
-    
+    private MapStatusBar mapStatusBar = new MapStatusBar();
+    //This timer will fetch the cursor component coordinates
+    //Then translate to the map coordinates and send it to
+    //the MapStatusBar
+    private Timer CursorCoordinateLookupTimer;
+    private final static int CURSOR_COORDINATE_LOOKUP_INTERVAL = 100; //Ms
+    private Point lastCursorPosition = new Point();
+    private Point lastTranslatedCursorPosition = new Point();
     /**
      * Constructor
      */
@@ -85,7 +94,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         dockingPanelParameters.setMinimizable(false);
         dockingPanelParameters.setExternalizable(false);
         dockingPanelParameters.setCloseable(false);
-        this.add(mapControl, BorderLayout.CENTER);
+        add(mapControl, BorderLayout.CENTER);
+        add(mapStatusBar, BorderLayout.PAGE_END);
         mapControl.setDefaultTool(new ZoomInTool());
         //Declare Tools of Map Editors
         //For debug purpose, also add the toolbar in the frame
@@ -98,6 +108,15 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         dragDropHandler = new MapTransferHandler();        
         this.setTransferHandler(dragDropHandler);
     }
+    
+    public void onUserSetScaleDenominator(PropertyChangeEvent pce) throws PropertyVetoException {
+            long newScale = (Long)pce.getNewValue();
+            if(newScale<1) {
+                    throw new PropertyVetoException(I18N.tr("The value of the scale denominator must be equal or greater than 1"),pce);
+            }
+            mapControl.getMapTransform().setScaleDenominator(newScale);
+    }
+    
     /**
      * Notifies this component that it now has a parent component.
      * When this method is invoked, the chain of parent 
@@ -108,6 +127,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         super.addNotify();
         //Register listener
         dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(Listener.class, this, "onDropEditable","editableList"));
+        mapControl.addMouseMotionListener(EventHandler.create(MouseMotionListener.class,this,"onMouseMove","point","mouseMoved"));
+        mapStatusBar.addVetoableChangeListener(
+                MapStatusBar.PROP_USER_DEFINED_SCALE_DENOMINATOR,
+                EventHandler.create(VetoableChangeListener.class, this,
+                "onUserSetScaleDenominator",""));
     }
     
     
@@ -134,7 +158,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             element.setMapEditor(this);
             mapControl.setMapContext(mapContext);
             mapControl.getMapTransform().setExtent(mapContext.getBoundingBox());
+            mapControl.setElement(this);
             mapControl.initMapControl();
+            CursorCoordinateLookupTimer = new Timer(CURSOR_COORDINATE_LOOKUP_INTERVAL,EventHandler.create(ActionListener.class,this,"onReadCursorMapCoordinate"));
+            CursorCoordinateLookupTimer.setRepeats(false);
+            CursorCoordinateLookupTimer.start();
             repaint();
         } catch (IllegalStateException ex) {
             GUILOGGER.error(ex);
@@ -142,6 +170,43 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             GUILOGGER.error(ex);
         }        
     }
+    
+    /**
+     * MouseMove event on the MapControl
+     * @param mousePoition x,y position of the event relative to the MapControl component.
+     */
+    public void onMouseMove(Point mousePoition) {
+            lastCursorPosition = mousePoition;
+    }
+
+        @Override
+        public void removeNotify() {
+                super.removeNotify();
+                if(CursorCoordinateLookupTimer!=null) {
+                        CursorCoordinateLookupTimer.stop();
+                        CursorCoordinateLookupTimer=null;
+                }
+        }
+    
+    
+    
+    /**
+     * This method is called by the timer called CursorCoordinateLookupTimer
+     * This function fetch the cursor coordinates (pixel)
+     * then translate to the map coordinates and send it to
+     * the MapStatusBar
+     */
+    public void onReadCursorMapCoordinate() {
+            if(!lastTranslatedCursorPosition.equals(lastCursorPosition)) {
+                lastTranslatedCursorPosition=lastCursorPosition;
+                Point2D mapCoordinate = mapControl.getMapTransform().toMapPoint(lastCursorPosition.x, lastCursorPosition.y);
+                mapStatusBar.setCursorCoordinates(mapCoordinate);
+            }
+            if(CursorCoordinateLookupTimer!=null) {
+                CursorCoordinateLookupTimer.start();
+            }
+    }
+    
     /**
      * Create a toolbar corresponding to the current state of the Editor
      * @return 
@@ -149,6 +214,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private JToolBar createToolBar(boolean useButtonText) {
         JToolBar toolBar = new JToolBar();
         ButtonGroup autoSelection = new ButtonGroup();
+        //Selection button
+        autoSelection.add(addButton(toolBar, new SelectionTool(), useButtonText));
         //Navigation Tools
         autoSelection.add(addButton(toolBar,new ZoomInTool(),useButtonText));
         autoSelection.add(addButton(toolBar,new ZoomOutTool(),useButtonText));
@@ -246,10 +313,12 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
      * docking system
      * @return The panel parameter instance
      */
+    @Override
     public DockingPanelParameters getDockingParameters() {
         return dockingPanelParameters;
     }
 
+    @Override
     public JComponent getComponent() {
         return this;
     }
@@ -274,8 +343,10 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             return mapControl;
     }
 
+    @Override
     public void extentChanged(Envelope oldExtent, MapTransform mapTransform) {
-        //do nothing
+            //Update the scale in the MapEditor status bar
+            mapStatusBar.setScaleDenominator(mapTransform.getScaleDenominator());
     }
 
     public void imageSizeChanged(int oldWidth, int oldHeight, MapTransform mapTransform) {
@@ -286,10 +357,12 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 return editableElement instanceof MapElement;
         }
 
+        @Override
         public EditableElement getEditableElement() {
                 return mapEditable;
         }
 
+        @Override
         public void setEditableElement(EditableElement editableElement) {
                 if(editableElement instanceof MapElement) {
                         loadMap((MapElement)editableElement);
@@ -307,6 +380,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         /**
          * Used with Toggle Button (new state can be DESELECTED)
          */
+                @Override
         public void itemStateChanged(ItemEvent ie) {
             if(ie.getStateChange() == ItemEvent.SELECTED) {
                 onToolSelected(automaton);

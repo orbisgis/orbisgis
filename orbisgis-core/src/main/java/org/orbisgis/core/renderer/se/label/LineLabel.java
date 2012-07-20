@@ -1,6 +1,30 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
+ *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se.label;
 
@@ -12,20 +36,22 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LineLabelType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * A {@code LineLabel} is a text of some kinf associated to a Line (polygon or not).
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  * @todo implements
  */
 public class LineLabel extends Label {
@@ -84,11 +110,11 @@ public class LineLabel extends Label {
      *
      */
     @Override
-    public void draw(Graphics2D g2, DataSource sds, long fid, 
+    public void draw(Graphics2D g2, Map<String,Value> map,
             Shape shp, boolean selected, MapTransform mt, RenderContext perm)
             throws ParameterException, IOException {
 
-        Rectangle2D bounds = getLabel().getBounds(g2, sds, fid, mt);
+        Rectangle2D bounds = getLabel().getBounds(g2, map, mt);
         double totalWidth = bounds.getWidth();
 
         // TODO, is shp a polygon ? Yes so create a line like:
@@ -172,14 +198,14 @@ public class LineLabel extends Label {
         double currentPos = startAt;
         double glyphWidth;
 
-        String text = getLabel().getText().getValue(sds, fid);
+        String text = getLabel().getText().getValue(map);
         String[] glyphs = text.split("");
 
         ArrayList<Shape> outlines = new ArrayList<Shape>();
 
         for (String glyph : glyphs) {
             if (glyph != null && !glyph.isEmpty()) {
-                Rectangle2D gBounds = getLabel().getBounds(g2, glyph, sds, fid, mt);
+                Rectangle2D gBounds = getLabel().getBounds(g2, glyph, map, mt);
 
                 glyphWidth = gBounds.getWidth()*way;
                 Point2D.Double pAt = ShapeHelper.getPointAt(shp, currentPos);
@@ -191,13 +217,13 @@ public class LineLabel extends Label {
                 AffineTransform at = AffineTransform.getTranslateInstance(pAt.x, pAt.y);
                 at.concatenate(AffineTransform.getRotateInstance(theta));
                 currentPos += glyphWidth;
-                outlines.add(getLabel().getOutline(g2, glyph, sds, fid, mt, at, perm, vA));
+                outlines.add(getLabel().getOutline(g2, glyph, map, mt, at, perm, vA));
             } else {
                 //System.out.println ("Space...");
                 //currentPos += emWidth*way;
             }
         }
-        getLabel().drawOutlines(g2, outlines, sds, fid, selected, mt);
+        getLabel().drawOutlines(g2, outlines, map, selected, mt);
     }
 
     @Override
@@ -223,5 +249,13 @@ public class LineLabel extends Label {
             return getLabel().dependsOnFeature();
         }
         return new HashSet<String>();
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        if (getLabel() != null) {
+            return getLabel().getUsedAnalysis();
+        }
+        return new UsedAnalysis();
     }
 }

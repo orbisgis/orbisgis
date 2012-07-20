@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,14 +23,15 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.view.background;
 
+import java.util.List;
+
 /**
- * The BackGround Manager process GUI operation on parrallel Swing thread
+ * The BackGround Manager process GUI operation on parrallel Swing thread.
  */
 public interface BackgroundManager {
 
@@ -40,7 +42,7 @@ public interface BackgroundManager {
 	 * @param lp
 	 *            instance that executes the action.
 	 */
-	void backgroundOperation(BackgroundJob lp);
+	JobId backgroundOperation(BackgroundJob lp);
 
 	/**
 	 * Executes an operation in a background thread.
@@ -48,7 +50,7 @@ public interface BackgroundManager {
 	 * @param lp
 	 *            instance that executes the action.
 	 */
-	void nonBlockingBackgroundOperation(BackgroundJob lp);
+	JobId nonBlockingBackgroundOperation(BackgroundJob lp);
 
 	/**
 	 * Executes an operation in a background thread. If there already exists an
@@ -91,4 +93,9 @@ public interface BackgroundManager {
          */
         void processFinished(JobId id);
 
+        /**
+         * Get the active jobs
+         * @return Jobs managed by this instance
+         */
+        List<Job> getActiveJobs();
 }

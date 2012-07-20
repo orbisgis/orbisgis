@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,10 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se;
 
@@ -44,10 +35,12 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.AreaSymbolizerType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -57,6 +50,7 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -71,7 +65,7 @@ import org.orbisgis.core.renderer.se.transform.Translate;
  * AreaSymbolizer</code> is defined with a perpendicular offset, a <code>Stroke</code> (to draw its limit, 
  * and as a <code>StrokeNode</code>) and a <code>Fill</code> (to paint its interior, and 
  * as a <code>FillNode</code>).
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, StrokeNode {
 
@@ -217,16 +211,16 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
 
                 List<Shape> shapes = new LinkedList<Shape>();
                 shapes.add(mt.getShape(the_geom, true));
-
+                Map<String,Value> map = getFeaturesMap(sds, fid);
                 if (shapes != null) {
                         for (Shape shp : shapes) {
                                 if (this.getTranslate() != null) {
-                                        shp = getTranslate().getAffineTransform(sds, fid, getUom(), mt,
+                                        shp = getTranslate().getAffineTransform(map, getUom(), mt,
                                                 (double) mt.getWidth(), (double) mt.getHeight()).createTransformedShape(shp);
                                 }
                                 if (shp != null) {
                                         if (fill != null) {
-                                                fill.draw(g2, sds, fid, shp, selected, mt);
+                                                fill.draw(g2, map, shp, selected, mt);
                                         }
 
                                         if (stroke != null) {
@@ -235,7 +229,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
                                                         offset = Uom.toPixel(perpendicularOffset.getValue(sds, fid),
                                                                 getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                                                 }
-                                                stroke.draw(g2, sds, fid, shp, selected, mt, offset);
+                                                stroke.draw(g2, map, shp, selected, mt, offset);
                                         }
                                 }
                         }
@@ -290,6 +284,24 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
                 }
                 if (perpendicularOffset != null) {
                         ret.addAll(perpendicularOffset.dependsOnFeature());
+                }
+                return ret;
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis ret = new UsedAnalysis();
+                if (translate != null) {
+                        ret.merge(translate.getUsedAnalysis());
+                }
+                if (fill != null) {
+                        ret.merge(fill.getUsedAnalysis());
+                }
+                if (perpendicularOffset != null) {
+                        ret.include(perpendicularOffset);
+                }
+                if (stroke != null) {
+                        ret.merge(stroke.getUsedAnalysis());
                 }
                 return ret;
         }

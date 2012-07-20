@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,14 +23,11 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se.fill;
 
-import org.orbisgis.core.renderer.se.graphic.*;
 import com.sun.media.jai.widget.DisplayJAI;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -46,27 +36,25 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.io.File;
-
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.imageio.ImageIO;
-
 import javax.swing.JFrame;
-
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 import org.orbisgis.core.map.MapTransform;
-import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class FillTest  {
 
@@ -112,7 +100,7 @@ public class FillTest  {
         rg.setRenderingHints(mt.getRenderingHints());
         mt.setImage(img);
 
-        collec.draw(rg, null, -1, false, mt, AffineTransform.getTranslateInstance(width/2, height/2));
+        collec.draw(rg, null, false, mt, AffineTransform.getTranslateInstance(width/2, height/2));
 
         rg.setPaint(Color.BLACK);
         rg.drawLine(0, 0, (int) (width), 0);

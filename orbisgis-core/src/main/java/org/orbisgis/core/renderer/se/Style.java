@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,13 +23,13 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -48,7 +41,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.*;
 import javax.xml.bind.util.ValidationEventCollector;
-
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.RuleType;
 import net.opengis.se._2_0.core.StyleType;
@@ -58,19 +50,34 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
+ * @author Alexis Guéganno
  */
 public final class Style implements SymbolizerNode {
 
+    public static final String PROP_VISIBLE = "visible";
     private static final String DEFAULT_NAME = "Unnamed Style";
+    
+    
+    
     private String name;
     private ArrayList<Rule> rules;
     private ILayer layer;
     private boolean visible = true;
+
+    protected PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);    
     
+    /**
+     * Create a new {@code Style} associated to the given {@code ILayer}. If the
+     * given boolean is tru, a default {@code Rule} will be added to the Style.
+     * If not, the {@code Style} will be let empty.
+     * @param layer
+     * @param addDefaultRule
+     */
     public Style(ILayer layer, boolean addDefaultRule) {
         rules = new ArrayList<Rule>();
         this.layer = layer;
@@ -80,6 +87,14 @@ public final class Style implements SymbolizerNode {
         }
     }
 
+    /**
+     * Build a new {@code Style} from the given se file and associated to the
+     * given {@code ILayer}.
+     * @param layer
+     * @param seFile
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     * If the SE file can't be read or is not valid against the XML schemas.
+     */
     public Style(ILayer layer, String seFile) throws InvalidStyle {
         rules = new ArrayList<Rule>();
         this.layer = layer;
@@ -124,12 +139,26 @@ public final class Style implements SymbolizerNode {
 
     }
 
+    /**
+     * Build a new {@code Style} associated to the given {@code ILayer} from the
+     * given {@code JAXBElement<StyleType>}.
+     * @param ftst
+     * @param layer
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     */
     public Style(JAXBElement<StyleType> ftst, ILayer layer) throws InvalidStyle {
         rules = new ArrayList<Rule>();
         this.layer = layer;
         this.setFromJAXB(ftst);
     }
 
+    /**
+     * Build a new {@code Style} associated to the given {@code ILayer} from the
+     * given {@code StyleType}.
+     * @param fts
+     * @param layer
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle
+     */
     public Style(StyleType fts, ILayer layer) throws InvalidStyle {
         rules = new ArrayList<Rule>();
         this.layer = layer;
@@ -194,6 +223,10 @@ public final class Style implements SymbolizerNode {
         this.rules.clear();
     }
 
+    /**
+     * Export this {@code Style} to the given SE file, in XML format.
+     * @param seFile
+     */
     public void export(String seFile) {
         try {
             JAXBContext jaxbContext = Services.JAXBCONTEXT;
@@ -207,6 +240,10 @@ public final class Style implements SymbolizerNode {
         }
     }
 
+    /**
+     * Gets a JAXB representation of this {@code Style}.
+     * @return
+     */
     public JAXBElement<StyleType> getJAXBElement() {
         StyleType ftst = new StyleType();
 
@@ -267,8 +304,6 @@ public final class Style implements SymbolizerNode {
                 }
             }
         }
-
-        Collections.sort(layerSymbolizers);
     }
 
     public void resetSymbolizerLevels() {
@@ -286,10 +321,18 @@ public final class Style implements SymbolizerNode {
         }
     }
 
+    /**
+     * Gets the {@code Layer} associated to this {@code Style}.
+     * @return
+     */
     public ILayer getLayer() {
         return layer;
     }
 
+    /**
+     * Sets the {@code Layer} associated to this {@code Style}.
+     * @param layer
+     */
     public void setLayer(ILayer layer) {
         this.layer = layer;
     }
@@ -309,18 +352,35 @@ public final class Style implements SymbolizerNode {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    /**
+     * Gets the name of this Style.
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+    * Sets the name of this Style.
+    * @param name
+    */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * Gets the list of {@link Rule} contained in this Style.
+     * @return
+     */
     public List<Rule> getRules() {
         return rules;
     }
 
+    /**
+     * Moves the ith {@link Rule} to position i-1 in the list of rules.
+     * @param i
+     * @return
+     */
     public boolean moveRuleUp(int i) {
         try {
             if (i > 0) {
@@ -333,6 +393,11 @@ public final class Style implements SymbolizerNode {
         return false;
     }
 
+    /**
+     * Moves the ith {@link Rule} to position i+1 in the list of rules.
+     * @param i
+     * @return
+     */
     public boolean moveRuleDown(int i) {
         try {
             if (i < rules.size() - 1) {
@@ -346,6 +411,10 @@ public final class Style implements SymbolizerNode {
         return false;
     }
 
+    /**
+     * Add a {@link Rule} to this {@code Style}.
+     * @param r
+     */
     public void addRule(Rule r) {
         if (r != null) {
             r.setParent(this);
@@ -353,6 +422,11 @@ public final class Style implements SymbolizerNode {
         }
     }
 
+    /**
+     * Add a {@link Rule} to this {@code Style} at position {@code index}.
+     * @param index
+     * @param r
+     */
     public void addRule(int index, Rule r) {
         if (r != null) {
             r.setParent(this);
@@ -360,6 +434,11 @@ public final class Style implements SymbolizerNode {
         }
     }
 
+    /**
+     * Delete the ith {@link Rule} from this {@code Style}.
+     * @param i
+     * @return
+     */
     public boolean deleteRule(int i) {
         try {
             rules.remove(i);
@@ -378,6 +457,16 @@ public final class Style implements SymbolizerNode {
         return hs;
     }
 
+    @Override
+    public UsedAnalysis getUsedAnalysis(){
+            //We get an empty UsedAnalysis - we'll merge everything.
+            UsedAnalysis ua = new UsedAnalysis();
+            for(Rule r : rules){
+                    ua.merge(r.getUsedAnalysis());
+            }
+            return ua;
+    }
+
     /**
      *
      * @return
@@ -392,6 +481,48 @@ public final class Style implements SymbolizerNode {
      * @param visible
      */
     public void setVisible(boolean visible) {
+        boolean oldValue = this.visible;
         this.visible = visible;
+        propertyChangeSupport.firePropertyChange(PROP_VISIBLE, oldValue, visible);
     }
+    
+
+    /**
+    * Add a property-change listener for all properties.
+    * The listener is called for all properties.
+    * @param listener The PropertyChangeListener instance
+    * @note Use EventHandler.create to build the PropertyChangeListener instance
+    */
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(listener);
+    }
+    
+    /**
+    * Add a property-change listener for a specific property.
+    * The listener is called only when there is a change to 
+    * the specified property.
+    * @param prop The static property name PROP_..
+    * @param listener The PropertyChangeListener instance
+    * @note Use EventHandler.create to build the PropertyChangeListener instance
+    */
+    public void addPropertyChangeListener(String prop,PropertyChangeListener listener) {
+        propertyChangeSupport.addPropertyChangeListener(prop, listener);
+    }
+    
+    /**
+    * Remove the specified listener from the list
+    * @param listener The listener instance
+    */
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(listener);
+    }
+
+    /**
+    * Remove the specified listener for a specified property from the list
+    * @param prop The static property name PROP_..
+    * @param listener The listener instance
+    */
+    public void removePropertyChangeListener(String prop,PropertyChangeListener listener) {
+        propertyChangeSupport.removePropertyChangeListener(prop,listener);
+    }    
 }

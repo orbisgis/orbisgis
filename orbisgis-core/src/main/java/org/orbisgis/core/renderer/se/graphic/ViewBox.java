@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,22 +23,22 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.geom.Point2D;
 import java.util.HashSet;
-import org.gdms.data.DataSource;
+import java.util.Map;
 import net.opengis.se._2_0.core.ViewBoxType;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -62,7 +55,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * and width.</p>
  * <p>The values given for the height and the width can be negative. If that
  * happens, the coordinate of the rendered graphic will be flipped.
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public final class ViewBox implements SymbolizerNode {
         
@@ -180,27 +173,35 @@ public final class ViewBox implements SymbolizerNode {
             return hs;
         }
 
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+            UsedAnalysis ua = new UsedAnalysis();
+            ua.include(x);
+            ua.include(y);
+            return ua;
+        }
+
         /**
          * Return the final dimension described by this view box, in [px].
-         * @param ds DataSource, i.e. the layer
-         * @param fid feature id
+         * @param ds map
          * @param ratio required final ratio (if either width or height isn't defined)
          * @return
          * @throws ParameterException
          */
-        public Point2D getDimensionInPixel(DataSource sds, long fid, double height, double width, Double scale, Double dpi) throws ParameterException {
+        public Point2D getDimensionInPixel(Map<String,Value> map, double height,
+                    double width, Double scale, Double dpi) throws ParameterException {
                 double dx, dy;
 
                 double ratio = height / width;
 
                 if (x != null && y != null) {
-                        dx = x.getValue(sds, fid);
-                        dy = y.getValue(sds, fid);
+                        dx = x.getValue(map);
+                        dy = y.getValue(map);
                 } else if (x != null) {
-                        dx = x.getValue(sds, fid);
+                        dx = x.getValue(map);
                         dy = dx * ratio;
                 } else if (y != null) {
-                        dy = y.getValue(sds, fid);
+                        dy = y.getValue(map);
                         dx = dy / ratio;
                 } else { // nothing is defined
                         dx = width;

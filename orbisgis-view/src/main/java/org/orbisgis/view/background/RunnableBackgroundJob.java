@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,14 +23,15 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.view.background;
 
 import org.apache.log4j.Logger;
 import org.orbisgis.progress.ProgressMonitor;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * This class is a basic {@link Runnable} that will do two things in its {@code
@@ -40,10 +42,10 @@ import org.orbisgis.progress.ProgressMonitor;
  * <p>This class is meanginful particularly when no other threads are run by
  * the inner {@code Job}. It will indeed be easier to avoid race conditions
  * caused by some mismanagement in the {@code BackgroundManager}.</p>
- * @author alexis
+ * @author Alexis Guéganno
  */
 public class RunnableBackgroundJob implements Runnable {
-
+        protected final static I18n I18N = I18nFactory.getI18n(RunnableBackgroundJob.class);
 	private Job job;
 	private ProgressMonitor pm;
 	private BackgroundManager jobQueue;
@@ -63,13 +65,15 @@ public class RunnableBackgroundJob implements Runnable {
 		this.jobQueue = jobQueue;
 	}
 
+        @Override
 	public synchronized void run() {
 		try {
 			job.run(pm);
 		} catch (Throwable t) {
-			LOGGER.error(t.getMessage(), t);
-		}
-		jobQueue.processFinished(job.getId());
+			LOGGER.error(I18N.tr("Fatal error on the job named {0}",job.getTaskName()),t);
+		} finally {
+                        jobQueue.processFinished(job.getId());
+                }
 	}
 
 }

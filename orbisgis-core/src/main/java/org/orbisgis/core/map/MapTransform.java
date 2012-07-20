@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
- * 
- *  Team leader Erwan BOCHER, scientific researcher,
- * 
- *  User support leader : Gwendall Petit, geomatic engineer.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,10 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.map;
 
@@ -395,6 +386,27 @@ public class MapTransform implements PointTransformation {
         }
 
         /**
+         * Sets the scale denominator, the Map extent is updated
+         */
+        public void setScaleDenominator(double denominator) throws IllegalArgumentException {
+                if (adjustedExtent != null) {
+                        double currentScale = getScaleDenominator();
+                        Coordinate center = getExtent().centre();
+                        double expandFactor = (denominator/currentScale);
+                        Envelope nextScaleEnvelope = new Envelope(center);
+                        nextScaleEnvelope.expandBy(expandFactor*getExtent().getWidth()/2.,expandFactor*getExtent().getHeight()/2.);
+                        setExtent(nextScaleEnvelope);
+                }
+        }
+        /**
+         * 
+         * @return The Image width in meter
+         */
+        private double getImageMeters() {
+                double metersByPixel = 0.0254 / dpi;
+                return getWidth() * metersByPixel;
+        }
+        /**
          * Gets the scale denominator. If the scale is 1:1000 this method returns
          * 1000. The scale is not absolutely precise and errors of 2% have been
          * measured.
@@ -405,10 +417,7 @@ public class MapTransform implements PointTransformation {
                 if (adjustedExtent == null) {
                         return 0;
                 } else {
-                        double metersByPixel = 0.0254 / dpi;
-                        double imageMeters = getWidth() * metersByPixel;
-
-                        return adjustedExtent.getWidth() / imageMeters;
+                        return adjustedExtent.getWidth() / getImageMeters();
                 }
         }
 

@@ -1,18 +1,43 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
+ *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se.label;
 
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LabelType;
 import net.opengis.se._2_0.core.LineLabelType;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.PointLabelType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -27,7 +52,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  * a label - If not it won't be displayed.</p>
  * <p>A Label instance contains a text value (as a StyledText) and informations 
  * about its alignment, vertical or horizontal.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public abstract class Label implements SymbolizerNode, UomNode {
 
@@ -314,8 +339,7 @@ public abstract class Label implements SymbolizerNode, UomNode {
     /**
      * Draw this {@code Label} in {@code g2}.
      * @param g2
-     * @param sds
-     * @param fid
+     * @param feat
      * @param shp
      * @param selected
      * @param mt
@@ -323,7 +347,7 @@ public abstract class Label implements SymbolizerNode, UomNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, DataSource sds, long fid,
+    public abstract void draw(Graphics2D g2, Map<String, Value> feat,
             Shape shp, boolean selected, MapTransform mt, RenderContext perm)
             throws ParameterException, IOException;
 

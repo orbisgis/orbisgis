@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,13 +23,12 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
-
 package org.orbisgis.view.main.frames;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.beans.EventHandler;
@@ -46,7 +46,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Host of the {@link DockStation}s, this frame contain 
- * all other dockable frames
+ * all other dockable frames.
  */
 public class MainFrame extends JFrame {
         protected final static I18n i18n = I18nFactory.getI18n(MainFrame.class);
@@ -67,11 +67,13 @@ public class MainFrame extends JFrame {
          * @param dockingManager 
 	 */
 	public MainFrame(){
+                getContentPane().setLayout(new BorderLayout());
 		setTitle( i18n.tr("OrbisGIS version {0} La Rochelle {1}", getClass().getPackage().getImplementationVersion(),Locale.getDefault().getCountry()));
                 setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
 		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis")); 
                 createMenu();
                 this.setJMenuBar(menuBar.getRootBar());
+                getContentPane().add(new MainFrameStatusBar(),BorderLayout.SOUTH);
 	}
 
         public void setDockingManager(DockingManager dockingManager) {
@@ -100,13 +102,13 @@ public class MainFrame extends JFrame {
         }
         /**
          * 
-         * @return The menubar manager
+         * @return The menu bar manager
          */
         public MenuBarManager getMenuBarManager() {
             return menuBar;
         }
         /**
-         * The user click on preferencies menu item
+         * The user click on preferences menu item
          */
         public void onMenuShowPreferencies() {
             dockingManager.showPreferenceDialog();

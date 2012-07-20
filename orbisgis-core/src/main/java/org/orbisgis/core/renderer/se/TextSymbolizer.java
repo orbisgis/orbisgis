@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,10 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se;
 
@@ -44,10 +35,12 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TextSymbolizerType;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -58,6 +51,7 @@ import org.orbisgis.core.renderer.se.label.Label;
 import org.orbisgis.core.renderer.se.label.PointLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -69,7 +63,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * original geometry</li>
  * <li>A {@link Label} that gathers all the informations needed to print the 
  * text. This element is compulsory.</li></ul>
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public final class TextSymbolizer extends VectorSymbolizer {
 
@@ -160,21 +154,19 @@ public final class TextSymbolizer extends VectorSymbolizer {
         public void draw(Graphics2D g2, DataSource sds, long fid,
                 boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
                 throws ParameterException, IOException, DriverException {
-
                 Shape shape = this.getShape(sds, fid, mt, the_geom, false);
-
-
+                Map<String,Value> map = getFeaturesMap(sds, fid);
                 if (shape != null) {
                         List<Shape> shps;
                         if (perpendicularOffset != null) {
-                                Double pOffset = perpendicularOffset.getValue(sds, fid);
+                                Double pOffset = perpendicularOffset.getValue(map);
                                 shps = ShapeHelper.perpendicularOffset(shape, pOffset);
                         } else {
                                 shps = new LinkedList<Shape>();
                                 shps.add(shape);
                         }
                         for (Shape s : shps) {
-                                label.draw(g2, sds, fid, s, selected, mt, perm);
+                                label.draw(g2, map, s, selected, mt, perm);
                         }
                 }
 
@@ -216,6 +208,18 @@ public final class TextSymbolizer extends VectorSymbolizer {
                 }
                 if (label != null) {
                         ret.addAll(label.dependsOnFeature());
+                }
+                return ret;
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis ret = new UsedAnalysis();
+                if (perpendicularOffset != null) {
+                        ret.include(perpendicularOffset);
+                }
+                if (label != null) {
+                        ret.merge(label.getUsedAnalysis());
                 }
                 return ret;
         }

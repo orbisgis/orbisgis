@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
- * 
- *  Team leader Erwan BOCHER, scientific researcher,
- * 
- *  User support leader : Gwendall Petit, geomatic engineer.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,9 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info@orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.layerModel;
 
@@ -193,10 +185,10 @@ public final class OwsMapContext extends BeanMapContext {
                 return super.getSelectedLayers();
         }
 
-        @Override
-        public void setSelectedStyles(ArrayList<Style> selectedRules) {
-                checkIsOpen();
-                super.setSelectedStyles(selectedRules.toArray(new Style[0]));
+	@Override
+	public void setSelectedStyles(Style[] selectedStyles) {
+		checkIsOpen();
+		super.setSelectedStyles(selectedStyles);
                 //DEPRECATED LISTENERS
                 for (MapContextListener listener : listeners) {
                         listener.layerSelectionChanged(this);
@@ -490,7 +482,7 @@ public final class OwsMapContext extends BeanMapContext {
          */
         private void parseJaxbLayer(LayerType lt, ILayer parentLayer) throws LayerException {
                 //Test if lt is a group
-                if (!lt.getLayer().isEmpty() || (lt.getStyleList() == null && lt.getDataURL() == null)) {
+                if(!lt.getLayer().isEmpty() || (lt.getDataURL()==null )) {
                         //it will create a LayerCollection
                         parseJaxbLayerCollection(lt, parentLayer);
                 } else {
@@ -517,6 +509,7 @@ public final class OwsMapContext extends BeanMapContext {
                                 try {
                                         ILayer leafLayer = createLayer(layerSource);
                                         leafLayer.setDescription(new Description(lt));
+                                        leafLayer.setVisible(!lt.isHidden());
                                         //Parse styles
                                         if(lt.isSetStyleList()) {
                                                 for(StyleType st : lt.getStyleList().getStyle()) {
@@ -590,9 +583,9 @@ public final class OwsMapContext extends BeanMapContext {
                 open = true;
                 this.activeLayer = null;
                 //Read the specified jaxbMapContext
-                setSelectedLayers(new ILayer[]{});
-                setSelectedStyles(new ArrayList<Style>());
-
+                setSelectedLayers(new ILayer[0]);
+                setSelectedStyles(new Style[0]);
+                
                 loadOwsContext();
                 jaxbMapContext = null;
 

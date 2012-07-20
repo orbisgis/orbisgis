@@ -1,44 +1,34 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
  *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
- *
+ * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * info_at_ orbisgis.org
  */
-
 package org.orbisgis.view.map.tools.generated;
 
 import java.awt.Graphics;
-import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
@@ -50,7 +40,7 @@ public abstract class Multipolygon implements Automaton {
         protected final static I18n I18N = I18nFactory.getI18n(Multipolygon.class);
 	private static Logger logger = Logger.getLogger(Multipolygon.class);
 
-	private String status = "Standby";
+	private Status status = Status.STANDBY;
 
 	private MapContext ec;
 
@@ -63,52 +53,26 @@ public abstract class Multipolygon implements Automaton {
 
         @Override
 	public String[] getTransitionLabels() {
-		ArrayList<String> ret = new ArrayList<String>();
-
-		if ("Standby".equals(status)) {
-
-			ret.add(I18N.tr("Cancel"));
-
-			ret.add(I18N.tr("Terminate multipolygon"));
-
-		}
-
-		if ("Point".equals(status)) {
-
-			ret.add(I18N.tr("Cancel"));
-
-			ret.add(I18N.tr("Terminate polygon"));
-
-			ret.add(I18N.tr("Terminate multipolygon"));
-
-		}
-
-		return ret.toArray(new String[0]);
+                switch(status){
+                        case STANDBY:
+                                return new String[]{I18N.tr("Cancel"),I18N.tr("Terminate multipolygon")};
+                        case POINT :
+                                return new String[]{I18N.tr("Cancel"),I18N.tr("Terminate polygon"),I18N.tr("Terminate multipolygon")};
+                        default :
+                                return new String[0];
+                }
 	}
 
         @Override
-	public String[] getTransitionCodes() {
-		ArrayList<String> ret = new ArrayList<String>();
-
-		if ("Standby".equals(status)) {
-
-			ret.add("esc");
-
-			ret.add("t");
-
-		}
-
-		if ("Point".equals(status)) {
-
-			ret.add("esc");
-
-			ret.add("p");
-
-			ret.add("t");
-
-		}
-
-		return ret.toArray(new String[0]);
+	public Code[] getTransitionCodes() {
+                switch(status){
+                        case STANDBY:
+                                return new Code[]{Code.ESC, Code.TERMINATE};
+                        case POINT :
+                                return new Code[]{Code.ESC, Code.P, Code.TERMINATE};
+                        default :
+                                return new Code[]{};
+                }
 	}
 
         @Override
@@ -117,7 +81,7 @@ public abstract class Multipolygon implements Automaton {
 		logger.info("status: " + status);
 		this.ec = ec;
 		this.tm = tm;
-		status = "Standby";
+		status = Status.STANDBY;
 		transitionTo_Standby(ec, tm);
 		if (isFinished(status)) {
 			throw new FinishedAutomatonException();
@@ -125,235 +89,192 @@ public abstract class Multipolygon implements Automaton {
 	}
 
         @Override
-	public void transition(String code) throws NoSuchTransitionException,
+	public void transition(Code code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
 		logger.info("transition code: " + code);
-
-		if ("Standby".equals(status)) {
-
-			if ("press".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "Point";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_Point(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-			if ("t".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "Done";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_Done(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-		}
-
-		if ("Point".equals(status)) {
-
-			if ("press".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "Point";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_Point(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-			if ("p".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "Line";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_Line(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-			if ("t".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "Done";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_Done(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-		}
-
-		if ("Line".equals(status)) {
-
-			if ("init".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "Standby";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_Standby(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-		}
-
-		if ("Done".equals(status)) {
-
-			if ("init".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "Standby";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_Standby(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-		}
-
-		if ("esc".equals(code)) {
-			status = "Cancel";
-			transitionTo_Cancel(ec, tm);
-			if (isFinished(status)) {
-				throw new FinishedAutomatonException();
-			}
-			return;
-		}
-
-		throw new NoSuchTransitionException(code);
+                Status preStatus;
+                switch(status){
+                        case STANDBY:
+                                if (Code.PRESS.equals(code)) {
+                                        preStatus = status;
+                                        try {
+                                                status = Status.POINT;
+                                                logger.info("status: " + status);
+                                                double[] v = tm.getValues();
+                                                for (int i = 0; i < v.length; i++) {
+                                                        logger.info("value: " + v[i]);
+                                                }
+                                                transitionTo_Point(ec, tm);
+                                                if (isFinished(status)) {
+                                                        throw new FinishedAutomatonException();
+                                                }
+                                        } catch (TransitionException e) {
+                                                status = preStatus;
+                                                throw e;
+                                        }
+                                } else if (Code.TERMINATE.equals(code)) {
+                                        preStatus = status;
+                                        try {
+                                                status = Status.DONE;
+                                                logger.info("status: " + status);
+                                                double[] v = tm.getValues();
+                                                for (int i = 0; i < v.length; i++) {
+                                                        logger.info("value: " + v[i]);
+                                                }
+                                                transitionTo_Done(ec, tm);
+                                                if (isFinished(status)) {
+                                                        throw new FinishedAutomatonException();
+                                                }
+                                        } catch (TransitionException e) {
+                                                status = preStatus;
+                                                throw e;
+                                        }
+                                }
+                                break;
+                        case POINT :
+                                switch(code){
+                                        case PRESS :
+                                                preStatus = status;
+                                                try {
+                                                        status = Status.POINT;
+                                                        logger.info("status: " + status);
+                                                        double[] v = tm.getValues();
+                                                        for (int i = 0; i < v.length; i++) {
+                                                                logger.info("value: " + v[i]);
+                                                        }
+                                                        transitionTo_Point(ec, tm);
+                                                        if (isFinished(status)) {
+                                                                throw new FinishedAutomatonException();
+                                                        }
+                                                } catch (TransitionException e) {
+                                                        status = preStatus;
+                                                        throw e;
+                                                }
+                                                break;
+                                        case P :
+                                                preStatus = status;
+                                                try {
+                                                        status = Status.LINE;
+                                                        logger.info("status: " + status);
+                                                        double[] v = tm.getValues();
+                                                        for (int i = 0; i < v.length; i++) {
+                                                                logger.info("value: " + v[i]);
+                                                        }
+                                                        transitionTo_Line(ec, tm);
+                                                        if (isFinished(status)) {
+                                                                throw new FinishedAutomatonException();
+                                                        }
+                                                } catch (TransitionException e) {
+                                                        status = preStatus;
+                                                        throw e;
+                                                }
+                                                break;
+                                        case TERMINATE:
+                                                preStatus = status;
+                                                try {
+                                                        status = Status.DONE;
+                                                        logger.info("status: " + status);
+                                                        double[] v = tm.getValues();
+                                                        for (int i = 0; i < v.length; i++) {
+                                                                logger.info("value: " + v[i]);
+                                                        }
+                                                        transitionTo_Done(ec, tm);
+                                                        if (isFinished(status)) {
+                                                                throw new FinishedAutomatonException();
+                                                        }
+                                                } catch (TransitionException e) {
+                                                        status = preStatus;
+                                                        throw e;
+                                                }
+                                                break;
+                                }
+                                break;
+                        case LINE :
+                                if (Code.INIT.equals(code)) {
+                                        preStatus = status;
+                                        try {
+                                                status = Status.STANDBY;
+                                                logger.info("status: " + status);
+                                                double[] v = tm.getValues();
+                                                for (int i = 0; i < v.length; i++) {
+                                                        logger.info("value: " + v[i]);
+                                                }
+                                                transitionTo_Standby(ec, tm);
+                                                if (isFinished(status)) {
+                                                        throw new FinishedAutomatonException();
+                                                }
+                                        } catch (TransitionException e) {
+                                                status = preStatus;
+                                                throw e;
+                                        }
+                                }
+                                break;
+                        case DONE :
+                                if ("init".equals(code)) {
+                                        preStatus = status;
+                                        try {
+                                                status = Status.STANDBY;
+                                                logger.info("status: " + status);
+                                                double[] v = tm.getValues();
+                                                for (int i = 0; i < v.length; i++) {
+                                                        logger.info("value: " + v[i]);
+                                                }
+                                                transitionTo_Standby(ec, tm);
+                                                if (isFinished(status)) {
+                                                        throw new FinishedAutomatonException();
+                                                }
+                                        } catch (TransitionException e) {
+                                                status = preStatus;
+                                                throw e;
+                                        }
+                                }
+                                break;
+                        default :
+                                if (Code.ESC.equals(code)) {
+                                        status = Status.CANCEL;
+                                        transitionTo_Cancel(ec, tm);
+                                        if (isFinished(status)) {
+                                                throw new FinishedAutomatonException();
+                                        }
+                                } else {
+                                        throw new NoSuchTransitionException(code.toString());
+                                }
+                }
 	}
 
-	public boolean isFinished(String status) {
-
-		if ("Standby".equals(status)) {
-
-			return false;
-
-		}
-
-		if ("Point".equals(status)) {
-
-			return false;
-
-		}
-
-		if ("Line".equals(status)) {
-
-			return false;
-
-		}
-
-		if ("Done".equals(status)) {
-
-			return false;
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-			return true;
-
-		}
-
-		throw new RuntimeException("Invalid status: " + status);
+	public boolean isFinished(Status status) {
+                switch (status) {
+                        case STANDBY:
+                        case POINT :
+                        case LINE :
+                        case DONE :
+                                return false;
+                        case CANCEL :
+                                return true;
+                        default:
+                                throw new RuntimeException("Invalid status: " + status);
+                }
 	}
 
         @Override
 	public void draw(Graphics g) throws DrawingException {
-
-		if ("Standby".equals(status)) {
-			drawIn_Standby(g, ec, tm);
-		}
-
-		if ("Point".equals(status)) {
-			drawIn_Point(g, ec, tm);
-		}
-
-		if ("Line".equals(status)) {
-			drawIn_Line(g, ec, tm);
-		}
-
-		if ("Done".equals(status)) {
-			drawIn_Done(g, ec, tm);
-		}
-
-		if ("Cancel".equals(status)) {
-			drawIn_Cancel(g, ec, tm);
-		}
+                switch(status){
+                        case STANDBY:
+                                drawIn_Standby(g, ec, tm);
+                                break;
+                        case POINT :
+                                drawIn_Point(g, ec, tm);
+                                break;
+                        case LINE :
+                                drawIn_Line(g, ec, tm);
+                                break;
+                        case DONE :
+                                drawIn_Done(g, ec, tm);
+                                break;
+                        case CANCEL:
+                                drawIn_Cancel(g, ec, tm);
+                                break;
+                }
 
 	}
 
@@ -387,11 +308,11 @@ public abstract class Multipolygon implements Automaton {
 	public abstract void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException;
 
-	protected void setStatus(String status) throws NoSuchTransitionException {
+	protected void setStatus(Status status) throws NoSuchTransitionException {
 		this.status = status;
 	}
 
-	public String getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 
@@ -401,28 +322,18 @@ public abstract class Multipolygon implements Automaton {
 	}
 
 	public String getMessage() {
-
-		if ("Standby".equals(status)) {
-			return I18N.tr("Select the first point/terminate multipolygon");
-		}
-
-		if ("Point".equals(status)) {
-			return I18N.tr("Select the next point/terminate polygon/terminate multipolygon");
-		}
-
-		if ("Line".equals(status)) {
-			return "";
-		}
-
-		if ("Done".equals(status)) {
-			return "";
-		}
-
-		if ("Cancel".equals(status)) {
-			return "";
-		}
-
-		throw new RuntimeException();
+                switch(status){
+                        case STANDBY:
+                                return I18N.tr("Select the first point/terminate multipolygon");
+                        case POINT :
+                                return I18N.tr("Select the next point/terminate polygon/terminate multipolygon");
+                        case LINE :
+                        case DONE :
+                        case CANCEL :
+                                return "";
+                        default :
+                                throw new RuntimeException();
+                }
 	}
 
 	public String getConsoleCommand() {
@@ -436,6 +347,7 @@ public abstract class Multipolygon implements Automaton {
 
 	private ImageIcon mouseCursor;
 
+        @Override
 	public ImageIcon getImageIcon() {
 		if (mouseCursor != null) {
 			return mouseCursor;
@@ -452,13 +364,9 @@ public abstract class Multipolygon implements Automaton {
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
-
-		if ("Point".equals(status)) {
-
-			transition("t");
-
+		if (Status.POINT.equals(status)) {
+			transition(Code.TERMINATE);
 		}
-
 	}
 
         @Override

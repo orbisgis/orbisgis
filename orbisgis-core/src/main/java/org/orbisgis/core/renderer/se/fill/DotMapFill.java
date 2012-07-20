@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,10 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se.fill;
 
@@ -46,19 +37,21 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Random;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.thematic.DotMapFillType;
 import net.opengis.se._2_0.thematic.ObjectFactory;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.orbisgis.core.Services;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.xnap.commons.i18n.I18n;
@@ -71,7 +64,7 @@ import org.xnap.commons.i18n.I18nFactory;
  *   * The quantity represented by a single dot<br/>
  *   * The total quantity to represent<br/>
  *   * The symbol associated to each single dot.
- * @author alexis
+ * @author Alexis Guéganno
  */
 public final class DotMapFill extends Fill implements GraphicNode {
 
@@ -175,27 +168,26 @@ public final class DotMapFill extends Fill implements GraphicNode {
      * @throws ParameterException
      */
     @Override
-    public Paint getPaint(long fid, DataSource sds,
+    public Paint getPaint(Map<String,Value> map,
             boolean selected, MapTransform mt) throws ParameterException {
         return null;
     }
 
     @Override
-    public void draw(Graphics2D g2, DataSource sds,
-            long fid, Shape shp, boolean selected, MapTransform mt)
+    public void draw(Graphics2D g2, Map<String,Value> map, Shape shp, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
 
-        //RenderedImage m = this.mark.getGraphic(sds, fid, selected, mt).createRendering(mt.getCurrentRenderContext());
+        //RenderedImage m = this.mark.getGraphic(map, selected, mt).createRendering(mt.getCurrentRenderContext());
 
 
         Double perMark = null;
         if (quantityPerMark != null) {
-            perMark = this.quantityPerMark.getValue(sds, fid);
+            perMark = this.quantityPerMark.getValue(map);
         }
 
         Double total = null;
         if (totalQuantity != null) {
-            total = this.totalQuantity.getValue(sds, fid);
+            total = this.totalQuantity.getValue(map);
         }
 
         if (perMark == null || total == null) {
@@ -212,7 +204,7 @@ public final class DotMapFill extends Fill implements GraphicNode {
         for (int i = 0; i < nb; i++) {
             Point2D.Double pos = findMarkPosition(area);
             if (pos != null) {
-                mark.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(pos.x, pos.y));
+                mark.draw(g2, map, selected, mt, AffineTransform.getTranslateInstance(pos.x, pos.y));
             } else {
                 LOGGER.error(I18N.tr("Could not find position for mark within area"));
             }
@@ -253,6 +245,17 @@ public final class DotMapFill extends Fill implements GraphicNode {
         }
 
         return ret;
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis ua = new UsedAnalysis();
+        if(mark != null){
+            ua.merge(mark.getUsedAnalysis());
+        }
+        ua.include(totalQuantity);
+        ua.include(quantityPerMark);
+        return ua;
     }
 
     @Override

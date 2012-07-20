@@ -1,14 +1,44 @@
+/**
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
+ *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
+ */
 package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Categorization is defined as the "transformation of continuous values to distinct values.
@@ -29,13 +59,15 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * @param <ToType> One of ColorParameter, RealParameter, StringParameter
  * @param <FallbackType> the Literal implementation of <ToType>. It is needed to store 
  * a default value, when an analyzed input can't be placed in any category.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  *
  */
 public abstract class Categorize<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter, LiteralListener {
 
     private static final String SD_FACTOR_KEY = "SdFactor";
     private static final String METHOD_KEY = "method";
+    private static final Logger LOGGER = Logger.getLogger(Categorize.class);
+    private static final I18n I18N = I18nFactory.getI18n(Categorize.class);
 
     private CategorizeMethod method;
     /**
@@ -310,7 +342,32 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
             }
 
         } catch (ParameterException ex) {
-            Logger.getLogger(Categorize.class.getName()).log(Level.WARNING, "Unable to categorize the feature", ex);
+            LOGGER.warn(I18N.tr("Unable to categorize the feature"), ex);
+        }
+        return fallbackValue;
+    }
+
+    protected ToType getParameter(Map<String, Value> map) {
+        try {
+            if (getNumClasses() > 1) {
+                double value = lookupValue.getValue(map);
+                Iterator<ToType> cIt = classValues.iterator();
+                Iterator<RealLiteral> tIt = thresholds.iterator();
+                ToType classValue = this.firstClass;
+                while (cIt.hasNext()) {
+                    double threshold = tIt.next().getValue(map);
+                    if ((!succeeding && value <= threshold) || ((value < threshold))) {
+                        return classValue;
+                    }
+                    classValue = cIt.next();
+                }
+                return classValue;
+            } else { // Means nbClass == 1
+                return firstClass;
+            }
+
+        } catch (ParameterException ex) {
+           LOGGER.debug("Unable to categorize the feature", ex);
         }
         return fallbackValue;
     }

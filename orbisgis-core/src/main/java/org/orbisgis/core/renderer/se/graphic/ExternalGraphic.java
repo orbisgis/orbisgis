@@ -1,3 +1,31 @@
+/**
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
+ *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
+ */
 package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.Graphics2D;
@@ -5,10 +33,11 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ExternalGraphicType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.UomNode;
@@ -18,6 +47,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.transform.Transform;
@@ -43,7 +73,7 @@ import org.orbisgis.core.renderer.se.transform.Transform;
  * @todo Opacity not yet implemented !
  * 
  * @see MarkGraphic, Graphic, ViewBox
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class ExternalGraphic extends Graphic implements UomNode, TransformNode,
         ViewBoxNode {
@@ -210,19 +240,19 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     }
 
     @Override
-    public Rectangle2D getBounds(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
-        Rectangle2D.Double bounds = source.updateCacheAndGetBounds(viewBox, sds, fid, mt, mimeType);
+    public Rectangle2D getBounds(Map<String,Value> map, MapTransform mt) throws ParameterException, IOException {
+        Rectangle2D.Double bounds = source.updateCacheAndGetBounds(viewBox, map, mt, mimeType);
         double width = bounds.getWidth();
         double height = bounds.getHeight();
 
         AffineTransform at = null;
         if (transform != null) {
-            at = transform.getGraphicalAffineTransform(false, sds, fid, mt, width, height);
+            at = transform.getGraphicalAffineTransform(false, map, mt, width, height);
         }
 
         // reserve the place for halo
         if (halo != null) {
-            double r = halo.getHaloRadius(sds, fid, mt);
+            double r = halo.getHaloRadius(map, mt);
             width += 2 * r;
             height += 2 * r;
             double px = bounds.getMinX()-r;
@@ -242,29 +272,29 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     }
 
     @Override
-    public void draw(Graphics2D g2, DataSource sds, long fid,
+    public void draw(Graphics2D g2, Map<String,Value> map,
             boolean selected, MapTransform mt, AffineTransform fat) throws ParameterException, IOException {
 
 
-        Rectangle2D.Double bounds = source.updateCacheAndGetBounds(viewBox, sds, fid, mt, mimeType);
+        Rectangle2D.Double bounds = source.updateCacheAndGetBounds(viewBox, map, mt, mimeType);
 
         AffineTransform at = new AffineTransform(fat);
         double width = bounds.getWidth();
         double height = bounds.getHeight();
 
         if (transform != null) {
-            at.concatenate(transform.getGraphicalAffineTransform(false, sds, fid, mt, width, height));
+            at.concatenate(transform.getGraphicalAffineTransform(false, map, mt, width, height));
         }
 
         // reserve the place for halo
         if (halo != null) {
             // Draw it
-            halo.draw(g2, sds, fid, selected, at.createTransformedShape(bounds), mt, selected);
+            halo.draw(g2, map, selected, at.createTransformedShape(bounds), mt, selected);
         }
 
         double op = 1.0;
         if (opacity != null){
-            op = opacity.getValue(sds, fid);
+            op = opacity.getValue(map);
         }
 
         source.draw(g2, at, mt, op, mimeType);
@@ -277,7 +307,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     RenderedImage img;
 
     //if (graphic == null) {
-    img = source.getPlanarImage(viewBox, sds, fid, mt, mimeType);
+    img = source.getPlanarImage(viewBox, map, mt, mimeType);
     //} else {
     //    img = graphic;
     //}
@@ -291,7 +321,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
 
     AffineTransform at = new AffineTransform();
     if (transform != null){
-    at = transform.getGraphicalAffineTransform(false, sds, fid, mt, w, h);
+    at = transform.getGraphicalAffineTransform(false, map, mt, w, h);
     }
 
     double px = 0;
@@ -299,7 +329,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
 
     // reserve the place for halo
     if (halo != null) {
-    double r = halo.getHaloRadius(sds, fid, mt);
+    double r = halo.getHaloRadius(map, mt);
     w += 2 * r;
     h += 2 * r;
     px = r;
@@ -317,7 +347,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     RenderableGraphics rg = Graphic.getNewRenderableGraphics(imageSize, 0, mt);
 
     if (halo != null) {
-    halo.draw(rg, sds, fid, selected, atShp, mt, false);
+    halo.draw(rg, map, selected, atShp, mt, false);
     // and add a translation to center img on halo
     at.concatenate(AffineTransform.getTranslateInstance(px, py));
     }
@@ -335,7 +365,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     double delta = 0.0;
 
     if (this.halo != null) {
-    delta += halo.getHaloRadius(sds, fid, mt);
+    delta += halo.getHaloRadius(map, mt);
     }
 
     return delta;
@@ -348,13 +378,13 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     if (viewBox != null && viewBox.usable()) {
     RenderedImage img;
     if (graphic == null) {
-    img = source.getPlanarImage(viewBox, sds, fid, mt, mimeType);
+    img = source.getPlanarImage(viewBox, map, mt, mimeType);
     } else {
     img = graphic;
     }
 
     if (img != null){
-    Point2D dim = viewBox.getDimensionInPixel(sds, fid, img.getHeight(), img.getWidth(), mt.getScaleDenominator(), mt.getDpi());
+    Point2D dim = viewBox.getDimensionInPixel(map, img.getHeight(), img.getWidth(), mt.getScaleDenominator(), mt.getDpi());
 
     delta = Math.max(dim.getY(), dim.getX());
     }
@@ -363,7 +393,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     }
     }
 
-    delta += this.getMargin(sds, fid, mt);
+    delta += this.getMargin(map, mt);
 
     return delta;
     }*/
@@ -381,6 +411,25 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
         }
         if (viewBox != null) {
             ret.addAll(viewBox.dependsOnFeature());
+        }
+
+        return ret;
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis ret = new UsedAnalysis();
+        if (halo != null) {
+            ret.merge(halo.getUsedAnalysis());
+        }
+        if (opacity != null) {
+            ret.include(opacity);
+        }
+        if (transform != null) {
+            ret.merge(transform.getUsedAnalysis());
+        }
+        if (viewBox != null) {
+            ret.merge(viewBox.getUsedAnalysis());
         }
 
         return ret;

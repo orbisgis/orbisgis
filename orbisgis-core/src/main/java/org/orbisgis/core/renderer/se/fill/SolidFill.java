@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,13 +23,9 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
-
-
 package org.orbisgis.core.renderer.se.fill;
 
 import java.awt.Color;
@@ -44,14 +33,16 @@ import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.SolidFillType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
@@ -62,7 +53,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 /**
  * A solid fill fills a shape with a solid color (+opacity)
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public final class SolidFill extends Fill {
 
@@ -175,12 +166,12 @@ public final class SolidFill extends Fill {
         * @throws ParameterException
         */
 	@Override
-	public Paint getPaint(long fid, DataSource sds, boolean selected, MapTransform mt) throws ParameterException {
+	public Paint getPaint(Map<String,Value> map, boolean selected, MapTransform mt) throws ParameterException {
 
         Color c, ac; // ac stands 4 colour + alpha channel
 
 		if (color != null){
-			c = color.getColor(sds, fid);
+			c = color.getColor(map);
 		} else {
                         //We must cast the colours to int values, because we want to use 
                         //GRAY50 to build RGB value - As it equals 128.0f, we need a cast
@@ -189,7 +180,7 @@ public final class SolidFill extends Fill {
         }
 
 		if (this.opacity != null) {
-		    ac = ColorHelper.getColorWithAlpha(c, this.opacity.getValue(sds, fid));
+		    ac = ColorHelper.getColorWithAlpha(c, this.opacity.getValue(map));
 		} else {
             ac = c;
         }
@@ -205,8 +196,9 @@ public final class SolidFill extends Fill {
 	}
 
 	@Override
-	public void draw(Graphics2D g2, DataSource sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException {
-		g2.setPaint(getPaint(fid, sds, selected, mt));
+	public void draw(Graphics2D g2, Map<String,Value> map, Shape shp, boolean selected,
+            MapTransform mt) throws ParameterException {
+		g2.setPaint(getPaint(map, selected, mt));
 		g2.fill(shp);
 	}
 
@@ -228,8 +220,16 @@ public final class SolidFill extends Fill {
                     ret.addAll(opacity.dependsOnFeature());
                 }
             }
-                return ret;
+            return ret;
 	}
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis ua = new UsedAnalysis();
+        ua.include(color);
+        ua.include(opacity);
+        return ua;
+    }
 
 	@Override
 	public SolidFillType getJAXBType() {

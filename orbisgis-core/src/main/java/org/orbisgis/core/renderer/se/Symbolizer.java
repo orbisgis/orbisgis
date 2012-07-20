@@ -1,12 +1,44 @@
+/**
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
+ *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
+ */
 package org.orbisgis.core.renderer.se;
 
 import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
 import net.opengis.se._2_0.raster.RasterSymbolizerType;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -18,7 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  * This abstract class contains only the name, the way to retrieve the geometry
  * and a description of the symbolizer.
  * @todo Add a general draw method that fit well for vectors and raster; implement fetch default geometry
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public abstract class Symbolizer implements SymbolizerNode, Comparable {
 
@@ -35,6 +67,8 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
     //protected GeometryAttribute the_geom;
     private SymbolizerNode parent;
     protected int level;
+    private Set<String> features;
+    private Map<String,Value> featuresMap;
 
     /**
      * Build an empty Symbolizer, with the default name and no description.
@@ -62,7 +96,6 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         }
 
         if (t.getVersion() != null && !t.getVersion().value().equals(Symbolizer.VERSION)) {
-            System.out.println("Unsupported Style version!");
             throw new InvalidStyle("Unsupported version !");
         }
 
@@ -143,41 +176,6 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         this.level = level;
     }
 
-    /**
-     * Get the field where to retrieve the geometry in the associated data.
-     * @return 
-     * A {@link GeometryAttribute} that can be used to retrieve the geometry 
-     * values in the data.
-     */
-    /*public GeometryAttribute getGeometry() {
-        return the_geom;
-    }*/
-
-    /**
-     * Set the field where to retrieve the geometry in the associated data.
-     * @param theGeom 
-     */
-/*    public void setGeometry(GeometryAttribute theGeom) {
-        this.the_geom = theGeom;
-    }
-
-    /**
-     * Get the geometry registered at index fid.
-     * @param sds
-     * @param fid
-     * @return
-     * @throws DriverException
-     * @throws ParameterException 
-     */
-/*    public Geometry getTheGeom(SpatialDataSourceDecorator sds, long fid) throws DriverException, ParameterException {
-        if (the_geom != null) {
-            return the_geom.getTheGeom(sds, fid);
-        } else {
-            int fieldId = ShapeHelper.getGeometryFieldId(sds);
-            return sds.getFieldValue(fid, fieldId).getAsGeometry();
-        }
-    }*/
-
     @Override
     public SymbolizerNode getParent() {
         return parent;
@@ -229,7 +227,6 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         } else if (st.getDeclaredType() == RasterSymbolizerType.class) {
             return new RasterSymbolizer((JAXBElement<RasterSymbolizerType>) st);
         } else {
-            System.out.println("NULL => " + st.getDeclaredType());
             return null;
         }
     }
@@ -270,6 +267,30 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         }
 
         return (Rule) pIt;
+    }
+
+    /**
+     * Get the faetures that are needed to build this Symbolizer in a {@code
+     * Map<String,Value>}. This method is based on {@link
+     * SymbolizerNode#dependsOnFeature()}. Using the field names retrieved with
+     * this method, we serach for {@code Values} at index {@code fid} in {@code
+     * sds}.
+     * @param sds
+     * @param fid
+     * @return
+     * @throws DriverException
+     */
+    public Map<String,Value> getFeaturesMap(DataSource sds, long fid) throws DriverException{
+        if(features==null){
+            features = dependsOnFeature();
+        }
+        if(featuresMap == null){
+            featuresMap = new HashMap<String,Value>();
+        }
+        for(String s : features){
+            featuresMap.put(s, sds.getFieldValue(fid, sds.getFieldIndexByName(s)));
+        }
+        return featuresMap;
     }
 
     /**

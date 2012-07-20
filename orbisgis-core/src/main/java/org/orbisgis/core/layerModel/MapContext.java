@@ -1,21 +1,12 @@
 /**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC, scientific researcher, Fernando GONZALEZ
- * CORTES, computer engineer.
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -32,17 +23,15 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info@orbisgis.org
- **/
+ * info_at_ orbisgis.org
+ */
 package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.beans.PropertyChangeListener;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Style;
@@ -181,14 +170,14 @@ public interface MapContext {
 	public void removeMapContextListener(MapContextListener listener);
 
 	/**
-	 * Sets the selected layers. If the specified layers are not in the map
+	 * Sets the selected styles. If the specified layers are not in the map
 	 * context they are removed from selection.
 	 *
 	 * @param selectedLayers
 	 * @throws IllegalStateException
 	 *             If the map is closed
 	 */
-	public void setSelectedStyles(ArrayList<Style> selectedStyles)
+	public void setSelectedStyles(Style[] selectedStyles)
 			throws IllegalStateException;
 
 	/**

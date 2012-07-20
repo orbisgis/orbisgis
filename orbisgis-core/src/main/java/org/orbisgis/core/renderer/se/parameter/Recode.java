@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,13 +23,9 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
-
-
 package org.orbisgis.core.renderer.se.parameter;
 
 import java.awt.Color;
@@ -49,7 +38,7 @@ import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.RecodeType;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.orbisgis.core.Services;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -58,7 +47,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Recoding is defined as the "transformation of discrete values to any other values".
  * It is a way to map values of one type to values of another (but eventually the same)
  * type.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  * @param <ToType> One of the SeParameter child types.
  * @param <FallbackType> The literal type associated to ToType. it is used to define the default value,
  * when an input value can't be processed for whatever reason.
@@ -236,6 +225,30 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         String key = "";
         try {
             key = lookupValue.getValue(sds, fid);
+            ToType ret = getMapItemValue(key);
+            return ret == null ? fallbackValue : ret;
+        } catch (Exception e) {
+            LOGGER.error(I18N.tr("Fallback ({0})",key),e);
+            return fallbackValue;
+        }
+    }
+
+    /**
+    * Get the value associated to the key sored in {@code map}. The needed value
+    * will be retrieved using the 
+    * @param sds
+    * @param fid
+    * @return
+    * A {@code ToType} instance. If the feature found in {@code sds} at
+    * {@code fid} does not match anything in the underlying map, the {@code
+    * fallBackValue} is returned.</p>
+    * <p>If an error of any kind is catched, the {@code fallBackValue} is
+    * returned, and a message is print using the {@code Logger}.
+    */
+    public ToType getParameter(Map<String,Value> map) {
+        String key = "";
+        try {
+            key = lookupValue.getValue(map);
             ToType ret = getMapItemValue(key);
             return ret == null ? fallbackValue : ret;
         } catch (Exception e) {

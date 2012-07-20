@@ -1,44 +1,34 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
  *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
- *
+ * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * info_at_ orbisgis.org
  */
-
 package org.orbisgis.view.map.tools.generated;
 
 import java.awt.Graphics;
-import java.util.ArrayList;
 import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
@@ -51,7 +41,7 @@ public abstract class ZoomIn implements Automaton {
         protected final static I18n I18N = I18nFactory.getI18n(ZoomIn.class);
 	private static Logger logger = Logger.getLogger(ZoomIn.class);
 
-	private String status = "Standby";
+	private Status status = Status.STANDBY;
 
 	private MapContext ec;
 
@@ -64,48 +54,12 @@ public abstract class ZoomIn implements Automaton {
 
         @Override
 	public String[] getTransitionLabels() {
-		ArrayList<String> ret = new ArrayList<String>();
-
-		if ("Standby".equals(status)) {
-
-		}
-
-		if ("OnePointLeft".equals(status)) {
-
-		}
-
-		if ("RectangleDone".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
-		return ret.toArray(new String[0]);
+		return new String[0];
 	}
 
         @Override
-	public String[] getTransitionCodes() {
-		ArrayList<String> ret = new ArrayList<String>();
-
-		if ("Standby".equals(status)) {
-
-		}
-
-		if ("OnePointLeft".equals(status)) {
-
-		}
-
-		if ("RectangleDone".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
-		return ret.toArray(new String[0]);
+	public Code[] getTransitionCodes() {
+		return new Code[0];
 	}
 
         @Override
@@ -114,7 +68,7 @@ public abstract class ZoomIn implements Automaton {
 		logger.debug("status: " + status);
 		this.ec = ec;
 		this.tm = tm;
-		status = "Standby";
+		status = Status.STANDBY;
 		transitionTo_Standby(ec, tm);
 		if (isFinished(status)) {
 			throw new FinishedAutomatonException();
@@ -122,146 +76,113 @@ public abstract class ZoomIn implements Automaton {
 	}
 
         @Override
-	public void transition(String code) throws NoSuchTransitionException,
+	public void transition(Code code) throws NoSuchTransitionException,
 			TransitionException, FinishedAutomatonException {
 		logger.debug("transition code: " + code);
-
-		if ("Standby".equals(status)) {
-
-			if ("press".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "OnePointLeft";
-					logger.info("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_OnePointLeft(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-		}
-
-		if ("OnePointLeft".equals(status)) {
-
-			if ("release".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "RectangleDone";
-					logger.debug("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_RectangleDone(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-		}
-
-		if ("RectangleDone".equals(status)) {
-
-			if ("init".equals(code)) {
-				String preStatus = status;
-				try {
-					status = "Standby";
-					logger.debug("status: " + status);
-					double[] v = tm.getValues();
-					for (int i = 0; i < v.length; i++) {
-						logger.info("value: " + v[i]);
-					}
-					transitionTo_Standby(ec, tm);
-					if (isFinished(status)) {
-						throw new FinishedAutomatonException();
-					}
-					return;
-				} catch (TransitionException e) {
-					status = preStatus;
-					throw e;
-				}
-			}
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
-		if ("esc".equals(code)) {
-			status = "Cancel";
-			transitionTo_Cancel(ec, tm);
-			if (isFinished(status)) {
-				throw new FinishedAutomatonException();
-			}
-			return;
-		}
-
-		throw new NoSuchTransitionException(code);
+                Status preStatus;
+                switch(status){
+                        case STANDBY:
+                                if (Code.PRESS.equals(code)) {
+                                        preStatus = status;
+                                        try {
+                                                status = Status.ONE_POINT_LEFT;
+                                                logger.info("status: " + status);
+                                                double[] v = tm.getValues();
+                                                for (int i = 0; i < v.length; i++) {
+                                                        logger.info("value: " + v[i]);
+                                                }
+                                                transitionTo_OnePointLeft(ec, tm);
+                                                if (isFinished(status)) {
+                                                        throw new FinishedAutomatonException();
+                                                }
+                                        } catch (TransitionException e) {
+                                                status = preStatus;
+                                                throw e;
+                                        }
+                                }
+                                break;
+                        case ONE_POINT_LEFT:
+                                if (Code.RELEASE.equals(code)) {
+                                        preStatus = status;
+                                        try {
+                                                status = Status.RECTANGLE_DONE;
+                                                logger.debug("status: " + status);
+                                                double[] v = tm.getValues();
+                                                for (int i = 0; i < v.length; i++) {
+                                                        logger.info("value: " + v[i]);
+                                                }
+                                                transitionTo_RectangleDone(ec, tm);
+                                                if (isFinished(status)) {
+                                                        throw new FinishedAutomatonException();
+                                                }
+                                        } catch (TransitionException e) {
+                                                status = preStatus;
+                                                throw e;
+                                        }
+                                }
+                                break;
+                        case RECTANGLE_DONE:
+                                if (Code.INIT.equals(code)) {
+                                        preStatus = status;
+                                        try {
+                                                status = Status.STANDBY;
+                                                logger.debug("status: " + status);
+                                                double[] v = tm.getValues();
+                                                for (int i = 0; i < v.length; i++) {
+                                                        logger.info("value: " + v[i]);
+                                                }
+                                                transitionTo_Standby(ec, tm);
+                                                if (isFinished(status)) {
+                                                        throw new FinishedAutomatonException();
+                                                }
+                                        } catch (TransitionException e) {
+                                                status = preStatus;
+                                                throw e;
+                                        }
+                                }
+                                break;
+                        default:
+                               if ("esc".equals(code)) {
+                                        status = Status.CANCEL;
+                                        transitionTo_Cancel(ec, tm);
+                                        if (isFinished(status)) {
+                                                throw new FinishedAutomatonException();
+                                        }
+                                } else {
+                                        throw new NoSuchTransitionException(code.toString());
+                                }
+                }
 	}
 
-	public boolean isFinished(String status) {
-
-		if ("Standby".equals(status)) {
-
-			return false;
-
-		}
-
-		if ("OnePointLeft".equals(status)) {
-
-			return false;
-
-		}
-
-		if ("RectangleDone".equals(status)) {
-
-			return false;
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-			return true;
-
-		}
-
-		throw new RuntimeException("Invalid status: " + status);
+	public boolean isFinished(Status status) {
+                switch(status){
+                        case STANDBY:
+                        case ONE_POINT_LEFT:
+                        case RECTANGLE_DONE:
+                                return false;
+                        case CANCEL:
+                                return true;
+                        default:
+                                throw new RuntimeException("Invalid status: " + status);
+                }
 	}
 
         @Override
 	public void draw(Graphics g) throws DrawingException {
-
-		if ("Standby".equals(status)) {
-			drawIn_Standby(g, ec, tm);
-		}
-
-		if ("OnePointLeft".equals(status)) {
-			drawIn_OnePointLeft(g, ec, tm);
-		}
-
-		if ("RectangleDone".equals(status)) {
-			drawIn_RectangleDone(g, ec, tm);
-		}
-
-		if ("Cancel".equals(status)) {
-			drawIn_Cancel(g, ec, tm);
-		}
-
+                switch(status){
+                        case STANDBY:
+                                drawIn_Standby(g, ec, tm);
+                                break;
+                        case ONE_POINT_LEFT:
+                                drawIn_OnePointLeft(g, ec, tm);
+                                break;
+                        case RECTANGLE_DONE:
+                                drawIn_RectangleDone(g, ec, tm);
+                                break;
+                        case CANCEL:
+                                drawIn_Cancel(g, ec, tm);
+                                break;
+                }
 	}
 
 	public abstract void transitionTo_Standby(MapContext vc, ToolManager tm)
@@ -289,11 +210,11 @@ public abstract class ZoomIn implements Automaton {
 	public abstract void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException;
 
-	protected void setStatus(String status) throws NoSuchTransitionException {
+	protected void setStatus(Status status) throws NoSuchTransitionException {
 		this.status = status;
 	}
 
-	public String getStatus() {
+	public Status getStatus() {
 		return status;
 	}
 
@@ -303,24 +224,17 @@ public abstract class ZoomIn implements Automaton {
 	}
 
 	public String getMessage() {
-
-		if ("Standby".equals(status)) {
-			return I18N.tr("Select the first point of the zooming rectangle");
-		}
-
-		if ("OnePointLeft".equals(status)) {
-			return I18N.tr("Select the second point");
-		}
-
-		if ("RectangleDone".equals(status)) {
-			return "";
-		}
-
-		if ("Cancel".equals(status)) {
-			return "";
-		}
-
-		throw new RuntimeException();
+                switch(status){
+                        case STANDBY:
+                                return I18N.tr("Select the first point of the zooming rectangle");
+                        case ONE_POINT_LEFT:
+                                return I18N.tr("Select the second point");
+                        case RECTANGLE_DONE:
+                        case CANCEL:
+                                return "";
+                        default:
+                                throw new RuntimeException("Invalid status: " + status);
+                }
 	}
 
 	public String getConsoleCommand() {
@@ -351,30 +265,11 @@ public abstract class ZoomIn implements Automaton {
 	public void toolFinished(MapContext vc, ToolManager tm)
 			throws NoSuchTransitionException, TransitionException,
 			FinishedAutomatonException {
-
-		if ("Standby".equals(status)) {
-
-		}
-
-		if ("OnePointLeft".equals(status)) {
-
-		}
-
-		if ("RectangleDone".equals(status)) {
-
-		}
-
-		if ("Cancel".equals(status)) {
-
-		}
-
 	}
 
         @Override
 	public java.awt.Point getHotSpotOffset() {
-
 		return new java.awt.Point(8, 8);
-
 	}
 
 }

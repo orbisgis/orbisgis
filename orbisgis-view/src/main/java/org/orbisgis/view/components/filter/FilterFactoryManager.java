@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,9 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.view.components.filter;
 
@@ -44,12 +44,13 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.view.components.ContainerItemProperties;
+import org.orbisgis.view.components.button.CustomButton;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * Filter GUI and functionality is a generic concept of OrbisGIS GUI
+ * Filter GUI and functionality is a generic concept of OrbisGIS GUI.
  * This manager help to 
  *  - introduce easily a filtering system
  *  - show the same GUI for the same functionality over all frames
@@ -324,11 +325,8 @@ public class FilterFactoryManager<FilterInterface> {
      */
     private JButton makeRemoveFilterButton() {
         //Create a compact button
-        JButton removeFilterButton = new JButton(OrbisGISIcon.getIcon("delete"));
+        JButton removeFilterButton = new CustomButton(OrbisGISIcon.getIcon("delete"));
         removeFilterButton.setToolTipText(i18n.tr("Delete this filter"));
-        removeFilterButton.setMargin(new Insets(0, 0, 0, 0));
-        removeFilterButton.setBorderPainted(false);
-        removeFilterButton.setContentAreaFilled(false);
         return removeFilterButton;
     }
     /**
@@ -340,10 +338,7 @@ public class FilterFactoryManager<FilterInterface> {
         //This JPanel set the button at the top
         JPanel buttonAlignement = new JPanel(new BorderLayout());
         //Create a compact button
-        JButton addFilterButton = new JButton(OrbisGISIcon.getIcon("add_filter"));
-        addFilterButton.setMargin(new Insets(0, 0, 0, 0));
-        addFilterButton.setBorderPainted(false);
-        addFilterButton.setContentAreaFilled(false);
+        JButton addFilterButton = new CustomButton(OrbisGISIcon.getIcon("add_filter"));
         buttonAlignement.add(addFilterButton,BorderLayout.NORTH);
         //Toottip
         addFilterButton.setToolTipText(i18n.tr("Add a new filter"));

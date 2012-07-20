@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,9 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.context.main;
 
@@ -56,15 +56,30 @@ public class MainContext {
     private DataManager dataManager;
     private boolean debugMode;
     private LevelRangeFilter consoleFilter;
+    
+    /**
+     * Single parameter constructor
+     * Take use.home as a default application folder
+     * @param debugMode 
+     */
+    public MainContext(boolean debugMode) {
+            this(debugMode,null);
+    }
     /**
      * Constructor of the workspace
      * @param debugMode Use the Debug logging on console output
+     * @param customWorkspace Do not use a default folders for
+     * application initialisation
      */
-    public MainContext(boolean debugMode) {
+    public MainContext(boolean debugMode, CoreWorkspace customWorkspace ) {
         this.debugMode = debugMode;
+        if(customWorkspace!=null) {
+                coreWorkspace = customWorkspace;
+        } else {
+                coreWorkspace = new CoreWorkspace();
+        }
         //Redirect root logging to console
-        initConsoleLogger();      
-        coreWorkspace = new CoreWorkspace();
+        initConsoleLogger();
         initFileLogger(coreWorkspace);
         dataSourceFactory = new DataSourceFactory(coreWorkspace.getSourceFolder(), coreWorkspace.getTempFolder(), coreWorkspace.getPluginFolder());
         dataManager = new DefaultDataManager(dataSourceFactory);

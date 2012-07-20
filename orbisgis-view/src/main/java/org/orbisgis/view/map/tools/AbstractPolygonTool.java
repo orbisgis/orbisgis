@@ -1,38 +1,30 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
  *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
- *
+ * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.view.map.tools;
 
@@ -79,7 +71,7 @@ public abstract class AbstractPolygonTool extends Polygon implements
         points = ToolUtilities.removeDuplicated(points);
         if (points.size() < 3) {
             throw new TransitionException(
-                    I18N.tr("Polygons must have more than two points")); //$NON-NLS-1$
+                    I18N.tr("Polygons must have more than two points"));
         }
         ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points.clone();
         double firstX = points.get(0).x;
@@ -90,11 +82,11 @@ public abstract class AbstractPolygonTool extends Polygon implements
 
         if (!pol.isValid()) {
             throw new TransitionException(
-                    I18N.tr("Invalid polygon")); //$NON-NLS-1$
+                    I18N.tr("Invalid polygon"));
         }
         polygonDone(pol, vc, tm);
 
-        transition("init"); //$NON-NLS-1$
+        transition(Code.INIT);
     }
 
 
@@ -135,7 +127,7 @@ public abstract class AbstractPolygonTool extends Polygon implements
 
             if (!geom.isValid()) {
                 throw new DrawingException(
-                        I18N.tr("Invalid polygon")); //$NON-NLS-1$
+                        I18N.tr("Invalid polygon"));
             }
         }
     }

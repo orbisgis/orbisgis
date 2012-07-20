@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,9 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.view.main;
 
@@ -44,11 +44,13 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.JobQueue;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.joblist.JobsPanel;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.map.MapElement;
@@ -157,6 +159,13 @@ public class Core {
         //Add the view as a new Docking Panel
         dockManager.show(geoCatalog);
     }
+    
+    /**
+     * Create the Job processing information and control panel
+     */
+    private void makeJobsPanel() {
+            dockManager.show(new JobsPanel());
+    }
     /**
      * Load the built-ins editors factories
      */
@@ -203,6 +212,9 @@ public class Core {
         //Load the log panels
         makeLoggingPanels();
         
+        //Load the Job Panel
+        makeJobsPanel();
+        
         //Load the editor factories manager
         editors = new EditorManager(dockManager);
         
@@ -230,6 +242,7 @@ public class Core {
         /**
         * Change the state of the main frame in the swing thread
         */
+        @Override
         public void run(){
                 mainFrame.setVisible( true );                
                 backgroundManager.backgroundOperation(new ReadMapContextProcess());
@@ -252,6 +265,15 @@ public class Core {
      * Free all resources allocated by this object
      */
     public void dispose() {
+        //Close all running jobs
+        for(Job job : backgroundManager.getActiveJobs()) {
+                try {
+                        job.cancel();
+                } catch (Throwable ex) {
+                        LOGGER.error(ex);
+                        //Cancel the next job
+                }
+        }
         //Remove all listeners created by this object
 
         //Free UI resources
@@ -290,6 +312,7 @@ public class Core {
     }
     private class ReadMapContextProcess implements BackgroundJob {
 
+                @Override
                 public void run(ProgressMonitor pm) {                        
                         //Create an empty map context
                         MapContext mapContext = new OwsMapContext();
@@ -314,6 +337,7 @@ public class Core {
                         editors.openEditable(editableMap); 
                 }
 
+                @Override
                 public String getTaskName() {
                         return I18N.tr("Open the map context");
                 }
