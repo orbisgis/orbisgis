@@ -284,11 +284,6 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         }
 
         @Override
-        public String getInfoText() {
-                return UIFactory.getDefaultOkMessage();
-        }
-
-        @Override
         public String getTitle() {
                 return I18N.tr("Legend edition");
         }

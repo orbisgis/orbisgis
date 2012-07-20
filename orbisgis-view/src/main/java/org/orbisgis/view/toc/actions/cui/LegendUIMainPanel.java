@@ -180,13 +180,7 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 	@Override
 	public Component getComponent() {
 		return this;
-	}
-
-	@Override
-	public String getInfoText() {
-		return UIFactory.getDefaultOkMessage();
-	}
-
+	}	
       
 
 	private class ActionListenerImpl implements ActionListener {

@@ -51,11 +51,16 @@ public class DataBaseTableModel extends AbstractTableModel {
         private final String[] sourceNames;
         String[] columnNames;
         private ArrayList<DataBaseRow> data = new ArrayList<DataBaseRow>();
+        private boolean isEditable = false;
 
         public DataBaseTableModel(SourceManager sourceManager, String[] sourceNames) {
                 this.sourceNames = sourceNames;
                 init(sourceManager);
 
+        }
+
+        public void setEditable(boolean isEditable) {
+                this.isEditable = isEditable;
         }
 
         /**
@@ -67,23 +72,27 @@ public class DataBaseTableModel extends AbstractTableModel {
                 try {
                         DataManager dm = (DataManager) Services.getService(DataManager.class);
                         DataSourceFactory dsf = dm.getDataSourceFactory();
-                        columnNames = new String[]{"Source name", "Table name", "Schema", "PK", "Spatial field", "EPSG code", "Export"};
+                        columnNames = new String[]{"Source name", "Table name", "Schema", "PK", "Spatial field", "CRS name", "EPSG code", "Export"};
+                        String crsName = "Unknown";
+                        int epsgCode = -1;
                         for (String sourceName : sourceNames) {
                                 int type = sourceManager.getSource(sourceName).getType();
                                 if (((SourceManager.VECTORIAL | SourceManager.RASTER | SourceManager.WMS | SourceManager.SYSTEM_TABLE) & type) == 0) {
-                                        DataBaseRow row = new DataBaseRow(sourceName, sourceName, "public", "gid", "the_geom", -1, Boolean.TRUE);
+                                        DataBaseRow row = new DataBaseRow(sourceName, sourceName, "public", "gid", "the_geom", crsName, epsgCode, Boolean.TRUE);
                                         data.add(row);
                                 } else if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
                                         DataSource ds = dsf.getDataSource(sourceName);
                                         ds.open();
                                         String geomField = ds.getFieldName(ds.getSpatialFieldIndex());
                                         CoordinateReferenceSystem crs = ds.getCRS();
-                                        int epsgCode = -1;
                                         if (crs != null) {
+                                                crsName = crs.getName();
                                                 epsgCode = crs.getEPSGCode();
+
                                         }
                                         ds.close();
-                                        DataBaseRow row = new DataBaseRow(sourceName, sourceName, "public", "gid", geomField, epsgCode, Boolean.TRUE);
+                                        DataBaseRow row = new DataBaseRow(sourceName, sourceName, "public", "gid", geomField, crsName, epsgCode, Boolean.TRUE);
+
                                         row.setIsSpatial(true);
                                         data.add(row);
                                 }
@@ -110,15 +119,19 @@ public class DataBaseTableModel extends AbstractTableModel {
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
-                if (columnIndex == 0) {
-                        return false;
-                }
-                if (!data.get(rowIndex).isIsSpatial()) {
-                        if ((columnIndex == 4) || (columnIndex == 5)) {
+                if (isEditable) {
+                        if (columnIndex == 0 || columnIndex == 5) {
                                 return false;
                         }
+                        if (!data.get(rowIndex).isIsSpatial()) {
+                                if ((columnIndex == 4) || (columnIndex == 6)) {
+                                        return false;
+                                }
+                        }
+
+                        return true;
                 }
-                return true;
+                return false;
         }
 
         @Override
@@ -169,20 +182,7 @@ public class DataBaseTableModel extends AbstractTableModel {
                 }
                 return false;
         }
-
-        /**
-         * Check if one source already exists
-         *
-         * @return
-         */
-        public boolean isSourceExist(String source) {
-                for (DataBaseRow row : data) {
-                        if (row.getInputSourceName().equals(source)) {
-                                return true;
-                        }
-                }
-                return false;
-        }
+       
 
         /**
          * Returns all rows
@@ -192,6 +192,4 @@ public class DataBaseTableModel extends AbstractTableModel {
         public ArrayList<DataBaseRow> getData() {
                 return data;
         }
-        
-       
 }

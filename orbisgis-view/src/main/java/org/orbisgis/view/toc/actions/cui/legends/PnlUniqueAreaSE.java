@@ -91,12 +91,7 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
         @Override
         public String getTitle() {
                 return "Unique symbol for lines.";
-        }
-
-        @Override
-        public String getInfoText() {
-                return "Configure a line to be displayed as a unique symbol.";
-        }
+        }        
 
         @Override
         public Legend copyLegend() {

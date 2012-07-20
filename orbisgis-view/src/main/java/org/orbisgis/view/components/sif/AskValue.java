@@ -37,10 +37,12 @@
 package org.orbisgis.view.components.sif;
 
 import java.awt.Component;
+import java.net.URL;
 import javax.swing.JTextField;
-import org.orbisgis.sif.AbstractUIPanel;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
 
-public class AskValue extends AbstractUIPanel {
+public class AskValue implements UIPanel {
 
         private JTextField txtField;
         private String[] sql;
@@ -94,5 +96,10 @@ public class AskValue extends AbstractUIPanel {
 
         public void setValue(String fieldName, String fieldValue) {
                 txtField.setText(fieldValue);
+        }
+
+        @Override
+        public URL getIconURL() {
+               return UIFactory.getDefaultIcon();
         }
 }

@@ -93,11 +93,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         }
 
         @Override
-        public String getInfoText() {
-                return "Configure a line to be displayed as a unique symbol.";
-        }
-
-        @Override
         public Legend copyLegend() {
                 UniqueSymbolLine usl = new UniqueSymbolLine();
                 usl.setDashArray(uniqueLine.getDashArray());

@@ -175,13 +175,7 @@ public class TableSelectionPanel implements UIPanel {
                         return i18n.tr("Please select one table or view");
                 }
                 return null;
-        }
-
-        @Override
-        public String getInfoText() {
-                return null;
-        }
-
+        }       
         
 
         public DBSource[] getSelectedDBSources() {

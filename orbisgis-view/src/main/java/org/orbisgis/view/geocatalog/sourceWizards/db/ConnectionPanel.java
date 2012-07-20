@@ -56,7 +56,6 @@ public class ConnectionPanel extends MultiInputPanel {
         public ConnectionPanel(SourceManager sourceManager) {
                 super(i18n.tr("Connect"));
                 this.sourceManager = sourceManager;
-                setInfoText(i18n.tr("Connection parameters"));
                 addInput(DBTYPE, i18n.tr("Type of database"),
                         getDriverInput());
                 addInput(HOST, i18n.tr("Host"),
@@ -105,8 +104,7 @@ public class ConnectionPanel extends MultiInputPanel {
                 });
 
 
-        }        
-        
+        }
 
         private InputType getDriverInput() {
                 DriverManager driverManager = sourceManager.getDriverManager();
@@ -160,7 +158,7 @@ public class ConnectionPanel extends MultiInputPanel {
                 if (getInput(SSL).equals("true")) {
                         ssl = true;
                 }
-                
+
                 return new DBSource(host, port, dbName, user, password, getDBDriver().getPrefixes()[0], ssl);
         }
 

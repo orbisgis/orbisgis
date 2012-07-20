@@ -35,7 +35,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  *
- *         @author ebocher
+ *   @author ebocher
  */
 public class TableCellRenderer extends DefaultTableCellRenderer {
 

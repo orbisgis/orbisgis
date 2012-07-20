@@ -62,11 +62,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
         public Component getComponent() {
                 return this;
         }
-
-        @Override
-        public String getInfoText() {
-                return UIFactory.getDefaultOkMessage();
-        }
+       
 
         /*
          * Is called after the panel has been closed (and validated) This method
