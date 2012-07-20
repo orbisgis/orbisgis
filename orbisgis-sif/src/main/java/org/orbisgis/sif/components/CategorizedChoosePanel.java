@@ -111,12 +111,7 @@ public class CategorizedChoosePanel extends JPanel implements UIPanel {
                 return UIFactory.getDefaultIcon();
         }
 
-        @Override
-        public String getInfoText() {
-                return UIFactory.getDefaultOkMessage();
-        }
-
-        
+              
 
         /**
          * Returns the id of the currently selected option if it's valid. If

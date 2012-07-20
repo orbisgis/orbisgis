@@ -29,7 +29,9 @@
 package org.orbisgis.sif.components;
 
 import java.io.File;
+import java.net.URL;
 import javax.swing.filechooser.FileFilter;
+import org.orbisgis.sif.UIFactory;
 
 /**
  * @class OpenFilePanel this class is used to import files in the geocatalog. To
@@ -53,9 +55,9 @@ public class OpenFilePanel extends AbstractOpenPanel {
         public String validateInput() {
                 File file = getSelectedFile();
                 if (file == null) {
-                        return i18n.tr("A file must be selected");
+                        return UIFactory.getI18n().tr("A file must be selected");
                 } else if (!file.exists()) {
-                        return i18n.tr("The file must exists");
+                        return UIFactory.getI18n().tr("The file must exists");
                 } else {
                         return null;
                 }
@@ -96,5 +98,10 @@ public class OpenFilePanel extends AbstractOpenPanel {
                                 }
                         }
                 }
+        }
+
+        @Override
+        public URL getIconURL() {
+                return UIFactory.getDefaultIcon();
         }
 }

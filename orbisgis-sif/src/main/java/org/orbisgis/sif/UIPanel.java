@@ -69,12 +69,5 @@ public interface UIPanel {
          * @return
          */
         Component getComponent();
-
-        /**
-         * Gets a text to be shown as tool tip for the dialog. Typically this
-         * will be the purpose of the dialog or some similar information
-         *
-         * @return
-         */
-        String getInfoText();
+        
 }

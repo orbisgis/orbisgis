@@ -166,4 +166,9 @@ public class UIFactory {
         public static Window getMainFrame() {
                 return mainFrame;
         }
+
+        public static I18n getI18n() {
+                return i18n;
+        }        
+        
 }

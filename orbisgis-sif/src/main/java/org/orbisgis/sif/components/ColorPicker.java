@@ -109,15 +109,9 @@ public class ColorPicker extends JPanel implements UIPanel {
         }
 
         @Override
-        public String getInfoText() {
-                return i18n.tr("sif.ColorPicker.InfoText");
-        }
-
-        @Override
         public String getTitle() {
                 return i18n.tr("sif.ColorPicker.Title");
         }
-        
 
         @Override
         public String validateInput() {

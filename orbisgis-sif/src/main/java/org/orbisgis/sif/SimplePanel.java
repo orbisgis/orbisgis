@@ -59,15 +59,10 @@ public class SimplePanel extends JPanel {
          * @return void
          */
         private void initialize(UIPanel panel) {
-                JPanel centerPanel = new JPanel();
-                centerPanel.setLayout(new BorderLayout());
                 Component comp = panel.getComponent();
                 fillFirstComponent(comp);
-                centerPanel.add(comp, BorderLayout.CENTER);
-
                 this.setLayout(new BorderLayout());
-
-                this.add(centerPanel, BorderLayout.CENTER);
+                this.add(comp, BorderLayout.CENTER);
         }
 
         private boolean fillFirstComponent(Component comp) {

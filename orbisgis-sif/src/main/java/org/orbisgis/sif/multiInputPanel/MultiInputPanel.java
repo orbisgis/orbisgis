@@ -50,7 +50,6 @@ public class MultiInputPanel implements UIPanel {
         private ArrayList<MIPValidation> validation = new ArrayList<MIPValidation>();
         private HashMap<String, Input> nameInput = new HashMap<String, Input>();
         private InputPanel comp;
-        private String infoText;
 
         /**
          *
@@ -61,6 +60,7 @@ public class MultiInputPanel implements UIPanel {
         }
 
         /**
+         * Add a rule to valide the content of the multiinputpanel
          *
          * @param mDValidation
          */
@@ -133,20 +133,8 @@ public class MultiInputPanel implements UIPanel {
         }
 
         /**
-         *
-         * @param infoText
-         */
-        public void setInfoText(String infoText) {
-                this.infoText = infoText;
-        }
-
-        @Override
-        public String getInfoText() {
-                return infoText;
-        }
-
-        /**
          * Valid the input of panel
+         *
          * @return a string message
          */
         @Override
@@ -173,7 +161,6 @@ public class MultiInputPanel implements UIPanel {
                 if (comp == null) {
                         comp = new InputPanel(inputs);
                 }
-
                 return comp;
         }
 

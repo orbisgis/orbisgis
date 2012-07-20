@@ -84,10 +84,6 @@ public class UIPanelDemo {
                 public Component getComponent() {
                         return panel;
                 }
-
-                @Override
-                public String getInfoText() {
-                        return null;
-                }
+                
         }
 }

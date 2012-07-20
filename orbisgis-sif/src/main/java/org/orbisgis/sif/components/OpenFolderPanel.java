@@ -29,7 +29,9 @@
 package org.orbisgis.sif.components;
 
 import java.io.File;
+import java.net.URL;
 import javax.swing.filechooser.FileFilter;
+import org.orbisgis.sif.UIFactory;
 
 /**
  * This class handles the panel used to import the content of a folder in the
@@ -60,11 +62,11 @@ public class OpenFolderPanel extends AbstractOpenPanel {
         public String validateInput() {
                 File file = getSelectedFile();
                 if (file == null) {
-                        return i18n.tr("sif.folderMustBeSelected");
+                        return UIFactory.getI18n().tr("sif.folderMustBeSelected");
                 } else if (!file.exists()) {
-                        return i18n.tr("sif.folderMustExist");
+                        return UIFactory.getI18n().tr("sif.folderMustExist");
                 } else if (!file.isDirectory()) {
-                        return i18n.tr("sif.folderMustBeDirectory");
+                        return UIFactory.getI18n().tr("sif.folderMustBeDirectory");
                 } else {
                         return null;
                 }
@@ -83,7 +85,6 @@ public class OpenFolderPanel extends AbstractOpenPanel {
         public String[] getFieldNames() {
                 return new String[]{FIELD_NAME, FILTER_NAME};
         }
-        
 
         public void setValue(String fieldName, String fieldValue) {
                 if (fieldName.equals(FIELD_NAME)) {
@@ -101,5 +102,10 @@ public class OpenFolderPanel extends AbstractOpenPanel {
                                 }
                         }
                 }
+        }
+
+        @Override
+        public URL getIconURL() {
+                return UIFactory.getDefaultIcon();
         }
 }

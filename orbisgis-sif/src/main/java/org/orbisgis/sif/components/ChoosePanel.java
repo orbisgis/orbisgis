@@ -39,13 +39,15 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.ArrayList;
 import javax.swing.*;
-import org.orbisgis.sif.AbstractUIPanel;
 import org.orbisgis.sif.CRFlowLayout;
 import org.orbisgis.sif.CarriageReturn;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
 
-public class ChoosePanel extends AbstractUIPanel {
+public class ChoosePanel implements  UIPanel {
 
         private String[] names;
         private String title;
@@ -126,7 +128,7 @@ public class ChoosePanel extends AbstractUIPanel {
         @Override
         public String validateInput() {
                 if (lst.getSelectedIndex() == -1) {
-                        return i18n.tr("An item must be selected. ");
+                        return UIFactory.getI18n().tr("An item must be selected. ");
                 }
                 return null;
         }
@@ -147,5 +149,10 @@ public class ChoosePanel extends AbstractUIPanel {
                 }
 
                 return ret.toArray();
+        }
+
+        @Override
+        public URL getIconURL() {
+                return UIFactory.getDefaultIcon();
         }
 }

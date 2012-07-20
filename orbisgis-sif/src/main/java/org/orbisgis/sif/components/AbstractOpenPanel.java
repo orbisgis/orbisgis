@@ -33,13 +33,13 @@ import java.awt.Component;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
-import org.orbisgis.sif.AbstractUIPanel;
+import org.orbisgis.sif.UIPanel;
 
 /**
  * Contains utility methods by both OpenFilePanel and OpenFolderPanel.
  * @author alexis
  */
-public abstract class AbstractOpenPanel extends AbstractUIPanel {
+public abstract class AbstractOpenPanel implements UIPanel {
 
 	private JFileChooser fileChooser;
 
@@ -185,12 +185,5 @@ public abstract class AbstractOpenPanel extends AbstractUIPanel {
 	public void setCurrentDirectory(File dir) {
 		fileChooser.setCurrentDirectory(dir);
 	}
-
-        @Override
-        public String getInfoText() {
-                final String infoText = super.getInfoText();
-                return infoText == null ? " " : infoText;
-        }
-
 
 }

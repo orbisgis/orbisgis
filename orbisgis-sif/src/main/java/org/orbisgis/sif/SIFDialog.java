@@ -36,69 +36,61 @@ import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-
 public class SIFDialog extends AbstractOutsideFrame {
 
-	private JButton btnOk;
+        protected JButton btnOk;
+        protected JButton btnCancel;
+        private SimplePanel simplePanel;
+        protected JPanel pnlButtons;
 
-	private JButton btnCancel;
+        public SIFDialog(Window owner, boolean okCancel) {
+                super(owner);
+                init(okCancel);
+        }
 
-	private SimplePanel simplePanel;
+        private void init(boolean okCancel) {
+                this.setLayout(new BorderLayout());
 
-	
+                btnOk = new JButton(i18n.tr("Ok"));
+                btnOk.setBorderPainted(false);
+                btnOk.addActionListener(new ActionListener() {
 
-	public SIFDialog(Window owner, boolean okCancel) {
-		super(owner);
-		init(okCancel);
-	}
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                                exit(true);
+                        }
+                });
+                getRootPane().setDefaultButton(btnOk);
+                btnCancel = new JButton(i18n.tr("Cancel"));
+                btnCancel.setBorderPainted(false);
+                btnCancel.addActionListener(new ActionListener() {
 
-	private void init(boolean okCancel) {
-		this.setLayout(new BorderLayout());
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                                exit(false);
+                        }
+                });
+                pnlButtons = new JPanel();
+                pnlButtons.add(btnOk);
+                if (okCancel) {
+                        pnlButtons.add(btnCancel);
+                }
+                this.add(pnlButtons, BorderLayout.SOUTH);
 
-		btnOk = new JButton(i18n.tr("Ok"));
-		btnOk.setBorderPainted(false);
-		btnOk.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				exit(true);
-			}
+                this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        }
 
-		});
-		getRootPane().setDefaultButton(btnOk);
-		btnCancel = new JButton(i18n.tr("Cancel"));
-		btnCancel.setBorderPainted(false);
-		btnCancel.addActionListener(new ActionListener() {
+        public void setComponent(SimplePanel simplePanel) {
+                this.simplePanel = simplePanel;
+                this.add(simplePanel, BorderLayout.CENTER);
+                this.setIconImage(getSimplePanel().getIconImage());
+        }
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				exit(false);
-			}
-
-		});
-		JPanel pnlButtons = new JPanel();
-		pnlButtons.add(btnOk);
-		if (okCancel) {
-			pnlButtons.add(btnCancel);
-		}
-		this.add(pnlButtons, BorderLayout.SOUTH);
-		
-
-		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-	}
-
-	public void setComponent(SimplePanel simplePanel) {
-		this.simplePanel = simplePanel;
-		this.add(simplePanel, BorderLayout.CENTER);
-		this.setIconImage(getSimplePanel().getIconImage());
-	}
-
-	
-
-	@Override
-	protected SimplePanel getSimplePanel() {
-		return simplePanel;
-	}
+        @Override
+        protected SimplePanel getSimplePanel() {
+                return simplePanel;
+        }
 
         @Override
         public void keyTyped(KeyEvent ke) {
@@ -107,6 +99,4 @@ public class SIFDialog extends AbstractOutsideFrame {
         @Override
         public void keyReleased(KeyEvent ke) {
         }
-
-       
 }

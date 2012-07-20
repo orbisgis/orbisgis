@@ -33,6 +33,7 @@ import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.FileChooserUI;
 import javax.swing.plaf.basic.BasicFileChooserUI;
+import org.orbisgis.sif.UIFactory;
 
 public class SaveFilePanel extends OpenFilePanel {
 
@@ -79,10 +80,10 @@ public class SaveFilePanel extends OpenFilePanel {
         public String validateInput() {
                 File file = getSelectedFile();
                 if (file == null) {
-                        return i18n.tr("A file must be selected");
+                        return UIFactory.getI18n().tr("A file must be selected");
                 } else if (fileMustNotExist) {
                         if (getSelectedFile().exists()) {
-                                return i18n.tr("The file already exists");
+                                return UIFactory.getI18n().tr("The file already exists");
                         } else {
                                 return null;
                         }
