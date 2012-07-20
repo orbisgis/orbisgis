@@ -180,8 +180,7 @@ public class JNumericSpinner extends JPanel {
 	 */
 	public double getValue() {
 		try {
-                        double ret = numberFormat.parse(txt.getText()).doubleValue();
-			return ret;
+                        return numberFormat.parse(txt.getText()).doubleValue();
 		} catch (ParseException e) {
 			return 0;
 		}
