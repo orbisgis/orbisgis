@@ -1,20 +1,52 @@
+/**
+ * The GDMS library (Generic Datasource Management System)
+ * is a middleware dedicated to the management of various kinds of
+ * data-sources such as spatial vectorial data or alphanumeric. Based
+ * on the JTS library and conform to the OGC simple feature access
+ * specifications, it provides a complete and robust API to manipulate
+ * in a SQL way remote DBMS (PostgreSQL, H2...) or flat files (.shp,
+ * .csv...).
+ *
+ * Gdms is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-2012 IRSTV FR CNRS 2488
+ *
+ * This file is part of Gdms.
+ *
+ * Gdms is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * Gdms is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * Gdms. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * info@orbisgis.org
+ */
 package org.gdms.source.stream;
+
+import java.net.URI;
+
+import org.apache.log4j.Logger;
+import org.orbisgis.progress.ProgressMonitor;
 
 import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.memory.MemoryDataSourceAdapter;
-import org.gdms.driver.DataSet;
-import org.gdms.driver.Driver;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.MemoryDriver;
-import org.gdms.source.directory.DefinitionType;
-import org.orbisgis.progress.ProgressMonitor;
-import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceDefinition;
+import org.gdms.data.memory.MemoryDataSourceAdapter;
 import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.*;
 import org.gdms.driver.driverManager.DriverManager;
+import org.gdms.source.directory.DefinitionType;
 
 /**
  *
@@ -73,14 +105,16 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition {
 
     @Override
     public DataSource createDataSource(String tableName, ProgressMonitor pm) throws DataSourceCreationException {
-        LOG.trace("Creating datasource");
-        getDriver().setDataSourceFactory(getDataSourceFactory());
+            try {
+                    getDriver().setDataSourceFactory(getDataSourceFactory());
 
-        //TO DO Maybe create a StreamDataSourceAdaptater ?
-        MemoryDataSourceAdapter ds = new MemoryDataSourceAdapter(
-                getSource(tableName), (MemoryDriver) getDriver());
-        LOG.trace("Datasource created");
-        return ds;
+                    //TO DO Maybe create a StreamDataSourceAdaptater ?
+                    MemoryDataSourceAdapter ds = new MemoryDataSourceAdapter(
+                            getSource(tableName), (MemoryDriver) getDriver());
+                    return ds;
+            } catch (DriverException e) {
+                    throw new DataSourceCreationException(e);
+            }
     }
 
     @Override
@@ -118,4 +152,9 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition {
 
         return new StreamSourceDefinition(streamSource);
     }
+
+        @Override
+        public URI getURI() throws DriverException {
+                return URI.create(m_streamSource.getDbms());
+        }
 }
