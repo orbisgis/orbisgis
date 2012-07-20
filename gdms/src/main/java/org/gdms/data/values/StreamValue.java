@@ -43,7 +43,8 @@ import org.gdms.data.stream.GeoStream;
 public interface StreamValue extends Value {
 
         /**
-         * @param Envelope the envelope to set
+         * Set value with the parameter
+         * @param Envelope 
          */
         void setValue(GeoStream value);
 }

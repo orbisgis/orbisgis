@@ -27,6 +27,16 @@ public class DefaultGeoStream implements GeoStream {
                 this.m_StreamSource = source;
         }
         
+        /**
+         * Gets a map with serval parameters like width,height and returns an image
+         * @param width
+         * @param height
+         * @param extent
+         * @param pm
+         * @return
+         * @throws DriverException 
+         */
+        
         @Override
         public Image getMap(int width, int height, Envelope extent, ProgressMonitor pm) throws DriverException{
                 this.m_Width = width;
@@ -38,21 +48,37 @@ public class DefaultGeoStream implements GeoStream {
                 return this.m_Image;
         }
         
+        /**
+         * Gets the envelope of the GeoStream
+         * @return 
+         */
         @Override
         public Envelope getEnvelope() {
                 return m_Envelope;
         }
 
+        /**
+         * Sets the envelpe with the parameter
+         * @param envelope 
+         */
         @Override
         public void setEnvelope(Envelope envelope){
                 this.m_Envelope = envelope;
         }
 
+        /**
+         * Returns the Source of the Stream
+         * @return 
+         */
         @Override
         public StreamSource getStreamSource() {
                 return this.m_StreamSource;
         }
 
+        /**
+         * Sets the SteamSource of the GeoStream with the parameter
+         * @param streamSource 
+         */
         @Override
         public void setStreamSource(StreamSource streamSource) {
                 this.m_StreamSource = streamSource;

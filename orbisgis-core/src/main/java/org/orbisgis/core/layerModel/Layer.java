@@ -345,6 +345,11 @@ public class Layer extends GdmsLayer {
         return dataSource.isVectorial();
     }
 
+    /**
+     * Check if the source is a stream
+     * @return
+     * @throws DriverException 
+     */
     @Override
     public boolean isStream() throws DriverException {
         return dataSource.isStream();

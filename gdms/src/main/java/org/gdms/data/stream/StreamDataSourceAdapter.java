@@ -101,12 +101,21 @@ public class StreamDataSourceAdapter extends DriverDataSource implements Commite
         sm.removeCommitListener(this);
     }
 
+    /**
+     * Save the data in the stream driver
+     * @param ds
+     * @throws DriverException 
+     */
     @Override
     public void saveData(DataSet ds) throws DriverException {
         LOG.trace("Saving Data");
         ((StreamReadWriteDriver) driver).write(ds, new NullProgressMonitor());
     }
 
+    /**
+     * Get the driver of the SteamData
+     * @return 
+     */
     @Override
     public Driver getDriver() {
         return driver;
@@ -129,6 +138,17 @@ public class StreamDataSourceAdapter extends DriverDataSource implements Commite
 
     }
 
+    /**
+     * Commit the StreamDataSource
+     * @param rowsDirections
+     * @param fieldNames
+     * @param schemaActions
+     * @param editionActions
+     * @param deletedPKs
+     * @param modifiedSource
+     * @return
+     * @throws DriverException 
+     */
     @Override
     public boolean commit(List<PhysicalRowAddress> rowsDirections, String[] fieldNames, List<EditionInfo> schemaActions, List<EditionInfo> editionActions, List<DeleteEditionInfo> deletedPKs, DataSource modifiedSource) throws DriverException {
         LOG.trace("Commiting");
