@@ -31,9 +31,7 @@ package org.orbisgis.sif.components;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
+import java.util.*;
 import javax.swing.*;
 import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
@@ -47,10 +45,10 @@ public class CategorizedChoosePanel extends JPanel implements UIPanel {
 
         private String id;
         private String title;
-        private HashMap<Option, ArrayList<Option>> categories = new HashMap<Option, ArrayList<Option>>();
+        private Map<Option, List<Option>> categories = new HashMap<Option, List<Option>>();
         private JTree tree;
         private CategoriesTreeModel categoriesTreeModel;
-        protected static final I18n i18n = I18nFactory.getI18n(CategorizedChoosePanel.class);
+        private static final I18n i18n = I18nFactory.getI18n(CategorizedChoosePanel.class);
 
         public CategorizedChoosePanel(String title, String id) {
                 this.title = title;
@@ -62,7 +60,7 @@ public class CategorizedChoosePanel extends JPanel implements UIPanel {
         public void addOption(String categoryId, String categoryName, String name,
                 String id, String icon) {
                 Option category = new Option(categoryId, categoryName, true, null);
-                ArrayList<Option> options = categories.get(category);
+                List<Option> options = categories.get(category);
                 if (options == null) {
                         options = new ArrayList<Option>();
                 }
@@ -102,7 +100,7 @@ public class CategorizedChoosePanel extends JPanel implements UIPanel {
                 Iterator<Option> it = categories.keySet().iterator();
                 while (it.hasNext()) {
                         Option category = it.next();
-                        ArrayList<Option> options = categories.get(category);
+                        List<Option> options = categories.get(category);
                         for (Option option : options) {
                                 if (option.getId().equals(fieldValue)) {
                                         tree.setSelectionPath(new TreePath(new Object[]{
@@ -210,7 +208,7 @@ public class CategorizedChoosePanel extends JPanel implements UIPanel {
 
         private class CategoriesTreeModel implements TreeModel {
 
-                private ArrayList<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
+                private List<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
 
                 @Override
                 public void addTreeModelListener(TreeModelListener l) {
@@ -226,19 +224,18 @@ public class CategorizedChoosePanel extends JPanel implements UIPanel {
 
                 @Override
                 public Object getChild(Object parent, int index) {
-                        ArrayList<Object> names = getArray(parent);
+                        List<Object> names = getArray(parent);
                         return names.get(index);
                 }
 
-                private ArrayList<Object> getArray(Object parent) {
-                        ArrayList<Object> names;
-                        names = new ArrayList<Object>();
+                private List<Object> getArray(Object parent) {
+                        List<Object> names = new ArrayList<Object>();
                         if (parent.toString().equals("ROOT")) {
                                 // Categories
                                 names.addAll(categories.keySet());
                         } else {
                                 // Category content
-                                ArrayList<Option> options = categories.get(parent);
+                                List<Option> options = categories.get((Option)parent);
                                 if (options != null) {
                                         names.addAll(options);
                                 }
@@ -248,14 +245,12 @@ public class CategorizedChoosePanel extends JPanel implements UIPanel {
 
                 @Override
                 public int getChildCount(Object parent) {
-                        ArrayList<Object> names = getArray(parent);
-                        return names.size();
+                        return getArray(parent).size();
                 }
 
                 @Override
                 public int getIndexOfChild(Object parent, Object child) {
-                        ArrayList<Object> names = getArray(parent);
-                        return names.indexOf(child);
+                        return getArray(parent).indexOf(child);
                 }
 
                 @Override
