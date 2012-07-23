@@ -269,7 +269,7 @@ public class Toc extends JPanel implements EditorDockable {
 
 
                 if (!sourceToDrop.isEmpty()) {
-                        BackgroundManager bm = (BackgroundManager) Services.getService(BackgroundManager.class);                        //Cancel the drawing process
+                        BackgroundManager bm = Services.getService(BackgroundManager.class);//Cancel the drawing process
                         bm.nonBlockingBackgroundOperation(new DropDataSourceListProcess(dropNode, index, sourceToDrop));
                         for(Job job : bm.getActiveJobs()) {
                                 if(job.getId().toString().startsWith(MapControl.JOB_DRAWING_PREFIX_ID)) {
@@ -346,7 +346,7 @@ public class Toc extends JPanel implements EditorDockable {
 
         private void setEmptyLayerModel(JTree jTree) {
                 //Add the treeModel
-                DataManager dataManager = (DataManager) Services.getService(DataManager.class);
+                DataManager dataManager = Services.getService(DataManager.class);
                 jTree.setModel(new DefaultTreeModel(new TocTreeNodeLayer(dataManager.createLayerCollection("root"))));
         }
 
@@ -821,7 +821,7 @@ public class Toc extends JPanel implements EditorDockable {
                 @Override
                 public void run(ProgressMonitor pm) {
 
-                        DataManager dataManager = (DataManager) Services.getService(DataManager.class);
+                        DataManager dataManager = Services.getService(DataManager.class);
                         for (int i = 0; i < draggedResources.size(); i++) {
                                 String sourceName = draggedResources.get(i).getId();
                                 if (pm.isCancelled()) {

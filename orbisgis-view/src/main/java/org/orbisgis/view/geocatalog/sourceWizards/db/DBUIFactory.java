@@ -186,7 +186,7 @@ public class DBUIFactory {
          * @return 
          */
         public static InputType getDriverInput() {
-                DataManager dm = (DataManager) Services.getService(DataManager.class);
+                DataManager dm = Services.getService(DataManager.class);
                 DriverManager driverManager = dm.getSourceManager().getDriverManager();
 
                 Driver[] filtered = driverManager.getDrivers(new DBDriverFilter());

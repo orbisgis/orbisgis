@@ -85,7 +85,7 @@ public class DataBaseTableModel extends AbstractTableModel {
          */
         private void init(SourceManager sourceManager) {
                 try {
-                        DataManager dm = (DataManager) Services.getService(DataManager.class);
+                        DataManager dm = Services.getService(DataManager.class);
                         DataSourceFactory dsf = dm.getDataSourceFactory();
                         String crsName = "Unknown";
                         int epsgCode = -1;

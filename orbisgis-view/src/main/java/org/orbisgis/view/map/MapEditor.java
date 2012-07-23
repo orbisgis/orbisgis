@@ -140,7 +140,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
      * @param editableList 
      */
     public void onDropEditable(EditableElement[] editableList) {
-        BackgroundManager bm = (BackgroundManager) Services.getService(BackgroundManager.class);
+        BackgroundManager bm = Services.getService(BackgroundManager.class);
         //Load the layers in the background
         bm.backgroundOperation(new DropDataSourceProcess(editableList));
     }
@@ -160,7 +160,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             mapControl.getMapTransform().setExtent(mapContext.getBoundingBox());
             mapControl.setElement(this);
             mapControl.initMapControl();
-            CursorCoordinateLookupTimer = new Timer(CURSOR_COORDINATE_LOOKUP_INTERVAL,EventHandler.create(ActionListener.class,this,"onReadCursorMapCoordinate"));
+            CursorCoordinateLookupTimer = new Timer(CURSOR_COORDINATE_LOOKUP_INTERVAL,
+                    EventHandler.create(ActionListener.class,this,"onReadCursorMapCoordinate"));
             CursorCoordinateLookupTimer.setRepeats(false);
             CursorCoordinateLookupTimer.start();
             repaint();
@@ -406,7 +407,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         }
         
         public void run(org.orbisgis.progress.ProgressMonitor pm) {
-            DataManager dataManager = (DataManager) Services.getService(DataManager.class);
+            DataManager dataManager = Services.getService(DataManager.class);
             ILayer dropLayer = mapContext.getLayerModel();
             int i=0;
             for(EditableElement eElement : editableList) {

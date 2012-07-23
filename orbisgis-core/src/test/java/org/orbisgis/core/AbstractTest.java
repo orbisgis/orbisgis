@@ -104,7 +104,7 @@ public abstract class AbstractTest {
         }
 
         protected DataManager getDataManager() {
-                return (DataManager) Services.getService(DataManager.class);
+                return Services.getService(DataManager.class);
         }
         protected DataSource getDataSourceFromPath(String path) throws LayerException {
 		String name = getDataManager().getDataSourceFactory().getSourceManager().nameAndRegister(new File(path));

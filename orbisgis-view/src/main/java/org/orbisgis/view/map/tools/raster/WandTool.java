@@ -58,8 +58,7 @@ import org.xnap.commons.i18n.I18n;
 
 public class WandTool extends AbstractPointTool {
 	private static final String wandLayername = I18n.marktr("orbisgis.org.orbisgis.ui.tools.WandTool.0"); //$NON-NLS-1$
-	private static final DataSourceFactory dsf = ((DataManager) Services
-			.getService(DataManager.class)).getDataSourceFactory();
+	private static final DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
         private static Logger UILOGGER = Logger.getLogger("gui."+WandTool.class);
 	private static final GeometryFactory geometryFactory = new GeometryFactory();
 
@@ -115,8 +114,7 @@ public class WandTool extends AbstractPointTool {
 				dsf.remove(I18N.tr(wandLayername));
 				vc.getLayerModel().remove(I18N.tr(wandLayername));
 			}
-			DataManager dataManager = (DataManager) Services
-					.getService(DataManager.class);
+			DataManager dataManager = Services.getService(DataManager.class);
 			final ILayer wandLayer = dataManager
 					.createLayer(buildWandDatasource(polygon));
 

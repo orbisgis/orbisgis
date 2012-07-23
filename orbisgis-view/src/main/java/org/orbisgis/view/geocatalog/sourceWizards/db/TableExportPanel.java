@@ -50,6 +50,7 @@ import org.gdms.sql.engine.ParseException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.workspace.CoreWorkspace;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.multiInputPanel.MIPValidation;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
@@ -249,7 +250,7 @@ public class TableExportPanel extends JDialog {
          * Load connection properties
          */
         private void loadDBProperties() {
-                CoreWorkspace ws = (CoreWorkspace) Services.getService(CoreWorkspace.class);
+                CoreWorkspace ws = Services.getService(CoreWorkspace.class);
                 try {
                         File propertiesFile = new File(ws.getWorkspaceFolder() + File.separator + dbPropertiesFile);
 
@@ -266,7 +267,7 @@ public class TableExportPanel extends JDialog {
          */
         private void saveProperties() {
                 try {
-                        CoreWorkspace ws = (CoreWorkspace) Services.getService(CoreWorkspace.class);
+                        CoreWorkspace ws = Services.getService(CoreWorkspace.class);
                         dbProperties.store(new FileOutputStream(ws.getWorkspaceFolder() + File.separator + dbPropertiesFile),
                                 I18N.tr("Saved with the OrbisGIS database exporter panel"));
                 } catch (IOException ex) {
@@ -358,7 +359,7 @@ public class TableExportPanel extends JDialog {
                 }
 
                 @Override
-                public void run(org.orbisgis.progress.ProgressMonitor pm) {
+                public void run(ProgressMonitor pm) {
                         DataManager dataManager = Services.getService(DataManager.class);
                         try {
                                 dataManager.getDataSourceFactory().executeSQL(sql, pm);
