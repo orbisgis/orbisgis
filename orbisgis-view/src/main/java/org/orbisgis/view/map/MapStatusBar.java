@@ -58,7 +58,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 
 public class MapStatusBar extends StatusBar {
-        protected static final I18n I18N = I18nFactory.getI18n(MapStatusBar.class);
+        private static final I18n I18N = I18nFactory.getI18n(MapStatusBar.class);
         private static final Logger LOGGER = Logger.getLogger(MapStatusBar.class);
         public static final String PROP_USER_DEFINED_SCALE_DENOMINATOR = "userDefinedScaleDenominator";
         private static final int STATUS_BAR_HEIGHT = 30;

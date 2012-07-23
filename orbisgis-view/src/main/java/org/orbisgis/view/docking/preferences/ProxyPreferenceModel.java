@@ -46,7 +46,7 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  */
 public class ProxyPreferenceModel extends DefaultPreferenceModel {
-    protected static final I18n i18n = I18nFactory.getI18n(ProxyPreferenceModel.class);
+    private static final I18n I18N = I18nFactory.getI18n(ProxyPreferenceModel.class);
     // JAVA proxy properties constant
     // @see http://docs.oracle.com/javase/1.4.2/docs/guide/net/properties.html
     private static final String SYSTEM_SOCKS_PROXY_PORT = "socksProxyPort";
@@ -91,16 +91,16 @@ public class ProxyPreferenceModel extends DefaultPreferenceModel {
         this.add(proxyInfo);
         //Use Proxy Check Box
         useProxy = new DockPropertyPreference<Boolean>(controller.getProperties(),USE_PROXY, Path.TYPE_BOOLEAN_PATH, new Path(USE_PROXY_KEY));
-        useProxy.setLabel(i18n.tr("Use Proxy"));
+        useProxy.setLabel(I18N.tr("Use Proxy"));
         useProxy.setDefaultValue(Boolean.FALSE);
         this.add(useProxy);
         //Proxy Url
         proxyUrl = new DockPropertyPreference<String>(controller.getProperties(),PROXY_URL, Path.TYPE_STRING_PATH, new Path(PROXY_URL_KEY));
-        proxyUrl.setLabel(i18n.tr("Proxy url"));
+        proxyUrl.setLabel(I18N.tr("Proxy url"));
         this.add(proxyUrl);
         //Proxy Port
         proxyPort = new DockPropertyPreference<String>(controller.getProperties(),PROXY_PORT, Path.TYPE_STRING_PATH, new Path(PROXY_PORT_KEY));
-        proxyPort.setLabel(i18n.tr("Proxy port"));
+        proxyPort.setLabel(I18N.tr("Proxy port"));
         proxyPort.setDefaultValue(DEFAULT_PORT_VALUE);
         this.add(proxyPort);
         
@@ -159,12 +159,12 @@ public class ProxyPreferenceModel extends DefaultPreferenceModel {
             int p = Integer.parseInt(preference.getValue());
             if (p < 0 || p > 65535) {
                 skipEvent = true;
-                proxyInfo.setValue(i18n.tr("The proxy port is invalid"));
+                proxyInfo.setValue(I18N.tr("The proxy port is invalid"));
                 preference.setValue(oldProxyPort);
             }
         } catch (NumberFormatException e) {
             skipEvent = true;
-            proxyInfo.setValue(i18n.tr("The proxy port is invalid"));
+            proxyInfo.setValue(I18N.tr("The proxy port is invalid"));
             preference.setValue(oldProxyPort);
             return;
         }

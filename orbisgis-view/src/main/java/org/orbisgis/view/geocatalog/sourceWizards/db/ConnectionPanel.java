@@ -47,7 +47,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class ConnectionPanel extends MultiInputPanel {
 
-        protected static final I18n I18N = I18nFactory.getI18n(ConnectionPanel.class);
+        private static final I18n I18N = I18nFactory.getI18n(ConnectionPanel.class);
         private static final int LENGTH = 20;
         public static final String DBTYPE = "dbtype";
         public static final String HOST = "host";

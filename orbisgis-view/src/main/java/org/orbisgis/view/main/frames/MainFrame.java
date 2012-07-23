@@ -49,7 +49,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * all other dockable frames.
  */
 public class MainFrame extends JFrame {
-        protected static final I18n i18n = I18nFactory.getI18n(MainFrame.class);
+        private static final I18n I18N = I18nFactory.getI18n(MainFrame.class);
         //Main menu keys
         public static final String MENU_FILE = "file";
         public static final String MENU_EXIT = "exitapp";
@@ -68,7 +68,7 @@ public class MainFrame extends JFrame {
 	 */
 	public MainFrame(){
                 getContentPane().setLayout(new BorderLayout());
-		setTitle( i18n.tr("OrbisGIS version {0} La Rochelle {1}", getClass().getPackage().getImplementationVersion(),Locale.getDefault().getCountry()));
+		setTitle( I18N.tr("OrbisGIS version {0} La Rochelle {1}", getClass().getPackage().getImplementationVersion(),Locale.getDefault().getCountry()));
                 setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
 		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis")); 
                 createMenu();
@@ -88,15 +88,15 @@ public class MainFrame extends JFrame {
          */
         private void createMenu() {
             //File menu
-            menuBar.addMenu("", new MenuProperties(MENU_FILE, new JMenu(i18n.tr("&File"))));
+            menuBar.addMenu("", new MenuProperties(MENU_FILE, new JMenu(I18N.tr("&File"))));
             //Add exit item
-            JMenuItem exitMenu = new JMenuItem(i18n.tr("&Exit"),OrbisGISIcon.getIcon("exit"));
+            JMenuItem exitMenu = new JMenuItem(I18N.tr("&Exit"),OrbisGISIcon.getIcon("exit"));
             exitMenu.addActionListener(EventHandler.create(ActionListener.class,this,"onMenuExitApplication"));
             menuBar.addMenuItem(MENU_FILE,new MenuItemProperties(MENU_EXIT,exitMenu));
             //Add the tools menu
-            menuBar.addMenu("", new MenuProperties(MENU_TOOLS, new JMenu(i18n.tr("&Tools"))));
+            menuBar.addMenu("", new MenuProperties(MENU_TOOLS, new JMenu(I18N.tr("&Tools"))));
             //Add preferencies menu item
-            JMenuItem preferenciesMenu = new JMenuItem(i18n.tr("&Configuration"),OrbisGISIcon.getIcon("preferences-system"));
+            JMenuItem preferenciesMenu = new JMenuItem(I18N.tr("&Configuration"),OrbisGISIcon.getIcon("preferences-system"));
             preferenciesMenu.addActionListener(EventHandler.create(ActionListener.class,this,"onMenuShowPreferencies"));
             menuBar.addMenuItem(MENU_TOOLS, new MenuItemProperties(MENU_TOOLS, preferenciesMenu));
         }

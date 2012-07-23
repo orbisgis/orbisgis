@@ -42,7 +42,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class OutputPanel extends JPanel {
         //Root logger, for gui logger error
         private static final Logger LOGGER = Logger.getLogger(OutputPanel.class);
-        protected static final I18n i18n = I18nFactory.getI18n(OutputPanel.class);
+        private static final I18n I18N = I18nFactory.getI18n(OutputPanel.class);
         private static final long serialVersionUID = 1L;
         private static final int DEFAULT_MAX_CHARACTERS = 200000;
 	private int maxCharacters = DEFAULT_MAX_CHARACTERS;
@@ -80,12 +80,12 @@ public class OutputPanel extends JPanel {
             //Create the root menu
             JPopupMenu rootMenu = new JPopupMenu();
             //Menu->Copy
-            JMenuItem copyItem = new JMenuItem(i18n.tr("&Copy"));
+            JMenuItem copyItem = new JMenuItem(I18N.tr("&Copy"));
             copyItem.addActionListener(EventHandler.create(ActionListener.class, this, "onMenuCopy"));
             MenuCommonFunctions.setMnemonic(copyItem);
             rootMenu.add(copyItem);
             //Menu->Clear
-            JMenuItem clearItem = new JMenuItem(i18n.tr("Clea&r"));
+            JMenuItem clearItem = new JMenuItem(I18N.tr("Clea&r"));
             clearItem.addActionListener(EventHandler.create(ActionListener.class, this, "onMenuClear"));
             MenuCommonFunctions.setMnemonic(clearItem);
             rootMenu.add(clearItem);
@@ -189,7 +189,7 @@ public class OutputPanel extends JPanel {
 			textPane.getDocument().insertString(len, text, aset);
                         removeAdditionnalCharacters();
 		} catch (BadLocationException e) {
-			LOGGER.error(i18n.tr("Cannot show the log message"), e);
+			LOGGER.error(I18N.tr("Cannot show the log message"), e);
 		}
 		textPane.setCaretPosition(textPane.getDocument().getLength());
 	}

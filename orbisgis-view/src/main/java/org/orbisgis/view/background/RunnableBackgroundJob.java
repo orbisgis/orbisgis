@@ -45,7 +45,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Alexis Guéganno
  */
 public class RunnableBackgroundJob implements Runnable {
-        protected static final I18n I18N = I18nFactory.getI18n(RunnableBackgroundJob.class);
+        private static final I18n I18N = I18nFactory.getI18n(RunnableBackgroundJob.class);
 	private Job job;
 	private ProgressMonitor pm;
 	private BackgroundManager jobQueue;

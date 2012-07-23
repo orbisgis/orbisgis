@@ -52,7 +52,7 @@ public class DataBaseRow {
         private String output_spatialField = "the_geom";
         private String inputSpatialField;
         private static final Logger LOGGER = Logger.getLogger(Catalog.class);
-        protected static final I18n I18N = I18nFactory.getI18n(Catalog.class);
+        private static final I18n I18N = I18nFactory.getI18n(Catalog.class);
 
         /**
          * Create a row object that stores all informations to export in a

@@ -44,7 +44,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 public class TocAbstractRenderer extends DefaultTreeCellRenderer {
-        protected static final I18n I18N = I18nFactory.getI18n(TocAbstractRenderer.class);
+        private static final I18n I18N = I18nFactory.getI18n(TocAbstractRenderer.class);
 	public static Icon getLayerIcon(ILayer layer) throws DriverException,
 			IOException {
 		if (layer.acceptsChilds()) {

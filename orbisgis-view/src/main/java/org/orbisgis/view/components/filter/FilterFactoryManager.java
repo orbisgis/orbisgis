@@ -31,7 +31,6 @@ package org.orbisgis.view.components.filter;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
@@ -60,7 +59,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 
 public class FilterFactoryManager<FilterInterface> {
-    protected static final I18n i18n = I18nFactory.getI18n(FilterFactoryManager.class);
+    private static final I18n I18N = I18nFactory.getI18n(FilterFactoryManager.class);
     private static final Logger LOGGER = Logger.getLogger(FilterFactoryManager.class);
     private JPanel filterListPanel;/*!< This panel contain the set of filters */
         //List of active filters
@@ -326,7 +325,7 @@ public class FilterFactoryManager<FilterInterface> {
     private JButton makeRemoveFilterButton() {
         //Create a compact button
         JButton removeFilterButton = new CustomButton(OrbisGISIcon.getIcon("delete"));
-        removeFilterButton.setToolTipText(i18n.tr("Delete this filter"));
+        removeFilterButton.setToolTipText(I18N.tr("Delete this filter"));
         return removeFilterButton;
     }
     /**
@@ -341,7 +340,7 @@ public class FilterFactoryManager<FilterInterface> {
         JButton addFilterButton = new CustomButton(OrbisGISIcon.getIcon("add_filter"));
         buttonAlignement.add(addFilterButton,BorderLayout.NORTH);
         //Toottip
-        addFilterButton.setToolTipText(i18n.tr("Add a new filter"));
+        addFilterButton.setToolTipText(I18N.tr("Add a new filter"));
         //Apply action listener
         addFilterButton.addActionListener( 
                 EventHandler.create(ActionListener.class, this, "onAddFilter")                

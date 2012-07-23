@@ -45,12 +45,12 @@ import org.xnap.commons.i18n.I18nFactory;
  * This panel includes all Output Type panel.
  */
 public class MainOutputPanel extends JPanel implements DockingPanel {
-    protected static final I18n i18n = I18nFactory.getI18n(MainOutputPanel.class);
+    private static final I18n I18N = I18nFactory.getI18n(MainOutputPanel.class);
     private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< docked panel properties */
     private JTabbedPane tabbedPane;
     public MainOutputPanel() {
         dockingParameters.setName("mainLog");
-        dockingParameters.setTitle(i18n.tr("Output"));
+        dockingParameters.setTitle(I18N.tr("Output"));
         dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("format-justify-fill"));
         dockingParameters.setCloseable(true);
         

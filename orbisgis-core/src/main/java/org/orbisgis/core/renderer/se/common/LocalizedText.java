@@ -46,7 +46,7 @@ public class LocalizedText {
     
     private String content;
     private Locale locale;
-    protected static final I18n I18N = I18nFactory.getI18n(LocalizedText.class);
+    private static final I18n I18N = I18nFactory.getI18n(LocalizedText.class);
             
     /**
      * Builds a new instance of {@code LocalizedText} with the given {@code

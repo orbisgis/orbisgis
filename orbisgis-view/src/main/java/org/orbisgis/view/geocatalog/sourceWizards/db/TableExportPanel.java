@@ -69,7 +69,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class TableExportPanel extends JDialog {
 
-        protected static final I18n I18N = I18nFactory.getI18n(TableExportPanel.class);
+        private static final I18n I18N = I18nFactory.getI18n(TableExportPanel.class);
         private static final Logger LOGGER = Logger.getLogger(Catalog.class);
         //private final ConnectionPanel firstPanel;
         private final String[] sourceNames;

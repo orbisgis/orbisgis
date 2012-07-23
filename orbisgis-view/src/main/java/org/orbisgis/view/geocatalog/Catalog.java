@@ -91,7 +91,7 @@ public class Catalog extends JPanel implements DockingPanel {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
 
         private static final long serialVersionUID = 1L;
-        protected static final I18n I18N = I18nFactory.getI18n(Catalog.class);
+        private static final I18n I18N = I18nFactory.getI18n(Catalog.class);
         private static final Logger LOGGER = Logger.getLogger(Catalog.class);
         private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*
          * !< GeoCatalog docked panel properties

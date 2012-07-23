@@ -40,11 +40,13 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class UIFactory {
 
-        protected static final I18n i18n = I18nFactory.getI18n(UIFactory.class);
+        private static final I18n I18N = I18nFactory.getI18n(UIFactory.class);
         private static URL defaultIconURL;
         private static ImageIcon defaultIcon;
         private static String okMessage;
         private static Window mainFrame = null;
+
+        private UIFactory(){}
 
         public static SIFDialog getSimpleDialog(UIPanel panel) {
                 return getSimpleDialog(panel, mainFrame);
@@ -102,7 +104,7 @@ public class UIFactory {
                 AbstractOutsideFrame dlg;
                 if (panels.length == 0) {
                         throw new IllegalArgumentException(
-                                i18n.tr("sif.uIFactory.atLeastAPanelHasToBeSpecified")); //$NON-NLS-1$
+                                I18N.tr("sif.uIFactory.atLeastAPanelHasToBeSpecified")); //$NON-NLS-1$
                 } else if (panels.length == 1) {
                         if (okCancel) {
                                 dlg = getSimpleDialog(panels[0]);
@@ -167,7 +169,7 @@ public class UIFactory {
         }
 
         public static I18n getI18n() {
-                return i18n;
+                return I18N;
         }        
         
 }

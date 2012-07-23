@@ -42,7 +42,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class SQLConsole extends JPanel implements DockingPanel{
 
-        protected static final I18n I18N = I18nFactory.getI18n(SQLConsole.class);
+        private static final I18n I18N = I18nFactory.getI18n(SQLConsole.class);
         private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< docked panel properties */
 
         public SQLConsole(){

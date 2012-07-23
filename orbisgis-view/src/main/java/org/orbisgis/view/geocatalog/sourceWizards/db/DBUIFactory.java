@@ -43,7 +43,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class DBUIFactory {
 
-        protected static final I18n I18N = I18nFactory.getI18n(TableExportPanel.class);
+        private static final I18n I18N = I18nFactory.getI18n(TableExportPanel.class);
         static String DBTYPE = "dbtype";
         static String HOST = "host";
         static String PORT = "port";

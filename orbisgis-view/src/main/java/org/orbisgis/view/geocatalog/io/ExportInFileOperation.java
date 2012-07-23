@@ -49,7 +49,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 public class ExportInFileOperation implements BackgroundJob {
 
-        protected static final I18n I18N = I18nFactory.getI18n(ExportInFileOperation.class);
+        private static final I18n I18N = I18nFactory.getI18n(ExportInFileOperation.class);
         private static final Logger LOGGER = Logger.getLogger(ExportInFileOperation.class);
         private File savedFile;
         private DataSourceFactory dsf;

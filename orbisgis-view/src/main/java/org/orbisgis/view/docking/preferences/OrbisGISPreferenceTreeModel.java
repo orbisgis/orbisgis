@@ -46,7 +46,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Specific OrbisGIS preferences.
  */
 public class OrbisGISPreferenceTreeModel extends PreferenceTreeModel {
-    protected static final I18n i18n = I18nFactory.getI18n(OrbisGISPreferenceTreeModel.class);
+    private static final I18n I18N = I18nFactory.getI18n(OrbisGISPreferenceTreeModel.class);
         /**
      * Creates a new model. This constructor sets the behavior of how to
      * create paths for preferences to {@link PathCombiner#SECOND}. This
@@ -69,17 +69,17 @@ public class OrbisGISPreferenceTreeModel extends PreferenceTreeModel {
     public OrbisGISPreferenceTreeModel( CControl control, PathCombiner combiner ){
         super( combiner, control.getController() );
         DockController controller = control.intern().getController();
-        //Linked, we use the DockingFrames i18n
+        //Linked, we use the DockingFrames I18N
         //Taken from CPreferenceModel, but with a specific root node
-        putNode(new Path( "windows"),i18n.tr("Windows"));
+        putNode(new Path( "windows"),I18N.tr("Windows"));
         putLinked( new Path( "windows.shortcuts" ), "preference.shortcuts", new CKeyStrokePreferenceModel( controller.getProperties() ) );
         putLinked( new Path( "windows.buttonContent" ), "preference.buttonContent", new ButtonContentPreferenceModel( controller ) );
         putLinked( new Path( "windows.layout" ), "preference.layout", new CLayoutPreferenceModel( control ));
         putLinked( new Path( "windows.layout.BubbleTheme" ), "theme.bubble", new BubbleThemePreferenceModel( controller.getProperties() ));
         putLinked( new Path( "windows.layout.EclipseTheme" ), "theme.eclipse", new EclipseThemePreferenceModel( controller.getProperties() ));
         //Custom properties
-        putNode(new Path( "web"),i18n.tr("Web configuration"));
-        put(new Path( "web.proxy" ),i18n.tr("Proxy"),new ProxyPreferenceModel(controller).initListeners());
+        putNode(new Path( "web"),I18N.tr("Web configuration"));
+        put(new Path( "web.proxy" ),I18N.tr("Proxy"),new ProxyPreferenceModel(controller).initListeners());
         
     }
 }
