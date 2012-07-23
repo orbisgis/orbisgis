@@ -526,7 +526,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
             throws ParameterException, IOException {
 
 
-        if (this.fill != null) {
+        if (this.fill != null && width.getValue(map) > 0) {
 
             List<Shape> shapes;
             // if not using offset rapport, compute perpendicular offset first
