@@ -42,22 +42,45 @@ import javax.swing.JTextField;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 
+/**
+ * This class is used to ask for a value of any kind through a graphical interface.
+ * Whatever the input, it will always be validated with
+ * {@link AskValue#validateInput() }. The built UI is basically made with a
+ * single text field.
+ * @author Erwan Bocher
+ * @author Alexis Guéganno
+ */
 public class AskValue implements UIPanel {
 
         private JTextField txtField;
-        private String[] sql;
         private String title;
         private String[] error;
         private String initialValue;
 
+        /**
+         * Build a new {@code AskValue}.
+         * @param title
+         * The title of the window.
+         * @param sql
+         * An SQL statement - can be empty or null.
+         * @param error
+         * The error returned if something wrong happens.
+         */
         public AskValue(String title, String sql, String error) {
                 this(title, sql, error, "");
         }
 
+        /**
+         * Build a new {@code AskValue} with an initial value set in the text
+         * field.
+         * @param title
+         * @param sql
+         * @param error
+         * @param initialValue
+         */
         public AskValue(String title, String sql, String error,
                 String initialValue) {
                 this.title = title;
-                this.sql = (sql == null) ? null : new String[]{sql};
                 this.error = (error == null) ? null : new String[]{error};
                 this.initialValue = initialValue;
         }
@@ -78,22 +101,47 @@ public class AskValue implements UIPanel {
                 return null;
         }
 
+        /**
+         * Get the error messages that can be returned by this {@code AskValue}.
+         * @return
+         */
         public String[] getErrorMessages() {
                 return error;
         }
 
+        /**
+         * Get the value contained in the text field as a String embedded in a
+         * String array.
+         * @return
+         */
         public String[] getValues() {
                 return new String[]{txtField.getText()};
         }
 
+        /**
+         * Gets the value contained in the text field.
+         * @return
+         */
         public String getValue() {
                 return getValues()[0];
         }
 
+        /**
+         *
+         * @return
+         * {@code null}.
+         */
         public String getId() {
                 return null;
         }
 
+        /**
+         * Sets the value of the text field externally
+         * @param fieldName
+         * Not used in AskValue, can be null.
+         * @param fieldValue
+         * The value to be set.
+         */
         public void setValue(String fieldName, String fieldValue) {
                 txtField.setText(fieldValue);
         }
