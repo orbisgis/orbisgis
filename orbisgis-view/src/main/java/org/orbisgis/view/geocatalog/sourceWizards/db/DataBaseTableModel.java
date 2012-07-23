@@ -32,7 +32,10 @@ import java.util.ArrayList;
 import javax.swing.table.AbstractTableModel;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
 import org.jproj.CoordinateReferenceSystem;
 import org.orbisgis.core.DataManager;
@@ -43,16 +46,24 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  *
  * @author Erwan Bocher
+ * @author Alexis Guéganno
  */
 public class DataBaseTableModel extends AbstractTableModel {
 
         private static final Logger LOGGER = Logger.getLogger(DataBaseTableModel.class);
         protected final static I18n I18N = I18nFactory.getI18n(DataBaseTableModel.class);
         private final String[] sourceNames;
-        String[] columnNames;
+        private String[] columnNames;
         private ArrayList<DataBaseRow> data = new ArrayList<DataBaseRow>();
         private boolean isEditable = false;
 
+        /**
+         * Build a new {@code DataBaseTableModel} using the {@code Source}
+         * instances regeistered in {@code sourceManager} with names {@code
+         * sourceNames}.
+         * @param sourceManager
+         * @param sourceNames
+         */
         public DataBaseTableModel(SourceManager sourceManager, String[] sourceNames) {
                 this.sourceNames = sourceNames;
                 init(sourceManager);
@@ -66,19 +77,24 @@ public class DataBaseTableModel extends AbstractTableModel {
         /**
          * Create the panel to display the list of tables.
          *
-         * @param firstPanel
+         * @param sourceManager
+         * The {@code SourceManager} used to retrieve sources.
          */
         private void init(SourceManager sourceManager) {
                 try {
                         DataManager dm = (DataManager) Services.getService(DataManager.class);
                         DataSourceFactory dsf = dm.getDataSourceFactory();
-                        columnNames = new String[]{"Source name", "Table name", "Schema", "PK", "Spatial field", "CRS name", "EPSG code", "Export"};
+                        columnNames = new String[]{"Source name", "Table name", "Schema",
+                                "PK", "Spatial field", "CRS name", "EPSG code", "Export"};
                         String crsName = "Unknown";
                         int epsgCode = -1;
+                        final int validType = SourceManager.VECTORIAL | SourceManager.RASTER
+                                | SourceManager.WMS | SourceManager.SYSTEM_TABLE;
                         for (String sourceName : sourceNames) {
                                 int type = sourceManager.getSource(sourceName).getType();
-                                if (((SourceManager.VECTORIAL | SourceManager.RASTER | SourceManager.WMS | SourceManager.SYSTEM_TABLE) & type) == 0) {
-                                        DataBaseRow row = new DataBaseRow(sourceName, sourceName, "public", "gid", "the_geom", crsName, epsgCode, Boolean.TRUE);
+                                if ((validType & type) == 0) {
+                                        DataBaseRow row = new DataBaseRow(sourceName, sourceName, "public", "gid",
+                                                "the_geom", crsName, epsgCode, Boolean.TRUE);
                                         data.add(row);
                                 } else if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
                                         DataSource ds = dsf.getDataSource(sourceName);
@@ -88,16 +104,20 @@ public class DataBaseTableModel extends AbstractTableModel {
                                         if (crs != null) {
                                                 crsName = crs.getName();
                                                 epsgCode = crs.getEPSGCode();
-
                                         }
                                         ds.close();
-                                        DataBaseRow row = new DataBaseRow(sourceName, sourceName, "public", "gid", geomField, crsName, epsgCode, Boolean.TRUE);
+                                        DataBaseRow row = new DataBaseRow(sourceName, sourceName,
+                                                "public", "gid", geomField, crsName, epsgCode, Boolean.TRUE);
 
                                         row.setIsSpatial(true);
                                         data.add(row);
                                 }
                         }
-                } catch (Exception e) {
+                } catch (NoSuchTableException ex) {
+                        LOGGER.error(I18N.tr("This table does not exist."), ex);
+                } catch (DataSourceCreationException ex) {
+                        LOGGER.error(I18N.tr("The required DataSource could not be created."), ex);
+                } catch (DriverException e) {
                         LOGGER.error(I18N.tr("Cannot connect to the database."), e);
                 }
         }
@@ -162,8 +182,10 @@ public class DataBaseTableModel extends AbstractTableModel {
                 return data.get(row).getObjects();
         }
 
-        /*
-         * Return the row
+        /**
+         * Returns the row at index {@code rowIndex}.
+         * @param rowIndex
+         * @return
          */
         public DataBaseRow getRow(int rowIndex) {
                 return data.get(rowIndex);
