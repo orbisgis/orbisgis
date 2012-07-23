@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat;
+package org.orbisgis.view.sqlconsole.codereformat;
 
 /*
  * Copyright (C) 2003 Gerd Wagner
@@ -49,7 +49,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
 import org.apache.log4j.Logger;
 import org.orbisgis.utils.I18N;
 import org.orbisgis.utils.TextUtils;
@@ -74,8 +73,11 @@ public class CodeReformator implements ICodeReformator {
 	}
 
 	/**
-	 * @see net.sourceforge.squirrel_sql.fw.codereformat.ICodeReformator#reformat(java.lang.String)
+         * @param in 
+         * @return 
+         * @see net.sourceforge.squirrel_sql.fw.codereformat.ICodeReformator#reformat(java.lang.String)
 	 */
+        @Override
 	public String reformat(String in) {
 		in = flatenWhiteSpaces(in, false);
 
@@ -85,7 +87,7 @@ public class CodeReformator implements ICodeReformator {
 
 		pieces = doInsertSpecial(pieces);
 
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		int braketCount = 0;
 		for (int i = 0; i < pieces.length; ++i) {
 			if (")".equals(pieces[i])) {
@@ -110,7 +112,7 @@ public class CodeReformator implements ICodeReformator {
 		if (!normalizedBefore.equalsIgnoreCase(normalizedAfter)) {
 			int minLen = Math.min(normalizedAfter.length(), normalizedBefore
 					.length());
-			StringBuffer diffPos = new StringBuffer();
+			StringBuilder diffPos = new StringBuilder();
 			for (int i = 0; i < minLen; ++i) {
 				if (Character.toUpperCase(normalizedBefore.charAt(i)) != Character
 						.toUpperCase(normalizedAfter.charAt(i))) {
@@ -178,7 +180,7 @@ public class CodeReformator implements ICodeReformator {
 	private List<String> getReformatedPieces(String in,
 			PieceMarkerSpec[] markers) {
 		CodeReformatorKernel kernel = new CodeReformatorKernel(
-				_statementSeparator, markers, _commentSpecs);
+                        markers, _commentSpecs);
 		String[] pieces = kernel.toPieces(in);
 		ArrayList<String> piecesBuf = new ArrayList<String>();
 
@@ -258,7 +260,7 @@ public class CodeReformator implements ICodeReformator {
 		ArrayList<String> valuesList = new ArrayList<String>();
 		ArrayList<String> behindInsert = new ArrayList<String>();
 
-		StringBuffer statementBegin = new StringBuffer();
+		StringBuilder statementBegin = new StringBuilder();
 		int braketCountAbsolute = 0;
 		for (int i = 0; i < pieces.length; ++i) {
 			if (3 < braketCountAbsolute) {
@@ -299,8 +301,8 @@ public class CodeReformator implements ICodeReformator {
 
 		if (insertList.size() == valuesList.size()) {
 			ret.add(statementBegin.toString());
-			StringBuffer insert = new StringBuffer();
-			StringBuffer values = new StringBuffer();
+			StringBuilder insert = new StringBuilder();
+			StringBuilder values = new StringBuilder();
 
 			String insBuf = insertList.get(0);
 			String valsBuf = valuesList.get(0);
@@ -342,7 +344,7 @@ public class CodeReformator implements ICodeReformator {
 		if (s1.length() == max) {
 			return s1;
 		} else {
-			StringBuffer sb = new StringBuffer();
+			StringBuilder sb = new StringBuilder();
 			sb.append(s1);
 			while (sb.length() < max) {
 				sb.append(' ');
@@ -354,12 +356,12 @@ public class CodeReformator implements ICodeReformator {
 	private String[] trySplit(String piece, int braketDepth, int trySplitLineLen) {
 		String trimmedPiece = piece.trim();
 		CodeReformatorKernel dum = new CodeReformatorKernel(
-				_statementSeparator, new PieceMarkerSpec[0], _commentSpecs);
+                        new PieceMarkerSpec[0], _commentSpecs);
 
 		if (hasTopLevelColon(trimmedPiece, dum)) {
 			PieceMarkerSpec[] pms = createPieceMarkerSpecIncludeColon();
 			CodeReformatorKernel crk = new CodeReformatorKernel(
-					_statementSeparator, pms, _commentSpecs);
+					pms, _commentSpecs);
 			String[] splitPieces1 = crk.toPieces(trimmedPiece);
 			if (1 == splitPieces1.length) {
 				return splitPieces1;
@@ -387,7 +389,7 @@ public class CodeReformator implements ICodeReformator {
 				// Split the first two matching toplevel brakets here
 				PieceMarkerSpec[] pms = createPieceMarkerSpecExcludeColon();
 				CodeReformatorKernel crk = new CodeReformatorKernel(
-						_statementSeparator, pms, _commentSpecs);
+                                        pms, _commentSpecs);
 				String[] splitPieces1 = crk.toPieces(trimmedPiece.substring(
 						tlbi[0] + 1, tlbi[1]));
 
@@ -511,7 +513,7 @@ public class CodeReformator implements ICodeReformator {
 	}
 
 	private String indent(String piece, int callDepth) {
-		StringBuffer sb = new StringBuffer();
+		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < callDepth; ++i) {
 			sb.append(INDENT);
 		}
@@ -527,7 +529,7 @@ public class CodeReformator implements ICodeReformator {
 			return in;
 		}
 
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		int aposCount = 0;
 		for (int i = 0; i < in.length(); ++i) {
 
@@ -563,7 +565,7 @@ public class CodeReformator implements ICodeReformator {
 
 	boolean hasCommentEndingWithLineFeed(String in) {
 		CodeReformatorKernel dum = new CodeReformatorKernel(
-				_statementSeparator, new PieceMarkerSpec[0], _commentSpecs);
+				new PieceMarkerSpec[0], _commentSpecs);
 		StateOfPosition[] sops = dum.getStatesOfPosition(in);
 
 		boolean inComment = false;

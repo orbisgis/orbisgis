@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.ui.plugins.views.sqlConsole.util;
+package org.orbisgis.view.sqlconsole.util;
 
 /*
  * Copyright (C) 2003 Gerd Wagner
@@ -55,7 +55,7 @@ public class QuoteUtilities {
 
 		String[] lines = textToQuote.split("\n");
 
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 
 		if (sbAppend) {
 			ret.append("sb.append(\"").append(
@@ -100,7 +100,7 @@ public class QuoteUtilities {
 
 		StringTokenizer st = new StringTokenizer(textToUnquote, "\"");
 
-		StringBuffer ret = new StringBuffer();
+		StringBuilder ret = new StringBuilder();
 		while (st.hasMoreTokens()) {
 			String token = st.nextToken();
 			String trimmedToken = token;

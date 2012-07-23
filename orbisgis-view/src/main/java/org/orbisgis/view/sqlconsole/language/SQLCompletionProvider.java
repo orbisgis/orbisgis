@@ -26,39 +26,25 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.ui.plugins.views.sqlConsole.language;
+package org.orbisgis.view.sqlconsole.language;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
-import org.fife.ui.autocomplete.AutoCompletion;
-import org.fife.ui.autocomplete.Completion;
-import org.fife.ui.autocomplete.DefaultCompletionProvider;
-import org.fife.ui.autocomplete.ParameterizedCompletion;
-import org.fife.ui.autocomplete.VariableCompletion;
+import org.fife.ui.autocomplete.ParameterizedCompletion.Parameter;
+import org.fife.ui.autocomplete.*;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.DefaultType;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.function.Argument;
-import org.gdms.sql.function.BasicFunctionSignature;
-import org.gdms.sql.function.Function;
-import org.gdms.sql.function.FunctionManager;
-import org.gdms.sql.function.FunctionSignature;
-import org.gdms.sql.function.ScalarArgument;
+import org.gdms.sql.function.*;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.language.matcher.SQLMatcher;
+import org.orbisgis.view.sqlconsole.language.matcher.SQLMatcher;
 
 /**
  * A SQL CompletionProvider based on a simple Lexer and a simple top-down parser.
@@ -157,7 +143,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
         public void addFunctionCompletions(boolean tables, boolean scalar, boolean executor) {
                 final FunctionManager functionManager = dataManager.getDataSourceFactory().getFunctionManager();
                 
-                HashSet a = new HashSet();
+                HashSet<Completion> a = new HashSet<Completion>();
 
                 // retrieve all registered functions
                 String[] functions = functionManager.getFunctionNames();
@@ -169,8 +155,8 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                                 || (function.isTable() && tables) || (function.isExecutor() && executor)) {
                                 FunctionSignature[] args = function.getFunctionSignatures();
                                 for (int j = 0; j < args.length; j++) {
-                                        ArrayList params = new ArrayList();
-                                        String typeDesc = null;
+                                        ArrayList<Parameter> params = new ArrayList<Parameter>();
+                                        String typeDesc;
 
                                         // trying to get it from the cache
                                         Completion compl = cachedCompletions.get(function.getName() + '_' + j);
@@ -225,7 +211,7 @@ public class SQLCompletionProvider extends DefaultCompletionProvider implements 
                         }
                 }
 
-                addCompletions(new ArrayList(a));
+                addCompletions(new ArrayList<Completion>(a));
         }
 
         /**

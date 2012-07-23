@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.ui.plugins.views.sqlConsole.language;
+package org.orbisgis.view.sqlconsole.language;
 
 import org.gdms.data.schema.Metadata;
 

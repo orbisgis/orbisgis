@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.ui.plugins.views.sqlConsole.language.matcher;
+package org.orbisgis.view.sqlconsole.language.matcher;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;

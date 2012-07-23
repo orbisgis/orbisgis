@@ -26,16 +26,14 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.ui.plugins.views.sqlConsole.language.matcher;
+package org.orbisgis.view.sqlconsole.language.matcher;
 
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Set;
-
 import org.fife.ui.autocomplete.ShorthandCompletion;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.language.SQLCompletionProvider;
-
 import org.gdms.data.values.SQLValueFactory;
+import org.orbisgis.view.sqlconsole.language.SQLCompletionProvider;
 
 /**
  * This is a hand written SQL pattern matcher that triggers the correct completion actions.

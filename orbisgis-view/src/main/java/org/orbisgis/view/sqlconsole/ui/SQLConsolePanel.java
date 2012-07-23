@@ -29,29 +29,26 @@
 package org.orbisgis.view.sqlconsole.ui;
 
 import java.awt.BorderLayout;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.beans.EventHandler;
 import javax.swing.*;
-import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
-import org.orbisgis.view.sqlConsole.actions.ActionsListener;
-import org.orbisgis.view.sqlConsole.actions.ConsoleAction;
-import org.orbisgis.view.sqlConsole.actions.ConsoleListener;
-import org.orbisgis.view.sqlConsole.actions.SQLConsoleKeyListener;
-import org.orbisgis.view.sqlConsole.codereformat.CodeReformator;
-import org.orbisgis.view.sqlConsole.codereformat.CommentSpec;
-import org.orbisgis.view.sqlConsole.language.SQLLanguageSupport;
+import org.orbisgis.view.components.findReplace.FindReplaceDialog;
+import org.orbisgis.view.sqlconsole.codereformat.CodeReformator;
+import org.orbisgis.view.sqlconsole.codereformat.CommentSpec;
+import org.orbisgis.view.sqlconsole.language.SQLLanguageSupport;
 
-public class SQLConsolePanel extends JPanel implements DropTargetListener {
+/**
+ * SQL Panel that contain a RSyntaxTextArea
+ */
+public class SQLConsolePanel extends JPanel {
+        private static final long serialVersionUID = 1L;
 
+        private JToolBar toolBar;
         private JButton btExecute = null;
         private JButton btClear = null;
         private JButton btOpen = null;
@@ -71,53 +68,25 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
         static CommentSpec[] COMMENT_SPECS = new CommentSpec[]{
                 new CommentSpec("/*", "*/"), new CommentSpec("--", "\n")};
         private FindReplaceDialog findReplaceDialog;
-
         /**
          * Creates a console for sql.
          */
         public SQLConsolePanel() {
-                actionAndKeyListener = new ActionsListener(listener, this);
                 setLayout(new BorderLayout());
                 JPanel split = new JPanel();
                 split.setLayout(new BorderLayout());
-                split.add(new SQLFunctionsPanel(this), BorderLayout.EAST);
-                split.add(getCenterPanel(listener), BorderLayout.CENTER);
+                split.add(new SQLFunctionsPanel(), BorderLayout.EAST);
+                split.add(getCenterPanel(), BorderLayout.CENTER);
                 add(split, BorderLayout.CENTER);
-
-                if (listener.showControlButtons()) {
-                        add(getButtonToolBar(), BorderLayout.NORTH);
-                }
-                setButtonsStatus();
                 add(getStatusToolBar(), BorderLayout.SOUTH);
-
-
-
         }
 
-        // getters
-        private JToolBar getButtonToolBar() {
-                final JToolBar northPanel = new JToolBar();
-                northPanel.add(getBtExecute());
-                northPanel.add(getBtClear());
-                northPanel.add(getBtOpen());
-                northPanel.add(getBtSave());
-                northPanel.add(getBtFindReplace());
-                setBtExecute();
-                setBtClear();
-                setBtSave();
-                setBtFindReplace();
-                northPanel.setFloatable(false);
-                northPanel.setBorderPainted(false);
-                northPanel.setOpaque(false);
-                return northPanel;
-        }
 
-        private RTextScrollPane getCenterPanel(ConsoleListener listener) {
+        private RTextScrollPane getCenterPanel() {
                 if (centerPanel == null) {
                         scriptPanel = new RSyntaxTextArea();
                         scriptPanel.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_SQL);
-                        scriptPanel.getDocument().addDocumentListener(actionAndKeyListener);
-                        scriptPanel.setDropTarget(new DropTarget(centerPanel, this));
+                        //scriptPanel.getDocument().addDocumentListener(actionAndKeyListener);
                         scriptPanel.setLineWrap(true);
                         scriptPanel.setClearWhitespaceLinesEnabled(true);
                         scriptPanel.setMarkOccurrences(false);
@@ -127,24 +96,22 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
                         CodeReformator codeReformator = new CodeReformator(";",
                                 COMMENT_SPECS);
 
+                        /*
                         scriptPanel.addKeyListener(new SQLConsoleKeyListener(this,
                                 codeReformator, actionAndKeyListener));
+                                */
+                        scriptPanel.addCaretListener(EventHandler.create(CaretListener.class,"this","onScriptPanelCaretUpdate"));
 
-                        scriptPanel.addCaretListener(new CaretListener() {
-
-                                @Override
-                                public void caretUpdate(CaretEvent e) {
-                                        line = scriptPanel.getCaretLineNumber() + 1;
-                                        character = scriptPanel.getCaretOffsetFromLineStart();
-                                        setStatusMessage(message);
-                                }
-                        });
 
                         centerPanel = new RTextScrollPane(scriptPanel);
                 }
                 return centerPanel;
         }
-
+        public void onScriptPanelCaretUpdate() {
+                line = scriptPanel.getCaretLineNumber() + 1;
+                character = scriptPanel.getCaretOffsetFromLineStart();
+                setStatusMessage(message);
+        }
         private JToolBar getStatusToolBar() {
 
                 if (toolBar == null) {
@@ -166,7 +133,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
                 return toolBar;
         }
 
-        public void setStatusMessage(String message) {
+        public final void setStatusMessage(String message) {
                 this.message = message;
                 if (!message.isEmpty()) {
                         timer.restart();
@@ -182,89 +149,8 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
                 this.line = line;
         }
 
-        private JButton getBtFindReplace() {
-                if (null == btFindReplace) {
-                        btFindReplace = new ConsoleButton(ConsoleAction.FIND_REPLACE,
-                                actionAndKeyListener);
-                }
-                return btFindReplace;
-        }
-
-        private JButton getBtExecute() {
-                if (null == btExecute) {
-                        btExecute = new ConsoleButton(ConsoleAction.EXECUTE,
-                                actionAndKeyListener);
-                }
-                return btExecute;
-        }
-
-        private JButton getBtClear() {
-                if (null == btClear) {
-                        btClear = new ConsoleButton(ConsoleAction.CLEAR,
-                                actionAndKeyListener);
-                }
-                return btClear;
-        }
-
-        private JButton getBtOpen() {
-                if (null == btOpen) {
-                        btOpen = new ConsoleButton(ConsoleAction.OPEN, actionAndKeyListener);
-                }
-                return btOpen;
-        }
-
-        private JButton getBtSave() {
-                if (null == btSave) {
-                        btSave = new ConsoleButton(ConsoleAction.SAVE, actionAndKeyListener);
-                }
-                return btSave;
-        }
-
         public String getText() {
                 return scriptPanel.getText();
-        }
-
-        private void setBtFindReplace() {
-                if (0 == getText().length()) {
-                        getBtFindReplace().setEnabled(false);
-                } else {
-                        getBtFindReplace().setEnabled(true);
-                }
-        }
-
-        private void setBtExecute() {
-                if (0 == getText().length()) {
-                        getBtExecute().setEnabled(false);
-                } else {
-                        getBtExecute().setEnabled(true);
-                }
-        }
-
-        private void setBtClear() {
-                if (0 == getText().length()) {
-                        getBtClear().setEnabled(false);
-                } else {
-                        getBtClear().setEnabled(true);
-                }
-        }
-
-        private void setBtOpen() {
-        }
-
-        private void setBtSave() {
-                if (0 == getText().length()) {
-                        getBtSave().setEnabled(false);
-                } else {
-                        getBtSave().setEnabled(true);
-                }
-        }
-
-        public void setButtonsStatus() {
-                setBtExecute();
-                setBtClear();
-                setBtOpen();
-                setBtSave();
-                setBtFindReplace();
         }
 
         public RSyntaxTextArea getScriptPanel() {
@@ -385,68 +271,12 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
                         scriptPanel.getDocument().getLength(), string, null);
         }
 
-        @Override
-        public void dragEnter(DropTargetDragEvent dtde) {
-        }
-
-        @Override
-        public void dragOver(DropTargetDragEvent dtde) {
-        }
-
-        @Override
-        public void dropActionChanged(DropTargetDragEvent dtde) {
-        }
-
-        @Override
-        public void dragExit(DropTargetEvent dte) {
-        }
-
-        @Override
-        public void drop(DropTargetDropEvent dtde) {
-                final Transferable t = dtde.getTransferable();
-
-                String query = listener.doDrop(t);
-                if (query == null) {
-                        try {
-                                if ((t.isDataFlavorSupported(TransferableSource.getResourceFlavor()))
-                                        || (t.isDataFlavorSupported(TransferableLayer.getLayerFlavor()))) {
-                                        dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-                                        String s = (String) t.getTransferData(DataFlavor.stringFlavor);
-                                        dtde.getDropTargetContext().dropComplete(true);
-                                        query = s;
-                                } else if (t.isDataFlavorSupported(DataFlavor.stringFlavor)) {
-                                        dtde.acceptDrop(DnDConstants.ACTION_COPY_OR_MOVE);
-                                        String s = (String) t.getTransferData(DataFlavor.stringFlavor);
-                                        dtde.getDropTargetContext().dropComplete(true);
-                                        query = s;
-                                }
-                        } catch (IOException e) {
-                                dtde.rejectDrop();
-                        } catch (UnsupportedFlavorException e) {
-                                dtde.rejectDrop();
-                        }
-                }
-
-                if (query != null) {
-                        // Cursor position
-                        int position = scriptPanel.viewToModel(dtde.getLocation());
-                        try {
-                                scriptPanel.getDocument().insertString(position, query, null);
-                        } catch (BadLocationException e) {
-                                ErrorMessages.error(
-                                        I18N.getString("orbisgis.org.orbisgis.textArea.BadLocationException"),
-                                        e);
-                        }
-                } else {
-                        dtde.rejectDrop();
-                }
-
-                setButtonsStatus();
-        }
-
         public void freeResources() {
                 if (lang != null) {
                         lang.uninstall(scriptPanel);
+                }
+                if(timer!=null) {
+                        timer.stop();
                 }
         }
 

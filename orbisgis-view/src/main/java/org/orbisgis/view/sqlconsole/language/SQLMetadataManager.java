@@ -26,14 +26,9 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.ui.plugins.views.sqlConsole.language;
+package org.orbisgis.view.sqlconsole.language;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import org.gdms.data.DataSource;
@@ -52,10 +47,10 @@ import org.gdms.source.SourceListener;
 import org.gdms.source.SourceRemovalEvent;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.background.BackgroundJob;
-import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.background.UniqueJobID;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.view.background.BackgroundJob;
+import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.background.UniqueJobID;
 
 /**
  * Handles all Metadata-related caching for the {@link SQLLanguageSupport} class.

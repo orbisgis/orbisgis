@@ -31,7 +31,6 @@ package org.orbisgis.view.components.filter;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
@@ -274,6 +273,7 @@ public class FilterFactoryManager<FilterInterface> {
     }
     /**
      * Regenerate all filters from filters components
+     * @return All active filters
      */
     public List<FilterInterface> getFilters() {
         List<FilterInterface> generatedFilters = new ArrayList<FilterInterface>();

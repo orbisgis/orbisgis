@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat;
+package org.orbisgis.view.sqlconsole.codereformat;
 
 /**
  * An interface to allow alternate implementations of the CodeReformator to be configured by plugins.

@@ -26,7 +26,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat;
+package org.orbisgis.view.sqlconsole.codereformat;
+
+import java.util.ArrayList;
+import java.util.List;
+
 /*
  * Copyright (C) 2003 Gerd Wagner
  *
@@ -44,27 +48,24 @@ package org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat;
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-import java.util.Vector;
 
 public class CodeReformatorKernel
 {
-	private String _statementSeparator;
 	private CommentSpec[] _commentSpecs;
 	private PieceMarkerSpec[] _pieceSpecs;
 	private StateOfPosition[] _statesOfPosition;
 
-	public CodeReformatorKernel(String statementSeparator, PieceMarkerSpec[] pieceSpecs, CommentSpec[] commentSpecs)
+	public CodeReformatorKernel(PieceMarkerSpec[] pieceSpecs, CommentSpec[] commentSpecs)
 	{
 		_commentSpecs = commentSpecs;
 		_pieceSpecs = pieceSpecs;
-		_statementSeparator = statementSeparator;
 	}
 
 	public String[] toPieces(String in)
 	{
 		_statesOfPosition = getStatesOfPosition(in);
 
-		Vector<String> ret = new Vector<String>();
+		List<String> ret = new ArrayList<String>();
 
       // toUpperCase replaces the German ß by ss.
       // This will kill reformating later.

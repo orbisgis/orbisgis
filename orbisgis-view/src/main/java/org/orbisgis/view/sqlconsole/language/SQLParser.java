@@ -26,26 +26,15 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.ui.plugins.views.sqlConsole.language;
+package org.orbisgis.view.sqlconsole.language;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-
 import javax.swing.text.BadLocationException;
-
-import org.antlr.runtime.ANTLRInputStream;
-import org.antlr.runtime.CommonTokenStream;
-import org.antlr.runtime.MismatchedTokenException;
-import org.antlr.runtime.RecognitionException;
-import org.antlr.runtime.Token;
+import org.antlr.runtime.*;
 import org.fife.ui.rsyntaxtextarea.RSyntaxDocument;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
-import org.fife.ui.rsyntaxtextarea.parser.AbstractParser;
-import org.fife.ui.rsyntaxtextarea.parser.DefaultParseResult;
-import org.fife.ui.rsyntaxtextarea.parser.DefaultParserNotice;
-import org.fife.ui.rsyntaxtextarea.parser.ParseResult;
-import org.fife.ui.rsyntaxtextarea.parser.ParserNotice;
-
+import org.fife.ui.rsyntaxtextarea.parser.*;
 import org.gdms.sql.engine.ANTLRCaseInsensitiveInputStream;
 import org.gdms.sql.parser.GdmSQLLexer;
 import org.gdms.sql.parser.GdmSQLParser;

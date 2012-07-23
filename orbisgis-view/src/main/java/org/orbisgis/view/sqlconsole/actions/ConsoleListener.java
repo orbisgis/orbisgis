@@ -26,41 +26,56 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.sqlconsole.codereformat;
-/*
- * Copyright (C) 2003 Gerd Wagner
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License
- * as published by the Free Software Foundation; either version 2
- * of the License, or any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
- */
-public class StateOfPosition
-{
-	public boolean isTopLevel;
+package org.orbisgis.view.sqlconsole.actions;
 
-	public int commentIndex = -1;
-	public int literalSepCount = 0;
-	public int braketDepth = 0;
+import java.awt.datatransfer.Transferable;
+import java.io.IOException;
 
-        @Override
-	public Object clone()
-	{
-		StateOfPosition ret = new StateOfPosition();
-		ret.commentIndex = commentIndex;
-		ret.literalSepCount = commentIndex;
-		ret.braketDepth = braketDepth;
-		ret.isTopLevel = isTopLevel;
+public interface ConsoleListener {
 
-		return ret;
-	}
+	/**
+	 * Executes the text in the console.
+	 * 
+	 * @param text
+	 *            Content of the console
+	 */
+	void execute(String text);
+
+	/**
+	 * Opens a script and returns the contents, that will be placed in the
+	 * console
+	 * 
+	 * @throws IOException
+	 */
+	String open() throws IOException;
+
+	/**
+	 * Saves the content of the console
+	 * 
+	 * @param text
+         * @return true if the file has been saved, false otherwise
+         * @throws IOException
+	 */
+	boolean save(String text) throws IOException;
+
+	/**
+	 * Invoked when the text of the console is changed
+	 */
+	void change();
+
+	/**
+	 * Return true if the buttons to execute, open, save, etc. have to be shown
+	 * 
+	 * @return
+	 */
+	boolean showControlButtons();
+
+	/**
+	 * Manages the drop event in the console and returns the string that will be
+	 * added to the console. Return null to have a default management
+	 * 
+	 * @param t
+	 * @return
+	 */
+	String doDrop(Transferable t);
 }

@@ -33,11 +33,12 @@ All methods return GBHelper object for call chaining.
 Author : Fred Swartz - January 30, 2007 - Placed in public domain.
  *
  */
-package org.orbisgis.core.ui.components.findReplace;
+package org.orbisgis.view.components.findReplace;
 
-import java.awt.*;
+import java.awt.GridBagConstraints;
 
 public class GBHelper extends GridBagConstraints {
+        private static final long serialVersionUID = 1L;
 
         /**
          * Creates helper at top left, component always fills cells
@@ -50,6 +51,7 @@ public class GBHelper extends GridBagConstraints {
 
         /**
          * Moves the helper's cursor to the right one column.
+         * @return this
          */
         public GBHelper nextCol() {
                 gridx++;
@@ -58,6 +60,7 @@ public class GBHelper extends GridBagConstraints {
 
         /**
          * Moves the helper's cursor to first col in next row.
+         * @return this
          */
         public GBHelper nextRow() {
                 gridx = 0;
@@ -69,7 +72,8 @@ public class GBHelper extends GridBagConstraints {
          * Expandable Width.  Returns new helper allowing horizontal expansion.
         A new helper is created so the expansion values don't
         pollute the origin helper.
-         */
+        * @return this
+        */
         public GBHelper expandW() {
                 GBHelper duplicate = (GBHelper) this.clone();
                 duplicate.weightx = 1.0;
@@ -78,6 +82,7 @@ public class GBHelper extends GridBagConstraints {
 
         /**
          * Expandable Height. Returns new helper allowing vertical expansion.
+         * @return this
          */
         public GBHelper expandH() {
                 GBHelper duplicate = (GBHelper) this.clone();
@@ -87,6 +92,8 @@ public class GBHelper extends GridBagConstraints {
 
         /**
          * Sets the width of the area in terms of number of columns.
+         * @param colsWide Column count
+         * @return this
          */
         public GBHelper width(int colsWide) {
                 GBHelper duplicate = (GBHelper) this.clone();
@@ -96,6 +103,7 @@ public class GBHelper extends GridBagConstraints {
 
         /**
          * Width is set to all remaining columns of the grid.
+         * @return this
          */
         public GBHelper width() {
                 GBHelper duplicate = (GBHelper) this.clone();
@@ -105,6 +113,8 @@ public class GBHelper extends GridBagConstraints {
 
         /**
          * Sets the height of the area in terms of rows.
+         * @param rowsHigh Row count
+         * @return this 
          */
         public GBHelper height(int rowsHigh) {
                 GBHelper duplicate = (GBHelper) this.clone();
@@ -114,6 +124,7 @@ public class GBHelper extends GridBagConstraints {
 
         /**
          * Height is set to all remaining rows.
+         * @return this
          */
         public GBHelper height() {
                 GBHelper duplicate = (GBHelper) this.clone();
@@ -123,6 +134,8 @@ public class GBHelper extends GridBagConstraints {
 
         /**
          * Alignment is set by parameter.
+         * @param alignment Anchor alignment
+         * @return this 
          */
         public GBHelper align(int alignment) {
                 GBHelper duplicate = (GBHelper) this.clone();

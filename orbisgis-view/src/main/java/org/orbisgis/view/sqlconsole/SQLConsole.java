@@ -31,15 +31,19 @@ package org.orbisgis.view.sqlconsole;
 import javax.swing.JComponent;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
+import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.view.edition.EditorDockable;
+import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
 
 /**
  *
  * @author Nicolas Fortin
  */
-public class SQLConsole implements DockingPanel {
+public class SQLConsole implements EditorDockable {
         private DockingPanelParameters dockingPanelParameters = new DockingPanelParameters();
         private SQLConsolePanel sqlPanel;
+        private MapElement mapElement;
 
         @Override
         public DockingPanelParameters getDockingParameters() {
@@ -51,7 +55,24 @@ public class SQLConsole implements DockingPanel {
                 if(sqlPanel==null) {
                         sqlPanel = new SQLConsolePanel();
                 }
-                throw new UnsupportedOperationException("Not supported yet.");
+                return sqlPanel;
+        }
+
+        @Override
+        public boolean match(EditableElement editableElement) {
+                return editableElement instanceof MapElement;
+        }
+
+        @Override
+        public EditableElement getEditableElement() {
+                return mapElement;
+        }
+
+        @Override
+        public void setEditableElement(EditableElement editableElement) {
+                if(editableElement instanceof MapElement) {
+                        mapElement = (MapElement) editableElement;
+                }
         }
         
 }

@@ -31,12 +31,15 @@ Purpose: Gaps for use in GridBagLayout (or any other).
 Library alternatives are available in the Box class.
 Author : Fred Swartz - January 30, 2007 - Placed in public domain.
  */
-package org.orbisgis.core.ui.components.findReplace;
+package org.orbisgis.view.components.findReplace;
 
-import java.awt.*;
-import javax.swing.*;
-
+import java.awt.Dimension;
+import javax.swing.JComponent;
+/**
+ * Invisible space component.
+ */
 public class Gap extends JComponent {
+        private static final long serialVersionUID = 1L;
 
         /**
          * Creates filler with minimum size, but expandable infinitely.
@@ -51,6 +54,7 @@ public class Gap extends JComponent {
 
         /**
          * Creates rigid filler. 
+         * @param size Width and height of the component
          */
         public Gap(int size) {
                 Dimension dim = new Dimension(size, size);
