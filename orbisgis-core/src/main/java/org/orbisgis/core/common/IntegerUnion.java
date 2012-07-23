@@ -28,10 +28,8 @@
  */
 package org.orbisgis.core.common;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * This class aggregates consecutive integers.
@@ -42,18 +40,9 @@ import java.util.List;
  * @author Nicolas Fortin
  */
 public class IntegerUnion implements Iterable<Integer> {
-    // int intervals ex: 0,15,50,60 for 0 to 15 and 50 to 60
-    private int[] intervals=new int[0];
-    int size=0;
-    
-    private void add(int value) {
-            
-    }
-    
-    private void insert(int index,int value) {
-            
-    }
-    
+    // int intervals ex: 0,15,50,60 for 0 to 15 and 50 to 60    
+    private IntegerArray intervals=new IntegerArray();
+        
     /**
      * Default constructor
      */
@@ -81,20 +70,13 @@ public class IntegerUnion implements Iterable<Integer> {
         intervals.add(rowbegin);
         intervals.add(rowend);
     }
-
-    /**
-     * @return The number of Integer in this instance
-     */
-    public int getItemCount() {
-        return intervals.size();
-    }
     
     /**
      * Does this container has intervals
      * @return True if this container is empty, false otherwise
      */
     public boolean isEmpty() {
-        return this.intervals.isEmpty();
+        return intervals.isEmpty();
     }
     /**
      * Add a row index in the list
