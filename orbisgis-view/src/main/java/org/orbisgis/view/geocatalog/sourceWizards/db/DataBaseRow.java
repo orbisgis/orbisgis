@@ -53,13 +53,22 @@ public class DataBaseRow {
         private String inputSpatialField;
         private static final Logger LOGGER = Logger.getLogger(Catalog.class);
         protected final static I18n I18N = I18nFactory.getI18n(Catalog.class);
-        private boolean hasACRS = false;
 
-        /*
+        /**
          * Create a row object that stores all informations to export in a
          * database
+         * @param intputSourceName
+         * @param outputSourceName
+         * @param schema
+         * @param pk
+         * @param input_spatialField
+         * @param crsName
+         * @param input_epsg_code
+         * @param export
          */
-        public DataBaseRow(String intputSourceName, String outputSourceName, String schema, String pk, String input_spatialField, String crsName,int input_epsg_code, Boolean export) {
+        public DataBaseRow(String intputSourceName, String outputSourceName, String schema, 
+                        String pk, String input_spatialField, String crsName,
+                        int input_epsg_code, Boolean export) {
                 this.intputSourceName = intputSourceName;
                 this.outputsourceName = outputSourceName;
                 this.inputSpatialField = input_spatialField;
@@ -72,22 +81,25 @@ public class DataBaseRow {
                 this.export = export;
         }
 
-        /*
+        /**
          * Specify if the input source is spatial
+         * @return
          */
         public boolean isIsSpatial() {
                 return isSpatial;
         }
 
-        /*
+        /**
          * Set if the input source is spatial
+         * @param isSpatial
          */
         public void setIsSpatial(boolean isSpatial) {
                 this.isSpatial = isSpatial;
         }
 
-        /*
+        /**
          * Return the spatial field
+         * @return
          */
         public String getInput_SpatialField() {
                 return input_spatialField;
@@ -95,7 +107,6 @@ public class DataBaseRow {
 
         /**
          * Return the EPSG code
-         *
          * @return
          */
         public int getInput_Epsg_code() {
@@ -104,7 +115,6 @@ public class DataBaseRow {
 
         /**
          * Specify if the input source can be exported
-         *
          * @return
          */
         public Boolean isExport() {
@@ -209,7 +219,8 @@ public class DataBaseRow {
                                         Integer value = Integer.valueOf(aValue.toString());
                                         setInput_epsg_code(value);
                                 } catch (NumberFormatException e) {
-                                        JOptionPane.showMessageDialog(null, I18N.tr("Cannot format the EPSG code into an int.\nThe default code will be used."));
+                                        JOptionPane.showMessageDialog(null, I18N.tr("Cannot format the EPSG code into an int.\n"
+                                                + "The default code will be used."));
                                 }
                                 break;
 
@@ -286,7 +297,8 @@ public class DataBaseRow {
          * @return
          */
         public Object[] getObjects() {
-                return new Object[]{getInputSourceName(), getOutPutsourceName(), getSchema(), getPK(), getInput_SpatialField(), getInput_Epsg_code(), isExport()};
+                return new Object[]{getInputSourceName(), getOutPutsourceName(), getSchema(),
+                        getPK(), getInput_SpatialField(), getInput_Epsg_code(), isExport()};
         }
 
         public void setOutPutsourceName(String outPutsourceName) {
@@ -311,7 +323,6 @@ public class DataBaseRow {
                 sb.append("* EXCEPT( ").append(getOutput_spatialField()).append(") ");
                 sb.append(" , ST_Transform(").append(getInputSpatialField()).append(", 'EPSG:").
                         append(getInput_Epsg_code()).append("') AS ").append(getOutput_spatialField());
-
                 sb.append(" FROM ");
                 sb.append(getInputSourceName());                
                 return sb.toString();
