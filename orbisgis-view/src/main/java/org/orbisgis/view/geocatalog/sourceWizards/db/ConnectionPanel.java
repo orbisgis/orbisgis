@@ -40,10 +40,15 @@ import org.orbisgis.sif.multiInputPanel.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+/**
+ *
+ * @author Erwan Bocher
+ * @author Alexis Guéganno
+ */
 public class ConnectionPanel extends MultiInputPanel {
 
-        protected final static I18n i18n = I18nFactory.getI18n(ConnectionPanel.class);
-        private final static int LENGTH = 20;
+        protected static final I18n I18N = I18nFactory.getI18n(ConnectionPanel.class);
+        private static final int LENGTH = 20;
         public static final String DBTYPE = "dbtype";
         public static final String HOST = "host";
         public static final String PORT = "port";
@@ -54,22 +59,22 @@ public class ConnectionPanel extends MultiInputPanel {
         private final SourceManager sourceManager;
 
         public ConnectionPanel(SourceManager sourceManager) {
-                super(i18n.tr("Connect"));
+                super(I18N.tr("Connect"));
                 this.sourceManager = sourceManager;
-                addInput(DBTYPE, i18n.tr("Type of database"),
+                addInput(DBTYPE, I18N.tr("Type of database"),
                         getDriverInput());
-                addInput(HOST, i18n.tr("Host"),
+                addInput(HOST, I18N.tr("Host"),
                         "127.0.0.1", new TextBoxType(LENGTH));
-                addInput(PORT, i18n.tr("Default port"),
+                addInput(PORT, I18N.tr("Default port"),
                         "0", new TextBoxType(LENGTH));
-                addInput(DBNAME, i18n.tr("Database name"),
+                addInput(DBNAME, I18N.tr("Database name"),
                         "database_name", new TextBoxType(LENGTH));
-                addInput(USER, i18n.tr("User name"),
+                addInput(USER, I18N.tr("User name"),
                         "postgres", new TextBoxType(LENGTH));
-                addInput(PASSWORD, i18n.tr("Password"), "",
+                addInput(PASSWORD, I18N.tr("Password"), "",
                         new PasswordType(LENGTH));
 
-                addInput(SSL, i18n.tr("SSL"), new CheckBoxChoice(false));
+                addInput(SSL, I18N.tr("SSL"), new CheckBoxChoice(false));
 
                 addValidation(new MIPValidation() {
 
@@ -78,11 +83,11 @@ public class ConnectionPanel extends MultiInputPanel {
 
                                 //Validation
                                 if (mid.getInput(DBNAME).isEmpty()) {
-                                        return i18n.tr("The database name is mandatory");
+                                        return I18N.tr("The database name is mandatory");
                                 }
                                 String host = mid.getInput(HOST);
                                 if (host.isEmpty()) {
-                                        return i18n.tr("The host cannot be null");
+                                        return I18N.tr("The host cannot be null");
                                 }
                                 String port = mid.getInput(PORT);
 
@@ -90,11 +95,11 @@ public class ConnectionPanel extends MultiInputPanel {
                                         try {
                                                 Integer portNumber = Integer.valueOf(port);
                                                 if (portNumber >= 0 && portNumber <= 32767) {
-                                                        return i18n.tr("The port number must be comprise between 0 and 32767");
+                                                        return I18N.tr("The port number must be comprised between 0 and 32767");
                                                 }
 
                                         } catch (NumberFormatException e) {
-                                                return i18n.tr("Cannot format the port code into an int");
+                                                return I18N.tr("Cannot format the port code into an int");
                                         }
                                 }
                                 return null;
@@ -122,6 +127,12 @@ public class ConnectionPanel extends MultiInputPanel {
                 return combo;
         }
 
+        /**
+         * Gets the Java SQL {@code Connection} built using all the parameters
+         * set through this UI.
+         * @return
+         * @throws SQLException
+         */
         public Connection getConnection() throws SQLException {
                 DBSource dbSource = getDBSource();
                 DBDriver dr = getDBDriver();
@@ -132,6 +143,11 @@ public class ConnectionPanel extends MultiInputPanel {
                 return dr.getConnection(cs);
         }
 
+        /**
+         * Gets the GDMS {@code DBDriver} that will be used to handle the
+         * {@code DataSet} in GDMS.
+         * @return
+         */
         public DBDriver getDBDriver() {
                 DriverManager driverManager = sourceManager.getDriverManager();
                 String dbType = getInput(DBTYPE);
@@ -144,6 +160,11 @@ public class ConnectionPanel extends MultiInputPanel {
                 return null;
         }
 
+        /**
+         * Gets the GDMS {@code DBSource} that contains all the parameters
+         * gathered through this panel to establish a database connection.
+         * @return
+         */
         public DBSource getDBSource() {
                 String host = getInput(HOST);
                 int port = Integer.parseInt(getInput(PORT));
@@ -163,8 +184,8 @@ public class ConnectionPanel extends MultiInputPanel {
         }
 
         /**
-         * Return the sourceManager
-         *
+         * Return the {@code SourceManager} that was used to build this {@code
+         * ConnectionPanel}.
          * @return
          */
         public SourceManager getSourceManager() {
