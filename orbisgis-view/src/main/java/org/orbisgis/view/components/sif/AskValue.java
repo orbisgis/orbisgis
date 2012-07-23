@@ -38,6 +38,7 @@ package org.orbisgis.view.components.sif;
 
 import java.awt.Component;
 import java.net.URL;
+import java.util.Arrays;
 import javax.swing.JTextField;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
@@ -106,7 +107,7 @@ public class AskValue implements UIPanel {
          * @return
          */
         public String[] getErrorMessages() {
-                return error;
+                return Arrays.copyOf(error, error.length);
         }
 
         /**
