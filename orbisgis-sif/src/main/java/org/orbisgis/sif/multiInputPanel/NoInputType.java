@@ -31,8 +31,9 @@ package org.orbisgis.sif.multiInputPanel;
 import java.awt.Component;
 
 /**
- *
- * @author ebocher
+ * This {@code InputType} is always empty : it does not have a value, can't have
+ * one and can't be used to get a component.
+ * @author Erwan Bocher
  */
 public class NoInputType implements InputType {
 

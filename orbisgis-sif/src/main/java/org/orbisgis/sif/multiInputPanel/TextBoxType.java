@@ -32,8 +32,9 @@ import java.awt.Component;
 import javax.swing.JTextField;
 
 /**
- *
- * @author ebocher
+ * {@code InputType} dedicated to text inputs.
+ * @author Erwan Bocher
+ * @author Alexis Guéganno
  */
 public final class TextBoxType implements InputType {
 

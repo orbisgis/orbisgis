@@ -38,7 +38,7 @@ import javax.swing.plaf.basic.BasicComboBoxRenderer;
 public class ComboBoxChoice implements InputType {
 
 	private HashMap<String, String> idText = new HashMap<String, String>();
-	protected JComboBox comp;
+	private JComboBox comp;
 
 	public ComboBoxChoice(String... choices) {
 		this(choices, choices);
@@ -48,11 +48,7 @@ public class ComboBoxChoice implements InputType {
 		setChoices(ids, texts);
 	}
 
-	protected void setChoices(String[] options) {
-		setChoices(options, options);
-	}
-
-	protected void setChoices(String[] ids, String[] texts) {
+	private void setChoices(String[] ids, String[] texts) {
 		for (int i = 0; i < texts.length; i++) {
 			idText.put(ids[i], texts[i]);
 		}
@@ -64,7 +60,6 @@ public class ComboBoxChoice implements InputType {
 					boolean cellHasFocus) {
 				JLabel ret = (JLabel) super.getListCellRendererComponent(list,
 						value, index, isSelected, cellHasFocus);
-
 				ret.setText(idText.get(value));
 
 				return ret;

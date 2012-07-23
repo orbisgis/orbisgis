@@ -31,19 +31,41 @@ package org.orbisgis.sif.multiInputPanel;
 import java.awt.Component;
 import javax.swing.JPasswordField;
 
+/**
+ * This {@link InputType} is used to retrieve passwords from the users without
+ * displaying them in the {@code Component}.
+ * @author Alexis Guéganno
+ * @author Erwan Bocher
+ */
 public class PasswordType implements InputType {
 
 	private JPasswordField comp = new JPasswordField();
 
+        /**
+         * Builds a new {@code PasswordType}.
+         * @param columns
+         *  The number of columns for the underlying component.
+         * @param isEditable
+         *  To specify if the component can be edited or not.
+         */
         public PasswordType(int columns, boolean isEditable) {
 		comp.setColumns(columns);
                 comp.setEditable(isEditable);
 	}
-        
+
+        /**
+         * Builds a new {@code PasswordType}.
+         * @param columns
+         *  The number of columns for the underlying component.
+         */
 	public PasswordType(int columns) {
 		comp.setColumns(columns);
 	}
 
+
+        /**
+         * Builds a new {@code PasswordType} with 5 columns.
+         */
 	public PasswordType() {
 		comp.setColumns(5);
 	}
