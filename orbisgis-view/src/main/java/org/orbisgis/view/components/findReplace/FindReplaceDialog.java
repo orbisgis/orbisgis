@@ -40,7 +40,7 @@ import org.orbisgis.utils.I18N;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  * FindReplaceDialog is based on the Fred Swartz job's.
  * http://leepoint.net/notes-java/GUI/layouts/gridbag-example.html
  *

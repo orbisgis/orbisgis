@@ -35,7 +35,7 @@ import org.orbisgis.sif.multiInputPanel.TextBoxType;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class MIPDemo {
 

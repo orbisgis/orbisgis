@@ -30,7 +30,7 @@ package org.orbisgis.view.geocatalog.sourceWizards.db;
 
 /**
  *
- *  @author ebocher
+ *  @author Erwan Bocher
  */
 
 

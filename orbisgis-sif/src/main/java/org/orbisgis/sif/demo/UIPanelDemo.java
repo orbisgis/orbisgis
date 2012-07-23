@@ -37,7 +37,7 @@ import org.orbisgis.sif.UIPanel;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class UIPanelDemo {
 

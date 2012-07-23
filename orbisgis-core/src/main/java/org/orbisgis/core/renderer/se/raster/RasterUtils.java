@@ -8,7 +8,7 @@ import java.awt.image.DirectColorModel;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class RasterUtils {
 

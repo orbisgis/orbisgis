@@ -42,7 +42,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class DataBaseTableModel extends AbstractTableModel {
 

@@ -38,7 +38,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class SQLConsole extends JPanel implements DockingPanel{
 
