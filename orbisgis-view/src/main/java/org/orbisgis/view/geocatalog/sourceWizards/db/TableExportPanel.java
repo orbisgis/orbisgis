@@ -30,14 +30,12 @@ package org.orbisgis.view.geocatalog.sourceWizards.db;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -53,7 +51,6 @@ import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.multiInputPanel.MIPValidation;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.PasswordType;
@@ -65,8 +62,10 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- *
+ * This {@code JDialog} is used to export the content of one or more {@code
+ * DataSource} into an external DB.
  * @author Erwan Bocher
+ * @author Alexis Guéganno
  */
 public class TableExportPanel extends JDialog {
 
@@ -110,7 +109,7 @@ public class TableExportPanel extends JDialog {
          *
          * @return
          */
-        public JToolBar connectionToolBar() {
+        private JToolBar connectionToolBar() {
                 if (connectionToolBar == null) {
                         connectionToolBar = new JToolBar();
                         connectionToolBar.setFloatable(false);
@@ -120,49 +119,42 @@ public class TableExportPanel extends JDialog {
                         boolean btnStatus = dbKeys.length > 0;
                         cmbDataBaseUri = new JComboBox(dbKeys);
                         cmbDataBaseUri.setEditable(false);
-
-
+                        //Connection button
                         btnConnect = new JButton(OrbisGISIcon.getIcon("database_connect"));
                         btnConnect.setToolTipText(I18N.tr("Connect to the database"));
                         btnConnect.setEnabled(btnStatus);
                         btnConnect.addActionListener(EventHandler.create(ActionListener.class, this, "onConnect"));
                         btnConnect.setBorderPainted(false);
-
+                        //Button for disconnecting.
                         btnDisconnect = new JButton(OrbisGISIcon.getIcon("disconnect"));
                         btnDisconnect.setToolTipText(I18N.tr("Disconnect"));
                         btnDisconnect.setEnabled(false);
                         btnDisconnect.addActionListener(EventHandler.create(ActionListener.class, this, "onDisconnect"));
                         btnDisconnect.setBorderPainted(false);
-
-
-
+                        //Button to add a conection.
                         btnAddConnection = new JButton(OrbisGISIcon.getIcon("database_add"));
                         btnAddConnection.setToolTipText(I18N.tr("Add a new connection"));
                         btnAddConnection.addActionListener(EventHandler.create(ActionListener.class, this, "onAddConnection"));
                         btnAddConnection.setBorderPainted(false);
-
-
+                        //button to edit a connection
                         btnEditConnection = new JButton(OrbisGISIcon.getIcon("database_edit"));
                         btnEditConnection.setToolTipText(I18N.tr("Edit the connection"));
                         btnEditConnection.setEnabled(btnStatus);
                         btnEditConnection.addActionListener(EventHandler.create(ActionListener.class, this, "onEditConnection"));
                         btnEditConnection.setBorderPainted(false);
-
-
+                        //button to remove a connection
                         btnRemoveConnection = new JButton(OrbisGISIcon.getIcon("database_delete"));
                         btnRemoveConnection.setToolTipText(I18N.tr("Remove the connection"));
                         btnRemoveConnection.setEnabled(btnStatus);
                         btnRemoveConnection.addActionListener(EventHandler.create(ActionListener.class, this, "onRemoveConnection"));
                         btnRemoveConnection.setBorderPainted(false);
-
+                        //The toolbar that contains these buttons.
                         connectionToolBar.add(cmbDataBaseUri);
                         connectionToolBar.add(btnConnect);
                         connectionToolBar.add(btnDisconnect);
                         connectionToolBar.add(btnAddConnection);
                         connectionToolBar.add(btnEditConnection);
                         connectionToolBar.add(btnRemoveConnection);
-
-
                 }
                 return connectionToolBar;
         }
@@ -170,7 +162,7 @@ public class TableExportPanel extends JDialog {
         /**
          * Create the main panel
          */
-        public void initialize() {
+        private void initialize() {
                 if (jScrollPane == null) {
                         this.setLayout(new BorderLayout());
                         jtableExporter = new JTable();
@@ -275,7 +267,8 @@ public class TableExportPanel extends JDialog {
         private void saveProperties() {
                 try {
                         CoreWorkspace ws = (CoreWorkspace) Services.getService(CoreWorkspace.class);
-                        dbProperties.store(new FileOutputStream(ws.getWorkspaceFolder() + File.separator + dbPropertiesFile), I18N.tr("Saved with the OrbisGIS database exporter panel"));
+                        dbProperties.store(new FileOutputStream(ws.getWorkspaceFolder() + File.separator + dbPropertiesFile),
+                                I18N.tr("Saved with the OrbisGIS database exporter panel"));
                 } catch (IOException ex) {
                         LOGGER.error(ex);
                 }
@@ -392,7 +385,6 @@ public class TableExportPanel extends JDialog {
                         MultiInputPanel passwordDialog = new MultiInputPanel(I18N.tr("Please set a password"));
                         passwordDialog.addInput("password", I18N.tr("Password"), "", new PasswordType(10));
                         passwordDialog.addValidation(new MIPValidation() {
-
                                 @Override
                                 public String validate(MultiInputPanel mid) {
                                         if (mid.getInput("password").isEmpty()) {
