@@ -30,13 +30,15 @@ package org.orbisgis.sif.components;
 
 import java.awt.Component;
 import java.awt.FlowLayout;
+import java.net.URL;
 import java.util.Enumeration;
 import java.util.List;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
-import org.orbisgis.sif.AbstractUIPanel;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
 
 /**
  * An {@code UIPanel} that will let the user choose one option in a list of
@@ -44,7 +46,7 @@ import org.orbisgis.sif.AbstractUIPanel;
  * title.
  * @author Alexis Guéganno
  */
-public class RadioButtonPanel extends AbstractUIPanel{
+public class RadioButtonPanel implements UIPanel{
 
         private List<String> choices;
         private String title;
@@ -70,7 +72,7 @@ public class RadioButtonPanel extends AbstractUIPanel{
         public String validateInput() {
                 for(String s : choices){
                         if(s == null){
-                                return "Must not contain null Strings";
+                                return UIFactory.getI18n().tr("Must not contain null Strings");
                         }
                 }
                 return null;
@@ -102,5 +104,10 @@ public class RadioButtonPanel extends AbstractUIPanel{
                         }
                 }
                 return null;
+        }
+
+        @Override
+        public URL getIconURL() {
+                return UIFactory.getDefaultIcon();
         }
 }

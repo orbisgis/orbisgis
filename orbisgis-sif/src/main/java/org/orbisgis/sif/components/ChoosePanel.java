@@ -32,122 +32,120 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.ArrayList;
-
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
-
-import org.orbisgis.sif.AbstractUIPanel;
+import javax.swing.*;
 import org.orbisgis.sif.CRFlowLayout;
 import org.orbisgis.sif.CarriageReturn;
-import org.orbisgis.utils.I18N;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
 
-public class ChoosePanel extends AbstractUIPanel {
+public class ChoosePanel implements  UIPanel {
 
-	private String[] names;
-	private String title;
-	private JList lst;
-	private DefaultListModel model;
-	private Object[] ids;
-	private boolean multiple = false;
-	private JPanel pnlButtons;
-	private JPanel pane;
+        private String[] names;
+        private String title;
+        private JList lst;
+        private DefaultListModel model;
+        private Object[] ids;
+        private boolean multiple = false;
+        private JPanel pnlButtons;
+        private JPanel pane;
 
-	public ChoosePanel(String title, String[] names, Object[] ids) {
-		this.title = title;
-		this.names = names;
-		this.ids = ids;
-		initComponent();
-	}
+        public ChoosePanel(String title, String[] names, Object[] ids) {
+                this.title = title;
+                this.names = names;
+                this.ids = ids;
+                initComponent();
+        }
 
-	public void setMultiple(boolean multiple) {
-		this.multiple = multiple;
-		pnlButtons.setVisible(multiple);
-		if (multiple) {
-			lst.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-		} else {
-			lst.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		}
-	}
+        public void setMultiple(boolean multiple) {
+                this.multiple = multiple;
+                pnlButtons.setVisible(multiple);
+                if (multiple) {
+                        lst.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+                } else {
+                        lst.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+                }
+        }
 
-	public Component getComponent() {
-		return pane;
-	}
+        @Override
+        public Component getComponent() {
+                return pane;
+        }
 
-	private void initComponent() {
-		pane = new JPanel();
-		pane.setLayout(new BorderLayout());
-		lst = new JList();
-		model = new DefaultListModel();
-		for (int i = 0; i < names.length; i++) {
-			model.addElement(names[i]);
-		}
-		lst.setModel(model);
-		pane.add(new JScrollPane(lst), BorderLayout.CENTER);
-		pnlButtons = new JPanel();
-		CRFlowLayout flowLayout = new CRFlowLayout();
-		flowLayout.setAlignment(CRFlowLayout.LEFT);
-		pnlButtons.setLayout(flowLayout);
-		JButton btnAll = new JButton("Select All");
-		btnAll.setBorderPainted(false);
-		btnAll.addActionListener(new ActionListener() {
+        private void initComponent() {
+                pane = new JPanel();
+                pane.setLayout(new BorderLayout());
+                lst = new JList();
+                model = new DefaultListModel();
+                for (int i = 0; i < names.length; i++) {
+                        model.addElement(names[i]);
+                }
+                lst.setModel(model);
+                pane.add(new JScrollPane(lst), BorderLayout.CENTER);
+                pnlButtons = new JPanel();
+                CRFlowLayout flowLayout = new CRFlowLayout();
+                flowLayout.setAlignment(CRFlowLayout.LEFT);
+                pnlButtons.setLayout(flowLayout);
+                JButton btnAll = new JButton("Select All");
+                btnAll.setBorderPainted(false);
+                btnAll.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				lst.getSelectionModel().setSelectionInterval(0,
-						lst.getModel().getSize() - 1);
-			}
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                                lst.getSelectionModel().setSelectionInterval(0,
+                                        lst.getModel().getSize() - 1);
+                        }
+                });
+                JButton btnNone = new JButton("Select none");
+                btnNone.setBorderPainted(false);
+                btnNone.addActionListener(new ActionListener() {
 
-		});
-		JButton btnNone = new JButton("Select none");
-		btnNone.setBorderPainted(false);
-		btnNone.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                                lst.clearSelection();
+                        }
+                });
+                pnlButtons.add(btnAll);
+                pnlButtons.add(new CarriageReturn());
+                pnlButtons.add(btnNone);
+                pnlButtons.setVisible(multiple);
+                pane.add(pnlButtons, BorderLayout.EAST);
+        }
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				lst.clearSelection();
-			}
+        @Override
+        public String getTitle() {
+                return title;
+        }
 
-		});
-		pnlButtons.add(btnAll);
-		pnlButtons.add(new CarriageReturn());
-		pnlButtons.add(btnNone);
-		pnlButtons.setVisible(multiple);
-		pane.add(pnlButtons, BorderLayout.EAST);
-	}
+        @Override
+        public String validateInput() {
+                if (lst.getSelectedIndex() == -1) {
+                        return UIFactory.getI18n().tr("An item must be selected. ");
+                }
+                return null;
+        }
 
-	public String getTitle() {
-		return title;
-	}
+        public Object getSelected() {
+                return ids[lst.getSelectedIndex()];
+        }
 
-	public String validateInput() {
-		if (lst.getSelectedIndex() == -1) {
-			return I18N.getString("orbisgis.org.orbisgis.core.anItemMustBeSelected");
-		}
+        public int getSelectedIndex() {
+                return lst.getSelectedIndex();
+        }
 
-		return null;
-	}
+        public Object[] getSelectedElements() {
+                ArrayList<Object> ret = new ArrayList<Object>();
+                int[] indexes = lst.getSelectedIndices();
+                for (int index : indexes) {
+                        ret.add(ids[index]);
+                }
 
-	public Object getSelected() {
-		return ids[lst.getSelectedIndex()];
-	}
+                return ret.toArray();
+        }
 
-	public int getSelectedIndex() {
-		return lst.getSelectedIndex();
-	}
-
-	public Object[] getSelectedElements() {
-		ArrayList<Object> ret = new ArrayList<Object>();
-		int[] indexes = lst.getSelectedIndices();
-		for (int index : indexes) {
-			ret.add(ids[index]);
-		}
-
-		return ret.toArray();
-	}
-
+        @Override
+        public URL getIconURL() {
+                return UIFactory.getDefaultIcon();
+        }
 }

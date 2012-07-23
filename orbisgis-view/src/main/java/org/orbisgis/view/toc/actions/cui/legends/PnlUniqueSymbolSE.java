@@ -40,15 +40,15 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.UIPanel;
-import org.orbisgis.sif.JNumericSpinner;
-import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
-import org.orbisgis.view.toc.actions.cui.components.ColorPicker;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.legend.thematic.constant.USNumericParameter;
 import org.orbisgis.legend.thematic.constant.USParameter;
 import org.orbisgis.legend.thematic.constant.UniqueSymbol;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
+import org.orbisgis.sif.components.ColorPicker;
+import org.orbisgis.sif.components.JNumericSpinner;
+import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
+import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 
 /**
  * This class proposes some methods that will be common to all the panels built

@@ -50,8 +50,8 @@ import org.xnap.commons.i18n.I18nFactory;
 public final class Recode2String extends Recode<StringParameter, StringLiteral> implements StringParameter {
 
         private String[] restriction = new String[]{};
-        private final static Logger LOGGER = Logger.getLogger(Recode2String.class);
-        private final static I18n I18N = I18nFactory.getI18n(Recode2String.class);
+        private static final Logger LOGGER = Logger.getLogger(Recode2String.class);
+        private static final I18n I18N = I18nFactory.getI18n(Recode2String.class);
         
         /**
          * Creates a new instance of <code>Recode2String</code>. The default result value

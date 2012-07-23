@@ -46,9 +46,9 @@ import org.xnap.commons.i18n.I18nFactory;
  * @note The source code, functionality is mainly provided by GeocognitionMapContext
  */
 public final class MapElement extends AbstractEditableElement {
-        public final static String EDITABLE_TYPE = "MapContext";
-        private final static Logger LOGGER = Logger.getLogger("gui."+MapElement.class);
-	private final static I18n I18N = I18nFactory.getI18n(MapElement.class);
+        public static final String EDITABLE_TYPE = "MapContext";
+        private static final Logger LOGGER = Logger.getLogger("gui."+MapElement.class);
+	private static final I18n I18N = I18nFactory.getI18n(MapElement.class);
         
         private Boolean modified = false;
 	private MapContext mapContext;

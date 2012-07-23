@@ -48,8 +48,8 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class TocTreeEditorStylePanel extends JPanel implements TocTreeEditorPanel {
         private static final long serialVersionUID = 1L;
-        protected final static I18n I18N = I18nFactory.getI18n(Toc.class);
-        private final static Logger LOGGER = Logger.getLogger("gui." + TocTreeEditorStylePanel.class);
+        private static final I18n I18N = I18nFactory.getI18n(Toc.class);
+        private static final Logger LOGGER = Logger.getLogger("gui." + TocTreeEditorStylePanel.class);
         private JCheckBox check;
         private JTextField textField;
         private Style style;

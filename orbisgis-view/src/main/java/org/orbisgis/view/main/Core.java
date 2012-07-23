@@ -65,7 +65,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * This is the main UIContext
  */
 public class Core {
-    protected final static I18n I18N = I18nFactory.getI18n(Core.class);        
+    private static final I18n I18N = I18nFactory.getI18n(Core.class);        
     private static final Logger LOGGER = Logger.getLogger(Core.class);
     /////////////////////
     //view package
@@ -105,8 +105,6 @@ public class Core {
      * Init the SIF ui factory
      */
     private void initSIF() {
-        UIFactory.setPersistencyDirectory(new File(viewWorkspace.getSIFPath()));
-        UIFactory.setTempDirectory(new File(mainContext.getCoreWorkspace().getTempFolder()));
         UIFactory.setDefaultImageIcon(OrbisGISIcon.getIcon("mini_orbisgis"));
     }
     

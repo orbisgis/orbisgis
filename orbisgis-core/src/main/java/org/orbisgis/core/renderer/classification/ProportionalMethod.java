@@ -49,7 +49,7 @@ public class ProportionalMethod {
     int LOGARITHMIC = 2;
 
 
-    private final static int MIN_SURFACE = 10;
+    private static final int MIN_SURFACE = 10;
 
     // The surface reference must be greater or equals than 10.
 

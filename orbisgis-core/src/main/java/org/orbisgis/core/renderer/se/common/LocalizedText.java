@@ -42,11 +42,11 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class LocalizedText {
 
-    private final static String lang_sep = "-";
+    private static final String lang_sep = "-";
     
     private String content;
     private Locale locale;
-    protected final static I18n I18N = I18nFactory.getI18n(LocalizedText.class);
+    private static final I18n I18N = I18nFactory.getI18n(LocalizedText.class);
             
     /**
      * Builds a new instance of {@code LocalizedText} with the given {@code

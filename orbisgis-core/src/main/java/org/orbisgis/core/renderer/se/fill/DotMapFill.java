@@ -68,8 +68,8 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public final class DotMapFill extends Fill implements GraphicNode {
 
-    private final static Logger LOGGER = Logger.getLogger(DotMapFill.class);
-    private final static I18n I18N = I18nFactory.getI18n(DotMapFill.class);
+    private static final Logger LOGGER = Logger.getLogger(DotMapFill.class);
+    private static final I18n I18N = I18nFactory.getI18n(DotMapFill.class);
     
     static final int MAX_ATTEMPT = 100;
 

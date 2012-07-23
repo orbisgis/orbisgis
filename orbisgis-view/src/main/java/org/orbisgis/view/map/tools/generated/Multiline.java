@@ -37,7 +37,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 public abstract class Multiline implements Automaton {
-        protected final static I18n I18N = I18nFactory.getI18n(Multiline.class);
+        protected static final I18n I18N = I18nFactory.getI18n(Multiline.class);
 	private static Logger logger = Logger.getLogger(Multiline.class);
 
 	private Status status = Status.STANDBY;

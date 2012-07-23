@@ -84,8 +84,7 @@ public class InfoTool extends AbstractRectangleTool {
 			sql = "select * from " + layer.getName() + " where ST_intersects("
 					+ sds.getMetadata().getFieldName(sds.getSpatialFieldIndex()) + ", ST_geomfromtext('"
 					+ writer.write(geomEnvelope) + "'));";
-			BackgroundManager bm = (BackgroundManager) Services
-					.getService(BackgroundManager.class);
+			BackgroundManager bm = Services.getService(BackgroundManager.class);
 			bm.backgroundOperation(new DefaultJobId(
 					"org.orbisgis.jobs.InfoTool"), new PopulateViewJob(sql));
 		} catch (DriverException e) {

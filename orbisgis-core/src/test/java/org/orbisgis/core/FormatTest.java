@@ -44,7 +44,7 @@ public class FormatTest extends AbstractTest {
 	public void setUp() throws Exception {
 		super.setUp();
 		super.registerDataManager();
-		sourceManager = ((DataManager) Services.getService(DataManager.class))
+		sourceManager = Services.getService(DataManager.class)
 				.getDataSourceFactory().getSourceManager();
 		sourceManager.removeAll();
 		

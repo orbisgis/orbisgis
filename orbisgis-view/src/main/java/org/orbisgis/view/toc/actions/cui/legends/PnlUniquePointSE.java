@@ -28,17 +28,18 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.net.URL;
 import javax.swing.JPanel;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
+import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
-import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 
 /**
  *
@@ -51,7 +52,6 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
          * be unique symbol (ie constant) Legends.
          */
         private UniqueSymbolPoint uniquePoint;
-        
 
         @Override
         public Component getComponent() {
@@ -65,7 +65,7 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
 
         @Override
         public void setLegend(Legend legend) {
-                if(legend instanceof UniqueSymbolPoint){
+                if (legend instanceof UniqueSymbolPoint) {
                         uniquePoint = (UniqueSymbolPoint) legend;
                         initPreview();
                         this.initializeLegendFields();
@@ -75,20 +75,19 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
                 }
         }
 
-	/**
-	 * Initialize the panel. This method is called just after the panel
-	 * creation.</p>
-         * <p>WARNING : the panel will be empty after calling this method. Indeed,
-         * there won't be any {@code Legend} instance associated to it. Use the
+        /**
+         * Initialize the panel. This method is called just after the panel
+         * creation.</p> <p>WARNING : the panel will be empty after calling this
+         * method. Indeed, there won't be any {@code Legend} instance associated
+         * to it. Use the
          * {@code setLegend} method to achieve this goal.
-	 *
-	 * @param lc
-	 *            LegendContext is useful to get some information about the
-	 *            layer in edition.
-	 */
+         *
+         * @param lc LegendContext is useful to get some information about the
+         * layer in edition.
+         */
         @Override
         public void initialize(LegendContext lc) {
-                if(uniquePoint == null){
+                if (uniquePoint == null) {
                         setLegend(new UniqueSymbolPoint());
                 }
         }
@@ -110,35 +109,21 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
 
         @Override
         public URL getIconURL() {
-		return UIFactory.getDefaultIcon();
+                return UIFactory.getDefaultIcon();
         }
 
         @Override
         public String getTitle() {
                 return "Unique symbol for lines.";
         }
-
-        @Override
-        public String initialize() {
-                return null;
-        }
-
-        @Override
-        public String postProcess() {
-                return null;
-        }
-
-        @Override
-        public String getInfoText() {
-                return "Configure a line to be displayed as a unique symbol.";
-        }
+        
 
         @Override
         public Legend copyLegend() {
                 return new UniqueSymbolPoint();
         }
 
-        private void initializeLegendFields(){
+        private void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel();
                 GridBagLayout grid = new GridBagLayout();
@@ -169,5 +154,4 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
                 glob.add(getPreview(), gbc);
                 this.add(glob);
         }
-        
 }

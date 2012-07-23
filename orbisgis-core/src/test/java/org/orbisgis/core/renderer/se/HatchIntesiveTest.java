@@ -62,8 +62,8 @@ import static org.junit.Assert.*;
  */
 public class HatchIntesiveTest extends AbstractTest {
 
-    private final static int WIDTH = 1000;
-    private final static int HEIGHT = 1000;
+    private static final int WIDTH = 1000;
+    private static final int HEIGHT = 1000;
 
     /**
      * We don't want negative distances

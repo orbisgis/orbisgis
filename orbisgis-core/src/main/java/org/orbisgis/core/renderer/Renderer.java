@@ -82,8 +82,8 @@ public abstract class Renderer {
         static final int ONE_HUNDRED_I = 100;
         static final int BATCH_SIZE = 1000;
         static final int EXECP_POS = 20;
-        private final static Logger LOGGER = Logger.getLogger(Renderer.class);
-        private final static I18n I18N = I18nFactory.getI18n(Renderer.class);
+        private static final Logger LOGGER = Logger.getLogger(Renderer.class);
+        private static final I18n I18N = I18nFactory.getI18n(Renderer.class);
         /**
          * This method shall returns a graphics2D for each symbolizers in the list.
          * This is useful to make the diff bw pdf purpose and image purpose

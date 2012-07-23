@@ -38,7 +38,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 
 public abstract class Point implements Automaton {
-        protected final static I18n I18N = I18nFactory.getI18n(Point.class);
+        protected static final I18n I18N = I18nFactory.getI18n(Point.class);
 	private static Logger logger = Logger.getLogger(Point.class.getName());
 
 	private Status status = Status.STANDBY;

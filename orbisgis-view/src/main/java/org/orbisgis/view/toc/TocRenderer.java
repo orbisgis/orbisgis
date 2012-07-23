@@ -44,7 +44,7 @@ import org.orbisgis.core.renderer.se.Style;
 
 public class TocRenderer extends TocAbstractRenderer {
         private static Logger UILOGGER = Logger.getLogger("gui."+ TocRenderer.class);
-        private final static int ROW_EMPTY_BORDER_SIZE = 2;
+        private static final int ROW_EMPTY_BORDER_SIZE = 2;
         private TreeCellRenderer lookAndFeelRenderer;
         private JTree tree;
         private JCheckBox lastCheckBox;

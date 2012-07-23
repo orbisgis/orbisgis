@@ -46,7 +46,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Alexis Guéganno
  */
 public class PnlStyle extends JPanel implements ISELegendPanel {
-        protected final static I18n I18N = I18nFactory.getI18n(PnlStyle.class);
+        private static final I18n I18N = I18nFactory.getI18n(PnlStyle.class);
         private Style style;
         private JTextField txtName;
         private String id;

@@ -31,23 +31,21 @@ package org.orbisgis.core.layerModel;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
 import org.grap.model.GeoRaster;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import org.orbisgis.core.renderer.se.Style;
-
-import org.gdms.driver.driverManager.DriverManager;
 
 @Deprecated
 public class LayerModelTest extends AbstractTest {
@@ -152,8 +150,7 @@ public class LayerModelTest extends AbstractTest {
 
         @Test
 	public void testRepeatedName() throws Exception {
-		DataSourceFactory dsf = ((DataManager) Services
-				.getService(DataManager.class)).getDataSourceFactory();
+		DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
 		SourceManager sourceManager = dsf.getSourceManager();
 		sourceManager.register("vector1", new File("/tmp/1.shp"));
 		sourceManager.register("vector2", new File("/tmp/2.shp"));
@@ -179,8 +176,7 @@ public class LayerModelTest extends AbstractTest {
 
         @Test
 	public void testAddWithSameName() throws Exception {
-		DataSourceFactory dsf = ((DataManager) Services
-				.getService(DataManager.class)).getDataSourceFactory();
+		DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
 		SourceManager sourceManager = dsf.getSourceManager();
 		sourceManager.register("mySource", new File(
 				"src/test/resources/data/bv_sap.shp"));

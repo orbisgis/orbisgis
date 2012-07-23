@@ -46,12 +46,12 @@ import org.xnap.commons.i18n.I18nFactory;
  * The output manager, create then link/unlink appender with LOG4J.
  */
 public class OutputManager {
-        protected final static I18n i18n = I18nFactory.getI18n(OutputManager.class);
-        public final static String LOG_INFO = "output_info";
-        public final static String LOG_ALL = "output_all";
-        public final static String LOG_ERROR = "output_error";
-        public final static String LOG_WARNING = "output_warning";
-        public final static String LOG_DEBUG = "output_debug";
+        private static final I18n I18N = I18nFactory.getI18n(OutputManager.class);
+        public static final String LOG_INFO = "output_info";
+        public static final String LOG_ALL = "output_all";
+        public static final String LOG_ERROR = "output_error";
+        public static final String LOG_WARNING = "output_warning";
+        public static final String LOG_DEBUG = "output_debug";
         
         private Map<String, PanelAppender> outputPanels = new HashMap<String, PanelAppender>();
         private MainOutputPanel mainPanel;
@@ -94,7 +94,7 @@ public class OutputManager {
                 allPanel = app.getGuiPanel();
                 outputAllListener = EventHandler.create(Listener.class,this,"onNewLogMessage","");
                 outputPanels.put(LOG_ALL, app);
-                mainPanel.addSubPanel(i18n.tr("All"), app.getGuiPanel());
+                mainPanel.addSubPanel(I18N.tr("All"), app.getGuiPanel());
                 mainPanel.showSubPanel(app.getGuiPanel()); //Select this panel by default                
         }
 
@@ -117,7 +117,7 @@ public class OutputManager {
                 app.addFilter(new DenyAllFilter());
                 outputPanels.put(LOG_ERROR, app);
                 ROOT_LOGGER.addAppender(app);
-                mainPanel.addSubPanel(i18n.tr("Errors"), app.getGuiPanel());
+                mainPanel.addSubPanel(I18N.tr("Errors"), app.getGuiPanel());
         }
 
         private PanelAppender makePanel() {
@@ -139,7 +139,7 @@ public class OutputManager {
                 app.addFilter(new DenyAllFilter());
                 outputPanels.put(LOG_INFO, app);
                 GUI_LOGGER.addAppender(app);
-                mainPanel.addSubPanel(i18n.tr("Infos"), app.getGuiPanel());
+                mainPanel.addSubPanel(I18N.tr("Infos"), app.getGuiPanel());
         }
 
         /**
@@ -156,7 +156,7 @@ public class OutputManager {
                 app.addFilter(new DenyAllFilter());
                 outputPanels.put(LOG_WARNING, app);
                 ROOT_LOGGER.addAppender(app);
-                mainPanel.addSubPanel(i18n.tr("Warnings"), app.getGuiPanel());
+                mainPanel.addSubPanel(I18N.tr("Warnings"), app.getGuiPanel());
         }
         /**
          * Make the debug Output panel
@@ -172,7 +172,7 @@ public class OutputManager {
                 app.addFilter(new DenyAllFilter());
                 outputPanels.put(LOG_DEBUG, app);
                 ROOT_LOGGER.addAppender(app);
-                mainPanel.addSubPanel(i18n.tr("Debug"), app.getGuiPanel());
+                mainPanel.addSubPanel(I18N.tr("Debug"), app.getGuiPanel());
         }
 
         /**

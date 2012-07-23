@@ -39,7 +39,7 @@ import org.apache.log4j.Logger;
  */
 public class JobQueue implements BackgroundManager {
 
-	private final static Logger LOGGER = Logger.getLogger("gui."+JobQueue.class);
+	private static final Logger LOGGER = Logger.getLogger("gui."+JobQueue.class);
 
 	private ArrayList<BackgroundListener> listeners = new ArrayList<BackgroundListener>();
 

@@ -38,7 +38,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 
 public abstract class VertexDeletion implements Automaton {
-        protected final static I18n I18N = I18nFactory.getI18n(VertexDeletion.class);
+        protected static final I18n I18N = I18nFactory.getI18n(VertexDeletion.class);
 	private static Logger logger = Logger.getLogger(VertexDeletion.class
 			.getName());
 
