@@ -33,7 +33,6 @@ import javax.swing.JComponent;
 import javax.swing.JPanel;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
-import org.orbisgis.view.output.MainOutputPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -41,11 +40,9 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * @author ebocher
  */
-
-
 public class SQLConsole extends JPanel implements DockingPanel{
 
-        protected final static I18n i18n = I18nFactory.getI18n(SQLConsole.class);
+        protected static final I18n I18N = I18nFactory.getI18n(SQLConsole.class);
         private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< docked panel properties */
 
         public SQLConsole(){

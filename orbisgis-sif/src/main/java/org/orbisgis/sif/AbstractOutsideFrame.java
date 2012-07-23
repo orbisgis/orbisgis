@@ -40,7 +40,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public abstract class AbstractOutsideFrame extends JDialog implements
         KeyListener {
 
-        protected final static I18n i18n = I18nFactory.getI18n(AbstractOutsideFrame.class);
+        protected static final I18n I18N = I18nFactory.getI18n(AbstractOutsideFrame.class);
         private boolean accepted = false;
 
         public AbstractOutsideFrame(Window owner) {

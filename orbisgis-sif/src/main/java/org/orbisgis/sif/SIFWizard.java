@@ -84,7 +84,7 @@ public class SIFWizard extends AbstractOutsideFrame {
 
         public JButton getBtnPrevious() {
                 if (btnPrevious == null) {
-                        btnPrevious = new JButton(i18n.tr("Previous"));
+                        btnPrevious = new JButton(I18N.tr("Previous"));
                         btnPrevious.setBorderPainted(false);
                         btnPrevious.setEnabled(false);
                         btnPrevious.addActionListener(new ActionListener() {
@@ -102,7 +102,7 @@ public class SIFWizard extends AbstractOutsideFrame {
 
         public JButton getBtnNext() {
                 if (btnNext == null) {
-                        btnNext = new JButton(i18n.tr("Next"));
+                        btnNext = new JButton(I18N.tr("Next"));
                         btnNext.setBorderPainted(false);
                         btnNext.addActionListener(new ActionListener() {
 
@@ -130,7 +130,7 @@ public class SIFWizard extends AbstractOutsideFrame {
 
         public JButton getBtnFinish() {
                 if (btnFinish == null) {
-                        btnFinish = new JButton(i18n.tr("Finish"));
+                        btnFinish = new JButton(I18N.tr("Finish"));
                         btnFinish.setBorderPainted(false);
                         btnFinish.addActionListener(new ActionListener() {
 
@@ -146,7 +146,7 @@ public class SIFWizard extends AbstractOutsideFrame {
 
         public JButton getBtnCancel() {
                 if (btnCancel == null) {
-                        btnCancel = new JButton(i18n.tr("Cancel"));
+                        btnCancel = new JButton(I18N.tr("Cancel"));
                         btnCancel.setBorderPainted(false);
                         btnCancel.addActionListener(new ActionListener() {
 
