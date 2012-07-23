@@ -96,6 +96,8 @@ public class DataBaseTableModel extends AbstractTableModel {
                                 if ((validType & type) == 0) {
                                         DataBaseRow row = new DataBaseRow(sourceName, sourceName, "public", "gid",
                                                 "the_geom", crsName, epsgCode, Boolean.TRUE);
+                                        //We don't need to call setSpatial : isSpatial is false
+                                        //by default.
                                         data.add(row);
                                 } else if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
                                         DataSource ds = dsf.getDataSource(sourceName);

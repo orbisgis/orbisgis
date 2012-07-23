@@ -34,34 +34,30 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
 /**
- *
- *   @author Erwan Bocher
+ * Cell renderer designed for {@code DataBaseTableModel}.
+ * @author Alexis Guéganno
+ * @author Erwan Bocher
  */
 public class TableCellRenderer extends DefaultTableCellRenderer {
 
         @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value,
+                        boolean isSelected, boolean hasFocus, int row, int column) {
                 Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 DataBaseTableModel model = (DataBaseTableModel) table.getModel();
-
+                //As defined in DataBaseTableModel#COLUMN_NAMES.
                 if ((column == 3) || (column == 4)) {
-
                         DataBaseRow dataBaseRow = model.getRow(row);
                         if (!dataBaseRow.isSpatial()) {
                                 Color clr = new Color(206, 206, 206);
                                 component.setForeground(clr);
                                 component.setBackground(clr);
                         }
-
-
                 } else {
                         Color clr = new Color(255, 255, 255);
                         component.setBackground(clr);
                         component.setForeground(new Color(0, 0, 0));
-                }               
-
-
-
+                }
                 return component;
 
         }        
