@@ -53,7 +53,8 @@ public class DataBaseTableModel extends AbstractTableModel {
         private static final Logger LOGGER = Logger.getLogger(DataBaseTableModel.class);
         protected final static I18n I18N = I18nFactory.getI18n(DataBaseTableModel.class);
         private final String[] sourceNames;
-        private String[] columnNames;
+        private static final String[] COLUMN_NAMES = new String[]{"Source name", "Table name", "Schema",
+                                "PK", "Spatial field", "CRS name", "EPSG code", "Export"};
         private ArrayList<DataBaseRow> data = new ArrayList<DataBaseRow>();
         private boolean isEditable = false;
 
@@ -75,7 +76,9 @@ public class DataBaseTableModel extends AbstractTableModel {
         }
 
         /**
-         * Create the panel to display the list of tables.
+         * Create the panel to display the list of tables. Displayed tables
+         * are the ones that are neither spatial, nor system tables, and the
+         * vectorial tables.
          *
          * @param sourceManager
          * The {@code SourceManager} used to retrieve sources.
@@ -84,8 +87,6 @@ public class DataBaseTableModel extends AbstractTableModel {
                 try {
                         DataManager dm = (DataManager) Services.getService(DataManager.class);
                         DataSourceFactory dsf = dm.getDataSourceFactory();
-                        columnNames = new String[]{"Source name", "Table name", "Schema",
-                                "PK", "Spatial field", "CRS name", "EPSG code", "Export"};
                         String crsName = "Unknown";
                         int epsgCode = -1;
                         final int validType = SourceManager.VECTORIAL | SourceManager.RASTER
@@ -109,7 +110,7 @@ public class DataBaseTableModel extends AbstractTableModel {
                                         DataBaseRow row = new DataBaseRow(sourceName, sourceName,
                                                 "public", "gid", geomField, crsName, epsgCode, Boolean.TRUE);
 
-                                        row.setIsSpatial(true);
+                                        row.setSpatial(true);
                                         data.add(row);
                                 }
                         }
@@ -129,7 +130,7 @@ public class DataBaseTableModel extends AbstractTableModel {
 
         @Override
         public int getColumnCount() {
-                return columnNames.length;
+                return COLUMN_NAMES.length;
         }
 
         @Override
@@ -143,7 +144,7 @@ public class DataBaseTableModel extends AbstractTableModel {
                         if (columnIndex == 0 || columnIndex == 5) {
                                 return false;
                         }
-                        if (!data.get(rowIndex).isIsSpatial()) {
+                        if (!data.get(rowIndex).isSpatial()) {
                                 if ((columnIndex == 4) || (columnIndex == 6)) {
                                         return false;
                                 }
@@ -164,7 +165,7 @@ public class DataBaseTableModel extends AbstractTableModel {
 
         @Override
         public String getColumnName(int col) {
-                return columnNames[col];
+                return COLUMN_NAMES[col];
         }
 
         @Override

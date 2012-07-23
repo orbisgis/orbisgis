@@ -47,7 +47,7 @@ public class TableCellRenderer extends DefaultTableCellRenderer {
                 if ((column == 3) || (column == 4)) {
 
                         DataBaseRow dataBaseRow = model.getRow(row);
-                        if (!dataBaseRow.isIsSpatial()) {
+                        if (!dataBaseRow.isSpatial()) {
                                 Color clr = new Color(206, 206, 206);
                                 component.setForeground(clr);
                                 component.setBackground(clr);

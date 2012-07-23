@@ -85,7 +85,7 @@ public class DataBaseRow {
          * Specify if the input source is spatial
          * @return
          */
-        public boolean isIsSpatial() {
+        public boolean isSpatial() {
                 return isSpatial;
         }
 
@@ -93,7 +93,7 @@ public class DataBaseRow {
          * Set if the input source is spatial
          * @param isSpatial
          */
-        public void setIsSpatial(boolean isSpatial) {
+        public void setSpatial(boolean isSpatial) {
                 this.isSpatial = isSpatial;
         }
 
