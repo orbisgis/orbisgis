@@ -49,7 +49,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 public class TableSelectionPanel implements UIPanel {
 
-        protected final static I18n i18n = I18nFactory.getI18n(ConnectionPanel.class);
+        protected static final I18n i18n = I18nFactory.getI18n(ConnectionPanel.class);
         private ConnectionPanel firstPanel;
         private JTree tableTree;
         private JScrollPane jScrollPane;

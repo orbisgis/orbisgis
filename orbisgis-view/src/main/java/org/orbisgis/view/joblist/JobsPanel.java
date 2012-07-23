@@ -45,8 +45,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * This panel shows the list of active jobs.
  */
 public class JobsPanel extends JPanel implements DockingPanel {
-        public final static String PANEL_NAME = "jobslist";
-        private final static I18n I18N = I18nFactory.getI18n(JobsPanel.class);
+        public static final String PANEL_NAME = "jobslist";
+        private static final I18n I18N = I18nFactory.getI18n(JobsPanel.class);
         private static final Logger LOGGER = Logger.getLogger("gui."+JobsPanel.class);
         private DockingPanelParameters dockingParameters = new DockingPanelParameters();
         private JobListPanel jobList;

@@ -45,7 +45,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * This panel includes all Output Type panel.
  */
 public class MainOutputPanel extends JPanel implements DockingPanel {
-    protected final static I18n i18n = I18nFactory.getI18n(MainOutputPanel.class);
+    protected static final I18n i18n = I18nFactory.getI18n(MainOutputPanel.class);
     private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< docked panel properties */
     private JTabbedPane tabbedPane;
     public MainOutputPanel() {

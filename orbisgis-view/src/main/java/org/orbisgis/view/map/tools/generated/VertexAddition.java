@@ -38,7 +38,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 
 public abstract class VertexAddition implements Automaton {
-        protected final static I18n I18N = I18nFactory.getI18n(VertexAddition.class);
+        protected static final I18n I18N = I18nFactory.getI18n(VertexAddition.class);
 	private static Logger logger = Logger.getLogger(VertexAddition.class);
 
 	private Status status = Status.STANDBY;

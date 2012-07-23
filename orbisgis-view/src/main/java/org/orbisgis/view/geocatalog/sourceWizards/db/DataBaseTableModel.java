@@ -51,7 +51,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class DataBaseTableModel extends AbstractTableModel {
 
         private static final Logger LOGGER = Logger.getLogger(DataBaseTableModel.class);
-        protected final static I18n I18N = I18nFactory.getI18n(DataBaseTableModel.class);
+        protected static final I18n I18N = I18nFactory.getI18n(DataBaseTableModel.class);
         private final String[] sourceNames;
         private static final String[] COLUMN_NAMES = new String[]{"Source name", "Table name", "Schema",
                                 "PK", "Spatial field", "CRS name", "EPSG code", "Export"};

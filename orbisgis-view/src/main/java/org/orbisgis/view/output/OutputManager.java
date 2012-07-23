@@ -46,12 +46,12 @@ import org.xnap.commons.i18n.I18nFactory;
  * The output manager, create then link/unlink appender with LOG4J.
  */
 public class OutputManager {
-        protected final static I18n i18n = I18nFactory.getI18n(OutputManager.class);
-        public final static String LOG_INFO = "output_info";
-        public final static String LOG_ALL = "output_all";
-        public final static String LOG_ERROR = "output_error";
-        public final static String LOG_WARNING = "output_warning";
-        public final static String LOG_DEBUG = "output_debug";
+        protected static final I18n i18n = I18nFactory.getI18n(OutputManager.class);
+        public static final String LOG_INFO = "output_info";
+        public static final String LOG_ALL = "output_all";
+        public static final String LOG_ERROR = "output_error";
+        public static final String LOG_WARNING = "output_warning";
+        public static final String LOG_DEBUG = "output_debug";
         
         private Map<String, PanelAppender> outputPanels = new HashMap<String, PanelAppender>();
         private MainOutputPanel mainPanel;

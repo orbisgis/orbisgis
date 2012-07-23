@@ -46,7 +46,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Specific OrbisGIS preferences.
  */
 public class OrbisGISPreferenceTreeModel extends PreferenceTreeModel {
-    protected final static I18n i18n = I18nFactory.getI18n(OrbisGISPreferenceTreeModel.class);
+    protected static final I18n i18n = I18nFactory.getI18n(OrbisGISPreferenceTreeModel.class);
         /**
      * Creates a new model. This constructor sets the behavior of how to
      * create paths for preferences to {@link PathCombiner#SECOND}. This

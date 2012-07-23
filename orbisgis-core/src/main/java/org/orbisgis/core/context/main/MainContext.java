@@ -50,7 +50,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 public class MainContext {
     private static final Logger LOGGER = Logger.getLogger(MainContext.class);
-    private final static I18n I18N = I18nFactory.getI18n(MainContext.class);
+    private static final I18n I18N = I18nFactory.getI18n(MainContext.class);
     private DataSourceFactory dataSourceFactory;
     private CoreWorkspace coreWorkspace;
     private DataManager dataManager;

@@ -50,7 +50,7 @@ public class CategorizedChoosePanel extends JPanel implements UIPanel {
         private HashMap<Option, ArrayList<Option>> categories = new HashMap<Option, ArrayList<Option>>();
         private JTree tree;
         private CategoriesTreeModel categoriesTreeModel;
-        protected final static I18n i18n = I18nFactory.getI18n(CategorizedChoosePanel.class);
+        protected static final I18n i18n = I18nFactory.getI18n(CategorizedChoosePanel.class);
 
         public CategorizedChoosePanel(String title, String id) {
                 this.title = title;

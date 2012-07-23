@@ -53,7 +53,7 @@ public class JobListItem extends ContainerItemProperties {
         private JobListItemPanel itemPanel;
         private AtomicBoolean progressionModified = new AtomicBoolean(true);
         private Timer fetchProgressionTimer;
-        private final static int PROGRESSION_TIMER_INTERVAL = 80;
+        private static final int PROGRESSION_TIMER_INTERVAL = 80;
 
         public JobListItemPanel getItemPanel() {
                 return itemPanel;

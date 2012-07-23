@@ -65,7 +65,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @brief The Map Editor Panel
  */
 public class MapEditor extends JPanel implements EditorDockable, TransformListener   {
-    protected final static I18n I18N = I18nFactory.getI18n(MapEditor.class);
+    protected static final I18n I18N = I18nFactory.getI18n(MapEditor.class);
     private static final Logger GUILOGGER = Logger.getLogger("gui."+MapEditor.class);
     //The UID must be incremented when the serialization is not compatible with the new version of this class
     private static final long serialVersionUID = 1L; 
@@ -79,7 +79,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     //Then translate to the map coordinates and send it to
     //the MapStatusBar
     private Timer CursorCoordinateLookupTimer;
-    private final static int CURSOR_COORDINATE_LOOKUP_INTERVAL = 100; //Ms
+    private static final int CURSOR_COORDINATE_LOOKUP_INTERVAL = 100; //Ms
     private Point lastCursorPosition = new Point();
     private Point lastTranslatedCursorPosition = new Point();
     /**

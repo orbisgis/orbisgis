@@ -48,7 +48,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class PnlRule extends JPanel implements ISELegendPanel {
 
-        protected final static I18n I18N = I18nFactory.getI18n(PnlRule.class);
+        protected static final I18n I18N = I18nFactory.getI18n(PnlRule.class);
         private JButton btnCurrentScaleToMin;
         private JButton btnCurrentScaleToMax;
         private JTextField txtMinScale;

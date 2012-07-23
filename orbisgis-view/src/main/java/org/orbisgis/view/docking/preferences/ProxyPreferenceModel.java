@@ -46,7 +46,7 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  */
 public class ProxyPreferenceModel extends DefaultPreferenceModel {
-    protected final static I18n i18n = I18nFactory.getI18n(ProxyPreferenceModel.class);
+    protected static final I18n i18n = I18nFactory.getI18n(ProxyPreferenceModel.class);
     // JAVA proxy properties constant
     // @see http://docs.oracle.com/javase/1.4.2/docs/guide/net/properties.html
     private static final String SYSTEM_SOCKS_PROXY_PORT = "socksProxyPort";

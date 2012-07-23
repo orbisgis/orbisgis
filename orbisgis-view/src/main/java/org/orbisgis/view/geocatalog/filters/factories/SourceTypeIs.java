@@ -47,10 +47,10 @@ import org.xnap.commons.i18n.I18nFactory;
  * @brief Source Type filter factory
  */
 public class SourceTypeIs implements FilterFactory<IFilter> {
-    protected final static I18n i18n = I18nFactory.getI18n(SourceTypeIs.class);
+    protected static final I18n i18n = I18nFactory.getI18n(SourceTypeIs.class);
     private Map<String,IFilter> filters = new HashMap<String,IFilter>();
     private List<ContainerItemProperties> filterLabelsId = new ArrayList<ContainerItemProperties>();
-    private final static String DEFAULT_FILTER = "geocatalog.filters.GeoFilter"; //Filter shown in the GUI by default
+    private static final String DEFAULT_FILTER = "geocatalog.filters.GeoFilter"; //Filter shown in the GUI by default
     
     /**
      * Add a new type filter

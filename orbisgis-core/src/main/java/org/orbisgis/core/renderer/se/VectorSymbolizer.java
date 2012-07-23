@@ -59,7 +59,7 @@ import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
  * @author Maxence Laurent, Alexis Guéganno
  */
 public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
-        private final static Logger LOGGER = Logger.getLogger(VectorSymbolizer.class);
+        private static final Logger LOGGER = Logger.getLogger(VectorSymbolizer.class);
         private Uom uom;
         private GeometryAttribute theGeom;
 

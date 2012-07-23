@@ -49,14 +49,14 @@ import org.xnap.commons.i18n.I18nFactory;
  * all other dockable frames.
  */
 public class MainFrame extends JFrame {
-        protected final static I18n i18n = I18nFactory.getI18n(MainFrame.class);
+        protected static final I18n i18n = I18nFactory.getI18n(MainFrame.class);
         //Main menu keys
-        public final static String MENU_FILE = "file";
-        public final static String MENU_EXIT = "exitapp";
-        public final static String MENU_TOOLS = "tools";
-        public final static String MENU_CONFIGURE = "configure";
-        public final static String MENU_LOOKANDFEEL = "lookAndFeel";
-        public final static String MENU_WINDOWS = "windows";
+        public static final String MENU_FILE = "file";
+        public static final String MENU_EXIT = "exitapp";
+        public static final String MENU_TOOLS = "tools";
+        public static final String MENU_CONFIGURE = "configure";
+        public static final String MENU_LOOKANDFEEL = "lookAndFeel";
+        public static final String MENU_WINDOWS = "windows";
         
         //The main frame show panels state,theme, and properties
         private DockingManager dockingManager=null;

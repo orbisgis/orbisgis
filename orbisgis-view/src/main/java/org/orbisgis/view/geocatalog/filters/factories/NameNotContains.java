@@ -44,7 +44,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 
 public class NameNotContains implements FilterFactory<IFilter> {
-    protected final static I18n i18n = I18nFactory.getI18n(NameNotContains.class);
+    protected static final I18n i18n = I18nFactory.getI18n(NameNotContains.class);
     /**
      * The factory ID
      *

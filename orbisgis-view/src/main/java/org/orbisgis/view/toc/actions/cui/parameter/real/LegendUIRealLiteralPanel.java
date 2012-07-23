@@ -61,7 +61,7 @@ public abstract class LegendUIRealLiteralPanel extends LegendUIComponent impleme
 	private Double max;
 	private Double initial;
 
-	private final static int nbColumns = 10;
+	private static final int nbColumns = 10;
 
 	public LegendUIRealLiteralPanel(String name, LegendUIController controller, LegendUIComponent parent, RealLiteral realLiteral, boolean isNullable) {
 		super(name, controller, parent, 0, isNullable);

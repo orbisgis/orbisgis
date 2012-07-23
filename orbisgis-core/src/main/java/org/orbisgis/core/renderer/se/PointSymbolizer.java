@@ -78,8 +78,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Alexis Guéganno, Maxence Laurent
  */
 public final class PointSymbolizer extends VectorSymbolizer implements GraphicNode {
-    private final static I18n I18N = I18nFactory.getI18n(PointSymbolizer.class);
-    private final static Logger LOGGER = Logger.getLogger(PointSymbolizer.class);
+    private static final I18n I18N = I18nFactory.getI18n(PointSymbolizer.class);
+    private static final Logger LOGGER = Logger.getLogger(PointSymbolizer.class);
     private static final String MODE_VERTEX = "vertex";
     private GraphicCollection graphic;
     private boolean onVertex;

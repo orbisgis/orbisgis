@@ -60,7 +60,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 
 public class FilterFactoryManager<FilterInterface> {
-    protected final static I18n i18n = I18nFactory.getI18n(FilterFactoryManager.class);
+    protected static final I18n i18n = I18nFactory.getI18n(FilterFactoryManager.class);
     private static final Logger LOGGER = Logger.getLogger(FilterFactoryManager.class);
     private JPanel filterListPanel;/*!< This panel contain the set of filters */
         //List of active filters

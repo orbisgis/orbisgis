@@ -38,7 +38,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 public abstract class Polygon implements Automaton {
         
-        protected final static I18n I18N = I18nFactory.getI18n(Polygon.class);
+        protected static final I18n I18N = I18nFactory.getI18n(Polygon.class);
 	private static Logger logger = Logger.getLogger(Polygon.class);
 
 	private Status status = Status.STANDBY;

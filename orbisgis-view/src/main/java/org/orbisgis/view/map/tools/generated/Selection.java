@@ -38,7 +38,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 
 public abstract class Selection implements Automaton {
-        protected final static I18n I18N = I18nFactory.getI18n(Selection.class);
+        protected static final I18n I18N = I18nFactory.getI18n(Selection.class);
 	private static Logger logger = Logger.getLogger(Selection.class);
 
 	private Status status = Status.STANDBY;

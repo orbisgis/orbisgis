@@ -91,8 +91,8 @@ public class Toc extends JPanel implements EditorDockable {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
 
         private static final long serialVersionUID = 1L;
-        protected final static I18n I18N = I18nFactory.getI18n(Toc.class);
-        private final static Logger LOGGER = Logger.getLogger("gui." + Toc.class);
+        protected static final I18n I18N = I18nFactory.getI18n(Toc.class);
+        private static final Logger LOGGER = Logger.getLogger("gui." + Toc.class);
         DockingPanelParameters dockingPanelParameters;
         private transient MapContext mapContext = null;
         private JTree tree;

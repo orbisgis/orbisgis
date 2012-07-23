@@ -41,7 +41,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class WKTTab extends JPanel implements ActionListener {
 
         private static final Logger LOGGER = Logger.getLogger(WKTTab.class);
-        protected final static I18n I18N = I18nFactory.getI18n(WKTTab.class);
+        protected static final I18n I18N = I18nFactory.getI18n(WKTTab.class);
         private JTextArea jTextArea;
         public static final String NO_SRS_INFO = "MapContext contains no CRS text information";
         public String crsHistory = "crsHistory.properties";

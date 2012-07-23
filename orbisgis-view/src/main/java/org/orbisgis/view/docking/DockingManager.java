@@ -67,7 +67,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public final class DockingManager {
         private JFrame owner;
         private SingleCDockableListMenuPiece dockableMenuTracker;
-        protected final static I18n i18n = I18nFactory.getI18n(DockingManager.class);
+        protected static final I18n i18n = I18nFactory.getI18n(DockingManager.class);
         private static final Logger LOGGER = Logger.getLogger(DockingManager.class);
         File dockingState=null;
         private CControl commonControl; /*!< link to the docking-frames */

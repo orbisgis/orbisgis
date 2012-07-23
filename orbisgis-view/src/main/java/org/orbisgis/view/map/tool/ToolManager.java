@@ -82,7 +82,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
 
         public static GeometryFactory toolsGeometryFactory = new GeometryFactory();
         
-        protected final static I18n I18N = I18nFactory.getI18n(ToolManager.class);
+        protected static final I18n I18N = I18nFactory.getI18n(ToolManager.class);
         private static Logger UILOGGER = Logger.getLogger("gui."+ToolManager.class);
         private Automaton currentTool;
         private ILayer activeLayer = null;

@@ -37,7 +37,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 
 public class NoPanel implements ILegendPanel {
-    protected final static I18n I18N = I18nFactory.getI18n(NoPanel.class);
+    protected static final I18n I18N = I18nFactory.getI18n(NoPanel.class);
 
 	private Legend legend;
 

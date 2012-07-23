@@ -40,7 +40,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class UIFactory {
 
-        protected final static I18n i18n = I18nFactory.getI18n(UIFactory.class);
+        protected static final I18n i18n = I18nFactory.getI18n(UIFactory.class);
         private static URL defaultIconURL;
         private static ImageIcon defaultIcon;
         private static String okMessage;

@@ -45,7 +45,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class ColorPicker extends JPanel implements UIPanel {
 
-        private final static I18n i18n = I18nFactory.getI18n(ColorPicker.class);
+        private static final I18n i18n = I18nFactory.getI18n(ColorPicker.class);
 
         /**
          * Creates new form ColorPicker

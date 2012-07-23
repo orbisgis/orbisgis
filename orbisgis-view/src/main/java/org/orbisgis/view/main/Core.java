@@ -65,7 +65,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * This is the main UIContext
  */
 public class Core {
-    protected final static I18n I18N = I18nFactory.getI18n(Core.class);        
+    protected static final I18n I18N = I18nFactory.getI18n(Core.class);        
     private static final Logger LOGGER = Logger.getLogger(Core.class);
     /////////////////////
     //view package

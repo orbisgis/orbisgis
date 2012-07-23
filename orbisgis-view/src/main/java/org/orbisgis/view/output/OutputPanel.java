@@ -42,9 +42,9 @@ import org.xnap.commons.i18n.I18nFactory;
 public class OutputPanel extends JPanel {
         //Root logger, for gui logger error
         private static final Logger LOGGER = Logger.getLogger(OutputPanel.class);
-        protected final static I18n i18n = I18nFactory.getI18n(OutputPanel.class);
+        protected static final I18n i18n = I18nFactory.getI18n(OutputPanel.class);
         private static final long serialVersionUID = 1L;
-        private final static int DEFAULT_MAX_CHARACTERS = 200000;
+        private static final int DEFAULT_MAX_CHARACTERS = 200000;
 	private int maxCharacters = DEFAULT_MAX_CHARACTERS;
         private JTextPane textPane;
         private Color defaultColor=Color.black;

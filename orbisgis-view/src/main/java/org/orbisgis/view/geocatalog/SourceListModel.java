@@ -55,7 +55,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * according to the SourceManager content and the filter loaded.
  */
 public class SourceListModel extends AbstractListModel {
-        protected final static I18n i18n = I18nFactory.getI18n(SourceListModel.class);
+        protected static final I18n i18n = I18nFactory.getI18n(SourceListModel.class);
 	private static final Logger LOGGER = Logger.getLogger(SourceListModel.class);
         private SourceListener sourceListener=null; /*!< The listener put in the sourceManager*/
 	private ContainerItemProperties[] sourceList;/*!< Sources */

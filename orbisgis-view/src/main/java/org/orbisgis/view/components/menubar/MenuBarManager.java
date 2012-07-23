@@ -40,7 +40,7 @@ import org.orbisgis.sif.common.MenuCommonFunctions;
 
 public class MenuBarManager {
     //This is a dev error, useless to translate
-    private final static String PARENT_NOT_EXISTS = "Parent menu must be inserted before the sub-menus";
+    private static final String PARENT_NOT_EXISTS = "Parent menu must be inserted before the sub-menus";
     private JMenuBar rootBar = new JMenuBar();
     //Store a flat version of menu containers
     private Map<String,MenuProperties> menuContainers = new HashMap<String,MenuProperties>();
