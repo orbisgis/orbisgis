@@ -1,97 +1,54 @@
-/**
+/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information.
- *
+ * manipulate and create vector and raster spatial information. 
+ * 
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
- *
+ * 
  * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
- *
+ * 
  * This file is part of OrbisGIS.
- *
+ * 
  * OrbisGIS is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- *
+ * 
  * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- *
+ * 
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
  * info_at_ orbisgis.org
  */
-/*
- * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- *
- *
- * This file is part of OrbisGIS.
- *
- * OrbisGIS is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- *
- * For more information, please consult: <http://www.orbisgis.org/>
- *
- * or contact directly:
- * info _at_ orbisgis.org
- */
-package org.orbisgis.core.ui.plugins.views.sqlConsole.ui;
+package org.orbisgis.view.sqlconsole.ui;
 
 import java.awt.BorderLayout;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.dnd.DnDConstants;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
+import java.awt.dnd.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import javax.swing.Timer;
+import javax.swing.*;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
-
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
-import org.orbisgis.core.ui.components.findReplace.FindReplaceDialog;
-import org.orbisgis.core.ui.editorViews.toc.TransferableLayer;
-import org.orbisgis.core.ui.pluginSystem.message.ErrorMessages;
-import org.orbisgis.core.ui.plugins.views.geocatalog.TransferableSource;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ActionsListener;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleAction;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.ConsoleListener;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.actions.SQLConsoleKeyListener;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat.CodeReformator;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.codereformat.CommentSpec;
-import org.orbisgis.core.ui.plugins.views.sqlConsole.language.SQLLanguageSupport;
-import org.orbisgis.utils.I18N;
+import org.orbisgis.view.sqlConsole.actions.ActionsListener;
+import org.orbisgis.view.sqlConsole.actions.ConsoleAction;
+import org.orbisgis.view.sqlConsole.actions.ConsoleListener;
+import org.orbisgis.view.sqlConsole.actions.SQLConsoleKeyListener;
+import org.orbisgis.view.sqlConsole.codereformat.CodeReformator;
+import org.orbisgis.view.sqlConsole.codereformat.CommentSpec;
+import org.orbisgis.view.sqlConsole.language.SQLLanguageSupport;
 
 public class SQLConsolePanel extends JPanel implements DropTargetListener {
 
@@ -100,11 +57,8 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
         private JButton btOpen = null;
         private JButton btSave = null;
         private JButton btFindReplace = null;
-        private ActionsListener actionAndKeyListener;
-        private ConsoleListener listener;
         private RTextScrollPane centerPanel;
         private RSyntaxTextArea scriptPanel;
-        private JToolBar toolBar;
         private JLabel statusMessage;
         private Timer timer;
         private int lastSQLStatementToReformatStart;
@@ -121,8 +75,7 @@ public class SQLConsolePanel extends JPanel implements DropTargetListener {
         /**
          * Creates a console for sql.
          */
-        public SQLConsolePanel(ConsoleListener listener) {
-                this.listener = listener;
+        public SQLConsolePanel() {
                 actionAndKeyListener = new ActionsListener(listener, this);
                 setLayout(new BorderLayout());
                 JPanel split = new JPanel();
