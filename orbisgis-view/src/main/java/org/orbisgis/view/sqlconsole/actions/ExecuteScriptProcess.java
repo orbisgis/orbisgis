@@ -53,7 +53,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class ExecuteScriptProcess implements BackgroundJob {
 
         private String script;
-        private static final Logger LOGGER = Logger.getLogger(ExecuteScriptProcess.class);
+        private static final Logger LOGGER = Logger.getLogger("gui."+ExecuteScriptProcess.class);
         protected final static I18n I18N = I18nFactory.getI18n(ExecuteScriptProcess.class);
                 
         private SQLConsolePanel panel;
@@ -71,7 +71,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
 
         @Override
         public String getTaskName() {
-                return "Executing script";
+                return I18N.tr("Executing script");
         }
 
         @Override
@@ -79,7 +79,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
 
                 DataManager dataManager = Services.getService(DataManager.class);
                 DataSourceFactory dsf = dataManager.getDataSourceFactory();
-                SQLStatement[] statements = null;
+                SQLStatement[] statements;
 
                 long t1 = System.currentTimeMillis();
                 try {
@@ -115,7 +115,8 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                                 }
 
                                                 if (spatial && vc != null) {
-
+                                                        //SQL request is a select with geometries
+                                                        //A new layer will be created and shown into the MapEditor
                                                         try {
                                                                 final ILayer layer = dataManager.createLayer(ds);
 
@@ -127,6 +128,8 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                                                 break;
                                                         }
                                                 } else {
+                                                        //The select return only non-geometrical data
+                                                        //the result is shown in the GUI console
                                                         ds.open();
                                                         StringBuilder aux = new StringBuilder();
                                                         int fc = ds.getMetadata().getFieldCount();

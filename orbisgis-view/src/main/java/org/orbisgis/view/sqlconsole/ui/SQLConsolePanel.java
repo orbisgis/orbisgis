@@ -37,6 +37,7 @@ import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.components.findReplace.FindReplaceDialog;
 import org.orbisgis.view.sqlconsole.codereformat.CodeReformator;
 import org.orbisgis.view.sqlconsole.codereformat.CommentSpec;
@@ -81,6 +82,13 @@ public class SQLConsolePanel extends JPanel {
                 add(getStatusToolBar(), BorderLayout.SOUTH);
         }
 
+        /**
+         * The map context is used to show the selected geometries
+         * @param mapContext 
+         */
+        public void setMapContext(MapContext mapContext) {
+                
+        }
 
         private RTextScrollPane getCenterPanel() {
                 if (centerPanel == null) {
@@ -95,18 +103,14 @@ public class SQLConsolePanel extends JPanel {
 
                         CodeReformator codeReformator = new CodeReformator(";",
                                 COMMENT_SPECS);
-
-                        /*
-                        scriptPanel.addKeyListener(new SQLConsoleKeyListener(this,
-                                codeReformator, actionAndKeyListener));
-                                */
-                        scriptPanel.addCaretListener(EventHandler.create(CaretListener.class,"this","onScriptPanelCaretUpdate"));
-
-
+                        scriptPanel.addCaretListener(EventHandler.create(CaretListener.class,this,"onScriptPanelCaretUpdate"));
                         centerPanel = new RTextScrollPane(scriptPanel);
                 }
                 return centerPanel;
         }
+        /**
+         * Update the rown:column label
+         */
         public void onScriptPanelCaretUpdate() {
                 line = scriptPanel.getCaretLineNumber() + 1;
                 character = scriptPanel.getCaretOffsetFromLineStart();

@@ -29,12 +29,15 @@
 package org.orbisgis.view.sqlconsole;
 
 import javax.swing.JComponent;
-import org.orbisgis.view.docking.DockingPanel;
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorDockable;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  *
@@ -42,9 +45,22 @@ import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
  */
 public class SQLConsole implements EditorDockable {
         private DockingPanelParameters dockingPanelParameters = new DockingPanelParameters();
-        private SQLConsolePanel sqlPanel;
+        private SQLConsolePanel sqlPanel = new SQLConsolePanel();
         private MapElement mapElement;
+        protected final static I18n I18N = I18nFactory.getI18n(SQLConsole.class);
+        
+        public SQLConsole() {
+                dockingPanelParameters.setTitle(I18N.tr("SQL Console"));
+                dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("script_code"));
+        }
 
+        /**
+         * Free sql console resources
+         */
+        public void dispose() {
+                sqlPanel.freeResources();
+        }
+        
         @Override
         public DockingPanelParameters getDockingParameters() {
                 return dockingPanelParameters;
@@ -52,9 +68,6 @@ public class SQLConsole implements EditorDockable {
 
         @Override
         public JComponent getComponent() {
-                if(sqlPanel==null) {
-                        sqlPanel = new SQLConsolePanel();
-                }
                 return sqlPanel;
         }
 
@@ -72,6 +85,7 @@ public class SQLConsole implements EditorDockable {
         public void setEditableElement(EditableElement editableElement) {
                 if(editableElement instanceof MapElement) {
                         mapElement = (MapElement) editableElement;
+                        sqlPanel.setMapContext((MapContext)mapElement.getObject());
                 }
         }
         

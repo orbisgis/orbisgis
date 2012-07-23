@@ -55,6 +55,7 @@ import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.output.OutputManager;
+import org.orbisgis.view.sqlconsole.SQLConsoleFactory;
 import org.orbisgis.view.toc.TocEditorFactory;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
@@ -174,6 +175,7 @@ public class Core {
     private void loadEditorFactories() {
             editors.addEditorFactory(new TocEditorFactory());
             editors.addEditorFactory(new MapEditorFactory());
+            editors.addEditorFactory(new SQLConsoleFactory());
     }
     /**
      * Initialisation of the BackGroundManager Service

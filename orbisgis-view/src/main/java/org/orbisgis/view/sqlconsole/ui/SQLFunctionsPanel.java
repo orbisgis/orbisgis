@@ -159,7 +159,10 @@ public class SQLFunctionsPanel extends JPanel {
                 collapsed.setVisible(true);
         }
 
-        private void expand() {
+        /**
+         * Shown the available sql functions
+         */
+        public void expand() {
                 if (!list.isVisible()) {
                         SQLFunctionsPanel.this.setPreferredSize(null);
                         list.setVisible(true);
