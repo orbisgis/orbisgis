@@ -317,11 +317,11 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
         public void setElement(TableEditableElement element) {
                 this.element = element;
                 if (this.element == null) {
-                        if (this.dataSource != null) {
+                        if (this.dataSource != null && dataSource.isEditable()) {
                                 this.dataSource.removeEditionListener(listener);
                                 this.dataSource.removeMetadataEditionListener(listener);
-                                this.dataSource = null;
                         }
+                        this.dataSource = null;
                         if (this.selection != null) {
                                 this.selection.removeSelectionListener(selectionListener);
                                 this.selection = null;
@@ -329,8 +329,10 @@ public class TableComponent extends JPanel implements WorkbenchFrame {
                         table.setModel(new DefaultTableModel());
                 } else {
                         this.dataSource = element.getDataSource();
-                        this.dataSource.addEditionListener(listener);
-                        this.dataSource.addMetadataEditionListener(listener);
+                        if (dataSource.isEditable()) {
+                                this.dataSource.addEditionListener(listener);
+                                this.dataSource.addMetadataEditionListener(listener);
+                        }
                         tableModel = new DataSourceDataModel();
                         table.setModel(tableModel);
                         table.setBackground(DEFAULT_COLOR);

@@ -111,25 +111,25 @@ public final class DriverUtilities {
          * Gets the first stream driver registered with the DriverManager that supports the
          * specified prefix
          * @param dm
-         * @param prefix
+         * @param streamType
          * @return
          */
-        public static StreamDriver getStreamDriver(DriverManager dm, String prefix) {
+        public static StreamDriver getStreamDriver(DriverManager dm, String streamType) {
                 String[] names = dm.getDriverNames();
                 for (int i = 0; i < names.length; i++) {
                         Driver driver = dm.getDriver(names[i]);
                         if (driver instanceof StreamDriver) {
                                 StreamDriver streamDriver = (StreamDriver) driver;
-                                String[] prefixes = streamDriver.getPrefixes();
-                                for (String driverPrefix : prefixes) {
-                                        if (driverPrefix.equalsIgnoreCase(prefix)) {
+                                String[] types = streamDriver.getStreamTypes();
+                                for (String driverType : types) {
+                                        if (driverType.equalsIgnoreCase(streamType)) {
                                                 return streamDriver;
                                         }
                                 }
                         }
                 }
 
-                throw new DriverLoadException("No suitable driver for " + prefix);
+                throw new DriverLoadException("No suitable driver for " + streamType);
         }
 
         /**

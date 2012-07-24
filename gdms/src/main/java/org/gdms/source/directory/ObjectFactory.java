@@ -85,6 +85,14 @@ public class ObjectFactory {
     public SystemDefinitionType createSystemDefinitionType() {
         return new SystemDefinitionType();
     }
+    
+    /**
+     * Create an instance of {@link SystemDefinitionType }
+     * 
+     */
+    public StreamDefinitionType createStreamDefinitionType() {
+        return new StreamDefinitionType();
+    }
 
     /**
      * Create an instance of {@link FileProperty }
@@ -174,7 +182,7 @@ public class ObjectFactory {
      * 
      */
     @XmlElementDecl(namespace = "", name = "stream-definition")
-    public JAXBElement<StreamDefinitionType> createWmsDefinition(StreamDefinitionType value) {
+    public JAXBElement<StreamDefinitionType> createStreamDefinition(StreamDefinitionType value) {
         return new JAXBElement<StreamDefinitionType>(_StreamDefinition_QNAME, StreamDefinitionType.class, null, value);
     }
 

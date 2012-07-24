@@ -71,7 +71,7 @@ public class WMSGeocatalogPlugIn extends AbstractPlugIn {
                                         //WMSSource source = new WMSSource(client.getHost(),layerName, srsPanel.getSRS(), validImageFormat);
 					//New way, we set SRS and image format later
                                         StreamSource source = new StreamSource(client.getHost(), client.getPort(), layerName, "wms", validImageFormat, srsPanel.getSRS());
-                                        
+                                        client.close();
                                         SourceManager sourceManager = Services.getService(DataManager.class).getSourceManager();
 					String uniqueName = sourceManager.getUniqueName(layerName);
 					sourceManager.register(uniqueName, source);

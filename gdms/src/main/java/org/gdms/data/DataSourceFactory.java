@@ -491,15 +491,12 @@ public final class DataSourceFactory {
         }
 
         /**
-         * Gets a DataSource instance to access the wms source with the
-         * {@link #DEFAULT} mode
+         * Gets a DataSource instance to access the stream source with the
+         * {@link #DEFAULT} mode.
          *
-         * @param wmsSource
-         * source to access
-         * @return
-         *
-         * @throws DataSourceCreationException
-         * If the instance creation fails
+         * @param streamSource source to access
+         * @return a DataSource
+         * @throws DataSourceCreationException if the instance creation fails
          * @throws DriverException
          */
         public DataSource getDataSource(StreamSource streamSource)
@@ -562,7 +559,17 @@ public final class DataSourceFactory {
                 if (pm.isCancelled()) {
                         ds = null;
                 } else {
-                        ds = getModedDataSource(ds, mode);
+                        // we check if the actual DS is actually editable
+                        // this allows for a DS to force itself NOT to be open
+                        // in edition, even if it is asked for.
+                        // This is currently used for Streams.
+                        if ((mode & EDITABLE) == EDITABLE && !ds.isEditable()) {
+                                // bitwise NOT
+                                // i.e. the current mode *minus* EDITABLE
+                                ds = getModedDataSource(ds, mode & ~EDITABLE);
+                        } else {
+                                ds = getModedDataSource(ds, mode);
+                        }
                 }
 
                 return ds;

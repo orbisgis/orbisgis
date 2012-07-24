@@ -137,7 +137,9 @@ public class Layer extends GdmsLayer {
     public void close() throws LayerException {
         super.close();
         try {
-            dataSource.removeEditionListener(editionListener);
+            if (dataSource.isEditable()) {
+                    dataSource.removeEditionListener(editionListener);
+            }
             dataSource.close();
         } catch (AlreadyClosedException e) {
             throw new LayerException(I18N.getString("org.orbisgis.layerModel.layer.bug"), e); //$NON-NLS-1$
@@ -175,7 +177,9 @@ public class Layer extends GdmsLayer {
             }
 
             // Listen modifications to update selection
-            dataSource.addEditionListener(editionListener);
+            if (dataSource.isEditable()) {
+                    dataSource.addEditionListener(editionListener);
+            }
         } catch (IOException e) {
             throw new LayerException(I18N.getString("org.orbisgis.layerModel.layer.cannotSetLegend"), e); //$NON-NLS-1$
         } catch (DriverException e) {

@@ -33,154 +33,88 @@
  */
 package org.gdms.data.stream;
 
-import java.awt.Image;
-import java.util.List;
-
 import com.vividsolutions.jts.geom.Envelope;
-import org.apache.log4j.Logger;
-import org.gvsig.remoteClient.wms.ICancellable;
-import org.orbisgis.progress.NullProgressMonitor;
 
-import org.gdms.data.DataSource;
 import org.gdms.data.DriverDataSource;
-import org.gdms.data.edition.Commiter;
-import org.gdms.data.edition.DeleteEditionInfo;
-import org.gdms.data.edition.EditionInfo;
-import org.gdms.data.edition.PhysicalRowAddress;
 import org.gdms.driver.DataSet;
-import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.StreamDriver;
-import org.gdms.driver.StreamReadWriteDriver;
-import org.gdms.driver.wms.SimpleWMSDriver;
-import org.gdms.source.CommitListener;
-import org.gdms.source.DefaultSourceManager;
 import org.gdms.source.Source;
 
 /**
- * Adapter to the DataSource interface for stream drivers
+ * Adapter to the DataSource interface for stream drivers.
  *
+ * @author Antoine Gourlay
  * @author Vincent Dépériers
  */
-public class StreamDataSourceAdapter extends DriverDataSource implements Commiter, CommitListener {
+public class StreamDataSourceAdapter extends DriverDataSource {
 
-    private StreamDriver driver;
-    private StreamSource def;
-    private static final Logger LOG = Logger.getLogger(StreamDataSourceAdapter.class);
+        private StreamDriver driver;
+        private StreamSource def;
 
-    /**
-     * Creates a new StreamDataSourceAdapter
-     *
-     *
-     * @param src
-     * @param def
-     * @param driver
-     */
-    public StreamDataSourceAdapter(Source src, StreamSource def, StreamDriver driver) {
-        super(src);
-        this.def = def;
-        this.driver = driver;
-        LOG.trace("Constructor");
-    }
-
-    @Override
-    public void open() throws DriverException {
-        LOG.trace("Opening");
-        driver.open(def);
-        fireOpen(this);
-        DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory().getSourceManager();
-        sm.addCommitListener(this);
-    }
-
-    @Override
-    public void close() throws DriverException {
-        LOG.trace("Closing");
-        driver.close();
-        fireCancel(this);
-        DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory().getSourceManager();
-        sm.removeCommitListener(this);
-    }
-
-    /**
-     * Save the data in the stream driver
-     * @param ds
-     * @throws DriverException 
-     */
-    @Override
-    public void saveData(DataSet ds) throws DriverException {
-        LOG.trace("Saving Data");
-        ((StreamReadWriteDriver) driver).write(ds, new NullProgressMonitor());
-    }
-
-    /**
-     * Get the driver of the SteamData
-     * @return 
-     */
-    @Override
-    public Driver getDriver() {
-        return driver;
-    }
-
-    @Override
-    public void syncWithSource() throws DriverException {
-        sync();
-    }
-
-    @Override
-    public void commitDone(String name) throws DriverException {
-        sync();
-    }
-
-    private void sync() throws DriverException {
-        driver.close();
-        //Faire ce dont on a besoin en parametre de close et open cf(DBTableDataSourceAdapter)
-        driver.open(def);
-
-    }
-
-    /**
-     * Commit the StreamDataSource
-     * @param rowsDirections
-     * @param fieldNames
-     * @param schemaActions
-     * @param editionActions
-     * @param deletedPKs
-     * @param modifiedSource
-     * @return
-     * @throws DriverException 
-     */
-    @Override
-    public boolean commit(List<PhysicalRowAddress> rowsDirections, String[] fieldNames, List<EditionInfo> schemaActions, List<EditionInfo> editionActions, List<DeleteEditionInfo> deletedPKs, DataSource modifiedSource) throws DriverException {
-        LOG.trace("Commiting");
-        boolean changed = ((StreamReadWriteDriver) driver).write(modifiedSource, new NullProgressMonitor());
-        try {
-            driver.close();
-        } catch (DriverException e) {
-            throw new DriverException("Cannot free resources: stream writen ...", e);
+        /**
+         * Creates a new StreamDataSourceAdapter.
+         *
+         * @param src the underlying source
+         * @param def the stream info
+         * @param driver the stream driver
+         */
+        public StreamDataSourceAdapter(Source src, StreamSource def, StreamDriver driver) {
+                super(src);
+                this.def = def;
+                this.driver = driver;
         }
-        driver.open(def);
 
-        fireCommit(this);
+        @Override
+        public void open() throws DriverException {
+                driver.open(def);
+                fireOpen(this);
+        }
 
-        return changed;
-    }
+        @Override
+        public void close() throws DriverException {
+                driver.close();
+                fireCancel(this);
+        }
 
-    @Override
-    public void isCommiting(String name, Object source) throws DriverException {
-    }
+        /**
+         * Save the data in the stream driver
+         *
+         * @param ds
+         * @throws DriverException
+         */
+        @Override
+        public void saveData(DataSet ds) throws DriverException {
+                throw new UnsupportedOperationException();
+        }
 
-    /**
-     * This method is used by the {@code Renderer} to know whether or not it is
-     * dealing with a stream datasource
-     * @return
-     */
-    @Override
-    public boolean isStream() {
-        return true;
-    }
+        /**
+         * @return the driver of the Stream.
+         */
+        @Override
+        public StreamDriver getDriver() {
+                return driver;
+        }
 
-    @Override
-    public Envelope getFullExtent() throws DriverException {
-        return getStream(0).getEnvelope();
-    }
+        @Override
+        public void syncWithSource() throws DriverException {
+                driver.close();
+                driver.open(def);
+        }
+
+        /**
+         * This method is used by the {@code Renderer} to know whether or not it is
+         * dealing with a stream datasource
+         *
+         * @return
+         */
+        @Override
+        public boolean isStream() {
+                return true;
+        }
+
+        @Override
+        public Envelope getFullExtent() throws DriverException {
+                return getStream(0).getEnvelope();
+        }
 }

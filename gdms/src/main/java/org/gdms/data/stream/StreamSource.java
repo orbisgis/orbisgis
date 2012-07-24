@@ -38,212 +38,193 @@ import java.io.Serializable;
 /**
  * Contains the information to identify a stream.
  *
+ * @author Antoine Gourlay
  * @author Vincent Dépériers
  */
 public class StreamSource implements Serializable {
 
-    private static final long serialVersionUID = 123456789L;
-    private String m_host;
-    private int m_port;
-    private String m_layerName;
-    //private String schemaName;
-    private String m_imageFormat;
-    private String m_user;
-    private String m_password;
-    private String m_prefix;
-    private String m_srs;
-    
-    
-    /**
-     * Creat a new Stream Source with the host, the port,the name of the layer and the prefix
-     * @param host
-     * @param port
-     * @param layerName
-     * @param prefix 
-     */
-    public StreamSource(String host, int port, String layerName, String prefix) {
-        this(host, port, layerName, prefix, "", "", "", "");
-    }
-     
-    /**
-     * Creat a new Stream Source with the host, the port,the name of the layer , 
-     * the prefix,the format of the image and the srs
-     * @param host
-     * @param port
-     * @param layerName
-     * @param prefix
-     * @param imageFormat
-     * @param srs 
-     */
-    public StreamSource(String host, int port, String layerName, String prefix,
-            String imageFormat, String srs) {
-        this(host, port, layerName, prefix, imageFormat, srs, "", "");
-    }
-    
-   /**
-    * Creat a new Stream Source with the host, the port,the name of the layer , 
-    * the prefix,the format of the image ,the srs,the user and the password if 
-    * necessairy
-    * @param host
-    * @param port
-    * @param layerName
-    * @param prefix
-    * @param imageFormat
-    * @param srs
-    * @param user
-    * @param password 
-    */
-    public StreamSource(String host, int port, String layerName, String prefix,
-            String imageFormat, String srs,
-            String user, String password) {
-        this.m_host = host;
-        this.m_port = port;
-        this.m_layerName = layerName;
-        this.m_prefix = prefix;
-        this.m_imageFormat = imageFormat;
-        this.m_srs = srs;
-        this.m_user = user;
-        this.m_password = password;
-    }
-    
-    /**
-     * Get the host of the source
-     * @return 
-     */
-    public String getHost() {
-        return this.m_host;
-    }
+        private static final long serialVersionUID = 123456789L;
+        private String host;
+        private int port;
+        private String layerName;
+        private String imageFormat;
+        private String type;
+        private String srs;
 
-    /**
-     * Set the host of the source with the parameter
-     * @param host 
-     */
-    public void setHost(String host) {
-        this.m_host = host;
-    }
+        /**
+         * Creates a new Stream Source with the host, the port,the name of the layer and the prefix.
+         *
+         * @param host
+         * @param port
+         * @param layerName
+         * @param prefix
+         */
+        public StreamSource(String host, int port, String layerName, String prefix) {
+                this(host, port, layerName, prefix, "image/png", "");
+        }
 
-    /**
-     * Get the port of the source
-     * @return 
-     */
-    public int getPort() {
-        return m_port;
-    }
+        /**
+         * Creates a new Stream Source with the host, the port,the name of the layer ,
+         * the prefix,the format of the image and the srs.
+         *
+         * @param host
+         * @param port
+         * @param layerName
+         * @param prefix
+         * @param imageFormat
+         * @param srs
+         */
+        public StreamSource(String host, int port, String layerName, String prefix,
+                String imageFormat, String srs) {
+                this.host = host;
+                this.port = port;
+                this.layerName = layerName;
+                this.type = prefix;
+                this.imageFormat = imageFormat;
+                this.srs = srs;
+        }
 
-    /**
-     * Set the port of the source with the parameter
-     * @param port 
-     */
-    public void setPort(int port) {
-        this.m_port = port;
-    }
+        /**
+         * @return the host of the source.
+         */
+        public String getHost() {
+                return this.host;
+        }
 
-    /**
-     * Get the name of the layer of the source
-     * @return 
-     */
-    public String getLayerName() {
-        return this.m_layerName;
-    }
+        /**
+         * Sets the host of the source.
+         *
+         * @param host a new host
+         */
+        public void setHost(String host) {
+                this.host = host;
+        }
 
-    /**
-     * Set the name of the layer of the source with the parameter
-     * @param layerName 
-     */
-    public void setLayerName(String layerName) {
-        this.m_layerName = layerName;
-    }
+        /**
+         * @return the port of the source
+         */
+        public int getPort() {
+                return port;
+        }
 
-    /**
-     * Get the format of the image 
-     * @return 
-     */
-    public String getImageFormat() {
-        return this.m_imageFormat;
-    }
+        /**
+         * Sets the port of the source.
+         *
+         * @param port a new port number
+         */
+        public void setPort(int port) {
+                this.port = port;
+        }
 
-    /**
-     * Set the format of the image with the parameter
-     * @param imageFormat 
-     */
-    public void setImageFormat(String imageFormat) {
-        this.m_imageFormat = imageFormat;
-    }
+        /**
+         * @return the name of the layer of the source
+         */
+        public String getLayerName() {
+                return this.layerName;
+        }
 
-    /**
-     * Get the user of the source
-     * @return 
-     */
-    public String getUser() {
-        return m_user;
-    }
+        /**
+         * Sets the name of the layer of the source.
+         *
+         * @param layerName a new layer name
+         */
+        public void setLayerName(String layerName) {
+                this.layerName = layerName;
+        }
 
-    /**
-     * Set the user of the source with the parameter
-     * @param user 
-     */
-    public void setUser(String user) {
-        this.m_user = user;
-    }
+        /**
+         * @return the format of the image
+         */
+        public String getImageFormat() {
+                return this.imageFormat;
+        }
 
-    /**
-     * Get the Password of the source
-     * @return 
-     */
-    public String getPassword() {
-        return m_password;
-    }
+        /**
+         * Sets the format of the image.
+         *
+         * @param imageFormat a new MIME format string
+         */
+        public void setImageFormat(String imageFormat) {
+                this.imageFormat = imageFormat;
+        }
 
-    /**
-     * Set the password of the source with the parameter
-     * @param password 
-     */
-    public void setPassword(String password) {
-        this.m_password = password;
-    }
+        /**
+         * Sets the srs of the source.
+         *
+         * @param srs a new SRS String
+         */
+        public void setSRS(String srs) {
+                this.srs = srs;
+        }
 
-    /**
-     * Set the srs of the source with the parameter
-     * @param srs 
-     */
-    public void setSRS(String srs) {
-        this.m_srs = srs;
-    }
+        /**
+         * @return the srs of the source
+         */
+        public String getSRS() {
+                return srs;
+        }
 
-    /**
-     * Get the srs of the source
-     * @return 
-     */
-    public String getSRS() {
-        return m_srs;
-    }
-    /**
-     * Returns a human-readable description of this StreamSource
-     *
-     * @return a description String
-     */
-    @Override
-    public String toString() {
-        return m_host + ":" + m_port + "-" + m_layerName + "-" + m_user + "-" + m_password + "-" + m_imageFormat;
-    }
+        @Override
+        public String toString() {
+                return type + "-" + host + ":" + port + "-" + layerName + "-" + imageFormat + "-" + srs;
+        }
 
-    public String getDbms() {
-        return m_host + ":" + m_port + "//request=getMap&layers=" + m_layerName;
-    }
+        public String getDbms() {
+                return host + ":" + port + "//request=getMap&layers=" + layerName;
+        }
 
-    /**
-     * Get the prefix of the source
-     * @return 
-     */
-    public String getPrefix() {
-        return m_prefix;
-    }
+        /**
+         * @return the prefix of the source
+         */
+        public String getStreamType() {
+                return type;
+        }
 
-    /**
-     * Set the prefix of the source with the parameter
-     * @param prefix 
-     */
-    public void setPrefix(String prefix) {
-        this.m_prefix = prefix;
-    }
+        /**
+         * Sets the prefix of the source.
+         *
+         * @param type a new prefix
+         */
+        public void setStreamType(String type) {
+                this.type = type;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+                if (obj instanceof StreamSource) {
+                        final StreamSource other = (StreamSource) obj;
+                        if ((this.host == null) ? (other.host != null) : !this.host.equals(other.host)) {
+                                return false;
+                        }
+                        if (this.port != other.port) {
+                                return false;
+                        }
+                        if ((this.layerName == null) ? (other.layerName != null) : !this.layerName.equals(other.layerName)) {
+                                return false;
+                        }
+                        if ((this.imageFormat == null) ? (other.imageFormat != null) : !this.imageFormat.equals(other.imageFormat)) {
+                                return false;
+                        }
+                        if ((this.type == null) ? (other.type != null) : !this.type.equals(other.type)) {
+                                return false;
+                        }
+                        if ((this.srs == null) ? (other.srs != null) : !this.srs.equals(other.srs)) {
+                                return false;
+                        }
+                        return true;
+                }
+                return false;
+        }
+
+        @Override
+        public int hashCode() {
+                int hash = 7;
+                hash = 73 * hash + (this.host != null ? this.host.hashCode() : 0);
+                hash = 73 * hash + this.port;
+                hash = 73 * hash + (this.layerName != null ? this.layerName.hashCode() : 0);
+                hash = 73 * hash + (this.imageFormat != null ? this.imageFormat.hashCode() : 0);
+                hash = 73 * hash + (this.type != null ? this.type.hashCode() : 0);
+                hash = 73 * hash + (this.srs != null ? this.srs.hashCode() : 0);
+                return hash;
+        }
 }

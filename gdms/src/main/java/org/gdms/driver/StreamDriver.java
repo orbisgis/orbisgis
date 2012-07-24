@@ -37,22 +37,22 @@ public interface StreamDriver extends Driver {
     boolean isOpen();
     
     /**
-     * Get map from server
+     * Gets an image from the stream.
      * 
-     * @param width
-     * @param height
-     * @param extent
-     * @param cancel
-     * @return
+     * @param width the width
+     * @param height the height
+     * @param extent the extend required
+     * @param pm
+     * @return the resulting image
      * @throws DriverException 
      */
     public Image getMap(int width, int height, Envelope extent, ProgressMonitor pm) throws DriverException;
     
 
     /**
-     * Gets the array of the prefixes accepted by this driver
+     * Gets the array of the stream types accepted by this driver.
      *
      * @return
      */
-    String[] getPrefixes();
+    String[] getStreamTypes();
 }

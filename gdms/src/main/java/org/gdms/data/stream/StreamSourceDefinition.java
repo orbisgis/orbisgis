@@ -35,7 +35,6 @@ package org.gdms.data.stream;
 
 import java.net.URI;
 
-import org.apache.log4j.Logger;
 import org.orbisgis.progress.ProgressMonitor;
 
 import org.gdms.data.AbstractDataSourceDefinition;
@@ -56,64 +55,50 @@ import org.gdms.source.directory.StreamDefinitionType;
  *
  * This is in a way the interface between the management of the data itself and
  * their integration into gdms.<br>
- * Here we will store the StreamSource to give it as a parameter when we create
+ * Here we store the StreamSource to be able to create
  * the StreamDatasource, through the StreamDataSourceAdapter.
  * </p>
  *
+ * @author Antoine Gourlay
  * @author Vincent Dépériers
  */
 public class StreamSourceDefinition extends AbstractDataSourceDefinition {
 
-        private StreamSource m_streamSource;
-        private static final Logger LOG = Logger.getLogger(StreamSourceDefinition.class);
-
-        public StreamSourceDefinition(StreamSource streamSource) {
-                LOG.trace("Constructor");
-                this.m_streamSource = streamSource;
-        }
+        private StreamSource streamSource;
 
         /**
-         *
-         * @param obj
-         * @return true if the object is an instance of StreamSourceDifinition
-         * having the same attributes values as the m_StreamSource
+         * Creates a new definition for a stream.
+         * @param streamSource the information on the stream
          */
+        public StreamSourceDefinition(StreamSource streamSource) {
+                this.streamSource = streamSource;
+        }
+
         @Override
         public boolean equals(Object obj) {
                 if (obj instanceof StreamSourceDefinition) {
                         StreamSourceDefinition ssd = (StreamSourceDefinition) obj;
-                        return (equals(ssd.m_streamSource.getDbms(), m_streamSource.getDbms())
-                                && equals(ssd.m_streamSource.getLayerName(), m_streamSource.getLayerName())
-                                && equals(ssd.m_streamSource.getHost(), m_streamSource.getHost())
-                                && equals(ssd.m_streamSource.getPassword(), m_streamSource.getPassword())
-                                && (ssd.m_streamSource.getPort() == m_streamSource.getPort())
-                                && equals(ssd.m_streamSource.getUser(), m_streamSource.getUser())
-                                && equals(ssd.m_streamSource.getPrefix(), m_streamSource.getPrefix()));
+                        return streamSource.equals(ssd.streamSource);
                 } else {
                         return false;
                 }
         }
 
-        private boolean equals(String str, String str2) {
-                if (str == null) {
-                        return str2 == null;
-                } else {
-                        return str.equals(str2);
-                }
-        }
-
         @Override
         public int hashCode() {
-                return 48 + m_streamSource.hashCode();
+                return 48 + streamSource.hashCode();
         }
 
+        /**
+         * @return the stream source for the definition
+         */
         public StreamSource getStreamSource() {
-                return this.m_streamSource;
+                return this.streamSource;
         }
 
         @Override
         protected Driver getDriverInstance() {
-                return DriverUtilities.getStreamDriver(getDataSourceFactory().getSourceManager().getDriverManager(), m_streamSource.getPrefix());
+                return DriverUtilities.getStreamDriver(getDataSourceFactory().getSourceManager().getDriverManager(), streamSource.getStreamType());
         }
 
         @Override
@@ -122,7 +107,7 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition {
                         getDriver().setDataSourceFactory(getDataSourceFactory());
 
                         StreamDataSourceAdapter sdsa = new StreamDataSourceAdapter(
-                                getSource(tableName), m_streamSource, (StreamDriver) getDriver());
+                                getSource(tableName), streamSource, (StreamDriver) getDriver());
                         sdsa.setDataSourceFactory(getDataSourceFactory());
                         return sdsa;
                 } catch (DriverException e) {
@@ -132,16 +117,18 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition {
 
         @Override
         public void createDataSource(DataSet contents, ProgressMonitor pm) throws DriverException {
-                throw new UnsupportedOperationException("Cannot create stream sources");
+                throw new UnsupportedOperationException("Cannot create stream sources.");
         }
 
         @Override
         public DefinitionType getDefinition() {
                 StreamDefinitionType ret = new StreamDefinitionType();
-                ret.setLayerName(m_streamSource.getLayerName());
-                ret.setHost(m_streamSource.getHost());
-                ret.setImageFormat(m_streamSource.getImageFormat());
-                ret.setSRS(m_streamSource.getSRS());
+                ret.setLayerName(streamSource.getLayerName());
+                ret.setHost(streamSource.getHost());
+                ret.setPort(String.valueOf(streamSource.getPort()));
+                ret.setImageFormat(streamSource.getImageFormat());
+                ret.setType(streamSource.getStreamType());
+                ret.setSRS(streamSource.getSRS());
 
                 return ret;
         }
@@ -151,13 +138,9 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition {
                 return DriverManager.DEFAULT_SINGLE_TABLE_NAME;
         }
 
-        public StreamSource getSourceDefinition() {
-                return this.m_streamSource;
-        }
-
         public static DataSourceDefinition createFromXML(StreamDefinitionType definition) {
-                StreamSource streamSource = new StreamSource(definition.getHost(), 80,
-                        definition.getLayerName(), "wms",
+                StreamSource streamSource = new StreamSource(definition.getHost(), Integer.parseInt(definition.getPort()),
+                        definition.getLayerName(), definition.getType(),
                         definition.getImageFormat(), definition.getSRS());
 
                 return new StreamSourceDefinition(streamSource);
@@ -165,6 +148,11 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition {
 
         @Override
         public URI getURI() throws DriverException {
-                return URI.create(m_streamSource.getDbms());
+                return URI.create(streamSource.getDbms());
+        }
+
+        @Override
+        public String calculateChecksum(DataSource openDS) throws DriverException {
+                return Integer.toString(streamSource.hashCode());
         }
 }

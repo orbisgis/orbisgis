@@ -1,9 +1,11 @@
 package org.gdms.data.stream;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.awt.Image;
-import org.gdms.driver.DriverException;
+
+import com.vividsolutions.jts.geom.Envelope;
 import org.orbisgis.progress.ProgressMonitor;
+
+import org.gdms.driver.DriverException;
 
 /**
  *
@@ -15,12 +17,14 @@ import org.orbisgis.progress.ProgressMonitor;
 public interface GeoStream {
         
         /**
-         * Get map from remot server
+         * Gets an image from the stream.
          * 
-         * @param width
-         * @param height
-         * @param extent
-         * @return 
+         * @param width the width
+         * @param height the height
+         * @param extent the required extent
+         * @param pm 
+         * @return the resulting image
+         * @throws DriverException  
          */
          public Image getMap(int width, int height, Envelope extent, ProgressMonitor pm) throws DriverException;
          
@@ -32,22 +36,9 @@ public interface GeoStream {
          public Envelope getEnvelope();
          
          /**
-          * Set envelope
-          * 
-          */
-         public void setEnvelope(Envelope envelope);
-         
-         /**
           * Get the StreamSource
           * 
           * @return 
           */
          public StreamSource getStreamSource();
-         
-         /**
-          * Set the StreamSource
-          * 
-          * @param streamSource 
-          */
-         public void setStreamSource(StreamSource streamSource);
 }
