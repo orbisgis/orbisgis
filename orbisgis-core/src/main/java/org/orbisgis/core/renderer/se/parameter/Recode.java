@@ -53,8 +53,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * when an input value can't be processed for whatever reason.
  */
 public abstract class Recode<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
-    private final static I18n I18N = I18nFactory.getI18n(Recode.class);
-    private final static Logger LOGGER = Logger.getLogger(Recode.class);
+    private static final I18n I18N = I18nFactory.getI18n(Recode.class);
+    private static final Logger LOGGER = Logger.getLogger(Recode.class);
     
     private FallbackType fallbackValue;
     private StringParameter lookupValue;

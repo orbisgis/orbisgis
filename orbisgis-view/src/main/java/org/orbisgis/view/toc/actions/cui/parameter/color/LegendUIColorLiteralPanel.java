@@ -38,11 +38,11 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
+import org.orbisgis.sif.components.ColorPicker;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.toc.actions.cui.LegendUIComponent;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
-import org.orbisgis.view.toc.actions.cui.components.ColorPicker;
-import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  *

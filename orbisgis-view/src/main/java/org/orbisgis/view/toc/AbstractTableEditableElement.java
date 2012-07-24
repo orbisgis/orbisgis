@@ -43,7 +43,7 @@ public abstract class AbstractTableEditableElement extends
 		AbstractEditableElement implements TableEditableElement {
 
 	private ModificationListener modificationListener = new ModificationListener();
-        protected final static I18n I18N = I18nFactory.getI18n(AbstractTableEditableElement.class);
+        private static final I18n I18N = I18nFactory.getI18n(AbstractTableEditableElement.class);
 	@Override
 	public boolean isModified() {
                 if (!getDataSource().isOpen()) {

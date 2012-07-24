@@ -55,7 +55,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * according to the SourceManager content and the filter loaded.
  */
 public class SourceListModel extends AbstractListModel {
-        protected final static I18n i18n = I18nFactory.getI18n(SourceListModel.class);
+        private static final I18n I18N = I18nFactory.getI18n(SourceListModel.class);
 	private static final Logger LOGGER = Logger.getLogger(SourceListModel.class);
         private SourceListener sourceListener=null; /*!< The listener put in the sourceManager*/
 	private ContainerItemProperties[] sourceList;/*!< Sources */
@@ -205,7 +205,7 @@ public class SourceListModel extends AbstractListModel {
                     }
                 } catch(DriverException ex) {
                     //Log warning
-                    LOGGER.warn(i18n.tr("Data source schema could not be read"),ex);
+                    LOGGER.warn(I18N.tr("Data source schema could not be read"),ex);
                 }
                 sourceList[rowidSource] = new CatalogSourceItem(
                                                 tempSourceNames[rowidSource], //Source Name

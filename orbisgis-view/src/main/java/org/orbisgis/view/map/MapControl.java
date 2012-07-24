@@ -71,7 +71,7 @@ public class MapControl extends JComponent implements ContainerListener {
         private static final long INTERMEDIATE_DRAW_PAINT_INTERVAL = 200;
         public static final String JOB_DRAWING_PREFIX_ID = "MapControl-Drawing";
         private static final Logger LOGGER = Logger.getLogger(MapControl.class);
-        protected final static I18n I18N = I18nFactory.getI18n(MapControl.class);
+        private static final I18n I18N = I18nFactory.getI18n(MapControl.class);
 	private static int lastMapControlId = 0;
         private AtomicBoolean awaitingDrawing=new AtomicBoolean(false); /*!< A drawing process is currently requested, it is useless to request another */
 	private int mapControlId;

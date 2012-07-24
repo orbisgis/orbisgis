@@ -63,8 +63,8 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public final class Halo implements SymbolizerNode, UomNode, FillNode {
 
-    private final static Logger LOGGER = Logger.getLogger(Halo.class);
-    private final static I18n I18N = I18nFactory.getI18n(Halo.class);
+    private static final Logger LOGGER = Logger.getLogger(Halo.class);
+    private static final I18n I18N = I18nFactory.getI18n(Halo.class);
         /**
          * The default radius for new {@code Halo} instances. Set to 5.0, and UOM dependant.
          */

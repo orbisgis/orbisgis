@@ -55,8 +55,8 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public final class GraphicCollection implements SymbolizerNode {
 
-    private final static Logger LOGGER = Logger.getLogger(GraphicCollection.class);
-    private final static I18n I18N = I18nFactory.getI18n(GraphicCollection.class);
+    private static final Logger LOGGER = Logger.getLogger(GraphicCollection.class);
+    private static final I18n I18N = I18nFactory.getI18n(GraphicCollection.class);
     
     private ArrayList<Graphic> graphics;
     private SymbolizerNode parent;

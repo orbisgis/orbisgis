@@ -62,18 +62,17 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * This {@code Panel} contains all the needed informations to build an UI that
  * will let the user edit the legends. It is built with the following properties
- * :</p> <ul><li>Legends are displayed in the {@code LegendList}.</li> 
- * <li>An inner list of available legends. It may be initialized using
+ * :</p> <ul><li>Legends are displayed in the {@code LegendList}.</li> <li>An
+ * inner list of available legends. It may be initialized using
  * {@code EPLegendHelper. It is used to validate a given {@code Legend}, in
- * order to determine if it can be edited or not.</li> 
- * <li>A {@code CardLayout} that is used to switch fast between the {@code
- * Legend} instances stored in {@code legends}</li> 
- * <li>Two text fields : one for the min scale, the other for the max scale.</li>
- * <li>Two buttons that are used to fastly set the min and/or max scales to
- * the current one.</li>
- * <li>A {@code MapTransform} that represents the current state of the map</li>
- * <li>A {@code Type} instance (should be the type of the {@code DataSource}
- * associated to the layer associated to the legend we want to edit.</li> </ul>
+ * order to determine if it can be edited or not.</li> <li>A {@code CardLayout}
+ * that is used to switch fast between the {@code
+ * Legend} instances stored in {@code legends}</li> <li>Two text fields : one
+ * for the min scale, the other for the max scale.</li> <li>Two buttons that are
+ * used to fastly set the min and/or max scales to the current one.</li> <li>A {@code MapTransform}
+ * that represents the current state of the map</li> <li>A {@code Type} instance
+ * (should be the type of the {@code DataSource} associated to the layer
+ * associated to the legend we want to edit.</li> </ul>
  *
  * @author Alexis Guéganno, others...
  */
@@ -93,7 +92,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         private StyleWrapper styleWrapper;
 
         public void init(MapTransform mt, Type gc, Style style, ILegendPanel[] availableLegends,
-                    ILayer layer) {
+                ILayer layer) {
                 this.mt = mt;
                 this.gc = gc;
                 this.layer = layer;
@@ -277,24 +276,10 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         }
 
         @Override
-        public String getInfoText() {
-                return UIFactory.getDefaultOkMessage();
-        }
-
-        @Override
         public String getTitle() {
                 return I18N.tr("Legend edition");
         }
 
-        @Override
-        public String initialize() {
-                return null;
-        }
-
-        @Override
-        public String postProcess() {
-                return null;
-        }
 
         @Override
         public String validateInput() {
@@ -303,9 +288,9 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                 }
                 List<String> errors = styleWrapper.validateInput();
                 StringBuilder sb = new StringBuilder();
-                for (String s : errors) {
-                        if (s != null && !s.isEmpty()) {
-                                sb.append(s);
+                for (String message : errors) {
+                        if (message != null && !message.isEmpty()) {
+                                sb.append(message);
                                 sb.append("\n");
                         }
                 }
@@ -334,4 +319,6 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         public StyleWrapper getStyleWrapper() {
                 return styleWrapper;
         }
+
+     
 }

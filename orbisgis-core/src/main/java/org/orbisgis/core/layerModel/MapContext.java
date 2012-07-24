@@ -49,6 +49,7 @@ public interface MapContext {
         public static final String PROP_SELECTEDSTYLES = "selectedStyles";
         public static final String PROP_ACTIVELAYER = "activeLayer";
         public static final String PROP_LAYERMODEL = "layerModel";
+        public static final String PROP_COORDINATEREFERENCESYSTEM = "coordinateReferenceSystem";
         
         /**
         * Add a property-change listener for all properties.

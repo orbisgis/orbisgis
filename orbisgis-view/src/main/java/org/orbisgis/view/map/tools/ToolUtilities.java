@@ -28,23 +28,21 @@
  */
 package org.orbisgis.view.map.tools;
 
+import com.vividsolutions.jts.geom.Coordinate;
 import java.text.ParseException;
 import java.util.ArrayList;
-
+import org.gdms.data.DataSource;
 import org.gdms.data.types.Constraint;
+import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.components.AskValidValue;
+import org.orbisgis.view.components.sif.AskValidValue;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.TransitionException;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.GeometryDimensionConstraint;
 
 public class ToolUtilities {
 
