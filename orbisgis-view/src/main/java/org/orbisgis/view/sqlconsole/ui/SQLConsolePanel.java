@@ -34,7 +34,15 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
+import javax.swing.JToolBar;
+import javax.swing.Timer;
 import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -341,7 +349,7 @@ public class SQLConsolePanel extends JPanel {
         }
 
         /**
-         * Open one instanceof the find replace dialog
+         * Open one instance of the find replace dialog
          */
         public void openFindReplaceDialog() {
                 if (findReplaceDialog == null) {

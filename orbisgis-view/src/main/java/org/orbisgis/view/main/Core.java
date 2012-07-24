@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.main;
 
-import de.muntjak.tinylookandfeel.TinyLookAndFeel;
 import java.awt.Rectangle;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;

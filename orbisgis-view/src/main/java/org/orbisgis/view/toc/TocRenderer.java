@@ -42,25 +42,28 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.se.Style;
 
+/**
+ * Toc renderer, try to stick to the Look&Feel but with custom controls.
+ */
 public class TocRenderer extends TocAbstractRenderer {
         private static Logger UILOGGER = Logger.getLogger("gui."+ TocRenderer.class);
         private final static int ROW_EMPTY_BORDER_SIZE = 2;
+        private static final long serialVersionUID = 1L;
         private TreeCellRenderer lookAndFeelRenderer;
-        private JTree tree;
         private JCheckBox lastCheckBox;
         /**
          * Install this renderer inside the tree
          * @param tree 
          */
         public static void install( JTree tree) {
-                TocRenderer tocRenderer = new TocRenderer(tree);
-                tocRenderer.initialize();
+                TocRenderer tocRenderer = new TocRenderer();
+                tocRenderer.initialize(tree);
                 tree.setCellRenderer(tocRenderer);
         }
         
         /**
-         * Update the native renderer
-         * @warning Using only by PropertyChangeListener on UI property
+         * Update the native renderer.
+         * Warning, Using only by PropertyChangeListener on UI property
          */
         public void updateLFRenderer() {
                 lookAndFeelRenderer = new JTree().getCellRenderer();
@@ -69,7 +72,7 @@ public class TocRenderer extends TocAbstractRenderer {
         /**
          * Listen for the arrival of Look&Feel
          */
-        private void initialize() {
+        private void initialize(JTree tree) {
                 updateLFRenderer();
                 tree.addPropertyChangeListener("UI",
                         EventHandler.create(PropertyChangeListener.class,this,"updateLFRenderer"));
@@ -78,8 +81,7 @@ public class TocRenderer extends TocAbstractRenderer {
          * Private constructor, use the static install method
          * @param lfRenderer 
          */
-        private TocRenderer(JTree tree) {
-                this.tree = tree;
+        private TocRenderer() {
         }
         
 	@Override

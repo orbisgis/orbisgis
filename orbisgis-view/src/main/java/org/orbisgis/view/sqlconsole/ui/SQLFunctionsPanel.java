@@ -58,9 +58,15 @@ package org.orbisgis.view.sqlconsole.ui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.BevelBorder;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.DataManager;
@@ -106,31 +112,16 @@ public class SQLFunctionsPanel extends JPanel {
                 btnCollapse.setIcon(OrbisGISIcon.getIcon("go-next"));
                 btnCollapse.setToolTipText(I18N.tr("Collapse"));
                 btnCollapse.addActionListener(collapseListener);
-                //btnCollapse.setBorderPainted(false);
 
-                /*
-                east = new JToolBar();
-                east.setFloatable(false);
-                east.add(txtFilter);
-                east.add(btnCollapse);
-                east.setOpaque(false);
-                this.add(east, BorderLayout.NORTH);
-                * 
-                */
-                expandedPanel.add(btnCollapse, BorderLayout.NORTH);
+                expandedPanel.add(btnCollapse, BorderLayout.WEST);
                 expandedPanel.add(new JScrollPane(list), BorderLayout.CENTER);
-                FunctionListRenderer functionListRenderer = new FunctionListRenderer();
-                list.setCellRenderer(functionListRenderer);
+                FunctionListRenderer.install(list);
 
                 functionLabelCount = new JLabel(I18N.tr("Functions count = {0}",functionListModel.getSize()));
                 expandedPanel.add(functionLabelCount, BorderLayout.SOUTH);
 
-                //btnExpand = new JLabel(OrbisGISIcon.getIcon("go-previous"), JLabel.CENTER);
-                //btnExpand.setIconTextGap(20);
-                //btnExpand.setVerticalTextPosition(JLabel.BOTTOM);
-                //btnExpand.setHorizontalTextPosition(JLabel.CENTER);
                 JButton expandButton = new JButton(OrbisGISIcon.getIcon("go-previous"));
-                expandButton.setSize(new Dimension(expandButton.getWidth(),0));
+                expandButton.setSize(new Dimension(20,0));
                 expandButton.setToolTipText(I18N.tr("Show SQL function list"));
                 add(expandButton, BorderLayout.WEST);
                 add(expandedPanel, BorderLayout.CENTER);
@@ -138,7 +129,6 @@ public class SQLFunctionsPanel extends JPanel {
                 btnExpand = expandButton;
 
                 expandedPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-                //this.setMinimumSize(new Dimension(100, 40));
                 collapse();
 
         }

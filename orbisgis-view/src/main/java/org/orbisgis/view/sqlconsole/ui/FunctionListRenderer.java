@@ -3,8 +3,8 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
  *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
@@ -22,76 +22,79 @@
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * For more information, please consult: <http://www.orbisgis.org/> or contact
+ * directly: info_at_ orbisgis.org
  */
 package org.orbisgis.view.sqlconsole.ui;
 
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.FlowLayout;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
+import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
- * Class to improve the function list rendering.
- * Add icons corresponding to FunctionElement type.
+ * Class to improve the function list rendering. Add icons corresponding to
+ * FunctionElement type.
+ *
  * @author ebocher
  */
 public class FunctionListRenderer implements ListCellRenderer {
 
-    private static final Color SELECTED = Color.lightGray;
-    private static final Color DESELECTED = Color.white;
-    private static final Color SELECTED_FONT = Color.white;
-    private static final Color DESELECTED_FONT = Color.black;
+        private ListCellRenderer lookAndFeelRenderer;
 
-    @Override
-    public Component getListCellRendererComponent(JList jlist, Object value, int index, boolean isSelected, boolean cellHasFocus) {
-        OurJPanel ourJPanel = new OurJPanel();
-        ourJPanel.setNodeCosmetic((FunctionElement) value, isSelected, cellHasFocus);
-        return ourJPanel;
-    }  
-
-    private class OurJPanel extends JPanel {
-        private static final long serialVersionUID = 1L;
-
-        private JLabel iconAndLabel;
-
-        public OurJPanel() {
-            FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
-            fl.setHgap(0);
-            setLayout(fl);
-            iconAndLabel = new JLabel();
-            add(iconAndLabel);
+        /**
+         * Install this renderer into the provided list
+         *
+         * @param list Destination of this renderer
+         */
+        public static void install(JList list) {
+                FunctionListRenderer renderer = new FunctionListRenderer();
+                renderer.initialize(list);
+                list.setCellRenderer(renderer);
         }
 
-        public void setNodeCosmetic(FunctionElement value, boolean selected,
-                boolean hasFocus) {
-            int type = value.getFunctionType();
-
-            if (type == FunctionElement.BASIC_FUNCTION) {
-                iconAndLabel.setIcon(OrbisGISIcon.getIcon("builtinfunctionmap"));
-            } else if (type == FunctionElement.CUSTOM_FUNCTION) {
-                iconAndLabel.setIcon(OrbisGISIcon.getIcon("builtincustomquerymap"));
-            } else {
-                iconAndLabel.setIcon(OrbisGISIcon.getIcon("builtincustomquerymaperror"));
-            }           
-            iconAndLabel.setText(value.getFunctionName());
-            iconAndLabel.setVisible(true);
-
-
-
-            if (selected) {
-                this.setBackground(SELECTED);
-                iconAndLabel.setForeground(SELECTED_FONT);
-            } else {
-                this.setBackground(DESELECTED);
-                iconAndLabel.setForeground(DESELECTED_FONT);
-            }
+        /**
+         * Update the native renderer.
+         * Warning, Using only by PropertyChangeListener on UI property
+         */
+        public void updateLFRenderer() {
+                lookAndFeelRenderer = new JList().getCellRenderer();
         }
-    }
+        /**
+         * The constructor is private, use the static {@link install} method
+         */
+        private FunctionListRenderer() {
+                
+        }
+
+        private void initialize(JList list) {
+                updateLFRenderer();
+                list.addPropertyChangeListener("UI",
+                        EventHandler.create(PropertyChangeListener.class,this,"updateLFRenderer"));
+        }
+        private static Icon getFunctionIcon(FunctionElement value) {
+                int type = value.getFunctionType();
+                if (type == FunctionElement.BASIC_FUNCTION) {
+                        return OrbisGISIcon.getIcon("builtinfunctionmap");
+                } else if (type == FunctionElement.CUSTOM_FUNCTION) {
+                        return OrbisGISIcon.getIcon("builtincustomquerymap");
+                } else {
+                        return OrbisGISIcon.getIcon("builtincustomquerymaperror");
+                }
+        }
+        @Override
+        public Component getListCellRendererComponent(JList jlist, Object value, int index, boolean isSelected, boolean cellHasFocus) {
+                Component nativeCell = lookAndFeelRenderer.getListCellRendererComponent(jlist, value, index, isSelected, cellHasFocus);
+                if(nativeCell instanceof JLabel) {
+                        JLabel renderingComp = (JLabel) nativeCell;
+                        FunctionElement sqlFunction = (FunctionElement)value;
+                        renderingComp.setIcon(getFunctionIcon(sqlFunction));
+                        renderingComp.setText(sqlFunction.getFunctionName());
+                }
+                return nativeCell;
+        }
 }
