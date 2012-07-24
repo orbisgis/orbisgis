@@ -343,12 +343,10 @@ public class SourceManagementTest extends TestBase {
                 if (hsqlDbAvailable) {
                         sm.register("db", testDB);
                 }
-                sm.register("wms", testWMS);
                 sm.register("obj", obj);
 
                 String fileContent = getContent("myfile");
                 String dbContent = hsqlDbAvailable ? getContent("db") : null;
-                String wmsContent = getContent("wms");
                 String objContent = getContent("obj");
 
                 sm.saveStatus();
@@ -357,7 +355,6 @@ public class SourceManagementTest extends TestBase {
                 if (hsqlDbAvailable) {
                         assertEquals(dbContent, getContent("db"));
                 }
-                assertEquals(wmsContent, getContent("wms"));
                 assertEquals(objContent, getContent("obj"));
 
                 sm.removeAll();
@@ -701,7 +698,7 @@ public class SourceManagementTest extends TestBase {
                 testFile = new File(TestResourceHandler.OTHERRESOURCES, "test.csv");
                 testDB = new DBSource(null, 0, TestResourceHandler.OTHERRESOURCES
                         + "testhsqldb", "sa", "", "gisapps", "jdbc:hsqldb:file");
-                testWMS = new StreamSource("127.0.0.1", 80, "cantons", "wms", "EPSG:1234", "format/pig");
+                testWMS = new StreamSource("http://127.0.0.1", 80, "cantons", "wms", "format/pig", "EPSG:1234");
                 obj = new MemoryDataSetDriver();
         }
 }
