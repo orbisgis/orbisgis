@@ -43,7 +43,7 @@ public class AlphanumericFilter implements IFilter {
     public boolean accepts(SourceManager sm, String sourceName) {
         int type = sm.getSource(sourceName).getType();
         int spatial = SourceManager.VECTORIAL | SourceManager.RASTER
-                        | SourceManager.WMS | SourceManager.SYSTEM_TABLE;
+                        | SourceManager.STREAM | SourceManager.SYSTEM_TABLE;
         return (type & spatial) == 0;
     }
 }

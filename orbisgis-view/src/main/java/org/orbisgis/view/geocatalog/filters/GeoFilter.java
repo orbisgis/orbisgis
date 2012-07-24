@@ -42,7 +42,7 @@ public class GeoFilter implements IFilter {
 	public boolean accepts(SourceManager sm, String sourceName) {
 		int type = sm.getSource(sourceName).getType();
 		int spatial = SourceManager.VECTORIAL | SourceManager.RASTER
-				| SourceManager.WMS;
+				| SourceManager.STREAM;
 		return (type & spatial) != 0;
 	}
 

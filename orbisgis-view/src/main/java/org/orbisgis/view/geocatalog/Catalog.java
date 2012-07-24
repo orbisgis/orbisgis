@@ -355,7 +355,7 @@ public class Catalog extends JPanel implements DockingPanel {
                                         new CSVFileDriverFilter());
                         } else if ((type & SourceManager.RASTER) == sm.RASTER) {
                                 filter = new RasterDriverFilter();
-                        } else if ((type & SourceManager.WMS) == sm.WMS) {
+                        } else if ((type & SourceManager.STREAM) == sm.STREAM) {
                                 filter = new DriverFilter() {
                                         
                                         @Override

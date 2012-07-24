@@ -56,7 +56,7 @@ import org.gvsig.remoteClient.exceptions.ServerErrorException;
 import org.gvsig.remoteClient.exceptions.WMSException;
 import org.gvsig.remoteClient.wms.WMSStatus;
 import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.WMSConnection;
+import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
@@ -68,6 +68,8 @@ import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import org.gdms.data.stream.GeoStream;
 
 /**
  * Renderer contains all the logic of the Symbology Encoding process based on java
@@ -403,75 +405,46 @@ public abstract class Renderer {
                         } else {
                                 ILayer layer = layers[i];
                                 if (layer.isVisible() && extent.intersects(layer.getEnvelope())) {
-                                        if (layer.isWMS()) {
-                                                // Iterate over next layers to make only one call to the
-                                                // WMS server
-                                                WMSStatus status = (WMSStatus) layer.getWMSConnection().getStatus().clone();
-                                                if (i > 0) {
-                                                        for (int j = i - 1; (j >= 0) && (layers[j].isWMS() || !layers[j].isVisible()); j--) {
-                                                                if (layers[j].isVisible()) {
-                                                                        i = j;
-                                                                        if (sameServer(layer, layers[j])) {
-                                                                                List<?> layerNames = layers[j].getWMSConnection().getStatus().getLayerNames();
-                                                                                for (Object layerName : layerNames) {
-                                                                                        status.addLayerName(layerName.toString());
-                                                                                }
-                                                                        }
-                                                                }
-                                                        }
-                                                }
-                                                WMSConnection conn = new WMSConnection(layer.getWMSConnection().getClient(), status);
-                                                drawWMS(
-                                                        g2, width, height, extent, conn);
-                                        } else {
-                                                DataSource sds = layer.getDataSource();
-                                                if (sds != null) {
-                                                        try {
+                                        try {
+                                                if (layer.isStream()) {
+                                                        drawStreamLayer(g2, layer, width, height, extent, pm);
+                                                } else {
+                                                        DataSource sds = layer.getDataSource();
+                                                        if (sds != null) {
                                                                 if (sds.isVectorial()) {
-                                                                   this.drawVector(g2, mt, layer, pm, perm);
+                                                                        this.drawVector(g2, mt, layer, pm, perm);
                                                                 } else if (sds.isRaster()) {
                                                                         LOGGER.warn("Raster Not Yet supported => Not drawn: {0}"+layer.getName());
                                                                 } else {
                                                                         LOGGER.warn(I18N.tr("Layer {0} not drawn",layer.getName()));
                                                                 }
-                                                        } catch (DriverException e) {
-                                                                LOGGER.error(
-                                                                        I18N.tr("Layer {0} not drawn",layer.getName()), e); 
+                                                                pm.progressTo(ONE_HUNDRED_I - (ONE_HUNDRED_I * i) / layers.length);
                                                         }
-                                                        pm.progressTo(ONE_HUNDRED_I
-                                                                - (ONE_HUNDRED_I * i) / layers.length);
                                                 }
+                                        } catch (DriverException e) {
+                                                LOGGER.error(I18N.tr("Layer {0} not drawn",layer.getName()), e); 
                                         }
                                 }
                         }
                 }
         }
 
-        private boolean sameServer(ILayer layer, ILayer layer2) {
-                return layer.getWMSConnection().getClient().getHost().equals(
-                        layer2.getWMSConnection().getClient().getHost());
-        }
-
-        private void drawWMS(Graphics2D g2, int width, int height, Envelope extent,
-                WMSConnection connection) {
-                WMSStatus status = connection.getStatus();
-                status.setWidth(width);
-                status.setHeight(height);
-                status.setExtent(new Rectangle2D.Double(extent.getMinX(), extent.getMinY(), extent.getWidth(), extent.getHeight()));
-
+        private void drawStreamLayer(Graphics2D g2, ILayer layer, int width, int height, Envelope extent, ProgressMonitor pm) {
                 try {
-                        File file = connection.getClient().getMap(status, null);
-                        BufferedImage image = ImageIO.read(file);
-                        g2.drawImage(image, 0, 0, null);
-                } catch (WMSException e) {
+                        layer.open();
+                        
+                        for (int i = 0 ; i < layer.getDataSource().getRowCount() ; i++) {
+                                GeoStream geoStream = layer.getDataSource().getStream(i);
+                                
+                                Image img = geoStream.getMap(width, height, extent, pm);
+                                g2.drawImage(img, 0, 0, null);
+                        }
+                } catch (DriverException e) {
                         LOGGER.error(
-                                I18N.tr("Cannot get WMS image"), e);
-                } catch (ServerErrorException e) {
+                                I18N.tr("Cannot get Stream image"), e);
+                } catch (LayerException e) {
                         LOGGER.error(
-                                I18N.tr("Cannot get WMS image"), e);
-                } catch (IOException e) {
-                        LOGGER.error(
-                                I18N.tr("Cannot get WMS image"), e);
+                                I18N.tr("Cannot get Stream image"), e);
                 }
         }
 
