@@ -91,6 +91,14 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         private MapTransform mt;
         private StyleWrapper styleWrapper;
 
+        /**
+         * Initialize the {@code LegendsPanel}.
+         * @param mt
+         * @param gc
+         * @param style
+         * @param availableLegends
+         * @param layer
+         */
         public void init(MapTransform mt, Type gc, Style style, ILegendPanel[] availableLegends,
                 ILayer layer) {
                 this.mt = mt;
@@ -277,7 +285,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
         @Override
         public String getTitle() {
-                return I18N.tr("Legend edition");
+                return I18N.tr("Advanced style edition");
         }
 
 

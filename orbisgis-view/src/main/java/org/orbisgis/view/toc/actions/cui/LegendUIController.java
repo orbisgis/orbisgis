@@ -352,7 +352,6 @@ public final class LegendUIController {
 
 	private void splitPanel(LegendUIComponent comp) {
 		if (mainPanel != null) {
-			System.out.println("SPLIT PANEL START");
 			// Inline all children
 			comp.unnestChildren();
 
@@ -363,7 +362,6 @@ public final class LegendUIController {
 			mainPanel.setVisible(false);
 			while (mainQueue.size() > 0) {
 				LegendUIComponent current = mainQueue.remove(0);
-				System.out.println ("Process : " + current);
 				// Mount the panel
 				current.mountComponentForChildren();
 				current.pack();
@@ -384,7 +382,6 @@ public final class LegendUIController {
 			}
 			mainPanel.setVisible(true);
 		}
-		System.out.println("SPLIT PANEL END");
 	}
 
 	void removeSymbolizerFromRule(LegendUISymbolizerPanel sPanel, int ruleID) {

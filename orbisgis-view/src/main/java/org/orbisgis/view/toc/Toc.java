@@ -506,7 +506,7 @@ public class Toc extends JPanel implements EditorDockable {
                 simpleEdtiorLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onSimpleEditor"));
                 popup.add(simpleEdtiorLayer);
                 //Display the menu to enter in the advanced style editor.
-                JMenuItem advancedEditorLayer = new JMenuItem(I18N.tr("Adavanced style edition"), OrbisGISIcon.getIcon("pencil"));
+                JMenuItem advancedEditorLayer = new JMenuItem(I18N.tr("Advanced style edition"), OrbisGISIcon.getIcon("pencil"));
                 advancedEditorLayer.setToolTipText(I18N.tr("Open the adavanced editor for SE styles"));
                 advancedEditorLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onAdvancedEditor"));
                 popup.add(advancedEditorLayer);
@@ -520,7 +520,6 @@ public class Toc extends JPanel implements EditorDockable {
                 exportStyle.setToolTipText(I18N.tr("Export this style from the associater layer."));
                 exportStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onExportStyle"));
                 popup.add(exportStyle);
-
         }
 
         /**
