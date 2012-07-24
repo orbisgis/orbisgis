@@ -148,6 +148,13 @@
                         <artifactId>languagesupport</artifactId>
                         <version>0.8-1</version>
                 </dependency>
+                <dependency>
+                        <!-- Another look&feel, optional -->
+                        <groupId>net.sf.squirrel-sql.thirdparty-non-maven</groupId>
+                        <artifactId>tinylaf</artifactId>
+                        <version>1.4.0</version>
+                </dependency>
+            
         </dependencies>
         <pluginRepositories>
                 <pluginRepository>

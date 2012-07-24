@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.main;
 
+import de.muntjak.tinylookandfeel.TinyLookAndFeel;
 import java.awt.Rectangle;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
@@ -35,6 +36,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
@@ -202,7 +204,15 @@ public class Core {
         if(mainFrame!=null) {
             return;//This method can't be called twice
         }
-        initI18n();        
+        initI18n();
+        
+        //Additionnal look&feel
+        try {
+                UIManager.installLookAndFeel(I18N.tr("Tiny"), "de.muntjak.tinylookandfeel.TinyLookAndFeel");
+        } catch ( Throwable ex) {
+                LOGGER.error(ex);
+                //Continue, this l&f is optional
+        }
         
         makeMainFrame();
         
