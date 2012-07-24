@@ -35,16 +35,17 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
+import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.thematic.factory.LegendFactory;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.components.RadioButtonPanel;
 import org.orbisgis.sif.multiInputPanel.MIPValidation;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
@@ -101,6 +102,7 @@ public class LegendTree extends JPanel {
                 this.setLayout(new BorderLayout());
                 this.add(toolBar, BorderLayout.PAGE_START);
                 this.add(new JScrollPane(tree), BorderLayout.CENTER);
+                refreshIcons();
         }
 
         /**
@@ -113,14 +115,14 @@ public class LegendTree extends JPanel {
                 LegendTreeModel tm = (LegendTreeModel) tree.getModel();
                 if (select instanceof ILegendPanel) {
                         RuleWrapper rw = (RuleWrapper) tp.getPath()[tp.getPath().length - 2];
+                        tree.setSelectionPath(null);
                         tm.removeElement(rw, select);
-                        //We refresh the icons
-                        refreshIcons();
                         //We refresh the legend container
                         legendsPanel.refreshLegendContainer();
+                        //We refresh the icons
                 } else if (select instanceof RuleWrapper) {
+                        tree.setSelectionPath(null);
                         tm.removeElement(tm.getRoot(), select);
-                        refreshIcons();
                         legendsPanel.refreshLegendContainer();
                 }
         }
@@ -130,21 +132,17 @@ public class LegendTree extends JPanel {
          * choose which type of element (legend or rule) it must be.
          */
         public void addElement() {
-                List<String> ls = new LinkedList<String>();
-                String rule = "Rule";
-                ls.add(rule);
-                String leg = "Legend";
-                ls.add(leg);
-                RadioButtonPanel rbp = new RadioButtonPanel(ls, "Choose the type of the object you want to add");
-                if (UIFactory.showDialog(rbp)) {
-                        String ret = rbp.getSelectedText();
-                        if (rule.equals(ret)) {
+                TreePath tp = tree.getSelectionPath();
+                if(tp == null){
+                        addRule();
+                } else {
+                        Object select = tp.getLastPathComponent();
+                        if(select instanceof StyleWrapper){
                                 addRule();
-                        } else if (leg.equals(ret)) {
+                        } else {
                                 addLegend();
                         }
                 }
-                refreshIcons();
         }
 
         /**
@@ -230,7 +228,7 @@ public class LegendTree extends JPanel {
          * Refreshes the state of the icons contained in the toolbar of this
          * panel.
          */
-        public void refreshIcons() {
+        public final void refreshIcons() {
                 //We must retrieve the index of the currently selected item in its
                 //parent to decide if we display the buttons or not.
                 TreePath tp = tree.getSelectionPath();
@@ -240,7 +238,6 @@ public class LegendTree extends JPanel {
                         jButtonMenuDown.setEnabled(false);
                         jButtonMenuUp.setEnabled(false);
                 } else {
-                        jButtonMenuDel.setEnabled(true);
                         jButtonMenuRename.setEnabled(true);
                         Object last = tp.getLastPathComponent();
                         int index = -1;
@@ -264,7 +261,11 @@ public class LegendTree extends JPanel {
                         } else {
                                 jButtonMenuDown.setEnabled(false);
                         }
-
+                        if(max < 1){
+                                jButtonMenuDel.setEnabled(false);
+                        } else {
+                                jButtonMenuDel.setEnabled(true);
+                        }
                 }
         }
 
@@ -382,26 +383,27 @@ public class LegendTree extends JPanel {
                 //end of the list.
                 MultiInputPanel mip = new MultiInputPanel("Choose a name for your rule");
                 mip.addInput("RuleName", "Name of the Rule : ", new TextBoxType(10));
-
-
                 mip.addValidation(new MIPValidation() {
-
                         @Override
                         public String validate(MultiInputPanel mid) {
                                 String ruleName = mid.getInput("RuleName");
-                                if (ruleName.isEmpty()) {
-                                        return "Rule name cannot be null or empty.";
-                                }
-                                return null;
-
+                                return ruleName.isEmpty() ? "Rule name cannot be null or empty." : null;
                         }
                 });
-
                 if (UIFactory.showDialog(mip)) {
                         String s = mip.getInput("RuleName");
                         RuleWrapper cur = getSelectedRule();
                         LegendTreeModel tm = (LegendTreeModel) tree.getModel();
-                        RuleWrapper nrw = new RuleWrapper(s);
+                        //We need to link our new RuleWrapper with the layer we are editing.
+                        Style style = legendsPanel.getStyleWrapper().getStyle();
+                        Rule temp = new Rule(style.getLayer());
+                        temp.setName(s);
+                        Legend leg = LegendFactory.getLegend(
+                                temp.getCompositeSymbolizer().getSymbolizerList().get(0));
+                        ILegendPanel ilp = legendsPanel.getPanel(leg);
+                        List<ILegendPanel> list = new ArrayList<ILegendPanel>();
+                        list.add(ilp);
+                        RuleWrapper nrw = new RuleWrapper(temp, list);
                         tm.addElement(tm.getRoot(), nrw, cur);
                         legendsPanel.legendAdded(nrw.getPanel());
                 }

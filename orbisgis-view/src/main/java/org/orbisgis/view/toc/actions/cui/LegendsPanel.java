@@ -196,7 +196,14 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                 return pnlContainer;
         }
 
-        private ILegendPanel getPanel(Legend legend) {
+        /**
+         * Gets the panel that can be associated to the {@code Legend} given in
+         * argument. This panel is cloned from one the panels given in the
+         * original constructor.
+         * @param legend
+         * @return
+         */
+        public ILegendPanel getPanel(Legend legend) {
                 for (ILegendPanel panel : availableLegends) {
                         if (panel.getLegend().getLegendTypeId().equals(
                                 legend.getLegendTypeId())) {
