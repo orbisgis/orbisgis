@@ -33,29 +33,31 @@
  */
 package org.gdms.data.values;
 
-import org.gdms.data.stream.DefaultGeoStream;
 import org.gdms.data.stream.GeoStream;
-import org.gdms.data.stream.StreamSource;
 import org.gdms.data.types.Type;
 
 /**
  * Main Stream value.
  * 
+ * This values mainly embeds a {@link GeoStream} that will be used to retrieve 
+ * geographic features stored in an external server (WMS, for instance).
+ *
  * @author Antoine Gourlay
  * @author Vincent Dépériers
  */
 class DefaultStreamValue extends AbstractValue implements StreamValue {
 
         private GeoStream geoStream;
-        
+
         /**
          * Creates a new DefaultStreamValue.
-         * @param geoStream 
+         *
+         * @param geoStream
          */
         DefaultStreamValue(GeoStream geoStream) {
                 this.geoStream = geoStream;
         }
-        
+
         @Override
         public BooleanValue equals(Value obj) {
                 if (obj instanceof StreamValue) {
@@ -84,14 +86,14 @@ class DefaultStreamValue extends AbstractValue implements StreamValue {
         public byte[] getBytes() {
                 return geoStream.getStreamSource().toString().getBytes();
         }
-        
+
         @Override
         public void setValue(GeoStream value) {
                 this.geoStream = value;
         }
-        
+
         @Override
         public GeoStream getAsStream() {
                 return this.geoStream;
-        }      
+        }
 }

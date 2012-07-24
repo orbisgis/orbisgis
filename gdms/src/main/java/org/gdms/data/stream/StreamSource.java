@@ -133,16 +133,16 @@ public class StreamSource implements Serializable {
         }
 
         /**
-         * @return the format of the image
+         * @return the format of the image, as a MIME type
          */
         public String getImageFormat() {
                 return this.imageFormat;
         }
 
         /**
-         * Sets the format of the image.
+         * Sets the format (MIME type) of the image.
          *
-         * @param imageFormat a new MIME format string
+         * @param imageFormat a new MIME format string.
          */
         public void setImageFormat(String imageFormat) {
                 this.imageFormat = imageFormat;

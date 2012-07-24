@@ -71,6 +71,9 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition {
          * @param streamSource the information on the stream
          */
         public StreamSourceDefinition(StreamSource streamSource) {
+                if (streamSource == null) {
+                        throw new IllegalArgumentException("Cannot create a definition from a null source!");
+                }
                 this.streamSource = streamSource;
         }
 

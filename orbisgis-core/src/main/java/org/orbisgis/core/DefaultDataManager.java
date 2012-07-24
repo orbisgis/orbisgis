@@ -102,38 +102,29 @@ public class DefaultDataManager implements DataManager {
         @Override
 	public ILayer createLayer(DataSource sds) throws LayerException {
 		int type = sds.getSource().getType();
-//		if ((type & SourceManager.STREAM) == SourceManager.STREAM) {
-//                        try {
-//                                sds.open();
-//                                return new WMSLayer(sds.getName(), sds);
-//                        } catch (DriverException e) {
-//				throw new LayerException("Cannot check source contents", e);
-//			}
-//		} else {
-			boolean hasSpatialData = true;
-			if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL
-                                || (type & SourceManager.STREAM) == SourceManager.STREAM) {
-				int sfi;
-				try {
-					sds.open();
-					sfi = sds.getSpatialFieldIndex();
-					try {
-						sds.close();
-					} catch (AlreadyClosedException e) {
-						// ignore
-						logger.debug("Cannot close", e);
-					}
-					hasSpatialData = (sfi != -1);
-				} catch (DriverException e) {
-					throw new LayerException("Cannot check source contents", e);
-				}
-			}
-			if (hasSpatialData) {
-				return new Layer(sds.getName(), sds);
-			} else {
-				throw new LayerException("The source contains no spatial info");
-			}
-//		}
+                boolean hasSpatialData = true;
+                if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL
+                        || (type & SourceManager.STREAM) == SourceManager.STREAM) {
+                        int sfi;
+                        try {
+                                sds.open();
+                                sfi = sds.getSpatialFieldIndex();
+                                try {
+                                        sds.close();
+                                } catch (AlreadyClosedException e) {
+                                        // ignore
+                                        logger.debug("Cannot close", e);
+                                }
+                                hasSpatialData = (sfi != -1);
+                        } catch (DriverException e) {
+                                throw new LayerException("Cannot check source contents", e);
+                        }
+                }
+                if (hasSpatialData) {
+                        return new Layer(sds.getName(), sds);
+                } else {
+                        throw new LayerException("The source contains no spatial info");
+                }
 	}
 
         @Override

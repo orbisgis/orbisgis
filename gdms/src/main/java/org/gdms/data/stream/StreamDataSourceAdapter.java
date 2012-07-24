@@ -77,20 +77,11 @@ public class StreamDataSourceAdapter extends DriverDataSource {
                 fireCancel(this);
         }
 
-        /**
-         * Save the data in the stream driver
-         *
-         * @param ds
-         * @throws DriverException
-         */
         @Override
         public void saveData(DataSet ds) throws DriverException {
                 throw new UnsupportedOperationException();
         }
 
-        /**
-         * @return the driver of the Stream.
-         */
         @Override
         public StreamDriver getDriver() {
                 return driver;
@@ -102,12 +93,6 @@ public class StreamDataSourceAdapter extends DriverDataSource {
                 driver.open(def);
         }
 
-        /**
-         * This method is used by the {@code Renderer} to know whether or not it is
-         * dealing with a stream datasource
-         *
-         * @return
-         */
         @Override
         public boolean isStream() {
                 return true;

@@ -48,7 +48,7 @@ import org.gdms.data.stream.GeoStream;
 
 /**
  * A data container used in Gdms as a container for actual data.
- * 
+ *
  */
 public interface Value extends Comparable<Value> {
 
@@ -70,7 +70,7 @@ public interface Value extends Comparable<Value> {
          * @param value a value
          * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
          */
-	BooleanValue or(Value value);
+        BooleanValue or(Value value);
 
         /**
          * Gets a numeric value containing the product of this value and the
@@ -81,7 +81,7 @@ public interface Value extends Comparable<Value> {
          * <code>this</code> and
          * <code>value</code>
          */
-	NumericValue multiply(Value value);
+        NumericValue multiply(Value value);
 
         /**
          * Gets a numeric value containing the sum of this value and the
@@ -92,15 +92,15 @@ public interface Value extends Comparable<Value> {
          * <code>this</code> and
          * <code>value</code>
          */
-	NumericValue sum(Value value);
+        NumericValue sum(Value value);
 
-	/**
+        /**
          * Inverses the current Value.
-	 * 
-	 * @return the inversed value
+         *
+         * @return the inversed value
          * @throws IncompatibleTypesException if inverse has no meaning for this kind of Value.
-	 */
-	Value inverse();
+         */
+        Value inverse();
 
         /**
          * Gets a boolean value representing the SQL equality between this value and the
@@ -110,54 +110,54 @@ public interface Value extends Comparable<Value> {
          * @param value a value
          * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
          */
-	BooleanValue equals(Value value);
+        BooleanValue equals(Value value);
 
         /**
          * Gets a boolean value representing the SQL non-equality between this value and the
          * <code>value</code>
          * parameter using three-valued logic (3VL).
-         * 
+         *
          * This is always strictly equivalent to calling
          * <code>equals(value).not()</code>.
-         * 
+         *
          * @param value a value
          * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
          */
-	BooleanValue notEquals(Value value);
+        BooleanValue notEquals(Value value);
 
-	/**
+        /**
          * Gets a boolean value representing, using three-valued logic (3VL):
          * - true if this value and
          * <code>value</code> are defined, and the former is strictly greater than the latter,
          * - false if this value and
          * <code>value</code> are defined, and the former is not strictly greater than the latter,
-         *  - NULL in any other case.
-         * 
+         * - NULL in any other case.
+         *
          * <code>value1.greater(value2)</code> is always strictly equivalent to calling
          * <code>value2.lessEqual(value1)</code>.
-         * 
+         *
          * @param value a value
          * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
          */
-	BooleanValue greater(Value value);
+        BooleanValue greater(Value value);
 
-	/**
+        /**
          * Gets a boolean value representing, using three-valued logic (3VL):
          * - true if this value and
          * <code>value</code> are defined, and the former is strictly less than the latter,
          * - false if this value and
          * <code>value</code> are defined, and the former is not strictly less than the latter,
-         *  - NULL in any other case.
-         * 
+         * - NULL in any other case.
+         *
          * <code>value1.less(value2)</code> is always strictly equivalent to calling
          * <code>value2.greaterEqual(value1)</code>.
-         * 
+         *
          * @param value a value
          * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
          */
-	BooleanValue less(Value value);
+        BooleanValue less(Value value);
 
-	/**
+        /**
          * Gets a boolean value representing, using three-valued logic (3VL):
          * - true if this value and
          * <code>value</code> are defined, and the former is greater or
@@ -165,17 +165,17 @@ public interface Value extends Comparable<Value> {
          * - false if this value and
          * <code>value</code> are defined, and the former is not greater
          * or equals the latter,
-         *  - NULL in any other case.
-         * 
+         * - NULL in any other case.
+         *
          * <code>value1.greaterEqual(value2)</code> is always strictly equivalent to calling
          * <code>value2.less(value1)</code>.
-         * 
+         *
          * @param value a value
          * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
          */
-	BooleanValue greaterEqual(Value value);
+        BooleanValue greaterEqual(Value value);
 
-	/**
+        /**
          * Gets a boolean value representing, using three-valued logic (3VL):
          * - true if this value and
          * <code>value</code> are defined, and the former is less or
@@ -183,15 +183,15 @@ public interface Value extends Comparable<Value> {
          * - false if this value and
          * <code>value</code> are defined, and the former is not less
          * or equals the latter,
-         *  - NULL in any other case.
-         * 
+         * - NULL in any other case.
+         *
          * <code>value1.lessEqual(value2)</code> is always strictly equivalent to calling
          * <code>value2.greater(value1)</code>.
-         * 
+         *
          * @param value a value
          * @return a value containing either TRUE, FALSE or NULL (=UNKNOWN)
          */
-	BooleanValue lessEqual(Value value);
+        BooleanValue lessEqual(Value value);
 
         /**
          * Gets a boolean value representing, using three-valued logic (3VL):
@@ -209,7 +209,7 @@ public interface Value extends Comparable<Value> {
         /**
          * Gets a boolean value representing, using three-valued logic (3VL):
          * - true if this String-based value matches the given pattern.
-         *  - NULL in any other case.
+         * - NULL in any other case.
          *
          * The pattern matching is done using POSIX regular expressions as implemented in java.
          * See {@link java.util.regex.Pattern }.
@@ -232,7 +232,7 @@ public interface Value extends Comparable<Value> {
          */
         BooleanValue like(Value value, boolean caseInsensitive);
 
-	/**
+        /**
          * Gets a boolean value representing, using three-valued logic (3VL):
          * - true if this String-based value matches the given pattern.
          * - NULL in any other case.
@@ -245,179 +245,176 @@ public interface Value extends Comparable<Value> {
         BooleanValue similarTo(Value value);
 
         /**
-	 * Gets the string representation of the value as it is defined in the
-	 * specified ValueWriter
-	 * 
-	 * @param writer
-	 *            Specifies the string representation for the values
-	 * 
-	 * @return String
-	 */
-	String getStringValue(ValueWriter writer);
+         * Gets the string representation of the value as it is defined in the
+         * specified ValueWriter
+         *
+         * @param writer specifies the string representation for the values
+         * @return String
+         */
+        String getStringValue(ValueWriter writer);
 
-	/**
+        /**
          * Gets the type of the value.
-	 * 
+         *
          * @return a type defined in the {@link org.gdms.data.types.Type} interface.
-	 */
-	int getType();
+         */
+        int getType();
 
-	/**
+        /**
          * Gets this value serialized as an array of bytes.
-	 * 
+         *
          * @return some bytes
-	 */
-	byte[] getBytes();
+         */
+        byte[] getBytes();
 
-	/**
-	 * @return true if this value is null, false otherwise
-	 */
-	boolean isNull();
+        /**
+         * @return true if this value is null, false otherwise
+         */
+        boolean isNull();
 
-	/**
+        /**
          * @return this value if it is a binary value or can implicitly be converted to it.
-	 * 
+         *
          * @throws IncompatibleTypesException if the value is not of the required type or cannot be
-	 *             converted
-	 */
-	byte[] getAsBinary();
+         * converted
+         */
+        byte[] getAsBinary();
 
-	/**
+        /**
          * Gets this value as a boolean value.
          *
          * This methods return <tt>true</tt> if the value is SQL TRUE,
          * <tt>false</tt> if the value is SQL FALSE, and <tt>null</tt> if
          * this value is SQL UNKNOWN.
-	 * 
+         *
          * Note that is the latter case, we have <code>isNull() == true</code>.
          *
          * @return the value
          * @throws IncompatibleTypesException if the value is not of the required type or cannot be
-	 *             converted
-	 */
-	Boolean getAsBoolean();
-
-	/**
-         * @return this value if it is a date value or can implicitly be converted to it.
-	 * 
-         * @throws IncompatibleTypesException if the value is not of the required type or cannot be
-	 *             converted
-	 */
-	Date getAsDate();
-
-	/**
-         * @return this value if it is a geometry value or can implicitly be converted to it.
-	 * 
-         * @throws IncompatibleTypesException if the value is not of the required type or cannot be
-	 *             converted
-	 */
-	Geometry getAsGeometry();
-
-	/**
-         * @return this value if it is a raster value or can implicitly be converted to it.
-	 * 
-         * @throws IncompatibleTypesException if the value is not of the required type or cannot be
-	 *             converted
-	 */
-	GeoRaster getAsRaster();
+         * converted
+         */
+        Boolean getAsBoolean();
 
         /**
-	 * @return this value if it is a stream value or it can be converted
-	 * 
-	 * @throws IncompatibleTypesException
-	 *             if the value is not of the required type or cannot be
-	 *             converted
-	 */
+         * @return this value if it is a date value or can implicitly be converted to it.
+         *
+         * @throws IncompatibleTypesException if the value is not of the required type or cannot be
+         * converted
+         */
+        Date getAsDate();
+
+        /**
+         * @return this value if it is a geometry value or can implicitly be converted to it.
+         *
+         * @throws IncompatibleTypesException if the value is not of the required type or cannot be
+         * converted
+         */
+        Geometry getAsGeometry();
+
+        /**
+         * @return this value if it is a raster value or can implicitly be converted to it.
+         *
+         * @throws IncompatibleTypesException if the value is not of the required type or cannot be
+         * converted
+         */
+        GeoRaster getAsRaster();
+
+        /**
+         * @return this value if it is a stream value or it can be converted
+         *
+         * @throws IncompatibleTypesException if the value is not of the required type or cannot be
+         * converted
+         */
         GeoStream getAsStream();
-        
-	/**
-         * @return this value if it is a numeric value or can implicitly be converted to it.
-	 * 
-         * @throws IncompatibleTypesException if the value is not of the required type or cannot be
-	 *             converted
-	 */
-	double getAsDouble();
 
-	/**
+        /**
          * @return this value if it is a numeric value or can implicitly be converted to it.
-	 * 
+         *
          * @throws IncompatibleTypesException if the value is not of the required type or cannot be
-	 *             converted
-	 */
-	float getAsFloat();
+         * converted
+         */
+        double getAsDouble();
 
-	/**
+        /**
          * @return this value if it is a numeric value or can implicitly be converted to it.
-	 * 
+         *
          * @throws IncompatibleTypesException if the value is not of the required type or cannot be
-	 *             converted
-	 */
-	long getAsLong();
+         * converted
+         */
+        float getAsFloat();
 
-	/**
+        /**
          * @return this value if it is a numeric value or can implicitly be converted to it.
-	 * 
+         *
          * @throws IncompatibleTypesException if the value is not of the required type or cannot be
-	 *             converted
-	 */
-	byte getAsByte();
+         * converted
+         */
+        long getAsLong();
 
-	/**
+        /**
          * @return this value if it is a numeric value or can implicitly be converted to it.
-	 * 
+         *
          * @throws IncompatibleTypesException if the value is not of the required type or cannot be
-	 *             converted
-	 */
-	short getAsShort();
+         * converted
+         */
+        byte getAsByte();
 
-	/**
+        /**
          * @return this value if it is a numeric value or can implicitly be converted to it.
-	 * 
+         *
          * @throws IncompatibleTypesException if the value is not of the required type or cannot be
-	 *             converted
-	 */
-	int getAsInt();
+         * converted
+         */
+        short getAsShort();
 
-	/**
+        /**
+         * @return this value if it is a numeric value or can implicitly be converted to it.
+         *
+         * @throws IncompatibleTypesException if the value is not of the required type or cannot be
+         * converted
+         */
+        int getAsInt();
+
+        /**
          * @return this value if it is a string value or can implicitly be converted to it.
-	 * 
+         *
          * @throws IncompatibleTypesException if the value is not of the required type or cannot be
-	 *             converted
-	 */
-	String getAsString();
+         * converted
+         */
+        String getAsString();
 
-	/**
+        /**
          * @return this value if it is a timestamp value or can implicitly be converted to it.
-	 * 
+         *
          * @throws IncompatibleTypesException if the value is not of the required type or cannot be
-	 *             converted
-	 */
-	Timestamp getAsTimestamp();
+         * converted
+         */
+        Timestamp getAsTimestamp();
 
-	/**
+        /**
          * @return this value if it is a time value or it can implicitly be converted to it.
-	 * 
+         *
          * @throws IncompatibleTypesException if the value is not of the required type or cannot be
-	 *             converted
-	 */
-	Time getAsTime();
+         * converted
+         */
+        Time getAsTime();
 
-	/**
-	 * @return this value if it is a value collection
-	 * 
+        /**
+         * @return this value if it is a value collection
+         *
          * @throws IncompatibleTypesException if the value is not of the required type or cannot be
-	 *             converted
-	 */
-	ValueCollection getAsValueCollection();
+         * converted
+         */
+        ValueCollection getAsValueCollection();
 
-	/**
+        /**
          * Converts this Value to the specified type.
-	 * 
+         *
          * @param typeCode a type code from {@link org.gdms.data.types.Type}.
          * @return The value in the new type
          * @throws IncompatibleTypesException if the value cannot be converted
-	 */
-	Value toType(int typeCode);
+         */
+        Value toType(int typeCode);
 
         /**
          * Gets a boolean value representing the SQL boolean NOT of this value using three-valued logic (3VL).
@@ -436,10 +433,10 @@ public interface Value extends Comparable<Value> {
 
         /**
          * Concatenates this value with the given <code>value</value>.
-         * 
+         *
          * One of the two values (this one or the parameter) has to be a StringValue, otherwise
          * an IncompatibleTypesException is thrown.
-         * 
+         *
          * @param value a value
          * @return a StringValue representing the concatenation of both values.
          */

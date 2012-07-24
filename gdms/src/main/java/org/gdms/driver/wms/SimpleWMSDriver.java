@@ -1,3 +1,36 @@
+/**
+ * The GDMS library (Generic Datasource Management System)
+ * is a middleware dedicated to the management of various kinds of
+ * data-sources such as spatial vectorial data or alphanumeric. Based
+ * on the JTS library and conform to the OGC simple feature access
+ * specifications, it provides a complete and robust API to manipulate
+ * in a SQL way remote DBMS (PostgreSQL, H2...) or flat files (.shp,
+ * .csv...).
+ *
+ * Gdms is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-2012 IRSTV FR CNRS 2488
+ *
+ * This file is part of Gdms.
+ *
+ * Gdms is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * Gdms is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * Gdms. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ *
+ * or contact directly:
+ * info@orbisgis.org
+ */
 package org.gdms.driver.wms;
 
 import java.awt.Image;
@@ -38,10 +71,11 @@ import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 
 /**
- * The driver who gets the information about a flux WMS(host,srs,format,), it
- * can provide an acces to the GDMS, and return a value about the WMSclient to
- * the layer.
- *
+ * A driver that accesses a WMS stream.
+ * 
+ * This can be used to open and access a source described by a {@link StreamSource } whose
+ * StreamType is "wms".
+ * 
  * @author Antoine Gourlay
  * @author Vincent Dépériers
  */
@@ -66,12 +100,6 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                 this.schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
         }
 
-        /**
-         * Opens the WMS driver.
-         *
-         * @param streamSource a stream source to open
-         * @throws DriverException if there is an error accessing the WMS server
-         */
         @Override
         public void open(StreamSource streamSource) throws DriverException {
                 LOG.trace("Opening WMS Stream");
@@ -93,11 +121,6 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                 }
         }
 
-        /**
-         * Close the stream source.
-         *
-         * @throws DriverException
-         */
         @Override
         public void close() throws DriverException {
                 wmsClient.close();
@@ -114,21 +137,6 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                 }
         }
 
-        /**
-         * Get image from the WMS stream. 
-         * 
-         * We create a WMSStatus
-         * We get the StreamSource from the GeoStream then we can initialize the WMSStatus
-         * We get the WMSClient from the WMSClientPool.
-         * We always get the client because the driver is open first
-         *      *
-         * @param width
-         * @param height
-         * @param extent
-         * @param pm
-         * @return
-         * @throws DriverException
-         */
         @Override
         public Image getMap(int width, int height, Envelope extent, ProgressMonitor pm) throws DriverException {
                 if (!isOpen()) {
@@ -181,7 +189,7 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
          * @param srs
          * @return
          */
-        private BoundaryBox getLayerBoundingBox(String layerName, WMSLayer layer, String srs) {
+        private BoundaryBox getLayerBoundingBox(String layerName, WMSLayer layer, String srs) throws DriverException {
                 WMSLayer wmsLayer = find(layerName, layer);
                 // Obtain the bbox at current level
                 BoundaryBox bbox = wmsLayer.getBbox(srs);
@@ -192,12 +200,7 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
 
                 // Some wrong bbox to not have null pointer exceptions
                 if (bbox == null) {
-                        bbox = new BoundaryBox();
-                        bbox.setXmin(0);
-                        bbox.setYmin(0);
-                        bbox.setXmax(100);
-                        bbox.setYmax(100);
-                        bbox.setSrs(srs);
+                        throw new DriverException("Could not find a valid bounding box for the layer " + layerName);
                 }
                 return bbox;
         }
