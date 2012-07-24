@@ -28,11 +28,14 @@
  */
 package org.orbisgis.view.sqlconsole.ui;
 
+import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import javax.swing.AbstractListModel;
 import javax.swing.ListModel;
+import org.gdms.sql.function.FunctionManagerListener;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 
@@ -42,11 +45,13 @@ import org.orbisgis.core.Services;
  */
 public class FunctionListModel extends AbstractListModel implements ListModel {
     private static final long serialVersionUID = 1L;
-
     private ArrayList<FunctionElement> functionsList;
-
+    private FunctionManagerListener functionListener = EventHandler.create(FunctionManagerListener.class,this,"");
+    private List<FunctionFilter> filters = new ArrayList<FunctionFilter>();
+    
     public FunctionListModel() {
-        getSQLFunctions();
+        readSQLFunctions();
+        Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager().addFunctionManagerListener(functionListener);
     }
 
     @Override
@@ -59,40 +64,46 @@ public class FunctionListModel extends AbstractListModel implements ListModel {
         return functionsList.get(i);
     }
 
-    private void getSQLFunctions() {
+    /**
+     * Release listeners created by this list model
+     */
+    public void dipose() {
+            Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager().removeFunctionManagerListener(functionListener);
+    }
+    /**
+     * Set the list filters, and 
+     * @param filters 
+     */
+    public void setFilters(List<FunctionFilter> filters) {
+            this.filters = new ArrayList<FunctionFilter>(filters);
+            refreshFunctionList();
+    }
+    
+    /**
+     * Update the list of functions
+     */
+    public void refreshFunctionList() {
+            readSQLFunctions();
+    }
+
+    private void readSQLFunctions() {
         functionsList = new ArrayList<FunctionElement>();
         String[] functions = Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager().getFunctionNames();
 
         for (String functionName : functions) {
-            functionsList.add(new FunctionElement(functionName.toUpperCase(), FunctionElement.BASIC_FUNCTION));
-        }
-        
-        Collections.sort(functionsList, new NameComparator());
-
-
-    }
-
-    /**
-     * A method to update the list according to a text filter
-     * @param text
-     */
-    public void filter(String text) {
-        if (text.length() == 0) {
-            getSQLFunctions();
-        } else {
-
-            ArrayList<FunctionElement> functionsFiltered = new ArrayList<FunctionElement>();
-
-            for (FunctionElement functionElement : functionsList) {
-                if (functionElement.getFunctionName().toLowerCase().contains(text.toLowerCase())) {
-                    functionsFiltered.add(functionElement);
-                }
+            boolean rejected = false;
+            FunctionElement element = new FunctionElement(functionName.toUpperCase(), FunctionElement.BASIC_FUNCTION);
+            for(FunctionFilter filter : filters) {
+                    if(!filter.accepts(element)) {
+                            rejected = true;
+                            break;
+                    }
             }
-            functionsList = functionsFiltered;
-
-        }
-
-        fireIntervalRemoved(this, 0, getSize());
+            if(!rejected) {
+                functionsList.add(element);
+            }
+        }        
+        Collections.sort(functionsList, new NameComparator());
         fireIntervalAdded(this, 0, getSize());
     }
 
@@ -100,10 +111,6 @@ public class FunctionListModel extends AbstractListModel implements ListModel {
      * A comparator to order functionElement according to its name.
      */
     private static class NameComparator implements Comparator<FunctionElement> {
-
-        public NameComparator() {
-        }
-
         @Override
         public int compare(FunctionElement functionElement1, FunctionElement functionElement2) {
             return functionElement1.getFunctionName().toLowerCase().compareTo(functionElement2.getFunctionName().toLowerCase());

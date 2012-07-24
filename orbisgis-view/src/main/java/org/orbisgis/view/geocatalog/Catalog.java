@@ -558,7 +558,7 @@ public class Catalog extends JPanel implements DockingPanel {
         private JList makeSourceList() {
                 sourceList = new JList();
                 //Set the list content renderer
-                sourceList.setCellRenderer(new DataSourceListCellRenderer());
+                sourceList.setCellRenderer(new DataSourceListCellRenderer(sourceList));
                 //Add mouse listener for popup menu
                 sourceList.addMouseListener(EventHandler.create(MouseListener.class,
                         this,

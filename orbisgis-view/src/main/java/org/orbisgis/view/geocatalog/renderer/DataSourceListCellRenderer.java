@@ -3,8 +3,8 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
  *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
@@ -22,75 +22,55 @@
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * For more information, please consult: <http://www.orbisgis.org/> or contact
+ * directly: info_at_ orbisgis.org
  */
 package org.orbisgis.view.geocatalog.renderer;
 
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.FlowLayout;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.ListCellRenderer;
+import org.orbisgis.view.components.renderers.ListLaFRenderer;
 import org.orbisgis.view.geocatalog.CatalogSourceItem;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
- * @brief Item renderer factory of GeoCatalog
- * This is the cell renderer factory for the DataSource List
- * in the GeoCatalog panel.
- * 
+ * @brief Item renderer factory of GeoCatalog This is the cell renderer factory
+ * for the DataSource List in the GeoCatalog panel.
+ *
  */
+public class DataSourceListCellRenderer extends ListLaFRenderer {
+        private static final long serialVersionUID = 1L;
 
-public class DataSourceListCellRenderer implements ListCellRenderer {
-
-    private static final Color SELECTED = Color.lightGray;      /*!< Item background color */
-    private static final Color DESELECTED = Color.white;        /*!< Item background color */
-    private static final Color SELECTED_FONT = Color.white;     /*!< Item font color */
-    private static final Color DESELECTED_FONT = Color.black;   /*!< Item font color */
-    /**
-     * Return a component that has been configured to display the specified value.
-     * @param list - The JList we're painting.
-     * @param value - The value returned by list.getModel().getElementAt(index).
-     * @param index - The cells index.
-     * @param isSelected - True if the specified cell was selected.
-     * @param cellHasFocus - True if the specified cell has the focus. 
-     * @return 
-     */
-     @Override
-     public Component getListCellRendererComponent(JList list,Object value,
-                                                    int index,
-                                                    boolean isSelected,
-                                                    boolean cellHasFocus)
-    {
-        //The panel show the background of the DataSource Item
-        JPanel sourcePanel = new JPanel();
-        FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
-        fl.setHgap(0);
-        sourcePanel.setLayout(fl);
-        //The label show the Icon and Text of the DataSource Item
-        JLabel sourceLabel = new JLabel();
-        //Retrieve the item informations
-        CatalogSourceItem listItem = (CatalogSourceItem)value;
-        sourceLabel.setIcon(OrbisGISIcon.getIcon(listItem.getSourceIconName()));
-        sourceLabel.setText(value.toString());
-        //Retrieve the registered name of geocatalog item
-        sourceLabel.setVisible(true);
-        //Change the item panel background color
-        //and the label text color depending on the selection state
-        if (isSelected) {
-                sourcePanel.setBackground(SELECTED);
-                sourceLabel.setForeground(SELECTED_FONT);
-        } else {
-                sourcePanel.setBackground(DESELECTED);
-                sourceLabel.setForeground(DESELECTED_FONT);
+        public DataSourceListCellRenderer(JList list) {
+                super(list);
         }
-        //Add the label into the Panel
-        sourcePanel.add(sourceLabel);
-        return sourcePanel;
-    }
-    
+
+        /**
+         * Return a component that has been configured to display the specified
+         * value.
+         *
+         * @param list - The JList we're painting.
+         * @param value - The value returned by
+         * list.getModel().getElementAt(index).
+         * @param index - The cells index.
+         * @param isSelected - True if the specified cell was selected.
+         * @param cellHasFocus - True if the specified cell has the focus.
+         * @return
+         */
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value,
+                int index,
+                boolean isSelected,
+                boolean cellHasFocus) {
+                Component cellRenderer = lookAndFeelRenderer.getListCellRendererComponent(list, value, index, isSelected, cellHasFocus);
+                if (cellRenderer instanceof JLabel) {
+                        //Retrieve the item informations
+                        CatalogSourceItem listItem = (CatalogSourceItem) value;
+                        JLabel dataSourceLabel = (JLabel) cellRenderer;
+                        //Customise the component
+                        dataSourceLabel.setIcon(OrbisGISIcon.getIcon(listItem.getSourceIconName()));
+                }
+                return cellRenderer;
+        }
 }

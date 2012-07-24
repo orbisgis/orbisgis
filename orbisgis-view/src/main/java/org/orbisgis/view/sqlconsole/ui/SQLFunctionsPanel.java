@@ -115,8 +115,9 @@ public class SQLFunctionsPanel extends JPanel {
 
                 expandedPanel.add(btnCollapse, BorderLayout.WEST);
                 expandedPanel.add(new JScrollPane(list), BorderLayout.CENTER);
-                FunctionListRenderer.install(list);
-
+                list.setCellRenderer(new FunctionListRenderer(list));
+                list.setTransferHandler(new FunctionListTransferHandler());
+                list.setDragEnabled(true);
                 functionLabelCount = new JLabel(I18N.tr("Functions count = {0}",functionListModel.getSize()));
                 expandedPanel.add(functionLabelCount, BorderLayout.SOUTH);
 

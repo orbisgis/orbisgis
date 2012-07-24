@@ -28,12 +28,13 @@
 package org.orbisgis.view.sqlconsole.ui;
 
 import java.awt.Component;
-import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import javax.swing.ListCellRenderer;
+import org.gdms.sql.function.FunctionManager;
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
+import org.orbisgis.view.components.renderers.ListLaFRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
@@ -42,40 +43,14 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  *
  * @author ebocher
  */
-public class FunctionListRenderer implements ListCellRenderer {
+public class FunctionListRenderer extends ListLaFRenderer {
+        private static final long serialVersionUID = 1L;
 
-        private ListCellRenderer lookAndFeelRenderer;
-
-        /**
-         * Install this renderer into the provided list
-         *
-         * @param list Destination of this renderer
-         */
-        public static void install(JList list) {
-                FunctionListRenderer renderer = new FunctionListRenderer();
-                renderer.initialize(list);
-                list.setCellRenderer(renderer);
+        public FunctionListRenderer(JList list) {
+                super(list);
         }
 
-        /**
-         * Update the native renderer.
-         * Warning, Using only by PropertyChangeListener on UI property
-         */
-        public void updateLFRenderer() {
-                lookAndFeelRenderer = new JList().getCellRenderer();
-        }
-        /**
-         * The constructor is private, use the static {@link install} method
-         */
-        private FunctionListRenderer() {
-                
-        }
-
-        private void initialize(JList list) {
-                updateLFRenderer();
-                list.addPropertyChangeListener("UI",
-                        EventHandler.create(PropertyChangeListener.class,this,"updateLFRenderer"));
-        }
+        
         private static Icon getFunctionIcon(FunctionElement value) {
                 int type = value.getFunctionType();
                 if (type == FunctionElement.BASIC_FUNCTION) {
@@ -94,6 +69,7 @@ public class FunctionListRenderer implements ListCellRenderer {
                         FunctionElement sqlFunction = (FunctionElement)value;
                         renderingComp.setIcon(getFunctionIcon(sqlFunction));
                         renderingComp.setText(sqlFunction.getFunctionName());
+                        renderingComp.setToolTipText(sqlFunction.getToolTip());
                 }
                 return nativeCell;
         }
