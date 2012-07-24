@@ -31,9 +31,6 @@ import java.awt.Component;
 import javax.swing.Icon;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import org.gdms.sql.function.FunctionManager;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
 import org.orbisgis.view.components.renderers.ListLaFRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
 

@@ -200,6 +200,11 @@ public class Core {
     * and manage the Look And Feel declarations
     */
     public void startup(){
+        // Show the application when Swing will be ready
+        SwingUtilities.invokeLater( new ShowSwingApplication());
+    }
+    private void initialize() {
+            
         if(mainFrame!=null) {
             return;//This method can't be called twice
         }
@@ -207,7 +212,7 @@ public class Core {
         
         //Additionnal look&feel
         try {
-                UIManager.installLookAndFeel(I18N.tr("Tiny"), "de.muntjak.tinylookandfeel.TinyLookAndFeel");
+                UIManager.installLookAndFeel(I18N.tr("Substance Graphite"), "org.pushingpixels.substance.api.skin.SubstanceGraphiteLookAndFeel");
         } catch ( Throwable ex) {
                 LOGGER.error(ex);
                 //Continue, this l&f is optional
@@ -244,10 +249,7 @@ public class Core {
         //Load the docking layout and editors opened in last OrbisGis instance
         dockManager.setDockingLayoutPersistanceFilePath(viewWorkspace.getDockingLayoutPath());
         
-        // Show the application when Swing will be ready
-        SwingUtilities.invokeLater( new ShowSwingApplication());
     }
-    
     /**
      * Change the state of the main frame in the swing thread
      */
@@ -257,6 +259,7 @@ public class Core {
         */
         @Override
         public void run(){
+                initialize();
                 mainFrame.setVisible( true );                
                 backgroundManager.backgroundOperation(new ReadMapContextProcess());
         }

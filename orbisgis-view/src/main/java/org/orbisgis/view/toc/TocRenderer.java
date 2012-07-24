@@ -90,8 +90,8 @@ public class TocRenderer extends TocAbstractRenderer {
 			boolean hasFocus) {
                 Component nativeRendererComp = lookAndFeelRenderer.getTreeCellRendererComponent(
                         tree, value, selected, expanded, leaf, row, hasFocus); 
-                if(nativeRendererComp instanceof DefaultTreeCellRenderer) {
-                        DefaultTreeCellRenderer rendererComponent = (DefaultTreeCellRenderer) nativeRendererComp;
+                if(nativeRendererComp instanceof JLabel) {
+                        JLabel rendererComponent = (JLabel) nativeRendererComp;
                         try {
                                 JPanel panel = new JPanel(new BorderLayout());
                                 panel.setOpaque(false);

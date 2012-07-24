@@ -35,7 +35,7 @@ import javax.swing.ListCellRenderer;
 
 /**
  * Instructions : Implement the method getListCellRendererComponent
- * by customise the component returned by lookAndFeelRenderer.getListCellRendererComponent .
+ * Customise the component returned by lookAndFeelRenderer.getListCellRendererComponent .
  * 
  * @author Nicolas Fortin
  */
