@@ -429,13 +429,7 @@ public class LayerCollection extends BeanLayer {
 	}
 
 	@Override
-	public WMSConnection getWMSConnection()
-			throws UnsupportedOperationException {
-		throw new UnsupportedOperationException(I18N.tr("Cannot do this operation on a layer collection")); //$NON-NLS-1$
-	}
-
-	@Override
-	public boolean isWMS() {
+	public boolean isStream() {
 		return false;
 	}
     

@@ -175,7 +175,9 @@ public class MapControl extends JComponent implements ContainerListener {
 		rootLayer.addLayerListener(refreshLayerListener);
 		DataSource dataSource = rootLayer.getDataSource();
 		if (dataSource != null) {
-			dataSource.addEditionListener(refreshLayerListener);
+                        if (dataSource.isEditable()) {
+                                dataSource.addEditionListener(refreshLayerListener);
+                        }
 			dataSource.addDataSourceListener(refreshLayerListener);
 		}
 		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
@@ -189,7 +191,9 @@ public class MapControl extends JComponent implements ContainerListener {
 		rootLayer.removeLayerListener(refreshLayerListener);
 		DataSource dataSource = rootLayer.getDataSource();
 		if (dataSource != null) {
-			dataSource.removeEditionListener(refreshLayerListener);
+                        if (dataSource.isEditable()) {
+                                dataSource.removeEditionListener(refreshLayerListener);
+                        }
 			dataSource.removeDataSourceListener(refreshLayerListener);
 		}
 		for (int i = 0; i < rootLayer.getLayerCount(); i++) {
