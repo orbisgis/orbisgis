@@ -96,11 +96,10 @@ public final class MetadataUtilities {
                         }
                 }
                 final int[] pkIndices = new int[tmpPKIndices.size()];
-                int i = 0;
-                for (Integer idx : tmpPKIndices) {
-                        pkIndices[i++] = idx.intValue();
+                for (int i = 0; i < pkIndices.length; i++) {
+                        pkIndices[i] = tmpPKIndices.get(i);
                 }
-
+                
                 return pkIndices;
         }
 
