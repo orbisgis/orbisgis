@@ -218,7 +218,7 @@ public class AllTypesObjectDriver extends AbstractDataSet implements MemoryDrive
 
         @Override
         public boolean isCommitable() {
-                return false;
+                return true;
         }
 
         @Override

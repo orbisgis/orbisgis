@@ -204,7 +204,7 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
 
         @Override
         public boolean isCommitable() {
-                return false;
+                return true;
         }
 
         @Override
