@@ -1,6 +1,30 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
+ *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se.transform;
 
@@ -13,7 +37,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class TransformTest {
 
@@ -31,7 +55,7 @@ public class TransformTest {
         t.addTransformation(r);
         AffineTransform at;
         try {
-            at = t.getGraphicalAffineTransform(false, null, -1, mt, null, null);
+            at = t.getGraphicalAffineTransform(false, null, mt, null, null);
             AffineTransform rat = AffineTransform.getRotateInstance(90 * Math.PI / 180, 10.0, 10.0);
             assertEquals(at, rat);
         } catch (Exception ex) {
@@ -50,16 +74,16 @@ public class TransformTest {
         t.addTransformation(new Translate(new RealLiteral(10.0), new RealLiteral(10.0)));
 
         try {
-            AffineTransform at = t.getGraphicalAffineTransform(false, null, -1, mt, null, null);
+            AffineTransform at = t.getGraphicalAffineTransform(false, null, mt, null, null);
             AffineTransform rat = AffineTransform.getTranslateInstance(10, 10);
             assertEquals(at, rat);
 
             t.addTransformation(new Translate(new RealLiteral(10.0), new RealLiteral(10.0)));
-            at = t.getGraphicalAffineTransform(false, null, -1, mt, null, null);
+            at = t.getGraphicalAffineTransform(false, null, mt, null, null);
             rat = AffineTransform.getTranslateInstance(20, 20);
 
             t.addTransformation(new Translate(new RealLiteral(10.0), new RealLiteral(10.0)));
-            at = t.getGraphicalAffineTransform(false, null, -1, mt, null, null);
+            at = t.getGraphicalAffineTransform(false, null, mt, null, null);
             rat = AffineTransform.getTranslateInstance(30, 30);
         } catch (Exception e) {
             assertTrue(false);
@@ -75,7 +99,7 @@ public class TransformTest {
         t.setUom(Uom.PX);
         t.addTransformation(new Scale(new RealLiteral(10.0)));
         try {
-            AffineTransform at = t.getGraphicalAffineTransform(false, null, -1, mt, null, null);
+            AffineTransform at = t.getGraphicalAffineTransform(false, null, mt, null, null);
             AffineTransform rat = AffineTransform.getScaleInstance(10, 10);
             assertEquals(at, rat);
         } catch (Exception e) {

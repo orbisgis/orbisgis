@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,10 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se;
 
@@ -44,6 +35,7 @@ import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ExtensionParameterType;
 import net.opengis.se._2_0.core.ExtensionType;
@@ -51,6 +43,7 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.PointSymbolizerType;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -59,6 +52,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -81,11 +75,11 @@ import org.xnap.commons.i18n.I18nFactory;
  * An additional parameter can be given. It is used to determine if the symbol 
  * must be drawn on the vertex of a geometry, rather than at its center.
  * 
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public final class PointSymbolizer extends VectorSymbolizer implements GraphicNode {
-    private final static I18n I18N = I18nFactory.getI18n(PointSymbolizer.class);
-    private final static Logger LOGGER = Logger.getLogger(PointSymbolizer.class);
+    private static final I18n I18N = I18nFactory.getI18n(PointSymbolizer.class);
+    private static final Logger LOGGER = Logger.getLogger(PointSymbolizer.class);
     private static final String MODE_VERTEX = "vertex";
     private GraphicCollection graphic;
     private boolean onVertex;
@@ -158,22 +152,23 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 
             if (graphic != null && graphic.getNumGraphics() > 0) {
                 double x,y;
-            if (onVertex) {
-                List<Point2D> points = getPoints(sds, fid, mt, the_geom);
-                for (Point2D pt : points) {
-                x = pt.getX();
-                y = pt.getY();
-                graphic.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(x, y));
+                Map<String,Value> map = getFeaturesMap(sds, fid);
+                if (onVertex) {
+                    List<Point2D> points = getPoints(sds, fid, mt, the_geom);
+                    for (Point2D pt : points) {
+                    x = pt.getX();
+                    y = pt.getY();
+                    graphic.draw(g2, map, selected, mt, AffineTransform.getTranslateInstance(x, y));
+                    }
+                } else {
+                    Point2D pt = getPointShape(sds, fid, mt, the_geom);
+
+                    x = pt.getX();
+                    y = pt.getY();
+
+                    // Draw the graphic right over the point !
+                    graphic.draw(g2, map, selected, mt, AffineTransform.getTranslateInstance(x, y));
                 }
-            } else {
-                Point2D pt = getPointShape(sds, fid, mt, the_geom);
-
-                x = pt.getX();
-                y = pt.getY();
-
-                // Draw the graphic right over the point !
-                graphic.draw(g2, sds, fid, selected, mt, AffineTransform.getTranslateInstance(x, y));
-            }
         }
     }
 
@@ -220,5 +215,11 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
     @Override
     public HashSet<String> dependsOnFeature() {
         return graphic.dependsOnFeature();
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis(){
+            //We get an empty UsedAnalysis - we'll merge everything.
+           return graphic.getUsedAnalysis();
     }
 }

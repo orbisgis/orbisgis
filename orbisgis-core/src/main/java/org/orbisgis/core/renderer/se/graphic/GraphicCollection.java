@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,10 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se.graphic;
 
@@ -41,34 +32,31 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.CompositeGraphicType;
 import net.opengis.se._2_0.core.GraphicType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.orbisgis.core.Services;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * This class doesn't exists within XSD. Actually, it the CompositeGraphic element which has been move up
  * It is a set of graphic symbols, as defined in SE.
- * @author maxence
+ * @author Maxence Laurent
  */
 public final class GraphicCollection implements SymbolizerNode {
 
-    private final static Logger LOGGER = Logger.getLogger(GraphicCollection.class);
-    private final static I18n I18N = I18nFactory.getI18n(GraphicCollection.class);
+    private static final Logger LOGGER = Logger.getLogger(GraphicCollection.class);
+    private static final I18n I18N = I18nFactory.getI18n(GraphicCollection.class);
     
     private ArrayList<Graphic> graphics;
     private SymbolizerNode parent;
@@ -236,15 +224,14 @@ public final class GraphicCollection implements SymbolizerNode {
 
     /**
      * Get the minimum horizontal rectangle that contains this GraphicCollection.
-     * @param sds
-     * @param fid
+     * @param map
      * @param selected
      * @param mt
      * @return
      * @throws ParameterException
      * @throws IOException 
      */
-    public Rectangle2D getBounds(DataSource sds, long fid, boolean selected, MapTransform mt)
+    public Rectangle2D getBounds(Map<String,Value> map, boolean selected, MapTransform mt)
             throws ParameterException, IOException {
 
         double xmin = Double.MAX_VALUE;
@@ -259,7 +246,7 @@ public final class GraphicCollection implements SymbolizerNode {
         while (it.hasNext()) {
             Graphic g = it.next();
             try {
-                Rectangle2D bounds = g.getBounds(sds, fid, mt);
+                Rectangle2D bounds = g.getBounds(map, mt);
                 if (bounds != null) {
                     double mX = bounds.getMinX();
                     double w = bounds.getWidth();
@@ -304,11 +291,11 @@ public final class GraphicCollection implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public void draw(Graphics2D g2, DataSource sds, long fid, boolean selected, MapTransform mt, AffineTransform at)
+    public void draw(Graphics2D g2, Map<String,Value> map, boolean selected, MapTransform mt, AffineTransform at)
             throws ParameterException, IOException {
         for (Graphic g : graphics) {
             try {
-                g.draw(g2, sds, fid, selected, mt, at);
+                g.draw(g2, map, selected, mt, at);
             } catch (ParameterException ex) {
                 LOGGER.error(I18N.tr("Could not render graphic"),ex);
             }
@@ -320,6 +307,15 @@ public final class GraphicCollection implements SymbolizerNode {
         HashSet<String> result = new HashSet<String>();
         for (Graphic g : this.graphics) {
             result.addAll(g.dependsOnFeature());
+        }
+        return result;
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis result = new UsedAnalysis();
+        for (Graphic g : this.graphics) {
+            result.merge(g.getUsedAnalysis());
         }
         return result;
     }

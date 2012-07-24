@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,23 +23,21 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
-
-
 package org.orbisgis.core.renderer.se.parameter.real;
 
+import java.util.Map;
 import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 
 /**
  * A {@code RealParameter} is a SE node that contains a numeric value, or that 
  * provides a direct mechanism to retrieve one in an external source.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public interface RealParameter extends SeParameter, Comparable {
 
@@ -58,14 +49,14 @@ public interface RealParameter extends SeParameter, Comparable {
          * in the new RealParameterContext.
          * @param ctx 
          */
-	void setContext(RealParameterContext ctx);
+        void setContext(RealParameterContext ctx);
 
         /**
          * Retrieve the context (if any) associated to this RealParameter. The context 
          * can be used to determine the range of valid values.
          * @return 
          */
-	RealParameterContext getContext();
+        RealParameterContext getContext();
 
         /**
          * Tries to retrieve the value associated to this RealParameter in sds, at line fid.
@@ -78,6 +69,17 @@ public interface RealParameter extends SeParameter, Comparable {
          */
         Double getValue(DataSource sds, long fid) throws ParameterException;
 
-	@Override
-	String toString();
+        /**
+         * Tries to retrieve the value associated to this RealParameter in the map.
+         * Note that it is up to the realization to know the key used to retrieve
+         * the value in the map.
+         * @param sds
+         * @param fid
+         * @return
+         * @throws ParameterException
+         */
+        Double getValue(Map<String,Value> map) throws ParameterException;
+
+        @Override
+        String toString();
 }

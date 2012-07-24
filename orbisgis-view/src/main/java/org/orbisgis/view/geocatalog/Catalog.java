@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,9 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.view.geocatalog;
 
@@ -53,9 +53,9 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
-import org.orbisgis.sif.SaveFilePanel;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.utils.CollectionUtils;
 import org.orbisgis.utils.FileUtils;
 import org.orbisgis.view.background.BackgroundJob;
@@ -72,6 +72,7 @@ import org.orbisgis.view.geocatalog.filters.factories.SourceTypeIs;
 import org.orbisgis.view.geocatalog.io.ExportInFileOperation;
 import org.orbisgis.view.geocatalog.renderer.DataSourceListCellRenderer;
 import org.orbisgis.view.geocatalog.sourceWizards.db.ConnectionPanel;
+import org.orbisgis.view.geocatalog.sourceWizards.db.TableExportPanel;
 import org.orbisgis.view.geocatalog.sourceWizards.db.TableSelectionPanel;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
@@ -90,12 +91,12 @@ public class Catalog extends JPanel implements DockingPanel {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
 
         private static final long serialVersionUID = 1L;
-        protected final static I18n I18N = I18nFactory.getI18n(Catalog.class);
+        private static final I18n I18N = I18nFactory.getI18n(Catalog.class);
         private static final Logger LOGGER = Logger.getLogger(Catalog.class);
         private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*
          * !< GeoCatalog docked panel properties
          */
-
+        
         private JList sourceList;
         private SourceListModel sourceListContent;
         //The factory shown when the user click on new factory button
@@ -164,20 +165,31 @@ public class Catalog extends JPanel implements DockingPanel {
 
         /**
          * Use service to return the data manager
+         *
          * @return DataManager instance
          */
         private DataManager getDataManager() {
                 return Services.getService(DataManager.class);
         }
+
         /**
-         * DataSource URI drop
+         * DataSource URI drop.
+         * Currently used on file drop by the {@link  SourceListTransferHandler}.
          * @param uriDrop Uniform Resource Identifier
          */
         public void onDropURI(List<URI> uriDrop) {
+                SourceManager src = getDataManager().getSourceManager();
                 for(URI uri : uriDrop) {
-                        getDataManager().getSourceManager().nameAndRegister(uri);
+                        // Use the file name as the data source name
+                        if(uri.getScheme().equals("file")) {
+                                File file = new File(uri);
+                                src.register(src.getUniqueName(FileUtils.getFileNameWithoutExtensionU(file)),uri);
+                        } else {
+                                src.nameAndRegister(uri);
+                        }
                 }
         }
+
         /**
          * For JUnit purpose, return the filter factory manager
          *
@@ -236,7 +248,7 @@ public class Catalog extends JPanel implements DockingPanel {
                         if (popup != null) {
                                 popup.show(e.getComponent(), e.getX(), e.getY());
                         }
-
+                        
                 }
         }
 
@@ -271,7 +283,7 @@ public class Catalog extends JPanel implements DockingPanel {
                                 }
                         }
                 }
-
+                
         }
 
         /**
@@ -282,7 +294,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 final ConnectionPanel firstPanel = new ConnectionPanel(sm);
                 final TableSelectionPanel secondPanel = new TableSelectionPanel(
                         firstPanel);
-
+                
                 if (UIFactory.showDialog(new UIPanel[]{firstPanel, secondPanel})) {
                         for (DBSource dBSource : secondPanel.getSelectedDBSources()) {
                                 String name = sm.getUniqueName(dBSource.getTableName().toString());
@@ -316,7 +328,7 @@ public class Catalog extends JPanel implements DockingPanel {
                                 sm.remove(resource);
                         } catch (IllegalStateException e) {
                                 LOGGER.error(I18N.tr("Cannot remove the source {0}", resource), e);
-
+                                
                         }
                 }
         }
@@ -334,7 +346,6 @@ public class Catalog extends JPanel implements DockingPanel {
                         final SaveFilePanel outfilePanel = new SaveFilePanel(
                                 "org.orbisgis.core.ui.plugins.views.geocatalog.SaveInFile",
                                 I18N.tr("Save the source : " + source));
-                        outfilePanel.setShowFavorites(false);
                         int type = sm.getSource(source).getType();
                         DriverFilter filter;
                         if ((type & SourceManager.VECTORIAL) == sm.VECTORIAL) {
@@ -346,7 +357,7 @@ public class Catalog extends JPanel implements DockingPanel {
                                 filter = new RasterDriverFilter();
                         } else if ((type & SourceManager.WMS) == sm.WMS) {
                                 filter = new DriverFilter() {
-
+                                        
                                         @Override
                                         public boolean acceptDriver(Driver driver) {
                                                 return false;
@@ -362,22 +373,28 @@ public class Catalog extends JPanel implements DockingPanel {
                                 String[] extensions = fileDriver.getFileExtensions();
                                 outfilePanel.addFilter(extensions, fileDriver.getTypeDescription());
                         }
-
+                        
                         if (UIFactory.showDialog(outfilePanel, true, true)) {
                                 final File savedFile = new File(outfilePanel.getSelectedFile().getAbsolutePath());
                                 BackgroundManager bm = Services.getService(BackgroundManager.class);
                                 bm.backgroundOperation(new ExportInFileOperation(dsf, source,
                                         savedFile, this));
                         }
-
+                        
                 }
-
+                
         }
 
         /**
          * The user can save a source in a database
          */
         public void onMenuSaveInDB() {
+                DataManager dm = Services.getService(DataManager.class);
+                SourceManager sm = dm.getSourceManager();
+                String[] res = getSelectedSources();
+                TableExportPanel tableExportPanel = new TableExportPanel(res, sm);
+                
+                tableExportPanel.setVisible(true);                
         }
 
         /**
@@ -385,7 +402,7 @@ public class Catalog extends JPanel implements DockingPanel {
          */
         public void onMenuAddFilesFromFolder() {
                 final OpenGdmsFolderPanel folderPanel = new OpenGdmsFolderPanel(I18N.tr("Add files from a folder"));
-                if (UIFactory.showDialog(folderPanel, true,true)) {
+                if (UIFactory.showDialog(folderPanel, true, true)) {
                         File[] files = folderPanel.getSelectedFiles();
                         for (final File file : files) {
                                 // for each folder, we apply the method processFolder.
@@ -393,18 +410,18 @@ public class Catalog extends JPanel implements DockingPanel {
                                 // to succeed in this operation.
                                 BackgroundManager bm = Services.getService(BackgroundManager.class);
                                 bm.backgroundOperation(new BackgroundJob() {
-
+                                        
                                         @Override
                                         public String getTaskName() {
                                                 return I18N.tr("Add from folder");
                                         }
-
+                                        
                                         @Override
                                         public void run(org.orbisgis.progress.ProgressMonitor pm) {
                                                 processFolder(file, folderPanel.getSelectedFilter(), pm);
                                         }
                                 });
-
+                                
                         }
                 }
         }
@@ -479,7 +496,7 @@ public class Catalog extends JPanel implements DockingPanel {
                         this,
                         "onMenuAddFilesFromFolder"));
                 addMenu.add(addFileItem);
-
+                
                 if (!sourceList.isSelectionEmpty()) {
                         //Popup:Save
                         JMenu saveMenu = new JMenu(I18N.tr("Save"));
@@ -502,9 +519,9 @@ public class Catalog extends JPanel implements DockingPanel {
                                 this,
                                 "onMenuSaveInDB"));
                         saveMenu.add(saveInDBItem);
-
+                        
                 }
-
+                
                 rootMenu.addSeparator();
 
                 //Popup:ClearGeocatalog (added if the datasource manager is not empty)
@@ -521,7 +538,7 @@ public class Catalog extends JPanel implements DockingPanel {
 
                 //Add function to remove a source
                 if (!sourceList.isSelectionEmpty()) {
-
+                        
                         JMenuItem removeSourceItem = new JMenuItem(
                                 I18N.tr("Remove the source"),
                                 OrbisGISIcon.getIcon("remove"));
@@ -563,7 +580,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 SourceListTransferHandler transferHandler = new SourceListTransferHandler();
                 //Call the method this.onDropURI when the user drop uri(like files) on the list control
                 transferHandler.getDropListenerHandler().addListener(this,
-                        EventHandler.create(Listener.class, this, "onDropURI","uriList"));
+                        EventHandler.create(Listener.class, this, "onDropURI", "uriList"));
                 sourceList.setTransferHandler(transferHandler);
                 sourceList.setDragEnabled(true);
                 //Attach the content to the DataSource instance
@@ -605,7 +622,7 @@ public class Catalog extends JPanel implements DockingPanel {
         public DockingPanelParameters getDockingParameters() {
                 return dockingParameters;
         }
-
+        
         @Override
         public JComponent getComponent() {
                 return this;

@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,10 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer;
 
@@ -55,7 +46,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
@@ -84,7 +74,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Graphics2D. This is an abstract class and subclasses provided effectives methods
  * according to the rendering target (e.g. bitmap image, SVG, pdf, etc.)
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class Renderer {
 
@@ -92,10 +82,10 @@ public abstract class Renderer {
         static final int ONE_HUNDRED_I = 100;
         static final int BATCH_SIZE = 1000;
         static final int EXECP_POS = 20;
-        private final static Logger LOGGER = Logger.getLogger(Renderer.class);
-        private final static I18n I18N = I18nFactory.getI18n(Renderer.class);
+        private static final Logger LOGGER = Logger.getLogger(Renderer.class);
+        private static final I18n I18N = I18nFactory.getI18n(Renderer.class);
         /**
-         * This method shall returns a graphics2D for each symbolisers in the list.
+         * This method shall returns a graphics2D for each symbolizers in the list.
          * This is useful to make the diff bw pdf purpose and image purpose
          * Is called just before a new layer is drawn
          * @return
@@ -105,6 +95,12 @@ public abstract class Renderer {
         protected abstract void initGraphics2D(List<Symbolizer> symbs, Graphics2D g2,
                 MapTransform mt);
 
+        /**
+         * Gets the {@code Graphics2D} instance that is associated to the {@code
+         * Symbolizer s}.
+         * @param s
+         * @return
+         */
         protected abstract Graphics2D getGraphics2D(Symbolizer s);
 
         protected abstract void releaseGraphics2D(Graphics2D g2);
@@ -316,11 +312,9 @@ public abstract class Renderer {
         }
 
         private static void printEx(Exception ex, ILayer layer, Graphics2D g2) {
-                java.util.logging.Logger.getLogger("Could not draw " +
-                        layer.getName()).log(Level.SEVERE, "Error while drawing " + layer.getName(), ex);
-                ex.printStackTrace(System.err);
-                g2.setColor(Color.red);
-                g2.drawString(ex.toString(), EXECP_POS, EXECP_POS);
+                LOGGER.warn("Could not draw " +layer.getName(), ex);
+//                g2.setColor(Color.red);
+//                g2.drawString(ex.toString(), EXECP_POS, EXECP_POS);
         }
 
         public void draw(Graphics2D g2dMap, int width, int height,

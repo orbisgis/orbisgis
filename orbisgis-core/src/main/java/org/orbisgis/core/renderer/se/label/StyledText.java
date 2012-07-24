@@ -1,3 +1,31 @@
+/**
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
+ *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
+ */
 package org.orbisgis.core.renderer.se.label;
 
 import java.awt.*;
@@ -7,9 +35,10 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Map;
 import net.opengis.se._2_0.core.FontType;
 import net.opengis.se._2_0.core.StyledTextType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.FillNode;
@@ -23,6 +52,7 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -41,7 +71,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
  * <li>A size</li>
  * <li>A stroke</li></ul>
  * Color and opacity of the text are defined using a <code>Fill</code> instance
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, UomNode {
 
@@ -318,29 +348,28 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         }
     }
 
-    private Font getFont(DataSource sds, long fid,
-            MapTransform mt) throws ParameterException, IOException {
+    private Font getFont(Map<String, Value> map, MapTransform mt) throws ParameterException, IOException {
         String family = "Arial";
         if (fontFamily != null) {
-            family = fontFamily.getValue(sds, fid);
+            family = fontFamily.getValue(map);
         }
 
         // TODO Family is comma delimeted list of fonts family. Choose the first available
 
         String weight = "normal";
         if (fontWeight != null) {
-            weight = fontWeight.getValue(sds, fid);
+            weight = fontWeight.getValue(map);
         }
 
         String style = "normal";
         if (fontStyle != null) {
-            style = fontStyle.getValue(sds, fid);
+            style = fontStyle.getValue(map);
         }
 
         //double size = Uom.toPixel(12, Uom.PT, mt.getDpi(), mt.getScaleDenominator(), null);
         double size = 12.0;
         if (fontSize != null) {
-            size = Uom.toPixel(fontSize.getValue(sds, fid), getFontUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+            size = Uom.toPixel(fontSize.getValue(map), getFontUom(), mt.getDpi(), mt.getScaleDenominator(), null);
         }
 
         int st = Font.PLAIN;
@@ -363,34 +392,32 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     /**
      * Get the minimal {@code Rectangle2D} that contains this {@code StyledText}.
      * @param g2
-     * @param sds
-     * @param fid
+     * @param map
      * @param mt
      * @return
      * @throws ParameterException
      * @throws IOException
      */
-    public Rectangle2D getBounds(Graphics2D g2, DataSource sds, long fid,
+    public Rectangle2D getBounds(Graphics2D g2, Map<String, Value> map,
             MapTransform mt) throws ParameterException, IOException {
-        String txt = this.text.getValue(sds, fid);
-        return getBounds(g2, txt, sds, fid, mt);
+        String txt = this.text.getValue(map);
+        return getBounds(g2, txt, map, mt);
     }
 
     /**
      * Get the minimal {@code Rectangle2D} that contains this {@code StyledText}.
      * @param g2
      * @param text
-     * @param sds
-     * @param fid
+     * @param map
      * @param mt
      * @return
      * @throws ParameterException
      * @throws IOException
      */
-    public Rectangle2D getBounds(Graphics2D g2, String text, DataSource sds, long fid,
+    public Rectangle2D getBounds(Graphics2D g2, String text, Map<String, Value> map,
             MapTransform mt) throws ParameterException, IOException {
 
-        Font font = getFont(sds, fid, mt);
+        Font font = getFont(map, mt);
         FontMetrics metrics = g2.getFontMetrics(font);
         return metrics.getStringBounds(text, null);
     }
@@ -398,8 +425,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     /**
      * Draw this {@code StyledText} in the {@code Graphics2D g2}.
      * @param g2
-     * @param sds
-     * @param fid
+     * @param map
      * @param selected
      * @param mt
      * @param at
@@ -407,10 +433,10 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
      * @throws ParameterException
      * @throws IOException
      */
-    public void draw(Graphics2D g2, DataSource sds, long fid,
+    public void draw(Graphics2D g2, Map<String, Value> map,
             boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
-        String txt = this.text.getValue(sds, fid);
-        draw(g2, txt, sds, fid, selected, mt, at, perm);
+        String txt = this.text.getValue(map);
+        draw(g2, txt, map, selected, mt, at, perm);
     }
 
     /**
@@ -422,11 +448,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
      * The {@code Graphics2D} instance used to render the map we are drawing.
      * @param text
      * The text we want to compute the ouline of.
-     * @param ds
-     * The {@code DataSource} where we'll retrieve all the needed parameters to
-     * build this {@code Styled} instance.
-     * @param fid
-     * The index of the feature we are rendering.
+     * @param map
      * @param mt
      * Used to compute the font's size.
      * @param at
@@ -436,10 +458,10 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
      * @throws ParameterException
      * @throws IOException
      */
-    public Shape getOutline(Graphics2D g2, String text, DataSource ds, long fid,
+    public Shape getOutline(Graphics2D g2, String text, Map<String, Value> map,
             MapTransform mt, AffineTransform at, RenderContext perm)
             throws ParameterException, IOException {
-        return getOutline(g2, text, ds, fid, mt, at, perm, Label.VerticalAlignment.TOP);
+        return getOutline(g2, text, map, mt, at, perm, Label.VerticalAlignment.TOP);
     }
 
     /**
@@ -450,11 +472,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
      * The {@code Graphics2D} instance used to render the map we are drawing.
      * @param text
      * The text we want to compute the ouline of.
-     * @param sds
-     * The {@code DataSource} where we'll retrieve all the needed parameters to
-     * build this {@code Styled} instance.
-     * @param fid
-     * The index of the feature we are rendering.
+     * @param map
      * @param mt
      * Used to compute the font's size.
      * @param at
@@ -470,10 +488,10 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
      * @throws IOException
      * If an error occurred while retrieving the {@code Font}.
      */
-    public Shape getOutline(Graphics2D g2, String text, DataSource sds, long fid,
+    public Shape getOutline(Graphics2D g2, String text, Map<String, Value> map,
             MapTransform mt, AffineTransform at, RenderContext perm, Label.VerticalAlignment va)
             throws ParameterException, IOException {
-        Font font = getFont(sds, fid, mt);
+        Font font = getFont(map, mt);
         TextLayout tl = new TextLayout(text, font, g2.getFontRenderContext());
         FontMetrics metrics = g2.getFontMetrics(font);
         double dy=0;
@@ -511,20 +529,18 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
      *
      * @param g2
      * @param outlines
-     * @param sds
-     * @param fid
+     * @param map
      * @param selected
      * @param mt
      * @throws ParameterException
      * @throws IOException
      */
-    public void drawOutlines(Graphics2D g2, ArrayList<Shape> outlines, DataSource sds, long fid,
+    public void drawOutlines(Graphics2D g2, ArrayList<Shape> outlines, Map<String, Value> map,
             boolean selected, MapTransform mt) throws ParameterException, IOException {
         if (halo != null) {
             for (Shape outline : outlines) {
-                //halo.draw(rg, sds, fid, selected, outline.getBounds(), mt, false);
-                //System.out.println ("Draw halo");
-                halo.draw(g2, sds, fid, selected, outline, mt, true);
+                //halo.draw(rg, map, selected, outline.getBounds(), mt, false);
+                halo.draw(g2, map, selected, outline, mt, true);
             }
         }
         for (Shape outline : outlines) {
@@ -534,13 +550,13 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
             if (fill == null && stroke == null) {
                 SolidFill sf = new SolidFill(Color.BLACK, 1.0);
                 sf.setParent(this);
-                sf.draw(g2, sds, fid, outline, selected, mt);
+                sf.draw(g2, map, outline, selected, mt);
             }
             if (fill != null) {
-                fill.draw(g2, sds, fid, outline, selected, mt);
+                fill.draw(g2, map, outline, selected, mt);
             }
             if (stroke != null) {
-                stroke.draw(g2, sds, fid, outline, selected, mt, 0.0);
+                stroke.draw(g2, map, outline, selected, mt, 0.0);
             }
         }
     }
@@ -549,8 +565,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
      * Draw this {@code StyledText} in the {@code Graphics2D g2}.
      * @param g2
      * @param text
-     * @param sds
-     * @param fid
+     * @param map
      * @param selected
      * @param mt
      * @param at
@@ -558,26 +573,25 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
      * @throws ParameterException
      * @throws IOException
      */
-    public void draw(Graphics2D g2, String text, DataSource sds, long fid,
+    public void draw(Graphics2D g2, String text, Map<String, Value> map,
             boolean selected, MapTransform mt, AffineTransform at, RenderContext perm) throws ParameterException, IOException {
 
         ArrayList<Shape> outlines = new ArrayList<Shape>();
-        outlines.add(getOutline(g2, text, sds, fid, mt, at, perm));
-        drawOutlines(g2, outlines, sds, fid, selected, mt);
+        outlines.add(getOutline(g2, text, map, mt, at, perm));
+        drawOutlines(g2, outlines, map, selected, mt);
     }
 
     /**
      *
-     * @param sds
-     * @param fid
+     * @param map
      * @param mt
      * @return
      * @throws ParameterException
      */
-    public double getEmInPixel(DataSource sds, long fid, MapTransform mt) throws ParameterException {
+    public double getEmInPixel(Map<String, Value> map, MapTransform mt) throws ParameterException {
         double size = Uom.toPixel(12, Uom.PT, mt.getDpi(), mt.getScaleDenominator(), null);
         if (fontSize != null) {
-            size = Uom.toPixel(fontSize.getValue(sds, fid), getFontUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+            size = Uom.toPixel(fontSize.getValue(map), getFontUom(), mt.getDpi(), mt.getScaleDenominator(), null);
         }
         return size / 2.0;
     }
@@ -634,7 +648,6 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
 
     @Override
     public HashSet<String> dependsOnFeature() {
-
         HashSet<String> result = new HashSet<String>();
         if (text != null) {
             result.addAll(text.dependsOnFeature());
@@ -651,7 +664,27 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         if (fontSize != null) {
             result.addAll(fontSize.dependsOnFeature());
         }
+        return result;
+    }
 
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis result = new UsedAnalysis();
+        if (text != null) {
+            result.include(text);
+        }
+        if (fontFamily != null) {
+            result.include(fontFamily);
+        }
+        if (fontWeight != null) {
+            result.include(fontWeight);
+        }
+        if (fontStyle != null) {
+            result.include(fontStyle);
+        }
+        if (fontSize != null) {
+            result.include(fontSize);
+        }
         return result;
     }
 }

@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,24 +23,22 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
-
 package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.Shape;
 import java.io.IOException;
-import org.gdms.data.DataSource;
+import java.util.Map;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
  * This interface allow to fetch a mark graphic for many sources,
  *
- * @author maxence
+ * @author Maxence Laurent
  * @todo implement in InlineContent(for se InlineContent && GML), OnlineResource
  */
 public interface MarkGraphicSource {
@@ -64,13 +55,13 @@ public interface MarkGraphicSource {
 	 * @throws ParameterException
 	 * @throws IOException
 	 */
-    Shape getShape(ViewBox viewBox, DataSource sds,
-            long fid, Double scale, Double dpi, RealParameter markIndex, String format)
+    Shape getShape(ViewBox viewBox, Map<String,Value> map, Double scale, Double dpi,
+            RealParameter markIndex, String format)
             throws ParameterException, IOException;
 
     //public void setJAXBSource(MarkGraphicType m);
 
-    double getDefaultMaxWidth(DataSource sds, long fid, 
+    double getDefaultMaxWidth(Map<String,Value> map,
             Double scale, Double dpi, RealParameter markIndex, String mimeType)
             throws ParameterException, IOException;
 }

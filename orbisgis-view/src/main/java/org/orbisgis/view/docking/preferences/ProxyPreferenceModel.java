@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -13,7 +14,7 @@
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- *I
+ *
  * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -22,10 +23,9 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
- */ 
+ * info_at_ orbisgis.org
+ */
 package org.orbisgis.view.docking.preferences;
 
 import bibliothek.extension.gui.dock.preference.DefaultPreference;
@@ -46,7 +46,7 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  */
 public class ProxyPreferenceModel extends DefaultPreferenceModel {
-    protected final static I18n i18n = I18nFactory.getI18n(ProxyPreferenceModel.class);
+    private static final I18n I18N = I18nFactory.getI18n(ProxyPreferenceModel.class);
     // JAVA proxy properties constant
     // @see http://docs.oracle.com/javase/1.4.2/docs/guide/net/properties.html
     private static final String SYSTEM_SOCKS_PROXY_PORT = "socksProxyPort";
@@ -91,16 +91,16 @@ public class ProxyPreferenceModel extends DefaultPreferenceModel {
         this.add(proxyInfo);
         //Use Proxy Check Box
         useProxy = new DockPropertyPreference<Boolean>(controller.getProperties(),USE_PROXY, Path.TYPE_BOOLEAN_PATH, new Path(USE_PROXY_KEY));
-        useProxy.setLabel(i18n.tr("Use Proxy"));
+        useProxy.setLabel(I18N.tr("Use Proxy"));
         useProxy.setDefaultValue(Boolean.FALSE);
         this.add(useProxy);
         //Proxy Url
         proxyUrl = new DockPropertyPreference<String>(controller.getProperties(),PROXY_URL, Path.TYPE_STRING_PATH, new Path(PROXY_URL_KEY));
-        proxyUrl.setLabel(i18n.tr("Proxy url"));
+        proxyUrl.setLabel(I18N.tr("Proxy url"));
         this.add(proxyUrl);
         //Proxy Port
         proxyPort = new DockPropertyPreference<String>(controller.getProperties(),PROXY_PORT, Path.TYPE_STRING_PATH, new Path(PROXY_PORT_KEY));
-        proxyPort.setLabel(i18n.tr("Proxy port"));
+        proxyPort.setLabel(I18N.tr("Proxy port"));
         proxyPort.setDefaultValue(DEFAULT_PORT_VALUE);
         this.add(proxyPort);
         
@@ -159,12 +159,12 @@ public class ProxyPreferenceModel extends DefaultPreferenceModel {
             int p = Integer.parseInt(preference.getValue());
             if (p < 0 || p > 65535) {
                 skipEvent = true;
-                proxyInfo.setValue(i18n.tr("The proxy port is invalid"));
+                proxyInfo.setValue(I18N.tr("The proxy port is invalid"));
                 preference.setValue(oldProxyPort);
             }
         } catch (NumberFormatException e) {
             skipEvent = true;
-            proxyInfo.setValue(i18n.tr("The proxy port is invalid"));
+            proxyInfo.setValue(I18N.tr("The proxy port is invalid"));
             preference.setValue(oldProxyPort);
             return;
         }

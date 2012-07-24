@@ -1,20 +1,46 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
+ *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MatrixType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -29,7 +55,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <p>Note that the matrix is filled with {@code RealParameter} instances, not 
  * with {@code double} values.
  * 
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class Matrix implements Transformation {
 
@@ -318,18 +344,31 @@ public final class Matrix implements Transformation {
         }
 
         @Override
-        public AffineTransform getAffineTransform(DataSource sds, long fid, Uom uom, MapTransform mt, Double width, Double height) throws ParameterException {
+        public UsedAnalysis getUsedAnalysis() {
+            UsedAnalysis result = new UsedAnalysis();
+            result.include(a);
+            result.include(b);
+            result.include(c);
+            result.include(d);
+            result.include(e);
+            result.include(f);
+            return result;
+        }
+
+        @Override
+        public AffineTransform getAffineTransform(Map<String,Value> map, Uom uom,
+            MapTransform mt, Double width, Double height) throws ParameterException {
                 return new AffineTransform(
                         //Uom.toPixel(a.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
-                        a.getValue(sds, fid),
-                        b.getValue(sds, fid),
-                        c.getValue(sds, fid),
+                        a.getValue(map),
+                        b.getValue(map),
+                        c.getValue(map),
                         //Uom.toPixel(b.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
                         //Uom.toPixel(c.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
                         //Uom.toPixel(d.getValue(feat), uom, mt.getDpi(), mt.getScaleDenominator(), null),
-                        d.getValue(sds, fid),
-                        Uom.toPixel(e.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), width),
-                        Uom.toPixel(f.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), height));
+                        d.getValue(map),
+                        Uom.toPixel(e.getValue(map), uom, mt.getDpi(), mt.getScaleDenominator(), width),
+                        Uom.toPixel(f.getValue(map), uom, mt.getDpi(), mt.getScaleDenominator(), height));
         }
 
         @Override

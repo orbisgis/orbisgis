@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,10 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se.fill;
 
@@ -43,16 +34,18 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.thematic.DensityFillType;
 import net.opengis.se._2_0.thematic.ObjectFactory;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -66,7 +59,7 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
  * repeated mark, registered as a {@code GraphicCollection} instance.</p>
  * <p>In every cases, the needed coverage percentage must be specified. If not set,
  * It will be defaulted to {@code DEFAULT_PERCENTAGE}.
- * @author alexis, maxence
+ * @author Alexis Guéganno, Maxence Laurent
  */
 public final class DensityFill extends Fill implements GraphicNode {
 
@@ -215,23 +208,23 @@ public final class DensityFill extends Fill implements GraphicNode {
     }
 
     @Override
-    public void draw(Graphics2D g2, DataSource sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Map<String,Value> map, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
         if (isHatched) {
             double alpha = HatchedFill.DEFAULT_ALPHA;
             double pDist;
 
             if (this.orientation != null) {
-                alpha = this.orientation.getValue(sds, fid);
+                alpha = this.orientation.getValue(map);
             }
 
             // Stroke width
-            double sWidth = hatches.getWidthInPixel(sds, fid, mt);
+            double sWidth = hatches.getWidthInPixel(map, mt);
 
             double percentage = 0.0;
 
             if (percentageCovered != null) {
-                percentage = percentageCovered.getValue(sds, fid) * ONE_HUNDRED;
+                percentage = percentageCovered.getValue(map) * ONE_HUNDRED;
             }
 
             if (percentage > ONE_HUNDRED) {
@@ -242,10 +235,10 @@ public final class DensityFill extends Fill implements GraphicNode {
             // Perpendiculat dist bw two hatches
             pDist = ONE_HUNDRED * sWidth / percentage;
 
-            HatchedFill.drawHatch(g2, sds, fid, shp, selected, mt, alpha, pDist, hatches, 0.0);
+            HatchedFill.drawHatch(g2, map, shp, selected, mt, alpha, pDist, hatches, 0.0);
         } else {
 
-            Paint painter = getPaint(fid, sds, selected, mt);
+            Paint painter = getPaint(map, selected, mt);
 
             if (painter != null) {
                 g2.setPaint(painter);
@@ -255,11 +248,11 @@ public final class DensityFill extends Fill implements GraphicNode {
     }
 
     @Override
-    public Paint getPaint(long fid, DataSource sds, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public Paint getPaint(Map<String,Value> map, boolean selected, MapTransform mt) throws ParameterException, IOException {
         double percentage = 0.0;
 
         if (percentageCovered != null) {
-            percentage = percentageCovered.getValue(sds, fid) * ONE_HUNDRED;
+            percentage = percentageCovered.getValue(map) * ONE_HUNDRED;
         }
 
         if (percentage > ONE_HUNDRED) {
@@ -272,13 +265,13 @@ public final class DensityFill extends Fill implements GraphicNode {
             if (isHatched && hatches != null) {
                 return null;
             } else if (mark != null) {
-                Rectangle2D bounds = mark.getBounds(sds, fid, selected, mt);
+                Rectangle2D bounds = mark.getBounds(map, selected, mt);
 
                 double ratio = Math.sqrt(ONE_HUNDRED / percentage);
                 double gapX =  bounds.getWidth()*ratio - bounds.getWidth();
                 double gapY =  bounds.getHeight()*ratio - bounds.getHeight();
 
-                painter = GraphicFill.getPaint(fid, sds, selected, mt, mark, gapX, gapY, bounds);
+                painter = GraphicFill.getPaint(map, selected, mt, mark, gapX, gapY, bounds);
             } else {
                 throw new ParameterException("Neither marks or hatches are defined");
             }
@@ -313,6 +306,19 @@ public final class DensityFill extends Fill implements GraphicNode {
             ret.addAll(mark.dependsOnFeature());
         }
         return ret;
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+            UsedAnalysis ua = new UsedAnalysis();
+            ua.include(percentageCovered);
+            if(useHatches()){
+                    ua.include(orientation);
+                    ua.merge(hatches.getUsedAnalysis());
+            } else {
+                    ua.merge(mark.getUsedAnalysis());
+            }
+            return ua;
     }
 
     @Override

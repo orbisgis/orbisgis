@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,9 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.view.map;
 
@@ -65,7 +65,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @brief The Map Editor Panel
  */
 public class MapEditor extends JPanel implements EditorDockable, TransformListener   {
-    protected final static I18n I18N = I18nFactory.getI18n(MapEditor.class);
+    private static final I18n I18N = I18nFactory.getI18n(MapEditor.class);
     private static final Logger GUILOGGER = Logger.getLogger("gui."+MapEditor.class);
     //The UID must be incremented when the serialization is not compatible with the new version of this class
     private static final long serialVersionUID = 1L; 
@@ -79,7 +79,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     //Then translate to the map coordinates and send it to
     //the MapStatusBar
     private Timer CursorCoordinateLookupTimer;
-    private final static int CURSOR_COORDINATE_LOOKUP_INTERVAL = 100; //Ms
+    private static final int CURSOR_COORDINATE_LOOKUP_INTERVAL = 100; //Ms
     private Point lastCursorPosition = new Point();
     private Point lastTranslatedCursorPosition = new Point();
     /**
@@ -140,7 +140,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
      * @param editableList 
      */
     public void onDropEditable(EditableElement[] editableList) {
-        BackgroundManager bm = (BackgroundManager) Services.getService(BackgroundManager.class);
+        BackgroundManager bm = Services.getService(BackgroundManager.class);
         //Load the layers in the background
         bm.backgroundOperation(new DropDataSourceProcess(editableList));
     }
@@ -160,7 +160,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             mapControl.getMapTransform().setExtent(mapContext.getBoundingBox());
             mapControl.setElement(this);
             mapControl.initMapControl();
-            CursorCoordinateLookupTimer = new Timer(CURSOR_COORDINATE_LOOKUP_INTERVAL,EventHandler.create(ActionListener.class,this,"onReadCursorMapCoordinate"));
+            CursorCoordinateLookupTimer = new Timer(CURSOR_COORDINATE_LOOKUP_INTERVAL,
+                    EventHandler.create(ActionListener.class,this,"onReadCursorMapCoordinate"));
             CursorCoordinateLookupTimer.setRepeats(false);
             CursorCoordinateLookupTimer.start();
             repaint();
@@ -357,10 +358,12 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 return editableElement instanceof MapElement;
         }
 
+        @Override
         public EditableElement getEditableElement() {
                 return mapEditable;
         }
 
+        @Override
         public void setEditableElement(EditableElement editableElement) {
                 if(editableElement instanceof MapElement) {
                         loadMap((MapElement)editableElement);
@@ -404,7 +407,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         }
         
         public void run(org.orbisgis.progress.ProgressMonitor pm) {
-            DataManager dataManager = (DataManager) Services.getService(DataManager.class);
+            DataManager dataManager = Services.getService(DataManager.class);
             ILayer dropLayer = mapContext.getLayerModel();
             int i=0;
             for(EditableElement eElement : editableList) {

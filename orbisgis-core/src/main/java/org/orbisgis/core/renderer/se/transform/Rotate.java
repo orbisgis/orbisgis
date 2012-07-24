@@ -1,20 +1,46 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
+ *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.RotateType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -26,7 +52,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <li>The Y-coordinate of the rotation center. This value takes place in 
  * the coordinate system of the graphic this {@code Rotate} is used on.</li>
  * <li>The rotation angle, in clockwise degrees.</li></ul>
- * @author maxence
+ * @author Maxence Laurent
  */
 public final class Rotate implements Transformation {
 
@@ -180,21 +206,30 @@ public final class Rotate implements Transformation {
         }
 
         @Override
-        public AffineTransform getAffineTransform(DataSource sds, long fid, Uom uom,
+        public UsedAnalysis getUsedAnalysis() {
+            UsedAnalysis result = new UsedAnalysis();
+            result.include(x);
+            result.include(y);
+            result.include(rotation);
+            return result;
+        }
+
+        @Override
+        public AffineTransform getAffineTransform(Map<String,Value> map, Uom uom,
                         MapTransform mt, Double width, Double height) throws ParameterException {
                 double ox = 0.0;
                 if (x != null) {
-                        ox = Uom.toPixel(x.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), width);
+                        ox = Uom.toPixel(x.getValue(map), uom, mt.getDpi(), mt.getScaleDenominator(), width);
                 }
 
                 double oy = 0.0;
                 if (y != null) {
-                        oy = Uom.toPixel(y.getValue(sds, fid), uom, mt.getDpi(), mt.getScaleDenominator(), height);
+                        oy = Uom.toPixel(y.getValue(map), uom, mt.getDpi(), mt.getScaleDenominator(), height);
                 }
 
                 double theta = 0.0;
                 if (rotation != null) {
-                        theta = rotation.getValue(sds, fid) * Math.PI / 180.0; // convert to rad
+                        theta = rotation.getValue(map) * Math.PI / 180.0; // convert to rad
                 }
                 return AffineTransform.getRotateInstance(theta, ox, oy);
         }

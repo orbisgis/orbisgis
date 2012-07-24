@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,10 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se;
 
@@ -65,10 +56,10 @@ import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
  *  <li> - an affine transformation def (transform)</li>
  * </ul>
  *
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
-        private final static Logger LOGGER = Logger.getLogger(VectorSymbolizer.class);
+        private static final Logger LOGGER = Logger.getLogger(VectorSymbolizer.class);
         private Uom uom;
         private GeometryAttribute theGeom;
 
@@ -191,17 +182,11 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
          */
         public List<Shape> getLines(DataSource sds, long fid,
                 MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
-
                 Geometry geom = getGeometry(sds, fid, the_geom);
                 LinkedList<Shape> shapes = new LinkedList<Shape>();
-
                 LinkedList<Geometry> geom2Process = new LinkedList<Geometry>();
-
                 geom2Process.add(geom);
-
-
                 AffineTransform at = null;
-
                 while (!geom2Process.isEmpty()) {
                         geom = geom2Process.remove(0);
 
@@ -290,7 +275,8 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
          * @throws IOException
          * @throws DriverException
          */
-        public Point2D getFirstPointShape(DataSource sds, long fid, MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
+        public Point2D getFirstPointShape(DataSource sds, long fid, MapTransform mt,
+                Geometry theGeom) throws ParameterException, IOException, DriverException {
 
                 Geometry geom = getGeometry(sds, fid, theGeom);
                 AffineTransform at = mt.getAffineTransform();

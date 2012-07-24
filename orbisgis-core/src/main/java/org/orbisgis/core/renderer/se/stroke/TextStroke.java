@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,10 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se.stroke;
 
@@ -42,22 +33,24 @@ import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TextStrokeType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.LineLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * {@code TexteStroke} is used to render text labels along a line. It is useful 
  * to add informations to the {@code CompoundStroke} elements.
  * It is dependant on a {@link LineLabel}, to store the text to render, and the styling
  * details used for the rendering.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class TextStroke extends Stroke {
 
@@ -114,10 +107,10 @@ public final class TextStroke extends Stroke {
         }
 
         @Override
-        public void draw(Graphics2D g2, DataSource sds, long fid, Shape shp,
+        public void draw(Graphics2D g2, Map<String,Value> map, Shape shp,
                         boolean selected, MapTransform mt, double offset) throws ParameterException, IOException {
                 if (this.lineLabel != null) {
-                        lineLabel.draw(g2, sds, fid, shp, selected, mt, null);
+                        lineLabel.draw(g2, map, shp, selected, mt, null);
                 }
         }
 
@@ -149,9 +142,18 @@ public final class TextStroke extends Stroke {
         }
 
         @Override
-        public Double getNaturalLength(DataSource sds, long fid,
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis ua = new UsedAnalysis();
+                if(lineLabel != null){
+                    ua.merge(lineLabel.getUsedAnalysis());
+                }
+                return ua;
+        }
+
+        @Override
+        public Double getNaturalLength(Map<String,Value> map,
                         Shape shp, MapTransform mt) throws ParameterException, IOException {
-                Rectangle2D bounds = lineLabel.getLabel().getBounds(null, sds, fid, mt);
+                Rectangle2D bounds = lineLabel.getLabel().getBounds(null, map, mt);
                 return bounds.getWidth();
         }
 

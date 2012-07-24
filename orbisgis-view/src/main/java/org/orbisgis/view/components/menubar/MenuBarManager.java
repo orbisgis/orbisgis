@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,9 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.view.components.menubar;
 
@@ -40,7 +40,7 @@ import org.orbisgis.sif.common.MenuCommonFunctions;
 
 public class MenuBarManager {
     //This is a dev error, useless to translate
-    private final static String PARENT_NOT_EXISTS = "Parent menu must be inserted before the sub-menus";
+    private static final String PARENT_NOT_EXISTS = "Parent menu must be inserted before the sub-menus";
     private JMenuBar rootBar = new JMenuBar();
     //Store a flat version of menu containers
     private Map<String,MenuProperties> menuContainers = new HashMap<String,MenuProperties>();

@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,48 +23,69 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.sif.multiInputPanel;
 
 import java.awt.Component;
 import javax.swing.JPasswordField;
-import org.orbisgis.sif.SQLUIPanel;
 
+/**
+ * This {@link InputType} is used to retrieve passwords from the users without
+ * displaying them in the {@code Component}.
+ * @author Alexis Guéganno
+ * @author Erwan Bocher
+ */
 public class PasswordType implements InputType {
 
 	private JPasswordField comp = new JPasswordField();
 
+        /**
+         * Builds a new {@code PasswordType}.
+         * @param columns
+         *  The number of columns for the underlying component.
+         * @param isEditable
+         *  To specify if the component can be edited or not.
+         */
+        public PasswordType(int columns, boolean isEditable) {
+		comp.setColumns(columns);
+                comp.setEditable(isEditable);
+	}
+
+        /**
+         * Builds a new {@code PasswordType}.
+         * @param columns
+         *  The number of columns for the underlying component.
+         */
 	public PasswordType(int columns) {
 		comp.setColumns(columns);
 	}
 
+
+        /**
+         * Builds a new {@code PasswordType} with 5 columns.
+         */
 	public PasswordType() {
 		comp.setColumns(5);
 	}
 
+        @Override
 	public Component getComponent() {
 		return comp;
 	}
+	
 
-	public int getType() {
-		return SQLUIPanel.STRING;
-	}
-
+        @Override
 	public String getValue() {
 		return new String(comp.getPassword());
-	}
-
-	public boolean isPersistent() {
-		return false;
 	}
 
 	public void setEditable(boolean b) {
 		comp.setEditable(b);
 	}
 
+        @Override
 	public void setValue(String value) {
 		comp.setText(value);
 	}

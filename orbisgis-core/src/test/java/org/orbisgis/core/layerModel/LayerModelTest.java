@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
- * 
- *  Team leader Erwan BOCHER, scientific researcher,
- * 
- *  User support leader : Gwendall Petit, geomatic engineer.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,33 +23,29 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.layerModel;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
 import org.grap.model.GeoRaster;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
 import org.orbisgis.core.renderer.se.Style;
-
-import org.gdms.driver.driverManager.DriverManager;
 
 @Deprecated
 public class LayerModelTest extends AbstractTest {
@@ -161,8 +150,7 @@ public class LayerModelTest extends AbstractTest {
 
         @Test
 	public void testRepeatedName() throws Exception {
-		DataSourceFactory dsf = ((DataManager) Services
-				.getService(DataManager.class)).getDataSourceFactory();
+		DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
 		SourceManager sourceManager = dsf.getSourceManager();
 		sourceManager.register("vector1", new File("/tmp/1.shp"));
 		sourceManager.register("vector2", new File("/tmp/2.shp"));
@@ -188,8 +176,7 @@ public class LayerModelTest extends AbstractTest {
 
         @Test
 	public void testAddWithSameName() throws Exception {
-		DataSourceFactory dsf = ((DataManager) Services
-				.getService(DataManager.class)).getDataSourceFactory();
+		DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
 		SourceManager sourceManager = dsf.getSourceManager();
 		sourceManager.register("mySource", new File(
 				"src/test/resources/data/bv_sap.shp"));

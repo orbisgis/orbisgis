@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,10 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se.fill;
 
@@ -45,17 +36,19 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.FillType;
 import net.opengis.se._2_0.core.HatchedFillType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
@@ -72,7 +65,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
  * so that each hatch of the second {@code HatchedFill} is drawn between two hatches
  * of the first {@code HatchedFill}.</p>
  * <p>The meaning of distance and offset is of course UOM dependant.
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class HatchedFill extends Fill implements StrokeNode {
 
@@ -167,9 +160,20 @@ public final class HatchedFill extends Fill implements StrokeNode {
 
     }
 
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis ua = new UsedAnalysis();
+        ua.include(angle);
+        ua.include(distance);
+        ua.include(offset);
+        if(stroke != null){
+            ua.merge(stroke.getUsedAnalysis());
+        }
+        return ua;
+    }
 
     @Override
-    public void draw(Graphics2D g2, DataSource sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public void draw(Graphics2D g2, Map<String,Value> map, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
         if (this.stroke != null) {
             // Perpendicular distance between two lines
@@ -178,20 +182,20 @@ public final class HatchedFill extends Fill implements StrokeNode {
                 double pDist;
                 pDist = DEFAULT_PDIST;
                 if (this.distance != null) {
-                    pDist = Uom.toPixel(this.distance.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                    pDist = Uom.toPixel(this.distance.getValue(map), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 }
 
                 double alpha = DEFAULT_ALPHA;
                 if (this.angle != null) {
-                    alpha = this.angle.getValue(sds, fid);
+                    alpha = this.angle.getValue(map);
                 }
 
                 double hOffset = 0.0;
                 if (this.offset != null) {
-                    hOffset = Uom.toPixel(this.offset.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+                    hOffset = Uom.toPixel(this.offset.getValue(map), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
                 }
 
-                drawHatch(g2, sds, fid, shp, selected, mt, alpha, pDist, stroke, hOffset);
+                drawHatch(g2, map, shp, selected, mt, alpha, pDist, stroke, hOffset);
                 
             } catch (RuntimeException eee) {
                 System.out.println("Error " + eee);
@@ -221,10 +225,10 @@ public final class HatchedFill extends Fill implements StrokeNode {
      * @throws ParameterException
      * @throws IOException 
      */
-    public static void drawHatch(Graphics2D g2, DataSource sds,
-            long fid, Shape shp, boolean selected, MapTransform mt,
-            double alph, double pDist, Stroke stroke, double hOffset) throws ParameterException, IOException {
-            double alpha = alph;
+    public static void drawHatch(Graphics2D g2, Map<String,Value> map, Shape shp,
+            boolean selected, MapTransform mt, double alph, double pDist, Stroke stroke,
+            double hOffset) throws ParameterException, IOException {
+        double alpha = alph;
         while (alpha < 0.0) {
             alpha += TWO_PI_DEG;
         }   // Make sure alpha is > 0
@@ -232,17 +236,10 @@ public final class HatchedFill extends Fill implements StrokeNode {
             alpha -= TWO_PI_DEG;
         } // and < 360.0
         alpha = alpha * Math.PI / PI_DEG; // and finally convert in radian
-
-        double deltaOx = 0.0;
-        double deltaOy = 0.0;
-
         double beta = Math.PI / 2.0 + alpha;
-        deltaOx = Math.cos(beta) * hOffset;
-        deltaOy = Math.sin(beta) * hOffset;
-
-
-
-        Double naturalLength = stroke.getNaturalLength(sds, fid, shp, mt);
+        double deltaOx = Math.cos(beta) * hOffset;
+        double deltaOy = Math.sin(beta) * hOffset;
+        Double naturalLength = stroke.getNaturalLength(map, shp, mt);
         if (naturalLength.isInfinite()) {
             naturalLength = DEFAULT_NATURAL_LENGTH;
         }
@@ -378,7 +375,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
                         l.y2 = hymin;
                     }
 
-                    stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
+                    stroke.draw(g2, map, l, selected, mt, 0.0);
 
                     //g2.fillOval((int)(l.getX1() - 2),(int)(l.getY1() -2) , 4, 4);
                     //g2.fillOval((int)(l.getX2() - 2),(int)(l.getY2() -2) , 4, 4);
@@ -392,7 +389,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
                     l.x2 = x;
                     l.y2 = hymax;
 
-                    stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
+                    stroke.draw(g2, map, l, selected, mt, 0.0);
 
                     //g2.fillOval((int)(l.getX1() - 2),(int)(l.getY1() -2) , 4, 4);
                     //g2.fillOval((int)(l.getX2() - 2),(int)(l.getY2() -2) , 4, 4);
@@ -421,7 +418,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
                         l.y2 = y;
                     }
 
-                    stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
+                    stroke.draw(g2, map, l, selected, mt, 0.0);
                     //g2.fillOval((int)(l.getX1() - 2),(int)(l.getY1() -2) , 4, 4);
                     //g2.fillOval((int)(l.getX2() - 2),(int)(l.getY2() -2) , 4, 4);
                 }
@@ -449,7 +446,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
                         l.y2 = y;
                     }
 
-                    stroke.draw(g2, sds, fid, l, selected, mt, 0.0);
+                    stroke.draw(g2, map, l, selected, mt, 0.0);
 
                     //g2.fillOval((int)(l.getX1() - 2),(int)(l.getY1() -2) , 4, 4);
                     //g2.fillOval((int)(l.getX2() - 2),(int)(l.getY2() -2) , 4, 4);
@@ -471,7 +468,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
      * @throws ParameterException
      */
     @Override
-    public Paint getPaint(long fid, DataSource sds,
+    public Paint getPaint(Map<String,Value> map,
             boolean selected, MapTransform mt) throws ParameterException {
         return null;
     }
@@ -559,8 +556,6 @@ public final class HatchedFill extends Fill implements StrokeNode {
     @Override
     public JAXBElement<? extends FillType> getJAXBElement() {
         ObjectFactory of = new ObjectFactory();
-
-
         return of.createHatchedFill(this.getJAXBType());
     }
 

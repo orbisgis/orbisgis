@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,9 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.sif;
 
@@ -34,65 +34,40 @@ import java.net.URL;
 /**
  * Interface that provides the necessary information to the SIF framework to
  * show dialogs and perform some validation
- * 
+ *
  */
 public interface UIPanel {
 
-	/**
-	 * Gets the icon of the UIPanel. If this method returns null, the default
-	 * icon in {@link UIFactory} is used
-	 * 
-	 * @return
-	 */
-	URL getIconURL();
+        /**
+         * Gets the icon of the UIPanel. If this method returns null, the
+         * default icon in {@link UIFactory} is used
+         *
+         * @return
+         */
+        URL getIconURL();
 
-	/**
-	 * Gets the title to show in the dialog
-	 * 
-	 * @return
-	 */
-	String getTitle();
+        /**
+         * Gets the title to show in the dialog
+         *
+         * @return
+         */
+        String getTitle();
 
-	/**
-	 * Performs any initialization. This method is called before the dialog is
-	 * shown. In a wizard context, all previous steps have been accomplished
-	 * 
-	 * @return An error description if something goes wrong or null if
-	 *         everything is ok
-	 */
-	String initialize();
+        
 
-	/**
-	 * When the user accepts the dialog or wizard this method is called to make
-	 * a last validation before closing the dialog or going to next step in the
-	 * wizard. If the user cancels this method is not called
-	 * 
-	 * @return An error description if the validation fails or null if
-	 *         everything is ok
-	 */
-	String postProcess();
+        /**
+         * A method invoked when the user click on the ok or next button to validate the contents of the interface
+         *
+         * @return A String An error description if the validation fails, a
+         * warning or null if everything is ok
+         */
+        String validateInput();
 
-	/**
-	 * A method invoked regularly to validate the contents of the interface
-	 * 
-	 * @return An error description if the validation fails or null if
-	 *         everything is ok
-	 */
-	String validateInput();
-
-	/**
-	 * Gets the swing component to show in the dialog
-	 * 
-	 * @return
-	 */
-	Component getComponent();
-
-	/**
-	 * Gets a text to be shown as tool tip for the dialog. Typically this will
-	 * be the purpose of the dialog or some similar information
-	 * 
-	 * @return
-	 */
-	String getInfoText();
-
+        /**
+         * Gets the swing component to show in the dialog
+         *
+         * @return
+         */
+        Component getComponent();
+        
 }

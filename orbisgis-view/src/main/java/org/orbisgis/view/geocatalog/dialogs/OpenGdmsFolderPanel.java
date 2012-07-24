@@ -1,10 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488. * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -21,11 +23,9 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
-
 package org.orbisgis.view.geocatalog.dialogs;
 
 import org.gdms.driver.Driver;
@@ -35,12 +35,12 @@ import org.gdms.source.FileDriverFilter;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.sif.OpenFolderPanel;
+import org.orbisgis.sif.components.OpenFolderPanel;
 
 /**
  * This panel is used to select the folders where we want to search for new datasources
  * to import in the geocatalog.
- * @author alexis, jean-yves
+ * @author Alexis Guéganno, Jean-Yves Martin
  */
 public class OpenGdmsFolderPanel extends OpenFolderPanel  {
 
@@ -60,19 +60,13 @@ public class OpenGdmsFolderPanel extends OpenFolderPanel  {
 		}
 	}
 
-	@Override
 	public String[] getErrorMessages() {
 		return null;
 	}
 
-	@Override
 	public String getId() {
 		return OPEN_GDMS_FOLDER_PANEL;
 	}
 
-	@Override
-	public String[] getValidationExpressions() {
-		return null;
-	}
 
 }

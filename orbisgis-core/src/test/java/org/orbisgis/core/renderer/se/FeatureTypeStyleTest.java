@@ -1,6 +1,30 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
+ *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se;
 
@@ -8,40 +32,26 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventLocator;
+import javax.xml.bind.*;
 import javax.xml.bind.util.ValidationEventCollector;
 import javax.xml.validation.Schema;
 import net.opengis.se._2_0.core.StyleType;
-
-
 import org.gdms.data.DataSourceFactory;
-
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-
 import org.junit.After;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
+import org.junit.Test;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.DefaultDataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import static org.junit.Assert.*;
-
-
-
-
-import org.junit.Test;
-import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public class FeatureTypeStyleTest {
 
@@ -53,10 +63,6 @@ public class FeatureTypeStyleTest {
                 DataManager.class,
                 "Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial",
                 new DefaultDataManager(dsf));
-    }
-
-    private static DataManager getDataManager() {
-        return (DataManager) Services.getService(DataManager.class);
     }
 
     @Before

@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,10 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se.stroke;
 
@@ -43,13 +34,14 @@ import java.util.List;
 import net.opengis.se._2_0.core.AlternativeStrokeElementsType;
 import net.opengis.se._2_0.core.StrokeElementType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * {@code AlternativeStrokeElements} provides the option for the rendering system to 
  * choose from different {@code StrokeElement} definitions.</p>
  * <p>Instances of this class contains a list of {@code StrokElement} that is used
  * to provide the said options.
- * @author maxence
+ * @author Maxence Laurent
  */
 public class AlternativeStrokeElements extends CompoundStrokeElement {
 
@@ -98,6 +90,15 @@ public class AlternativeStrokeElements extends CompoundStrokeElement {
                 HashSet<String> result = new HashSet<String>();
                 for (StrokeElement elem : elements) {
                         result.addAll(elem.dependsOnFeature());
+                }
+                return result;
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis result = new UsedAnalysis();
+                for (StrokeElement elem : elements) {
+                        result.merge(elem.getUsedAnalysis());
                 }
                 return result;
         }

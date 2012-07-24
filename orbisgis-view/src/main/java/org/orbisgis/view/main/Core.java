@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,9 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.view.main;
 
@@ -44,6 +44,7 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.JobQueue;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.edition.EditorManager;
@@ -64,7 +65,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * This is the main UIContext
  */
 public class Core {
-    protected final static I18n I18N = I18nFactory.getI18n(Core.class);        
+    private static final I18n I18N = I18nFactory.getI18n(Core.class);        
     private static final Logger LOGGER = Logger.getLogger(Core.class);
     /////////////////////
     //view package
@@ -104,8 +105,6 @@ public class Core {
      * Init the SIF ui factory
      */
     private void initSIF() {
-        UIFactory.setPersistencyDirectory(new File(viewWorkspace.getSIFPath()));
-        UIFactory.setTempDirectory(new File(mainContext.getCoreWorkspace().getTempFolder()));
         UIFactory.setDefaultImageIcon(OrbisGISIcon.getIcon("mini_orbisgis"));
     }
     
@@ -266,6 +265,15 @@ public class Core {
      * Free all resources allocated by this object
      */
     public void dispose() {
+        //Close all running jobs
+        for(Job job : backgroundManager.getActiveJobs()) {
+                try {
+                        job.cancel();
+                } catch (Throwable ex) {
+                        LOGGER.error(ex);
+                        //Cancel the next job
+                }
+        }
         //Remove all listeners created by this object
 
         //Free UI resources

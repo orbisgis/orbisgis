@@ -1,38 +1,30 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able
- * to manipulate and create vector and raster spatial information. OrbisGIS
- * is distributed under GPL 3 license. It is produced  by the geo-informatic team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/>, CNRS FR 2488:
- *    Erwan BOCHER, scientific researcher,
- *    Thomas LEDUC, scientific researcher,
- *    Fernando GONZALEZ CORTES, computer engineer.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
  *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
- * OrbisGIS is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * OrbisGIS is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License
- * along with OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult:
- *    <http://orbisgis.cerma.archi.fr/>
- *    <http://sourcesup.cru.fr/projects/orbisgis/>
- *
+ * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
- *    erwan.bocher _at_ ec-nantes.fr
- *    fergonco _at_ gmail.com
- *    thomas.leduc _at_ cerma.archi.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.view.toc.actions.cui;
 
@@ -70,20 +62,19 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * This {@code Panel} contains all the needed informations to build an UI that
  * will let the user edit the legends. It is built with the following properties
- * :</p> <ul><li>Legends are displayed in the {@code LegendList}.</li> 
- * <li>An inner list of available legends. It may be initialized using
+ * :</p> <ul><li>Legends are displayed in the {@code LegendList}.</li> <li>An
+ * inner list of available legends. It may be initialized using
  * {@code EPLegendHelper. It is used to validate a given {@code Legend}, in
- * order to determine if it can be edited or not.</li> 
- * <li>A {@code CardLayout} that is used to switch fast between the {@code
- * Legend} instances stored in {@code legends}</li> 
- * <li>Two text fields : one for the min scale, the other for the max scale.</li>
- * <li>Two buttons that are used to fastly set the min and/or max scales to
- * the current one.</li>
- * <li>A {@code MapTransform} that represents the current state of the map</li>
- * <li>A {@code Type} instance (should be the type of the {@code DataSource}
- * associated to the layer associated to the legend we want to edit.</li> </ul>
+ * order to determine if it can be edited or not.</li> <li>A {@code CardLayout}
+ * that is used to switch fast between the {@code
+ * Legend} instances stored in {@code legends}</li> <li>Two text fields : one
+ * for the min scale, the other for the max scale.</li> <li>Two buttons that are
+ * used to fastly set the min and/or max scales to the current one.</li> <li>A {@code MapTransform}
+ * that represents the current state of the map</li> <li>A {@code Type} instance
+ * (should be the type of the {@code DataSource} associated to the layer
+ * associated to the legend we want to edit.</li> </ul>
  *
- * @author alexis, others...
+ * @author Alexis Guéganno, others...
  */
 public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
@@ -101,7 +92,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         private StyleWrapper styleWrapper;
 
         public void init(MapTransform mt, Type gc, Style style, ILegendPanel[] availableLegends,
-                    ILayer layer) {
+                ILayer layer) {
                 this.mt = mt;
                 this.gc = gc;
                 this.layer = layer;
@@ -285,24 +276,10 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         }
 
         @Override
-        public String getInfoText() {
-                return UIFactory.getDefaultOkMessage();
-        }
-
-        @Override
         public String getTitle() {
                 return I18N.tr("Legend edition");
         }
 
-        @Override
-        public String initialize() {
-                return null;
-        }
-
-        @Override
-        public String postProcess() {
-                return null;
-        }
 
         @Override
         public String validateInput() {
@@ -311,9 +288,9 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                 }
                 List<String> errors = styleWrapper.validateInput();
                 StringBuilder sb = new StringBuilder();
-                for (String s : errors) {
-                        if (s != null && !s.isEmpty()) {
-                                sb.append(s);
+                for (String message : errors) {
+                        if (message != null && !message.isEmpty()) {
+                                sb.append(message);
                                 sb.append("\n");
                         }
                 }
@@ -342,4 +319,6 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         public StyleWrapper getStyleWrapper() {
                 return styleWrapper;
         }
+
+     
 }

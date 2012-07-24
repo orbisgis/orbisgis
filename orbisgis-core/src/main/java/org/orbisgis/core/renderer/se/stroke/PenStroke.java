@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,10 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.core.renderer.se.stroke;
 
@@ -42,13 +33,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.PenStrokeType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -59,6 +51,7 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -77,7 +70,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
  * the pattern is expanded by repeating it twice to give an even number of values.</li>
  * <li>An offset used to know where to draw the line.</li>
  * </ul>
- * @author maxence, alexis
+ * @author Maxence Laurent, Alexis Guéganno
  */
 public final class PenStroke extends Stroke implements FillNode, UomNode {
 
@@ -205,7 +198,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     }
 
     @Override
-    public Double getNaturalLength(DataSource sds, long fid, Shape shp, MapTransform mt) {
+    public Double getNaturalLength(Map<String,Value> map, Shape shp, MapTransform mt) {
 
         if (dashArray != null) {
             // A dashed penstroke has a length
@@ -213,7 +206,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
             // for infinite PenStroke element ! For this reason, compound stroke use getNaturalLengthForCompound
             try {
                 double sum = 0.0;
-                String sDash = this.dashArray.getValue(sds, fid);
+                String sDash = this.dashArray.getValue(map);
                 String[] splitedDash = sDash.split(" ");
                 int size = splitedDash.length;
                 for (int i = 0; i < size; i++) {
@@ -234,7 +227,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     }
 
     @Override
-    public Double getNaturalLengthForCompound(DataSource sds, long fid,
+    public Double getNaturalLengthForCompound(Map<String,Value> map,
             Shape shp, MapTransform mt) throws ParameterException, IOException {
         return Double.POSITIVE_INFINITY;
     }
@@ -242,7 +235,6 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     @Override
     public HashSet<String> dependsOnFeature() {
         HashSet<String> result = new HashSet<String>();
-
         if (fill != null) {
             result.addAll(fill.dependsOnFeature());
         }
@@ -255,7 +247,24 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         if (width != null) {
             result.addAll(width.dependsOnFeature());
         }
+        return result;
+    }
 
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis result = new UsedAnalysis();
+        if (fill != null) {
+            result.merge(fill.getUsedAnalysis());
+        }
+        if (dashOffset != null) {
+            result.include(dashOffset);
+        }
+        if (dashArray != null) {
+            result.include(dashArray);
+        }
+        if (width != null) {
+            result.include(width);
+        }
         return result;
     }
 
@@ -374,7 +383,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         this.dashArray = dashArray;
     }
 
-    private BasicStroke createBasicStroke(DataSource sds, long fid,
+    private BasicStroke createBasicStroke(Map<String,Value> map,
             Shape shp, MapTransform mt, Double v100p, boolean useDash) throws ParameterException {
 
         int cap;
@@ -416,17 +425,17 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         double w = DEFAULT_WIDTH_PX;
 
         if (width != null) {
-            w = width.getValue(sds, fid);
+            w = width.getValue(map);
             w = Uom.toPixel(w, getUom(), mt.getDpi(), mt.getScaleDenominator(), null); // 100% based on view box height or width ? TODO
         }
 
 
-        if (useDash && this.dashArray != null && !this.dashArray.getValue(sds, fid).isEmpty()) {
+        if (useDash && this.dashArray != null && !this.dashArray.getValue(map).isEmpty()) {
 
             double dashO = 0.0;
             double[] dashA;
 
-            String sDash = this.dashArray.getValue(sds, fid);
+            String sDash = this.dashArray.getValue(map);
             String[] splitedDash = sDash.split(" ");
             int dashSize = splitedDash.length;
             dashA = new double[dashSize];
@@ -436,7 +445,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
             }
 
             if (this.dashOffset != null) {
-                dashO = Uom.toPixel(this.dashOffset.getValue(sds, fid), getUom(),
+                dashO = Uom.toPixel(this.dashOffset.getValue(map), getUom(),
                         mt.getDpi(), mt.getScaleDenominator(), v100p);
             }
 
@@ -460,15 +469,14 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     /**
      * Get an AWT {@code BasicStroke} that is representative of this {@code 
      * PenStroke}
-     * @param sds
-     * @param fid
+     * @param map
      * @param mt
      * @param v100p
      * @return
      * @throws ParameterException 
      */
-    public BasicStroke getBasicStroke(DataSource sds, long fid, MapTransform mt, Double v100p) throws ParameterException {
-        return this.createBasicStroke(sds, fid, null, mt, v100p, true);
+    public BasicStroke getBasicStroke(Map<String,Value> map, MapTransform mt, Double v100p) throws ParameterException {
+        return this.createBasicStroke(map, null, mt, v100p, true);
     }
 
     private void scaleDashArrayLength(double[] dashes, Shape shp) {
@@ -503,14 +511,22 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
      * Draw a pen stroke, using the given Graphics2D.
      *
      * @todo DashOffset
+     * @param g2
+     * @param map
+     * @param shape
+     * @param selected
+     * @param mt
+     * @param offset
+     * @throws ParameterException
+     * @throws IOException
      */
     @Override
-    public void draw(Graphics2D g2, DataSource sds, long fid, Shape shape,
+    public void draw(Graphics2D g2, Map<String,Value> map, Shape shape,
             boolean selected, MapTransform mt, double offset)
             throws ParameterException, IOException {
 
 
-        if (this.fill != null) {
+        if (this.fill != null && width.getValue(map) > 0) {
 
             List<Shape> shapes;
             // if not using offset rapport, compute perpendicular offset first
@@ -523,17 +539,17 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
                 shapes.add(shape);
             }
 
-            Paint paint = fill.getPaint(fid, sds, selected, mt);
+            Paint paint = fill.getPaint(map, selected, mt);
 
             for (Shape shp : shapes) {
-                if (this.dashArray != null && !this.dashArray.getValue(sds, fid).isEmpty() && Math.abs(offset) > 0.0) {
-                    String value = dashArray.getValue(sds, fid);
+                if (this.dashArray != null && !this.dashArray.getValue(map).isEmpty() && Math.abs(offset) > 0.0) {
+                    String value = dashArray.getValue(map);
                     String[] split = value.split("\\s+");
                     //value.split("");
 
                     Shape chute = shp;
                     List<Shape> fragments = new ArrayList<Shape>();
-                    BasicStroke bs = createBasicStroke(sds, fid, shp, mt, null, false);
+                    BasicStroke bs = createBasicStroke(map, shp, mt, null, false);
 
                     int splitSize = split.length;
                     double dashLengths[] = new double[splitSize];
@@ -580,7 +596,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
                                     g2.draw(oSeg);
                                 } else {
                                     Shape outline = bs.createStrokedShape(oSeg);
-                                    fill.draw(g2, sds, fid, outline, selected, mt);
+                                    fill.draw(g2, map, outline, selected, mt);
                                 }
                             }
                         }
@@ -589,7 +605,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
 
                     BasicStroke stroke;
 
-                    stroke = this.createBasicStroke(sds, fid, shp, mt, null /*ShapeHelper.getAreaPerimeterLength(shp)*/, true);
+                    stroke = this.createBasicStroke(map, shp, mt, null /*ShapeHelper.getAreaPerimeterLength(shp)*/, true);
                     g2.setPaint(paint);
                     g2.setStroke(stroke);
 
@@ -604,7 +620,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
                                     g2.draw(oShp);
                                 } else {
                                     Shape outline = stroke.createStrokedShape(oShp);
-                                    fill.draw(g2, sds, fid, outline, selected, mt);
+                                    fill.draw(g2, map, outline, selected, mt);
                                 }
                             }
                         }
@@ -618,7 +634,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
                         } else {
                             // Others can't -> create the ares to fill
                             Shape outline = stroke.createStrokedShape(shp);
-                            fill.draw(g2, sds, fid, outline, selected, mt);
+                            fill.draw(g2, map, outline, selected, mt);
                         }
                     }
                 }
@@ -628,15 +644,14 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
 
     /**
      * Gets the width, in pixels, of the lines that will be drawn using this {@code PenStroke}.
-     * @param sds
-     * @param fid
+     * @param map
      * @param mt
      * @return
      * @throws ParameterException 
      */
-    public double getWidthInPixel(DataSource sds, long fid, MapTransform mt) throws ParameterException {
+    public double getWidthInPixel(Map<String,Value> map, MapTransform mt) throws ParameterException {
         if (this.width != null) {
-            return Uom.toPixel(width.getValue(sds, fid), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
+            return Uom.toPixel(width.getValue(map), this.getUom(), mt.getDpi(), mt.getScaleDenominator(), null);
         } else {
             return DEFAULT_WIDTH_PX;
         }
@@ -645,16 +660,15 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     /**
      * Get the minimal length needed to display a complete dash pattern, including
      * the dash offset.
-     * @param sds
-     * @param fid
+     * @param map
      * @param mt
      * @return
      * @throws ParameterException 
      */
-    public double getMinLength(DataSource sds, long fid, MapTransform mt) throws ParameterException {
+    public double getMinLength(Map<String,Value> map, MapTransform mt) throws ParameterException {
         double length = 0;
         if (dashArray != null) {
-            String sDash = this.dashArray.getValue(sds, fid);
+            String sDash = this.dashArray.getValue(map);
             String[] splitedDash = sDash.split(" ");
             int size = splitedDash.length;
             for (int i = 0; i < size; i++) {
@@ -663,7 +677,7 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         }
 
         if (dashOffset != null) {
-            length += dashOffset.getValue(sds, fid);
+            length += dashOffset.getValue(map);
         }
 
         return length;

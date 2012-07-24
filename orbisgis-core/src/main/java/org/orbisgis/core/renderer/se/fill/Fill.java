@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,19 +23,16 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
-
-
 package org.orbisgis.core.renderer.se.fill;
 
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.FillType;
 import net.opengis.se._2_0.core.GraphicFillType;
@@ -50,7 +40,7 @@ import net.opengis.se._2_0.core.HatchedFillType;
 import net.opengis.se._2_0.core.SolidFillType;
 import net.opengis.se._2_0.thematic.DensityFillType;
 import net.opengis.se._2_0.thematic.DotMapFillType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -63,7 +53,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  *
  * @todo create subclasse FillReference
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class Fill implements SymbolizerNode {
 
@@ -121,7 +111,8 @@ public abstract class Fill implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, DataSource sds, long fid, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException;
+    public abstract void draw(Graphics2D g2, Map<String,Value> map, Shape shp,
+            boolean selected, MapTransform mt) throws ParameterException, IOException;
 
 
     /**
@@ -136,7 +127,7 @@ public abstract class Fill implements SymbolizerNode {
      *
      * @throws ParameterException
      */
-	public abstract Paint getPaint(long fid, DataSource sds, boolean selected, MapTransform mt) throws ParameterException, IOException;
+	public abstract Paint getPaint(Map<String,Value> map, boolean selected, MapTransform mt) throws ParameterException, IOException;
 
 
     /**

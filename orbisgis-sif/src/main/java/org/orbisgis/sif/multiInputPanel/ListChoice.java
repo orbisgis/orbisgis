@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,56 +23,52 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.sif.multiInputPanel;
 
 import java.awt.Component;
 import javax.swing.JList;
 import javax.swing.JScrollPane;
-import org.orbisgis.sif.SQLUIPanel;
 
 public class ListChoice implements InputType {
-	public static final String SEPARATOR = "#";
-	private JList comp;
 
-	public ListChoice(String... choices) {
-		comp = new JList(choices);
-	}
+        public static final String SEPARATOR = "#";
+        private JList comp;
 
-	public Component getComponent() {
-		return new JScrollPane(comp);
-	}
+        public ListChoice(String... choices) {
+                comp = new JList(choices);
+        }
 
-	public int getType() {
-		return SQLUIPanel.STRING;
-	}
+        @Override
+        public Component getComponent() {
+                return new JScrollPane(comp);
+        }
 
-	public String getValue() {
-		final Object[] selectedValues = comp.getSelectedValues();
-		final StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < selectedValues.length; i++) {
-			sb.append(selectedValues[i]);
-			if (i + 1 != selectedValues.length) {
-				sb.append(SEPARATOR);
-			}
-		}
-		return sb.toString();
-	}
+        
 
-	public void setSelectionMode(int selectionMode) {
-		comp.setSelectionMode(selectionMode);
-	}
+        @Override
+        public String getValue() {
+                final Object[] selectedValues = comp.getSelectedValues();
+                final StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < selectedValues.length; i++) {
+                        sb.append(selectedValues[i]);
+                        if (i + 1 != selectedValues.length) {
+                                sb.append(SEPARATOR);
+                        }
+                }
+                return sb.toString();
+        }
 
-	public void setValue(String value) {
-		if (null != value) {
-			comp.setListData(value.split(SEPARATOR));
-		}
-	}
+        public void setSelectionMode(int selectionMode) {
+                comp.setSelectionMode(selectionMode);
+        }
 
-	public boolean isPersistent() {
-		return true;
-	}
+        @Override
+        public void setValue(String value) {
+                if (null != value) {
+                        comp.setListData(value.split(SEPARATOR));
+                }
+        }
 }

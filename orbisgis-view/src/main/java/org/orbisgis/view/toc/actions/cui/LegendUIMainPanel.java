@@ -1,19 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- *  Team leader Erwan BOCHER, scientific researcher,
- *
- *  User support leader : Gwendall Petit, geomatic engineer.
- *
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Pierre-Yves FADET, Alexis GUEGANNO, Maxence LAURENT
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -30,14 +23,9 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * erwan.bocher _at_ ec-nantes.fr
- * gwendall.petit _at_ ec-nantes.fr
+ * info_at_ orbisgis.org
  */
-
-
-
 package org.orbisgis.view.toc.actions.cui;
 
 import java.awt.BorderLayout;
@@ -49,19 +37,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import org.orbisgis.core.renderer.se.Style;
+import javax.swing.*;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 
 /**
  *
- * @author maxence
+ * @author Maxence Laurent
  */
 public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 	private LegendUIController controller;
@@ -182,24 +166,10 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 	}
 
 	@Override
-	public String initialize() {
-		return null;
-	}
-
-	@Override
-	public String postProcess() {
-		return null;
-	}
-
-	@Override
 	public Component getComponent() {
 		return this;
-	}
-
-	@Override
-	public String getInfoText() {
-		return UIFactory.getDefaultOkMessage();
-	}
+	}	
+      
 
 	private class ActionListenerImpl implements ActionListener {
 

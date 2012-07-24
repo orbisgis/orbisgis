@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,198 +23,153 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.sif;
 
 import java.awt.Window;
-import java.io.File;
 import java.net.URL;
-import java.util.HashMap;
 import javax.swing.ImageIcon;
-import org.gdms.data.DataSourceFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * UIFactory is a factory to build SIF dialog.
- * @author ebocher
+ * @author Erwan Bocher
  */
-
 public class UIFactory {
-        protected final static I18n i18n = I18nFactory.getI18n(UIFactory.class);
-	private static HashMap<String, String> inputs = new HashMap<String, String>();
-	static File baseDir = new File(System.getProperty("user.home") //$NON-NLS-1$
-			+ File.separator + ".sif"); //$NON-NLS-1$
-	private static URL defaultIconURL;
+
+        private static final I18n I18N = I18nFactory.getI18n(UIFactory.class);
+        private static URL defaultIconURL;
         private static ImageIcon defaultIcon;
-	private static String okMessage;
-	private static Window mainFrame = null;
-	static final DataSourceFactory dsf = new DataSourceFactory();
+        private static String okMessage;
+        private static Window mainFrame = null;
 
-	public static SIFDialog getSimpleDialog(UIPanel panel) {
-		return getSimpleDialog(panel, mainFrame);
-	}
+        private UIFactory(){}
 
-	public static SIFDialog getSimpleDialog(UIPanel panel, Window owner) {
-		return getSimpleDialog(panel, owner, true);
-	}
+        public static SIFDialog getSimpleDialog(UIPanel panel) {
+                return getSimpleDialog(panel, mainFrame);
+        }
 
-	public static SIFDialog getSimpleDialog(UIPanel panel, boolean b) {
-		return getSimpleDialog(panel, mainFrame, true);
-	}
+        public static SIFDialog getSimpleDialog(UIPanel panel, Window owner) {
+                return getSimpleDialog(panel, owner, true);
+        }
 
-	public static SIFDialog getSimpleDialog(UIPanel panel, Window owner,
-			boolean okCancel) {
-		SIFDialog dlg = new SIFDialog(owner, okCancel);
-		SimplePanel simplePanel = new SimplePanel(dlg, panel);
-		dlg.setComponent(simplePanel, inputs);
-		return dlg;
-	}
+        public static SIFDialog getSimpleDialog(UIPanel panel, boolean b) {
+                return getSimpleDialog(panel, mainFrame, true);
+        }
 
-	public static DynamicUIPanel getDynamicUIPanel(String title, URL icon,
-			String[] names) {
-		return getDynamicUIPanel(null, title, icon, names, new int[0],
-				new String[0], new String[0]);
-	}
+        public static SIFDialog getSimpleDialog(UIPanel panel, Window owner,
+                boolean okCancel) {
+                SIFDialog dlg = new SIFDialog(owner, okCancel);
+                SimplePanel simplePanel = new SimplePanel(dlg, panel);
+                dlg.setTitle(panel.getTitle());
+                dlg.setComponent(simplePanel);
+                return dlg;
+        }
 
-	public static DynamicUIPanel getDynamicUIPanel(String title, URL icon,
-			String[] names, int[] types, String[] expressions,
-			String[] errorMsgs) {
-		return getDynamicUIPanel(null, title, icon, names, types, expressions,
-				errorMsgs);
-	}
+        public static SIFWizard getWizard(UIPanel[] panels) {
+                return getWizard(panels, mainFrame);
+        }
 
-	public static DynamicUIPanel getDynamicUIPanel(String id, String title,
-			URL icon, String[] names) {
-		return new DynamicUIPanel(id, title, icon, names, new int[0],
-				new String[0], new String[0]);
-	}
+        private static SIFWizard getWizard(UIPanel[] panels, Window owner) {
+                SIFWizard dlg = new SIFWizard(owner);
+                SimplePanel[] simplePanels = new SimplePanel[panels.length];
+                for (int i = 0; i < simplePanels.length; i++) {
+                        simplePanels[i] = new SimplePanel(dlg, panels[i]);
+                }
+                dlg.setComponent(simplePanels);
+                return dlg;
+        }
 
-	public static DynamicUIPanel getDynamicUIPanel(String id, String title,
-			URL icon, String[] names, int[] types, String[] expressions,
-			String[] errorMsgs) {
-		return new DynamicUIPanel(id, title, icon, names, types, expressions,
-				errorMsgs);
-	}
+        public static boolean showDialog(UIPanel[] panels) {
+                return showDialog(panels, true);
+        }
 
-	public static SIFWizard getWizard(UIPanel[] panels) {
-		return getWizard(panels, mainFrame);
-	}
-
-	private static SIFWizard getWizard(UIPanel[] panels, Window owner) {
-		SIFWizard dlg = new SIFWizard(owner);
-		SimplePanel[] simplePanels = new SimplePanel[panels.length];
-		for (int i = 0; i < simplePanels.length; i++) {
-			simplePanels[i] = new SimplePanel(dlg, panels[i]);
-		}
-		dlg.setComponent(simplePanels, inputs);
-		return dlg;
-	}
-
-	public static boolean showDialog(UIPanel[] panels) {
-		return showDialog(panels, true);
-	}
-        
         public static boolean showDialog(UIPanel[] panels, boolean okCancel) {
                 return showDialog(panels, okCancel, false);
         }
 
-        /**Create a dialog and 
-         * specify if the dialog shows the ok cancel buttons and if
-         * its on top of all swing GUI.
+        /**
+         * Create a dialog and specify if the dialog shows the ok cancel buttons
+         * and if its on top of all swing GUI.
+         *
          * @param panels
          * @param okCancel
          * @param onTop
-         * @return 
+         * @return
          */
-	public static boolean showDialog(UIPanel[] panels, boolean okCancel, boolean onTop) {
-		AbstractOutsideFrame dlg;
-		if (panels.length == 0) {
-			throw new IllegalArgumentException(
-					i18n.tr("sif.uIFactory.atLeastAPanelHasToBeSpecified")); //$NON-NLS-1$
-		} else if (panels.length == 1) {
-			if (okCancel) {
-				dlg = getSimpleDialog(panels[0]);
-			} else {
-				dlg = getSimpleDialog(panels[0], mainFrame, false);
-			}
-		} else {
-			dlg = getWizard(panels);
-		}
-		dlg.setModal(true);
-		dlg.pack();
-		dlg.setLocationRelativeTo(mainFrame);
-		dlg.setVisible(true);
+        public static boolean showDialog(UIPanel[] panels, boolean okCancel, boolean onTop) {
+                AbstractOutsideFrame dlg;
+                if (panels.length == 0) {
+                        throw new IllegalArgumentException(
+                                I18N.tr("sif.uIFactory.atLeastAPanelHasToBeSpecified")); //$NON-NLS-1$
+                } else if (panels.length == 1) {
+                        if (okCancel) {
+                                dlg = getSimpleDialog(panels[0]);
+                        } else {
+                                dlg = getSimpleDialog(panels[0], mainFrame, false);
+                        }
+                } else {
+                        dlg = getWizard(panels);
+                }
+                dlg.setModal(true);
+                dlg.pack();
+                dlg.setLocationRelativeTo(mainFrame);
+                dlg.setVisible(true);
                 dlg.setAlwaysOnTop(onTop);
 
-		return dlg.isAccepted();
-	}
+                return dlg.isAccepted();
+        }
 
-        public static boolean showDialog(UIPanel panel, boolean  okCancel, boolean onTop) {
-		return showDialog(new UIPanel[] { panel }, okCancel,onTop);
-	}
+        public static boolean showDialog(UIPanel panel, boolean okCancel, boolean onTop) {
+                return showDialog(new UIPanel[]{panel}, okCancel, onTop);
+        }
+
+        public static boolean showDialog(UIPanel panel) {
+                return showDialog(new UIPanel[]{panel}, true);
+        }
+
+        public static void showOkDialog(UIPanel panel) {
+                showDialog(new UIPanel[]{panel}, false);
+        }
+
+       
+        public static URL getDefaultIcon() {
+                return defaultIconURL;
+        }
+
+        public static ImageIcon getDefaultImageIcon() {
+                return defaultIcon;
+        }
+
+        public static void setDefaultIcon(URL iconURL) {
+                UIFactory.defaultIconURL = iconURL;
+        }
+
+        public static void setDefaultImageIcon(ImageIcon icon) {
+                UIFactory.defaultIcon = icon;
+        }
+
+        public static String getDefaultOkMessage() {
+                return okMessage;
+        }
+
+        public static void setDefaultOkMessage(String msg) {
+                okMessage = msg;
+        }
+
+        public static void setMainFrame(Window wnd) {
+                mainFrame = wnd;
+        }
+
+        public static Window getMainFrame() {
+                return mainFrame;
+        }
+
+        public static I18n getI18n() {
+                return I18N;
+        }        
         
-	public static boolean showDialog(UIPanel panel) {
-		return showDialog(new UIPanel[] { panel }, true);
-	}
-
-	public static void showOkDialog(UIPanel panel) {
-		showDialog(new UIPanel[] { panel }, false);
-	}
-
-	public static void setInputFor(String id, String inputName) {
-		inputs.put(id, inputName);
-	}
-
-	public static void setPersistencyDirectory(File baseDir) {
-                //Create directories if not exists
-                if(!baseDir.exists()) {
-                    baseDir.mkdirs();
-                }
-		UIFactory.baseDir = baseDir;
-	}
-
-	public static void setTempDirectory(File tempDir) {
-                //Create directories if not exists
-                if(!tempDir.exists()) {
-                    tempDir.mkdirs();
-                }
-		dsf.setTempDir(tempDir.getAbsolutePath());
-	}
-
-	public static URL getDefaultIcon() {
-		return defaultIconURL;
-	}
-
-
-	public static ImageIcon getDefaultImageIcon() {
-		return defaultIcon;
-	}
-        
-	public static void setDefaultIcon(URL iconURL) {
-		UIFactory.defaultIconURL = iconURL;
-	}
-
-	public static void setDefaultImageIcon(ImageIcon icon) {
-		UIFactory.defaultIcon = icon;
-	}
-
-	public static String getDefaultOkMessage() {
-		return okMessage;
-	}
-
-	public static void setDefaultOkMessage(String msg) {
-		okMessage = msg;
-	}
-
-	public static void setMainFrame(Window wnd) {
-		mainFrame = wnd;
-	}
-
-	public static Window getMainFrame() {
-		return mainFrame;
-	}
 }

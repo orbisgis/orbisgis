@@ -1,4 +1,31 @@
-
+/**
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
+ *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
+ */
 package org.orbisgis.view.joblist;
 
 import java.awt.FlowLayout;
@@ -20,9 +47,11 @@ public class JobListItemPanel extends JPanel {
         private JLabel jobCancelLabel;
         private JLabel jobLabel;
         private JProgressBar jobProgressBar;
+        private boolean statusBarJob;
         
-        public JobListItemPanel(Job job) {
+        public JobListItemPanel(Job job,boolean statusBarJob) {
                 this.job = job;
+                this.statusBarJob = statusBarJob;
                 //The panel show the background of the DataSource Item
                 FlowLayout fl = new FlowLayout(FlowLayout.LEADING);
                 fl.setHgap(5);
@@ -41,9 +70,15 @@ public class JobListItemPanel extends JPanel {
                 //The label show the text of the DataSource Item
                 jobLabel = new JLabel();
                 add(jobProgressBar);
-                add(jobCancelLabel);
+                if(!statusBarJob) {
+                        add(jobCancelLabel);
+                }
                 //Add the label into the Panel
                 add(jobLabel);
+                //On the status bar the job is aligned on the right
+                if(statusBarJob) {
+                        add(jobCancelLabel);
+                }
                 readJob();
         }
 
@@ -77,19 +112,23 @@ public class JobListItemPanel extends JPanel {
          */
         public final String getText() {
                 StringBuilder sb = new StringBuilder();
-                sb.append("<html>");
+                if(!statusBarJob) {
+                        sb.append("<html>");
+                }
                 sb.append(job.getTaskName());
                 sb.append(" (");
                 sb.append(job.getOverallProgress());
                 sb.append(" %)");
-                if(job.getCurrentProgress()>0) {
+                if(!statusBarJob && job.getCurrentProgress()>0) {
                         sb.append("<br>&nbsp;");
                         sb.append(job.getCurrentTaskName());
                         sb.append(" (");
                         sb.append(job.getCurrentProgress());
                         sb.append(" %)");
                 }
-                sb.append("</html>");
+                if(!statusBarJob) {
+                        sb.append("</html>");
+                }
                 return sb.toString();
         }        
 }

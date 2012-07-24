@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,9 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.view.geocatalog.filters.factories;
 
@@ -47,10 +47,10 @@ import org.xnap.commons.i18n.I18nFactory;
  * @brief Source Type filter factory
  */
 public class SourceTypeIs implements FilterFactory<IFilter> {
-    protected final static I18n i18n = I18nFactory.getI18n(SourceTypeIs.class);
+    private static final I18n I18N = I18nFactory.getI18n(SourceTypeIs.class);
     private Map<String,IFilter> filters = new HashMap<String,IFilter>();
     private List<ContainerItemProperties> filterLabelsId = new ArrayList<ContainerItemProperties>();
-    private final static String DEFAULT_FILTER = "geocatalog.filters.GeoFilter"; //Filter shown in the GUI by default
+    private static final String DEFAULT_FILTER = "geocatalog.filters.GeoFilter"; //Filter shown in the GUI by default
     
     /**
      * Add a new type filter
@@ -67,34 +67,34 @@ public class SourceTypeIs implements FilterFactory<IFilter> {
      */
     public SourceTypeIs() {
         addFilter("geocatalog.filters.AlphanumericFilter",
-                i18n.tr("Alphanumeric"),
+                I18N.tr("Alphanumeric"),
                 new AlphanumericFilter());
         addFilter("geocatalog.filters.DbsFilter",
-                i18n.tr("DataBase"),
+                I18N.tr("DataBase"),
                 new DBsFilter());
         
         addFilter("geocatalog.filters.FilesFilter",
-                i18n.tr("Files"),
+                I18N.tr("Files"),
                 new FilesFilter());
         
         addFilter("geocatalog.filters.GeoFilter",
-                i18n.tr("Geometry"),
+                I18N.tr("Geometry"),
                 new GeoFilter());
 
         addFilter("geocatalog.filters.RasterFilter",
-                i18n.tr("Raster"),
+                I18N.tr("Raster"),
                 new RasterFilter());
 
         addFilter("geocatalog.filters.VectorialFilter",
-                i18n.tr("Vectorial"),
+                I18N.tr("Vectorial"),
                 new VectorialFilter());
         
         addFilter("geocatalog.filters.WMSFilter",
-                i18n.tr("Web Map Services"),
+                I18N.tr("Web Map Services"),
                 new WMSFilter());
         
         addFilter("geocatalog.filters.TableSystemFilter",
-                i18n.tr("System Table"),
+                I18N.tr("System Table"),
                 new TableSystemFilter());
     }
     
@@ -115,7 +115,7 @@ public class SourceTypeIs implements FilterFactory<IFilter> {
      */
     @Override
     public String getFilterLabel() {
-        return i18n.tr("Source type is");
+        return I18N.tr("Source type is");
     }
 
     /**

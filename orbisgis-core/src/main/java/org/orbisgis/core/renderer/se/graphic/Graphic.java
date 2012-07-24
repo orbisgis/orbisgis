@@ -1,3 +1,31 @@
+/**
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
+ *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
+ */
 package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.Graphics2D;
@@ -5,6 +33,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ExternalGraphicType;
 import net.opengis.se._2_0.core.GraphicType;
@@ -12,7 +41,7 @@ import net.opengis.se._2_0.core.MarkGraphicType;
 import net.opengis.se._2_0.core.PointTextGraphicType;
 import net.opengis.se._2_0.thematic.AxisChartType;
 import net.opengis.se._2_0.thematic.PieChartType;
-import org.gdms.data.DataSource;
+import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
@@ -21,7 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
 /**
  * Generic class to represent graphic symbols as defined in SE.
  * @todo create subclasses: AlternativeGraphic, GraphicReference
- * @author maxence
+ * @author Maxence Laurent
  */
 public abstract class Graphic implements SymbolizerNode {
 
@@ -58,7 +87,6 @@ public abstract class Graphic implements SymbolizerNode {
             }
 
         } catch (IOException ex) {
-            System.out.println ("Ex: " + ex);
             ex.printStackTrace(System.err);
             return null;
         } catch(URISyntaxException e){
@@ -85,10 +113,7 @@ public abstract class Graphic implements SymbolizerNode {
 
     /**
      * Return graphic bounds. Bounds center point shall match CRS origin !
-     *
-     *
-     * @param sds
-     * @param fid
+     * @param map
      * @param selected
      * @param mt
      * @param at
@@ -96,21 +121,20 @@ public abstract class Graphic implements SymbolizerNode {
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract Rectangle2D getBounds(DataSource sds,
-            long fid, MapTransform mt) throws ParameterException, IOException;
+    public abstract Rectangle2D getBounds(Map<String,Value> map, MapTransform mt)
+            throws ParameterException, IOException;
 
     /**
      * Draw this graphic using {@code g2}.
      * @param g2
-     * @param sds
-     * @param fid
+     * @param map
      * @param selected
      * @param mt
      * @param at
      * @throws ParameterException
      * @throws IOException
      */
-    public abstract void draw(Graphics2D g2, DataSource sds, long fid, 
+    public abstract void draw(Graphics2D g2, Map<String,Value> map,
             boolean selected, MapTransform mt, AffineTransform at) throws ParameterException, IOException;
 
     /**

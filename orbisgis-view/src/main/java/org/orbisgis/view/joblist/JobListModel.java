@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,10 +23,9 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
- */ 
+ * info_at_ orbisgis.org
+ */
 package org.orbisgis.view.joblist;
 
 
@@ -61,7 +61,19 @@ public class JobListModel extends AbstractListModel {
         private List<Job> jobAdded = Collections.synchronizedList(new LinkedList<Job>());
         private List<Job> jobRemoved = Collections.synchronizedList(new LinkedList<Job>());
         private List<Job> jobUpdated = Collections.synchronizedList(new LinkedList<Job>());
-                
+
+        /**
+         * Remove all items before the release of this object
+         */
+        public void dispose() {
+                while(!shownJobs.isEmpty()) {
+                        shownJobs.remove(0).dispose();
+                }
+        }
+              
+        
+        
+        
         /**
          * Attach listeners to the BackgroundManager
          * @return itself
@@ -103,7 +115,7 @@ public class JobListModel extends AbstractListModel {
                 while(!jobAdded.isEmpty()) {
                         Job job = jobAdded.remove(0);
                         //Added
-                        JobListItem addedJobItem = new JobListItem(job).listenToJob();
+                        JobListItem addedJobItem = new JobListItem(job).listenToJob(false);
                         addedJobItem.addPropertyChangeListener(ContainerItemProperties.PROP_LABEL,labelUpdateListener);
                         shownJobs.add(addedJobItem);
                         fireIntervalAdded(addedJobItem, shownJobs.size() - 1, shownJobs.size() - 1);
@@ -114,14 +126,19 @@ public class JobListModel extends AbstractListModel {
                         Job job = jobRemoved.remove(0);
                         JobListItem jobId = new JobListItem(job);
                         int jobIndex = shownJobs.indexOf(jobId);
-                        shownJobs.remove(jobId);
-                        fireIntervalRemoved(jobId, jobIndex, jobIndex);
-                        LOGGER.debug("JobListModel:jobRemoved");
+                        if(jobIndex!=-1) {
+                                shownJobs.get(jobIndex).dispose();
+                                shownJobs.remove(jobId);
+                                fireIntervalRemoved(jobId, jobIndex, jobIndex);
+                                LOGGER.debug("JobListModel:jobRemoved");
+                        } else {
+                                LOGGER.debug("JobListModel:jobRemoved fail to found the job");
+                        }
                 }
                 //Updated
                 while(!jobUpdated.isEmpty()) {
                         Job job = jobUpdated.remove(0);
-                        JobListItem changedJobItem = new JobListItem(job).listenToJob();
+                        JobListItem changedJobItem = new JobListItem(job).listenToJob(false);
                         fireContentsChanged(changedJobItem, 0, 0);
                         LOGGER.debug("JobListModel:jobReplaced");
                 }                        

@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -13,7 +14,7 @@
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- *I
+ *
  * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
@@ -22,9 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.view.docking.preferences;
 
@@ -43,10 +43,10 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * Specific OrbisGIS preferences
+ * Specific OrbisGIS preferences.
  */
 public class OrbisGISPreferenceTreeModel extends PreferenceTreeModel {
-    protected final static I18n i18n = I18nFactory.getI18n(OrbisGISPreferenceTreeModel.class);
+    private static final I18n I18N = I18nFactory.getI18n(OrbisGISPreferenceTreeModel.class);
         /**
      * Creates a new model. This constructor sets the behavior of how to
      * create paths for preferences to {@link PathCombiner#SECOND}. This
@@ -69,17 +69,17 @@ public class OrbisGISPreferenceTreeModel extends PreferenceTreeModel {
     public OrbisGISPreferenceTreeModel( CControl control, PathCombiner combiner ){
         super( combiner, control.getController() );
         DockController controller = control.intern().getController();
-        //Linked, we use the DockingFrames i18n
+        //Linked, we use the DockingFrames I18N
         //Taken from CPreferenceModel, but with a specific root node
-        putNode(new Path( "windows"),i18n.tr("Windows"));
+        putNode(new Path( "windows"),I18N.tr("Windows"));
         putLinked( new Path( "windows.shortcuts" ), "preference.shortcuts", new CKeyStrokePreferenceModel( controller.getProperties() ) );
         putLinked( new Path( "windows.buttonContent" ), "preference.buttonContent", new ButtonContentPreferenceModel( controller ) );
         putLinked( new Path( "windows.layout" ), "preference.layout", new CLayoutPreferenceModel( control ));
         putLinked( new Path( "windows.layout.BubbleTheme" ), "theme.bubble", new BubbleThemePreferenceModel( controller.getProperties() ));
         putLinked( new Path( "windows.layout.EclipseTheme" ), "theme.eclipse", new EclipseThemePreferenceModel( controller.getProperties() ));
         //Custom properties
-        putNode(new Path( "web"),i18n.tr("Web configuration"));
-        put(new Path( "web.proxy" ),i18n.tr("Proxy"),new ProxyPreferenceModel(controller).initListeners());
+        putNode(new Path( "web"),I18N.tr("Web configuration"));
+        put(new Path( "web.proxy" ),I18N.tr("Proxy"),new ProxyPreferenceModel(controller).initListeners());
         
     }
 }

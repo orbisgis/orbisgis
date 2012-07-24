@@ -1,11 +1,12 @@
-/*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,9 +23,8 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.view.joblist;
 
@@ -34,6 +34,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import org.apache.log4j.Logger;
 
 /**
  * A panel that manage a list of subpanel.
@@ -47,7 +48,8 @@ public class JobListPanel extends JPanel {
         private ListCellRenderer listRenderer;
         private BoxLayout cellsStack;
         private ModelListener modelListener = new ModelListener();
-
+        private static final Logger LOGGER = Logger.getLogger(JobListPanel.class);
+        
         public JobListPanel() {
                 cellsStack = new BoxLayout(this, BoxLayout.Y_AXIS);
                 setLayout(cellsStack);
@@ -61,6 +63,14 @@ public class JobListPanel extends JPanel {
                 return listModel;
         }
 
+        @Override
+        public void removeNotify() {
+                super.removeNotify();
+                setModel(null);               
+        }
+
+        
+        
         /**
          * Set the model, contents change events will be ignored,
          * The component attach with the item must be updated
@@ -70,8 +80,15 @@ public class JobListPanel extends JPanel {
                 if(this.listModel!=null) {
                         this.listModel.removeListDataListener(modelListener);
                 }
-                listModel.addListDataListener(modelListener);
                 this.listModel = listModel;
+                if(listModel!=null) {
+                        listModel.addListDataListener(modelListener);
+                        //Read the content
+                        for(int rowi=0;rowi<listModel.getSize();rowi++) {
+                                onAddRow(rowi);
+                        }
+                        repaint();
+                }
         }
 
         /**
@@ -92,12 +109,19 @@ public class JobListPanel extends JPanel {
         
         private void onAddRow(int index) {
                 add(listRenderer.getListCellRendererComponent(null, listModel.getElementAt(index), index, true, true));
-                repaint();
         }
-        
+        /**
+         * Remove the Swing component
+         * @param index 
+         */
         private void onRemoveRow(int index) {
-                remove(index);
-                repaint();
+                try {
+                        if(index<getComponentCount()) {
+                                remove(index);
+                        }
+                } catch (ArrayIndexOutOfBoundsException ex) {
+                        LOGGER.error(ex);
+                }
         }
         
         private class ModelListener implements ListDataListener {
@@ -107,6 +131,7 @@ public class JobListPanel extends JPanel {
                         for(int index=lde.getIndex0();index<=lde.getIndex1();index++) {
                                 onAddRow(index);
                         }
+                        repaint();
                 }
 
                 @Override
@@ -114,6 +139,7 @@ public class JobListPanel extends JPanel {
                         for(int index=lde.getIndex0();index<=lde.getIndex1();index++) {
                                 onRemoveRow(index);
                         }
+                        repaint();
                 }
 
                 @Override

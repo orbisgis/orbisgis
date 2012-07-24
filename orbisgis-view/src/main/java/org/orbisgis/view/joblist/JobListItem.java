@@ -1,11 +1,12 @@
- /*
+/**
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- * 
+ * manipulate and create vector and raster spatial information.
  *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -22,39 +23,38 @@
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
  * For more information, please consult: <http://www.orbisgis.org/>
- *
  * or contact directly:
- * info _at_ orbisgis.org
+ * info_at_ orbisgis.org
  */
 package org.orbisgis.view.joblist;
 
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.ProgressListener;
 import org.orbisgis.view.components.ContainerItemProperties;
 
 /**
  * This list item is linked with a Job
+ * @warning This component has a Timer running when the function listenToJob is 
+ * called, always call the method dispose() when this instance is no longer used
  */
 
 public class JobListItem extends ContainerItemProperties {
-        //Minimal interval of refreshing label in ms
-        private static final long updateLabelInterval = 50; 
-        private long lastTimeUpdatedItem = 0;
         private Job job;
         private ProgressListener listener = 
                 EventHandler.create(ProgressListener.class,
                                     this,
                                     "onJobUpdate");
         private JobListItemPanel itemPanel;
-        /*!< If true a swing runnable is pending to refresh the content of
-          the job item
-         */
-        private AtomicBoolean awaitingItemUpdate = new AtomicBoolean(false);
-        
+        private AtomicBoolean progressionModified = new AtomicBoolean(true);
+        private Timer fetchProgressionTimer;
+        private static final int PROGRESSION_TIMER_INTERVAL = 80;
+
         public JobListItemPanel getItemPanel() {
                 return itemPanel;
         }
@@ -66,18 +66,25 @@ public class JobListItem extends ContainerItemProperties {
 
         /**
          * Update the list item on job changes and make the panel
+         * @param simplifiedPanel Job displayed on a single line
+         * @return 
          */
-        public JobListItem listenToJob() {
+        public JobListItem listenToJob(boolean simplifiedPanel) {
                 job.addProgressListener(listener);    
-                itemPanel = new JobListItemPanel(job);
+                itemPanel = new JobListItemPanel(job,simplifiedPanel);
                 onJobUpdate();
+                fetchProgressionTimer = new Timer(PROGRESSION_TIMER_INTERVAL,new TimerFetchListener());
+                fetchProgressionTimer.start();
                 return this;
         }
         /**
-         * Stop listening to the job
+         * Stop listening to the job and the timer
          */
         public void dispose() {
                 job.removeProgressListener(listener);
+                if(fetchProgressionTimer!=null) {
+                        fetchProgressionTimer.stop();
+                }
         }
         
         /**
@@ -92,27 +99,15 @@ public class JobListItem extends ContainerItemProperties {
          */
         private void updateJob() {
                 if(itemPanel!=null) {
-                        long now = System.currentTimeMillis();
-                        //It is useless to update the controls on each
-                        //job progression increment,
-                        //then a minimal update interval is set
-                        if(now - lastTimeUpdatedItem > updateLabelInterval) {
-                                lastTimeUpdatedItem = now;
-                                itemPanel.readJob();
-                                setLabel(itemPanel.getText());
-                        } else {
-                                //Update the Job later
-                                onJobUpdate();
-                        }
+                        itemPanel.readJob();
+                        setLabel(itemPanel.getText());
                 }   
         }
         /**
          * Update the JobPanel content and the item text later
          */
         public void onJobUpdate() {     
-                if(!awaitingItemUpdate.getAndSet(true)) {
-                        SwingUtilities.invokeLater(new UpdateItemProperties());
-                }
+                progressionModified.set(true);
         }
         /**
          * 
@@ -121,13 +116,17 @@ public class JobListItem extends ContainerItemProperties {
         public Job getJob() {
                 return job;
         }
-        
-        private class UpdateItemProperties implements Runnable {
+        /**
+         * Listen to timer events
+         */
+        private class TimerFetchListener implements ActionListener {
 
                 @Override
-                public void run() {
-                        awaitingItemUpdate.set(false);
-                        updateJob();
+                public void actionPerformed(ActionEvent ae) {
+                        //Update the job if the progression has been updated
+                        if(progressionModified.getAndSet(false)) {
+                                updateJob();
+                        }
                 }
                 
         }
