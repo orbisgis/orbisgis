@@ -142,7 +142,7 @@ public class StreamSource implements Serializable {
         /**
          * Sets the format (MIME type) of the image.
          *
-         * @param imageFormat a new MIME format string.
+         * @param imageFormat a MIME format string.
          */
         public void setImageFormat(String imageFormat) {
                 this.imageFormat = imageFormat;
