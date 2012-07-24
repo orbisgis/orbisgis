@@ -32,15 +32,19 @@ import org.orbisgis.core.Services;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.edition.SingleEditorFactory;
 import org.orbisgis.view.sqlconsole.language.SQLMetadataManager;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 
 /**
- *
+ * Create a single instance of SQLConsole and
+ * manage the declaration of the SQLMetadataManager service.
  * @author Nicolas Fortin
  */
 public class SQLConsoleFactory implements SingleEditorFactory {
 
         public static final String factoryId = "SQLConsoleFactory";
+        protected final static I18n I18N = I18nFactory.getI18n(SQLConsoleFactory.class);
         private SQLConsole sqlConsole;
         private SQLMetadataManager sqlMetadataManager;
         
@@ -51,7 +55,7 @@ public class SQLConsoleFactory implements SingleEditorFactory {
                         sqlMetadataManager = new SQLMetadataManager();
                         sqlMetadataManager.start();
                         Services.registerService(SQLMetadataManager.class,
-                                "Handles all Metadata-related caching for the SQLLanguageSupport class",
+                                I18N.tr("Handles all Metadata-related caching for the SQLLanguageSupport class"),
                                 sqlMetadataManager);
                         sqlConsole = new SQLConsole();
                 }

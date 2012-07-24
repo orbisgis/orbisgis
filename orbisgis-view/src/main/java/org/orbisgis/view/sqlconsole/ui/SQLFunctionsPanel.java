@@ -80,18 +80,20 @@ public class SQLFunctionsPanel extends JPanel {
         private static final long serialVersionUID = 1L;
 
         private final JList list;
+        private final JPanel expandedPanel;
         private final FunctionListModel functionListModel;
         private final FilterFactoryManager<FunctionFilter> functionFilters = new FilterFactoryManager<FunctionFilter>();
         private final JLabel functionLabelCount;
-        private final JLabel collapsed;
+        private final JComponent btnExpand;
         //private final JToolBar east;
         private final FunctionManager functionManager;
         private final ActionListener collapseListener = EventHandler.create(ActionListener.class,this,"collapse");
-        private final MouseListener expandListener = EventHandler.create(MouseListener.class,this,"expand",null,"mouseClicked");
+        private final ActionListener expandListener = EventHandler.create(ActionListener.class,this,"expand");
         protected final static I18n I18N = I18nFactory.getI18n(SQLFunctionsPanel.class);
         
         public SQLFunctionsPanel() {
                 this.setLayout(new BorderLayout());
+                expandedPanel = new JPanel(new BorderLayout());
                 functionManager = Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager();
                 functionListModel = new FunctionListModel();
 
@@ -104,7 +106,7 @@ public class SQLFunctionsPanel extends JPanel {
                 btnCollapse.setIcon(OrbisGISIcon.getIcon("go-next"));
                 btnCollapse.setToolTipText(I18N.tr("Collapse"));
                 btnCollapse.addActionListener(collapseListener);
-                btnCollapse.setBorderPainted(false);
+                //btnCollapse.setBorderPainted(false);
 
                 /*
                 east = new JToolBar();
@@ -115,25 +117,28 @@ public class SQLFunctionsPanel extends JPanel {
                 this.add(east, BorderLayout.NORTH);
                 * 
                 */
-                this.add(new JScrollPane(list), BorderLayout.CENTER);
+                expandedPanel.add(btnCollapse, BorderLayout.NORTH);
+                expandedPanel.add(new JScrollPane(list), BorderLayout.CENTER);
                 FunctionListRenderer functionListRenderer = new FunctionListRenderer();
                 list.setCellRenderer(functionListRenderer);
 
                 functionLabelCount = new JLabel(I18N.tr("Functions count = {0}",functionListModel.getSize()));
-                this.add(functionLabelCount, BorderLayout.SOUTH);
+                expandedPanel.add(functionLabelCount, BorderLayout.SOUTH);
 
-                collapsed = new JLabel(OrbisGISIcon.getIcon("go-previous"), JLabel.CENTER);
-                collapsed.setIconTextGap(20);
-                collapsed.setVerticalTextPosition(JLabel.BOTTOM);
-                collapsed.setHorizontalTextPosition(JLabel.CENTER);
-                collapsed.setToolTipText(I18N.tr("Expand"));
+                //btnExpand = new JLabel(OrbisGISIcon.getIcon("go-previous"), JLabel.CENTER);
+                //btnExpand.setIconTextGap(20);
+                //btnExpand.setVerticalTextPosition(JLabel.BOTTOM);
+                //btnExpand.setHorizontalTextPosition(JLabel.CENTER);
+                JButton expandButton = new JButton(OrbisGISIcon.getIcon("go-previous"));
+                expandButton.setSize(new Dimension(expandButton.getWidth(),0));
+                expandButton.setToolTipText(I18N.tr("Show SQL function list"));
+                add(expandButton, BorderLayout.WEST);
+                add(expandedPanel, BorderLayout.CENTER);
+                expandButton.addActionListener(expandListener);
+                btnExpand = expandButton;
 
-                this.add(collapsed, BorderLayout.WEST);
-                collapsed.addMouseListener(expandListener);
-
-                this.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
-                this.setMinimumSize(new Dimension(100, 40));
-
+                expandedPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
+                //this.setMinimumSize(new Dimension(100, 40));
                 collapse();
 
         }
@@ -152,22 +157,24 @@ public class SQLFunctionsPanel extends JPanel {
                 //functionListModel.filter(txtFilter.getText());
         }
 
-        private void collapse() {
-                SQLFunctionsPanel.this.setPreferredSize(new Dimension(20, 0));
-                list.setVisible(false);
-                //east.setVisible(false);
-                collapsed.setVisible(true);
+        /**
+         * Hide the SQL list and show the expand button
+         */
+        public final void collapse() {
+                if (expandedPanel.isVisible()) {
+                        expandedPanel.setVisible(false);
+                        btnExpand.setVisible(true);
+                }
         }
 
         /**
          * Shown the available sql functions
          */
-        public void expand() {
-                if (!list.isVisible()) {
-                        SQLFunctionsPanel.this.setPreferredSize(null);
-                        list.setVisible(true);
-                        //east.setVisible(true);
-                        collapsed.setVisible(false);
+        public final void expand() {
+                if (!expandedPanel.isVisible()) {
+                        setPreferredSize(null);
+                        expandedPanel.setVisible(true);
+                        btnExpand.setVisible(false);
                 }
         }
 }

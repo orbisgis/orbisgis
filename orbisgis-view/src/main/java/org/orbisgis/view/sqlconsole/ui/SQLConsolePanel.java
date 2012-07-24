@@ -32,25 +32,36 @@ import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.*;
 import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.findReplace.FindReplaceDialog;
+import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.sqlconsole.actions.ExecuteScriptProcess;
 import org.orbisgis.view.sqlconsole.codereformat.CodeReformator;
 import org.orbisgis.view.sqlconsole.codereformat.CommentSpec;
 import org.orbisgis.view.sqlconsole.language.SQLLanguageSupport;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * SQL Panel that contain a RSyntaxTextArea
  */
 public class SQLConsolePanel extends JPanel {
         private static final long serialVersionUID = 1L;
-
-        private JToolBar toolBar;
-        private JButton btExecute = null;
+        protected final static I18n I18N = I18nFactory.getI18n(SQLConsolePanel.class);
+        
+        private JToolBar infoToolBar;
+        private JToolBar commandToolBar;
+        
+        private List<AbstractButton> btExecute = new ArrayList<AbstractButton>();
         private JButton btClear = null;
         private JButton btOpen = null;
         private JButton btSave = null;
@@ -69,11 +80,16 @@ public class SQLConsolePanel extends JPanel {
         static CommentSpec[] COMMENT_SPECS = new CommentSpec[]{
                 new CommentSpec("/*", "*/"), new CommentSpec("--", "\n")};
         private FindReplaceDialog findReplaceDialog;
+        private MapContext mapContext;
+        
+        //Listeners
+        private ActionListener executeListener = EventHandler.create(ActionListener.class,this,"onExecute");
+        
         /**
          * Creates a console for sql.
          */
         public SQLConsolePanel() {
-                setLayout(new BorderLayout());
+                super(new BorderLayout());
                 JPanel split = new JPanel();
                 split.setLayout(new BorderLayout());
                 split.add(new SQLFunctionsPanel(), BorderLayout.EAST);
@@ -83,11 +99,35 @@ public class SQLConsolePanel extends JPanel {
         }
 
         /**
+         * Return a set of button to control the sql panel features
+         * 
+         * @param setButtonText If true, a text is set on the buttons
+         * @return Instance of JToolBar
+         */
+        public JToolBar getEditorToolBar(boolean setButtonText) {
+                if(commandToolBar==null) {
+                        commandToolBar = new JToolBar();
+                        String executeText="";
+                        if(setButtonText) {
+                                executeText = I18N.tr("Execute");
+                        }
+                        JButton execute = new JButton(executeText,OrbisGISIcon.getIcon("execute"));
+                        execute.setToolTipText(I18N.tr("Run SQL statements"));
+                        execute.addActionListener(executeListener);
+                        commandToolBar.add(execute);
+                        commandToolBar.add(new JSeparator());
+                }
+                return commandToolBar;
+        }
+        
+        
+        
+        /**
          * The map context is used to show the selected geometries
          * @param mapContext 
          */
         public void setMapContext(MapContext mapContext) {
-                
+                this.mapContext = mapContext;
         }
 
         private RTextScrollPane getCenterPanel() {
@@ -104,12 +144,28 @@ public class SQLConsolePanel extends JPanel {
                         CodeReformator codeReformator = new CodeReformator(";",
                                 COMMENT_SPECS);
                         scriptPanel.addCaretListener(EventHandler.create(CaretListener.class,this,"onScriptPanelCaretUpdate"));
+                        //Add custom actions
+                        JPopupMenu areaMenu = scriptPanel.getPopupMenu();
+                        //Add Run menu
+                        JMenuItem runSql = new JMenuItem(I18N.tr("Execute"),OrbisGISIcon.getIcon("execute"));
+                        runSql.addActionListener(executeListener);
+                        btExecute.add(runSql);
+                        areaMenu.insert(runSql, 0);
+                        areaMenu.insert(new JSeparator(),1);
                         centerPanel = new RTextScrollPane(scriptPanel);
                 }
                 return centerPanel;
         }
         /**
-         * Update the rown:column label
+         * Run the Sql commands stored in the editor
+         */
+        public void onExecute() {                
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.backgroundOperation(new ExecuteScriptProcess(getText(), this,mapContext));
+        }
+        
+        /**
+         * Update the row:column label
          */
         public void onScriptPanelCaretUpdate() {
                 line = scriptPanel.getCaretLineNumber() + 1;
@@ -118,11 +174,11 @@ public class SQLConsolePanel extends JPanel {
         }
         private JToolBar getStatusToolBar() {
 
-                if (toolBar == null) {
-                        toolBar = new JToolBar();
+                if (infoToolBar == null) {
+                        infoToolBar = new JToolBar();
                         statusMessage = new JLabel();
-                        toolBar.add(statusMessage);
-                        toolBar.setFloatable(false);
+                        infoToolBar.add(statusMessage);
+                        infoToolBar.setFloatable(false);
 
                         timer = new Timer(5000, new ActionListener() {
 
@@ -134,7 +190,7 @@ public class SQLConsolePanel extends JPanel {
                         timer.setRepeats(false);
                 }
 
-                return toolBar;
+                return infoToolBar;
         }
 
         public final void setStatusMessage(String message) {

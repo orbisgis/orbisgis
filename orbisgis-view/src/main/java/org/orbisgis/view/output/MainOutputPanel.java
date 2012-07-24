@@ -46,6 +46,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class MainOutputPanel extends JPanel implements DockingPanel {
     protected final static I18n I18N = I18nFactory.getI18n(MainOutputPanel.class);
+    private static final long serialVersionUID = 1L;
     private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< docked panel properties */
     private JTabbedPane tabbedPane;
     public MainOutputPanel() {
@@ -59,9 +60,16 @@ public class MainOutputPanel extends JPanel implements DockingPanel {
         //Add the tabbed pane to this panel.
         add(tabbedPane,BorderLayout.CENTER);
          
-        //The following line enables to use scrolling tabs.
-        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
     }
+
+        @Override
+        public void addNotify() {
+                super.addNotify();
+                //The following line enables to use scrolling tabs.
+                tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+        }
+    
+    
     /**
      * Found the tab id of the provided sub panel
      * @param subPanel

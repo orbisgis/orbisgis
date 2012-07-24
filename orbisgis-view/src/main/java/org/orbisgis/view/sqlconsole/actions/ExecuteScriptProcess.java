@@ -87,7 +87,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
                         try {
                                 statements = Engine.parse(script, dsf.getProperties());
                         } catch (ParseException e) {
-                                LOGGER.error("Cannot parse script", e);
+                                LOGGER.error(I18N.tr("Cannot parse script"), e);
                                 if (panel != null) {
                                         panel.setStatusMessage(I18N.tr("Failed to parse the script."));
                                 }
@@ -98,7 +98,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
 
                                 SQLStatement st = statements[i];
                                 boolean spatial;
-                                LOGGER.info("Running instruction " + (i + 1) + " / " + statements.length + ":");
+                                LOGGER.info(I18N.tr("Running instruction {0}/{1} :",(i + 1),statements.length));
                                 LOGGER.info(st.getSQL());
                                 try {
                                         st.setDataSourceFactory(dsf);
@@ -192,7 +192,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
                 double lastExecTime = ((t2 - t1) / 1000.0);
                 LOGGER.debug("Execution time: " + lastExecTime);
                 if (panel != null) {
-                        panel.setStatusMessage("Execution time: " + lastExecTime);
+                        panel.setStatusMessage(I18N.tr("Execution time: {0}",lastExecTime));
                 }
         }
 }
