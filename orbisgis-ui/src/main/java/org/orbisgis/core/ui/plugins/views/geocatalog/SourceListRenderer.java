@@ -122,7 +122,7 @@ public class SourceListRenderer implements ListCellRenderer {
                                                 icon = spatial;
                                         } else if ((sourceType & SourceManager.RASTER) == SourceManager.RASTER) {
                                                 icon = raster;
-                                        } else if ((sourceType & SourceManager.WMS) == SourceManager.WMS) {
+                                        } else if ((sourceType & SourceManager.STREAM) == SourceManager.STREAM) {
                                                 icon = server_connect;
                                         } else if ((sourceType & SourceManager.FILE) == SourceManager.FILE) {
                                                 icon = alphanumeric_file;

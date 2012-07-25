@@ -30,7 +30,6 @@ package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.util.Vector;
 
-import org.gdms.data.wms.WMSSource;
 import org.gdms.source.SourceManager;
 import org.gvsig.remoteClient.wms.WMSClient;
 import org.gvsig.remoteClient.wms.WMSLayer;
@@ -50,6 +49,8 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.wms.WMSCon
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.utils.I18N;
 
+import org.gdms.data.stream.StreamSource;
+
 public class WMSGeocatalogPlugIn extends AbstractPlugIn {
 
 	public boolean execute(PlugInContext context) throws Exception {
@@ -61,17 +62,17 @@ public class WMSGeocatalogPlugIn extends AbstractPlugIn {
 			WMSClient client = wmsConnection.getWMSClient();
 			String validImageFormat = getFirstImageFormat(client.getFormats());
 			if (validImageFormat == null) {
-				ErrorMessages
-						.error(I18N
-								.getString("orbisgis.errorMessages.wms.CannotFindImageFormat"));
+				ErrorMessages.error(I18N.getString("orbisgis.errorMessages.wms.CannotFindImageFormat"));
 			} else {
 				Object[] layers = layerConfiguration.getSelectedLayers();
 				for (Object layer : layers) {
 					String layerName = ((WMSLayer) layer).getName();
-					WMSSource source = new WMSSource(client.getHost(),
-							layerName, srsPanel.getSRS(), validImageFormat);
-					SourceManager sourceManager = Services.getService(
-							DataManager.class).getSourceManager();
+					//Old way to create stream source
+                                        //WMSSource source = new WMSSource(client.getHost(),layerName, srsPanel.getSRS(), validImageFormat);
+					//New way, we set SRS and image format later
+                                        StreamSource source = new StreamSource(client.getHost(), client.getPort(), layerName, "wms", validImageFormat, srsPanel.getSRS());
+                                        client.close();
+                                        SourceManager sourceManager = Services.getService(DataManager.class).getSourceManager();
 					String uniqueName = sourceManager.getUniqueName(layerName);
 					sourceManager.register(uniqueName, source);
 				}
@@ -109,8 +110,16 @@ public class WMSGeocatalogPlugIn extends AbstractPlugIn {
 				frame,
 				this,
 				new String[] { Names.POPUP_GEOCATALOG_ADD,
+						Names.POPUP_GEOCATALOG_Stream },
+				Names.POPUP_GEOCATALOG_ADD, false, null,
+				wbContext);
+                //ajouter un popupMenu de WMS
+                context.getFeatureInstaller().addPopupMenuItem(
+				frame,
+				this,
+				new String[] { Names.POPUP_GEOCATALOG_Stream,
 						Names.POPUP_GEOCATALOG_WMS },
-				Names.POPUP_GEOCATALOG_ADD, false, OrbisGISIcon.GEOCATALOG_WMS,
+				Names.POPUP_GEOCATALOG_Stream, false, OrbisGISIcon.GEOCATALOG_WMS,
 				wbContext);
 	}
 

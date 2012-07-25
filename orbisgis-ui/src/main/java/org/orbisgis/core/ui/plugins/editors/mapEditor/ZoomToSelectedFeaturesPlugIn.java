@@ -78,9 +78,9 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 				ILayer[] layers = mc.getSelectedLayers();
 				Envelope rect = null;
 				for (ILayer lyr : layers) {
-					if (!lyr.isWMS()) {
-						try {
-							int[] selectedRow = lyr.getSelection();
+                                        try {
+                                                if (!lyr.isStream()) {
+                                                        int[] selectedRow = lyr.getSelection();
 
 							DataSource sds = lyr
 									.getDataSource();
@@ -108,12 +108,11 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 								}
 
 							}
-						} catch (DriverException e) {
-							ErrorMessages.error(
-									ErrorMessages.CannotComputeEnvelope, e);
-						}
+                                                }
+					} catch (DriverException e) {
+						ErrorMessages.error(ErrorMessages.CannotComputeEnvelope, e);
 					}
-
+					
 					if (rect != null) {
 						mapEditor.getMapTransform().setExtent(rect);
 
@@ -133,18 +132,23 @@ public class ZoomToSelectedFeaturesPlugIn extends AbstractPlugIn {
 				btn, context);
 	}
 
+        @Override
 	public boolean isEnabled() {
 		boolean isEnabled = false;
 		MapEditorPlugIn mapEditor = null;
 		if ((mapEditor = getPlugInContext().getMapEditor()) != null) {
 			MapContext mc = (MapContext) mapEditor.getElement().getObject();
 			ILayer[] layers = mc.getLayerModel().getLayersRecursively();
-			for (ILayer lyr : layers) {
-				if (!lyr.isWMS()) {
-					if (lyr.getSelection().length > 0)
-						isEnabled = true;
-				}
-			}
+			                     try {
+                                for (ILayer lyr : layers) {
+                                        if (!lyr.isStream()) {
+                                                if (lyr.getSelection().length > 0) {
+                                                        isEnabled = true;
+                                                }
+                                        }
+                                }
+                        } catch (DriverException e) {
+                        }
 		}
 		btn.setEnabled(isEnabled);
 		return isEnabled;

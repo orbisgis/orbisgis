@@ -34,7 +34,7 @@ public class WMSFilter implements IFilter {
 
 	public boolean accepts(SourceManager sm, String sourceName) {
 		int type = sm.getSource(sourceName).getType();
-		return (type & SourceManager.WMS) == SourceManager.WMS;
+		return (type & SourceManager.STREAM) == SourceManager.STREAM;
 	}
 
 }

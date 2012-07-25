@@ -52,8 +52,8 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.file.FileSourceDefinition;
 import org.gdms.data.memory.MemorySourceDefinition;
-import org.gdms.data.wms.WMSSource;
-import org.gdms.data.wms.WMSSourceDefinition;
+import org.gdms.data.stream.StreamSource;
+import org.gdms.data.stream.StreamSourceDefinition;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -492,9 +492,9 @@ public final class ExtendedSource implements org.gdms.source.Source {
         }
 
         @Override
-        public WMSSource getWMSSource() {
-                if (def instanceof WMSSourceDefinition) {
-                        return ((WMSSourceDefinition) def).getWMSSource();
+        public StreamSource getStreamSource() {
+                if (def instanceof StreamSourceDefinition) {
+                        return ((StreamSourceDefinition) def).getStreamSource();
                 }
                 return null;
         }
@@ -521,8 +521,8 @@ public final class ExtendedSource implements org.gdms.source.Source {
         }
 
         @Override
-        public boolean isWMSSource() {
-                return (getType() & SourceManager.WMS) == SourceManager.WMS;
+        public boolean isStreamSource() {
+                return (getType() & SourceManager.STREAM) == SourceManager.STREAM;
         }
 
         @Override

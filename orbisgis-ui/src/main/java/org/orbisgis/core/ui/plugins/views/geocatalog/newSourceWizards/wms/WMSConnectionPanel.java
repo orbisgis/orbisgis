@@ -61,7 +61,6 @@ import org.gvsig.remoteClient.wms.WMSClient;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.background.BackgroundJob;
 import org.orbisgis.core.background.BackgroundManager;
-import org.orbisgis.core.layerModel.WMSClientPool;
 import org.orbisgis.core.sif.CRFlowLayout;
 import org.orbisgis.core.sif.CarriageReturn;
 import org.orbisgis.core.sif.SQLUIPanel;
@@ -271,11 +270,11 @@ public class WMSConnectionPanel extends JPanel implements SQLUIPanel {
                                 String wmsURL = originalWmsURL.trim();
                                 try {
 					if (client == null) {
-						client = WMSClientPool.getWMSClient(wmsURL);
+						client = new WMSClient(wmsURL);
 					}
 					else {
 						if(!client.getHost().equals(wmsURL)){
-							client = WMSClientPool.getWMSClient(wmsURL);
+							client = new WMSClient(wmsURL);
 						}
 					}
                                         configPanel.setClient(client);

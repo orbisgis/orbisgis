@@ -43,24 +43,27 @@ import org.gvsig.remoteClient.exceptions.WMSException;
 import org.gvsig.remoteClient.wms.WMSStatus;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.layerModel.WMSConnection;
 import org.orbisgis.core.renderer.symbol.Symbol;
+import org.gvsig.remoteClient.wms.WMSClient;
+import org.gvsig.remoteClient.wms.WMSStatus;
 
 public class WMSLegend extends AbstractLegend {
 
-	private WMSConnection wmsConnection;
+	private WMSClient wmsClient;
+        private WMSStatus wmsStatus;
 	private String layerName;
 	private File file;
 
-	public WMSLegend(WMSConnection wmsConnection, String layerName) {
-		this.wmsConnection = wmsConnection;
+	public WMSLegend(WMSClient wmsClient, WMSStatus wmsStatus, String layerName) {
+		this.wmsClient = wmsClient;
+                this.wmsStatus = wmsStatus;
 		this.layerName = layerName;
 	}
 
 	@Override
 	public void drawImage(Graphics2D g) {
-		if ((wmsConnection != null) || (layerName != null)) {
-			BufferedImage img = getWMSLegend(wmsConnection, layerName);
+		if ((wmsClient != null) || (wmsStatus != null) || (layerName != null)) {
+			BufferedImage img = getWMSLegend(wmsClient, wmsStatus, layerName);
 			g.drawImage(img, 0, 0, null);
 		} else {
 			g.drawImage(new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB),
@@ -70,8 +73,8 @@ public class WMSLegend extends AbstractLegend {
 
 	@Override
 	public int[] getImageSize(Graphics2D g) {
-		if ((wmsConnection != null) || (layerName != null)) {
-			BufferedImage img = getWMSLegend(wmsConnection, layerName);
+		if ((wmsClient != null) || (wmsStatus != null) || (layerName != null)) {
+			BufferedImage img = getWMSLegend(wmsClient, wmsStatus, layerName);
 			return new int[] { img.getWidth(), img.getHeight() };
 		} else {
 			FontMetrics fm = g.getFontMetrics();
@@ -115,7 +118,7 @@ public class WMSLegend extends AbstractLegend {
 
 	@Override
 	public Legend newInstance() {
-		return new WMSLegend(null, null);
+		return new WMSLegend(null, null, null);
 	}
 
 	@Override
@@ -123,13 +126,12 @@ public class WMSLegend extends AbstractLegend {
 
 	}
 
-	private BufferedImage getWMSLegend(WMSConnection connection,
+	private BufferedImage getWMSLegend(WMSClient client, WMSStatus status,
 			String layerName) {
-		WMSStatus status = connection.getStatus();
 		BufferedImage image = null;
 		try {
 			if (file == null) {
-				file = connection.getClient().getLegendGraphic(status,
+				file = client.getLegendGraphic(status,
 						layerName, null);
 			}
 			image = ImageIO.read(file);

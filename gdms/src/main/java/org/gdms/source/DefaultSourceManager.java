@@ -83,10 +83,10 @@ import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.schema.RootSchema;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.sql.SQLSourceDefinition;
+import org.gdms.data.stream.StreamSource;
+import org.gdms.data.stream.StreamSourceDefinition;
 import org.gdms.data.system.SystemSource;
 import org.gdms.data.system.SystemSourceDefinition;
-import org.gdms.data.wms.WMSSource;
-import org.gdms.data.wms.WMSSourceDefinition;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
@@ -104,6 +104,7 @@ import org.gdms.driver.mifmid.MifMidDriver;
 import org.gdms.driver.png.PngDriver;
 import org.gdms.driver.postgresql.PostgreSQLDriver;
 import org.gdms.driver.shapefile.ShapefileDriver;
+import org.gdms.driver.wms.SimpleWMSDriver;
 import org.gdms.source.directory.Source;
 import org.gdms.source.directory.Sources;
 import org.gdms.sql.engine.Engine;
@@ -140,6 +141,7 @@ public final class DefaultSourceManager implements SourceManager {
                 dm.registerDriver(AscDriver.class);
                 dm.registerDriver(JPGDriver.class);
                 dm.registerDriver(PngDriver.class);
+                dm.registerDriver(SimpleWMSDriver.class);
                 dm.registerImporter(DXFDriver.class);
                 dm.registerImporter(MifMidDriver.class);
                 dm.registerImporter(GeoJsonImporter.class);
@@ -483,8 +485,8 @@ public final class DefaultSourceManager implements SourceManager {
         }
 
         @Override
-        public void register(String name, WMSSource wmsSource) {
-                register(name, new WMSSourceDefinition(wmsSource));
+        public void register(String name, StreamSource streamSource) {
+                register(name, new StreamSourceDefinition(streamSource));
         }
 
         @Override
@@ -688,9 +690,9 @@ public final class DefaultSourceManager implements SourceManager {
         }
 
         @Override
-        public String nameAndRegister(WMSSource dbTable) {
+        public String nameAndRegister(StreamSource streamSource) {
                 String name = getUID();
-                register(name, false, new WMSSourceDefinition(dbTable));
+                register(name, false, new StreamSourceDefinition(streamSource));
                 return name;
         }
 
@@ -866,7 +868,7 @@ public final class DefaultSourceManager implements SourceManager {
         public boolean isEmpty() {
                 return nameSource.isEmpty() && nameMapping.isEmpty();
         }
-        
+
         @Override
         public boolean isEmpty(boolean ignoreSystem) {
                 if (!ignoreSystem) {

@@ -802,24 +802,6 @@ public class SQLTest extends TestBase {
         }
 
         @Test
-        public void testSecondaryIndependence() throws Exception {
-                DataSource d = dsf.getDataSourceFromSQL("select * from " + SHPTABLE + ";",
-                        DataSourceFactory.EDITABLE);
-
-                DataSource d2 = dsf.getDataSourceFromSQL("select * from " + d.getName() + ";");
-
-                d.open();
-                for (int i = 0; i < d.getRowCount();) {
-                        d.deleteRow(0);
-                }
-                d2.open();
-                assertFalse(d.getAsString().equals(d2.getAsString()));
-                d2.getAsString();
-                d2.close();
-                d.close();
-        }
-
-        @Test
         public void testGetDataSourceFactory() throws Exception {
                 DataSource d = dsf.getDataSourceFromSQL("select * from " + SHPTABLE + ";");
 
