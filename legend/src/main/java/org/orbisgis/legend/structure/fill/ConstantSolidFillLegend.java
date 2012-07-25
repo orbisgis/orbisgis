@@ -31,6 +31,7 @@ package org.orbisgis.legend.structure.fill;
 import java.awt.Color;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.legend.structure.literal.ColorLiteralLegend;
+import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 
 /**
  * A {@code Legend} that represents a {@code SolidFill} where the color is a
@@ -45,8 +46,8 @@ public class ConstantSolidFillLegend extends SolidFillLegend implements Constant
          * @param fill
          * @param colorLegend
          */
-        public ConstantSolidFillLegend(SolidFill fill, ColorLiteralLegend colorLegend) {
-                super(fill, colorLegend);
+        public ConstantSolidFillLegend(SolidFill fill, ColorLiteralLegend colorLegend, RealLiteralLegend opacity) {
+                super(fill, colorLegend, opacity);
         }
 
         /**
@@ -65,6 +66,22 @@ public class ConstantSolidFillLegend extends SolidFillLegend implements Constant
     public void setColor(Color col) {
             ColorLiteralLegend cll = (ColorLiteralLegend) getColorLegend();
             cll.setColor(col);
+    }
+
+        /**
+         * Get the {@code Color} used to paint the inner {@code SolidFill}.
+         * @return
+         */
+        public double getOpacity(){
+            return getOpacityLegend().getDouble();
+        }
+
+        /**
+         * Set the {@code Color} used to paint the inner {@code SolidFill}.
+         * @param d
+         */
+    public void setOpacity(double d) {
+            getOpacityLegend().setDouble(d);
     }
 
 }

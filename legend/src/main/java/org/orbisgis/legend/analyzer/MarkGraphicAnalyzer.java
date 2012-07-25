@@ -41,7 +41,7 @@ import org.orbisgis.legend.structure.graphic.ConstantWKNLegend;
 import org.orbisgis.legend.structure.graphic.MarkGraphicLegend;
 import org.orbisgis.legend.structure.graphic.ProportionalWKNLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
-import org.orbisgis.legend.structure.stroke.ConstantPenStrokeLegend;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.viewbox.ConstantViewBox;
 import org.orbisgis.legend.structure.viewbox.DefaultViewBox;
 import org.orbisgis.legend.structure.viewbox.MonovariateProportionalViewBox;

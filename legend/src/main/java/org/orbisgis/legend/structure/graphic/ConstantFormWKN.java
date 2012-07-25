@@ -33,7 +33,7 @@ import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.structure.fill.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
-import org.orbisgis.legend.structure.stroke.ConstantPenStrokeLegend;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 
 /**
  * This abstract class is a common {@code LegendStructure} description for all the {@code

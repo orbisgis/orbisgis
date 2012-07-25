@@ -34,7 +34,7 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
-import org.orbisgis.legend.structure.stroke.ConstantPenStrokeLegend;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
 
 /**

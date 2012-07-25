@@ -31,6 +31,7 @@ package org.orbisgis.legend.structure.fill;
 import java.awt.Color;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.legend.structure.categorize.Categorize2ColorLegend;
+import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 
 /**
  * A {@code Legend} that represents a {@code SolidFill} where the color is defined
@@ -45,8 +46,8 @@ public class CategorizedSolidFillLegend extends SolidFillLegend {
          * @param fill
          * @param colorLegend
          */
-        public CategorizedSolidFillLegend(SolidFill fill, Categorize2ColorLegend colorLegend) {
-                super(fill, colorLegend);
+        public CategorizedSolidFillLegend(SolidFill fill, Categorize2ColorLegend colorLegend, RealLiteralLegend opacity) {
+                super(fill, colorLegend, opacity);
         }
 
         /**

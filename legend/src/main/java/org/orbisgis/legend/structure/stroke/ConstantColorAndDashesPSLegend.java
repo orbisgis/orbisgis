@@ -70,6 +70,22 @@ public abstract class ConstantColorAndDashesPSLegend extends PenStrokeLegend {
         ((ConstantSolidFillLegend)getFillAnalysis()).setColor(col);
     }
 
+    /**
+     * Gets the {@code Color} of the associated {@code PenStroke}.
+     * @return
+     */
+    public double getLineOpacity() {
+        return ((ConstantSolidFillLegend)getFillAnalysis()).getOpacity();
+    }
+
+    /**
+     * Sets the {@code Color} of the associated {@code PenStroke}.
+     * @param col
+     */
+    public void setLineOpacity(double opacity) {
+        ((ConstantSolidFillLegend)getFillAnalysis()).setOpacity(opacity);
+    }
+
 
 
 }

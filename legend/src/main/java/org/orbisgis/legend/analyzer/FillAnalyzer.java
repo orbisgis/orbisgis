@@ -33,11 +33,13 @@ import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.legend.AbstractAnalyzer;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.parameter.ColorParameterAnalyzer;
+import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
 import org.orbisgis.legend.structure.categorize.Categorize2ColorLegend;
 import org.orbisgis.legend.structure.fill.CategorizedSolidFillLegend;
 import org.orbisgis.legend.structure.fill.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.literal.ColorLiteralLegend;
+import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 import org.orbisgis.legend.structure.recode.Recode2ColorLegend;
 
 /**
@@ -67,12 +69,17 @@ public class FillAnalyzer extends AbstractAnalyzer{
         private LegendStructure analyzeSolidFill(SolidFill sf){
                 ColorParameterAnalyzer colorPA = new ColorParameterAnalyzer(sf.getColor());
                 LegendStructure colorLegend = colorPA.getLegend();
-                if(colorLegend instanceof ColorLiteralLegend){
-                        return new ConstantSolidFillLegend(sf, (ColorLiteralLegend) colorLegend);
-                } else if(colorLegend instanceof Categorize2ColorLegend){
-                        return new CategorizedSolidFillLegend(sf, (Categorize2ColorLegend) colorLegend);
-                } else if(colorLegend instanceof Recode2ColorLegend){
-                        return new RecodedSolidFillLegend(sf, (Recode2ColorLegend) colorLegend);
+                RealParameterAnalyzer rpa = new RealParameterAnalyzer(sf.getOpacity());
+                LegendStructure ls = rpa.getLegend();
+                if(ls instanceof RealLiteralLegend){
+                    RealLiteralLegend rll = (RealLiteralLegend) ls;
+                    if(colorLegend instanceof ColorLiteralLegend){
+                            return new ConstantSolidFillLegend(sf, (ColorLiteralLegend) colorLegend, rll);
+                    } else if(colorLegend instanceof Categorize2ColorLegend){
+                            return new CategorizedSolidFillLegend(sf, (Categorize2ColorLegend) colorLegend, rll);
+                    } else if(colorLegend instanceof Recode2ColorLegend){
+                            return new RecodedSolidFillLegend(sf, (Recode2ColorLegend) colorLegend, rll);
+                    }
                 }
                 throw new UnsupportedOperationException("We can't do such an anlysis "
                         + "on Fill instances yet");

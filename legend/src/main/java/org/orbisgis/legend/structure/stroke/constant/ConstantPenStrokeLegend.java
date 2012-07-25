@@ -26,20 +26,21 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.legend.structure.stroke;
+package org.orbisgis.legend.structure.stroke.constant;
 
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.structure.fill.ConstantFillLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
+import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
 
 /**
  * This class is used to represent instances of {@code PenStroke} whose
- * parameters (width, fill and dahs array) are all constant.
+ * parameters (width, fill and dash array) are all constant.
  * @author Alexis Guéganno
  */
-public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend {
+public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend implements ConstantPenStroke{
 
         /**
          * Build a new instance of {@code ConstantPenStrokeLegend}.
@@ -57,6 +58,7 @@ public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend {
          * Get the width of the associated {@code PenStroke}.
          * @return
          */
+    @Override
         public double getLineWidth() {
             return ((RealLiteralLegend) getWidthAnalysis()).getDouble();
         }
@@ -65,6 +67,7 @@ public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend {
          * Set the width of the associated {@code PenStroke}.
          * @param width
          */
+    @Override
         public void setLineWidth(double width) {
             ((RealLiteralLegend) getWidthAnalysis()).setDouble(width);
         }
@@ -77,6 +80,7 @@ public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend {
          * {@code Symbolizer} does not have such an array, an empty {@code
          * String} is returned.
          */
+    @Override
         public String getDashArray() {
             String ret = "";
             StringLiteralLegend sll = (StringLiteralLegend) getDashAnalysis();
@@ -95,6 +99,7 @@ public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend {
          * associated {@code PenStroke}.
         * @param dashes
         */
+    @Override
         public void setDashArray(String str) {
             PenStroke ps = getPenStroke();
             StringLiteral rl = (StringLiteral) ps.getDashArray();
