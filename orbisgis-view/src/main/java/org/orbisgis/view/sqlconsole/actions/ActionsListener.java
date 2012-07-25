@@ -75,7 +75,7 @@ public class ActionsListener implements ActionListener, DocumentListener {
                                                 if (consolePanel.getText().trim().length() > 0) {
                                                         answer = JOptionPane.showConfirmDialog(
                                                                 consolePanel,
-                                                                I18N.tr("Do you want to clear all before loadding the file ?"),
+                                                                I18N.tr("Do you want to clear all before loading the file ?"),
                                                                 I18N.tr("Open file"),
                                                                 JOptionPane.YES_NO_CANCEL_OPTION);
                                                 }

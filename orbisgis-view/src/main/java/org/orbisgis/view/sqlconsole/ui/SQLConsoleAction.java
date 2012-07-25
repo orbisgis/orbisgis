@@ -55,7 +55,9 @@ public class SQLConsoleAction extends AbstractAction {
                 this.actionListener = actionListener;
                 this.keyStroke = keyStroke;
                 putValue(SHORT_DESCRIPTION, actionToolTip);
-                putValue(ACCELERATOR_KEY, keyStroke);                
+                if(keyStroke!=null) {
+                        putValue(ACCELERATOR_KEY, keyStroke);
+                }
         }
         /**
          * 
