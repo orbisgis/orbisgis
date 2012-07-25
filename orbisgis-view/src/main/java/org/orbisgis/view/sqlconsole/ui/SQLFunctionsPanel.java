@@ -80,7 +80,6 @@ import org.xnap.commons.i18n.I18nFactory;
  * A simple panel to list all GDMS functions.
  * @author ebocher
  * TODO filter with FilterFactoryManager
- * TODO swing drag&drop with TransferHandler
  */
 public class SQLFunctionsPanel extends JPanel {
         private static final long serialVersionUID = 1L;
@@ -91,7 +90,7 @@ public class SQLFunctionsPanel extends JPanel {
         private final FilterFactoryManager<FunctionFilter> functionFilters = new FilterFactoryManager<FunctionFilter>();
         private final JLabel functionLabelCount;
         private final JComponent btnExpand;
-        //private final JToolBar east;
+
         private final FunctionManager functionManager;
         private final ActionListener collapseListener = EventHandler.create(ActionListener.class,this,"collapse");
         private final ActionListener expandListener = EventHandler.create(ActionListener.class,this,"expand");
@@ -146,6 +145,7 @@ public class SQLFunctionsPanel extends JPanel {
 
         private void doFilter() {
                 //functionListModel.filter(txtFilter.getText());
+                functionListModel.refreshFunctionList();
         }
 
         /**

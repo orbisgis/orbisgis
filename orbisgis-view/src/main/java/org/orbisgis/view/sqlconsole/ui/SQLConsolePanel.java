@@ -34,10 +34,14 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
+import javax.swing.InputMap;
 import javax.swing.JButton;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
@@ -66,6 +70,9 @@ public class SQLConsolePanel extends JPanel {
         private static final long serialVersionUID = 1L;
         protected final static I18n I18N = I18nFactory.getI18n(SQLConsolePanel.class);
         
+        
+        
+        // Components
         private JToolBar infoToolBar;
         private JToolBar commandToolBar;
         
@@ -92,12 +99,17 @@ public class SQLConsolePanel extends JPanel {
         
         //Listeners
         private ActionListener executeListener = EventHandler.create(ActionListener.class,this,"onExecute");
-        
+        private ActionListener clearListener = EventHandler.create(ActionListener.class,this,"onClean");
+        //Actions
+        private SQLConsoleAction executeAction;
+        private SQLConsoleAction cleanAction;
+                
         /**
          * Creates a console for sql.
          */
         public SQLConsolePanel() {
                 super(new BorderLayout());
+                initActions();
                 JPanel split = new JPanel();
                 split.setLayout(new BorderLayout());
                 split.add(new SQLFunctionsPanel(), BorderLayout.EAST);
@@ -107,6 +119,20 @@ public class SQLConsolePanel extends JPanel {
         }
 
         /**
+         * Create actions instances
+         */
+        private void initActions() {
+                executeAction = new SQLConsoleAction(
+                        I18N.tr("Execute"),
+                        I18N.tr("Run SQL statements"),
+                        OrbisGISIcon.getIcon("execute"),
+                        executeListener,
+                        ConsoleKeyStrokes.RUN
+                        );
+                
+                
+        }
+        /**
          * Return a set of button to control the sql panel features
          * 
          * @param setButtonText If true, a text is set on the buttons
@@ -115,13 +141,15 @@ public class SQLConsolePanel extends JPanel {
         public JToolBar getEditorToolBar(boolean setButtonText) {
                 if(commandToolBar==null) {
                         commandToolBar = new JToolBar();
+                        /*
                         String executeText="";
                         if(setButtonText) {
                                 executeText = I18N.tr("Execute");
                         }
-                        JButton execute = new JButton(executeText,OrbisGISIcon.getIcon("execute"));
-                        execute.setToolTipText(I18N.tr("Run SQL statements"));
-                        execute.addActionListener(executeListener);
+                        * 
+                        */
+                        JButton execute = new JButton(executeAction);
+                        btExecute.add(execute);
                         commandToolBar.add(execute);
                         commandToolBar.add(new JSeparator());
                 }
@@ -137,7 +165,25 @@ public class SQLConsolePanel extends JPanel {
         public void setMapContext(MapContext mapContext) {
                 this.mapContext = mapContext;
         }
-
+        private void feedPopupMenu(JPopupMenu areaMenu) {
+                //Add Run menu
+                JMenuItem runSql = new JMenuItem(executeAction);
+                btExecute.add(runSql);
+                areaMenu.insert(runSql, 0);
+                //Add clear menu
+                
+                //Separator at the end
+                areaMenu.insert(new JSeparator(),1);                
+        }
+        
+        /**
+         * Text key shortcuts, Accelerators
+         */
+        private void setAccelerators(JComponent component) {
+                InputMap im = component.getInputMap(WHEN_FOCUSED);
+                //Run
+                component.getActionMap().put(im.get(executeAction.getKeyStroke()), executeAction);
+        }
         private RTextScrollPane getCenterPanel() {
                 if (centerPanel == null) {
                         scriptPanel = new RSyntaxTextArea();
@@ -146,6 +192,7 @@ public class SQLConsolePanel extends JPanel {
                         scriptPanel.setLineWrap(true);
                         scriptPanel.setClearWhitespaceLinesEnabled(true);
                         scriptPanel.setMarkOccurrences(false);
+                        setAccelerators(scriptPanel);
                         lang = new SQLLanguageSupport();
                         lang.install(scriptPanel);
 
@@ -153,13 +200,7 @@ public class SQLConsolePanel extends JPanel {
                                 COMMENT_SPECS);
                         scriptPanel.addCaretListener(EventHandler.create(CaretListener.class,this,"onScriptPanelCaretUpdate"));
                         //Add custom actions
-                        JPopupMenu areaMenu = scriptPanel.getPopupMenu();
-                        //Add Run menu
-                        JMenuItem runSql = new JMenuItem(I18N.tr("Execute"),OrbisGISIcon.getIcon("execute"));
-                        runSql.addActionListener(executeListener);
-                        btExecute.add(runSql);
-                        areaMenu.insert(runSql, 0);
-                        areaMenu.insert(new JSeparator(),1);
+                        feedPopupMenu(scriptPanel.getPopupMenu());
                         centerPanel = new RTextScrollPane(scriptPanel);
                 }
                 return centerPanel;
@@ -171,7 +212,19 @@ public class SQLConsolePanel extends JPanel {
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
                 bm.backgroundOperation(new ExecuteScriptProcess(getText(), this,mapContext));
         }
-        
+        /**
+         * Prompt the user to accept the document cleaning.
+         */
+        public void onClear() {
+                if(scriptPanel.getDocument().getLength()==0) {
+                        int answer = JOptionPane.showConfirmDialog(this,
+                                I18N.tr("Do you want to clear the contents of the console?"),
+                                I18N.tr("Clear script"), JOptionPane.YES_NO_OPTION);
+                        if (answer == JOptionPane.YES_OPTION) {
+                                scriptPanel.setText("");
+                        }
+                }
+        }
         /**
          * Update the row:column label
          */
@@ -357,5 +410,22 @@ public class SQLConsolePanel extends JPanel {
                 }
                 findReplaceDialog.setAlwaysOnTop(true);
                 findReplaceDialog.setVisible(true);
+        }
+        
+        /**
+         * Run the SQL command in the editor
+         */
+        private class RunAction extends AbstractAction {
+                private static final long serialVersionUID = 1L;
+
+                public RunAction() {
+                        
+                }
+
+                @Override
+                public void actionPerformed(ActionEvent ae) {
+                        throw new UnsupportedOperationException("Not supported yet.");
+                }
+                
         }
 }
