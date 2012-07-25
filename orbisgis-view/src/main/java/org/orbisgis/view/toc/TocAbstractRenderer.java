@@ -50,7 +50,7 @@ public class TocAbstractRenderer extends DefaultTreeCellRenderer {
 		if (layer.acceptsChilds()) {
 			return OrbisGISIcon.getIcon("layers");
 		} else {
-			if (layer.isWMS()) {
+			if (layer.isStream()) {
 				return OrbisGISIcon.getIcon("server_connect");
 			} else {
 				DataSource dataSource = layer.getDataSource();

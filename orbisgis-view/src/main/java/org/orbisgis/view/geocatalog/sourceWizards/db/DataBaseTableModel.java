@@ -90,7 +90,7 @@ public class DataBaseTableModel extends AbstractTableModel {
                         String crsName = "Unknown";
                         int epsgCode = -1;
                         final int validType = SourceManager.VECTORIAL | SourceManager.RASTER
-                                | SourceManager.WMS | SourceManager.SYSTEM_TABLE;
+                                | SourceManager.STREAM | SourceManager.SYSTEM_TABLE;
                         for (String sourceName : sourceNames) {
                                 int type = sourceManager.getSource(sourceName).getType();
                                 if ((validType & type) == 0) {

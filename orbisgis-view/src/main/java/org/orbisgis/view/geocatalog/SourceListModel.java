@@ -155,7 +155,7 @@ public class SourceListModel extends AbstractListModel {
                 return "geofile";
             } else if ((sourceType & SourceManager.RASTER) == SourceManager.RASTER) {
                 return "image";
-            } else if ((sourceType & SourceManager.WMS) == SourceManager.WMS) {
+            } else if ((sourceType & SourceManager.STREAM) == SourceManager.STREAM) {
                 return "server_connect";
             } else if ((sourceType & SourceManager.FILE) == SourceManager.FILE) {
                 return "flatfile";

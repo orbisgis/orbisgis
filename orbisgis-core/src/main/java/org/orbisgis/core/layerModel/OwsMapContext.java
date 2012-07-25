@@ -99,33 +99,31 @@ public final class OwsMapContext extends BeanMapContext {
         @Override
         public ILayer createLayer(DataSource sds) throws LayerException {
                 int type = sds.getSource().getType();
-                if ((type & SourceManager.WMS) == SourceManager.WMS) {
-                        return new WMSLayer(sds.getName(), sds);
-                } else {
-                        boolean hasSpatialData = true;
-                        if ((type & SourceManager.VECTORIAL) == 0
-                                && (type & SourceManager.LIVE) == SourceManager.LIVE) {
-                                int sfi;
+                
+                boolean hasSpatialData = true;
+                if ((type & SourceManager.VECTORIAL) == 0 && (type & SourceManager.STREAM) == 0
+                        && (type & SourceManager.SQL) == SourceManager.SQL) {
+                        int sfi;
+                        try {
+                                sds.open();
+                                sfi = sds.getSpatialFieldIndex();
                                 try {
-                                        sds.open();
-                                        sfi = sds.getSpatialFieldIndex();
-                                        try {
-                                                sds.close();
-                                        } catch (AlreadyClosedException e) {
-                                                // ignore
-                                                LOGGER.debug(I18N.tr("Cannot close the data source"), e);
-                                        }
-                                        hasSpatialData = (sfi != -1);
-                                } catch (DriverException e) {
-                                        throw new LayerException(I18N.tr("Cannot check source contents"), e);
+                                        sds.close();
+                                } catch (AlreadyClosedException e) {
+                                        // ignore
+                                        LOGGER.debug(I18N.tr("Cannot close the data source"), e);
                                 }
-                        }
-                        if (hasSpatialData) {
-                                return new Layer(sds.getName(), sds);
-                        } else {
-                                throw new LayerException(I18N.tr("The source contains no spatial info"));
+                                hasSpatialData = (sfi != -1);
+                        } catch (DriverException e) {
+                                throw new LayerException(I18N.tr("Cannot check source contents"), e);
                         }
                 }
+                if (hasSpatialData) {
+                        return new Layer(sds.getName(), sds);
+                } else {
+                        throw new LayerException(I18N.tr("The source contains no spatial info"));
+                }
+                
         }
 
         @Override
