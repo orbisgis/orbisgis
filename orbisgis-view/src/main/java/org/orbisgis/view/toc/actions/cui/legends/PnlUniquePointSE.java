@@ -94,7 +94,7 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
 
         @Override
         public boolean acceptsGeometryType(int geometryType) {
-                return geometryType == GeometryProperties.POINT;
+                return (geometryType & GeometryProperties.ALL) != 0;
         }
 
         @Override

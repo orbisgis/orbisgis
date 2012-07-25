@@ -91,6 +91,14 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
         private MapTransform mt;
         private StyleWrapper styleWrapper;
 
+        /**
+         * Initialize the {@code LegendsPanel}.
+         * @param mt
+         * @param gc
+         * @param style
+         * @param availableLegends
+         * @param layer
+         */
         public void init(MapTransform mt, Type gc, Style style, ILegendPanel[] availableLegends,
                 ILayer layer) {
                 this.mt = mt;
@@ -188,7 +196,14 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                 return pnlContainer;
         }
 
-        private ILegendPanel getPanel(Legend legend) {
+        /**
+         * Gets the panel that can be associated to the {@code Legend} given in
+         * argument. This panel is cloned from one of the panels given in the
+         * original constructor.
+         * @param legend
+         * @return
+         */
+        public ILegendPanel getPanel(Legend legend) {
                 for (ILegendPanel panel : availableLegends) {
                         if (panel.getLegend().getLegendTypeId().equals(
                                 legend.getLegendTypeId())) {
@@ -277,7 +292,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
         @Override
         public String getTitle() {
-                return I18N.tr("Legend edition");
+                return I18N.tr("Advanced style edition");
         }
 
 

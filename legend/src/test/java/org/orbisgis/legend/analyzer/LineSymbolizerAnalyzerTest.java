@@ -205,6 +205,15 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
     }
 
     @Test
+    public void testUniqueValueSetWrongDashBis() throws Exception {
+        Style st = getStyle(constantDash);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        UniqueSymbolLine usl = new UniqueSymbolLine(ls);
+        usl.setDashArray("1 -5 3");
+        assertTrue(usl.getDashArray().equals(""));
+    }
+
+    @Test
     public void testDefaultConstructorUniqueSymbol() throws Exception {
         UniqueSymbolLine usl = new UniqueSymbolLine();
         LineSymbolizerAnalyzer lsa = new LineSymbolizerAnalyzer((LineSymbolizer)usl.getSymbolizer());

@@ -118,6 +118,9 @@ public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend {
             for(String s : splits){
                 try{
                     double d = Double.valueOf(s);
+                    if(d<0){
+                            return false;
+                    }
                 } catch(NumberFormatException nfe){
                     return false;
                 }
