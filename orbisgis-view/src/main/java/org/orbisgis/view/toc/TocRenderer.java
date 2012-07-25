@@ -31,6 +31,7 @@ package org.orbisgis.view.toc;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -52,7 +53,7 @@ public class TocRenderer extends TocAbstractRenderer {
         private final static int ROW_EMPTY_BORDER_SIZE = 2;
         private static final long serialVersionUID = 1L;
         private TreeCellRenderer lookAndFeelRenderer;
-        private JCheckBox lastCheckBox;
+        private Rectangle checkBoxRect;
         /**
          * Install this renderer inside the tree
          * @param tree 
@@ -99,23 +100,30 @@ public class TocRenderer extends TocAbstractRenderer {
          * @return 
          */
         private static Icon mergeComponentAndIcon(JComponent component,Icon icon) {
-                component.setSize(component.getPreferredSize());
-                int compWidth = component.getWidth();
-                int comHeight=component.getHeight();
+                Dimension compSize = component.getPreferredSize();
+                component.setSize(compSize);                
+                int compWidth = compSize.width;
+                int compHeight =  compSize.height;
+                int iconY = 0;
                 if(icon!=null) {
                         compWidth += icon.getIconWidth();
-                        comHeight = Math.max(component.getHeight(),icon.getIconHeight());
+                        //Set vertical icon alignement to center
+                        if(compHeight>icon.getIconHeight()) {
+                                iconY = (int)Math.ceil((compHeight - icon.getIconHeight()) / 2);
+                        } else {
+                                compHeight = icon.getIconHeight();
+                        }
                 }
                 //Create an icon that is the copound of the checkbox with the row icon
-                if(compWidth<=0 || comHeight<=0) {
+                if(compWidth<=0 || compHeight<=0) {
                         return null;
                 }
-                BufferedImage image = new BufferedImage(compWidth, comHeight, BufferedImage.TYPE_INT_ARGB);
+                BufferedImage image = new BufferedImage(compWidth, compHeight, BufferedImage.TYPE_INT_ARGB);
                 CellRendererPane pane = new CellRendererPane();
                 pane.add(component);
                 pane.paintComponent(image.createGraphics(), component, pane, component.getBounds());    
                 if(icon!=null) {
-                        icon.paintIcon(pane, image.getGraphics(), component.getWidth(), 0);
+                        icon.paintIcon(pane, image.getGraphics(), component.getPreferredSize().width, iconY);
                 }
                 return new ImageIcon(image);
         }
@@ -130,7 +138,7 @@ public class TocRenderer extends TocAbstractRenderer {
                         try {
                                 JPanel panel = new JPanel(new BorderLayout());
                                 panel.setOpaque(false);
-                                panel.setBorder(BorderFactory.createEmptyBorder(
+                                rendererComponent.setBorder(BorderFactory.createEmptyBorder(
                                         ROW_EMPTY_BORDER_SIZE,
                                         ROW_EMPTY_BORDER_SIZE,
                                         ROW_EMPTY_BORDER_SIZE,
@@ -152,8 +160,8 @@ public class TocRenderer extends TocAbstractRenderer {
                                 panel.add(checkBox,BorderLayout.WEST);
                                 panel.add(rendererComponent,BorderLayout.CENTER);
                                 panel.doLayout();
+                                checkBoxRect= new Rectangle(0, 0, checkBox.getPreferredSize().width, checkBox.getPreferredSize().height);
                                 rendererComponent.setIcon(mergeComponentAndIcon(checkBox,rendererComponent.getIcon()));
-                                lastCheckBox = checkBox;
                         } catch (DriverException ex) {
                                 UILOGGER.error(ex);
                         } catch (IOException ex) {
@@ -164,8 +172,8 @@ public class TocRenderer extends TocAbstractRenderer {
 	}
 
 	public Rectangle getCheckBoxBounds() {
-                if(lastCheckBox!=null) {
-                        return lastCheckBox.getBounds();
+                if(checkBoxRect!=null) {
+                        return checkBoxRect;
                 } else {
                         return new Rectangle(0,0);
                 }
