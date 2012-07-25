@@ -45,8 +45,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * This panel includes all Output Type panel.
  */
 public class MainOutputPanel extends JPanel implements DockingPanel {
-    protected final static I18n I18N = I18nFactory.getI18n(MainOutputPanel.class);
     private static final long serialVersionUID = 1L;
+    private static final I18n I18N = I18nFactory.getI18n(MainOutputPanel.class);
     private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< docked panel properties */
     private JTabbedPane tabbedPane;
     public MainOutputPanel() {

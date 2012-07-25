@@ -58,10 +58,10 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 
 public class MapStatusBar extends StatusBar {
-        protected final static I18n I18N = I18nFactory.getI18n(MapStatusBar.class);
+        private static final I18n I18N = I18nFactory.getI18n(MapStatusBar.class);
         private static final Logger LOGGER = Logger.getLogger(MapStatusBar.class);
         public static final String PROP_USER_DEFINED_SCALE_DENOMINATOR = "userDefinedScaleDenominator";
-        private final static int STATUS_BAR_HEIGHT = 30;
+        private static final int STATUS_BAR_HEIGHT = 30;
         private ActionListener scaleInputActionListener = EventHandler.create(ActionListener.class,this,"validateInputScale");
         
         protected VetoableChangeSupport vetoableChangeSupport = new VetoableChangeSupport(this);
@@ -77,8 +77,8 @@ public class MapStatusBar extends StatusBar {
         private JLabel mouseCoordinatesLabel;
         private Point2D mouseCoordinates = new Point2D.Double();
         //Layout parameters
-        private final static int OUTER_BAR_BORDER = 1;
-        private final static int HORIZONTAL_EMPTY_BORDER = 4;
+        private static final int OUTER_BAR_BORDER = 1;
+        private static final int HORIZONTAL_EMPTY_BORDER = 4;
 
         public MapStatusBar() {
                 super(OUTER_BAR_BORDER,HORIZONTAL_EMPTY_BORDER);

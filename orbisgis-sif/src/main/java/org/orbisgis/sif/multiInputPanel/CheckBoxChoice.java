@@ -30,40 +30,47 @@ package org.orbisgis.sif.multiInputPanel;
 
 import java.awt.Component;
 import javax.swing.JCheckBox;
-import org.orbisgis.sif.SQLUIPanel;
 
+/**
+ * {@code InputType} particularly designed for booleans : if the inner {@code
+ * JCheckbox} is checked, the boolean will be true, false otherwise. Note that
+ * as {@code InputType} returns only {@code String} values through its {@code
+ * {@code getValue} method, the boolean will be returned as a String...
+ * @author Erwan Bocher
+ * @author Alexis Guéganno
+ */
 public class CheckBoxChoice implements InputType {
 
-	private JCheckBox jCheckBox;
+        private JCheckBox jCheckBox;
 
-	public CheckBoxChoice(boolean b) {
-		jCheckBox = new JCheckBox();
-		jCheckBox.setSelected(b);
+        public CheckBoxChoice(boolean b) {
+                jCheckBox = new JCheckBox();
+                jCheckBox.setSelected(b);
+        }
 
-	}
+        @Override
+        public Component getComponent() {
+                return jCheckBox;
+        }       
 
-	public Component getComponent() {
+        /**
+         * The {@code String} representation of the associated {@code boolean}.
+         * @return
+         */
+        @Override
+        public String getValue() {
+                return Boolean.toString(jCheckBox.isSelected());
+        }
 
-		return jCheckBox;
-	}
-
-	public int getType() {
-
-		return SQLUIPanel.STRING;
-	}
-
-	public String getValue() {
-		return Boolean.toString(jCheckBox.isSelected());
-	}
-
-	public boolean isPersistent() {
-
-		return true;
-	}
-
-	public void setValue(String value) {
-		jCheckBox.setSelected(Boolean.parseBoolean(value));
-
-	}
-
+        /**
+         * Set the value stored in this {@code CheckBoxChoice}. If {@code value}
+         * is equal to the string {@code true}, ignoring case, the associated
+         * checkbox will be checked. If value is null or equal to anything else,
+         * the cehckbox will be unchecked.
+         * @param value
+         */
+        @Override
+        public void setValue(String value) {
+                jCheckBox.setSelected(Boolean.parseBoolean(value));
+        }
 }

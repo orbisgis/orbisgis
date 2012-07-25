@@ -30,14 +30,14 @@ package org.orbisgis.view.toc.actions.cui;
 
 import java.awt.Component;
 import javax.swing.JLabel;
-import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.legend.Legend;
+import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 
 public class NoPanel implements ILegendPanel {
-    protected final static I18n I18N = I18nFactory.getI18n(NoPanel.class);
+    private static final I18n I18N = I18nFactory.getI18n(NoPanel.class);
 
 	private Legend legend;
 

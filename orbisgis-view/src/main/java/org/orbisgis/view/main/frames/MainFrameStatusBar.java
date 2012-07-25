@@ -52,9 +52,9 @@ import org.orbisgis.view.joblist.JobListPanel;
  */
 public class MainFrameStatusBar extends StatusBar {
         //Layout parameters
-        private final static int OUTER_BAR_BORDER = 1;
-        private final static int HORIZONTAL_EMPTY_BORDER = 4;
-        private final static int STATUS_BAR_HEIGHT = 30;
+        private static final int OUTER_BAR_BORDER = 1;
+        private static final int HORIZONTAL_EMPTY_BORDER = 4;
+        private static final int STATUS_BAR_HEIGHT = 30;
         //JobLabel
         private JPanel jobListBar;     //This component contain the first job panel
         //private JobListPanel jobList;  //Popup Panel

@@ -37,24 +37,26 @@ import java.io.IOException;
 import javax.imageio.ImageIO;
 import org.gvsig.remoteClient.exceptions.ServerErrorException;
 import org.gvsig.remoteClient.exceptions.WMSException;
+import org.gvsig.remoteClient.wms.WMSClient;
 import org.gvsig.remoteClient.wms.WMSStatus;
-import org.orbisgis.core.layerModel.WMSConnection;
 
 @Deprecated
 public class WMSLegend {
 
-	private WMSConnection wmsConnection;
+	private WMSClient wmsClient;
+	private WMSStatus wmsStatus;
 	private String layerName;
 	private File file;
 
-	public WMSLegend(WMSConnection wmsConnection, String layerName) {
-		this.wmsConnection = wmsConnection;
+	public WMSLegend(WMSClient wmsClient, WMSStatus wmsStatus, String layerName) {
+		this.wmsClient = wmsClient;
+                this.wmsStatus = wmsStatus;
 		this.layerName = layerName;
 	}
 
 	public void drawImage(Graphics2D g) {
-		if ((wmsConnection != null) || (layerName != null)) {
-			BufferedImage img = getWMSLegend(wmsConnection, layerName);
+		if ((wmsClient != null) || (layerName != null)) {
+			BufferedImage img = getWMSLegend(wmsClient, wmsStatus, layerName);
 			g.drawImage(img, 0, 0, null);
 		} else {
 			g.drawImage(new BufferedImage(10, 10, BufferedImage.TYPE_INT_ARGB),
@@ -63,8 +65,8 @@ public class WMSLegend {
 	}
 
 	public int[] getImageSize(Graphics2D g) {
-		if ((wmsConnection != null) || (layerName != null)) {
-			BufferedImage img = getWMSLegend(wmsConnection, layerName);
+		if ((wmsClient != null) || (layerName != null)) {
+			BufferedImage img = getWMSLegend(wmsClient, wmsStatus, layerName);
 			return new int[] { img.getWidth(), img.getHeight() };
 		} else {
 			FontMetrics fm = g.getFontMetrics();
@@ -95,14 +97,12 @@ public class WMSLegend {
 
 	}
 
-	private BufferedImage getWMSLegend(WMSConnection connection,
+	private BufferedImage getWMSLegend(WMSClient client, WMSStatus status,
 			String layerName) {
-		WMSStatus status = connection.getStatus();
 		BufferedImage image = null;
 		try {
 			if (file == null) {
-				file = connection.getClient().getLegendGraphic(status,
-						layerName, null);
+				file = client.getLegendGraphic(status, layerName, null);
 			}
 			image = ImageIO.read(file);
 		} catch (WMSException e) {

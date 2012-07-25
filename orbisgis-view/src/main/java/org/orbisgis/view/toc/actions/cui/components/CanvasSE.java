@@ -28,12 +28,17 @@
  */
 package org.orbisgis.view.toc.actions.cui.components;
 
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 import java.awt.Dimension;
 import java.awt.*;
 import java.io.IOException;
 import java.util.Iterator;
 import javax.swing.JPanel;
+import org.apache.log4j.Logger;
 import org.gdms.data.*;
 import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.EditionListener;
@@ -61,7 +66,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  * @author Alexis Guéganno, others...
  */
 public class CanvasSE extends JPanel {
-
+        private static final Logger LOGGER = Logger.getLogger("gui."+CanvasSE.class);
         private Symbolizer s;
         private GeometryFactory gf;
         private Geometry geom;
@@ -94,6 +99,8 @@ public class CanvasSE extends JPanel {
                 } catch (DriverException de){
                 } catch (ParameterException de){
                 } catch (IOException de){
+                } catch (IllegalArgumentException ie){
+                        LOGGER.error(ie.getMessage());
                 }
                 g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, old);
 	}

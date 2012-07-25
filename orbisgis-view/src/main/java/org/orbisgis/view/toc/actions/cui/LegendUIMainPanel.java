@@ -37,21 +37,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.SwingUtilities;
-import org.orbisgis.core.renderer.se.Style;
+import javax.swing.*;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  *
  * @author Maxence Laurent
  */
 public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
+        private static final I18n I18N = I18nFactory.getI18n(LegendUIMainPanel.class);
 	private LegendUIController controller;
 
 	private JPanel leftMenu;
@@ -166,28 +165,14 @@ public final class LegendUIMainPanel extends JPanel  implements UIPanel  {
 
 	@Override
 	public String getTitle() {
-		return "Legend Edition";
-	}
-
-	@Override
-	public String initialize() {
-		return null;
-	}
-
-	@Override
-	public String postProcess() {
-		return null;
+		return I18N.tr("Advanced style edition");
 	}
 
 	@Override
 	public Component getComponent() {
 		return this;
-	}
-
-	@Override
-	public String getInfoText() {
-		return UIFactory.getDefaultOkMessage();
-	}
+	}	
+      
 
 	private class ActionListenerImpl implements ActionListener {
 

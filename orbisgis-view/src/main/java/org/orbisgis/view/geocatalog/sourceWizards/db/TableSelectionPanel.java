@@ -34,12 +34,10 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-
 import org.apache.log4j.Logger;
 import org.gdms.data.db.DBSource;
 import org.gdms.driver.DBDriver;
@@ -50,7 +48,8 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 public class TableSelectionPanel implements UIPanel {
-        protected final static I18n i18n = I18nFactory.getI18n(ConnectionPanel.class);
+
+        private static final I18n i18n = I18nFactory.getI18n(ConnectionPanel.class);
         private ConnectionPanel firstPanel;
         private JTree tableTree;
         private JScrollPane jScrollPane;
@@ -65,6 +64,7 @@ public class TableSelectionPanel implements UIPanel {
         public Component getComponent() {
                 if (null == jScrollPane) {
                         jScrollPane = new JScrollPane();
+                        initialize();
                 }
                 return jScrollPane;
         }
@@ -79,21 +79,20 @@ public class TableSelectionPanel implements UIPanel {
                 return i18n.tr("Select a table or a view");
         }
 
-        @Override
-        public String initialize() {
+        
+        public void initialize() {
                 try {
                         tableTree = getTableTree();
                 } catch (SQLException e) {
-                        return e.getMessage();
+                        LOGGER.error(e.getMessage());
                 } catch (DriverException e) {
-                        return e.getMessage();
+                        LOGGER.error(e.getMessage());
                 }
                 if (jScrollPane == null) {
                         jScrollPane = new JScrollPane();
                 }
                 jScrollPane.setViewportView(tableTree);
 
-                return null;
         }
 
         private JTree getTableTree() throws SQLException, DriverException {
@@ -172,21 +171,12 @@ public class TableSelectionPanel implements UIPanel {
 
         @Override
         public String validateInput() {
-                String validateInput = null;
-                validateInput = (getSelectedDBSources().length == 0) ? i18n.tr("Select one table or view")
-                        : null;
-                return validateInput;
-        }
-
-        @Override
-        public String getInfoText() {
+                if (getSelectedDBSources().length == 0) {
+                        return i18n.tr("Please select one table or view");
+                }
                 return null;
-        }
-
-        @Override
-        public String postProcess() {
-                return null;
-        }
+        }       
+        
 
         public DBSource[] getSelectedDBSources() {
                 List<TableNode> tables = new ArrayList<TableNode>();
@@ -217,5 +207,5 @@ public class TableSelectionPanel implements UIPanel {
                         i++;
                 }
                 return dbSources;
-        }
+        }        
 }

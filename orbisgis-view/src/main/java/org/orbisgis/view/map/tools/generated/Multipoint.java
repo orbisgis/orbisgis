@@ -38,7 +38,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 
 public abstract class Multipoint implements Automaton {
-        protected final static I18n I18N = I18nFactory.getI18n(Multipoint.class);
+        protected static final I18n I18N = I18nFactory.getI18n(Multipoint.class);
 	private static Logger logger = Logger.getLogger(Multipoint.class);
 
 	private Status status = Status.STANDBY;

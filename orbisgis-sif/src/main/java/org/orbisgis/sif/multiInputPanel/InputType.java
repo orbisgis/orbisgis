@@ -30,16 +30,32 @@ package org.orbisgis.sif.multiInputPanel;
 
 import java.awt.Component;
 
+/**
+ * {@code InputType} instances are used to build quickly some UIs where the user
+ * will be able to provide some informations to the software. This objects can
+ * be used to retrieve a {@code Component} where the information can be set.
+ * @author Erwan Bocher
+ * @author Alexis Guéganno
+ */
 public interface InputType {
 
-	int getType();
+        /**
+         * Gets the {@code Component} that will be used to retrieve the inputs
+         * from the user.
+         * @return
+         */
+        Component getComponent();
 
-	Component getComponent();
+        /**
+         * Gets the value currently stored in this {@code InputType} instance.
+         * @return
+         * The stored value as a {@code String}.
+         */
+        String getValue();
 
-	String getValue();
-
-	void setValue(String value);
-
-	boolean isPersistent();
-
+        /**
+         * Sets the value stored in this {@code InputType} to {@code value}.
+         * @param value
+         */
+        void setValue(String value);
 }

@@ -67,7 +67,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public final class DockingManager {
         private JFrame owner;
         private SingleCDockableListMenuPiece dockableMenuTracker;
-        protected final static I18n i18n = I18nFactory.getI18n(DockingManager.class);
+        private static final I18n I18N = I18nFactory.getI18n(DockingManager.class);
         private static final Logger LOGGER = Logger.getLogger(DockingManager.class);
         File dockingState=null;
         private CControl commonControl; /*!< link to the docking-frames */
@@ -86,7 +86,7 @@ public final class DockingManager {
          * @return The look and feel menu
          */
         public JMenu getLookAndFeelMenu() {
-            RootMenuPiece laf = new RootMenuPiece(i18n.tr("&Look And Feel"), false, new CLookAndFeelMenuPiece( commonControl ));
+            RootMenuPiece laf = new RootMenuPiece(I18N.tr("&Look And Feel"), false, new CLookAndFeelMenuPiece( commonControl ));
             return laf.getMenu();
         }
         /**
@@ -94,7 +94,7 @@ public final class DockingManager {
          * @return The menu that shows items declared in the docking
          */
         public JMenu getCloseableDockableMenu() {
-            RootMenuPiece laf = new RootMenuPiece(i18n.tr("&Windows"), false,dockableMenuTracker);
+            RootMenuPiece laf = new RootMenuPiece(I18N.tr("&Windows"), false,dockableMenuTracker);
             return laf.getMenu();
         }
         /**
@@ -106,7 +106,7 @@ public final class DockingManager {
                     try {
                         commonControl.readXML(dockingState);
                     } catch (IOException ex) {
-                        LOGGER.error(i18n.tr("Unable to load the docking layout."), ex);
+                        LOGGER.error(I18N.tr("Unable to load the docking layout."), ex);
                     }
                 }
             }            
@@ -119,7 +119,7 @@ public final class DockingManager {
                 try {
                     commonControl.writeXML(dockingState);
                 } catch (IOException ex) {
-                    LOGGER.error(i18n.tr("Unable to save the docking layout."), ex);
+                    LOGGER.error(I18N.tr("Unable to save the docking layout."), ex);
                 }    
             }
         }
@@ -183,7 +183,7 @@ public final class DockingManager {
                 commonControl.setPreferenceModel(preferences);
 
                 //DEFAULT property of a view
-		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, i18n.tr("Docked Window") );
+		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, I18N.tr("Docked Window") );
 		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_ICON, OrbisGISIcon.getIcon("mini_orbisgis") );
 				
                 //StackDockStation will contain all instances of ReservedDockStation

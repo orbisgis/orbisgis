@@ -44,13 +44,14 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 public abstract class TocAbstractRenderer implements TreeCellRenderer {
-        protected final static I18n I18N = I18nFactory.getI18n(TocAbstractRenderer.class);
-	public static Icon getLayerIcon(ILayer layer) throws DriverException,
+        private static final I18n I18N = I18nFactory.getI18n(TocAbstractRenderer.class);
+
+        public static Icon getLayerIcon(ILayer layer) throws DriverException,
 			IOException {
 		if (layer.acceptsChilds()) {
 			return OrbisGISIcon.getIcon("layers");
 		} else {
-			if (layer.isWMS()) {
+			if (layer.isStream()) {
 				return OrbisGISIcon.getIcon("server_connect");
 			} else {
 				DataSource dataSource = layer.getDataSource();

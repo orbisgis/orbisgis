@@ -38,7 +38,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 public abstract class Compass implements Automaton {
-        protected final static I18n I18N = I18nFactory.getI18n(Compass.class);
+        protected static final I18n I18N = I18nFactory.getI18n(Compass.class);
 	private static Logger logger = Logger.getLogger(Compass.class);
 
 	private Status status = Status.STANDBY;

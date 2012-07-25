@@ -32,111 +32,71 @@ import java.awt.BorderLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.util.HashMap;
-
+import java.awt.event.KeyEvent;
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-
 public class SIFDialog extends AbstractOutsideFrame {
 
-	private JButton btnOk;
+        protected JButton btnOk;
+        protected JButton btnCancel;
+        private SimplePanel simplePanel;
+        protected JPanel pnlButtons;
 
-	private JButton btnCancel;
+        public SIFDialog(Window owner, boolean okCancel) {
+                super(owner);
+                init(okCancel);
+        }
 
-	private SimplePanel simplePanel;
+        private void init(boolean okCancel) {
+                this.setLayout(new BorderLayout());
 
-	private boolean test;
+                btnOk = new JButton(I18N.tr("Ok"));
+                btnOk.setBorderPainted(false);
+                btnOk.addActionListener(new ActionListener() {
 
-	public SIFDialog(Window owner, boolean okCancel) {
-		super(owner);
-		init(okCancel);
-	}
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                                exit(true);
+                        }
+                });
+                getRootPane().setDefaultButton(btnOk);
+                btnCancel = new JButton(I18N.tr("Cancel"));
+                btnCancel.setBorderPainted(false);
+                btnCancel.addActionListener(new ActionListener() {
 
-	private void init(boolean okCancel) {
-		this.setLayout(new BorderLayout());
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                                exit(false);
+                        }
+                });
+                pnlButtons = new JPanel();
+                pnlButtons.add(btnOk);
+                if (okCancel) {
+                        pnlButtons.add(btnCancel);
+                }
+                this.add(pnlButtons, BorderLayout.SOUTH);
 
-		btnOk = new JButton(i18n.tr("sif.ok"));
-		btnOk.setBorderPainted(false);
-		btnOk.addActionListener(new ActionListener() {
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				exit(true);
-			}
+                this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        }
 
-		});
-		getRootPane().setDefaultButton(btnOk);
-		btnCancel = new JButton(i18n.tr("sif.cancel"));
-		btnCancel.setBorderPainted(false);
-		btnCancel.addActionListener(new ActionListener() {
+        public void setComponent(SimplePanel simplePanel) {
+                this.simplePanel = simplePanel;
+                this.add(simplePanel, BorderLayout.CENTER);
+                this.setIconImage(getSimplePanel().getIconImage());
+        }
 
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				exit(false);
-			}
+        @Override
+        protected SimplePanel getSimplePanel() {
+                return simplePanel;
+        }
 
-		});
-		JPanel pnlButtons = new JPanel();
-		pnlButtons.add(btnOk);
-		if (okCancel) {
-			pnlButtons.add(btnCancel);
-		}
+        @Override
+        public void keyTyped(KeyEvent ke) {
+        }
 
-		this.add(pnlButtons, BorderLayout.SOUTH);
-
-		this.addComponentListener(new ComponentAdapter() {
-
-			@Override
-			public void componentShown(ComponentEvent e) {
-				if (test) {
-					exit(true);
-				}
-			}
-
-		});
-
-		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-	}
-
-	public void setComponent(SimplePanel simplePanel,
-			HashMap<String, String> inputs) {
-		this.simplePanel = simplePanel;
-		this.add(simplePanel, BorderLayout.CENTER);
-		listen(this);
-		loadInput(inputs);
-		getPanel().initialize();
-		this.setIconImage(getPanel().getIconImage());
-	}
-
-	@Override
-	public void canContinue() {
-		btnOk.setEnabled(true);
-	}
-
-	@Override
-	public void cannotContinue() {
-		btnOk.setEnabled(false);
-	}
-
-	@Override
-	protected SimplePanel getPanel() {
-		return simplePanel;
-	}
-
-	@Override
-	protected void saveInput() {
-		simplePanel.saveInput();
-	}
-
-	protected void loadInput(HashMap<String, String> inputs) {
-		if (simplePanel.loadInput(inputs)) {
-			test = true;
-		} else {
-			test = false;
-		}
-	}
-
+        @Override
+        public void keyReleased(KeyEvent ke) {
+        }
 }

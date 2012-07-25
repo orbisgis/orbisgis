@@ -48,8 +48,8 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 public class MapTransform implements PointTransformation {
-        private final static Logger LOGGER = Logger.getLogger(MapTransform.class);
-        private final static I18n I18N = I18nFactory.getI18n(MapTransform.class);
+        private static final Logger LOGGER = Logger.getLogger(MapTransform.class);
+        private static final I18n I18N = I18nFactory.getI18n(MapTransform.class);
         private boolean adjustExtent;
         private BufferedImage image = null;
         private Envelope adjustedExtent;
@@ -197,7 +197,7 @@ public class MapTransform implements PointTransformation {
                         double newHeight;
                         double newWidth;
 
-                        adjustedExtent = null;
+                        adjustedExtent = new Envelope();
 
                         double scale;
                         if (escalaX < escalaY) {

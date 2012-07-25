@@ -53,8 +53,8 @@ public final class ShapeHelper {
     public static final double ONE_DEG_IN_RAD = Math.PI / 180.0;
     private static final boolean ENABLE_QUAD = true;
     private static final double FLATNESS = 1e-5;
-    private final static Logger LOGGER = Logger.getLogger(ShapeHelper.class);
-    private final static I18n I18N = I18nFactory.getI18n(ShapeHelper.class);
+    private static final Logger LOGGER = Logger.getLogger(ShapeHelper.class);
+    private static final I18n I18N = I18nFactory.getI18n(ShapeHelper.class);
     
     private ShapeHelper(){
     }
