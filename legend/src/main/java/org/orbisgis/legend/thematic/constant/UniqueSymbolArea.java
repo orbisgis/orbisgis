@@ -34,7 +34,7 @@ import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.FillAnalyzer;
-import org.orbisgis.legend.structure.fill.ConstantSolidFillLegend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.thematic.ConstantStrokeArea;
 
 /**

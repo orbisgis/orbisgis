@@ -42,7 +42,7 @@ import org.junit.Test;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
-import org.orbisgis.legend.structure.fill.ConstantSolidFillLegend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import static org.junit.Assert.*;
 
 /**

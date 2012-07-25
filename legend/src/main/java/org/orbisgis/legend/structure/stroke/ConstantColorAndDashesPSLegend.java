@@ -31,7 +31,7 @@ package org.orbisgis.legend.structure.stroke;
 import java.awt.Color;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.structure.fill.ConstantSolidFillLegend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 
 
 /**

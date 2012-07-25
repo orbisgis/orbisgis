@@ -36,7 +36,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.AbstractAnalyzer;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.parameter.StringParameterAnalyzer;
-import org.orbisgis.legend.structure.fill.ConstantSolidFillLegend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.graphic.ConstantWKNLegend;
 import org.orbisgis.legend.structure.graphic.MarkGraphicLegend;
 import org.orbisgis.legend.structure.graphic.ProportionalWKNLegend;

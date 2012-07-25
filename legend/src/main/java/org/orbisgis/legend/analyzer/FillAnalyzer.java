@@ -36,7 +36,7 @@ import org.orbisgis.legend.analyzer.parameter.ColorParameterAnalyzer;
 import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
 import org.orbisgis.legend.structure.categorize.Categorize2ColorLegend;
 import org.orbisgis.legend.structure.fill.CategorizedSolidFillLegend;
-import org.orbisgis.legend.structure.fill.ConstantSolidFillLegend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.literal.ColorLiteralLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;

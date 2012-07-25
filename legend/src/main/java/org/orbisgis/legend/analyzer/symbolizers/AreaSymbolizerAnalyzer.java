@@ -37,7 +37,7 @@ import org.orbisgis.legend.AbstractAnalyzer;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.FillAnalyzer;
 import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
-import org.orbisgis.legend.structure.fill.ConstantSolidFillLegend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 
