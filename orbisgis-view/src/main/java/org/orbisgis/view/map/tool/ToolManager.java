@@ -148,7 +148,9 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                                 activeLayer = layer;
                                 if (activeLayer != null) {
                                         activeLayer.addLayerListener(layerListener);
-                                        activeLayer.getDataSource().addEditionListener(layerListener);
+                                        if (activeLayer.getDataSource().isEditable()) {
+                                                activeLayer.getDataSource().addEditionListener(layerListener);
+                                        }
                                         activeLayer.getDataSource().addDataSourceListener(layerListener);
                                 }
                                 try {
@@ -186,7 +188,9 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         public void freeResources() {
                 if (activeLayer != null) {
                         activeLayer.removeLayerListener(layerListener);
-                        activeLayer.getDataSource().removeEditionListener(layerListener);
+                        if (activeLayer.getDataSource().isEditable()) {
+                                activeLayer.getDataSource().removeEditionListener(layerListener);
+                        }
                         activeLayer.getDataSource().removeDataSourceListener(layerListener);
                         try {
                                 setTool(ToolManager.this.defaultTool);

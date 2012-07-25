@@ -197,7 +197,7 @@ public class MapTransform implements PointTransformation {
                         double newHeight;
                         double newWidth;
 
-                        adjustedExtent = null;
+                        adjustedExtent = new Envelope();
 
                         double scale;
                         if (escalaX < escalaY) {
