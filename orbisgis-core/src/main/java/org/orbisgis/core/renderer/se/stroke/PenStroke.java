@@ -56,6 +56,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Basic stroke for linear features. It is designed according to :
@@ -74,6 +76,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
  */
 public final class PenStroke extends Stroke implements FillNode, UomNode {
 
+    private static final I18n I18N = I18nFactory.getI18n(PenStroke.class);
     private static final double DEFAULT_WIDTH_PX = 1.0;
     private static final LineCap DEFAULT_CAP = LineCap.BUTT;
     private static final LineJoin DEFAULT_JOIN = LineJoin.ROUND;
@@ -457,6 +460,10 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
             int dashesSize = dashes.length;
             for (int i = 0; i < dashesSize; i++) {
                 dashes[i] = (float) dashA[i];
+                if(dashes[i] < 0){
+                        throw new IllegalArgumentException(I18N.tr("Dash array must be made "
+                                + "of positive numbers separated with spaces."));
+                }
             }
 
 
@@ -473,7 +480,9 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
      * @param mt
      * @param v100p
      * @return
-     * @throws ParameterException 
+     * @throws ParameterException
+     * @throws IllegalArgumentException If the embedded dash pattern is invalid
+     * (eg. if it contains negative numbers).
      */
     public BasicStroke getBasicStroke(Map<String,Value> map, MapTransform mt, Double v100p) throws ParameterException {
         return this.createBasicStroke(map, null, mt, v100p, true);
@@ -519,6 +528,8 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
      * @param offset
      * @throws ParameterException
      * @throws IOException
+     * @throws IllegalArgumentException If the embedded dash pattern is invalid
+     * (eg. if it contains negative numbers).
      */
     @Override
     public void draw(Graphics2D g2, Map<String,Value> map, Shape shape,

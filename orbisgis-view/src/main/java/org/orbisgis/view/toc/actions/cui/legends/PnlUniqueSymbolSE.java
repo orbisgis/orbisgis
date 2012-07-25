@@ -40,6 +40,7 @@ import java.util.List;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import org.apache.log4j.Logger;
 import org.orbisgis.legend.thematic.constant.USNumericParameter;
 import org.orbisgis.legend.thematic.constant.USParameter;
 import org.orbisgis.legend.thematic.constant.UniqueSymbol;
@@ -49,6 +50,8 @@ import org.orbisgis.sif.components.ColorPicker;
 import org.orbisgis.sif.components.JNumericSpinner;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * This class proposes some methods that will be common to all the panels built
@@ -57,6 +60,8 @@ import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
  */
 public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel, UIPanel {
 
+        private static final Logger LOGGER = Logger.getLogger("gui."+PnlUniqueSymbolSE.class);
+        private static final I18n I18N = I18nFactory.getI18n(PnlUniqueSymbolSE.class);
         private String id;
         private CanvasSE preview;
 
@@ -181,7 +186,13 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
                 FocusListener fl = new FocusListener() {
                         @Override public void focusGained(FocusEvent e) {}
                         @Override public void focusLost(FocusEvent e) {
-                                s.setValue(((JTextField)e.getSource()).getText());
+                                JTextField jtf = (JTextField)e.getSource();
+                                String tmp = jtf.getText();
+                                s.setValue(tmp);
+                                if(!tmp.equals(s.getValue())){
+                                        LOGGER.warn(I18N.tr("Could not validate your input."));
+                                        jtf.setText(s.getValue());
+                                }
                         }
                 };
                 jrf.addFocusListener(fl);
