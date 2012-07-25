@@ -30,12 +30,14 @@ package org.orbisgis.view.toc;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Container;
+import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import javax.swing.*;
-import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreeCellRenderer;
 import org.apache.log4j.Logger;
 import org.gdms.driver.DriverException;
@@ -83,7 +85,40 @@ public class TocRenderer extends TocAbstractRenderer {
          */
         private TocRenderer() {
         }
-        
+        private void copyComponentStyle(JComponent source, JComponent destination) {
+                destination.setOpaque(source.isOpaque());
+                destination.setBackground(source.getBackground());
+                destination.setForeground(source.getForeground());
+                destination.setBorder(source.getBorder());
+        }
+            
+        /**
+         * Draw the component at the left of the provided icon
+         * @param component
+         * @param icon
+         * @return 
+         */
+        private static Icon mergeComponentAndIcon(JComponent component,Icon icon) {
+                component.setSize(component.getPreferredSize());
+                int compWidth = component.getWidth();
+                int comHeight=component.getHeight();
+                if(icon!=null) {
+                        compWidth += icon.getIconWidth();
+                        comHeight = Math.max(component.getHeight(),icon.getIconHeight());
+                }
+                //Create an icon that is the copound of the checkbox with the row icon
+                if(compWidth<=0 || comHeight<=0) {
+                        return null;
+                }
+                BufferedImage image = new BufferedImage(compWidth, comHeight, BufferedImage.TYPE_INT_ARGB);
+                CellRendererPane pane = new CellRendererPane();
+                pane.add(component);
+                pane.paintComponent(image.createGraphics(), component, pane, component.getBounds());    
+                if(icon!=null) {
+                        icon.paintIcon(pane, image.getGraphics(), component.getWidth(), 0);
+                }
+                return new ImageIcon(image);
+        }
 	@Override
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean selected, boolean expanded, boolean leaf, int row,
@@ -101,9 +136,7 @@ public class TocRenderer extends TocAbstractRenderer {
                                         ROW_EMPTY_BORDER_SIZE,
                                         ROW_EMPTY_BORDER_SIZE));
                                 JCheckBox checkBox = new JCheckBox();
-                                checkBox.setBackground(rendererComponent.getBackground());
-                                checkBox.setOpaque(rendererComponent.isOpaque());
-                                checkBox.setBorder(rendererComponent.getBorder());
+                                copyComponentStyle(rendererComponent,checkBox);
                                 if (value instanceof TocTreeNodeLayer) {
                                         ILayer layerNode = ((TocTreeNodeLayer) value).getLayer();
                                         Icon layerIcon = TocAbstractRenderer.getLayerIcon(layerNode);
@@ -118,8 +151,9 @@ public class TocRenderer extends TocAbstractRenderer {
                                 }
                                 panel.add(checkBox,BorderLayout.WEST);
                                 panel.add(rendererComponent,BorderLayout.CENTER);
+                                panel.doLayout();
+                                rendererComponent.setIcon(mergeComponentAndIcon(checkBox,rendererComponent.getIcon()));
                                 lastCheckBox = checkBox;
-                                return panel;
                         } catch (DriverException ex) {
                                 UILOGGER.error(ex);
                         } catch (IOException ex) {
