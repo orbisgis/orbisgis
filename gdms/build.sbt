@@ -8,7 +8,9 @@ scalaVersion := "2.9.2"
 
 externalPom()
 
-javacOptions ++= Seq("-target", "1.6", "-source", "1.6")
+javacOptions ++= Seq("-target", "1.6", "-source", "1.6", "-Xlint")
+
+scalacOptions ++= Seq("-unchecked", "-Xlint", "-Ywarn-all")
 
 resolvers += "Local Maven Repository" at "file://"+Path.userHome.absolutePath+"/.m2/repository"
 
