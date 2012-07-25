@@ -51,7 +51,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public final class FindReplaceDialog extends JDialog {
         private static final long serialVersionUID = 1L;
-        protected final static I18n I18N = I18nFactory.getI18n(FindReplaceDialog.class);
+        protected static final I18n I18N = I18nFactory.getI18n(FindReplaceDialog.class);
         private static final Logger LOGGER = Logger.getLogger(FindReplaceDialog.class);
         private final RSyntaxTextArea rSyntaxTextArea;
         //================================================================ constants
