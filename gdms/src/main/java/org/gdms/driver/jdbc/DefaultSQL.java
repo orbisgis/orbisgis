@@ -353,16 +353,6 @@ public abstract class DefaultSQL extends AbstractDataSet implements DBReadWriteD
                                         }
                                 }
 
-                                final String[] pks = MetadataUtilities.getPKNames(metadata);
-                                if (pks.length == 0) {
-                                        throw new DriverException("No primary key specified");
-                                } else {
-                                        sql.append(", PRIMARY KEY(").append(pks[0]);
-                                        for (int i = 1; i < pks.length; i++) {
-                                                sql.append(", ").append(pks[i]);
-                                        }
-                                        sql.append(')');
-                                }
                                 sql.append(");");
 
                                 sql.append(getPostCreateTableSQL(metadata));

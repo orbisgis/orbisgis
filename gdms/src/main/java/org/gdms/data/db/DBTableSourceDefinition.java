@@ -130,10 +130,6 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition<DBDriv
                         throw new DriverException(e);
                 }
 
-                if (contents instanceof DataSource) {
-                        contents = getDataSourceWithPK((DataSource) contents);
-                }
-
                 driver.createSource(def, contents.getMetadata());
 
                 for (int i = 0; i < rowCount; i++) {
@@ -173,19 +169,6 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition<DBDriv
                         throw new DriverException(e);
                 }
                 pm.endTask();
-        }
-
-        private DataSource getDataSourceWithPK(DataSource ds)
-                throws DriverException {
-                Metadata metadata = ds.getMetadata();
-                for (int i = 0; i < metadata.getFieldCount(); i++) {
-                        Type fieldType = metadata.getFieldType(i);
-                        if (fieldType.getConstraint(Constraint.PK) != null) {
-                                return ds;
-                        }
-                }
-
-                return new PKDataSourceAdapter(ds);
         }
 
         @Override
