@@ -198,7 +198,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
         /**
          * Gets the panel that can be associated to the {@code Legend} given in
-         * argument. This panel is cloned from one the panels given in the
+         * argument. This panel is cloned from one of the panels given in the
          * original constructor.
          * @param legend
          * @return
