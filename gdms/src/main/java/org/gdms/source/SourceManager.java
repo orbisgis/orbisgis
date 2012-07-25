@@ -46,7 +46,7 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.exporter.ExportSourceDefinition;
 import org.gdms.data.importer.ImportSourceDefinition;
 import org.gdms.data.schema.Schema;
-import org.gdms.data.wms.WMSSource;
+import org.gdms.data.stream.StreamSource;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.driverManager.DriverManager;
@@ -96,7 +96,7 @@ public interface SourceManager {
         /**
          * The source contains the parameters of a WMS connection.
          */
-        int WMS = 64;
+        int STREAM = 64;
         /**
          * The source is a system table.
          */
@@ -199,15 +199,15 @@ public interface SourceManager {
          * @throws org.gdms.data.SourceAlreadyExistsException
          */
         void register(String name, DBSource dbTable);
-
+        
         /**
-         * Registers a wms source with the specified name.
+         * Registers a stream source with the specified name.
          *
          * @param name name to register
          * @param wmsSource source to register
          * @throws org.gdms.data.SourceAlreadyExistsException
          */
-        void register(String name, WMSSource wmsSource);
+        void register(String name, StreamSource wmsSource);
 
         /**
          * Registers a memory object with the specified name.
@@ -286,10 +286,10 @@ public interface SourceManager {
         /**
          * Registers generating the name automatically.
          *
-         * @param wmsSource a wms source
+         * @param streamSource
          * @return the name of the registered source
          */
-        String nameAndRegister(WMSSource wmsSource);
+        String nameAndRegister(StreamSource streamSource);
 
         /**
          * Registers generating the name automatically.

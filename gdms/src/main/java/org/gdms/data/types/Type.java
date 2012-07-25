@@ -42,7 +42,6 @@ import org.gdms.data.values.Value;
  * 
  */
 public interface Type {
-
 	int BINARY = 1;
 	int BOOLEAN = 2;
 	int BYTE = 4;
@@ -57,6 +56,7 @@ public interface Type {
 	int TIME = 2048;
 	int GEOMETRY = 4096;
 	int RASTER = 8192;
+        int STREAM = 4194304;
 
 	int NULL = -1;
 	int COLLECTION = 16384;

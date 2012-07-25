@@ -5,9 +5,9 @@
  *
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
- *
+ * 
  * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
- *
+ * 
  * This file is part of OrbisGIS.
  *
  * OrbisGIS is free software: you can redistribute it and/or modify it under the
@@ -45,7 +45,6 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.Layer;
 import org.orbisgis.core.layerModel.LayerCollection;
 import org.orbisgis.core.layerModel.LayerException;
-import org.orbisgis.core.layerModel.WMSLayer;
 
 public class DefaultDataManager implements DataManager {
 
@@ -53,128 +52,114 @@ public class DefaultDataManager implements DataManager {
         private DataSourceFactory dsf;
 
         public DefaultDataManager(DataSourceFactory dsf) {
-                this.dsf = dsf;
-        }
+		this.dsf = dsf;
+	}
 
         @Override
         public DataSourceFactory getDataSourceFactory() {
-                return dsf;
-        }
+		return dsf;
+	}
 
         @Override
-        public IndexManager getIndexManager() {
-                return dsf.getIndexManager();
-        }
+	public IndexManager getIndexManager() {
+		return dsf.getIndexManager();
+	}
 
         @Override
-        public SourceManager getSourceManager() {
-                return dsf.getSourceManager();
-        }
+	public SourceManager getSourceManager() {
+		return dsf.getSourceManager();
+	}
 
         @Override
-        public ILayer createLayer(String sourceName) throws LayerException {
-                Source src = dsf.getSourceManager().getSource(sourceName);
-                if (src != null) {
-                        int type = src.getType();
-                        if ((type & (SourceManager.RASTER | SourceManager.SQL |
-                                SourceManager.VECTORIAL | SourceManager.WMS)) != 0) {
+	public ILayer createLayer(String sourceName) throws LayerException {
+		Source src = ((DataManager) Services.getService(DataManager.class))
+				.getDataSourceFactory().getSourceManager().getSource(sourceName);
+		if (src != null) {
+			int type = src.getType();
+			if ((type & (SourceManager.RASTER | SourceManager.VECTORIAL | SourceManager.STREAM)) != 0) {
+				try {
+					DataSource ds = ((DataManager) Services
+							.getService(DataManager.class)).getDataSourceFactory()
+							.getDataSource(sourceName);
+					return createLayer(ds);
+				} catch (DriverLoadException e) {
+					throw new LayerException("Cannot instantiate layer", e);
+				} catch (NoSuchTableException e) {
+					throw new LayerException("Cannot instantiate layer", e);
+				} catch (DataSourceCreationException e) {
+					throw new LayerException("Cannot instantiate layer", e);
+				}
+			} else {
+				throw new LayerException("There is no spatial information: "
+						+ type);
+			}
+		} else {
+			throw new LayerException("There is no source "
+					+ "registered with the name: " + sourceName);
+		}
+	}
+
+        @Override
+	public ILayer createLayer(DataSource sds) throws LayerException {
+		int type = sds.getSource().getType();
+                boolean hasSpatialData = true;
+                if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL
+                        || (type & SourceManager.STREAM) == SourceManager.STREAM) {
+                        int sfi;
+                        try {
+                                sds.open();
+                                sfi = sds.getSpatialFieldIndex();
                                 try {
-                                        DataSource ds = dsf.getDataSource(sourceName);
-                                        return createLayer(ds);
-                                } catch (DriverLoadException e) {
-                                        throw new LayerException("Cannot instantiate layer", e);
-                                } catch (NoSuchTableException e) {
-                                        throw new LayerException("Cannot instantiate layer", e);
-                                } catch (DataSourceCreationException e) {
-                                        throw new LayerException("Cannot instantiate layer", e);
+                                        sds.close();
+                                } catch (AlreadyClosedException e) {
+                                        // ignore
+                                        logger.debug("Cannot close", e);
                                 }
-                        } else {
-                                throw new LayerException("There is no spatial information: "
-                                        + type);
+                                hasSpatialData = (sfi != -1);
+                        } catch (DriverException e) {
+                                throw new LayerException("Cannot check source contents", e);
                         }
+                }
+                if (hasSpatialData) {
+                        return new Layer(sds.getName(), sds);
                 } else {
-                        throw new LayerException("There is no source "
-                                + "registered with the name: " + sourceName);
+                        throw new LayerException("The source contains no spatial info");
                 }
-        }
+	}
 
         @Override
-        public ILayer createLayer(DataSource sds) throws LayerException {
-                int type = sds.getSource().getType();
-                if ((type & SourceManager.WMS) == SourceManager.WMS) {
-                        return new WMSLayer(sds.getName(), sds);
-                } else {
-                        boolean hasSpatialData = true;
-                        /*
-                         * Two special cases:
-                         *  - if there is no vectorial information (this should not happen except for SQL,
-                         *    but still...), we look for one, and for that we need to open the source to
-                         *    get the metadata.
-                         *  - if it is a SQL query, we do not do the above, we just go on. This implicitly
-                         *    implies that ExecuteScriptProcess knows what it is doing, which is usually
-                         *    ok.
-                         * 
-                         * Hopefully this will be removed if/when we get a SourceManager that keeps all
-                         * metadata referenced and accessible at all times.
-                         */
-                        if ((type & SourceManager.VECTORIAL) == 0 && 
-                                (type & SourceManager.SQL) != SourceManager.SQL) {
-                                int sfi;
-                                try {
-                                        sds.open();
-                                        sfi = sds.getSpatialFieldIndex();
-                                        try {
-                                                sds.close();
-                                        } catch (AlreadyClosedException e) {
-                                                // ignore
-                                                logger.debug("Cannot close", e);
-                                        }
-                                        hasSpatialData = (sfi != -1);
-                                } catch (DriverException e) {
-                                        throw new LayerException("Cannot check source contents", e);
-                                }
-                        }
-                        if (hasSpatialData) {
-                                return new Layer(sds.getName(), sds);
-                        } else {
-                                throw new LayerException("The source contains no spatial info");
-                        }
-                }
-        }
+	public ILayer createLayerCollection(String layerName) {
+		return new LayerCollection(layerName);
+	}
 
         @Override
-        public ILayer createLayerCollection(String layerName) {
-                return new LayerCollection(layerName);
-        }
+	public ILayer createLayer(String name, File file) throws LayerException {
+		dsf.getSourceManager().register(name, file);
+		try {
+			DataSource dataSource = dsf.getDataSource(name);
+			return createLayer(dataSource);
+		} catch (DriverLoadException e) {
+			throw new LayerException("Cannot find a suitable driver for "
+					+ file.getAbsolutePath(), e);
+		} catch (NoSuchTableException e) {
+			throw new LayerException("bug!", e);
+		} catch (DataSourceCreationException e) {
+			throw new LayerException("Cannot instantiate layer", e);
+		}
+	}
 
-        @Override
-        public ILayer createLayer(String name, File file) throws LayerException {
-                dsf.getSourceManager().register(name, file);
-                try {
-                        DataSource dataSource = dsf.getDataSource(name);
-                        return createLayer(dataSource);
-                } catch (DriverLoadException e) {
-                        throw new LayerException("Cannot find a suitable driver for "
-                                + file.getAbsolutePath(), e);
-                } catch (NoSuchTableException e) {
-                        throw new LayerException("bug!", e);
-                } catch (DataSourceCreationException e) {
-                        throw new LayerException("Cannot instantiate layer", e);
-                }
-        }
-
-        public ILayer createLayer(File file) throws LayerException {
-                String name = dsf.getSourceManager().nameAndRegister(file);
-                try {
-                        DataSource dataSource = dsf.getDataSource(name);
-                        return createLayer(dataSource);
-                } catch (DriverLoadException e) {
-                        throw new LayerException("Cannot find a suitable driver for "
-                                + file.getAbsolutePath(), e);
-                } catch (NoSuchTableException e) {
-                        throw new LayerException("bug!", e);
-                } catch (DataSourceCreationException e) {
-                        throw new LayerException("Cannot instantiate layer", e);
-                }
-        }
+	public ILayer createLayer(File file) throws LayerException {
+		String name = dsf.getSourceManager().nameAndRegister(file);
+		try {
+			DataSource dataSource = dsf.getDataSource(name);
+			return createLayer(dataSource);
+		} catch (DriverLoadException e) {
+			throw new LayerException("Cannot find a suitable driver for "
+					+ file.getAbsolutePath(), e);
+		} catch (NoSuchTableException e) {
+			throw new LayerException("bug!", e);
+		} catch (DataSourceCreationException e) {
+			throw new LayerException("Cannot instantiate layer", e);
+		}
+	}
 }

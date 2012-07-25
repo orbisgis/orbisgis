@@ -38,11 +38,13 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import org.grap.model.GeoRaster;
 import org.jproj.CoordinateReferenceSystem;
 
-import org.gdms.data.types.IncompatibleTypesException;
+import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.stream.GeoStream;
 
 /**
  * A data container used in Gdms as a container for actual data.
@@ -246,9 +248,7 @@ public interface Value extends Comparable<Value> {
          * Gets the string representation of the value as it is defined in the
          * specified ValueWriter
          *
-         * @param writer
-         * Specifies the string representation for the values
-         *
+         * @param writer specifies the string representation for the values
          * @return String
          */
         String getStringValue(ValueWriter writer);
@@ -282,11 +282,11 @@ public interface Value extends Comparable<Value> {
 
         /**
          * Gets this value as a boolean value.
-         * 
+         *
          * This methods return <tt>true</tt> if the value is SQL TRUE,
          * <tt>false</tt> if the value is SQL FALSE, and <tt>null</tt> if
          * this value is SQL UNKNOWN.
-         * 
+         *
          * Note that is the latter case, we have <code>isNull() == true</code>.
          *
          * @return the value
@@ -318,6 +318,14 @@ public interface Value extends Comparable<Value> {
          * converted
          */
         GeoRaster getAsRaster();
+
+        /**
+         * @return this value if it is a stream value or it can be converted
+         *
+         * @throws IncompatibleTypesException if the value is not of the required type or cannot be
+         * converted
+         */
+        GeoStream getAsStream();
 
         /**
          * @return this value if it is a numeric value or can implicitly be converted to it.
@@ -440,7 +448,7 @@ public interface Value extends Comparable<Value> {
          *
          * @param value
          * @return The remainder.
-         * @throws IncompatibleTypesException if the operation is not possible between 
+         * @throws IncompatibleTypesException if the operation is not possible between
          * these two products.
          */
         NumericValue remainder(Value value);
@@ -458,6 +466,7 @@ public interface Value extends Comparable<Value> {
 
         /**
          * Gets the CRS associated with this Value, if there is one.
+         *
          * @return a valid CRS or null if not present or not applicable
          */
         CoordinateReferenceSystem getCRS();

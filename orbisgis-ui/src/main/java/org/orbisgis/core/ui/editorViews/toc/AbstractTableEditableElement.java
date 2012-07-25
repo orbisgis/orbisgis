@@ -59,16 +59,20 @@ public abstract class AbstractTableEditableElement extends
 	public void close(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		DataSource ds = getDataSource();
-		ds.removeEditionListener(modificationListener);
-		ds.removeMetadataEditionListener(modificationListener);
+                if (ds.isEditable()) {
+                        ds.removeEditionListener(modificationListener);
+                        ds.removeMetadataEditionListener(modificationListener);
+                }
 	}
 
 	@Override
 	public void open(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		DataSource ds = getDataSource();
-		ds.addEditionListener(modificationListener);
-		ds.addMetadataEditionListener(modificationListener);
+                if (ds.isEditable()) {
+                        ds.addEditionListener(modificationListener);
+                        ds.addMetadataEditionListener(modificationListener);
+                }
 	}
 
 	@Override

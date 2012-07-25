@@ -52,13 +52,14 @@ import org.apache.log4j.Logger;
 import org.grap.model.GeoRaster;
 import org.jproj.CoordinateReferenceSystem;
 
+import org.gdms.data.stream.GeoStream;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 
 /**
- * Factory to instantiate Value instances from basic types
- * 
+ * Factory to instantiate Value instances from basic types.
+ *
  */
 public final class ValueFactory {
 
@@ -120,6 +121,20 @@ public final class ValueFactory {
         public static StringValue createValue(String s) {
                 if (s != null) {
                         return new DefaultStringValue(s);
+                } else {
+                        return createNullValue();
+                }
+        }
+
+        /**
+         * Creates a Value instance that contains the specified String value
+         *
+         * @param s
+         * @return
+         */
+        public static StreamValue createValue(GeoStream s) {
+                if (s != null) {
+                        return new DefaultStreamValue(s);
                 } else {
                         return createNullValue();
                 }
@@ -216,19 +231,19 @@ public final class ValueFactory {
 
         /**
          * Instantiates a value of the specified type containing the value with the
-         * specified textual representation
+         * specified textual representation.
          *
          * @param text
-         *            Textual representation of the value to instantiate
+         * Textual representation of the value to instantiate
          * @param type
-         *            Type of the value. Must be one of the constants of the Type
-         *            interface
+         * Type of the value. Must be one of the constants of the Type
+         * interface
          *
          * @return
          *
          * @throws ParseException
-         *             If the textual representation cannot be converted to the
-         *             specified type
+         * If the textual representation cannot be converted to the
+         * specified type
          * @throws NumberFormatException
          */
         public static Value createValueByType(String text, int type)
@@ -337,7 +352,7 @@ public final class ValueFactory {
         /**
          * Creates a new null Value
          *
-         * @param <T> 
+         * @param <T>
          * @return NullValue
          */
         public static <T extends Value> T createNullValue() {
@@ -348,9 +363,9 @@ public final class ValueFactory {
          * Gets a Value with the value v1 plus v2
          *
          * @param v1
-         *            first value
+         * first value
          * @param v2
-         *            second value
+         * second value
          *
          * @return a numeric value with the operation
          */
@@ -482,9 +497,9 @@ public final class ValueFactory {
          * Gets the value of the operation v1 v2
          *
          * @param v1
-         *            first value
+         * first value
          * @param v2
-         *            second value
+         * second value
          *
          * @return a numeric value with the operation
          */
@@ -558,7 +573,7 @@ public final class ValueFactory {
          * Creates a byte array value
          *
          * @param bytes
-         *            bytes of the value
+         * bytes of the value
          *
          * @return
          */
@@ -570,7 +585,7 @@ public final class ValueFactory {
          * Creates a Value instance that contains the specified geometry value
          *
          * @param geom
-         * @param crs 
+         * @param crs
          * @return
          */
         public static GeometryValue createValue(Geometry geom, CoordinateReferenceSystem crs) {
@@ -596,7 +611,7 @@ public final class ValueFactory {
                         return createNullValue();
                 }
         }
-        
+
         /**
          * Creates a Value instance that contains the specified geometry value
          *
@@ -611,7 +626,7 @@ public final class ValueFactory {
          * Creates a Value instance that contains the specified Point value
          *
          * @param geom
-         * @param crs 
+         * @param crs
          * @return
          */
         public static PointValue createValue(Point geom, CoordinateReferenceSystem crs) {
@@ -621,7 +636,7 @@ public final class ValueFactory {
                         return createNullValue();
                 }
         }
-        
+
         /**
          * Creates a Value instance that contains the specified Point value
          *
@@ -636,7 +651,7 @@ public final class ValueFactory {
          * Creates a Value instance that contains the specified LineString value
          *
          * @param geom
-         * @param crs 
+         * @param crs
          * @return
          */
         public static LineStringValue createValue(LineString geom, CoordinateReferenceSystem crs) {
@@ -646,7 +661,7 @@ public final class ValueFactory {
                         return createNullValue();
                 }
         }
-        
+
         /**
          * Creates a Value instance that contains the specified LineString value
          *
@@ -661,7 +676,7 @@ public final class ValueFactory {
          * Creates a Value instance that contains the specified LineString value
          *
          * @param geom
-         * @param crs 
+         * @param crs
          * @return
          */
         public static PolygonValue createValue(Polygon geom, CoordinateReferenceSystem crs) {
@@ -671,7 +686,7 @@ public final class ValueFactory {
                         return createNullValue();
                 }
         }
-        
+
         /**
          * Creates a Value instance that contains the specified LineString value
          *
@@ -686,7 +701,7 @@ public final class ValueFactory {
          * Creates a Value instance that contains the specified LineString value
          *
          * @param geom
-         * @param crs 
+         * @param crs
          * @return
          */
         public static GeometryCollectionValue createValue(GeometryCollection geom, CoordinateReferenceSystem crs) {
@@ -696,7 +711,7 @@ public final class ValueFactory {
                         return createNullValue();
                 }
         }
-        
+
         /**
          * Creates a Value instance that contains the specified LineString value
          *
@@ -711,7 +726,7 @@ public final class ValueFactory {
          * Creates a Value instance that contains the specified LineString value
          *
          * @param geom
-         * @param crs 
+         * @param crs
          * @return
          */
         public static MultiPointValue createValue(MultiPoint geom, CoordinateReferenceSystem crs) {
@@ -721,7 +736,7 @@ public final class ValueFactory {
                         return createNullValue();
                 }
         }
-        
+
         /**
          * Creates a Value instance that contains the specified LineString value
          *
@@ -736,7 +751,7 @@ public final class ValueFactory {
          * Creates a Value instance that contains the specified LineString value
          *
          * @param geom
-         * @param crs 
+         * @param crs
          * @return
          */
         public static MultiLineStringValue createValue(MultiLineString geom, CoordinateReferenceSystem crs) {
@@ -746,7 +761,7 @@ public final class ValueFactory {
                         return createNullValue();
                 }
         }
-        
+
         /**
          * Creates a Value instance that contains the specified LineString value
          *
@@ -761,7 +776,7 @@ public final class ValueFactory {
          * Creates a Value instance that contains the specified LineString value
          *
          * @param geom
-         * @param crs 
+         * @param crs
          * @return
          */
         public static MultiPolygonValue createValue(MultiPolygon geom, CoordinateReferenceSystem crs) {
@@ -771,7 +786,7 @@ public final class ValueFactory {
                         return createNullValue();
                 }
         }
-        
+
         /**
          * Creates a Value instance that contains the specified LineString value
          *
@@ -795,12 +810,12 @@ public final class ValueFactory {
                         return createNullValue();
                 }
         }
-        
+
         /**
          * Creates a Value instance that contains the specified raster value
          *
          * @param raster
-         * @param crs 
+         * @param crs
          * @return
          */
         public static RasterValue createValue(GeoRaster raster, CoordinateReferenceSystem crs) {
@@ -816,9 +831,9 @@ public final class ValueFactory {
          * obtained by a previous call to Value.getBytes
          *
          * @param valueType
-         *            The type of the value. one of the constants in Type interface
+         * The type of the value. one of the constants in Type interface
          * @param buffer
-         *            byte representation of the value
+         * byte representation of the value
          *
          * @return
          */

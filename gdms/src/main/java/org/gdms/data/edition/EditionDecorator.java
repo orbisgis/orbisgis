@@ -170,6 +170,11 @@ public final class EditionDecorator extends AbstractDataSourceDecorator implemen
                                                 if ((v != null) && (!v.isNull())) {
                                                         r = v.getAsRaster().getMetadata().getEnvelope();
                                                 }
+                                        } else if (typeCode == Type.STREAM) {
+                                                Value v = getFieldValue(i, j);
+                                                if ((v != null) && (!v.isNull())) {
+                                                        r = v.getAsStream().getEnvelope();
+                                                }
                                         }
                                         if (r != null) {
                                                 if (cachedScope == null) {

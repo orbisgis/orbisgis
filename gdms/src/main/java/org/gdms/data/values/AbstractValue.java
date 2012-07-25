@@ -38,6 +38,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 import java.util.regex.Pattern;
 
+import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import org.grap.model.GeoRaster;
 import org.jproj.CoordinateReferenceSystem;
@@ -45,6 +46,7 @@ import org.jproj.CoordinateReferenceSystem;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.gdms.data.stream.GeoStream;
 
 /**
  * Parent wrapper. This class provides very basic implementation of the
@@ -638,9 +640,18 @@ public abstract class AbstractValue implements Value {
         public int compareTo(Value o) {
                 throw new IncompatibleTypesException("Cannot compare " + this + " and " + o);
         }
-
+        
         @Override
         public CoordinateReferenceSystem getCRS() {
                 return null;
+        }
+
+        @Override
+        public GeoStream getAsStream() {
+               if (isNull()) {
+                        return null;
+                }
+                throw new IncompatibleTypesException("This value is not GeoStream: "
+                        + toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
         }
 }

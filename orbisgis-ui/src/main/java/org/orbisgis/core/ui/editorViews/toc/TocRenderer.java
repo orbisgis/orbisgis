@@ -94,7 +94,7 @@ public class TocRenderer extends TocAbstractRenderer implements
 					return ourJPanel.getJPanel();
 				}
 
-				else if (layer.isWMS()) {
+				else if (layer.isStream()) {
 					WMSLegendRenderPanel ourJPanel = new WMSLegendRenderPanel();
 					ourJPanel.setNodeCosmetic(tree, legendNode.getLayer(),
 							legendNode.getLegendIndex(), selected, expanded,

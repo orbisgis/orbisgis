@@ -42,7 +42,7 @@ import java.util.HashMap;
  * @author Antoine Gourlay
  */
 public final class TypeFactory {
-        
+
         private static void checkNotNull(int typeCode) {
                 if (typeCode == Type.NULL) {
                         throw new InvalidTypeException("You cannot build a NULL type!");
@@ -59,7 +59,7 @@ public final class TypeFactory {
          */
         public static Type createType(final int typeCode) {
                 final String desc = DefaultType.typesDescription.get(typeCode);
-                if (desc == null ) {
+                if (desc == null) {
                         throw new InvalidTypeException("There is no known type with typeCode " + typeCode);
                 }
                 return createType(typeCode, desc);
@@ -93,8 +93,8 @@ public final class TypeFactory {
          * @param constraints
          * @return
          * @throws InvalidTypeException if typeCode is an unknown type code or is Type.NULL, or
-         *   if the constraints are not valid for this type
-         * 
+         * if the constraints are not valid for this type
+         *
          */
         public static Type createType(final int typeCode,
                 final Constraint... constraints) {
@@ -114,7 +114,7 @@ public final class TypeFactory {
          * @param constraints
          * @return
          * @throws InvalidTypeException if typeCode is an unknown type code or is Type.NULL, or
-         *   if the constraints are not valid for this type
+         * if the constraints are not valid for this type
          */
         public static Type createType(final int typeCode, final String typeName,
                 final Constraint... constraints) {
@@ -168,6 +168,8 @@ public final class TypeFactory {
                                 return "raster";
                         case Type.SHORT:
                                 return "short";
+                        case Type.STREAM:
+                                return "stream";
                         case Type.STRING:
                                 return "string";
                         case Type.TIME:
@@ -213,7 +215,7 @@ public final class TypeFactory {
         public static int[] getTypes() {
                 return new int[]{Type.BINARY, Type.BOOLEAN, Type.BYTE, Type.DATE,
                                 Type.DOUBLE, Type.FLOAT, Type.GEOMETRY, Type.INT, Type.LONG,
-                                Type.RASTER, Type.SHORT, Type.STRING, Type.TIME, Type.TIMESTAMP,
+                                Type.RASTER, Type.STREAM, Type.SHORT, Type.STRING, Type.TIME, Type.TIMESTAMP,
                                 Type.POINT, Type.MULTIPOINT, Type.LINESTRING, Type.MULTILINESTRING,
                                 Type.POLYGON, Type.MULTIPOLYGON, Type.GEOMETRYCOLLECTION};
         }
@@ -225,7 +227,8 @@ public final class TypeFactory {
          * @return true if it is a spatial type
          */
         public static boolean isSpatial(int typeCode) {
-                return ((typeCode & Type.GEOMETRY) != 0 || (typeCode == Type.RASTER)) || typeCode == Type.NULL;
+                return (typeCode & Type.GEOMETRY) != 0 || typeCode == Type.RASTER
+                        || typeCode == Type.STREAM || typeCode == Type.NULL;
         }
 
         /**
@@ -252,7 +255,7 @@ public final class TypeFactory {
         /**
          * Returns the type being able to accept all the values the other type
          * accepts. Returns Type.NULL if the types are not compatible.
-         * 
+         *
          * Type.NULL is compatible with everything, and the broader type is the other type.
          *
          * @param type1
@@ -265,7 +268,7 @@ public final class TypeFactory {
                 } else if (type2 == Type.NULL) {
                         return type1;
                 }
-                
+
                 if (isNumerical(type1) && isNumerical(type2)) {
                         HashMap<Integer, Integer> typeSort = new HashMap<Integer, Integer>();
                         typeSort.put(Type.BYTE, 0);
@@ -301,14 +304,14 @@ public final class TypeFactory {
                         int sort = Math.max(sort1, sort2);
                         return sortType.get(sort);
                 } else if (isVectorial(type1) && isVectorial(type2)) {
-                        if ((type1 & Type.GEOMETRYCOLLECTION) == Type.GEOMETRYCOLLECTION 
+                        if ((type1 & Type.GEOMETRYCOLLECTION) == Type.GEOMETRYCOLLECTION
                                 && (type2 & Type.GEOMETRYCOLLECTION) == Type.GEOMETRYCOLLECTION) {
                                 return Type.GEOMETRYCOLLECTION;
                         } else {
                                 return Type.GEOMETRY;
                         }
                 } else if (type1 == type2) {
-                                return type1;
+                        return type1;
                 }
 
                 return Type.NULL;
