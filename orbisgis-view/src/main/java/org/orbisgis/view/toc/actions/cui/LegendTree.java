@@ -381,13 +381,13 @@ public class LegendTree extends JPanel {
                 //We must add it just after the currently selected Rule.
                 //Let's find which one it is. If there is none, we add it at the
                 //end of the list.
-                MultiInputPanel mip = new MultiInputPanel("Choose a name for your rule");
-                mip.addInput("RuleName", "Name of the Rule : ", new TextBoxType(10));
+                MultiInputPanel mip = new MultiInputPanel(I18N.tr("Choose a name for your rule"));
+                mip.addInput("RuleName", I18N.tr("Name of the Rule : "), new TextBoxType(10));
                 mip.addValidation(new MIPValidation() {
                         @Override
                         public String validate(MultiInputPanel mid) {
                                 String ruleName = mid.getInput("RuleName");
-                                return ruleName.isEmpty() ? "Rule name cannot be null or empty." : null;
+                                return ruleName.isEmpty() ? I18N.tr("Rule name cannot be null or empty.") : null;
                         }
                 });
                 if (UIFactory.showDialog(mip)) {
