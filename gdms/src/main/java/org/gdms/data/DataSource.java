@@ -818,7 +818,7 @@ public interface DataSource extends DataSet {
         boolean isVectorial() throws DriverException;
         
         /**
-         * Gets if true if the default geometry is a stream.
+         * Gets if the default geometry is a stream.
          * 
          * @return true if a stream
          * @throws DriverException  
