@@ -30,6 +30,8 @@ package org.orbisgis.view.sqlconsole.ui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
@@ -42,6 +44,7 @@ public class SQLConsoleAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
         private ActionListener actionListener;
         private KeyStroke keyStroke;
+        private List<KeyStroke> additionnalKeyStrokes = new ArrayList<KeyStroke>();
         /**
          * 
          * @param actionLabel I18N label short label
@@ -78,5 +81,24 @@ public class SQLConsoleAction extends AbstractAction {
         public void actionPerformed(ActionEvent ae) {
                 actionListener.actionPerformed(ae);
         }
+        
+        /**
+         * Add a new Accelerator for this action (not used in menu and toolbars)
+         * @see getAdditionnalKeyStrokes
+         * @param keyStroke
+         * @return this
+         */
+        public SQLConsoleAction addStroke(KeyStroke keyStroke) {
+                additionnalKeyStrokes.add(keyStroke);
+                return this;
+        }
+        /**
+        * @see addStroke
+        * @return Accelerator for this action (not used in menu and toolbars)
+        */
+        public List<KeyStroke> getAdditionnalKeyStrokes() {
+                return additionnalKeyStrokes;
+        }
+        
         
 }

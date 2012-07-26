@@ -35,6 +35,7 @@ import java.util.EventObject;
  * Event Data when filters must be regenerated
  */
 public class FilterChangeEventData  extends EventObject {
+    private static final long serialVersionUID = 1L;
     /**
      * Event Data Constructor
      * @param o Source, the FilterFactoryManager instance

@@ -71,8 +71,10 @@ import javax.swing.border.BevelBorder;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.events.Listener;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.sqlconsole.ui.functionFilters.NameFilterFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -94,6 +96,9 @@ public class SQLFunctionsPanel extends JPanel {
         private final FunctionManager functionManager;
         private final ActionListener collapseListener = EventHandler.create(ActionListener.class,this,"collapse");
         private final ActionListener expandListener = EventHandler.create(ActionListener.class,this,"expand");
+        private final Listener filterEvent = EventHandler.create(Listener.class,this,"doFilter");
+        
+        
         protected final static I18n I18N = I18nFactory.getI18n(SQLFunctionsPanel.class);
         
         public SQLFunctionsPanel() {
@@ -114,6 +119,9 @@ public class SQLFunctionsPanel extends JPanel {
 
                 expandedPanel.add(btnCollapse, BorderLayout.WEST);
                 expandedPanel.add(new JScrollPane(list), BorderLayout.CENTER);
+                functionFilters.setUserCanRemoveFilter(false);
+                expandedPanel.add(functionFilters.makeFilterPanel(false), BorderLayout.NORTH);
+                                
                 list.setCellRenderer(new FunctionListRenderer(list));
                 list.setTransferHandler(new FunctionListTransferHandler());
                 list.setDragEnabled(true);
@@ -133,6 +141,15 @@ public class SQLFunctionsPanel extends JPanel {
 
         }
 
+        @Override
+        public void addNotify() {
+                super.addNotify();                
+                functionFilters.getEventFilterChange().addListener(this, filterEvent);
+                NameFilterFactory nameFilter = new NameFilterFactory();
+                functionFilters.registerFilterFactory(nameFilter);
+                functionFilters.addFilter(nameFilter.getFactoryId(), "");
+        }
+
         public String[] getSelectedSources() {
                 Object[] selectedValues = list.getSelectedValues();
                 String[] sources = new String[selectedValues.length];
@@ -143,9 +160,11 @@ public class SQLFunctionsPanel extends JPanel {
                 return sources;
         }
 
-        private void doFilter() {
-                //functionListModel.filter(txtFilter.getText());
-                functionListModel.refreshFunctionList();
+        /**
+         * Called by the listener filterEvent
+         */
+        public void doFilter() {
+                functionListModel.setFilters(functionFilters.getFilters());
         }
 
         /**

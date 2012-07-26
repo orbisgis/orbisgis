@@ -35,14 +35,15 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.EventHandler;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
@@ -66,10 +67,12 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
+import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.findReplace.FindReplaceDialog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.sqlconsole.actions.ExecuteScriptProcess;
+import org.orbisgis.view.sqlconsole.blockComment.QuoteSQL;
 import org.orbisgis.view.sqlconsole.codereformat.CodeReformator;
 import org.orbisgis.view.sqlconsole.codereformat.CommentSpec;
 import org.orbisgis.view.sqlconsole.language.SQLLanguageSupport;
@@ -89,11 +92,9 @@ public class SQLConsolePanel extends JPanel {
         private JToolBar infoToolBar;
         private JToolBar commandToolBar;
         
-        //Keep buttons reference to enable/disable them
-        private Map<SQLConsoleAction,ArrayList<AbstractButton>> actionButtons = new HashMap<SQLConsoleAction,ArrayList<AbstractButton>>();
-        
         private RTextScrollPane centerPanel;
         private RSyntaxTextArea scriptPanel;
+        private CodeReformator codeReformator;
         private JLabel statusMessage;
         private Timer timer;
         private int lastSQLStatementToReformatStart;
@@ -110,7 +111,9 @@ public class SQLConsolePanel extends JPanel {
         
         //Actions
         private List<SQLConsoleAction> actions = new ArrayList<SQLConsoleAction>();
-                
+        //Keep buttons reference to enable/disable them
+        private Map<SQLConsoleAction,ArrayList<AbstractButton>> actionButtons = new HashMap<SQLConsoleAction,ArrayList<AbstractButton>>();
+                        
         /**
          * Creates a console for sql.
          */
@@ -124,6 +127,16 @@ public class SQLConsolePanel extends JPanel {
                 add(split, BorderLayout.CENTER);
                 add(getStatusToolBar(), BorderLayout.SOUTH);
         }
+
+        @Override
+        public void removeNotify() {
+                super.removeNotify();
+                if (findReplaceDialog != null) {
+                        findReplaceDialog.dispose();
+                }                
+        }
+        
+        
         
         /**
          * Register action button, to enable/disable them later
@@ -139,6 +152,9 @@ public class SQLConsolePanel extends JPanel {
 
         /**
          * Create actions instances
+         * 
+         * Each action is put in the Popup menu and the tool bar
+         * Their shortcuts is registered also in the editor
          */
         private void initActions() {
                 //Execute Action
@@ -147,7 +163,7 @@ public class SQLConsolePanel extends JPanel {
                         I18N.tr("Run SQL statements"),
                         OrbisGISIcon.getIcon("execute"),
                         EventHandler.create(ActionListener.class,this,"onExecute"),
-                        KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_MASK)
+                        KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK)
                         ));
                 //Clear action
                 actions.add(new SQLConsoleAction(
@@ -163,7 +179,50 @@ public class SQLConsolePanel extends JPanel {
                         I18N.tr("Load a file in this editor"),
                         OrbisGISIcon.getIcon("open"),
                         EventHandler.create(ActionListener.class,this,"onOpenFile"),
-                        KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_MASK)
+                        KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)
+                       ));
+                //Find action                
+                actions.add(new SQLConsoleAction(
+                        I18N.tr("Search.."),
+                        I18N.tr("Search text in the document"),
+                        OrbisGISIcon.getIcon("find"),
+                        EventHandler.create(ActionListener.class,this,"openFindReplaceDialog"),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK)
+                       ).addStroke(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK)));
+                
+                //Quote
+                actions.add(new SQLConsoleAction(
+                        I18N.tr("Quote"),
+                        I18N.tr("Quote selected text"),
+                        null,
+                        EventHandler.create(ActionListener.class,this,"onQuote"),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_SLASH, InputEvent.SHIFT_DOWN_MASK)
+                       ));
+                //unQuote
+                actions.add(new SQLConsoleAction(
+                        I18N.tr("Un Quote"),
+                        I18N.tr("Un Quote selected text"),
+                        null,
+                        EventHandler.create(ActionListener.class,this,"onUnQuote"),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SLASH, InputEvent.SHIFT_DOWN_MASK)
+                       ));
+                
+                //Format SQL
+                actions.add(new SQLConsoleAction(
+                        I18N.tr("Format"),
+                        I18N.tr("Format editor content"),
+                        null,
+                        EventHandler.create(ActionListener.class,this,"onFormatCode"),
+                        KeyStroke.getKeyStroke("alt shift F")
+                       ));
+                
+                //Save
+                actions.add(new SQLConsoleAction(
+                        I18N.tr("Save"),
+                        I18N.tr("Save the editor content into a file"),
+                        OrbisGISIcon.getIcon("save"),
+                        EventHandler.create(ActionListener.class,this,"onSaveFile"),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)
                        ));
         }
         /**
@@ -187,8 +246,6 @@ public class SQLConsolePanel extends JPanel {
                 }
                 return commandToolBar;
         }
-        
-        
         
         /**
          * The map context is used to show the selected geometries
@@ -217,7 +274,12 @@ public class SQLConsolePanel extends JPanel {
                 ActionMap actionMap = component.getActionMap();
                 for(SQLConsoleAction action : actions) {
                         if(action.getKeyStroke()!=null) {
-                                actionMap.put(im.get(action.getKeyStroke()), action);
+                                im.put(action.getKeyStroke(), action);
+                                actionMap.put(action, action);
+                                //Additionnal strokes
+                                for(KeyStroke stroke : action.getAdditionnalKeyStrokes()) {                                        
+                                        im.put(stroke, action);
+                                }
                         }
                 }
         }
@@ -233,7 +295,7 @@ public class SQLConsolePanel extends JPanel {
                         lang = new SQLLanguageSupport();
                         lang.install(scriptPanel);
 
-                        CodeReformator codeReformator = new CodeReformator(";",
+                        codeReformator = new CodeReformator(";",
                                 COMMENT_SPECS);
                         scriptPanel.addCaretListener(EventHandler.create(CaretListener.class,this,"onScriptPanelCaretUpdate"));
                         //Add custom actions
@@ -249,6 +311,40 @@ public class SQLConsolePanel extends JPanel {
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
                 bm.backgroundOperation(new ExecuteScriptProcess(getText(), this,mapContext));
         }
+               
+        /**
+         * Open a dialog that let the user to select a file and save the content
+         * of the sql editor into this file.
+         */
+        public void onSaveFile() {
+                BufferedWriter out = null;
+                try {
+                        final SaveFilePanel outfilePanel = new SaveFilePanel(
+                                "sqlConsoleOutFile", I18N.tr("Save script"));
+                        outfilePanel.addFilter("sql", I18N.tr("SQL script (*.sql)"));
+
+                        if (UIFactory.showDialog(outfilePanel)) {
+                                out = new BufferedWriter(
+                                        new FileWriter(outfilePanel.getSelectedFile()));
+                                out.write(scriptPanel.getText());
+                                setStatusMessage(I18N.tr("The file has been saved."));
+
+                        } else {
+                                setStatusMessage("");
+                        }
+                } catch (IOException e1) {
+                        LOGGER.error(I18N.tr("IO error."), e1);
+                } finally {
+                        if(out!=null) {
+                                try {
+                                        out.close();
+                                } catch (IOException ex) {
+                                        LOGGER.error(I18N.tr("Fail to close the file"), ex);
+                                }
+                        }
+                }
+        }
+
         /**
          * Open a dialog that let the user to select a file
          * and add or replace the content of the sql editor.
@@ -260,8 +356,6 @@ public class SQLConsolePanel extends JPanel {
                                 "sqlConsoleInFile",
                                 I18N.tr("Open script"));
                         inFilePanel.addFilter("sql", I18N.tr("SQL script (*.sql)"));
-                        String script;
-                        final String eol = System.getProperty("line.separator");
                         if (UIFactory.showDialog(inFilePanel)) {
                                 File selectedFile = inFilePanel.getSelectedFile();
                                 in = new BufferedReader(
@@ -282,7 +376,7 @@ public class SQLConsolePanel extends JPanel {
                                 
                                 if(answer != JOptionPane.CANCEL_OPTION) {
                                         while(in.ready()) {
-                                                scriptPanel.append(in.readLine());
+                                                scriptPanel.append(in.readLine()+"\n");
                                         }
                                 }
                         }
@@ -298,6 +392,28 @@ public class SQLConsolePanel extends JPanel {
                         }
                 }
         }
+        
+        
+        /**
+         * Add quote to the selected sql
+         */
+        public void onQuote() {
+                QuoteSQL.quoteSQL(this, false);
+        }
+        /**
+         * Remove quote to the selected sql
+         */
+        public void onUnQuote() {
+                QuoteSQL.unquoteSQL(this);
+        }
+        /**
+         * Format SQL code
+         */
+        public void onFormatCode() {
+                replaceCurrentSQLStatement(
+                codeReformator.reformat(getCurrentSQLStatement()));
+        }
+        
         /**
          * Prompt the user to accept the document cleaning.
          */
@@ -492,26 +608,9 @@ public class SQLConsolePanel extends JPanel {
          */
         public void openFindReplaceDialog() {
                 if (findReplaceDialog == null) {
-                        findReplaceDialog = new FindReplaceDialog(getScriptPanel());
+                        findReplaceDialog = new FindReplaceDialog(scriptPanel);
                 }
                 findReplaceDialog.setAlwaysOnTop(true);
                 findReplaceDialog.setVisible(true);
-        }
-        
-        /**
-         * Run the SQL command in the editor
-         */
-        private class RunAction extends AbstractAction {
-                private static final long serialVersionUID = 1L;
-
-                public RunAction() {
-                        
-                }
-
-                @Override
-                public void actionPerformed(ActionEvent ae) {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-                
         }
 }

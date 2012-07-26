@@ -75,6 +75,7 @@ public class FilterFactoryManager<FilterInterface> {
     //Listener on filter change
     private ListenerContainer<FilterChangeEventData> eventFilterChange = new ListenerContainer<FilterChangeEventData>();
     
+    private boolean userCanRemoveFilter = true;
     /**
      * Add a filter factory
      * @param filterFactory The filter factory instance
@@ -152,20 +153,26 @@ public class FilterFactoryManager<FilterInterface> {
     private void addFilterComponent(Component newFilterComponent,ActiveFilter activeFilter) {
         //the factory name
         JPanel filterPanel = new JPanel(new BorderLayout());
-        //Create the remove button
-        JButton removeButton = makeRemoveFilterButton();
-        //Attach listener, will call the onRemoveFilter method
-        //with the parent container as argument
-        removeButton.addActionListener(
-                EventHandler.create(
-                ActionListener.class, this, "onRemoveFilter","source.parent")
-        );
-        //Add the button in the filter panel
-        filterPanel.add(removeButton,BorderLayout.WEST);        
+        if(userCanRemoveFilter) {
+                //Create the remove button
+                JButton removeButton = makeRemoveFilterButton();
+                //Attach listener, will call the onRemoveFilter method
+                //with the parent container as argument
+                removeButton.addActionListener(
+                        EventHandler.create(
+                        ActionListener.class, this, "onRemoveFilter","source.parent")
+                );
+                //Add the button in the filter panel
+                filterPanel.add(removeButton,BorderLayout.WEST);
+        }
         //Create a layout to contain the factory and filter components
         JPanel factoryAndFilter = new JPanel(new BorderLayout());
-        //Create the filter factory combobox
-        factoryAndFilter.add(makeFilterFactoriesComboBox(activeFilter.getFactoryId()),BorderLayout.WEST);
+        if(filterFactories.size()>1) {
+                //Create the filter factory combobox
+                factoryAndFilter.add(makeFilterFactoriesComboBox(activeFilter.getFactoryId()),BorderLayout.WEST);
+        } else {
+                factoryAndFilter.add(makeFileFactoryLabel(filterFactories.get(activeFilter.getFactoryId()).getFilterLabel()),BorderLayout.WEST);
+        }
         if(newFilterComponent!=null) {
             //Add the factory component in the filter panel
             factoryAndFilter.add(newFilterComponent,BorderLayout.CENTER);
@@ -178,6 +185,26 @@ public class FilterFactoryManager<FilterInterface> {
         //Refresh the GUI
         filterListPanel.updateUI();
     }
+
+    /**
+     * Is The remove button at the left of filters is visible
+     * @return 
+     */
+    public boolean isUserCanRemoveFilter() {
+        return userCanRemoveFilter;
+    }
+
+    /**
+     * Hide/Show The remove button at the left of filters
+     * This parameter is only active on new filters
+     * @param userCanRemoveFilter 
+     */
+    public void setUserCanRemoveFilter(boolean userCanRemoveFilter) {
+        this.userCanRemoveFilter = userCanRemoveFilter;
+    }
+    
+    
+    
     /**
      * Create a new filter in the UI filter list
      * @param filterFactoryId The factory identification
@@ -212,7 +239,8 @@ public class FilterFactoryManager<FilterInterface> {
 
     /**
      * Replace all FactoryComboBox by Labels
-     * Navigation through components is quite difficult and verbose
+     * Navigation through components is quite difficult and verbose.
+     * A reference could be used instead of doing the kind of navigation
      */
     private void replaceFactoryComboBoxByLabels() {
         boolean uiChange=false;
@@ -231,7 +259,7 @@ public class FilterFactoryManager<FilterInterface> {
                             //Remove the factory list
                             ((JPanel)factoryAndFilter).remove(factoryList);
                             //Place the Label
-                            ((JPanel)factoryAndFilter).add(new JLabel(itemLabel), BorderLayout.WEST);
+                            ((JPanel)factoryAndFilter).add(makeFileFactoryLabel(itemLabel), BorderLayout.WEST);
                             ((JPanel)factoryAndFilter).doLayout();
                             uiChange=true;
                         }
@@ -299,6 +327,12 @@ public class FilterFactoryManager<FilterInterface> {
         //Add a new filter with an empty value
         addFilter(filterFactoryId,"");
     }
+    
+    private JLabel makeFileFactoryLabel(String selectedFactory) {
+            return new JLabel(selectedFactory);
+    }
+    
+    
     /**
      * Create a new filter factories combo box
      * @return A new instance of filterFactoriesComboBox
