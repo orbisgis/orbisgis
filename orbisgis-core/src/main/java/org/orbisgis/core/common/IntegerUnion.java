@@ -28,8 +28,10 @@
  */
 package org.orbisgis.core.common;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 /**
  * This class aggregates consecutive integers.
@@ -41,7 +43,7 @@ import java.util.Iterator;
  */
 public class IntegerUnion implements Iterable<Integer> {
     // int intervals ex: 0,15,50,60 for 0 to 15 and 50 to 60    
-    private IntegerArray intervals=new IntegerArray();
+    private List<Integer> intervals=new ArrayList<Integer>();
         
     /**
      * Default constructor
@@ -81,42 +83,64 @@ public class IntegerUnion implements Iterable<Integer> {
     /**
      * Add a row index in the list
      * @param row The row index. Duplicates are not pushed, and do not raise errors.
-     * @TODO Add function to push a range instead of a single row index
-     * @TODO refactor, use only one call of binarySearch !
+     * @TODO Add function to push a range instead of a single int
      */
-    public void addRow(int row) {
+    public void add(int row) {
         // Iterate over the row range array and find contiguous row
         boolean inserted = false;
+        
         //Find the first nearest value in ranges
         int index = Collections.binarySearch(intervals, row);
-        
+        if(index>=0) {
+                return;
+        }
+        index=-index-1; //retrieve the nearest index by order
+        // intervals[index] > row
+        if(index % 2==0) {
+                //If index corresponding to begin of a range
+                
+        } else {
+                //If index corresponding to the end of a range
+        }        
+        if(!inserted) {
+                //New range
+                intervals.add(index,row);
+                intervals.add(index,row);            
+        }        
     }
 
     @Override
     public Iterator<Integer> iterator() {
-        return new RowIterator(intervals.iterator());
+        return new RowIterator();
+    }
+    /**
+     * 
+     * @return intervals ex: 0,0,50,60 for [0] and [50-60]
+     */
+    public List<Integer> getRowRanges() {
+            return intervals;
     }
     private class RowIterator implements Iterator<Integer> {
-        int index = 0;
-        int current = 0;
-        int itEnd = 0;
+        private Iterator<Integer> it;
+        private Integer current = 0;
+        private Integer itEnd = 0;
 
         public RowIterator() {
-            if(size!=0) {
-                    current = intervals[0];
-                    itEnd = intervals[1];
-                    index = 1;
+            it = intervals.iterator();
+            if(!intervals.isEmpty()) {
+                    current = it.next();
+                    itEnd = it.next();
             }
         }
         
         @Override
         public boolean hasNext() {
-            return current<itEnd && itR.hasNext();
+            return current<itEnd && it.hasNext();
         }
 
         @Override
         public Integer next() {
-            return new RowInterval(itR.next(),itR.next()+1);
+            return current++;
         }
 
         @Override
