@@ -187,8 +187,8 @@ public class FilterFactoryManager<FilterInterface> {
     }
 
     /**
-     * Is The remove button at the left of filters is visible
-     * @return 
+     * @see FilterFactoryManager.setUserCanRemoveFilter
+     * @return False if the next remove buttons will not be created
      */
     public boolean isUserCanRemoveFilter() {
         return userCanRemoveFilter;
