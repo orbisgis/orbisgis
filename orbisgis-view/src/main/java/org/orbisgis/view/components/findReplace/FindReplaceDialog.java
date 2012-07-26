@@ -44,7 +44,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  * FindReplaceDialog is based on the Fred Swartz job's.
  * http://leepoint.net/notes-java/GUI/layouts/gridbag-example.html
  *
