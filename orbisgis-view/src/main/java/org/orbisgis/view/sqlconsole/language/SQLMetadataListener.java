@@ -32,7 +32,7 @@ import org.gdms.data.schema.Metadata;
 
 /**
  * A listener for things that happen in a {@link SQLMetadataManager}.
- * @author antoine
+ * @author Antoine Gourlay
  */
 public interface SQLMetadataListener {
         

@@ -54,7 +54,7 @@ import org.orbisgis.view.background.UniqueJobID;
 
 /**
  * Handles all Metadata-related caching for the {@link SQLLanguageSupport} class.
- * @author antoine
+ * @author Antoine Gourlay
  */
 public class SQLMetadataManager implements SourceListener {
 

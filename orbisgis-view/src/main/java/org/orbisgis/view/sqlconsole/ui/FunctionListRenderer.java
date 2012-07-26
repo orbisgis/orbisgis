@@ -39,7 +39,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  * Class to improve the function list rendering. Add icons corresponding to
  * FunctionElement type.
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class FunctionListRenderer extends ListLaFRenderer {
         private static final long serialVersionUID = 1L;

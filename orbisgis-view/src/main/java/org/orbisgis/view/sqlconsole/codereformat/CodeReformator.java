@@ -50,12 +50,13 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.orbisgis.utils.I18N;
 import org.orbisgis.utils.TextUtils;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 public class CodeReformator implements ICodeReformator {
 	private static final String INDENT = "   ";
-
+        protected final static I18n I18N = I18nFactory.getI18n(CodeReformator.class);
 	private static final int TRY_SPLIT_LINE_LEN = 80;
 
 	private String _statementSeparator;
@@ -124,7 +125,7 @@ public class CodeReformator implements ICodeReformator {
 
 			// i18n[editextras.reformatFailed=Reformat failed, normalized
 			// Strings differ]
-			StringBuilder msg = new StringBuilder(I18N.getString("orbisgis.core.ui.plugins.views.sqlConsole.codereformat.reformatFailed"));
+			StringBuilder msg = new StringBuilder(I18N.tr("Reformat failed, normalised strings differ"));
 			msg.append(_lineSep);
 			msg.append(normalizedBefore);
 			msg.append(_lineSep);

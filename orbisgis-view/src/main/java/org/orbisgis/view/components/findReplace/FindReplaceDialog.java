@@ -28,9 +28,13 @@
  */
 package org.orbisgis.view.components.findReplace;
 
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.GraphicsConfiguration;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import javax.swing.*;
@@ -73,16 +77,52 @@ public final class FindReplaceDialog extends JDialog {
         JCheckBox upCB;
         JCheckBox downCB;
 
-        public FindReplaceDialog(RSyntaxTextArea rSyntaxTextArea) {
-                super();
-                this.rSyntaxTextArea = rSyntaxTextArea;
+        @Override
+        public void addNotify() {
+                super.addNotify();
+                initialize();
+        }
+        
+        private void initialize() {                
                 getContentPane().add(createContentPane());
                 setLocationRelativeTo(rSyntaxTextArea);
                 setTitle(I18N.tr("Search replace"));
                 pack();
                 setResizable(false);
         }
+        
+        private FindReplaceDialog() {
+                rSyntaxTextArea = null;
+        }
 
+        /**
+         * This constructor doesn't define an owner.
+         * L&F and dispose functions will not be called automatically
+         * 
+         * @param rSyntaxTextArea 
+         * @deprecated Use a constructor with a frame owner
+         */
+        public FindReplaceDialog(RSyntaxTextArea rSyntaxTextArea) {
+                super();
+                this.rSyntaxTextArea = rSyntaxTextArea;
+        }
+
+        public FindReplaceDialog(RSyntaxTextArea rSyntaxTextArea, Window window) {
+                super(window);
+                this.rSyntaxTextArea = rSyntaxTextArea;
+        }
+
+        public FindReplaceDialog(RSyntaxTextArea rSyntaxTextArea, Dialog dialog) {
+                super(dialog);
+                this.rSyntaxTextArea = rSyntaxTextArea;
+        }
+
+        public FindReplaceDialog(RSyntaxTextArea rSyntaxTextArea, Frame frame) {
+                super(frame);
+                this.rSyntaxTextArea = rSyntaxTextArea;
+        }
+
+        
         /**
          * Click on the find next button
          */

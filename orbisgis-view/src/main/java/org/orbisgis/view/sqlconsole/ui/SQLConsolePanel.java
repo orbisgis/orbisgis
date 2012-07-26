@@ -49,6 +49,7 @@ import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -127,16 +128,6 @@ public class SQLConsolePanel extends JPanel {
                 add(split, BorderLayout.CENTER);
                 add(getStatusToolBar(), BorderLayout.SOUTH);
         }
-
-        @Override
-        public void removeNotify() {
-                super.removeNotify();
-                if (findReplaceDialog != null) {
-                        findReplaceDialog.dispose();
-                }                
-        }
-        
-        
         
         /**
          * Register action button, to enable/disable them later
@@ -610,7 +601,7 @@ public class SQLConsolePanel extends JPanel {
          */
         public void openFindReplaceDialog() {
                 if (findReplaceDialog == null) {
-                        findReplaceDialog = new FindReplaceDialog(scriptPanel);
+                        findReplaceDialog = new FindReplaceDialog(scriptPanel,(JFrame)getTopLevelAncestor());
                 }
                 findReplaceDialog.setAlwaysOnTop(true);
                 findReplaceDialog.setVisible(true);

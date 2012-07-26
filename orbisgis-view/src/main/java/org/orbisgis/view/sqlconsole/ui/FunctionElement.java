@@ -36,12 +36,12 @@ import org.orbisgis.core.Services;
 /**
  * A class to manage function name an type in the jlist function
  * 
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class FunctionElement {
 
-    static int BASIC_FUNCTION = 0;
-    static int CUSTOM_FUNCTION = 1;
+    public static final int BASIC_FUNCTION = 0;
+    public static final int CUSTOM_FUNCTION = 1;
     private final String functionName;
     private final int functionType;
     private String description;

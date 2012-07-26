@@ -35,23 +35,25 @@ import java.util.Comparator;
 import java.util.List;
 import javax.swing.AbstractListModel;
 import javax.swing.ListModel;
+import org.gdms.sql.function.FunctionManager;
 import org.gdms.sql.function.FunctionManagerListener;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 
 /**
  * A custom list model to load and manage GDMS functions.
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class FunctionListModel extends AbstractListModel implements ListModel {
     private static final long serialVersionUID = 1L;
-    private ArrayList<FunctionElement> functionsList;
+    private List<FunctionElement> functionsList;
     private FunctionManagerListener functionListener = EventHandler.create(FunctionManagerListener.class,this,"");
     private List<FunctionFilter> filters = new ArrayList<FunctionFilter>();
     
     public FunctionListModel() {
-        readSQLFunctions();
-        Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager().addFunctionManagerListener(functionListener);
+        FunctionManager functionManager = Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager();
+        readSQLFunctions(functionManager);
+        functionManager.addFunctionManagerListener(functionListener);
     }
 
     @Override
@@ -71,7 +73,8 @@ public class FunctionListModel extends AbstractListModel implements ListModel {
             Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager().removeFunctionManagerListener(functionListener);
     }
     /**
-     * Set the list filters, and 
+     * Set the list filters, and refresh the list of functions
+     * through {@code refreshFunctionList}.
      * @param filters 
      */
     public void setFilters(List<FunctionFilter> filters) {
@@ -80,15 +83,17 @@ public class FunctionListModel extends AbstractListModel implements ListModel {
     }
     
     /**
-     * Update the list of functions
+     * Update the list of functions.
+     * Called by the function manager listener 
      */
     public void refreshFunctionList() {
-            readSQLFunctions();
+            FunctionManager functionManager = Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager();
+            readSQLFunctions(functionManager);
     }
 
-    private void readSQLFunctions() {
+    private void readSQLFunctions(FunctionManager functionManager) {
         functionsList = new ArrayList<FunctionElement>();
-        String[] functions = Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager().getFunctionNames();
+        String[] functions = functionManager.getFunctionNames();
 
         for (String functionName : functions) {
             boolean rejected = false;

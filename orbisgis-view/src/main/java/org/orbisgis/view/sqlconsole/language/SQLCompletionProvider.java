@@ -33,15 +33,24 @@ import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.JTextComponent;
+import org.fife.ui.autocomplete.AutoCompletion;
+import org.fife.ui.autocomplete.Completion;
+import org.fife.ui.autocomplete.DefaultCompletionProvider;
+import org.fife.ui.autocomplete.ParameterizedCompletion;
 import org.fife.ui.autocomplete.ParameterizedCompletion.Parameter;
-import org.fife.ui.autocomplete.*;
+import org.fife.ui.autocomplete.VariableCompletion;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.DefaultType;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.function.*;
+import org.gdms.sql.function.Argument;
+import org.gdms.sql.function.BasicFunctionSignature;
+import org.gdms.sql.function.Function;
+import org.gdms.sql.function.FunctionManager;
+import org.gdms.sql.function.FunctionSignature;
+import org.gdms.sql.function.ScalarArgument;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.view.sqlconsole.language.matcher.SQLMatcher;
@@ -51,7 +60,7 @@ import org.orbisgis.view.sqlconsole.language.matcher.SQLMatcher;
  * 
  * 
  * 
- * @author antoine
+ * @author Antoine Gourlay
  * @since 4.0
  */
 public class SQLCompletionProvider extends DefaultCompletionProvider implements CaretListener, SQLMetadataListener {
