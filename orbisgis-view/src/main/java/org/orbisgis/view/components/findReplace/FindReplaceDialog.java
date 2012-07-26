@@ -30,13 +30,13 @@ package org.orbisgis.view.components.findReplace;
 
 import java.awt.Dialog;
 import java.awt.Frame;
-import java.awt.GraphicsConfiguration;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Window;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
 import org.apache.log4j.Logger;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -57,6 +57,7 @@ public final class FindReplaceDialog extends JDialog {
         private static final long serialVersionUID = 1L;
         protected static final I18n I18N = I18nFactory.getI18n(FindReplaceDialog.class);
         private static final Logger LOGGER = Logger.getLogger(FindReplaceDialog.class);
+        private AtomicBoolean initialised = new AtomicBoolean(false);
         private final RSyntaxTextArea rSyntaxTextArea;
         //================================================================ constants
         private static final int BORDER = 12;  // Window border in pixels.
@@ -83,12 +84,14 @@ public final class FindReplaceDialog extends JDialog {
                 initialize();
         }
         
-        private void initialize() {                
-                getContentPane().add(createContentPane());
-                setLocationRelativeTo(rSyntaxTextArea);
-                setTitle(I18N.tr("Search replace"));
-                pack();
-                setResizable(false);
+        private void initialize() {
+                if(!initialised.getAndSet(true)) {
+                        getContentPane().add(createContentPane());
+                        setLocationRelativeTo(rSyntaxTextArea);
+                        setTitle(I18N.tr("Search replace"));
+                        pack();
+                        setResizable(false);
+                }
         }
         
         private FindReplaceDialog() {

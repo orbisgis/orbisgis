@@ -32,6 +32,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -70,7 +71,7 @@ public class SQLFunctionsPanel extends JPanel {
         private final ActionListener collapseListener = EventHandler.create(ActionListener.class,this,"collapse");
         private final ActionListener expandListener = EventHandler.create(ActionListener.class,this,"expand");
         private final Listener filterEvent = EventHandler.create(Listener.class,this,"doFilter");
-        
+        private AtomicBoolean initialised = new AtomicBoolean(false);
         
         protected final static I18n I18N = I18nFactory.getI18n(SQLFunctionsPanel.class);
         
@@ -113,14 +114,20 @@ public class SQLFunctionsPanel extends JPanel {
                 collapse();
 
         }
+        
+        private void initialise() {
+                if(!initialised.getAndSet(true)) {
+                        functionFilters.getEventFilterChange().addListener(this, filterEvent);
+                        NameFilterFactory nameFilter = new NameFilterFactory();
+                        functionFilters.registerFilterFactory(nameFilter);
+                        functionFilters.addFilter(nameFilter.getFactoryId(), "");                
+                }
+        }
 
         @Override
         public void addNotify() {
-                super.addNotify();                
-                functionFilters.getEventFilterChange().addListener(this, filterEvent);
-                NameFilterFactory nameFilter = new NameFilterFactory();
-                functionFilters.registerFilterFactory(nameFilter);
-                functionFilters.addFilter(nameFilter.getFactoryId(), "");
+                super.addNotify();    
+                initialise();
         }
 
         public String[] getSelectedSources() {
