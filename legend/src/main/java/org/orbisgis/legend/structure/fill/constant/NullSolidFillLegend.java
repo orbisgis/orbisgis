@@ -29,28 +29,37 @@
 package org.orbisgis.legend.structure.fill.constant;
 
 import java.awt.Color;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 
 /**
- * {@link SolidFill} fields that are set to null can be considered as constant in some situation. Indeed, they
- * are "simple", are not linked to an analysis and always produce the same result, whatever the input feature.
+ * {@link SolidFill} fields that are set to null can be considered as constant
+ * in some situation. Indeed, they are "simple", are not linked to an analysis
+ * and always produce the same result, whatever the input feature.
+ *
  * @author Alexis Guéganno
  */
 public class NullSolidFillLegend implements ConstantSolidFill {
 
-    @Override
-    public Color getColor() {
-        return null;
-    }
+        @Override
+        public SolidFill getFill() {
+                return null;
+        }
 
-    @Override
-    public void setColor(Color col) {}
+        @Override
+        public Color getColor() {
+                return null;
+        }
 
-    @Override
-    public double getOpacity() {
-        return 0;
-    }
+        @Override
+        public void setColor(Color col) {
+        }
 
-    @Override
-    public void setOpacity(double d) {}
+        @Override
+        public double getOpacity() {
+                return 0;
+        }
 
+        @Override
+        public void setOpacity(double d) {
+        }
 }

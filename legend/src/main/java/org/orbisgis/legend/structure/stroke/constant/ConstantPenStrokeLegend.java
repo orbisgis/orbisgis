@@ -58,7 +58,7 @@ public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend impl
          * Get the width of the associated {@code PenStroke}.
          * @return
          */
-    @Override
+        @Override
         public double getLineWidth() {
             return ((RealLiteralLegend) getWidthAnalysis()).getDouble();
         }
@@ -67,7 +67,7 @@ public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend impl
          * Set the width of the associated {@code PenStroke}.
          * @param width
          */
-    @Override
+        @Override
         public void setLineWidth(double width) {
             ((RealLiteralLegend) getWidthAnalysis()).setDouble(width);
         }
@@ -80,7 +80,7 @@ public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend impl
          * {@code Symbolizer} does not have such an array, an empty {@code
          * String} is returned.
          */
-    @Override
+        @Override
         public String getDashArray() {
             String ret = "";
             StringLiteralLegend sll = (StringLiteralLegend) getDashAnalysis();
@@ -99,7 +99,7 @@ public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend impl
          * associated {@code PenStroke}.
         * @param dashes
         */
-    @Override
+        @Override
         public void setDashArray(String str) {
             PenStroke ps = getPenStroke();
             StringLiteral rl = (StringLiteral) ps.getDashArray();

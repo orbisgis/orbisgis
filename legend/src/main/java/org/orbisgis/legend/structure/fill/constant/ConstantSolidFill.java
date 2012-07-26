@@ -29,12 +29,20 @@
 package org.orbisgis.legend.structure.fill.constant;
 
 import java.awt.Color;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 
 /**
  * Common representation for all the kind of constant solid fills.
  * @author Alexis Guéganno
  */
- interface ConstantSolidFill extends ConstantFillLegend {
+public interface ConstantSolidFill extends ConstantFillLegend {
+
+        /**
+         * Gets the {@link SolidFill} associated to this legend.
+         * @return
+         */
+        SolidFill getFill();
+
         /**
          * Get the {@code Color} used to paint the inner {@code SolidFill}.
          * @return

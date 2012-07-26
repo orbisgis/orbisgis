@@ -38,6 +38,7 @@ import org.orbisgis.legend.structure.categorize.Categorize2ColorLegend;
 import org.orbisgis.legend.structure.fill.CategorizedSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
+import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.literal.ColorLiteralLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 import org.orbisgis.legend.structure.recode.Recode2ColorLegend;
@@ -67,6 +68,9 @@ public class FillAnalyzer extends AbstractAnalyzer{
         }
 
         private LegendStructure analyzeSolidFill(SolidFill sf){
+                if(sf == null){
+                        return new NullSolidFillLegend();
+                }
                 ColorParameterAnalyzer colorPA = new ColorParameterAnalyzer(sf.getColor());
                 LegendStructure colorLegend = colorPA.getLegend();
                 RealParameterAnalyzer rpa = new RealParameterAnalyzer(sf.getOpacity());

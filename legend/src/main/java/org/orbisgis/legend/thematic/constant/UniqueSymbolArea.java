@@ -34,8 +34,12 @@ import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.FillAnalyzer;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
+import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.thematic.ConstantStrokeArea;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Represents a {@code AreaSymbolizer} whose parameters are constant, whatever
@@ -50,12 +54,13 @@ import org.orbisgis.legend.thematic.ConstantStrokeArea;
  * We expect from its {@code Fill} to be a constant {@code SolidFill} instance.
  * @author Alexis Guéganno
  */
-public class UniqueSymbolArea extends  ConstantStrokeArea implements IUniqueSymbolArea {
+public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbolArea {
 
-    private ConstantSolidFillLegend fillLegend;
+//    private static final I18n I18N = I18nFactory.getI18n(UniqueSymbolArea.class);
+    private ConstantSolidFill fillLegend;
 
     /**
-     * Build a new default {@code UniqueSymbolArea} from scratch. It contains a
+     * Builds a new default {@code UniqueSymbolArea} from scratch. It contains a
      * default {@code AreaSymbolizer}, which is consequently constant. The
      * associated {@code LegendStructure} structure is built during initialization.
      */
@@ -67,7 +72,7 @@ public class UniqueSymbolArea extends  ConstantStrokeArea implements IUniqueSymb
     }
 
     /**
-     * Build a new {@code UniqueSymbolArea} directly from the given {@code
+     * Builds a new {@code UniqueSymbolArea} directly from the given {@code
      * AreaSymbolizer}.
      * @param symbolizer
      */
@@ -89,6 +94,30 @@ public class UniqueSymbolArea extends  ConstantStrokeArea implements IUniqueSymb
         //can't manage the input Symbolizer, an exception has been thrown.
     }
 
+    /**
+     * Exposes the inner {@link LegendStructure} that represents the analysis
+     * made on the {@link Fill}.
+     * @return 
+     */
+    public ConstantSolidFill getFillLegend(){
+            return fillLegend;
+    }
+
+    /**
+     * Sets the legend describing the structure of the fill contained in the
+     * inner {@link AreaSymbolizer}. This will update the fill of the {@code
+     * AreaSymbolizer} in question.
+     * @param cfl
+     */
+    public void setFillLegend(ConstantSolidFill cfl){
+            if(cfl == null){
+                    fillLegend = new NullSolidFillLegend();
+            } else {
+                    fillLegend = cfl;
+            }
+            AreaSymbolizer symbolizer = (AreaSymbolizer) getSymbolizer();
+            symbolizer.setFill(fillLegend.getFill());
+    }
 
     /**
      * A {@code UniqueSymbolArea} is associated to a {@code SolidFill}, that

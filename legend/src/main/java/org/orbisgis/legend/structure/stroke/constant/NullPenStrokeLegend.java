@@ -29,6 +29,7 @@
 package org.orbisgis.legend.structure.stroke.constant;
 
 import java.awt.Color;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 
 /**
  * A {@link PenStroke} that is null can be considered as a constant : it is not dependant upon any
@@ -41,6 +42,11 @@ public class NullPenStrokeLegend implements ConstantPenStroke {
     @Override
     public Color getLineColor() {
         return  null;
+    }
+
+    @Override
+    public PenStroke getPenStroke() {
+        return null;
     }
 
     @Override

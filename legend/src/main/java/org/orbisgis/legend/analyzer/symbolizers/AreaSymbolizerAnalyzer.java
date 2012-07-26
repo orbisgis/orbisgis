@@ -30,14 +30,13 @@ package org.orbisgis.legend.analyzer.symbolizers;
 
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.fill.Fill;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.AbstractAnalyzer;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.FillAnalyzer;
 import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
-import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 
@@ -69,11 +68,9 @@ public class AreaSymbolizerAnalyzer extends AbstractAnalyzer {
         if(str == null || psleg instanceof ConstantPenStrokeLegend){
             //We retrieve the fill
             Fill f = symbolizer.getFill();
-            LegendStructure fls = null;
-            if(f != null){
-                fls = new FillAnalyzer(f).getLegend();
-            }
-            if(fls instanceof ConstantSolidFillLegend || f == null){
+            LegendStructure fls;
+            fls = new FillAnalyzer(f).getLegend();
+            if(fls instanceof ConstantSolidFill || f == null){
                 return new UniqueSymbolArea(symbolizer);
             }
             throw new UnsupportedOperationException("We just find unique symbols for now.");

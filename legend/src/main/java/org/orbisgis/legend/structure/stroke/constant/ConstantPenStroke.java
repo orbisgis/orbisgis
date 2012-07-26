@@ -30,11 +30,19 @@ package org.orbisgis.legend.structure.stroke.constant;
 
 import java.awt.Color;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.legend.LegendStructure;
 /**
  * Interface to be implemented by legends that are associated to constant {@link PenStroke}.
  * @author Alexis Guéganno
  */
- interface ConstantPenStroke {
+public interface ConstantPenStroke  extends LegendStructure {
+
+        /**
+         * Gets the {@code PenStroke} that has been used to build this {@code
+         * ConstantPenStroke}.
+         * @return
+         */
+        PenStroke getPenStroke();
 
         /**
          * Gets the color of the associated {@code PenStroke}.

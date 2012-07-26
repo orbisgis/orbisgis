@@ -36,6 +36,8 @@ import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Represents a {@code LineSymbolizer} whose parameters are constant, whatever
@@ -51,6 +53,7 @@ import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
  */
 public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUniqueSymbolLine {
 
+    private static final I18n I18N = I18nFactory.getI18n(UniqueSymbolLine.class);
     private ConstantPenStrokeLegend strokeLegend;
 
     /**
@@ -150,7 +153,7 @@ public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUni
 
     @Override
     public String getLegendTypeName() {
-        return "Unique Symbol - Line";
+        return I18N.tr("Unique Symbol - Line");
     }
 
     @Override
