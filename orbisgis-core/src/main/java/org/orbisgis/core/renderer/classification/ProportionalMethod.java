@@ -32,14 +32,15 @@ import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.utils.I18N;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Adapted from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
  * 
  */
 public class ProportionalMethod {
-
+    protected final static I18n I18N = I18nFactory.getI18n(ProportionalMethod.class);
     int LINEAR = 1;
 
 	private DataSource ds;
@@ -80,7 +81,8 @@ public class ProportionalMethod {
 
         if ((method == LOGARITHMIC) && (minValue <= 0)) {
             throw new ClassificationMethodException(
-                    I18N.getString("orbisgis.org.orbisgis.core.renderer.legend.carto.defaultProportionalLegend.symbolSize.logarithmic"));
+                    I18N.tr("The parameter of the logarithmic function must be"
+                    + " greater than 0"));
 
         }
         if (minSymbolArea >= 10) {

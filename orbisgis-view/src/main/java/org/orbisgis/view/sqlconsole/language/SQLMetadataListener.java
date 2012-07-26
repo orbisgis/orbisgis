@@ -26,22 +26,27 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.filter;
+package org.orbisgis.view.sqlconsole.language;
 
-import java.util.EventObject;
-
+import org.gdms.data.schema.Metadata;
 
 /**
- * Event Data when filters must be regenerated
+ * A listener for things that happen in a {@link SQLMetadataManager}.
+ * @author Antoine Gourlay
  */
-public class FilterChangeEventData  extends EventObject {
-    private static final long serialVersionUID = 1L;
-    /**
-     * Event Data Constructor
-     * @param o Source, the FilterFactoryManager instance
-     */
-    public FilterChangeEventData(Object o) {
-        super(o);
-    }
-    
+public interface SQLMetadataListener {
+        
+        /**
+         * Raised when some metadata is added.
+         * @param name the name of the added source
+         * @param m the corresponding metadata
+         */
+        void metadataAdded(String name, Metadata m);
+        
+        /**
+         * Raised when some metadata is removed.
+         * @param name the name of the added source
+         * @param m the corresponding metadata
+         */
+        void metadataRemoved(String name, Metadata m);
 }

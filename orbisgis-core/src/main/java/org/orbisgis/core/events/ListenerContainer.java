@@ -32,23 +32,25 @@ import java.lang.ref.WeakReference;
 import java.security.InvalidParameterException;
 import java.util.*;
 import org.apache.log4j.Logger;
-import org.orbisgis.utils.I18N;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * @brief Accessor to listeners
+ * @param <EventObjectType> EventObject created by event source
+ * @brief Store listeners
  * The listener container manager the Add,Remove and Call to listeners
  * corresponding to a single event type
  * The listener container is fully compatible with Java Beans specifications for event managments.
- * This is a refactorisation, leading to remove duplicate code.
+ * This is a refactoring, leading to remove duplicate code.
  * @warning A listener must have only one method
  */
 
 public class ListenerContainer<EventObjectType extends EventObject> {
     private static Logger logger = Logger.getLogger(ListenerContainer.class);
-    private ListenerContainer upLevelContainer = null; /*!< This container will call the upLevelContainer on a new event */
+    private ListenerContainer<EventObject> upLevelContainer = null; /*!< This container will call the upLevelContainer on a new event */
     private Map<Object,ArrayList<WeakReference<Listener>>> targetToListeners = Collections.synchronizedMap(new HashMap<Object,ArrayList<WeakReference<Listener>>>()); /*!< Contain the link between target and listeners */
     private Set<Listener> listeners = Collections.synchronizedSet(new HashSet<Listener>()); /*!< Listerners of this container */
-
+    protected final static I18n I18N = I18nFactory.getI18n(ListenerContainer.class);
     /**
      * Declare the root or single event listener collection.
      */
@@ -60,7 +62,7 @@ public class ListenerContainer<EventObjectType extends EventObject> {
      * This container will call the upLevelContainer on a new event
      * @param upLevelContainer The container to call on a callListeners event.
      */
-    public ListenerContainer(ListenerContainer upLevelContainer) {
+    public ListenerContainer(ListenerContainer<EventObject> upLevelContainer) {
         this.upLevelContainer = upLevelContainer;
     }
     
@@ -69,7 +71,7 @@ public class ListenerContainer<EventObjectType extends EventObject> {
      * @param listenerRelease The instance of release manager
      * @return this object
      */
-    public ListenerContainer addReleaseTool(ListenerRelease listenerRelease) {
+    public ListenerContainer<EventObjectType> addReleaseTool(ListenerRelease listenerRelease) {
         listenerRelease.addContainer(this);
         return this;
     }
@@ -80,7 +82,7 @@ public class ListenerContainer<EventObjectType extends EventObject> {
      */
     public void addListener(Object target,Listener listener) {
         if(listeners.contains(listener)) {
-            throw(new InvalidParameterException(I18N.getString("org.orbisgis.base.events.ListenerContainer.eventListernerAlreadyPushed")));
+            throw(new InvalidParameterException(I18N.tr("This listener is already registered.")));
         }
         ArrayList<WeakReference<Listener>> listenersOfTarget;
         if(!targetToListeners.containsKey(target)) {
@@ -147,7 +149,7 @@ public class ListenerContainer<EventObjectType extends EventObject> {
             } catch (ListenerException ex) {
                 //This listener stop the propagation of the event
                 if(!ex.letContinueProcessing()) {
-                    logger.error(I18N.getString("org.orbisgis.base.events.ListenerContainer.ListernerThrowStopEvent"), ex);
+                    logger.error(I18N.tr("The listener stop the event process."), ex);
                     return;
                 }
             } catch (RuntimeException e) { 
@@ -155,7 +157,7 @@ public class ListenerContainer<EventObjectType extends EventObject> {
                 //To keep the thread and continue to propagate the event
                 //the listener is removed and an error message is sent
                 //@link http://www.ibm.com/developerworks/java/library/j-jtp07265/index.html#3.0
-                logger.error(I18N.getString("org.orbisgis.base.events.ListenerContainer.ListernerUnexpectedThrow"), e);
+                logger.error(I18N.tr("The listener throw an unexpected error"), e);
                 removeListener(listener);
                 itListener.remove();
            }

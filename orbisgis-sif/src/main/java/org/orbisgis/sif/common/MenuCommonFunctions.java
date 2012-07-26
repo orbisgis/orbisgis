@@ -29,7 +29,7 @@
 package org.orbisgis.sif.common;
 
 import java.awt.event.KeyEvent;
-import javax.swing.JMenuItem;
+import javax.swing.AbstractButton;
 
 /**
  * Common tools to Swing Menu
@@ -44,16 +44,16 @@ public class MenuCommonFunctions {
     
     /**
      * Translate the character following & in the label by a mnemonic
-     * @param menuItem The menu item
+     * @param actionComponent The menu item
      */
-    public static void setMnemonic(JMenuItem menuItem) {
-        String menuLabel = menuItem.getText();
-        int charpos=menuLabel.indexOf("&");
-        if(charpos!=-1 && menuLabel.length()>charpos+1) {
-                if(menuLabel.charAt(charpos+1)!=KeyEvent.VK_AMPERSAND) {
-                        menuItem.setMnemonic(menuLabel.charAt(charpos+1));
+    public static void setMnemonic(AbstractButton actionComponent) {
+        String componentLabel = actionComponent.getText().toLowerCase();
+        int charpos=componentLabel.indexOf("&");
+        if(charpos!=-1 && componentLabel.length()>charpos+1) {
+                if(componentLabel.charAt(charpos+1)!=KeyEvent.VK_AMPERSAND) {
+                        actionComponent.setMnemonic(componentLabel.charAt(charpos+1));
                 }
-                menuItem.setText(menuLabel.replaceFirst("&",""));
+                actionComponent.setText(componentLabel.replaceFirst("&",""));
         }
     }
 }

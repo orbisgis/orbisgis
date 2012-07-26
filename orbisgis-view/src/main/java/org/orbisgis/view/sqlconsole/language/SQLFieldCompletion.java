@@ -26,22 +26,27 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.filter;
+package org.orbisgis.view.sqlconsole.language;
 
-import java.util.EventObject;
-
+import org.fife.ui.autocomplete.CompletionProvider;
+import org.fife.ui.autocomplete.VariableCompletion;
 
 /**
- * Event Data when filters must be regenerated
+ * Completion class dedicated to fields
+ * @author Antoine Gourlay
  */
-public class FilterChangeEventData  extends EventObject {
-    private static final long serialVersionUID = 1L;
-    /**
-     * Event Data Constructor
-     * @param o Source, the FilterFactoryManager instance
-     */
-    public FilterChangeEventData(Object o) {
-        super(o);
-    }
-    
+public class SQLFieldCompletion extends VariableCompletion {
+
+        /**
+         * Returns the field with the following format : "name : type".
+         * @return formatted field name and type
+         */
+        @Override
+        public String toString() {
+                return super.toString() + " : " + getType();
+        }
+
+        public SQLFieldCompletion(CompletionProvider provider, String name, String type) {
+                super(provider, name, type);
+        }
 }

@@ -26,12 +26,12 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.geocatalog.filters;
+package org.orbisgis.view.components.filter;
 
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
-import org.orbisgis.view.components.filter.ActiveFilter;
 
 /**
  * This listener update an ActiveLayer at each modification of a JTextField.
@@ -53,21 +53,35 @@ public class TextFieldDocumentListener implements DocumentListener {
      * User insert characters
      * @param de the document event
      */
+    @Override
     public void insertUpdate(DocumentEvent de) {
-        activeFilter.setCurrentFilterValue(textField.getText());
+        SwingUtilities.invokeLater(new updateFilter());
     }
     /**
      * User remove characters
      * @param de the document event
      */
+    @Override
     public void removeUpdate(DocumentEvent de) {
-        activeFilter.setCurrentFilterValue(textField.getText());
+        SwingUtilities.invokeLater(new updateFilter());
     }
     /**
      * Gives notification that an attribute or set of attributes changed.
      * @param de the document event
      */
+    @Override
     public void changedUpdate(DocumentEvent de) {
     }
     
+    /**
+     * DocumentListener events is not on the swing thread
+     */
+    private class updateFilter implements Runnable {
+
+                @Override
+                public void run() {
+                        activeFilter.setCurrentFilterValue(textField.getText());
+                }
+            
+    }
 }

@@ -34,7 +34,7 @@ import org.gdms.source.SourceManager;
 import org.orbisgis.view.components.filter.ActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.geocatalog.filters.IFilter;
-import org.orbisgis.view.geocatalog.filters.TextFieldDocumentListener;
+import org.orbisgis.view.components.filter.TextFieldDocumentListener;
 
 /**
  * This is the data source name contains x filter.
