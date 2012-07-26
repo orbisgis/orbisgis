@@ -77,6 +77,18 @@ public class SQLConsoleAction extends AbstractAction {
                 return keyStroke;
         }
         
+        /**
+         * 
+         * @return The icon or null
+         */
+        public Icon getIcon() {
+                Object value = getValue(SMALL_ICON);
+                if(value instanceof Icon) {
+                        return (Icon) value;
+                } else {
+                        return null;
+                }
+        }
         @Override
         public void actionPerformed(ActionEvent ae) {
                 actionListener.actionPerformed(ae);

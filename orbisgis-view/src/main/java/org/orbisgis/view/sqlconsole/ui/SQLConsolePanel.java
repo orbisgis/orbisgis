@@ -236,9 +236,11 @@ public class SQLConsolePanel extends JPanel {
                         commandToolBar = new JToolBar();
                         //Add all registered actions
                         for(SQLConsoleAction action : actions) {
-                                JButton newButton = new JButton(action);
-                                registerActionButton(newButton);
-                                commandToolBar.add(newButton);
+                                if(action.getIcon()!=null) {
+                                        JButton newButton = new JButton(action);
+                                        registerActionButton(newButton);
+                                        commandToolBar.add(newButton);
+                                }
                         }
                         
                         //Final separator
