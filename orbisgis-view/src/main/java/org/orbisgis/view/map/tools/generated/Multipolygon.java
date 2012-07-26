@@ -37,7 +37,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 public abstract class Multipolygon implements Automaton {
-        protected final static I18n I18N = I18nFactory.getI18n(Multipolygon.class);
+        protected static final I18n I18N = I18nFactory.getI18n(Multipolygon.class);
 	private static Logger logger = Logger.getLogger(Multipolygon.class);
 
 	private Status status = Status.STANDBY;

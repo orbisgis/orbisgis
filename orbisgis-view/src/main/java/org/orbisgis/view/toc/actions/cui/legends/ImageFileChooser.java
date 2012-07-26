@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
-import org.orbisgis.sif.OpenFilePanel;
+import org.orbisgis.sif.components.OpenFilePanel;
 
 @Deprecated
 public class ImageFileChooser extends OpenFilePanel {

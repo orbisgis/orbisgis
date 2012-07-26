@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.components;
 
-import org.orbisgis.sif.ChoosePanel;
+import org.orbisgis.sif.components.ChoosePanel;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 
 /**

@@ -32,35 +32,21 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventLocator;
+import javax.xml.bind.*;
 import javax.xml.bind.util.ValidationEventCollector;
 import javax.xml.validation.Schema;
 import net.opengis.se._2_0.core.StyleType;
-
-
 import org.gdms.data.DataSourceFactory;
-
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-
 import org.junit.After;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
+import org.junit.Test;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.DefaultDataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import static org.junit.Assert.*;
-
-
-
-
-import org.junit.Test;
-import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
@@ -77,10 +63,6 @@ public class FeatureTypeStyleTest {
                 DataManager.class,
                 "Access to the sources, to its properties (indexes, etc.) and its contents, either raster or vectorial",
                 new DefaultDataManager(dsf));
-    }
-
-    private static DataManager getDataManager() {
-        return (DataManager) Services.getService(DataManager.class);
     }
 
     @Before

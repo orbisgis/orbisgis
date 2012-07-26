@@ -65,7 +65,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 public abstract class AbstractHandler implements Handler {
-        protected final static I18n I18N = I18nFactory.getI18n(AbstractHandler.class);
+        protected static final I18n I18N = I18nFactory.getI18n(AbstractHandler.class);
 	protected static GeometryFactory gf = new GeometryFactory();
 	protected int vertexIndex;
 	protected Coordinate point;

@@ -77,7 +77,9 @@ public class Layer extends BeanLayer {
     @Override
 	public void close() throws LayerException {
 		try {
-			dataSource.removeEditionListener(editionListener);
+                        if (dataSource.isEditable()) {
+                                dataSource.removeEditionListener(editionListener);
+                        }
 			dataSource.close();
 		} catch (AlreadyClosedException e) {
 			throw new LayerException(I18N.tr("Cannot close the data source"), e);
@@ -100,7 +102,9 @@ public class Layer extends BeanLayer {
                                 addStyleListener(defStyle);
                         }
 			// Listen modifications to update selection
-			dataSource.addEditionListener(editionListener);
+                        if (dataSource.isEditable()) {
+                                dataSource.addEditionListener(editionListener);
+                        }
 		} catch (DriverException e) {
 			throw new LayerException(I18N.tr("Cannot open the layer"), e);
 		}
@@ -216,14 +220,7 @@ public class Layer extends BeanLayer {
 	}
 
 	@Override
-	public boolean isWMS() {
-		return false;
+	public boolean isStream() throws DriverException {
+		return dataSource.isStream();
 	}
-
-	@Override
-	public WMSConnection getWMSConnection()
-			throws UnsupportedOperationException {
-		throw new UnsupportedOperationException(I18N.tr("This is not a WMS layer"));
-	}
-        
 }

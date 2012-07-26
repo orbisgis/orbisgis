@@ -52,7 +52,7 @@ public abstract class RealLiteralInput extends JPanel {
 	private Double max;
 	private Double initial;
 
-	private final static int nbColumns = 10;
+	private static final int nbColumns = 10;
 
 	/**
 	 *

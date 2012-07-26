@@ -35,7 +35,7 @@ import org.gdms.source.FileDriverFilter;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.sif.OpenFolderPanel;
+import org.orbisgis.sif.components.OpenFolderPanel;
 
 /**
  * This panel is used to select the folders where we want to search for new datasources
@@ -60,19 +60,13 @@ public class OpenGdmsFolderPanel extends OpenFolderPanel  {
 		}
 	}
 
-	@Override
 	public String[] getErrorMessages() {
 		return null;
 	}
 
-	@Override
 	public String getId() {
 		return OPEN_GDMS_FOLDER_PANEL;
 	}
 
-	@Override
-	public String[] getValidationExpressions() {
-		return null;
-	}
 
 }

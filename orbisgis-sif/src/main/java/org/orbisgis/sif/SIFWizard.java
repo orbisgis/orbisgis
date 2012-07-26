@@ -33,235 +33,148 @@ import java.awt.CardLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.util.HashMap;
-
 import javax.swing.JButton;
 import javax.swing.JPanel;
 
-
 public class SIFWizard extends AbstractOutsideFrame {
 
-	private JPanel wizardButtons;
-	private JButton btnPrevious;
-	private JButton btnNext;
-	private JButton btnFinish;
-	private JButton btnCancel;
-	private JPanel mainPanel;
+        private JPanel wizardButtons;
+        private JButton btnPrevious;
+        private JButton btnNext;
+        private JButton btnFinish;
+        private JButton btnCancel;
+        private JPanel mainPanel;
+        private SimplePanel[] panels;
+        private int index = 0;
+        private CardLayout layout = new CardLayout();
 
-	private boolean test;
+        public SIFWizard(Window owner) {
+                super(owner);
+                init();
+        }
 
-	private SimplePanel[] panels;
-	private int index = 0;
+        private void init() {
+                this.setLayout(new BorderLayout());
 
-	private CardLayout layout = new CardLayout();
+                this.add(getWizardButtons(), BorderLayout.SOUTH);              
 
-	public SIFWizard(Window owner) {
-		super(owner);
-		init();
-	}
+                this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+        }
 
-	private void init() {
-		this.setLayout(new BorderLayout());
+        private JPanel getWizardButtons() {
+                if (wizardButtons == null) {
+                        wizardButtons = new JPanel();
+                        wizardButtons.add(getBtnPrevious());
+                        wizardButtons.add(getBtnNext());
+                        wizardButtons.add(getBtnFinish());
+                        wizardButtons.add(getBtnCancel());
+                }
 
-		this.add(getWizardButtons(), BorderLayout.SOUTH);
+                return wizardButtons;
+        }
 
-		this.addComponentListener(new ComponentAdapter() {
+        private void buildMainPanel(SimplePanel[] panels) {
+                mainPanel = new JPanel();
+                mainPanel.setLayout(layout);
 
-			@Override
-			public void componentShown(ComponentEvent e) {
-				if (test) {
-					exit(true);
-				}
-			}
+                for (int i = 0; i < panels.length; i++) {
+                        mainPanel.add(panels[i], Integer.toString(i));
+                }
+        }
 
-		});
+        public JButton getBtnPrevious() {
+                if (btnPrevious == null) {
+                        btnPrevious = new JButton(I18N.tr("Previous"));
+                        btnPrevious.setBorderPainted(false);
+                        btnPrevious.setEnabled(false);
+                        btnPrevious.addActionListener(new ActionListener() {
 
-		this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-	}
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                        index--;
+                                        layout.previous(mainPanel);
+                                }
+                        });
+                }
 
-	private JPanel getWizardButtons() {
-		if (wizardButtons == null) {
-			wizardButtons = new JPanel();
-			wizardButtons.add(getBtnPrevious());
-			wizardButtons.add(getBtnNext());
-			wizardButtons.add(getBtnFinish());
-			wizardButtons.add(getBtnCancel());
-		}
+                return btnPrevious;
+        }
 
-		return wizardButtons;
-	}
+        public JButton getBtnNext() {
+                if (btnNext == null) {
+                        btnNext = new JButton(I18N.tr("Next"));
+                        btnNext.setBorderPainted(false);
+                        btnNext.addActionListener(new ActionListener() {
 
-	private void buildMainPanel(SimplePanel[] panels) {
-		mainPanel = new JPanel();
-		mainPanel.setLayout(layout);
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                        if (validateInput()) {
+                                                index++;
+                                                layout.next(mainPanel);
+                                                setDefaultButton();
+                                        }
+                                }
+                        });
+                }
 
-		for (int i = 0; i < panels.length; i++) {
-			mainPanel.add(panels[i], Integer.toString(i));
-		}
-	}
+                return btnNext;
+        }
 
-	public JButton getBtnPrevious() {
-		if (btnPrevious == null) {
-			btnPrevious = new JButton(i18n.tr("sif.previous"));
-			btnPrevious.setBorderPainted(false);
-			btnPrevious.setEnabled(false);
-			btnPrevious.addActionListener(new ActionListener() {
+        private void setDefaultButton() {
+                if (index == panels.length - 1) {
+                        getRootPane().setDefaultButton(btnFinish);
+                } else {
+                        getRootPane().setDefaultButton(btnNext);
+                }
+        }
 
-				public void actionPerformed(ActionEvent e) {
-					index--;
-					layout.previous(mainPanel);
-				}
+        public JButton getBtnFinish() {
+                if (btnFinish == null) {
+                        btnFinish = new JButton(I18N.tr("Finish"));
+                        btnFinish.setBorderPainted(false);
+                        btnFinish.addActionListener(new ActionListener() {
 
-			});
-		}
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                        exit(true);
+                                }
+                        });
+                }
 
-		return btnPrevious;
-	}
+                return btnFinish;
+        }
 
-	public JButton getBtnNext() {
-		if (btnNext == null) {
-			btnNext = new JButton(i18n.tr("sif.next"));
-			btnNext.setBorderPainted(false);
-			btnNext.addActionListener(new ActionListener() {
+        public JButton getBtnCancel() {
+                if (btnCancel == null) {
+                        btnCancel = new JButton(I18N.tr("Cancel"));
+                        btnCancel.setBorderPainted(false);
+                        btnCancel.addActionListener(new ActionListener() {
 
-				public void actionPerformed(ActionEvent e) {
-					if (getPanel().postProcess()) {
-						index++;
-						layout.next(mainPanel);
-						getPanel().initialize();
-						setDefaultButton();
-					} else {
-						return;
-					}
-				}
+                                @Override
+                                public void actionPerformed(ActionEvent e) {
+                                        exit(false);
+                                }
+                        });
+                }
 
-			});
-		}
+                return btnCancel;
+        }
 
-		return btnNext;
-	}
+        public void setComponent(SimplePanel[] panels) {
+                this.panels = panels;
+                this.index = 0;
+                buildMainPanel(panels);
+                this.add(mainPanel, BorderLayout.CENTER);             
+                this.setIconImage(getSimplePanel().getIconImage());
+                setDefaultButton();
+        }
 
-	private void setDefaultButton() {
-		if (index == panels.length - 1) {
-			getRootPane().setDefaultButton(btnFinish);
-		} else {
-			getRootPane().setDefaultButton(btnNext);
-		}
-	}
+       
 
-	public JButton getBtnFinish() {
-		if (btnFinish == null) {
-			btnFinish = new JButton(i18n.tr("sif.finish"));
-			btnFinish.setBorderPainted(false);
-			btnFinish.addActionListener(new ActionListener() {
+        @Override
+        protected SimplePanel getSimplePanel() {
+                return panels[index];
+        }
 
-				public void actionPerformed(ActionEvent e) {
-					exit(true);
-				}
-
-			});
-		}
-
-		return btnFinish;
-	}
-
-	public JButton getBtnCancel() {
-		if (btnCancel == null) {
-			btnCancel = new JButton(i18n.tr("sif.cancel"));
-			btnCancel.setBorderPainted(false);
-			btnCancel.addActionListener(new ActionListener() {
-
-				public void actionPerformed(ActionEvent e) {
-					exit(false);
-				}
-
-			});
-		}
-
-		return btnCancel;
-	}
-
-	public void setComponent(SimplePanel[] panels,
-			HashMap<String, String> inputs) {
-		this.panels = panels;
-		this.index = 0;
-		panels[0].validateInput();
-		buildMainPanel(panels);
-		this.add(mainPanel, BorderLayout.CENTER);
-		listen(this);
-		loadInput(inputs);
-		getPanel().initialize();
-		this.setIconImage(getPanel().getIconImage());
-		setDefaultButton();
-	}
-
-	public void canContinue() {
-		enableByPosition();
-		visualizeByPosition();
-
-		btnNext.setEnabled(true);
-		btnFinish.setEnabled(true);
-	}
-
-	private void visualizeByPosition() {
-		if (panels != null) {
-			if (index == panels.length - 1) {
-				btnFinish.setVisible(true);
-				btnNext.setVisible(false);
-			} else {
-				btnFinish.setVisible(false);
-				btnNext.setVisible(true);
-			}
-		}
-	}
-
-	private void enableByPosition() {
-		if (panels != null) {
-			if (index == 0) {
-				btnPrevious.setEnabled(false);
-			} else {
-				btnPrevious.setEnabled(true);
-			}
-
-			if (index < panels.length - 1) {
-				btnNext.setEnabled(true);
-				btnFinish.setEnabled(false);
-			} else {
-				btnNext.setEnabled(false);
-				btnFinish.setEnabled(true);
-			}
-		}
-	}
-
-	public void cannotContinue() {
-		enableByPosition();
-		visualizeByPosition();
-
-		btnNext.setEnabled(false);
-		btnFinish.setEnabled(false);
-	}
-
-	@Override
-	protected SimplePanel getPanel() {
-		return panels[index];
-	}
-
-	protected void loadInput(HashMap<String, String> inputs) {
-		test = true;
-		for (SimplePanel panel : panels) {
-			if (!panel.loadInput(inputs)) {
-				test = false;
-			}
-		}
-	}
-
-	@Override
-	protected void saveInput() {
-		for (SimplePanel panel : panels) {
-			panel.saveInput();
-		}
-	}
-
+        
 }

@@ -42,7 +42,7 @@ import org.orbisgis.core.renderer.se.Style;
 public class TocTreeEditor implements TreeCellEditor {
 	private JTree tree;
         private TocTreeEditorPanel lastEditedCell;
-        private final static Logger LOGGER = Logger.getLogger("gui." + TocTreeEditor.class);
+        private static final Logger LOGGER = Logger.getLogger("gui." + TocTreeEditor.class);
         
 	public TocTreeEditor(JTree toc) {
 		this.tree = toc;

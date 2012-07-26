@@ -93,7 +93,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
 
         private ILayer createFenceLayer(Geometry g) {
                 try {
-                        DataSourceFactory dsf = ((DataManager) Services.getService(DataManager.class)).getDataSourceFactory();
+                        DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
 
 
 
@@ -123,7 +123,7 @@ public class FencePolygonTool extends AbstractPolygonTool {
                         writer.close();
                         dsf.getSourceManager().register(fenceLayerName, file);
 
-                        DataManager dataManager = (DataManager) Services.getService(DataManager.class);
+                        DataManager dataManager = Services.getService(DataManager.class);
                         return dataManager.createLayer(fenceLayerName);
 
 

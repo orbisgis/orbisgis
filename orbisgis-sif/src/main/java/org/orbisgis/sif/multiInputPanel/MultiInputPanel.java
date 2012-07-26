@@ -32,327 +32,182 @@ import java.awt.Component;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.orbisgis.sif.SQLUIPanel;
+import java.util.Iterator;
+import org.orbisgis.sif.UIPanel;
 
 /**
- * 
+ *
  * MultiInputPanel is a fast and simple way to create user interface to ask user
  * input.
- * 
- * 
- * Example :
- * 
- * MultiInputPanel mip = new MultiInputPanel( "org.myPanel", "AddValue
- * initialization", false); mip.addInput("AddValue1", "Value1 to add", "1", new
- * IntType()); mip.addInput("AddValue2", "Value2 to add", "0", new IntType());
- * mip.addValidationExpression("AddValue1 > 0 or AddValue2 <12","Invalid input
- * values : Value1 > 0 and Value2 < 12 "); mip.group("Values", new
- * String[]{"AddValue1","AddValue2"});
- * 
+ *
+ *
  */
-public class MultiInputPanel implements SQLUIPanel {
+public class MultiInputPanel implements UIPanel {
 
-	private String id;
+        private URL url;
+        private String title;
+        private ArrayList<Input> inputs = new ArrayList<Input>();
+        private ArrayList<MIPValidation> validation = new ArrayList<MIPValidation>();
+        private HashMap<String, Input> nameInput = new HashMap<String, Input>();
+        private InputPanel comp;
 
-	private URL url;
+        /**
+         *
+         * @param title of the panel
+         */
+        public MultiInputPanel(String title) {
+                this.title = title;
+        }
 
-	private String title;
+        /**
+         * Add a rule to valide the content of the multiinputpanel
+         *
+         * @param mDValidation
+         */
+        public void addValidation(MIPValidation mDValidation) {
+                validation.add(mDValidation);
+        }
 
-	private ArrayList<String> expressions = new ArrayList<String>();
+        /**
+         * To add a component on the multiInputPanel
+         *
+         * @param name of the component. Using an identifier to get it.
+         * @param text of the component that is showed.
+         * @param type of the component.
+         *
+         * Example :
+         *
+         *
+         * addInput("AddValue", "Value to add", new IntType());
+         *
+         */
+        public void addInput(String name, String text, InputType type) {
+                Input input = new Input(name, text, null, type);
+                inputs.add(input);
+                nameInput.put(name, input);
+        }
 
-	private ArrayList<String> errors = new ArrayList<String>();
+        /**
+         * To add a component on the multiInputPanel
+         *
+         * @param name of the component. Using an identifier to get it.
+         * @param text of the component that is showed.
+         *
+         * @param initialValue for the input component
+         * @param type of the component.
+         *
+         * Example :
+         *
+         * addInput("AddValue", "Value to add", "1", new IntType());
+         */
+        public void addInput(String name, String text, String initialValue,
+                InputType type) {
+                Input input = new Input(name, text, initialValue, type);
+                inputs.add(input);
+                nameInput.put(name, input);
+        }
 
-	private ArrayList<Input> inputs = new ArrayList<Input>();
+        /**
+         *
+         * @param text
+         */
+        public void addText(String text) {
+                Input input = new Input(null, text, null, new NoInputType());
+                inputs.add(input);
+        }
 
-	private HashMap<String, Input> nameInput = new HashMap<String, Input>();
+        /**
+         *
+         * @param url for the icon panel.
+         */
+        public void setIcon(URL url) {
+                this.url = url;
+        }
 
-	private InputPanel comp;
+        /**
+         *
+         * @param title
+         */
+        public void setTitle(String title) {
+                this.title = title;
+        }
 
-	private String infoText;
+        /**
+         * Valid the input of panel
+         *
+         * @return a string message
+         */
+        @Override
+        public String validateInput() {
+                for (Iterator<MIPValidation> it = validation.iterator(); it.hasNext();) {
+                        MIPValidation validator = it.next();
+                        String message = validator.validate(this);
+                        if (message != null) {
+                                return message;
+                        }
+                }
+                return null;
+        }
 
-	private boolean showFavourites;
+        public void setValue(String fieldName, String fieldValue) {
+                Input input = nameInput.get(fieldName);
+                if (input != null) {
+                        input.getType().setValue(fieldValue);
+                }
+        }
 
-	/**
-	 * 
-	 * @param title
-	 *            of the panel
-	 */
-	public MultiInputPanel(String title) {
-		this(null, title);
-	}
+        @Override
+        public Component getComponent() {
+                if (comp == null) {
+                        comp = new InputPanel(inputs);
+                }
+                return comp;
+        }
 
-	/**
-	 * 
-	 * @param id
-	 *            unique identifier to make the content persistent
-	 * @param title
-	 *            of panel
-	 */
+        @Override
+        public URL getIconURL() {
+                return url;
+        }
 
-	public MultiInputPanel(String id, String title) {
-		this(id, title, true);
-	}
+        @Override
+        public String getTitle() {
+                return title;
+        }
 
-	/**
-	 * 
-	 * @param id
-	 *            unique identifier to make the content persistent.
-	 * @param title
-	 *            of the panel.
-	 * @param isShowFavorites
-	 *            option to manage or not favorites.
-	 */
-	public MultiInputPanel(String id, String title, boolean showFavorites) {
-		this.id = id;
-		this.setTitle(title);
-		this.showFavourites = showFavorites;
-	}
+        /**
+         *
+         * @param inputName the name of the component
+         * @return the input value
+         *
+         * Example :
+         *
+         * new Integer(mip.getInput("AddValue"));
+         */
+        public String getInput(String inputName) {
+                Input input = nameInput.get(inputName);
+                if (input != null) {
+                        return input.getType().getValue();
+                } else {
+                        return null;
+                }
+        }
 
-	/**
-	 * To add a component on the multiInputPanel
-	 * 
-	 * @param name
-	 *            of the component. Using an identifier to get it.
-	 * @param text
-	 *            of the component that is showed.
-	 * @param type
-	 *            of the component.
-	 * 
-	 *            Example :
-	 * 
-	 * 
-	 *            addInput("AddValue", "Value to add", new IntType());
-	 * 
-	 */
-	public void addInput(String name, String text, InputType type) {
-		Input input = new Input(name, text, null, type);
-		inputs.add(input);
-		nameInput.put(name, input);
-	}
-
-	/**
-	 * To add a component on the multiInputPanel
-	 * 
-	 * @param name
-	 *            of the component. Using an identifier to get it.
-	 * @param text
-	 *            of the component that is showed.
-	 * 
-	 * @param initialValue
-	 *            for the input component
-	 * @param type
-	 *            of the component.
-	 * 
-	 *            Example :
-	 * 
-	 *            addInput("AddValue", "Value to add", "1", new IntType());
-	 */
-	public void addInput(String name, String text, String initialValue,
-			InputType type) {
-		Input input = new Input(name, text, initialValue, type);
-		inputs.add(input);
-		nameInput.put(name, input);
-	}
-
-	/**
-	 * 
-	 * @param text
-	 */
-	public void addText(String text) {
-		Input input = new Input(null, text, null, new NoInputType());
-		inputs.add(input);
-	}
-
-	/**
-	 * Expression to validate the input in a component.
-	 * 
-	 * @param sql
-	 *            where sql condition.
-	 * @param errorMsg
-	 *            if the condition is not validated.
-	 * 
-	 *            Example :
-	 * 
-	 *            addValidationExpression("AddValue > 0","The input value must
-	 *            be greater than 0 !"
-	 */
-	public void addValidationExpression(String sql, String errorMsg) {
-		this.expressions.add(sql);
-		this.errors.add(errorMsg);
-	}
-
-	/**
-	 * 
-	 * @param url
-	 *            for the icon panel.
-	 */
-	public void setIcon(URL url) {
-		this.url = url;
-	}
-
-	/**
-	 * 
-	 * @param title
-	 */
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	/**
-	 * 
-	 * @param infoText
-	 */
-	public void setInfoText(String infoText) {
-		this.infoText = infoText;
-	}
-
-	public String getInfoText() {
-		return infoText;
-	}
-
-	public String[] getErrorMessages() {
-		return errors.toArray(new String[errors.size()]);
-	}
-
-	public String[] getFieldNames() {
-		ArrayList<String> ret = new ArrayList<String>();
-		for (Input input : inputs) {
-			if (input.getType().isPersistent()) {
-				ret.add(input.getName());
-			}
-		}
-
-		return ret.toArray(new String[ret.size()]);
-	}
-
-	public int[] getFieldTypes() {
-		String[] fieldNames = getFieldNames();
-		int[] ret = new int[fieldNames.length];
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = nameInput.get(fieldNames[i]).getType().getType();
-		}
-
-		return ret;
-	}
-
-	public String getId() {
-		return id;
-	}
-
-	public String validateInput() {
-		return null;
-	}
-
-	public String[] getValidationExpressions() {
-		return expressions.toArray(new String[expressions.size()]);
-	}
-
-	public String[] getValues() {
-		String[] fieldNames = getFieldNames();
-		String[] ret = new String[fieldNames.length];
-		for (int i = 0; i < ret.length; i++) {
-			ret[i] = nameInput.get(fieldNames[i]).getType().getValue();
-		}
-
-		return ret;
-	}
-
-	public void setValue(String fieldName, String fieldValue) {
-		Input input = nameInput.get(fieldName);
-		if (input != null) {
-			input.getType().setValue(fieldValue);
-		}
-	}
-
-	public Component getComponent() {
-		if (comp == null) {
-			comp = new InputPanel(inputs);
-		}
-
-		return comp;
-	}
-
-	public URL getIconURL() {
-		return url;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
-	public String initialize() {
-		return null;
-	}
-
-	/**
-	 * 
-	 * @param inputName
-	 *            the name of the component
-	 * @return the input value
-	 * 
-	 *         Example :
-	 * 
-	 *         new Integer(mip.getInput("AddValue"));
-	 */
-	public String getInput(String inputName) {
-		Input input = nameInput.get(inputName);
-		if (input != null) {
-			return input.getType().getValue();
-		} else {
-			return null;
-		}
-	}
-
-	/**
-	 * 
-	 * @param title
-	 *            of the group
-	 * @param inputs
-	 *            name of the components that you want to group.
-	 * 
-	 *            Example :
-	 * 
-	 *            addInput("AddValue1", "Value to add", "1", new IntType());
-	 *            addInput("AddValue2", "Value to add", "1", new IntType());
-	 * 
-	 *            group("Values", new String[]{"AddValue1","AddValue2"});
-	 * 
-	 */
-	public void group(String title, String... inputs) {
-		for (String inputName : inputs) {
-			nameInput.get(inputName).setGroup(title);
-		}
-	}
-
-	private class NoInputType implements InputType {
-
-		public Component getComponent() {
-			return null;
-		}
-
-		public int getType() {
-			return STRING;
-		}
-
-		public String getValue() {
-			return null;
-		}
-
-		public boolean isPersistent() {
-			return false;
-		}
-
-		public void setValue(String value) {
-		}
-
-	}
-
-	public String postProcess() {
-		return null;
-	}
-
-	public boolean isShowFavorites() {
-		return showFavourites;
-	}
-
+        /**
+         *
+         * @param title of the group
+         * @param inputs name of the components that you want to group.
+         *
+         * Example :
+         *
+         * addInput("AddValue1", "Value to add", "1", new IntType());
+         * addInput("AddValue2", "Value to add", "1", new IntType());
+         *
+         * group("Values", new String[]{"AddValue1","AddValue2"});
+         *
+         */
+        public void group(String title, String... inputs) {
+                for (String inputName : inputs) {
+                        nameInput.get(inputName).setGroup(title);
+                }
+        }
 }

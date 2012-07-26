@@ -34,12 +34,11 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.plaf.basic.BasicComboBoxRenderer;
-import org.orbisgis.sif.SQLUIPanel;
 
 public class ComboBoxChoice implements InputType {
 
 	private HashMap<String, String> idText = new HashMap<String, String>();
-	protected JComboBox comp;
+	private JComboBox comp;
 
 	public ComboBoxChoice(String... choices) {
 		this(choices, choices);
@@ -49,11 +48,7 @@ public class ComboBoxChoice implements InputType {
 		setChoices(ids, texts);
 	}
 
-	protected void setChoices(String[] options) {
-		setChoices(options, options);
-	}
-
-	protected void setChoices(String[] ids, String[] texts) {
+	private void setChoices(String[] ids, String[] texts) {
 		for (int i = 0; i < texts.length; i++) {
 			idText.put(ids[i], texts[i]);
 		}
@@ -65,7 +60,6 @@ public class ComboBoxChoice implements InputType {
 					boolean cellHasFocus) {
 				JLabel ret = (JLabel) super.getListCellRendererComponent(list,
 						value, index, isSelected, cellHasFocus);
-
 				ret.setText(idText.get(value));
 
 				return ret;
@@ -76,24 +70,20 @@ public class ComboBoxChoice implements InputType {
 		}
 	}
 
+        @Override
 	public Component getComponent() {
 		return comp;
 	}
+        
 
-	public int getType() {
-		return SQLUIPanel.STRING;
-	}
-
+        @Override
 	public String getValue() {
 		return (String) comp.getSelectedItem();
 	}
 
+        @Override
 	public void setValue(String value) {
 		comp.setSelectedItem(value);
-	}
-
-	public boolean isPersistent() {
-		return true;
 	}
 
 }

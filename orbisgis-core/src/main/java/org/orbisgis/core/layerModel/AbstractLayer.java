@@ -39,8 +39,8 @@ import org.xnap.commons.i18n.I18nFactory;
 public abstract class AbstractLayer implements ILayer {
         
         
-        protected final static I18n I18N = I18nFactory.getI18n(BeanLayer.class);
-        protected final static Logger LOGGER = Logger.getLogger(BeanLayer.class);
+        protected static final I18n I18N = I18nFactory.getI18n(BeanLayer.class);
+        protected static final Logger LOGGER = Logger.getLogger(BeanLayer.class);
 
 	public AbstractLayer() {
 		listeners = new ArrayList<LayerListener>();

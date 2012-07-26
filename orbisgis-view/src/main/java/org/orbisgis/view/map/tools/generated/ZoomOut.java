@@ -38,7 +38,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 
 public abstract class ZoomOut implements Automaton {
-        protected final static I18n I18N = I18nFactory.getI18n(ZoomOut.class);
+        protected static final I18n I18N = I18nFactory.getI18n(ZoomOut.class);
 	private static Logger logger = Logger.getLogger(ZoomOut.class.getName());
 
 	private Status status = Status.STANDBY;

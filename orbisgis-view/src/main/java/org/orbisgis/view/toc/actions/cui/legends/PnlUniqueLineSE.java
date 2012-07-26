@@ -33,8 +33,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.net.URL;
 import javax.swing.JPanel;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
@@ -53,7 +51,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          * be unique symbol (ie constant) Legends.
          */
         private UniqueSymbolLine uniqueLine;
-        
 
         @Override
         public Component getComponent() {
@@ -67,7 +64,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
         @Override
         public void setLegend(Legend legend) {
-                if(legend instanceof UniqueSymbolLine){
+                if (legend instanceof UniqueSymbolLine) {
                         uniqueLine = (UniqueSymbolLine) legend;
                         initPreview();
                         initializeLegendFields();
@@ -77,27 +74,27 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 }
         }
 
-	/**
-	 * Initialize the panel. This method is called just after the panel
-	 * creation.</p>
-         * <p>WARNING : the panel will be empty after calling this method. Indeed,
-         * there won't be any {@code Legend} instance associated to it. Use the
+        /**
+         * Initialize the panel. This method is called just after the panel
+         * creation.</p> <p>WARNING : the panel will be empty after calling this
+         * method. Indeed, there won't be any {@code Legend} instance associated
+         * to it. Use the
          * {@code setLegend} method to achieve this goal.
-	 *
-	 * @param lc
-	 *            LegendContext is useful to get some information about the
-	 *            layer in edition.
-	 */
+         *
+         * @param lc LegendContext is useful to get some information about the
+         * layer in edition.
+         */
         @Override
         public void initialize(LegendContext lc) {
-                if(uniqueLine == null){
+                if (uniqueLine == null) {
                         setLegend(new UniqueSymbolLine());
                 }
         }
 
         @Override
         public boolean acceptsGeometryType(int geometryType) {
-                return geometryType == GeometryProperties.LINE;
+                return geometryType == GeometryProperties.LINE ||
+                        geometryType == GeometryProperties.POLYGON;
         }
 
         @Override
@@ -112,27 +109,12 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
         @Override
         public URL getIconURL() {
-		return UIFactory.getDefaultIcon();
+                return UIFactory.getDefaultIcon();
         }
 
         @Override
         public String getTitle() {
                 return "Unique symbol for lines.";
-        }
-
-        @Override
-        public String initialize() {
-                return null;
-        }
-
-        @Override
-        public String postProcess() {
-                return null;
-        }
-
-        @Override
-        public String getInfoText() {
-                return "Configure a line to be displayed as a unique symbol.";
         }
 
         @Override
@@ -144,7 +126,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 return usl;
         }
 
-        private void initializeLegendFields(){
+        private void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel();
                 GridBagLayout grid = new GridBagLayout();
