@@ -207,18 +207,7 @@ public class Core {
             return;//This method can't be called twice
         }
         initI18n();
-        
-        //Additionnal look&feel
-        try {
-                //Substance http://java.net/projects/substance/
-                //Samples http://insubstantial.github.com/insubstantial/substance/docs/skins/toneddown.html
-                UIManager.installLookAndFeel(I18N.tr("Substance Graphite"), "org.pushingpixels.substance.api.skin.SubstanceGraphiteLookAndFeel");
-                UIManager.installLookAndFeel(I18N.tr("Substance Steel"), "org.pushingpixels.substance.api.skin.SubstanceBusinessBlackSteelLookAndFeel");
-        } catch ( Throwable ex) {
-                LOGGER.error(ex);
-                //Continue, this l&f is optional
-        }
-        
+                
         makeMainFrame();
         
         //Initiate the docking management system
