@@ -273,9 +273,6 @@ public final class OwsMapContext extends BeanMapContext {
                                         }
                                 }
                         }
-                        if(isLayerModelSpatial()){
-                                setBoundingBox(null);
-                        }
 
                         setSelectedLayers(newSelection.toArray(new ILayer[newSelection.size()]));
                         // checkIfHasToResetSRID();
