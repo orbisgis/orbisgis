@@ -37,6 +37,7 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.DataManager;
@@ -82,6 +83,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private static final int CURSOR_COORDINATE_LOOKUP_INTERVAL = 100; //Ms
     private Point lastCursorPosition = new Point();
     private Point lastTranslatedCursorPosition = new Point();
+    private AtomicBoolean initialised = new AtomicBoolean(false);
     /**
      * Constructor
      */
@@ -117,24 +119,26 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             mapControl.getMapTransform().setScaleDenominator(newScale);
     }
     
-    /**
-     * Notifies this component that it now has a parent component.
-     * When this method is invoked, the chain of parent 
-     * components is set up with KeyboardAction event listeners.
-     */
-    @Override
-    public void addNotify() {
-        super.addNotify();
-        //Register listener
-        dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(Listener.class, this, "onDropEditable","editableList"));
-        mapControl.addMouseMotionListener(EventHandler.create(MouseMotionListener.class,this,"onMouseMove","point","mouseMoved"));
-        mapStatusBar.addVetoableChangeListener(
-                MapStatusBar.PROP_USER_DEFINED_SCALE_DENOMINATOR,
-                EventHandler.create(VetoableChangeListener.class, this,
-                "onUserSetScaleDenominator",""));
-    }
-    
-    
+        /**
+         * Notifies this component that it now has a parent component. When this
+         * method is invoked, the chain of parent components is set up with
+         * KeyboardAction event listeners.
+         */
+        @Override
+        public void addNotify() {
+                super.addNotify();
+                if (!initialised.getAndSet(true)) {
+                        //Register listener
+                        dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(Listener.class, this, "onDropEditable", "editableList"));
+                        mapControl.addMouseMotionListener(EventHandler.create(MouseMotionListener.class, this, "onMouseMove", "point", "mouseMoved"));
+                        mapStatusBar.addVetoableChangeListener(
+                                MapStatusBar.PROP_USER_DEFINED_SCALE_DENOMINATOR,
+                                EventHandler.create(VetoableChangeListener.class, this,
+                                "onUserSetScaleDenominator", ""));
+                }
+        }
+
+
     /**
      * The user Drop a list of Editable
      * @param editableList 
@@ -350,10 +354,12 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             mapStatusBar.setScaleDenominator(mapTransform.getScaleDenominator());
     }
 
+    @Override
     public void imageSizeChanged(int oldWidth, int oldHeight, MapTransform mapTransform) {
         //do nothing
     }
 
+        @Override
         public boolean match(EditableElement editableElement) {
                 return editableElement instanceof MapElement;
         }
@@ -369,7 +375,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         loadMap((MapElement)editableElement);
                 }
         }
-    
+        
     /**
      * Internal Listener that store an automaton
      */
@@ -391,6 +397,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
          * Used with Menu Item
          * @param ae 
          */
+        @Override
         public void actionPerformed(ActionEvent ae) {
             onToolSelected(automaton);
         }
@@ -406,6 +413,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             this.editableList = editableList;
         }
         
+        @Override
         public void run(org.orbisgis.progress.ProgressMonitor pm) {
             DataManager dataManager = Services.getService(DataManager.class);
             ILayer dropLayer = mapContext.getLayerModel();
@@ -424,6 +432,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             }
         }
 
+        @Override
         public String getTaskName() {
             return I18N.tr("Load the data source droped into the map editor.");
         }    

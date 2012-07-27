@@ -35,6 +35,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
@@ -55,6 +56,7 @@ import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.output.OutputManager;
+import org.orbisgis.view.sqlconsole.SQLConsoleFactory;
 import org.orbisgis.view.toc.TocEditorFactory;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
@@ -172,6 +174,7 @@ public class Core {
     private void loadEditorFactories() {
             editors.addEditorFactory(new TocEditorFactory());
             editors.addEditorFactory(new MapEditorFactory());
+            editors.addEditorFactory(new SQLConsoleFactory());
     }
     /**
      * Initialisation of the BackGroundManager Service
@@ -195,11 +198,16 @@ public class Core {
     * and manage the Look And Feel declarations
     */
     public void startup(){
+        // Show the application when Swing will be ready
+        SwingUtilities.invokeLater( new ShowSwingApplication());
+    }
+    private void initialize() {
+            
         if(mainFrame!=null) {
             return;//This method can't be called twice
         }
-        initI18n();        
-        
+        initI18n();
+                
         makeMainFrame();
         
         //Initiate the docking management system
@@ -231,10 +239,7 @@ public class Core {
         //Load the docking layout and editors opened in last OrbisGis instance
         dockManager.setDockingLayoutPersistanceFilePath(viewWorkspace.getDockingLayoutPath());
         
-        // Show the application when Swing will be ready
-        SwingUtilities.invokeLater( new ShowSwingApplication());
     }
-    
     /**
      * Change the state of the main frame in the swing thread
      */
@@ -244,6 +249,7 @@ public class Core {
         */
         @Override
         public void run(){
+                initialize();
                 mainFrame.setVisible( true );                
                 backgroundManager.backgroundOperation(new ReadMapContextProcess());
         }

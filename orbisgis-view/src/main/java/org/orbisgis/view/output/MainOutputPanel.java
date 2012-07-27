@@ -30,6 +30,7 @@ package org.orbisgis.view.output;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
@@ -45,9 +46,12 @@ import org.xnap.commons.i18n.I18nFactory;
  * This panel includes all Output Type panel.
  */
 public class MainOutputPanel extends JPanel implements DockingPanel {
+    private static final long serialVersionUID = 1L;
     private static final I18n I18N = I18nFactory.getI18n(MainOutputPanel.class);
     private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< docked panel properties */
     private JTabbedPane tabbedPane;
+    private AtomicBoolean initialised = new AtomicBoolean(false);
+    
     public MainOutputPanel() {
         dockingParameters.setName("mainLog");
         dockingParameters.setTitle(I18N.tr("Output"));
@@ -59,9 +63,18 @@ public class MainOutputPanel extends JPanel implements DockingPanel {
         //Add the tabbed pane to this panel.
         add(tabbedPane,BorderLayout.CENTER);
          
-        //The following line enables to use scrolling tabs.
-        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
     }
+
+        @Override
+        public void addNotify() {
+                super.addNotify();
+                if(!initialised.getAndSet(true)) {
+                        //The following line enables to use scrolling tabs.
+                        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
+                }
+        }
+    
+    
     /**
      * Found the tab id of the provided sub panel
      * @param subPanel
