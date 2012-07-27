@@ -174,7 +174,7 @@ public abstract class BeanMapContext implements MapContext {
          */
         @Override
         public void setBoundingBox(Envelope boundingBox) {
-                if (!boundingBox.equals(this.boundingBox)) {
+                if (boundingBox != null && !boundingBox.equals(this.boundingBox)) {
                         Envelope oldBoundingBox = this.boundingBox;
                         this.boundingBox = boundingBox;
                         propertyChangeSupport.firePropertyChange(PROP_BOUNDINGBOX, oldBoundingBox, boundingBox);
