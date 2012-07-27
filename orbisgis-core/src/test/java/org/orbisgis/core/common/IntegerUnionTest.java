@@ -84,7 +84,6 @@ public class IntegerUnionTest {
                 while(itMerge.hasNext()) {
                         Integer mergeValue = itMerge.next();
                         Integer originValue = itOrigin.next();
-                        System.out.println(mergeValue+"//"+originValue);
                         if(mergeValue!=originValue) {
                                 Assert.assertTrue(mergeValue+"!="+originValue,mergeValue==originValue);
                         }
@@ -113,57 +112,6 @@ public class IntegerUnionTest {
                 check(mergeTool, new Integer[]{14, 53});
                 mergeTool.add(12);
                 check(mergeTool, new Integer[]{12,12,14, 53});
-        }
-
-        @Test
-        public void testRowMerge() {
-                long deb = System.nanoTime();
-                IntegerUnion mergeTool = new IntegerUnion();
-
-                mergeTool.add(50);
-
-                for (int i = 51; i < 200; i++) {
-                        mergeTool.add(i);
-                }
-
-                for (int i = 300; i < 400; i++) {
-                        mergeTool.add(i);
-                }
-                for (int i = 450; i < 1500; i++) {
-                        mergeTool.add(i);
-                }
-                for (int i = 2000; i < 20000; i++) {
-                        mergeTool.add(i);
-                }
-                for (int i = 401; i < 450; i++) {
-                        mergeTool.add(i);
-                }
-                //Add already pushed rows id, the result of intervals must be the same
-                mergeTool.add(401);
-                mergeTool.add(410);
-                mergeTool.add(19999);
-
-                mergeTool.add(400);
-                double timeadd = ((System.nanoTime() - deb) / 1e6);
-                //Test if results is correct
-                Iterator<Integer> it = mergeTool.getValueRanges().iterator();
-                System.out.println("Ranges :");
-                List<Integer> correctRanges = new ArrayList<Integer>();
-                correctRanges.add(50);
-                correctRanges.add(199);
-                correctRanges.add(300);
-                correctRanges.add(1499);
-                correctRanges.add(2000);
-                correctRanges.add(19999);
-
-                while (it.hasNext()) {
-                        int begin = it.next();
-                        int end = it.next();
-                        Assert.assertTrue(correctRanges.contains(begin));
-                        Assert.assertTrue(correctRanges.contains(end));
-                        Assert.assertTrue(!(300 < begin && begin < 1499));
-                        Assert.assertTrue(!(300 < end && end < 1499));
-                }
         }
 
         @BeforeClass
