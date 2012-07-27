@@ -53,7 +53,9 @@ import org.jproj.CoordinateReferenceSystem;
 import org.orbisgis.utils.ByteUtils;
 
 import org.gdms.data.InitializationException;
+import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 
 class DefaultRasterValue extends AbstractValue implements RasterValue {
 
@@ -132,11 +134,17 @@ class DefaultRasterValue extends AbstractValue implements RasterValue {
         }
 
         @Override
-        public BooleanValue equals(Value obj) {
-                if (obj instanceof RasterValue) {
-                        return ValueFactory.createValue(geoRaster.equals(((RasterValue) obj).getAsRaster()));
+        public BooleanValue equals(Value value) {
+                if (value.isNull()) {
+                        return ValueFactory.createNullValue();
+                }
+                
+                if (value instanceof RasterValue) {
+                        return ValueFactory.createValue(geoRaster.equals(value.getAsRaster()));
                 } else {
-                        return ValueFactory.createValue(false);
+                        throw new IncompatibleTypesException(
+                                "The specified value is not a raster value:"
+                                + TypeFactory.getTypeName(value.getType()));
                 }
         }
 

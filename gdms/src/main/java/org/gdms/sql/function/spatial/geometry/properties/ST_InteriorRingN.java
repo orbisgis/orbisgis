@@ -49,7 +49,7 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 public class ST_InteriorRingN extends AbstractScalarSpatialFunction {
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
 
                 Geometry g = args[0].getAsGeometry();
 

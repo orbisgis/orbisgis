@@ -52,7 +52,7 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 public final class ST_Scale extends AbstractScalarSpatialFunction {
 
         @Override
-	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
 
 		final Geometry geom = args[0].getAsGeometry();
 		final double scale = args[1].getAsDouble();		

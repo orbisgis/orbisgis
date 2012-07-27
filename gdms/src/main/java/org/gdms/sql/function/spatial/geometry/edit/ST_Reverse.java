@@ -47,7 +47,7 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 public final class ST_Reverse extends AbstractScalarSpatialFunction {
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 Geometry g = args[0].getAsGeometry();
                 return ValueFactory.createValue(g.reverse(), args[0].getCRS());
 

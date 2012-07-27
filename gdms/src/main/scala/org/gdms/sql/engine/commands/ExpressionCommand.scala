@@ -53,7 +53,7 @@ trait ExpressionCommand extends Command {
 
   protected def exp: Seq[Expression]
   
-  protected override def doPrepare = {
+  protected override def doPrepare() = {
     // all child metadata
     val allM = children map (_.getMetadata)
     
@@ -92,7 +92,7 @@ trait ExpressionCommand extends Command {
     // validation
     // this will fail if any field is left un-initialized
     // this will also validate subqueries
-    exp foreach (_ validate)
+    exp foreach (_ validate())
   }
   
   // holds references to the metadata of the outer query
@@ -105,7 +105,7 @@ trait ExpressionCommand extends Command {
   
   /**
    * Push available metadata of this (the outer query) to any inner query
-   * so that they can validate themselves
+   * so that they can validate() themselves
    */
   private def pushIntoSubQuery(exp: Expression, allM: List[SQLMetadata]) {
     // process children first
@@ -252,9 +252,9 @@ trait ExpressionCommand extends Command {
     e.foreach (setDsf)
   }
   
-  override def doCleanUp {
+  override def doCleanUp() {
     // reset state of expressions
-    exp foreach (_ cleanUp)
+    exp foreach (_ cleanUp())
     
     // reset state of this command
     outerReference = Nil

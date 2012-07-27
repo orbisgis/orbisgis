@@ -52,9 +52,9 @@ class MergeSortCommand(names: Seq[(Expression, Boolean)]) extends Command with E
   
   val exp = names map (_._1)
   
-  protected override final def doPrepare = {
+  protected override final def doPrepare() = {
     // init sorting expressions
-    super.doPrepare
+    super.doPrepare()
     
     exp foreach { e =>
       // checks if the expressions can be sorted

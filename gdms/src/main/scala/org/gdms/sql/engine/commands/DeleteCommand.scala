@@ -63,7 +63,7 @@ class DeleteCommand extends Command with OutputCommand {
   
   // holds the rowIndexes of the rows to delete
   // they are deleted during execute() but the DataSource
-  // is actually committed during preDoCleanUp (the query could be aborded)
+  // is actually committed during preDoCleanUp() (the query could be aborded)
   var indexes: TreeSet[Long] = new TreeSet
   
   // holds the result set that will containt the number of deleted rows
@@ -88,9 +88,9 @@ class DeleteCommand extends Command with OutputCommand {
     Iterator.empty
   }
 
-  override def doPrepare = {
+  override def doPrepare() = {
     // this inits the ScanCommand
-    super.doPrepare
+    super.doPrepare()
 
     // then we find it and get the DataSource
     def find(ch: Seq[Command]): Option[Command] = ch.filter (_.isInstanceOf[ScanCommand]) headOption
@@ -104,9 +104,9 @@ class DeleteCommand extends Command with OutputCommand {
     res = new MemoryDataSetDriver(new DefaultMetadata(Array(TypeFactory.createType(Type.LONG)), Array("Deleted")))
   }
 
-  override def preDoCleanUp = {
+  override def preDoCleanUp() = {
     // commit before the close() from ScanCommand
-    ds.commit
+    ds.commit()
   }
   
   def getResult = res

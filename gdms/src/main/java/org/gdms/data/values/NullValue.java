@@ -378,7 +378,7 @@ final class NullValue extends AbstractValue implements BinaryValue, BooleanValue
 
         @Override
         public Value toType(int typeCode) {
-                return this;
+                return ValueFactory.createNullValue();
         }
 
         @Override

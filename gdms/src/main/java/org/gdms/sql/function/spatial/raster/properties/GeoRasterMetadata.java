@@ -50,19 +50,19 @@ public final class GeoRasterMetadata {
 			HEIGHT = 512, PIXELSIZEX = 1024, PIXELSIZEY = 2048, UPPERLEFTX = 4,
 			UPPERLEFTY = 8, NUMBANDS = 9, NODATAVALUE = 10;
 
-	public static final Map<String, Integer> operators = new HashMap<String, Integer>();
+	public static final Map<String, Integer> OPERATORS = new HashMap<String, Integer>();
 	static {
-		operators.put("min", MIN);
-		operators.put("max", MAX);
-		operators.put("count", COUNT);
-		operators.put("ncols", WIDTH);
-		operators.put("nrows", HEIGHT);
-		operators.put("pixelsizex", PIXELSIZEX);
-		operators.put("pixelsizey", PIXELSIZEY);
-		operators.put("upperleftx", UPPERLEFTX);
-		operators.put("upperlefty", UPPERLEFTY);
-		operators.put("numnands", NUMBANDS);
-		operators.put("nodatavalue", NODATAVALUE);
+		OPERATORS.put("min", MIN);
+		OPERATORS.put("max", MAX);
+		OPERATORS.put("count", COUNT);
+		OPERATORS.put("ncols", WIDTH);
+		OPERATORS.put("nrows", HEIGHT);
+		OPERATORS.put("pixelsizex", PIXELSIZEX);
+		OPERATORS.put("pixelsizey", PIXELSIZEY);
+		OPERATORS.put("upperleftx", UPPERLEFTX);
+		OPERATORS.put("upperlefty", UPPERLEFTY);
+		OPERATORS.put("numnands", NUMBANDS);
+		OPERATORS.put("nodatavalue", NODATAVALUE);
 	}
 
 	private int method;

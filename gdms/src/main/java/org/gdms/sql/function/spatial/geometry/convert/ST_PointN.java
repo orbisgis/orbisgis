@@ -52,7 +52,7 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 public final class ST_PointN extends AbstractScalarSpatialFunction {
 
         @Override
-	public Value evaluate(DataSourceFactory dsf, Value[] args)
+	public Value evaluate(DataSourceFactory dsf, Value... args)
 			throws FunctionException {
 		final Geometry geom = args[0].getAsGeometry();
 

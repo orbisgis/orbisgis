@@ -34,18 +34,17 @@
 package org.gdms.data;
 
 /**
- * Thrown if attempting to close an already closed DataSource
- * 
- * 
+ * Thrown if an unchecked attempt to close a DataSource fails because it is already closed.
  */
 public class AlreadyClosedException extends RuntimeException {
 
-	/**
-	 * @param message
-	 */
-	public AlreadyClosedException(String message) {
-		super(message);
+        private static final long serialVersionUID = -4530144583179301706L;
 
-	}
+        /**
+         * @param message
+         */
+        public AlreadyClosedException(String message) {
+                super(message);
 
+        }
 }

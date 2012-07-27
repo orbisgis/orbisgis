@@ -51,7 +51,7 @@ public class Sum extends AbstractAggregateFunction {
 	private Value acum = ValueFactory.createNullValue();
 
 	@Override
-	public void evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
+	public void evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
 		if (!args[0].isNull()) {
 			if (acum.isNull()) {
 				acum = args[0];

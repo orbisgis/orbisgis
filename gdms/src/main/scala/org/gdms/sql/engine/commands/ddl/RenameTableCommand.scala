@@ -50,7 +50,7 @@ import org.orbisgis.progress.ProgressMonitor
  */
 class RenameTableCommand(name: String, newname: String) extends Command with OutputCommand {
 
-  override def doPrepare = {
+  override def doPrepare() = {
     // checks the table exists
     if (!dsf.getSourceManager.exists(name)) {
       throw new NoSuchTableException(name)

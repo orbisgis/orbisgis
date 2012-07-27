@@ -86,7 +86,7 @@ public class ST_Holes extends AbstractScalarSpatialFunction {
         private final GeometryFactory gf = new GeometryFactory();
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 if (args[0].isNull()) {
                         return ValueFactory.createNullValue();
                 } else {

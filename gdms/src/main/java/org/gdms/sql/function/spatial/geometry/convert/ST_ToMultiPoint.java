@@ -53,7 +53,7 @@ public final class ST_ToMultiPoint extends AbstractScalarSpatialFunction {
         }
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 if (args[0].isNull()) {
                         return ValueFactory.createNullValue();
                 } else {

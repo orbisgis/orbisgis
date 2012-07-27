@@ -56,7 +56,7 @@ import org.gdms.sql.function.spatial.raster.AbstractScalarRasterFunction;
 public final class ST_D8RiverDistance extends AbstractScalarRasterFunction {
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 final GeoRaster grD8Direction = args[0].getAsRaster();
                 final GeoRaster grD8Accumulation = args[1].getAsRaster();
                 int riverThreshold = args[2].getAsInt();

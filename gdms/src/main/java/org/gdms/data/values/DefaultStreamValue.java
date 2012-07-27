@@ -34,12 +34,14 @@
 package org.gdms.data.values;
 
 import org.gdms.data.stream.GeoStream;
+import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 
 /**
  * Main Stream value.
- * 
- * This values mainly embeds a {@link GeoStream} that will be used to retrieve 
+ *
+ * This values mainly embeds a {@link GeoStream} that will be used to retrieve
  * geographic features stored in an external server (WMS, for instance).
  *
  * @author Antoine Gourlay
@@ -59,11 +61,17 @@ class DefaultStreamValue extends AbstractValue implements StreamValue {
         }
 
         @Override
-        public BooleanValue equals(Value obj) {
-                if (obj instanceof StreamValue) {
-                        return ValueFactory.createValue(geoStream.equals(((StreamValue) obj).getAsStream()));
+        public BooleanValue equals(Value value) {
+                if (value.isNull()) {
+                        return ValueFactory.createNullValue();
+                }
+
+                if (value instanceof StreamValue) {
+                        return ValueFactory.createValue(geoStream.equals(value.getAsStream()));
                 } else {
-                        return ValueFactory.createValue(false);
+                        throw new IncompatibleTypesException(
+                                "The specified value is not a stream value:"
+                                + TypeFactory.getTypeName(value.getType()));
                 }
         }
 

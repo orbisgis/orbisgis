@@ -71,26 +71,26 @@ abstract class Evaluator {
 
   def childExpressions: Seq[Expression] = List.empty
 
-  final def validate: Unit = {
-    childExpressions map (_ validate)
-    doValidate
+  final def validate(): Unit = {
+    childExpressions map (_ validate())
+    doValidate()
   }
   
-  final def preValidate: Unit = {
-    childExpressions map (_ preValidate)
-    doPreValidate
+  final def preValidate(): Unit = {
+    childExpressions map (_ preValidate())
+    doPreValidate()
   }
   
-  final def cleanUp {
-    childExpressions map (_ cleanUp)
-    doCleanUp
+  final def cleanUp() {
+    childExpressions map (_ cleanUp())
+    doCleanUp()
   }
   
-  protected def doPreValidate: Unit = {}
+  protected def doPreValidate(): Unit = {}
 
-  protected def doValidate: Unit = {}
+  protected def doValidate(): Unit = {}
   
-  protected def doCleanUp: Unit = {}
+  protected def doCleanUp(): Unit = {}
   
   def duplicate: Evaluator
 }
@@ -117,7 +117,7 @@ object cons {
 trait DsfEvaluator extends Evaluator {
   var dsf: DataSourceFactory = null
   
-  override def doCleanUp = dsf = null
+  override def doCleanUp() = dsf = null
 }
 
 /**
@@ -131,7 +131,7 @@ case class FunctionEvaluator(name: String, l: List[Expression]) extends Evaluato
   def eval = s => f.evaluate(dsf, l map ( _.evaluate(s)): _*)
   def sqlType = f.getType(l.map( _.evaluator.sqlType ) toArray)
   override val childExpressions = l
-  override def doValidate = {
+  override def doValidate() = {
     if (f == null) throw new FunctionException("Internal error: failed to initialized function for '" + name + "'.")
     val fs = FunctionValidator.failIfTypesDoNotMatchSignature(l.map(_.evaluator.sqlType) toArray,
                                                               f.getFunctionSignatures)
@@ -159,8 +159,8 @@ case class FunctionEvaluator(name: String, l: List[Expression]) extends Evaluato
     }
     ret
   }  
-  override def doCleanUp = {
-    super.doCleanUp
+  override def doCleanUp() = {
+    super.doCleanUp()
     f == null
   }
 }
@@ -188,10 +188,10 @@ case class AggregateEvaluator(f: AggregateFunction, l: List[Expression]) extends
   val finalValue = () => f.getAggregateResult
   def sqlType = f.getType(l.map(_.evaluator.sqlType) toArray)
   override val childExpressions = l
-  override def doPreValidate = {
+  override def doPreValidate() = {
     if (f == null) throw new FunctionException("The function does not exist.")
   }
-  override def doValidate = {
+  override def doValidate() = {
     val fs = FunctionValidator.failIfTypesDoNotMatchSignature(l.map(_.evaluator.sqlType) toArray,
                                                               f.getFunctionSignatures)
     
@@ -235,7 +235,7 @@ case class FieldEvaluator(name: String, table: Option[String] = None) extends Ev
   def eval = _(index)
   var sqlType = -1
   var index: Int = -1
-  override def doValidate = index match {
+  override def doValidate() = index match {
     case -1 => throw new UnknownFieldException(name)
     case _ =>
   }
@@ -248,7 +248,7 @@ case class FieldEvaluator(name: String, table: Option[String] = None) extends Ev
     c
   }
   
-  override def doCleanUp = {
+  override def doCleanUp() = {
     sqlType = -1
     index = -1
   }
@@ -275,7 +275,7 @@ case class OuterFieldEvaluator(name: String, table: Option[String]) extends Eval
   def eval = s => value
   var sqlType = -1
   var index: Int = -1
-  override def doValidate = index match {
+  override def doValidate() = index match {
     case -1 => throw new UnknownFieldException(name)
     case _ =>
   }
@@ -290,7 +290,7 @@ case class OuterFieldEvaluator(name: String, table: Option[String]) extends Eval
   
   override def toString = "OuterField(" + (if (table.isDefined) table.get + "." else "") + name + ")"
   
-  override def doCleanUp = {
+  override def doCleanUp() = {
     sqlType = -1
     index = -1
     value = null
@@ -399,9 +399,9 @@ trait QueryEvaluator extends Evaluator with DsfEvaluator {
   protected var matOut: QueryOutputCommand = null
   protected var evals: List[OuterFieldEvaluator]= Nil
   
-  override def doPreValidate = op.validate
+  override def doPreValidate() = op.validate()
   
-  override def doValidate = {
+  override def doValidate() = {
     command.prepare(dsf)
     
     if (command.getMetadata.getFieldCount > 1) {
@@ -417,14 +417,14 @@ trait QueryEvaluator extends Evaluator with DsfEvaluator {
       matOut.materialize(dsf)
     }
   }
-  override def doCleanUp = {
-    super.doCleanUp
+  override def doCleanUp() = {
+    super.doCleanUp()
     
     if (matOut != null) {
-      matOut.cleanUp
+      matOut.cleanUp()
       matOut = null
     } else {
-      command.cleanUp
+      command.cleanUp()
     }
     
     command = null
@@ -482,14 +482,14 @@ case class QueryToScalarEvaluator(var op: Operation) extends QueryEvaluator {
     }
   }
   
-  override def doValidate = {
-    super.doValidate
+  override def doValidate() = {
+    super.doValidate()
     
     returnType = command.getMetadata.getFieldType(0).getTypeCode
   }
   
-  override def doCleanUp = {
-    super.doCleanUp
+  override def doCleanUp() = {
+    super.doCleanUp()
     returnType = -1
   }
   

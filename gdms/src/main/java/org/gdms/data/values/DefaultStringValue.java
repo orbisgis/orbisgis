@@ -219,61 +219,85 @@ class DefaultStringValue extends AbstractValue implements Serializable, StringVa
 
         @Override
         public BooleanValue equals(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
-
-                return ValueFactory.createValue(this.value.equals(value.toString()));
+                
+                if (value instanceof StringValue) {
+                        return ValueFactory.createValue(this.value.equals(value.getAsString()));
+                } else {
+                        throw new IncompatibleTypesException(
+                                "The specified value is not a text value:"
+                                + TypeFactory.getTypeName(value.getType()));
+                }
         }
 
         @Override
         public BooleanValue greater(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
-
-                return new DefaultBooleanValue(this.value.compareTo(value.toString()) > 0);
+                
+                if (value instanceof StringValue) {
+                        return ValueFactory.createValue(this.value.compareTo(value.toString()) > 0);
+                } else {
+                        throw new IncompatibleTypesException(
+                                "The specified value is not a text value:"
+                                + TypeFactory.getTypeName(value.getType()));
+                }
         }
 
         @Override
         public BooleanValue greaterEqual(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
-
-                return new DefaultBooleanValue(this.value.compareTo(value.toString()) >= 0);
+                
+                if (value instanceof StringValue) {
+                        return ValueFactory.createValue(this.value.compareTo(value.toString()) >= 0);
+                } else {
+                        throw new IncompatibleTypesException(
+                                "The specified value is not a text value:"
+                                + TypeFactory.getTypeName(value.getType()));
+                }
         }
 
         @Override
         public BooleanValue less(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
-
-                return new DefaultBooleanValue(this.value.compareTo(value.toString()) < 0);
+                
+                if (value instanceof StringValue) {
+                        return ValueFactory.createValue(this.value.compareTo(value.toString()) < 0);
+                } else {
+                        throw new IncompatibleTypesException(
+                                "The specified value is not a text value:"
+                                + TypeFactory.getTypeName(value.getType()));
+                }
         }
 
         @Override
         public BooleanValue lessEqual(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
-                return new DefaultBooleanValue(this.value.compareTo(value.toString()) <= 0);
+                return ValueFactory.createValue(this.value.compareTo(value.toString()) <= 0);
         }
 
         @Override
         public BooleanValue notEquals(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
-                return new DefaultBooleanValue(!this.value.equals(value.toString()));
+                return ValueFactory.createValue(!this.value.equals(value.toString()));
         }
 
         @Override
         public BooleanValue matches(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
@@ -293,7 +317,7 @@ class DefaultStringValue extends AbstractValue implements Serializable, StringVa
 
         @Override
         public BooleanValue like(Value value, boolean caseInsensitive) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
@@ -308,7 +332,7 @@ class DefaultStringValue extends AbstractValue implements Serializable, StringVa
         
         @Override
         public BooleanValue similarTo(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 

@@ -51,7 +51,7 @@ abstract class Command() {
   var children: List[Command] = List.empty
 
   /**
-   * The current DSF. It is set up during prepare(), *before* doPrepare() is called.
+   * The current DSF. It is set up during prepare(), *before* doPrepare()() is called.
    */
   protected var dsf: DataSourceFactory = null
 
@@ -78,21 +78,21 @@ abstract class Command() {
    * Override this method to do something specific when the query has finished executing, after all children
    * are cleaned up.
    */
-  protected def doCleanUp : Unit = {}
+  protected def doCleanUp() : Unit = {}
 
   /**
    * Override this method to do something specific when the query has finised executing, before all children
    * are cleaned up.
    */
-  protected def preDoCleanUp: Unit = {}
+  protected def preDoCleanUp(): Unit = {}
 
   /**
    * Cleans any resources left open.
    */
-  final def cleanUp: Unit = {
-    preDoCleanUp
-    children foreach( _.cleanUp )
-    doCleanUp
+  final def cleanUp(): Unit = {
+    preDoCleanUp()
+    children foreach( _.cleanUp() )
+    doCleanUp()
     dsf = null
   }
 
@@ -101,9 +101,9 @@ abstract class Command() {
    */
   final def prepare(dsf: DataSourceFactory): Unit = {
     this.dsf = dsf
-    preDoPrepare
+    preDoPrepare()
     children foreach( _.prepare(dsf) )
-    doPrepare
+    doPrepare()
   }
 
   /**
@@ -112,7 +112,7 @@ abstract class Command() {
    *
    * The DataSourceFactory is set at this point and can be used to validate table names, etc.
    */
-  protected def doPrepare : Unit = {}
+  protected def doPrepare() : Unit = {}
   
   /**
    * Override this method to do something specific right before the query starts, before all children
@@ -120,7 +120,7 @@ abstract class Command() {
    *
    * This DataSourceFactory is set at this point and can be used to validate table names, etc.
    */
-  protected def preDoPrepare : Unit = {}
+  protected def preDoPrepare() : Unit = {}
 
   /**
    * Returns the resulting metadata. Override this method to provide a specific metadata.

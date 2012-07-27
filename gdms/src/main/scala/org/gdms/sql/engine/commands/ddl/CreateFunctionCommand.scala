@@ -56,7 +56,7 @@ extends Command with OutputCommand {
   // will hold the class object of the function
   private var cc: Class[_ <: org.gdms.sql.function.Function] = _
   
-  override def doPrepare = {
+  override def doPrepare() = {
     // checks if the function already exists
     if (!replace && dsf.getFunctionManager.contains(name)) {
       throw new SemanticException("There already is a function named '" + name + "' registered.")
@@ -79,7 +79,7 @@ extends Command with OutputCommand {
     Iterator.empty
   }
   
-  override def doCleanUp = cc = null
+  override def doCleanUp() = cc = null
   
   val getResult = null
 

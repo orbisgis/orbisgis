@@ -47,7 +47,7 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 public final class ST_Normalize extends AbstractScalarSpatialFunction {
 
         @Override
-	public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
 
 		Geometry g = args[0].getAsGeometry();
 		g.normalize();

@@ -33,24 +33,23 @@
  */
 package org.gdms.data.values;
 
+import java.io.Serializable;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.regex.Pattern;
 
-import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import org.grap.model.GeoRaster;
 import org.jproj.CoordinateReferenceSystem;
 
-import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.data.stream.GeoStream;
 
 /**
  * A data container used in Gdms as a container for actual data.
  *
  */
-public interface Value extends Comparable<Value> {
+public interface Value extends Comparable<Value>, Serializable {
 
         /**
          * Gets a boolean value representing the SQL AND operation between this value and the

@@ -54,7 +54,7 @@ import org.orbisgis.progress.ProgressMonitor
  */
 class CreateViewCommand(table: String, sql: String, op: Operation, orReplace: Boolean) extends Command with OutputCommand {
   
-  override def doPrepare = {
+  override def doPrepare() = {
     // checks that there is no table with this name
     if (!orReplace && dsf.getSourceManager.exists(table)) {
       throw new SemanticException("There already is a registered table named '" + table + "'.")

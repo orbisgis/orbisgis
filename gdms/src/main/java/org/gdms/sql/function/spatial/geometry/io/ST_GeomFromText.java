@@ -56,7 +56,7 @@ public final class ST_GeomFromText extends AbstractScalarSpatialFunction {
         private static WKTReader reader = new WKTReader();
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 if (args[0].isNull()) {
                         return ValueFactory.createNullValue();
                 } else {

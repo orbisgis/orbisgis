@@ -31,44 +31,6 @@
  * or contact directly:
  * info@orbisgis.org
  */
-/*
- * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- *
- *
- * Team leader : Erwan BOCHER, scientific researcher,
- *
- * User support leader : Gwendall Petit, geomatic engineer.
- *
- * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC,
- * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
- *
- * This file is part of OrbisGIS.
- *
- * OrbisGIS is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- *
- * For more information, please consult: <http://www.orbisgis.org/>
- *
- * or contact directly:
- * info@orbisgis.org
- */
 package org.gdms.data.values;
 
 import java.util.Arrays;
@@ -78,31 +40,27 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 
 /**
- * This class is intended to store binary values, as a table of bytes.
+ * A wrapper for binary values, as a table of bytes.
  */
 class DefaultBinaryValue extends AbstractValue implements BinaryValue {
-        //the set of values.
 
         private byte[] value;
 
         /**
-         * Constructor
-         * @param bytes : the table taht contains the values
+         * Creates a new wrapper.
+         *
+         * @param bytes the array of bytes to wrap
          */
         DefaultBinaryValue(byte[] bytes) {
                 value = bytes;
         }
 
         /**
-         * Create a new empty BinaryValue
+         * Create a new empty wrapper.
          */
         DefaultBinaryValue() {
         }
 
-        /**
-         * Return the content of the Value as a String
-         * @return the value as a String
-         */
         @Override
         public String toString() {
                 StringBuilder sb = new StringBuilder();
@@ -120,16 +78,19 @@ class DefaultBinaryValue extends AbstractValue implements BinaryValue {
         }
 
         /**
-         * Evaluate if <code>this</code> is equal to <code>value</code>.
+         * Evaluate if
+         * <code>this</code> is equal to
+         * <code>value</code>.
          * Two BynaryValues are equal if an only if they contain exactly the same byte values.
+         *
          * @param value The value to be compared with
          * @return a BooleanValue, which is "true" if this and value are equals.
          * @throws IncompatibleTypesException if the value type is neither NullValue nor BinaryValue
          */
         @Override
         public BooleanValue equals(Value value) {
-                if (value instanceof NullValue) {
-                        return ValueFactory.createValue(false);
+                if (value.isNull()) {
+                        return ValueFactory.createNullValue();
                 }
 
                 if (value instanceof BinaryValue) {
@@ -146,21 +107,6 @@ class DefaultBinaryValue extends AbstractValue implements BinaryValue {
                                 }
                         }
                         return ValueFactory.createValue(ret);
-                } else {
-                        throw new IncompatibleTypesException(
-                                "The specified value is not a binary:"
-                                + TypeFactory.getTypeName(value.getType()));
-                }
-        }
-
-        @Override
-        public BooleanValue notEquals(Value value) {
-                if (value instanceof NullValue) {
-                        return ValueFactory.createValue(false);
-                }
-
-                if (value instanceof BinaryValue) {
-                        return ValueFactory.createValue(!(equals(value)).getAsBoolean());
                 } else {
                         throw new IncompatibleTypesException(
                                 "The specified value is not a binary:"
@@ -203,6 +149,7 @@ class DefaultBinaryValue extends AbstractValue implements BinaryValue {
 
         /**
          * Create a new BinaryValue withe the byte tabe buffer
+         *
          * @param buffer
          * @return a new BinaryValue as a Value.
          */

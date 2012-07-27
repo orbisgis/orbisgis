@@ -44,7 +44,9 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.ParseException;
 import org.jproj.CoordinateReferenceSystem;
 
+import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.geometryUtils.GeometryTypeUtil;
 
 abstract class DefaultGeometryValue extends AbstractValue implements GeometryValue {
@@ -77,11 +79,17 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
         }
 
         @Override
-        public BooleanValue equals(Value obj) {
-                if (obj.getType() == Type.STRING) {
-                        return ValueFactory.createValue(obj.getAsString().equals(this.geom.toText()));
+        public BooleanValue equals(Value value) {
+                if (value.isNull()) {
+                        return ValueFactory.createNullValue();
+                }
+
+                if (value instanceof GeometryValue) {
+                        return ValueFactory.createValue(equalsExact(geom, value.getAsGeometry()));
                 } else {
-                        return ValueFactory.createValue(equalsExact(geom, obj.getAsGeometry()));
+                        throw new IncompatibleTypesException(
+                                "The specified value is not a geometry value:"
+                                + TypeFactory.getTypeName(value.getType()));
                 }
         }
 
@@ -126,11 +134,6 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
                                 return false;
                         }
                 }
-        }
-
-        @Override
-        public BooleanValue notEquals(Value value) {
-                return (BooleanValue) equals(value).inverse();
         }
 
         @Override
@@ -274,5 +277,4 @@ abstract class DefaultGeometryValue extends AbstractValue implements GeometryVal
         public CoordinateReferenceSystem getCRS() {
                 return crs;
         }
-        
 }

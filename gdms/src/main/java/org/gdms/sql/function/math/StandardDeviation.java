@@ -52,7 +52,7 @@ public final class StandardDeviation extends AbstractAggregateFunction {
 	private int numberOfValues = 0;
 
         @Override
-	public void evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
+	public void evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
 		if (!args[0].isNull()) {
 			final double currentValue = args[0].getAsDouble();
 			sumOfValues += currentValue;

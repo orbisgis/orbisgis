@@ -286,7 +286,6 @@ public class DBTableDataSourceAdapter extends DriverDataSource implements
                 try {
                         driver.close(con);
                         con.close();
-                        con = null;
                         con = getConnection();
                         driver.open(con, def.getTableName(), def.getSchemaName());
                 } catch (SQLException e) {

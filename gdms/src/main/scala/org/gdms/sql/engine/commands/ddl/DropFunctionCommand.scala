@@ -47,7 +47,7 @@ import org.orbisgis.progress.ProgressMonitor
  * @since 0.3
  */
 class DropFunctionCommand(name: String, ifExists: Boolean) extends Command with OutputCommand {
-  override def doPrepare = {
+  override def doPrepare() = {
     // checks the function exists
     if (!ifExists && !dsf.getFunctionManager.contains(name)) {
       throw new SemanticException("The function '" + name + "' does not exist.")

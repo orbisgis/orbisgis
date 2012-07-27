@@ -53,7 +53,7 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 public final class ST_NearestPoint extends AbstractScalarSpatialFunction {
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 final Geometry geomA = args[0].getAsGeometry();
                 final Geometry geomB = args[1].getAsGeometry();
                 Coordinate[] pts = DistanceOp.nearestPoints(geomA, geomB);

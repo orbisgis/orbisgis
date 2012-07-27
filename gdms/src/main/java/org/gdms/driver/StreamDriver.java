@@ -83,7 +83,7 @@ public interface StreamDriver extends Driver {
          * @return the resulting image
          * @throws DriverException
          */
-        public Image getMap(int width, int height, Envelope extent, ProgressMonitor pm) throws DriverException;
+        Image getMap(int width, int height, Envelope extent, ProgressMonitor pm) throws DriverException;
 
         /**
          * Gets the array of the stream types accepted by this driver.

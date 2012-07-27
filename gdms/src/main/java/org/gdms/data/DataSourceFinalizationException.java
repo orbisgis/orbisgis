@@ -33,7 +33,14 @@
  */
 package org.gdms.data;
 
+/**
+ * An error during finalization of a {@link DataSource }.
+ * 
+ * @author Antoine Gourlay
+ */
 public class DataSourceFinalizationException extends Exception {
+        
+        private static final long serialVersionUID = -1204793256804775002L;
 
 	public DataSourceFinalizationException() {
 		super();

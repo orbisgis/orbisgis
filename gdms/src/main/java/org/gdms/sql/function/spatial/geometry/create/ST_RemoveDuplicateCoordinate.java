@@ -48,7 +48,7 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 public final class ST_RemoveDuplicateCoordinate extends AbstractScalarSpatialFunction {
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
 
                 final Geometry geom = args[0].getAsGeometry();
                 return ValueFactory.createValue(GeometryClean.removeDuplicateCoordinates(geom), args[0].getCRS());

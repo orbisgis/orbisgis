@@ -61,7 +61,7 @@ extends Command with OutputCommand with ExpressionCommand {
   
   protected var exp: Seq[Expression] = Seq.empty
 
-  override def doPrepare = {
+  override def doPrepare() = {
     // checks that the table actually exists
     if (!dsf.getSourceManager.exists(name)) {
       throw new NoSuchTableException(name)
@@ -103,7 +103,7 @@ extends Command with OutputCommand with ExpressionCommand {
     children = List(new DummyReferenceCommand(SQLMetadata(name, ds.getMetadata)))
     
     // init expressions
-    super.doPrepare
+    super.doPrepare()
     
     elems foreach {
       case a @ AlterTypeOfColumn(n, nT, init) => {
@@ -177,12 +177,12 @@ extends Command with OutputCommand with ExpressionCommand {
           }
       }}
     
-    ds.commit
+    ds.commit()
 
     Iterator.empty
   }
   
-  override def doCleanUp {
+  override def doCleanUp() {
     ds.close
     ds = null
   }

@@ -52,86 +52,74 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
 /**
- * Convert a geometry into a MultiLineString
+ * Converts a geometry into a MultiLineString.
  */
 public final class ST_ToMultiLine extends AbstractScalarSpatialFunction {
-	private static final class PointException extends Exception {
-		// this (internal) exception is only thrown in case of (Multi)Point
-		// geometry... When such an exception is catched, a NullValue is
-		// returned.
-	}
 
         @Override
-	public Value evaluate(DataSourceFactory dsf,Value... args) throws FunctionException {
-		if (args[0].isNull()) {
-			return ValueFactory.createNullValue();
-		} else {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
+                if (args[0].isNull()) {
+                        return ValueFactory.createNullValue();
+                } else {
 
-			final Geometry geometry = args[0].getAsGeometry();
-			final List<LineString> allLineString = new LinkedList<LineString>();
+                        final Geometry geometry = args[0].getAsGeometry();
+                        final List<LineString> allLineString = new LinkedList<LineString>();
 
-			try {
-				toMultiLineString(geometry, allLineString);
-			} catch (PointException e) {
-				allLineString.clear();
-			}
+                        toMultiLineString(geometry, allLineString);
 
-			final MultiLineString multiLineString = new GeometryFactory()
-					.createMultiLineString(allLineString
-							.toArray(new LineString[allLineString.size()]));
-			return ValueFactory.createValue(multiLineString);
+                        final MultiLineString multiLineString = new GeometryFactory().createMultiLineString(allLineString.toArray(new LineString[allLineString.size()]));
+                        return ValueFactory.createValue(multiLineString);
 
-		}
-	}
+                }
+        }
 
-	private void toMultiLineString(final LineString lineString,
-			final List<LineString> allLineString) {
-		allLineString.add(lineString);
-	}
+        private void toMultiLineString(final LineString lineString,
+                final List<LineString> allLineString) {
+                allLineString.add(lineString);
+        }
 
-	private void toMultiLineString(final Polygon polygon,
-			final List<LineString> allLineString) {
-		allLineString.add(polygon.getExteriorRing());
-		final int nbOfHoles = polygon.getNumInteriorRing();
-		for (int i = 0; i < nbOfHoles; i++) {
-			allLineString.add(polygon.getInteriorRingN(i));
-		}
-	}
+        private void toMultiLineString(final Polygon polygon,
+                final List<LineString> allLineString) {
+                allLineString.add(polygon.getExteriorRing());
+                final int nbOfHoles = polygon.getNumInteriorRing();
+                for (int i = 0; i < nbOfHoles; i++) {
+                        allLineString.add(polygon.getInteriorRingN(i));
+                }
+        }
 
-	private void toMultiLineString(final GeometryCollection geometryCollection,
-			final List<LineString> allLineString) throws PointException {
-		final int nbOfLinesStrings = geometryCollection.getNumGeometries();
-		for (int i = 0; i < nbOfLinesStrings; i++) {
-			toMultiLineString(geometryCollection.getGeometryN(i), allLineString);
-		}
-	}
+        private void toMultiLineString(final GeometryCollection geometryCollection,
+                final List<LineString> allLineString) throws FunctionException {
+                final int nbOfLinesStrings = geometryCollection.getNumGeometries();
+                for (int i = 0; i < nbOfLinesStrings; i++) {
+                        toMultiLineString(geometryCollection.getGeometryN(i), allLineString);
+                }
+        }
 
-	private void toMultiLineString(final Geometry geometry,
-			final List<LineString> allLineString) throws PointException {
-		if ((geometry instanceof Point) || (geometry instanceof MultiPoint)) {
-			throw new PointException();
-		} else if (geometry instanceof LineString) {
-			toMultiLineString((LineString) geometry, allLineString);
-		} else if (geometry instanceof Polygon) {
-			toMultiLineString((Polygon) geometry, allLineString);
-		} else if (geometry instanceof GeometryCollection) {
-			toMultiLineString((GeometryCollection) geometry, allLineString);
-		}
-	}
+        private void toMultiLineString(final Geometry geometry,
+                final List<LineString> allLineString) throws FunctionException {
+                if ((geometry instanceof Point) || (geometry instanceof MultiPoint)) {
+                        throw new FunctionException("Found a point! Cannot create a MultiLineString.");
+                } else if (geometry instanceof LineString) {
+                        toMultiLineString((LineString) geometry, allLineString);
+                } else if (geometry instanceof Polygon) {
+                        toMultiLineString((Polygon) geometry, allLineString);
+                } else if (geometry instanceof GeometryCollection) {
+                        toMultiLineString((GeometryCollection) geometry, allLineString);
+                }
+        }
 
         @Override
-	public String getDescription() {
-		return "Convert a geometry into a MultiLineString";
-	}
+        public String getDescription() {
+                return "Convert a geometry into a MultiLineString";
+        }
 
         @Override
-	public String getName() {
-		return "ST_ToMultiLine";
-	}
+        public String getName() {
+                return "ST_ToMultiLine";
+        }
 
         @Override
-	public String getSqlOrder() {
-		return "select ST_ToMultiLine(the_geom) from myTable;";
-	}
-
+        public String getSqlOrder() {
+                return "select ST_ToMultiLine(the_geom) from myTable;";
+        }
 }

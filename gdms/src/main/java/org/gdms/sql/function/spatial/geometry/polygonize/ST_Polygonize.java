@@ -55,7 +55,7 @@ public final class ST_Polygonize extends AbstractAggregateSpatialFunction {
         private Polygonizer polygonizer = new Polygonizer();
 
         @Override
-        public void evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public void evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 if (!args[0].isNull()) {
                         final Geometry geom = args[0].getAsGeometry();
                         polygonizer.add(geom);

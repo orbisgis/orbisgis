@@ -31,9 +31,6 @@
  * or contact directly:
  * info@orbisgis.org
  */
-/**
- *
- */
 package org.gdms.data.indexes.rtree;
 
 class ChildReferenceDistance {

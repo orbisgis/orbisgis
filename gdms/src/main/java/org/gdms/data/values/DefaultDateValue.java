@@ -93,20 +93,20 @@ class DefaultDateValue extends AbstractValue implements Serializable, DateValue 
 
         @Override
         public BooleanValue equals(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
-                return new DefaultBooleanValue(this.value.equals(getDate(value)));
+                return ValueFactory.createValue(this.value.equals(getDate(value)));
         }
 
         @Override
         public BooleanValue greater(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
-                return new DefaultBooleanValue(this.value.compareTo(getDate(value)) > 0);
+                return ValueFactory.createValue(this.value.compareTo(getDate(value)) > 0);
         }
 
         private Date getDate(Value value) {
@@ -138,38 +138,29 @@ class DefaultDateValue extends AbstractValue implements Serializable, DateValue 
 
         @Override
         public BooleanValue greaterEqual(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
-                return new DefaultBooleanValue(this.value.compareTo(getDate(value)) >= 0);
+                return ValueFactory.createValue(this.value.compareTo(getDate(value)) >= 0);
         }
 
         @Override
         public BooleanValue less(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
-                return new DefaultBooleanValue(this.value.compareTo(getDate(value)) < 0);
+                return ValueFactory.createValue(this.value.compareTo(getDate(value)) < 0);
         }
 
         @Override
         public BooleanValue lessEqual(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
-                return new DefaultBooleanValue(this.value.compareTo(getDate(value)) <= 0);
-        }
-
-        @Override
-        public BooleanValue notEquals(Value value) {
-                if (value instanceof NullValue) {
-                        return ValueFactory.createNullValue();
-                }
-
-                return new DefaultBooleanValue(!this.value.equals(getDate(value)));
+                return ValueFactory.createValue(this.value.compareTo(getDate(value)) <= 0);
         }
 
         @Override

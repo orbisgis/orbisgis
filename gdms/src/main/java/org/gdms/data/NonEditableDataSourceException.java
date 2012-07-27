@@ -34,6 +34,8 @@
 package org.gdms.data;
 
 public class NonEditableDataSourceException extends Exception {
+        
+        private static final long serialVersionUID = -7810354906790016107L;
 
 	public NonEditableDataSourceException(String msg) {
 		super(msg);

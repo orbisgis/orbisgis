@@ -39,7 +39,6 @@ import com.vividsolutions.jts.geom.Envelope;
 
 public abstract class AbstractRTreeNode implements RTreeNode {
 
-        private static int nodes = 0;
         private long parentAddress;
         protected String name;
         protected DiskRTree tree;
@@ -50,8 +49,7 @@ public abstract class AbstractRTreeNode implements RTreeNode {
                 this.tree = btree;
                 this.address = address;
                 this.parentAddress = parentAddress;
-                this.name = "node-" + nodes;
-                nodes++;
+                this.name = "node-" + hashCode();
         }
 
         @Override

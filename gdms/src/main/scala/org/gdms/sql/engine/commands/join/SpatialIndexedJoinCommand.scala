@@ -122,7 +122,7 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
     }
   }
   
-  override def doPrepare = {
+  override def doPrepare() = {
     // identifiated the small and big commands
     // small: IndexQueryScanCommand
     // big: the other one
@@ -142,10 +142,10 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
     bigSpatialFieldName  = big.getMetadata.getFieldName(MetadataUtilities.getGeometryFieldIndex(big.getMetadata))
     
     // reorder children in the iteration order (small then big)
-    // this is important for ExpressionCommand.doPrepare() to do its work correctly
+    // this is important for ExpressionCommand.doPrepare()() to do its work correctly
     children = List(small, big)
     
-    super.doPrepare
+    super.doPrepare()
     
     // check the filter expression is indeed a boolean predicate
     expr.evaluator.sqlType match {
@@ -202,7 +202,7 @@ class SpatialIndexedJoinCommand(expr: Expression) extends Command with Expressio
     }
   }
   
-  override def preDoCleanUp = {
+  override def preDoCleanUp() = {
     children = List(small, big)
   }
 }

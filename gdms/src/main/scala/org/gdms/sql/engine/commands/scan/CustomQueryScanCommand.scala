@@ -82,9 +82,9 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
   // holds the result set of the function
   private var ds: DataSet = _
 
-  override def doPrepare = {
+  override def doPrepare() = {
     // initialize expressions
-    super.doPrepare
+    super.doPrepare()
 
     // functions to open the inputs and get their metadata
     def forDs: String => Metadata = { s =>
@@ -143,13 +143,13 @@ class CustomQueryScanCommand(e: Seq[Expression], tables: Seq[Either[String, Outp
 
   protected final def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = Iterator.empty
 
-  override def doCleanUp = {
+  override def doCleanUp() = {
     // closes any DataSource object (the other are closed by the OutputCommand)
     f.workFinished
     openedTables flatMap (_.left toSeq) foreach (_.close)
     openedTables = Nil
     
-    super.doCleanUp
+    super.doCleanUp()
   }
 
   override def getMetadata = SQLMetadata("", metadata)

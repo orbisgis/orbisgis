@@ -72,7 +72,7 @@ class ExecutorCommand(name: String, tables: Seq[Either[String, OutputCommand]], 
   // holds all tables opened before given to the function
   private var openedTables: List[Either[DataSource, OutputCommand]] = Nil
 
-  override def doPrepare = {
+  override def doPrepare() = {
     // check if the function exists and is of correct type
     val f = dsf.getFunctionManager.getFunction(name)
     if (f == null) {
@@ -90,7 +90,7 @@ class ExecutorCommand(name: String, tables: Seq[Either[String, OutputCommand]], 
     }
     
     // initialize expressions
-    super.doPrepare
+    super.doPrepare()
     
     // functions to open the inputs and get their metadata
     def forDs: String => Metadata = { s =>
@@ -137,12 +137,12 @@ class ExecutorCommand(name: String, tables: Seq[Either[String, OutputCommand]], 
     Iterator.empty
   }
   
-  override def doCleanUp {
+  override def doCleanUp() {
     // close sources
     openedTables flatMap (_.left toSeq) foreach (_.close)
     openedTables = Nil
     
-    super.doCleanUp
+    super.doCleanUp()
   }
 
   val getResult = null

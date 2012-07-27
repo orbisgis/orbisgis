@@ -46,7 +46,7 @@ import org.gdms.data.types.TypeFactory
 abstract class NumericEvaluator(e1: Expression, e2: Expression) extends Evaluator {
   def sqlType = TypeFactory.getBroaderType(e1.evaluator.sqlType, e2.evaluator.sqlType)
   override val childExpressions = List(e1,e2)
-  override def doValidate = {
+  override def doValidate() = {
     childExpressions map { e => TypeFactory.isNumerical(e.evaluator.sqlType) 
     } reduceLeft(_ && _) match {
       case false => throw new IncompatibleTypesException

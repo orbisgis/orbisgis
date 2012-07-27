@@ -58,7 +58,7 @@ import org.gdms.sql.function.spatial.raster.AbstractScalarRasterFunction;
 public final class ST_D8Watershed extends AbstractScalarRasterFunction {
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 try {
                         GeoRaster grD8Direction = args[0].getAsRaster();
                         Operation allWatersheds;

@@ -56,7 +56,7 @@ class TableCreationCommand(name: String, cols: Seq[(String, String, Seq[Constrai
   // holds the column names, gdms type code and constraints to create
   private var initcols : Seq[(String, Int, Array[Constraint])] = Nil
   
-  override def doPrepare {
+  override def doPrepare() {
     initcols = cols map (c =>
       (c._1,
        // maps a type name to a gdms type code
@@ -88,7 +88,7 @@ class TableCreationCommand(name: String, cols: Seq[(String, String, Seq[Constrai
     Iterator.empty
   }
   
-  override def doCleanUp = initcols = Nil
+  override def doCleanUp() = initcols = Nil
   
   val getResult = null
 

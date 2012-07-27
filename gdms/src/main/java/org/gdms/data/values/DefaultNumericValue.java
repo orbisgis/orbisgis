@@ -33,7 +33,6 @@
  */
 package org.gdms.data.values;
 
-import java.io.Serializable;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -46,7 +45,7 @@ import org.gdms.data.types.TypeFactory;
  * Abstract class which gives a common basis to all the numeric values.
  * @author Fernando Gonzalez Cortes
  */
-abstract class DefaultNumericValue extends AbstractValue implements Serializable, NumericValue {
+abstract class DefaultNumericValue extends AbstractValue implements NumericValue {
 
         private static final String NOTNUMERIC = "The specified value is not a numeric:";
 
@@ -155,20 +154,22 @@ abstract class DefaultNumericValue extends AbstractValue implements Serializable
 
         @Override
         public BooleanValue equals(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
-                if (!(value instanceof NumericValue)) {
-                        throw new IncompatibleTypesException("Type:" + value.getType());
+                if (value instanceof NumericValue) {
+                        return ValueFactory.createValue(doubleValue() == ((NumericValue) value).doubleValue());
+                } else {
+                        throw new IncompatibleTypesException(
+                                "The specified value is not a numeric value:"
+                                + TypeFactory.getTypeName(value.getType()));
                 }
-
-                return ValueFactory.createValue(this.doubleValue() == ((NumericValue) value).doubleValue());
         }
 
         @Override
         public BooleanValue greater(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
@@ -183,7 +184,7 @@ abstract class DefaultNumericValue extends AbstractValue implements Serializable
 
         @Override
         public BooleanValue greaterEqual(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
@@ -198,7 +199,7 @@ abstract class DefaultNumericValue extends AbstractValue implements Serializable
 
         @Override
         public BooleanValue less(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
@@ -213,7 +214,7 @@ abstract class DefaultNumericValue extends AbstractValue implements Serializable
 
         @Override
         public BooleanValue lessEqual(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
@@ -222,21 +223,6 @@ abstract class DefaultNumericValue extends AbstractValue implements Serializable
                 }
 
                 return ValueFactory.createValue(this.doubleValue() <= ((NumericValue) value).doubleValue());
-        }
-
-        @Override
-        public BooleanValue notEquals(Value value) {
-                if (value instanceof NullValue) {
-                        return ValueFactory.createNullValue();
-                }
-
-                if (!(value instanceof NumericValue)) {
-                        throw new IncompatibleTypesException(
-                                NOTNUMERIC
-                                + TypeFactory.getTypeName(value.getType()));
-                }
-
-                return ValueFactory.createValue(this.doubleValue() != ((NumericValue) value).doubleValue());
         }
 
         @Override
@@ -310,7 +296,7 @@ abstract class DefaultNumericValue extends AbstractValue implements Serializable
                                 return super.toType(typeCode);
                 }
                 throw new IncompatibleTypesException("Cannot cast to type:" + typeCode
-                        + ": " + getStringValue(ValueWriter.internalValueWriter));
+                        + ": " + getStringValue(ValueWriter.DEFAULTWRITER));
         }
 
         @Override

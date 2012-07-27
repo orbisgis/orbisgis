@@ -57,15 +57,15 @@ public interface GeoStream {
          * @return the resulting image
          * @throws DriverException  
          */
-         public Image getMap(int width, int height, Envelope extent, ProgressMonitor pm) throws DriverException;
+         Image getMap(int width, int height, Envelope extent, ProgressMonitor pm) throws DriverException;
          
          /**
           * @return the full extend of the data behind this stream
           */
-         public Envelope getEnvelope();
+         Envelope getEnvelope();
          
          /**
           * @return the source of this stream
           */
-         public StreamSource getStreamSource();
+         StreamSource getStreamSource();
 }

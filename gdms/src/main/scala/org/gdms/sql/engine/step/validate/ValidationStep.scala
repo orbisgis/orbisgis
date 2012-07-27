@@ -46,7 +46,7 @@ import org.gdms.sql.engine.operations.Operation
 case object ValidationStep extends AbstractEngineStep[Operation, Operation]("validation") {
 
   def doOperation(op: Operation)(implicit p: Properties) = {
-    op.validate
+    op.validate()
     op
   }
 }

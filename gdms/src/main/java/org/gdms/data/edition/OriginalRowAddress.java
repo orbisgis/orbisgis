@@ -41,9 +41,9 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DriverException;
 
-public class OriginalRowAddress implements PhysicalRowAddress, Serializable {
+public class OriginalRowAddress implements PhysicalRowAddress {
 
-        private transient DataSource source;
+        private DataSource source;
         private int row;
 
         public OriginalRowAddress(DataSource source, int row) {

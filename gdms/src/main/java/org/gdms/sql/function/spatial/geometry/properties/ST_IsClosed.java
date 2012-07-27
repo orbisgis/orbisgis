@@ -48,7 +48,7 @@ import org.gdms.sql.function.FunctionException;
 public final class ST_IsClosed extends AbstractSpatialPropertyFunction {
 
         @Override
-        public Value evaluateResult(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluateResult(DataSourceFactory dsf, Value... args) throws FunctionException {
                 final Geometry g = args[0].getAsGeometry();
 
                 if (g instanceof LineString) {

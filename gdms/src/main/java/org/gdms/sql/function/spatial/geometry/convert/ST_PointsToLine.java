@@ -58,7 +58,7 @@ public final class ST_PointsToLine extends AbstractAggregateSpatialFunction {
 	private List<Coordinate> coords = new LinkedList<Coordinate>();
 
         @Override
-	public void evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
+	public void evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
 		if (!args[0].isNull()) {
 			Geometry geometry = args[0].getAsGeometry();
 			if (geometry instanceof Point) {

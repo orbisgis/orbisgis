@@ -48,7 +48,7 @@ import org.orbisgis.progress.ProgressMonitor
  */
 class CreateIndexCommand(table: String, columns: Seq[String]) extends Command with OutputCommand {
   
-  override def doPrepare = {
+  override def doPrepare() = {
     // checks that the table exists
     if (!dsf.getSourceManager.exists(table)) {
       throw new NoSuchTableException(table)

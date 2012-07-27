@@ -47,7 +47,7 @@ import org.gdms.data.types.TypeFactory;
  *
  * @author Erwan Bocher
  */
-public class TINMetadataFactory {
+public final class TINMetadataFactory {
 
         public static Metadata createTrianglesMetadata() {
                 Metadata md = new DefaultMetadata(

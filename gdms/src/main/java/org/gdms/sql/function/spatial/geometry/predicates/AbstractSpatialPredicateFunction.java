@@ -49,7 +49,7 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 public abstract class AbstractSpatialPredicateFunction extends AbstractScalarSpatialFunction {
 
         @Override
-        public final Value evaluate(DataSourceFactory dsf, Value[] args)
+        public final Value evaluate(DataSourceFactory dsf, Value... args)
                 throws FunctionException {
                 if ((args[0].isNull()) || (args[1].isNull())) {
                         return ValueFactory.createNullValue();
@@ -58,7 +58,7 @@ public abstract class AbstractSpatialPredicateFunction extends AbstractScalarSpa
                 }
         }
 
-        protected abstract Value evaluateResult(DataSourceFactory dsf, Value[] args)
+        protected abstract Value evaluateResult(DataSourceFactory dsf, Value... args)
                 throws FunctionException;
 
         @Override

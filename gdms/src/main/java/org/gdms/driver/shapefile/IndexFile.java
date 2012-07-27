@@ -98,7 +98,7 @@ public class IndexFile {
 	public IndexFile(FileChannel channel, WarningListener warningListener)
 			throws IOException {
 		readHeader(channel, warningListener);
-		this.channel = (FileChannel) channel;
+		this.channel = channel;
 		LOGGER.finest("Reading from file...");
 		this.buf = new ReadBufferManager(channel, 8 * 128);
 	}

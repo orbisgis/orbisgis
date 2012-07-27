@@ -50,7 +50,7 @@ import org.gdms.sql.function.ScalarArgument;
  */
 public class StrLength  extends AbstractScalarFunction {
         @Override
-	public Value evaluate(DataSourceFactory dsf,Value[] args) throws FunctionException {
+	public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
 		if (args[0].isNull()) {
 			return ValueFactory.createNullValue();
 		} else {

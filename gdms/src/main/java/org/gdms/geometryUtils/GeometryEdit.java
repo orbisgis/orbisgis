@@ -729,8 +729,7 @@ public final class GeometryEdit {
                         for (int i = 0; i < geometry.getNumGeometries(); i++) {
                                 LineString line = (LineString) geometry.getGeometryN(i);
 
-                                LineString inserted = (LineString) insertVertexInLineString(line,
-                                        vertexPoint, tolerance);
+                                LineString inserted = insertVertexInLineString(line, vertexPoint, tolerance);
                                 if (inserted != null) {
                                         linestrings[i] = inserted;
                                         any = true;
@@ -751,8 +750,7 @@ public final class GeometryEdit {
                         for (int i = 0; i < geometry.getNumGeometries(); i++) {
                                 Polygon polygon = (Polygon) geometry.getGeometryN(i);
 
-                                Polygon inserted = (Polygon) insertVertexInPolygon(polygon,
-                                        vertexPoint, tolerance);
+                                Polygon inserted = insertVertexInPolygon(polygon, vertexPoint, tolerance);
                                 if (inserted != null) {
                                         any = true;
                                         polygons[i] = inserted;

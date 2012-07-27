@@ -49,7 +49,7 @@ public final class Abs extends AbstractScalarMathFunction {
         private FunctionSignature[] signs;
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 if (args[0].isNull()) {
                         return ValueFactory.createNullValue();
                 } else {

@@ -53,7 +53,7 @@ import org.gdms.sql.function.ScalarArgument;
 public class ST_SetZToExtremities extends AbstractScalarFunction {
 
         @Override
-        public final Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public final Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 Geometry geom = args[0].getAsGeometry();
                 double startZ = args[1].getAsDouble();
                 double endZ = args[2].getAsDouble();

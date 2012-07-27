@@ -54,7 +54,7 @@ import org.gdms.sql.function.spatial.raster.AbstractScalarRasterFunction;
 public final class ST_LSFactor extends AbstractScalarRasterFunction {
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 final GeoRaster grSlope = args[0].getAsRaster();
                 final GeoRaster grAccflow = args[1].getAsRaster();
 

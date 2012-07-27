@@ -51,7 +51,7 @@ import org.orbisgis.progress.ProgressMonitor
  */
 class DropViewsCommand(var names: Seq[String], ifExists: Boolean) extends Command with OutputCommand {
 
-  override def doPrepare = {
+  override def doPrepare() = {
     if (!ifExists) {
       names foreach { n =>
         // check that the views do exist

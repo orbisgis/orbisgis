@@ -58,7 +58,7 @@ public class Max extends AbstractAggregateFunction {
 	private Value max = ValueFactory.createNullValue();
 
         @Override
-	public void evaluate(DataSourceFactory dsf, Value[] args)
+	public void evaluate(DataSourceFactory dsf, Value... args)
 			throws FunctionException {
             LOG.trace("Evaluating");
 		if (!args[0].isNull()) {

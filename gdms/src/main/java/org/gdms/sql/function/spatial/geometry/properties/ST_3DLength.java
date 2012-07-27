@@ -47,7 +47,7 @@ import org.gdms.sql.function.FunctionException;
 public class ST_3DLength extends AbstractSpatialPropertyFunction {
 
         @Override
-        protected Value evaluateResult(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        protected Value evaluateResult(DataSourceFactory dsf, Value... args) throws FunctionException {
                 return ValueFactory.createValue(CoordinatesUtils.length3D(args[0].getAsGeometry()));
         }
 

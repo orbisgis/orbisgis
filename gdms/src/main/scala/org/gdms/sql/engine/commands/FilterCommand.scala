@@ -75,7 +75,7 @@ class ExpressionFilterCommand(e: Expression) extends FilterCommand with Expressi
     if (ev.isNull) false else ev.getAsBoolean
   }
   
-  override def doPrepare {
+  override def doPrepare() {
     // no aggregate function is allowed in a WHERE clause
     // this check cannot be done in Filter Operation because aggregates are resolved later.
     // HAVING clauses are handled during the function step (aggregates are allowed in these)
@@ -90,7 +90,7 @@ class ExpressionFilterCommand(e: Expression) extends FilterCommand with Expressi
     check(e)
     
     // prepares the expression
-    super.doPrepare
+    super.doPrepare()
     
     // checks that the expression is indeed a predicate
     e.evaluator.sqlType match {

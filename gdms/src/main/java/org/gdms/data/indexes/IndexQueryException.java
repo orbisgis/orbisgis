@@ -38,6 +38,8 @@ package org.gdms.data.indexes;
  * @author Antoine Gourlay
  */
 public class IndexQueryException extends Exception {
+        
+        private static final long serialVersionUID = 7894561230174384690L;
 
         /**
          * Creates a new instance of <code>IndexQueryException</code> without detail message.

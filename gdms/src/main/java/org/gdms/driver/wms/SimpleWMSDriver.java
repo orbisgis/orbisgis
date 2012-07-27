@@ -96,8 +96,8 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                 DefaultMetadata metadata = new DefaultMetadata();
                 metadata.addField("stream", Type.STREAM);
 
-                this.schema = new DefaultSchema(DRIVER_NAME + this.hashCode());
-                this.schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
+                schema = new DefaultSchema(DRIVER_NAME + this.hashCode());
+                schema.addTable(DriverManager.DEFAULT_SINGLE_TABLE_NAME, metadata);
         }
 
         @Override
@@ -130,7 +130,7 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
         @Override
         public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
                 if (fieldId == 0) {
-                        return ValueFactory.createValue(this.geoStream);
+                        return ValueFactory.createValue(geoStream);
                 } else {
                         throw new DriverException("Internal error: asked for field " + fieldId +
                                  " on a Stream.");
@@ -147,15 +147,15 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
                         StreamSource streamSource = geoStream.getStreamSource();
 
                         //Create the WMSStatus object
-                        WMSStatus WMSStatus = new WMSStatus();
-                        WMSStatus.addLayerName(streamSource.getLayerName());
-                        WMSStatus.setSrs(streamSource.getSRS());
-                        WMSStatus.setFormat(streamSource.getImageFormat());
-                        WMSStatus.setWidth(width);
-                        WMSStatus.setHeight(height);
-                        WMSStatus.setExtent(new Rectangle2D.Double(extent.getMinX(), extent.getMinY(), extent.getWidth(), extent.getHeight()));
+                        WMSStatus wmsStatus = new WMSStatus();
+                        wmsStatus.addLayerName(streamSource.getLayerName());
+                        wmsStatus.setSrs(streamSource.getSRS());
+                        wmsStatus.setFormat(streamSource.getImageFormat());
+                        wmsStatus.setWidth(width);
+                        wmsStatus.setHeight(height);
+                        wmsStatus.setExtent(new Rectangle2D.Double(extent.getMinX(), extent.getMinY(), extent.getWidth(), extent.getHeight()));
 
-                        return ImageIO.read(wmsClient.getMap(WMSStatus, null));
+                        return ImageIO.read(wmsClient.getMap(wmsStatus, null));
                 } catch (WMSException e) {
                         throw new DriverException(e);
                 } catch (ServerErrorException e) {
@@ -214,12 +214,10 @@ public final class SimpleWMSDriver extends AbstractDataSet implements StreamDriv
         public Number[] getScope(int dimension) throws DriverException {
                 switch (dimension) {
                         case DataSet.X: {
-                                Number[] number = {geoStream.getEnvelope().getMaxX(), geoStream.getEnvelope().getMinX()};
-                                return number;
+                                return new Number[] {geoStream.getEnvelope().getMaxX(), geoStream.getEnvelope().getMinX()};
                         }
                         case DataSet.Y: {
-                                Number[] number = {geoStream.getEnvelope().getMaxY(), geoStream.getEnvelope().getMinY()};
-                                return number;
+                                return new Number[] {geoStream.getEnvelope().getMaxY(), geoStream.getEnvelope().getMinY()};
                         }
                         default:
                                 throw new DriverException("Unimplemented dimension");

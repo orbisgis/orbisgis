@@ -51,7 +51,7 @@ import org.gdms.sql.function.ScalarArgument;
 public final class ST_Distance extends AbstractSpatialPropertyFunction {
 
         @Override
-        public Value evaluateResult(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluateResult(DataSourceFactory dsf, Value... args) throws FunctionException {
                 final Geometry g1 = args[0].getAsGeometry();
                 final Geometry g2 = args[1].getAsGeometry();
                 return ValueFactory.createValue(g1.distance(g2));

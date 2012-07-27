@@ -41,7 +41,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.util.List;
 
@@ -56,20 +55,20 @@ import org.gdms.driver.DriverException;
  * This class is used to write a Delaunay triangulation into a ply format.
  * http://local.wasp.uwa.edu.au/~pbourke/dataformats/ply/
  * The TIN file extension is used to qualify the TIN.
- * 
+ *
  * A basic file description is used :
- * 
+ *
  * ply
- * format ascii 1.0           { ascii/binary, format version number }
- * made by GDMS  { comments keyword specified, like all lines }
- * element vertex 8           { define "vertex" element, 8 of them in file }
- * property float x           { vertex contains float "x" coordinate }
- * property float y           { y coordinate is also a vertex property }
- * property float z           { z coordinate, too }
- * element face 6             { there are 6 "triangles" elements in the file }
+ * format ascii 1.0 { ascii/binary, format version number }
+ * made by GDMS { comments keyword specified, like all lines }
+ * element vertex 8 { define "vertex" element, 8 of them in file }
+ * property float x { vertex contains float "x" coordinate }
+ * property float y { y coordinate is also a vertex property }
+ * property float z { z coordinate, too }
+ * element face 6 { there are 6 "triangles" elements in the file }
  * property list uchar int vertex_index { "vertex_indices" is a list of ints }
- * end_header                 { delimits the end of the header }
- * 
+ * end_header { delimits the end of the header }
+ *
  * @author Erwan Bocher
  */
 public final class TINWriter {
@@ -81,9 +80,10 @@ public final class TINWriter {
         private static final int DOUBLE_DATA_TYPE = 2;
 
         /**
-         * Path to specify the output file.
-         * @param path
-         * @throws IOException  
+         * Creates a new writer with a path to specify the output file.
+         *
+         * @param path path the to file
+         * @throws IOException
          */
         public TINWriter(String path) throws IOException {
                 this(new File(path));
@@ -106,14 +106,15 @@ public final class TINWriter {
         }
 
         /**
-         * This method writes the triangles and their points id into a ASCII ply format
-         * @param mesh 
+         * Writes the triangles and their points id into a ASCII ply format.
+         *
+         *
+         * @param mesh
          * @param comment
-         * @throws UnsupportedEncodingException
          * @throws IOException
-         * @throws DriverException  
+         * @throws DriverException
          */
-        public void writeFile(ConstrainedMesh mesh, String comment) throws UnsupportedEncodingException, IOException, DriverException {
+        public void writeFile(ConstrainedMesh mesh, String comment) throws IOException, DriverException {
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
 
                 try {
@@ -122,7 +123,7 @@ public final class TINWriter {
                         writer.write("format ");
                         writer.write(binary ? "binary_big_endian" : "ascii");
                         writer.write(" 1.0\n");
-                        
+
                         //Write comment
                         if (comment != null) {
                                 BufferedReader r = new BufferedReader(new StringReader(comment));
@@ -133,7 +134,7 @@ public final class TINWriter {
                                         writer.write('\n');
                                 }
                         }
-                        
+
                         List<DTriangle> triangles = mesh.getTriangleList();
                         List<DPoint> points = mesh.getPoints();
 
@@ -174,12 +175,14 @@ public final class TINWriter {
         }
 
         /**
-         * This method writes the triangles and their points id into a binary ply format
-         * Data are stored in double representation.
+         * Writes the triangles and their points id into a binary ply format.
+         *
+         * Data is stored in double representation.
+         *
          * @param triangles
          * @param points
          * @param bos
-         * @throws IOException 
+         * @throws IOException
          */
         private void writeAsDoubleBinary(List<DTriangle> triangles, List<DPoint> points, BufferedOutputStream bos) throws IOException {
                 DataOutputStream dos = new DataOutputStream(bos);
@@ -202,10 +205,11 @@ public final class TINWriter {
         /**
          * This method writes the triangles and their points id into a binary ply format
          * Data are stored in float representation.
+         *
          * @param triangles
          * @param points
          * @param bos
-         * @throws IOException 
+         * @throws IOException
          */
         private void writeAsFloatBinary(List<DTriangle> triangles, List<DPoint> points, BufferedOutputStream bos) throws IOException {
                 DataOutputStream dos = new DataOutputStream(bos);
@@ -226,14 +230,16 @@ public final class TINWriter {
         }
 
         /**
-         * This method writes the triangles and their points id into a ASCII ply format
+         * Writes the triangles and their points id into a ASCII ply format.
+         *
          * Data are stored in float representation.
+         *
          * @param triangles
          * @param points
          * @param bos
-         * @throws IOException 
+         * @throws IOException
          */
-        private void writeAsFloatAscii(List<DTriangle> triangles, List<DPoint> points, BufferedOutputStream bos) throws UnsupportedEncodingException, IOException {
+        private void writeAsFloatAscii(List<DTriangle> triangles, List<DPoint> points, BufferedOutputStream bos) throws IOException {
                 Writer writer = new OutputStreamWriter(bos, "UTF-8");
                 for (DPoint dPoint : points) {
                         writer.write(new Float(dPoint.getX()).toString());
@@ -257,14 +263,16 @@ public final class TINWriter {
         }
 
         /**
-         * This method writes the triangles and their points id into a ASCII ply format
+         * Writes the triangles and their points id into a ASCII ply format.
+         *
          * Data are stored in double representation.
+         *
          * @param triangles
          * @param points
          * @param bos
-         * @throws IOException 
+         * @throws IOException
          */
-        private void writeAsDoubleAscii(List<DTriangle> triangles, List<DPoint> points, BufferedOutputStream bos) throws UnsupportedEncodingException, IOException {
+        private void writeAsDoubleAscii(List<DTriangle> triangles, List<DPoint> points, BufferedOutputStream bos) throws IOException {
                 Writer writer = new OutputStreamWriter(bos, "UTF-8");
                 for (DPoint dPoint : points) {
                         writer.write(Double.toString(dPoint.getX()));
@@ -289,12 +297,13 @@ public final class TINWriter {
         }
 
         /**
-         * Write triangles into a ply binary format
+         * Writes triangles into a ply binary format.
+         *
          * @param triangles
          * @param points
          * @param bos
          * @param dataType
-         * @throws IOException 
+         * @throws IOException
          */
         private void writeBinary(List<DTriangle> triangles, List<DPoint> points, BufferedOutputStream bos, int dataType) throws IOException {
 
@@ -306,14 +315,15 @@ public final class TINWriter {
         }
 
         /**
-         * Write triangles into a ply ASCII format
+         * Writes triangles into a ply ASCII format.
+         *
          * @param triangles
          * @param points
          * @param bos
          * @param dataType
-         * @throws IOException 
+         * @throws IOException
          */
-        private void writeAscii(List<DTriangle> triangles, List<DPoint> points, BufferedOutputStream bos, int dataType) throws UnsupportedEncodingException, IOException {
+        private void writeAscii(List<DTriangle> triangles, List<DPoint> points, BufferedOutputStream bos, int dataType) throws IOException {
                 if (dataType == DOUBLE_DATA_TYPE) {
                         writeAsDoubleAscii(triangles, points, bos);
                 } else {
@@ -321,7 +331,7 @@ public final class TINWriter {
                 }
         }
 
-        public boolean checkFileExtension(File file) {                
+        public boolean checkFileExtension(File file) {
                 return file.getName().toLowerCase().endsWith(".tin");
         }
 }

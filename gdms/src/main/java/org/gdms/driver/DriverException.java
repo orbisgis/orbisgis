@@ -45,38 +45,41 @@ package org.gdms.driver;
  * @author Fernando Gonzalez Cortes
  */
 public class DriverException extends Exception {
-	/**
-	 * Creates a new StartException object.
-	 */
-	public DriverException() {
-		super();
-	}
 
-	/**
-	 * Creates a new DriverException object.
-	 *
-	 * @param arg0
-	 */
-	public DriverException(String arg0) {
-		super(arg0);
-	}
+        private static final long serialVersionUID = -1342514583124227518L;
 
-	/**
-	 * Creates a new DriverException object.
-	 *
-	 * @param arg0
-	 * @param arg1
-	 */
-	public DriverException(String arg0, Throwable arg1) {
-		super(arg0, arg1);
-	}
+        /**
+         * Creates a new StartException object.
+         */
+        public DriverException() {
+                super();
+        }
 
-	/**
-	 * Creates a new DriverException object.
-	 *
-	 * @param arg0
-	 */
-	public DriverException(Throwable arg0) {
-		super(arg0);
-	}
+        /**
+         * Creates a new DriverException object.
+         *
+         * @param arg0
+         */
+        public DriverException(String arg0) {
+                super(arg0);
+        }
+
+        /**
+         * Creates a new DriverException object.
+         *
+         * @param arg0
+         * @param arg1
+         */
+        public DriverException(String arg0, Throwable arg1) {
+                super(arg0, arg1);
+        }
+
+        /**
+         * Creates a new DriverException object.
+         *
+         * @param arg0
+         */
+        public DriverException(Throwable arg0) {
+                super(arg0);
+        }
 }

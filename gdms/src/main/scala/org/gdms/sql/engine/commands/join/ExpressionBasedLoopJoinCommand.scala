@@ -92,7 +92,7 @@ extends Command with ExpressionCommand with JoinCommand {
     
     // initialize expressions
     if (expr.isDefined) {
-      super.doPrepare
+      super.doPrepare()
       
       // check the expression is a boolean predicate
       expr.get.evaluator.sqlType match {

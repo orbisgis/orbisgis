@@ -34,6 +34,8 @@
 package org.gdms.data.indexes;
 
 public class IndexException extends Exception {
+        
+        private static final long serialVersionUID = 4067240156390794106L;
 
 	public IndexException() {
 		super();

@@ -44,7 +44,7 @@ import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
 
 /**
- * Wrapper for timestamps
+ * Wrapper for timestamps.
  *
  * @author Fernando Gonzalez Cortes
  */
@@ -81,12 +81,12 @@ class DefaultTimestampValue extends AbstractValue implements Serializable, Times
 
         @Override
         public BooleanValue equals(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
                 if (value instanceof TimestampValue) {
-                        return new DefaultBooleanValue(this.value.equals(((TimestampValue) value).getAsTimestamp()));
+                        return ValueFactory.createValue(this.value.equals(value.getAsTimestamp()));
                 } else {
                         throw new IncompatibleTypesException();
                 }
@@ -94,12 +94,12 @@ class DefaultTimestampValue extends AbstractValue implements Serializable, Times
 
         @Override
         public BooleanValue greater(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
                 if (value instanceof TimestampValue) {
-                        return new DefaultBooleanValue(this.value.compareTo(((TimestampValue) value).getAsTimestamp()) > 0);
+                        return ValueFactory.createValue(this.value.compareTo(value.getAsTimestamp()) > 0);
                 } else {
                         throw new IncompatibleTypesException();
                 }
@@ -107,12 +107,12 @@ class DefaultTimestampValue extends AbstractValue implements Serializable, Times
 
         @Override
         public BooleanValue greaterEqual(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
                 if (value instanceof TimestampValue) {
-                        return new DefaultBooleanValue(this.value.compareTo(((TimestampValue) value).getAsTimestamp()) >= 0);
+                        return ValueFactory.createValue(this.value.compareTo(value.getAsTimestamp()) >= 0);
                 } else {
                         throw new IncompatibleTypesException();
                 }
@@ -120,12 +120,12 @@ class DefaultTimestampValue extends AbstractValue implements Serializable, Times
 
         @Override
         public BooleanValue less(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
                 if (value instanceof TimestampValue) {
-                        return new DefaultBooleanValue(this.value.compareTo(((TimestampValue) value).getAsTimestamp()) < 0);
+                        return ValueFactory.createValue(this.value.compareTo(value.getAsTimestamp()) < 0);
                 } else {
                         throw new IncompatibleTypesException();
                 }
@@ -133,12 +133,12 @@ class DefaultTimestampValue extends AbstractValue implements Serializable, Times
 
         @Override
         public BooleanValue lessEqual(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
                 if (value instanceof TimestampValue) {
-                        return new DefaultBooleanValue(this.value.compareTo(((TimestampValue) value).getAsTimestamp()) <= 0);
+                        return ValueFactory.createValue(this.value.compareTo(value.getAsTimestamp()) <= 0);
                 } else {
                         throw new IncompatibleTypesException();
                 }
@@ -146,12 +146,12 @@ class DefaultTimestampValue extends AbstractValue implements Serializable, Times
 
         @Override
         public BooleanValue notEquals(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
                 if (value instanceof TimestampValue) {
-                        return new DefaultBooleanValue(!this.value.equals(((TimestampValue) value).getAsTimestamp()));
+                        return ValueFactory.createValue(!this.value.equals(value.getAsTimestamp()));
                 } else {
                         throw new IncompatibleTypesException();
                 }

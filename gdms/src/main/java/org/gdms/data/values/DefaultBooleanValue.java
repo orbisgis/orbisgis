@@ -31,58 +31,18 @@
  * or contact directly:
  * info@orbisgis.org
  */
-/*
- * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
- * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information. OrbisGIS is
- * distributed under GPL 3 license. It is produced by the "Atelier SIG" team of
- * the IRSTV Institute <http://www.irstv.cnrs.fr/> CNRS FR 2488.
- *
- *
- * Team leader : Erwan BOCHER, scientific researcher,
- *
- * User support leader : Gwendall Petit, geomatic engineer.
- *
- * Previous computer developer : Pierre-Yves FADET, computer engineer, Thomas LEDUC,
- * scientific researcher, Fernando GONZALEZ CORTES, computer engineer.
- *
- * Copyright (C) 2007 Erwan BOCHER, Fernando GONZALEZ CORTES, Thomas LEDUC
- *
- * Copyright (C) 2010 Erwan BOCHER, Alexis GUEGANNO, Maxence LAURENT, Antoine GOURLAY
- *
- * This file is part of OrbisGIS.
- *
- * OrbisGIS is free software: you can redistribute it and/or modify it under the
- * terms of the GNU General Public License as published by the Free Software
- * Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
- * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
- * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License along with
- * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- *
- * For more information, please consult: <http://www.orbisgis.org/>
- *
- * or contact directly:
- * info@orbisgis.org
- */
 package org.gdms.data.values;
-
-import java.io.Serializable;
 
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 
 /**
- * Wrapper for boolean
- * It provides some conveniency methods for comparison between two booleans.
+ * Wrapper value for boolean.
+ * 
  * @author Fernando Gonzalez Cortes
  */
-class DefaultBooleanValue extends AbstractValue implements Serializable, BooleanValue {
+class DefaultBooleanValue extends AbstractValue implements BooleanValue {
 
         private static final String NOTBOOLEAN = "The specified value is not a boolean:";
         private boolean value;
@@ -90,8 +50,7 @@ class DefaultBooleanValue extends AbstractValue implements Serializable, Boolean
         /**
          * Creates a new BooleanValue object.
          *
-         * @param value
-         *            boolean vlue which will be contained in this object
+         * @param value boolean value which will be contained in this object
          */
         DefaultBooleanValue(boolean value) {
                 this.value = value;
@@ -106,13 +65,9 @@ class DefaultBooleanValue extends AbstractValue implements Serializable, Boolean
         /**
          * Test if this and values contain the same boolean value.
          *
-         * @param value
-         *            The value to be compared to.
-         *
-         * @return
-         *             A BooleanValue which contains true if this and value  contains the same boolean value.
-         * @throws IncompatibleTypesException
-         *             If value is not an instance of BooleanValue.
+         * @param value the value to be compared to.
+         * @return a BooleanValue which contains true if this and value contains the same boolean value
+         * @throws IncompatibleTypesException if value is not an instance of BooleanValue
          */
         @Override
         public BooleanValue equals(Value value) {
@@ -128,24 +83,15 @@ class DefaultBooleanValue extends AbstractValue implements Serializable, Boolean
         /**
          * Test if this and value are not equal.
          *
-         * @param value
-         *         Another BooleanValue
-         *
-         * @return
-         *             A BooleanValue that contains true if and only if this and value are different.
-         * @throws IncompatibleTypesException
-         *             If value is not an instance of BooleanValue.
+         * @param value another BooleanValue
+         * @return a BooleanValue that contains true if and only if this and value are different
+         * @throws IncompatibleTypesException if value is not an instance of BooleanValue.
          */
         @Override
         public BooleanValue notEquals(Value value) {
                 return equals(value).not();
         }
 
-        /**
-         * Set the boolean stored in this object.
-         *
-         * @param value
-         */
         @Override
         public void setValue(boolean value) {
                 this.value = value;
@@ -209,7 +155,8 @@ class DefaultBooleanValue extends AbstractValue implements Serializable, Boolean
 
         /**
          * Get the boolean value as a byte.
-         * @return A  byte table that contain one value :  one if ths is true, 0 if this is false.
+         *
+         * @return A byte table that contain one value : one if ths is true, 0 if this is false.
          */
         @Override
         public byte[] getBytes() {
@@ -219,21 +166,21 @@ class DefaultBooleanValue extends AbstractValue implements Serializable, Boolean
         /**
          * Create a new BooleanValue by testing the first element of buffer.
          * If it equals 1, the new Value will be true, falser either
+         *
          * @param buffer
          * @return
-         *          a BooleanValue.
+         * a BooleanValue.
          */
         public static Value readBytes(byte[] buffer) {
                 if (buffer.length == 0) {
                         return ValueFactory.createNullValue();
                 }
-                return new DefaultBooleanValue(buffer[0] == 1);
+                return ValueFactory.createValue(buffer[0] == 1);
         }
 
         /**
-         *
-         * @return
-         *          The boolean value stored in this object.
+         * {@inheritDoc }
+         * @return the boolean value stored in this object
          * @throws IncompatibleTypesException
          */
         @Override

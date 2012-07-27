@@ -83,7 +83,7 @@ public final class CSVDriver extends AbstractDataSet implements FileReadWriteDri
         private boolean open;
         private Schema schema;
         private DefaultMetadata metadata;
-        private ValueWriter valueWriter = ValueWriter.internalValueWriter;
+        private ValueWriter valueWriter = ValueWriter.DEFAULTWRITER;
         private static final Logger LOG = Logger.getLogger(CSVDriver.class);
         private List<String[]> rows;
         private File file;

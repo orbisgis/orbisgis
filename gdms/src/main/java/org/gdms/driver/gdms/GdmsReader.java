@@ -211,7 +211,7 @@ public class GdmsReader {
                 if (version == 2) {
                         // check there is enough rowIndexes
                         // 4 bytes / index
-                        checkRemainingBytes(rowCount * 4);
+                        checkRemainingBytes(rowCount * 4L);
 
                         // read row indexes after metadata
                         for (int i = 0; i < rowCount; i++) {
@@ -226,7 +226,7 @@ public class GdmsReader {
 
                         // check there is enough rowIndexes
                         // 4 bytes / index
-                        checkRemainingBytes(rowCount * 4);
+                        checkRemainingBytes(rowCount * 4L);
 
                         for (int i = 0; i < rowCount; i++) {
                                 this.rowIndexes[i] = rbm.getInt();
@@ -240,7 +240,7 @@ public class GdmsReader {
 
                         // check there is enough rowIndexes
                         // 8 bytes / index
-                        checkRemainingBytes(rowCount * 8);
+                        checkRemainingBytes(rowCount * 8L);
 
                         for (int i = 0; i < rowCount; i++) {
                                 this.rowIndexes[i] = rbm.getLong();

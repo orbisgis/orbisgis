@@ -34,11 +34,13 @@
 package org.gdms.data;
 
 /**
- * The system failed while initializing
+ * Gdms failed while initializing.
  *
  * @author Fernando Gonzalez Cortes
  */
 public class InitializationException extends RuntimeException {
+        
+        private static final long serialVersionUID = -4572390173506790160L;
 
 	/**
 	 *

@@ -50,7 +50,6 @@ import org.gdms.data.db.DBSource;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
-import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.types.AutoIncrementConstraint;
 import org.gdms.data.types.Constraint;
@@ -77,7 +76,7 @@ public abstract class DefaultSQL extends AbstractDataSet implements DBReadWriteD
         protected String schemaName;
         protected Schema schema = new DefaultSchema("DB" + this.hashCode());
         private Metadata metadata;
-        private ValueWriter valueWriter = ValueWriter.internalValueWriter;
+        private ValueWriter valueWriter = ValueWriter.DEFAULTWRITER;
         private static final Logger LOG = Logger.getLogger(DefaultSQL.class);
 
         public DefaultSQL() {

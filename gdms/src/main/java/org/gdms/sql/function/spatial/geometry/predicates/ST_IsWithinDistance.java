@@ -51,7 +51,7 @@ import org.gdms.sql.function.SpatialIndexedFunction;
 public final class ST_IsWithinDistance extends AbstractSpatialPredicateFunction implements SpatialIndexedFunction {
 
         @Override
-        public Value evaluateResult(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluateResult(DataSourceFactory dsf, Value... args) throws FunctionException {
                 if ((args[0].isNull()) || (args[1].isNull()) || (args[2].isNull())) {
                         return ValueFactory.createNullValue();
                 } else {

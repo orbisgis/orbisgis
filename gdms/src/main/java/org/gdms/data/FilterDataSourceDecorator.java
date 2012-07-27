@@ -277,9 +277,4 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
                         }
                 }
         }
-
-        @Override
-        public DataSourceFactory getDataSourceFactory() {
-                return (DataSourceFactory) super.getDataSourceFactory();
-        }
 }

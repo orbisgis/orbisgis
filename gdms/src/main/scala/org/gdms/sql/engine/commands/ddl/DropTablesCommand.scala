@@ -50,7 +50,7 @@ import org.orbisgis.progress.ProgressMonitor
  */
 class DropTablesCommand(names: Seq[String], ifExists: Boolean, purge: Boolean) extends Command with OutputCommand {
 
-  override def doPrepare = {
+  override def doPrepare() = {
     if (!ifExists) {
       // checks that tables do exist
       names foreach { n =>

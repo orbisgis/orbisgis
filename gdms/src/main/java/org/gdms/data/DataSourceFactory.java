@@ -123,7 +123,7 @@ public final class DataSourceFactory {
          * EDITABLE | STATUS_CHECK
          */
         public static final int DEFAULT = EDITABLE | STATUS_CHECK;
-        private String I18NLocale = "";
+        private String i18NLocale = "";
         private File tempDir = new File(".");
         private WarningListener warningListener = new NullWarningListener();
         private DefaultSourceManager sourceManager;
@@ -797,7 +797,7 @@ public final class DataSourceFactory {
          * @return 
          */
         public String getI18nLocale() {
-                return I18NLocale;
+                return i18NLocale;
         }
 
         /**
@@ -805,7 +805,7 @@ public final class DataSourceFactory {
          * @param locale 
          */
         public void setI18nLocale(String locale) {
-                this.I18NLocale = locale;
+                this.i18NLocale = locale;
         }
 
         /**
@@ -831,7 +831,7 @@ public final class DataSourceFactory {
         private void initialize(String sourceInfoDir, String tempDir, String pluginDir) {
                 LOG.trace("DataSourceFactory initializing");
 
-                I18N.addI18n(I18NLocale, "gdms", this.getClass());
+                I18N.addI18n(i18NLocale, "gdms", this.getClass());
                 indexManager = new IndexManager(this);
                 indexManager.addIndex(IndexManager.RTREE_SPATIAL_INDEX,
                         RTreeIndex.class);

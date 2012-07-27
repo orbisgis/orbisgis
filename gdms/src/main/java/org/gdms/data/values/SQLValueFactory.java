@@ -43,6 +43,7 @@ import org.gdms.sql.parser.GdmSQLParser;
 
 /**
  * This utility class provides methods to build Gdms {@link Value} objects from the SQL parser.
+ *
  * @author Antoine Gourlay
  */
 public final class SQLValueFactory {
@@ -52,56 +53,39 @@ public final class SQLValueFactory {
         /**
          * Creates a Value instance with the specified literal and the specified parser code.
          *
-         * @param text
-         *            Text containing the value
-         * @param type
-         *            Type of literal. SQL parser constant:
-         *            GdmSQLParser.T_TRUE,
-         *            GdmSQLParser.NUMBER or
-         *            GdmSQLParser.QUOTED_STRING
+         * @param text text containing the value
+         * @param type type of literal. SQL parser constant:
+         *
+         * GdmSQLParser.T_TRUE,
+         * GdmSQLParser.NUMBER or
+         * GdmSQLParser.QUOTED_STRING
          *
          * @return a Gdms Value
-         * @throws IllegalArgumentException
-         *             If the literal type is not valid
+         * @throws IllegalArgumentException if the literal type is not valid
          */
         public static Value createValue(String text, int type) {
                 switch (type) {
                         case GdmSQLParser.T_TRUE:
                         case GdmSQLParser.T_FALSE:
 
-                                return new DefaultBooleanValue(Boolean.parseBoolean(text));
+                                return ValueFactory.createValue(Boolean.parseBoolean(text));
 
                         case GdmSQLParser.QUOTED_STRING:
 
-                                StringValue r1 = new DefaultStringValue();
-                                r1.setValue(text.substring(1, text.length() - 1));
-
-                                return r1;
+                                return ValueFactory.createValue(text.substring(1, text.length() - 1));
 
                         case GdmSQLParser.NUMBER:
 
                                 try {
-                                        IntValue r2 = new DefaultIntValue();
-                                        r2.setValue(Integer.parseInt(text));
-
-                                        return r2;
+                                        return ValueFactory.createValue(Integer.parseInt(text));
                                 } catch (NumberFormatException e) {
                                         try {
-                                                LongValue r2 = new DefaultLongValue();
-                                                r2.setValue(Long.parseLong(text));
-
-                                                return r2;
+                                                return ValueFactory.createValue(Long.parseLong(text));
                                         } catch (NumberFormatException e2) {
                                                 try {
-                                                        FloatValue r2 = new DefaultFloatValue();
-                                                        r2.setValue(Float.parseFloat(text));
-
-                                                        return r2;
+                                                        return ValueFactory.createValue(Float.parseFloat(text));
                                                 } catch (NumberFormatException e3) {
-                                                        DoubleValue r2 = new DefaultDoubleValue();
-                                                        r2.setValue(Double.parseDouble(text));
-
-                                                        return r2;
+                                                        return ValueFactory.createValue(Double.parseDouble(text));
                                                 }
                                         }
 
@@ -116,25 +100,25 @@ public final class SQLValueFactory {
 
         private static void populateSqlTypes() {
                 TYPES.clear();
-                
+
                 // binary
                 TYPES.put("binary", Type.BINARY);
                 TYPES.put("bytea", Type.BINARY);
-                
+
                 // boolean
                 TYPES.put("boolean", Type.BOOLEAN);
                 TYPES.put("bool", Type.BOOLEAN);
-                
+
                 // byte
                 TYPES.put("byte", Type.BYTE);
-                
+
                 // date
                 TYPES.put("date", Type.DATE);
-                
+
                 // double
                 TYPES.put("double", Type.DOUBLE);
                 TYPES.put("float8", Type.DOUBLE);
-                
+
                 // geometry
                 TYPES.put("geometry", Type.GEOMETRY);
                 TYPES.put("geometrycollection", Type.GEOMETRYCOLLECTION);
@@ -144,42 +128,44 @@ public final class SQLValueFactory {
                 TYPES.put("multipolygon", Type.MULTIPOLYGON);
                 TYPES.put("point", Type.POINT);
                 TYPES.put("polygon", Type.POLYGON);
-                
+
                 // integer
                 TYPES.put("integer", Type.INT);
                 TYPES.put("int", Type.INT);
                 TYPES.put("int4", Type.INT);
-                
+
                 // long
                 TYPES.put("long", Type.LONG);
                 TYPES.put("int8", Type.LONG);
-                
+
                 // float
                 TYPES.put("float", Type.FLOAT);
                 TYPES.put("float4", Type.FLOAT);
                 TYPES.put("real", Type.FLOAT);
-                
+
                 // short
                 TYPES.put("short", Type.SHORT);
                 TYPES.put("int2", Type.SHORT);
                 TYPES.put("smallint", Type.SHORT);
-                
+
                 // string
                 TYPES.put("string", Type.STRING);
                 TYPES.put("text", Type.STRING);
-                
+
                 // time
                 TYPES.put("time", Type.TIME);
-                
+
                 // timestamp
                 TYPES.put("timestamp", Type.TIMESTAMP);
         }
 
         /**
          * Gets the typeCode corresponding to a sql String identifier.
+         *
          * @param id identifier
          * @return an Gdms typeCode
-         * @throws IllegalArgumentException if the <code>id</code> does not correspond to any Gdms type.
+         * @throws IllegalArgumentException if the
+         * <code>id</code> does not correspond to any Gdms type.
          */
         public static int getTypeCodeFromSqlIdentifier(String id) {
                 if (TYPES.isEmpty()) {
@@ -194,16 +180,17 @@ public final class SQLValueFactory {
                         return i;
                 }
         }
-        
+
         /**
          * Gets the set of all valid SQL types (aliases included).
+         *
          * @return a read-only set
          */
         public static Set<String> getValidSQLTypes() {
                 if (TYPES.isEmpty()) {
                         populateSqlTypes();
                 }
-                
+
                 return Collections.unmodifiableSet(TYPES.keySet());
         }
 

@@ -53,12 +53,12 @@ class ScanCommand(table: String, alias: Option[String] = None, edition: Boolean 
   // the result set metadata
   var metadata: Metadata = _
   
-  override protected def doCleanUp = {
+  override protected def doCleanUp() = {
     // closes the DataSource
     if (ds != null) ds.close
   }
 
-  override protected def doPrepare = {
+  override protected def doPrepare() = {
     // the datasource can be used for edition (UPDATE command for example)
     ds = if (edition) dsf.getDataSource(table, DataSourceFactory.EDITABLE)
     else dsf.getDataSource(table, DataSourceFactory.NORMAL)
@@ -70,7 +70,7 @@ class ScanCommand(table: String, alias: Option[String] = None, edition: Boolean 
     for (i <- (0l until ds.getRowCount).par.view.toIterator) yield Row(i, ds.getRow(i))
   }
 
-  def commit = ds.commit
+  def commit() = ds.commit()
 
   override def getMetadata = SQLMetadata(alias.getOrElse(table), metadata)
 }

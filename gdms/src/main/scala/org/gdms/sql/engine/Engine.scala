@@ -69,7 +69,7 @@ object Engine {
       ss.setDataSourceFactory(dsf)
       ss.prepare
       ss.execute
-      ss.cleanUp
+      ss.cleanUp()
     }
   }
   

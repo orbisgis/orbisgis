@@ -48,12 +48,12 @@ import org.orbisgis.progress.ProgressMonitor
  */
 class UnionCommand extends Command {
 
-  // a flatten is all it takes, provided that doPrepare checks for any problems
+  // a flatten is all it takes, provided that doPrepare() checks for any problems
   def doWork(r: Iterator[RowStream])(implicit pm: Option[ProgressMonitor]) = r flatten
   
   private val metadata: DefaultMetadata = new DefaultMetadata
   
-  override def doPrepare {
+  override def doPrepare() {
     val me = children map(_.getMetadata)
     
     // checks that they all have the same number of fields

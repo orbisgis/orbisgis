@@ -49,7 +49,7 @@ import org.gdms.sql.engine.operations.Operation
  */
 abstract sealed class BooleanEvaluator extends Evaluator {
   val sqlType = Type.BOOLEAN
-  override def doValidate = {
+  override def doValidate() = {
     childExpressions foreach { _.evaluator.sqlType match {
         case Type.BOOLEAN =>
         case _ => throw new IncompatibleTypesException
@@ -132,9 +132,9 @@ object ! {
 case class EqualsEvaluator(e1: Expression, e2: Expression) extends BooleanEvaluator {
   def eval = s => e1.evaluate(s) equals e2.evaluate(s)
   override val childExpressions = List(e1, e2)
-  override val doPreValidate = {}
+  override def doPreValidate() = {}
   override def toString = "(" + e1 + " = " + e2 + ")"
-  override def doValidate = {
+  override def doValidate() = {
     val t1 = e1.evaluator.sqlType
     val t2 = e2.evaluator.sqlType
     if (!TypeFactory.canBeCastTo(t1, t2) && !TypeFactory.canBeCastTo(t2, t1)) {
@@ -163,7 +163,7 @@ object === {
 case class IsNullEvaluator(e1: Expression) extends BooleanEvaluator {
   def eval = s => ValueFactory.createValue(e1.evaluate(s) isNull)
   override val childExpressions = List(e1)
-  override val doValidate = {}
+  override def doValidate() = {}
   override def toString = "ISNULL (" + e1 + ")"
   def duplicate: IsNullEvaluator = IsNullEvaluator(e1.duplicate)
 }
@@ -193,7 +193,7 @@ case class InListEvaluator(e1: Expression, e2:Seq[Expression]) extends BooleanEv
     }
   }
   override val childExpressions = e1 :: e2.toList
-  override def doValidate = {
+  override def doValidate() = {
     val t = e1.evaluator.sqlType
     e2 foreach (e => if (!TypeFactory.canBeCastTo(e.evaluator.sqlType, t)) {
         throw new IncompatibleTypesException("Value of type '" + TypeFactory.getTypeName(e.evaluator.sqlType)

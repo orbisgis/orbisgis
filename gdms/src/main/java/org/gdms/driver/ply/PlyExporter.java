@@ -34,12 +34,10 @@ package org.gdms.driver.ply;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.StringReader;
-import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 
 import com.vividsolutions.jts.geom.Coordinate;
@@ -69,8 +67,6 @@ public class PlyExporter {
         private final File file;
         private boolean binary = false;
         private final DataSourceFactory dsf;
-        private double X_REFERENCE = 0;
-        private double Y_REFERENCE = 0;
         private final Coordinate coordRef;
         private int coordSize = 0;
         private int numFaces = 0;
@@ -79,7 +75,7 @@ public class PlyExporter {
                 this.dataSet = dataSet;
                 this.file = file;
                 this.dsf = dsf;
-                coordRef = new Coordinate(X_REFERENCE, Y_REFERENCE);
+                coordRef = new Coordinate(0, 0);
         }
 
         public void setBinary(boolean binary) {
@@ -89,12 +85,10 @@ public class PlyExporter {
         /**
          *
          * @param comment
-         * @throws FileNotFoundException
-         * @throws UnsupportedEncodingException
          * @throws IOException
          * @throws DriverException
          */
-        public void write(String comment) throws FileNotFoundException, UnsupportedEncodingException, IOException, DriverException {
+        public void write(String comment) throws IOException, DriverException {
                 BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(file));
 
                 try {

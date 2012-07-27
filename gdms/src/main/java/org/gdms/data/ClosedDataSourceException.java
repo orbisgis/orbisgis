@@ -34,12 +34,14 @@
 package org.gdms.data;
 
 /**
- * An attempt to operate on a closed data source has been made
+ * Thrown if a closed DataSource is used as if it were open.
  *
  * @author Fernando Gonzalez Cortes
  *
  */
 public class ClosedDataSourceException extends RuntimeException {
+        
+        private static final long serialVersionUID = -4578961202457860349L;
 
 	/**
 	 *

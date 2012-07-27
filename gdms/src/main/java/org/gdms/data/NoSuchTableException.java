@@ -42,40 +42,43 @@ package org.gdms.data;
  * @author Fernando Gonzalez Cortes
  */
 public class NoSuchTableException extends Exception {
-	/**
-	 * Creates a new NoSuchTableException object.
-	 */
-	public NoSuchTableException() {
-		super();
-	}
 
-	/**
-	 * Creates a new NoSuchTableException object.
-	 *
-	 * @param tableName
-	 */
-	public NoSuchTableException(String tableName) {
-		super(tableName);
-	}
+        private static final long serialVersionUID = -7461400187366540811L;
 
-	/**
-	 * Creates a new NoSuchTableException object.
-	 *
-	 * @param arg0
-	 */
-	public NoSuchTableException(Throwable arg0) {
-		super(arg0);
-	}
+        /**
+         * Creates a new NoSuchTableException object.
+         */
+        public NoSuchTableException() {
+                super();
+        }
 
-	/**
-	 * Creates a new NoSuchTableException object.
-	 *
-	 * @param tableName
-	 * @param arg1
-	 */
-	public NoSuchTableException(String tableName, Throwable arg1) {
-		super(tableName, arg1);
-	}
+        /**
+         * Creates a new NoSuchTableException object.
+         *
+         * @param tableName
+         */
+        public NoSuchTableException(String tableName) {
+                super(tableName);
+        }
+
+        /**
+         * Creates a new NoSuchTableException object.
+         *
+         * @param arg0
+         */
+        public NoSuchTableException(Throwable arg0) {
+                super(arg0);
+        }
+
+        /**
+         * Creates a new NoSuchTableException object.
+         *
+         * @param tableName
+         * @param arg1
+         */
+        public NoSuchTableException(String tableName, Throwable arg1) {
+                super(tableName, arg1);
+        }
 
         private String format(String tableName) {
                 return String.format("The table %s does not exist!", tableName);

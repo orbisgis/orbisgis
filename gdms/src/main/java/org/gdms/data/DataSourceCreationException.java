@@ -35,20 +35,21 @@ package org.gdms.data;
 
 public class DataSourceCreationException extends Exception {
 
-	public DataSourceCreationException() {
-		super();
-	}
+        private static final long serialVersionUID = 5017903078004571399L;
 
-	public DataSourceCreationException(String message, Throwable cause) {
-		super(message, cause);
-	}
+        public DataSourceCreationException() {
+                super();
+        }
 
-	public DataSourceCreationException(String message) {
-		super(message);
-	}
+        public DataSourceCreationException(String message, Throwable cause) {
+                super(message, cause);
+        }
 
-	public DataSourceCreationException(Throwable cause) {
-		super(cause);
-	}
+        public DataSourceCreationException(String message) {
+                super(message);
+        }
 
+        public DataSourceCreationException(Throwable cause) {
+                super(cause);
+        }
 }

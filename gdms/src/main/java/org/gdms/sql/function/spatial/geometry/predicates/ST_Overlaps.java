@@ -48,7 +48,7 @@ public final class ST_Overlaps extends AbstractSpatialPredicateFunction implemen
         SpatialIndexedFunction {
 
         @Override
-        public Value evaluateResult(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluateResult(DataSourceFactory dsf, Value... args) throws FunctionException {
                 final Geometry geom1 = args[0].getAsGeometry();
                 final Geometry geom2 = args[1].getAsGeometry();
                 return ValueFactory.createValue(geom1.overlaps(geom2));

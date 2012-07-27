@@ -60,7 +60,7 @@ public final class ST_RingBuffer extends AbstractScalarSpatialFunction {
         private static final GeometryFactory GF = new GeometryFactory();
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 if ((args[0].isNull()) || (args[1].isNull())) {
                         return ValueFactory.createNullValue();
                 } else {

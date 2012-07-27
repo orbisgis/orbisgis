@@ -673,8 +673,14 @@ public class IndexManager {
          */
         public void queryIndex(String dsName, IndexQuery indexQuery, IndexVisitor<?> visitor)
                 throws IndexException, NoSuchTableException, IndexQueryException {
-                DataSourceIndex dsi;
-                dsi = getIndex(dsName, indexQuery.getFieldNames());
+                queryIndexImpl(dsName, indexQuery, visitor);
+        }
+
+        // separated from above for type safety (in the implementation) + no exposure of the
+        // type parameter (at call site)
+        private <A> void queryIndexImpl(String dsName, IndexQuery indexQuery, IndexVisitor<A> visitor)
+                throws IndexException, NoSuchTableException, IndexQueryException {
+                DataSourceIndex<A> dsi = getIndex(dsName, indexQuery.getFieldNames());
                 if (dsi != null) {
                         if (!dsi.isOpen()) {
                                 dsi.load();
@@ -789,18 +795,24 @@ public class IndexManager {
          */
         public void queryIndex(DataSet src, IndexQuery indexQuery, IndexVisitor<?> visitor)
                 throws IndexException, NoSuchTableException, IndexQueryException {
-                DataSourceIndex dsi;
+                queryIndexImpl(src, indexQuery, visitor);
+        }
+
+        // separated from above for type safety (in the implementation) + no exposure of the
+        // type parameter (at call site)
+        private <A> void queryIndexImpl(DataSet src, IndexQuery indexQuery, IndexVisitor<A> visitor)
+                throws IndexException, NoSuchTableException, IndexQueryException {
                 if (src instanceof DataSource) {
                         DataSource ds = (DataSource) src;
                         queryIndex(ds.getName(), indexQuery, visitor);
-                }
-
-                dsi = getIndex(TEMPINDEXPREFIX + src.hashCode(), indexQuery.getFieldNames());
-                if (dsi != null) {
-                        if (!dsi.isOpen()) {
-                                dsi.load();
+                } else {
+                        DataSourceIndex<A> dsi = getIndex(TEMPINDEXPREFIX + src.hashCode(), indexQuery.getFieldNames());
+                        if (dsi != null) {
+                                if (!dsi.isOpen()) {
+                                        dsi.load();
+                                }
+                                dsi.query(indexQuery, visitor);
                         }
-                        dsi.query(indexQuery, visitor);
                 }
         }
 

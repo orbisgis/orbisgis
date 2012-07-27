@@ -64,10 +64,10 @@ public class ST_PixelValue extends AbstractScalarFunction {
         public Value evaluate(DataSourceFactory dsf, Value... values) throws FunctionException {
                 try {
                         if (geoRaster == null) {
-                                geoRaster= values[0].getAsRaster();
+                                geoRaster = values[0].getAsRaster();
                                 ip = geoRaster.getImagePlus().getProcessor();
-                        } else if (geoRaster != null) {
-                                GeoRaster georaster2= values[0].getAsRaster();
+                        } else {
+                                GeoRaster georaster2 = values[0].getAsRaster();
                                 if (!geoRaster.equals(georaster2)) {
                                         geoRaster = georaster2;
                                         ip = georaster2.getImagePlus().getProcessor();

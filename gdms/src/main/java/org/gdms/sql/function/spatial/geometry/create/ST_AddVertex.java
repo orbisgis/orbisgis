@@ -53,7 +53,7 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 public final class ST_AddVertex extends AbstractScalarSpatialFunction {
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
 
                 Geometry geom = args[0].getAsGeometry();
                 final Geometry geom1 = args[1].getAsGeometry();

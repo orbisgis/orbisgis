@@ -50,7 +50,7 @@ import org.gdms.sql.function.spatial.raster.AbstractScalarRasterFunction;
 public final class ST_D8Direction extends AbstractScalarRasterFunction {
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 final GeoRaster geoRasterSrc = args[0].getAsRaster();
                 final Operation slopesDirections = new D8OpDirection();
                 try {

@@ -60,7 +60,7 @@ public final class ST_LocateAlong extends AbstractScalarSpatialFunction {
         GeometryFactory gf = new GeometryFactory();
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 final Geometry geom = args[0].getAsGeometry();
                 final double segmentLengthFraction = args[1].getAsDouble();
                 final double offsetDistance = args[2].getAsDouble();

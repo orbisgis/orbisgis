@@ -56,7 +56,7 @@ import org.gdms.sql.function.spatial.raster.AbstractScalarRasterFunction;
 public final class ST_CropRaster extends AbstractScalarRasterFunction {
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 GeoRaster gr = args[0].getAsRaster();
                 Envelope g = args[1].getAsGeometry().getEnvelopeInternal();
 

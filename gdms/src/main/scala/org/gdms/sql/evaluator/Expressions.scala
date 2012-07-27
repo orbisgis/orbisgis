@@ -147,12 +147,12 @@ sealed class Expression(var evaluator: Evaluator) extends Iterable[Expression] w
 
   def iterator = evaluator.childExpressions.iterator
 
-  def validate: Unit = evaluator.validate
+  def validate(): Unit = evaluator.validate()
   
-  def preValidate: Unit = evaluator.preValidate
+  def preValidate(): Unit = evaluator.preValidate()
   
-  def cleanUp = {
-    evaluator.cleanUp
+  def cleanUp() = {
+    evaluator.cleanUp()
     evaluator match {
       case OuterFieldEvaluator(n, t) => evaluator = FieldEvaluator(n ,t)
       case _ =>

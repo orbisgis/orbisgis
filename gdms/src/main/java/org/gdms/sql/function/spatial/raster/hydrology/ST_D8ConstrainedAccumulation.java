@@ -55,7 +55,7 @@ import org.gdms.sql.function.spatial.raster.AbstractScalarRasterFunction;
 public final class ST_D8ConstrainedAccumulation extends AbstractScalarRasterFunction {
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 GeoRaster grD8Direction = args[0].getAsRaster();
                 GeoRaster grConstrained = args[1].getAsRaster();
 

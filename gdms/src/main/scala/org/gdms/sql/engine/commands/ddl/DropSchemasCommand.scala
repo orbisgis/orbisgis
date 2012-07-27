@@ -49,7 +49,7 @@ import org.orbisgis.progress.ProgressMonitor
  * @since 0.3
  */
 class DropSchemasCommand(names: Seq[String], ifExists: Boolean, purge: Boolean) extends Command with OutputCommand {
-  override def doPrepare = {
+  override def doPrepare() = {
     if (!ifExists) {
       // checks that the schema actually exists
       names foreach { n =>

@@ -58,65 +58,65 @@ import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
 
 /**
- * Factory to instantiate Value instances from basic types.
- *
+ * Factory to create {@link Value} instances from basic types.
+ * 
+ * This factory is independent from any running Gdms instance and provides values
+ * for all of them.
+ * 
+ * @author Antoine Gourlay
+ * @author Fernando Gonzalez Cortes
  */
 public final class ValueFactory {
 
         private static final Logger LOG = Logger.getLogger(ValueFactory.class);
         public static final BooleanValue TRUE = new DefaultBooleanValue(true);
         public static final BooleanValue FALSE = new DefaultBooleanValue(false);
-        /**
-         * Max size of the Value cache.
-         */
-        public static final int VALUECACHEMAXSIZE = 50;
 
         /**
-         * Creates a Value instance that contains the specified int value
+         * Creates a Value instance that contains the specified int value.
          *
-         * @param n
-         * @return
-         *
+         * @param n an int
+         * @return a wrapper over the int
          */
         public static IntValue createValue(int n) {
                 return new DefaultIntValue(n);
         }
 
         /**
-         * Creates a Value instance that contains the specified long value
+         * Creates a Value instance that contains the specified long value.
          *
-         * @param l
-         * @return
+         * @param l a long
+         * @return a wrapper of the long
          */
         public static LongValue createValue(long l) {
                 return new DefaultLongValue(l);
         }
 
         /**
-         * Creates a Value instance that contains the specified byte value
+         * Creates a Value instance that contains the specified byte value.
          *
-         * @param b
-         * @return
+         * @param b a byte
+         * @return a wrapper over the byte
          */
         public static ByteValue createValue(byte b) {
                 return new DefaultByteValue(b);
         }
 
         /**
-         * Creates a Value instance that contains the specified short value
+         * Creates a Value instance that contains the specified short value.
          *
-         * @param l
-         * @return
+         * @param s a short
+         * @return a wrapper over the short
          */
-        public static ShortValue createValue(short l) {
-                return new DefaultShortValue(l);
+        public static ShortValue createValue(short s) {
+                return new DefaultShortValue(s);
         }
 
         /**
-         * Creates a Value instance that contains the specified String value
+         * Creates a Value instance that contains the specified String value.
          *
-         * @param s
-         * @return
+         * @param s a string
+         * @return a wrapper over the string
          */
         public static StringValue createValue(String s) {
                 if (s != null) {
@@ -127,44 +127,44 @@ public final class ValueFactory {
         }
 
         /**
-         * Creates a Value instance that contains the specified String value
+         * Creates a Value instance that contains the specified GeoStream value.
          *
-         * @param s
-         * @return
+         * @param gS a GeoStream object
+         * @return a wrapper over the stream
          */
-        public static StreamValue createValue(GeoStream s) {
-                if (s != null) {
-                        return new DefaultStreamValue(s);
+        public static StreamValue createValue(GeoStream gS) {
+                if (gS != null) {
+                        return new DefaultStreamValue(gS);
                 } else {
                         return createNullValue();
                 }
         }
 
         /**
-         * Creates a Value instance that contains the specified float value
+         * Creates a Value instance that contains the specified float value.
          *
-         * @param f
-         * @return
+         * @param f a float
+         * @return a wrapper over the float
          */
         public static FloatValue createValue(float f) {
                 return new DefaultFloatValue(f);
         }
 
         /**
-         * Creates a Value instance that contains the specified double value
+         * Creates a Value instance that contains the specified double value.
          *
-         * @param d
-         * @return
+         * @param d a double
+         * @return a wrapper over the double
          */
         public static DoubleValue createValue(double d) {
                 return new DefaultDoubleValue(d);
         }
 
         /**
-         * Creates a Value instance that contains the specified date value
+         * Creates a Value instance that contains the specified date value.
          *
-         * @param d
-         * @return
+         * @param d a Date object
+         * @return a wrapper over the Date
          */
         public static DateValue createValue(Date d) {
                 if (d != null) {
@@ -175,10 +175,10 @@ public final class ValueFactory {
         }
 
         /**
-         * Creates a Value instance that contains the specified time value
+         * Creates a Value instance that contains the specified time value.
          *
-         * @param t
-         * @return
+         * @param t a Time object
+         * @return a wrapper over the Time
          */
         public static TimeValue createValue(Time t) {
                 if (t != null) {
@@ -189,10 +189,10 @@ public final class ValueFactory {
         }
 
         /**
-         * Creates a TimestampValue object
+         * Creates a Value instance that contains the specified timestamp value.
          *
-         * @param t
-         * @return
+         * @param t a Timestamp object
+         * @return a wrapper over the Timestamp
          */
         public static TimestampValue createValue(Timestamp t) {
                 if (t != null) {
@@ -203,24 +203,20 @@ public final class ValueFactory {
         }
 
         /**
-         * Creates a Value instance that contains the specified boolean value
+         * Creates a Value instance that contains the specified boolean value.
          *
-         * @param b
-         * @return
+         * @param b a boolean
+         * @return a wrapper over the boolean
          */
         public static BooleanValue createValue(boolean b) {
-                if (b) {
-                        return TRUE;
-                } else {
-                        return FALSE;
-                }
+                return b ? TRUE : FALSE;
         }
 
         /**
-         * Creates a Value collection
+         * Creates a heterogeneous Value collection.
          *
-         * @param values
-         * @return
+         * @param values some values
+         * @return a wrapper value over the underlying array of values
          */
         public static ValueCollection createValue(Value[] values) {
                 ValueCollection v = new DefaultValueCollection();
@@ -233,53 +229,32 @@ public final class ValueFactory {
          * Instantiates a value of the specified type containing the value with the
          * specified textual representation.
          *
-         * @param text
-         * Textual representation of the value to instantiate
-         * @param type
-         * Type of the value. Must be one of the constants of the Type
-         * interface
-         *
-         * @return
-         *
-         * @throws ParseException
-         * If the textual representation cannot be converted to the
+         * @param text textual representation of the value to instantiate
+         * @param type typeCode of the value (must be one of the constants of the Type interface)
+         * @return the parsed value, of the corresponding type
+         * @throws ParseException if the textual representation cannot be converted to the
          * specified type
          * @throws NumberFormatException
          */
-        public static Value createValueByType(String text, int type)
-                throws ParseException {
-                Value value;
-
+        public static Value createValueByType(String text, int type) throws ParseException {
                 switch (type) {
                         case Type.LONG:
-                                value = createValue(Long.parseLong(text));
-
-                                break;
+                                return createValue(Long.parseLong(text));
 
                         case Type.BOOLEAN:
-                                value = createValue(Boolean.valueOf(text));
-
-                                break;
+                                return createValue(Boolean.valueOf(text));
 
                         case Type.DATE:
-                                value = DefaultDateValue.parseString(text);
-
-                                break;
+                                return DefaultDateValue.parseString(text);
 
                         case Type.DOUBLE:
-                                value = createValue(DecimalFormat.getNumberInstance(Locale.ROOT).parse(text).doubleValue());
-
-                                break;
+                                return createValue(DecimalFormat.getNumberInstance(Locale.ROOT).parse(text).doubleValue());
 
                         case Type.INT:
-                                value = createValue(Integer.parseInt(text));
-
-                                break;
+                                return createValue(Integer.parseInt(text));
 
                         case Type.FLOAT:
-                                value = createValue(DecimalFormat.getNumberInstance(Locale.ROOT).parse(text).floatValue());
-
-                                break;
+                                return createValue(DecimalFormat.getNumberInstance(Locale.ROOT).parse(text).floatValue());
 
                         case Type.GEOMETRY:
                         case Type.GEOMETRYCOLLECTION:
@@ -290,23 +265,17 @@ public final class ValueFactory {
                         case Type.MULTIPOINT:
                         case Type.MULTIPOLYGON:
                                 try {
-                                        value = DefaultGeometryValue.parseString(text, null);
+                                        return DefaultGeometryValue.parseString(text, null);
                                 } catch (com.vividsolutions.jts.io.ParseException e) {
                                         LOG.error("Error parsing geometry", e);
                                         throw new ParseException("Cannot parse geometry:" + e.getMessage(), -1);
                                 }
 
-                                break;
-
                         case Type.SHORT:
-                                value = createValue(Short.parseShort(text));
-
-                                break;
+                                return createValue(Short.parseShort(text));
 
                         case Type.BYTE:
-                                value = createValue(Byte.parseByte(text));
-
-                                break;
+                                return createValue(Byte.parseByte(text));
 
                         case Type.BINARY:
 
@@ -317,40 +286,32 @@ public final class ValueFactory {
 
                                 byte[] array = new byte[text.length() / 2];
 
-                                for (int i = 0; i < (text.length() / 2); i++) {
+                                for (int i = 0; i < array.length; i++) {
                                         String theByte = text.substring(2 * i, (2 * i) + 2);
                                         array[i] = (byte) Integer.parseInt(theByte, 16);
                                 }
 
-                                value = createValue(array);
-
-                                break;
+                                return createValue(array);
 
                         case Type.TIMESTAMP:
                                 try {
-                                        value = createValue(Timestamp.valueOf(text));
+                                        return createValue(Timestamp.valueOf(text));
                                 } catch (IllegalArgumentException e) {
                                         LOG.error("Error parsing Timestamp", e);
                                         throw new ParseException(e.getMessage(), -1);
                                 }
 
-                                break;
-
                         case Type.TIME:
-                                value = DefaultTimeValue.parseString(text);
-
-                                break;
+                                return DefaultTimeValue.parseString(text);
 
                         case Type.STRING:
                         default:
-                                value = createValue(text);
+                                return createValue(text);
                 }
-
-                return value;
         }
 
         /**
-         * Creates a new null Value
+         * Creates a new null Value.
          *
          * @param <T>
          * @return NullValue
@@ -360,19 +321,19 @@ public final class ValueFactory {
         }
 
         /**
-         * Gets a Value with the value v1 plus v2
+         * Gets a Value object with the value "v1 added to v2".
          *
-         * @param v1
-         * first value
-         * @param v2
-         * second value
-         *
-         * @return a numeric value with the operation
+         * @param v1 first value
+         * @param v2 second value
+         * @return a numeric value with the result of the operation
          */
         static NumericValue sum(NumericValue v1, NumericValue v2) {
                 int type = getType(v1.getType(), v2.getType());
 
                 switch (type) {
+                        // The comment below is one the last of its kind, a memorial to the ancient time
+                        // when this codebase was documentented and coded (including some variable
+                        // and method names) in an ugly mix of catalan, french and(bad) english.
                         /*
                          * El operador '+' en java no est� definido para byte ni short, as� que
                          * nosotros tampoco lo definimos. Por otro lado no conocemos manera de
@@ -384,11 +345,7 @@ public final class ValueFactory {
                         case Type.INT:
 
                                 int intValue = v1.intValue() + v2.intValue();
-
-                                if ((intValue) != (v1.longValue() + v2.longValue())) {
-                                        type = Type.LONG;
-
-                                } else {
+                                if (intValue == v1.longValue() + v2.longValue()) {
                                         return createValue(intValue);
                                 }
 
@@ -396,19 +353,13 @@ public final class ValueFactory {
                                 return createValue(v1.longValue() + v2.longValue());
 
                         case Type.FLOAT:
-
                                 float floatValue = v1.floatValue() + v2.floatValue();
-
-                                if ((floatValue) != (v1.doubleValue() + v2.doubleValue())) {
-                                        type = Type.DOUBLE;
-
-                                } else {
+                                if (floatValue == v1.doubleValue() + v2.doubleValue()) {
                                         return createValue(floatValue);
                                 }
 
                         case Type.DOUBLE:
-                                return createValue(v1.doubleValue()
-                                        + v2.doubleValue());
+                                return createValue(v1.doubleValue() + v2.doubleValue());
                         default:
                                 throw new IncompatibleTypesException("Cannot sum this data types: "
                                         + v1.getType() + " and " + v2.getType());
@@ -424,7 +375,6 @@ public final class ValueFactory {
                         case Type.SHORT:
                         case Type.INT:
                                 return createValue(v1.intValue() % v2.intValue());
-
                         case Type.FLOAT:
                                 return createValue(v1.floatValue() % v2.floatValue());
                         case Type.LONG:
@@ -444,6 +394,8 @@ public final class ValueFactory {
                 if (aNull && bNull) {
                         return createNullValue();
                 }
+                // careful, boxing is necessary here, one of these can be null
+                // the condition below + the one above carefully avoid that
                 final Boolean bBool = v2.getAsBoolean();
                 final Boolean aBool = v1.getAsBoolean();
 
@@ -461,6 +413,8 @@ public final class ValueFactory {
                 if (aNull && bNull) {
                         return createNullValue();
                 }
+                // careful, boxing is necessary here, one of these can be null
+                // the condition below + the one above carefully avoid that
                 final Boolean bBool = v2.getAsBoolean();
                 final Boolean aBool = v1.getAsBoolean();
 
@@ -494,72 +448,48 @@ public final class ValueFactory {
         }
 
         /**
-         * Gets the value of the operation v1 v2
+         * Gets a Value object with the value "v1 multiplied by v2".
          *
-         * @param v1
-         * first value
-         * @param v2
-         * second value
-         *
-         * @return a numeric value with the operation
+         * @param v1 first value
+         * @param v2 second value
+         * @return a numeric value with the result of the operation
          */
         static NumericValue product(NumericValue v1, NumericValue v2) {
                 int type = getType(v1.getType(), v2.getType());
 
-                while (true) {
-                        switch (type) {
-                                /*
-                                 * El operador '+' en java no esta definido para byte ni short, asi
-                                 * que nosotros tampoco lo definimos. Por otro lado no conocemos
-                                 * manera de detectar el overflow al operar con long's ni double's
-                                 * de manera eficiente, asi que no se detecta.
-                                 */
-                                case Type.BYTE:
-                                case Type.SHORT:
-                                case Type.INT:
+                switch (type) {
+                        case Type.BYTE:
+                        case Type.SHORT:
+                        case Type.INT:
 
-                                        int intValue = v1.intValue() * v2.intValue();
+                                int intValue = v1.intValue() * v2.intValue();
+                                if (intValue == v1.longValue() * v2.longValue()) {
+                                        return createValue(intValue);
+                                }
 
-                                        if ((intValue) != (v1.intValue() * v2.intValue())) {
-                                                type = Type.LONG;
+                        case Type.LONG:
+                                return createValue(v1.longValue() * v2.longValue());
 
-                                                continue;
-                                        } else {
-                                                return createValue(intValue);
-                                        }
+                        case Type.FLOAT:
 
-                                case Type.LONG:
-                                        return createValue(v1.longValue()
-                                                * v2.longValue());
+                                float floatValue = v1.floatValue() * v2.floatValue();
+                                if (floatValue == v1.doubleValue() * v2.doubleValue()) {
+                                        return createValue(floatValue);
+                                }
 
-                                case Type.FLOAT:
-
-                                        float floatValue = v1.floatValue() * v2.floatValue();
-
-                                        if ((floatValue) != (v1.doubleValue() * v2.doubleValue())) {
-                                                type = Type.DOUBLE;
-
-                                                continue;
-                                        } else {
-                                                return createValue(floatValue);
-                                        }
-
-                                case Type.DOUBLE:
-                                        return createValue(v1.doubleValue()
-                                                * v2.doubleValue());
-                                default:
-                                        throw new IncompatibleTypesException("Cannot multiply these data types: "
-                                                + v1.getType() + " and " + v2.getType());
-                        }
+                        case Type.DOUBLE:
+                                return createValue(v1.doubleValue() * v2.doubleValue());
+                        default:
+                                throw new IncompatibleTypesException("Cannot multiply these data types: "
+                                        + v1.getType() + " and " + v2.getType());
                 }
         }
 
         /**
-         * Gets the inverse value (1/v) of the specified parameter.
+         * Gets the inverse value (1/v) of the given (non-null) numeric value.
          *
-         * @param v
-         *
-         * @return
+         * @param v a numeric value
+         * @return the inverse
          */
         static NumericValue inverse(NumericValue v) {
                 if (v.getAsDouble() == 0) {
@@ -570,23 +500,21 @@ public final class ValueFactory {
         }
 
         /**
-         * Creates a byte array value
+         * Creates a byte array value.
          *
-         * @param bytes
-         * bytes of the value
-         *
-         * @return
+         * @param bytes bytes of the value
+         * @return a wrapper value over the byte array
          */
         public static BinaryValue createValue(byte[] bytes) {
                 return new DefaultBinaryValue(bytes);
         }
 
         /**
-         * Creates a Value instance that contains the specified geometry value
+         * Creates a Value instance over a geometry, with the given CRS.
          *
-         * @param geom
-         * @param crs
-         * @return
+         * @param geom geometry
+         * @param crs the CRS of the geometry
+         * @return a wrapper value over the geometry
          */
         public static GeometryValue createValue(Geometry geom, CoordinateReferenceSystem crs) {
                 if (geom != null) {
@@ -613,21 +541,21 @@ public final class ValueFactory {
         }
 
         /**
-         * Creates a Value instance that contains the specified geometry value
+         * Creates a Value instance over a geometry, with no defined CRS.
          *
-         * @param geom
-         * @return
+         * @param geom geometry
+         * @return a wrapper value over the geometry
          */
         public static GeometryValue createValue(Geometry geom) {
                 return createValue(geom, null);
         }
 
         /**
-         * Creates a Value instance that contains the specified Point value
+         * Creates a Value instance over a point, with the defined CRS.
          *
-         * @param geom
-         * @param crs
-         * @return
+         * @param geom point
+         * @param crs the CRS of the point
+         * @return a wrapper value over the point
          */
         public static PointValue createValue(Point geom, CoordinateReferenceSystem crs) {
                 if (geom != null) {
@@ -638,21 +566,21 @@ public final class ValueFactory {
         }
 
         /**
-         * Creates a Value instance that contains the specified Point value
+         * Creates a Value instance over a point, with no defined CRS.
          *
-         * @param geom
-         * @return
+         * @param geom point
+         * @return a wrapper value over the point
          */
         public static PointValue createValue(Point geom) {
                 return createValue(geom, null);
         }
 
         /**
-         * Creates a Value instance that contains the specified LineString value
+         * Creates a Value instance over a line string, with the defined CRS.
          *
-         * @param geom
-         * @param crs
-         * @return
+         * @param geom line string
+         * @param crs the CRS of the line string
+         * @return a wrapper value over the line string
          */
         public static LineStringValue createValue(LineString geom, CoordinateReferenceSystem crs) {
                 if (geom != null) {
@@ -663,21 +591,21 @@ public final class ValueFactory {
         }
 
         /**
-         * Creates a Value instance that contains the specified LineString value
+         * Creates a Value instance over a line string, with no defined CRS.
          *
-         * @param geom
-         * @return
+         * @param geom line string
+         * @return a wrapper value over the line string
          */
         public static LineStringValue createValue(LineString geom) {
                 return createValue(geom, null);
         }
 
         /**
-         * Creates a Value instance that contains the specified LineString value
+         * Creates a Value instance over a polygon, with the defined CRS.
          *
-         * @param geom
-         * @param crs
-         * @return
+         * @param geom a polygon
+         * @param crs the CRS of the polygon
+         * @return a wrapper value over the polygon
          */
         public static PolygonValue createValue(Polygon geom, CoordinateReferenceSystem crs) {
                 if (geom != null) {
@@ -688,21 +616,21 @@ public final class ValueFactory {
         }
 
         /**
-         * Creates a Value instance that contains the specified LineString value
+         * Creates a Value instance over a polygon, with no defined CRS.
          *
-         * @param geom
-         * @return
+         * @param geom a polygon
+         * @return a wrapper value over the polygon
          */
         public static PolygonValue createValue(Polygon geom) {
                 return createValue(geom, null);
         }
 
         /**
-         * Creates a Value instance that contains the specified LineString value
+         * Creates a Value instance over a geometry collection, with the defined CRS.
          *
-         * @param geom
-         * @param crs
-         * @return
+         * @param geom a geometry collection
+         * @param crs the CRS of the geometry collection
+         * @return a wrapper value over the geometry collection
          */
         public static GeometryCollectionValue createValue(GeometryCollection geom, CoordinateReferenceSystem crs) {
                 if (geom != null) {
@@ -713,21 +641,21 @@ public final class ValueFactory {
         }
 
         /**
-         * Creates a Value instance that contains the specified LineString value
+         * Creates a Value instance over a geometry collection, with no defined CRS.
          *
-         * @param geom
-         * @return
+         * @param geom a geometry collection
+         * @return a wrapper value over the geometry collection
          */
         public static GeometryCollectionValue createValue(GeometryCollection geom) {
                 return createValue(geom, null);
         }
 
         /**
-         * Creates a Value instance that contains the specified LineString value
+         * Creates a Value instance over a multi-point, with the defined CRS.
          *
-         * @param geom
-         * @param crs
-         * @return
+         * @param geom a multi-point
+         * @param crs the CRS of the multi-point
+         * @return a wrapper value over the multi-point
          */
         public static MultiPointValue createValue(MultiPoint geom, CoordinateReferenceSystem crs) {
                 if (geom != null) {
@@ -738,21 +666,21 @@ public final class ValueFactory {
         }
 
         /**
-         * Creates a Value instance that contains the specified LineString value
+         * Creates a Value instance over a multi-point, with no defined CRS.
          *
-         * @param geom
-         * @return
+         * @param geom a multi-point
+         * @return a wrapper value over the multi-point
          */
         public static MultiPointValue createValue(MultiPoint geom) {
                 return createValue(geom, null);
         }
 
         /**
-         * Creates a Value instance that contains the specified LineString value
+         * Creates a Value instance over a multi-line string, with the defined CRS.
          *
-         * @param geom
-         * @param crs
-         * @return
+         * @param geom a multi-line string
+         * @param crs the CRS of the multi-line string
+         * @return a wrapper value over the multi-line string
          */
         public static MultiLineStringValue createValue(MultiLineString geom, CoordinateReferenceSystem crs) {
                 if (geom != null) {
@@ -763,21 +691,21 @@ public final class ValueFactory {
         }
 
         /**
-         * Creates a Value instance that contains the specified LineString value
+         * Creates a Value instance over a multi-line string, with no defined CRS.
          *
-         * @param geom
-         * @return
+         * @param geom a multi-line string
+         * @return a wrapper value over the multi-line string
          */
         public static MultiLineStringValue createValue(MultiLineString geom) {
                 return createValue(geom, null);
         }
 
         /**
-         * Creates a Value instance that contains the specified LineString value
+         * Creates a Value instance over a multi-polygon, with the defined CRS.
          *
-         * @param geom
-         * @param crs
-         * @return
+         * @param geom a multi-polygon
+         * @param crs the CRS of the multi-polygon
+         * @return a wrapper value over the multi-polygon
          */
         public static MultiPolygonValue createValue(MultiPolygon geom, CoordinateReferenceSystem crs) {
                 if (geom != null) {
@@ -788,20 +716,20 @@ public final class ValueFactory {
         }
 
         /**
-         * Creates a Value instance that contains the specified LineString value
+         * Creates a Value instance over a multi-polygon, with no defined CRS.
          *
-         * @param geom
-         * @return
+         * @param geom a multi-polygon
+         * @return a wrapper value over the multi-polygon
          */
         public static MultiPolygonValue createValue(MultiPolygon geom) {
                 return createValue(geom, null);
         }
 
         /**
-         * Creates a Value instance that contains the specified raster value
+         * Creates a Value instance over a raster, with no defined CRS.
          *
-         * @param raster
-         * @return
+         * @param raster a raster
+         * @return a wrapper value over the raster
          */
         public static RasterValue createValue(GeoRaster raster) {
                 if (raster != null) {
@@ -812,11 +740,11 @@ public final class ValueFactory {
         }
 
         /**
-         * Creates a Value instance that contains the specified raster value
+         * Creates a Value instance over a raster, with the defined CRS.
          *
-         * @param raster
-         * @param crs
-         * @return
+         * @param raster a raster
+         * @param crs the CRS of the multi-polygon
+         * @return a wrapper value over the raster
          */
         public static RasterValue createValue(GeoRaster raster, CoordinateReferenceSystem crs) {
                 if (raster != null) {
@@ -827,15 +755,13 @@ public final class ValueFactory {
         }
 
         /**
-         * Creates a Value from the specified bytes. Those bytes must have been
-         * obtained by a previous call to Value.getBytes
+         * Creates a Value from the specified bytes. 
+         * 
+         * Those bytes are the ones obtained by a call to {@link Value#getBytes() }.
          *
-         * @param valueType
-         * The type of the value. one of the constants in Type interface
-         * @param buffer
-         * byte representation of the value
-         *
-         * @return
+         * @param valueType the type of the value (one of the constants in the Type interface)
+         * @param buffer the bytes representing the value
+         * @return a new wrapper around the actual data in the byte buffer
          */
         public static Value createValue(final int valueType, byte[] buffer) {
                 //In many cases, Type.GEOMETRY will be set with a concrete geometry type.
@@ -887,8 +813,10 @@ public final class ValueFactory {
         }
 
         /**
+         * Creates a lazily loaded value.
+         * 
          * <p>
-         * Creates a value of the specified type in two steps. The first one builds
+         * This creates a value of the specified type in two steps. The first one builds
          * quickly the value based on the byte[], the second asks for data to the
          * specified byteProvider to build the Value completely on demand.
          * </p>
@@ -896,10 +824,10 @@ public final class ValueFactory {
          * Note that this method only supports Rasters right now.
          * </p>
          *
-         * @param valueType
-         * @param buffer
-         * @param byteProvider
-         * @return
+         * @param valueType the type of the value (one of the constants in the Type interface)
+         * @param buffer some partial data
+         * @param byteProvider a provider to get the rest of the value content when asked for
+         * @return a lazy value of the requested type
          */
         public static Value createLazyValue(int valueType, byte[] buffer,
                 ByteProvider byteProvider) {
@@ -910,6 +838,15 @@ public final class ValueFactory {
                 }
         }
 
+        /**
+         * Gets the size, in bytes, of the header of a Raster object in a RasterValue.
+         * 
+         * This size if fixed for a particular platform, but can vary between platforms.
+         * It is provided here so that file driver can know in advance this size, for
+         * example for performance reasons.
+         * 
+         * @return the size in bytes of a raster header
+         */
         public static int getRasterHeaderSize() {
                 return DefaultRasterValue.getHeaderSize();
         }

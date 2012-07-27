@@ -47,7 +47,7 @@ import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
 
 /**
- * ArrayValue. Contains an array of Values
+ * Wrapper for heterogeneous array of values.
  *
  * @author Fernando Gonzalez Cortes
  */
@@ -57,12 +57,12 @@ class DefaultValueCollection extends AbstractValue implements ValueCollection {
 
         @Override
         public BooleanValue equals(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
                 if (!(value instanceof ValueCollection)) {
-                        throw new IncompatibleTypesException(value + " is not an array");
+                        throw new IncompatibleTypesException(value + " is not a ValueCollection.");
                 }
 
                 ValueCollection arrayValue = (ValueCollection) value;
@@ -283,21 +283,6 @@ class DefaultValueCollection extends AbstractValue implements ValueCollection {
          */
         public void add(Value value) {
                 values.add(value);
-        }
-
-        @Override
-        public BooleanValue notEquals(Value value) {
-                if (value instanceof NullValue) {
-                        return ValueFactory.createNullValue();
-                }
-
-                BooleanValue bv = equals(value);
-
-                if (bv.isNull()) {
-                        return bv;
-                } else {
-                        return ValueFactory.createValue(!bv.getAsBoolean());
-                }
         }
 
         @Override

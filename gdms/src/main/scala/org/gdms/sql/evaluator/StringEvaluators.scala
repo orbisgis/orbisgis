@@ -49,7 +49,7 @@ case class StringConcatEvaluator(e1: Expression, e2: Expression) extends Evaluat
   val sqlType = Type.STRING
   def eval = s => e1.evaluate(s) concatWith e2.evaluate(s)
   override val childExpressions = List(e1, e2)
-  override def doValidate = {
+  override def doValidate() = {
     childExpressions map
     {_.evaluator.sqlType == Type.STRING} reduceLeft (_ || _) match {
       case true =>
@@ -94,14 +94,14 @@ case class LikeEvaluator(e1: Expression, e2: Expression, caseInsensitive: Boolea
     }
   } 
   override val childExpressions = List(e1, e2)
-  override def doValidate = {
+  override def doValidate() = {
     childExpressions map
     {_.evaluator.sqlType == Type.STRING} reduceLeft (_ && _) match {
       case true =>
       case false => throw new IncompatibleTypesException
     }
   }
-  override def doCleanUp = {
+  override def doCleanUp() = {
     pattern = null
     loaded = false
   }
@@ -144,14 +144,14 @@ case class SimilarToEvaluator(e1: Expression, e2: Expression) extends Evaluator 
     }
   } 
   override val childExpressions = List(e1, e2)
-  override def doValidate = {
+  override def doValidate() = {
     childExpressions map
     {_.evaluator.sqlType == Type.STRING} reduceLeft (_ && _) match {
       case true =>
       case false => throw new IncompatibleTypesException
     }
   }
-  override def doCleanUp = {
+  override def doCleanUp() = {
     pattern = null
     loaded = false
   }
@@ -197,14 +197,14 @@ case class POSIXEvaluator(e1: Expression, e2: Expression, caseInsensitive: Boole
     }
   } 
   override val childExpressions = List(e1, e2)
-  override def doValidate = {
+  override def doValidate() = {
     childExpressions map
     {_.evaluator.sqlType == Type.STRING} reduceLeft (_ && _) match {
       case true =>
       case false => throw new IncompatibleTypesException
     }
   }
-  override def doCleanUp = {
+  override def doCleanUp() = {
     pattern = null
     loaded = false
   }

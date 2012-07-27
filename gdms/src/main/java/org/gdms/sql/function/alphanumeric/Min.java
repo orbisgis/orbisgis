@@ -59,7 +59,7 @@ public class Min extends AbstractAggregateFunction {
         private static final Logger LOG = Logger.getLogger(Min.class);
 
         @Override
-	public void evaluate(DataSourceFactory dsf, Value[] args)
+	public void evaluate(DataSourceFactory dsf, Value... args)
 			throws FunctionException {
             LOG.trace("Evaluating");
 		if (!args[0].isNull()) {

@@ -96,7 +96,7 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
     e foreach { exp => ds.setFieldValue(r.rowId.get, exp._1, exp._2.evaluate(r)) }
   }
 
-  override def doPrepare = {
+  override def doPrepare() = {
     // finds the scan and get the DataSource
     def find(ch: Seq[Command]): Option[Command] = ch.filter {
       _.isInstanceOf[ScanCommand] }.headOption
@@ -116,7 +116,7 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
     }
     
     // this inits the expressions
-    super.doPrepare
+    super.doPrepare()
     
     // checks that the updated expressions can be implicitely cast to the column type.
     e foreach {ee =>
@@ -131,9 +131,9 @@ class UpdateCommand(e: Seq[(String, Expression)]) extends Command with Expressio
     res = new MemoryDataSetDriver(new DefaultMetadata(Array(TypeFactory.createType(Type.LONG)), Array("Updated")))
   }
 
-  override def preDoCleanUp = {
+  override def preDoCleanUp() = {
     // commit before the close() from ScanCommand
-    ds.commit
+    ds.commit()
   }
 
   def getResult = res

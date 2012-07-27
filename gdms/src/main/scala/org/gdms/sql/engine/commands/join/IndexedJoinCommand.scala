@@ -113,7 +113,7 @@ class IndexedJoinCommand(queryExpr: Expression, expr: Expression, field: String,
     }
   }
   
-  override def doPrepare = {
+  override def doPrepare() = {
     // identify the small and big commands
     // small: IndexQueryScanCommand
     // big: the other one
@@ -129,10 +129,10 @@ class IndexedJoinCommand(queryExpr: Expression, expr: Expression, field: String,
     }
     
     // reorder children in the iteration order (small then big)
-    // this is import for ExpressionCommand.doPrepare() to do its work correctly
+    // this is import for ExpressionCommand.doPrepare()() to do its work correctly
     children = List(small, big)
     
-    super.doPrepare
+    super.doPrepare()
     
     // check the filter expression is indeed a boolean predicate
     expr.evaluator.sqlType match {

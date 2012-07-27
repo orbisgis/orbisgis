@@ -57,12 +57,12 @@ abstract sealed class Operation {
    */
   def allChildren: List[Operation] = children flatMap (ch => ch :: (ch allChildren))
 
-  def validate: Unit = {
-    children foreach (_.validate)
-    doValidate
+  def validate(): Unit = {
+    children foreach (_.validate())
+    doValidate()
   }
   
-  def doValidate: Unit = {}
+  def doValidate(): Unit = {}
   
   def duplicate: Operation
 
@@ -128,7 +128,7 @@ case class CustomQueryScan(customQuery: String, exp: Seq[Expression],
   
   override def toString = "TableFunction  called(" + customQuery + ") params(" + exp + tables + ")" + alias
   var function: TableFunction = null
-  override def doValidate = {
+  override def doValidate() = {
     exp foreach (_ preValidate)
     
     def check(e: Expression) {
@@ -183,7 +183,7 @@ case class ValuesScan(exp: Seq[Seq[Expression]], alias: Option[String] = None, i
 extends Operation with ExpressionOperation {
   override def toString = "ValuesScan" + (if (internal) "(internal)" else "") + " of (" + exp + ") " + (if (alias.isDefined) alias else "")
   val children = Nil
-  override def doValidate {
+  override def doValidate() {
     // check for constant values
     def check(e: Expression): Unit = e match {
       case field(name,_) => throw new SemanticException("the expression cannot contain the field '" + name +
@@ -219,7 +219,7 @@ case class Output(var child: Operation) extends Operation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
   
-  override def doValidate = {
+  override def doValidate() = {
     val aliases = allChildren flatMap { _ match {
         case Scan(_, a, _) => a
         case CustomQueryScan(_, _, _, a) => a
@@ -309,7 +309,7 @@ case class Projection(exp: List[(Expression, Option[String])],var child: Operati
 extends Operation with ExpressionOperation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def doValidate = exp foreach (_._1 preValidate)
+  override def doValidate() = exp foreach (_._1 preValidate)
   override def toString = "Projection of(" + exp + ") on(" + children + ")"
   def expr = exp map (_._1)
   def duplicate: Projection = Projection(exp map (a => (a._1.duplicate, a._2)), child.duplicate)
@@ -329,7 +329,7 @@ case class Aggregate(var exp: List[(Expression, Option[String])],var child: Oper
 extends Operation with ExpressionOperation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def doValidate = exp foreach (_._1 preValidate)
+  override def doValidate() = exp foreach (_._1 preValidate)
   override def toString = "Aggregate exp(" + exp + ") on(" + children + ")"
   def expr = exp map (_._1)
   def duplicate: Aggregate = Aggregate(exp map (a => (a._1.duplicate, a._2)), child.duplicate)
@@ -347,7 +347,7 @@ extends Operation with ExpressionOperation {
 case class Filter(e: Expression,var child: Operation, having: Boolean = false) extends Operation with ExpressionOperation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def doValidate = e.preValidate
+  override def doValidate() = e.preValidate
   override def toString = "Filter of(" + e + ") on(" + children + ")"
   def expr = Seq(e)
   def duplicate: Filter = Filter(e.duplicate, child.duplicate, having)
@@ -368,7 +368,7 @@ case class Filter(e: Expression,var child: Operation, having: Boolean = false) e
 case class Sort(names: Seq[(Expression, Boolean)],var child: Operation) extends Operation with ExpressionOperation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def doValidate = names foreach (_._1 preValidate)
+  override def doValidate() = names foreach (_._1 preValidate)
   override def toString = "Sort fields(" + names + ") on(" + children + ")"
   def expr = names map (_._1)
   def duplicate: Sort = Sort(names map (a => (a._1.duplicate, a._2)), child.duplicate)
@@ -388,7 +388,7 @@ case class Sort(names: Seq[(Expression, Boolean)],var child: Operation) extends 
 case class Grouping(var exp: List[(Expression, Option[String])],var child: Operation) extends Operation with ExpressionOperation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def doValidate = exp foreach (_._1 preValidate)
+  override def doValidate() = exp foreach (_._1 preValidate)
   override def toString = "Group over(" + exp + ") on(" + children + ")"
   def expr = exp map (_._1)
   def duplicate: Grouping = Grouping(exp map (a => (a._1.duplicate, a._2)), child.duplicate)
@@ -449,7 +449,7 @@ case class Union(var left: Operation,var right: Operation) extends Operation {
 case class Update(exp: Seq[(String, Expression)],var child: Operation) extends Operation with ExpressionOperation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def doValidate = exp foreach (_._2 preValidate)
+  override def doValidate() = exp foreach (_._2 preValidate)
   override def toString = "Update exp(" + exp + ") on (" + children + ")"
   def expr = exp map (_._2)
   def duplicate: Update = Update(exp map (a => (a._1, a._2.duplicate)), child.duplicate)
@@ -645,7 +645,7 @@ case class DropIndex(table: String, columns: Seq[String]) extends Operation {
  */
 case class ExecutorCall(name: String, tables: Seq[Either[String, Operation]], params: Seq[Expression]) extends Operation with ExpressionOperation {
   def children = tables.flatMap(_.right.toOption).toList
-  override def doValidate = {
+  override def doValidate() = {
     params foreach (_ preValidate)
     
     def check(e: Expression) {
@@ -704,7 +704,7 @@ case class Show(parameter: Option[String]) extends Operation {
  */
 case class CreateFunction(name: String, as: String, language: String, replace: Boolean) extends Operation {
   def children = Nil
-  override def doValidate = {
+  override def doValidate() = {
     if (language != "java") {
       throw new SemanticException("Unknown language: '" + language + "'. The only supported language is 'java'.")
     }

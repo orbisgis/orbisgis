@@ -58,12 +58,12 @@ class IndexQueryScanCommand(table: String, alias: Option[String] = None, var que
   // the result set metadata
   var metadata: Metadata = _
   
-  override protected def doCleanUp = {
+  override protected def doCleanUp() = {
     // closes the DataSource
     if (ds != null) ds.close
   }
 
-  override protected def doPrepare = {
+  override protected def doPrepare() = {
     ds = dsf.getDataSource(table, DataSourceFactory.NORMAL)
     ds.open
     metadata = ds.getMetadata    

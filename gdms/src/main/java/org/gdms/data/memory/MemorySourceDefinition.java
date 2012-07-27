@@ -34,6 +34,7 @@
 package org.gdms.data.memory;
 
 import java.net.URI;
+
 import org.apache.log4j.Logger;
 import org.orbisgis.progress.ProgressMonitor;
 
@@ -42,7 +43,6 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.driver.DataSet;
-import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.EditableMemoryDriver;
 import org.gdms.driver.MemoryDriver;
@@ -54,7 +54,7 @@ import org.gdms.source.directory.ObjectDefinitionType;
  *
  * @author fergonco, Antoine Gourlay
  */
-public class MemorySourceDefinition extends AbstractDataSourceDefinition {
+public class MemorySourceDefinition extends AbstractDataSourceDefinition<MemoryDriver> {
 
         private MemoryDriver driver;
         private String tableName;
@@ -101,7 +101,7 @@ public class MemorySourceDefinition extends AbstractDataSourceDefinition {
         }
 
         @Override
-        protected Driver getDriverInstance() {
+        protected MemoryDriver getDriverInstance() {
                 return driver;
         }
 

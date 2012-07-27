@@ -66,8 +66,8 @@ extends Command with ExpressionCommand {
     exps.par.view map(evaluate) toIterator
   }
   
-  override def doPrepare = {
-    super.doPrepare
+  override def doPrepare() = {
+    super.doPrepare()
     
     // check for compatible types of elements in rows
     val types = exps.head map (_.evaluator.sqlType)

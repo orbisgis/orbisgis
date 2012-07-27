@@ -745,10 +745,10 @@ public class SQLTest extends TestBase {
                         sql += separator + " \"" + fieldNames[j] + "\"";
                         if (row[j].isNull()) {
                                 sql += " is "
-                                        + row[j].getStringValue(ValueWriter.internalValueWriter);
+                                        + row[j].getStringValue(ValueWriter.DEFAULTWRITER);
                         } else {
                                 sql += "="
-                                        + row[j].getStringValue(ValueWriter.internalValueWriter);
+                                        + row[j].getStringValue(ValueWriter.DEFAULTWRITER);
                         }
                         separator = " and ";
                 }

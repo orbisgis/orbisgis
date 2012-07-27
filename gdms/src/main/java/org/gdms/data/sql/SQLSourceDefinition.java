@@ -46,7 +46,6 @@ import org.gdms.data.AbstractDataSourceDefinition;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceDefinition;
-import org.gdms.data.DataSourceFactory;
 import org.gdms.data.memory.MemoryDataSourceAdapter;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.Schema;
@@ -79,11 +78,6 @@ public final class SQLSourceDefinition extends AbstractDataSourceDefinition<Memo
         public SQLSourceDefinition(SQLStatement instruction) {
                 LOG.trace("Constructor");
                 this.statement = instruction;
-        }
-
-        @Override
-        public DataSourceFactory getDataSourceFactory() {
-                return (DataSourceFactory) super.getDataSourceFactory();
         }
 
         /**

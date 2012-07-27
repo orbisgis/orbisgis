@@ -169,7 +169,7 @@ public class PlugInManager {
 
                 File[] f = directory.listFiles();
                 for (int i = 0; i < f.length; i++) {
-                        File file = (File) f[i];
+                        File file = f[i];
                         if (file.isDirectory()) {
                                 findFilesRecursively(file, files);
                         }

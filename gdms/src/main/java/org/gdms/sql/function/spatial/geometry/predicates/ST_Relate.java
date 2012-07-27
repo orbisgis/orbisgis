@@ -53,7 +53,7 @@ import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 public final class ST_Relate extends AbstractScalarSpatialFunction implements SpatialIndexedFunction {
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 if (args[0].isNull() || args[1].isNull()) {
                         return ValueFactory.createNullValue();
                 }

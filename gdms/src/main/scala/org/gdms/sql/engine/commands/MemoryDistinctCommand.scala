@@ -57,7 +57,7 @@ class MemoryDistinctCommand extends Command {
     h.add(r.hashCode)
   }
   
-  override def preDoCleanUp = {
+  override def preDoCleanUp() = {
     h.clear
   }
   

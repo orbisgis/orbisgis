@@ -45,7 +45,7 @@ import org.gdms.sql.function.FunctionSignature;
 public class ZeroArgsFunction extends AbstractScalarFunction {
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args)
+        public Value evaluate(DataSourceFactory dsf, Value... args)
                 throws FunctionException {
                 return ValueFactory.createNullValue();
         }

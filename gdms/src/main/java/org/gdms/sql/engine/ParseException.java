@@ -35,18 +35,24 @@ package org.gdms.sql.engine;
 
 /**
  * This exception denotes that something happened during the parsing of a SQL script.
+ *
  * @author Antoine Gourlay
  */
 public class ParseException extends Exception {
 
+        private static final long serialVersionUID = 7891440179352170045L;
+
         /**
-         * Creates a new instance of <code>ParseException</code> without detail message.
+         * Creates a new instance of
+         * <code>ParseException</code> without detail message.
          */
         public ParseException() {
         }
 
         /**
-         * Constructs an instance of <code>ParseException</code> with the specified detail message.
+         * Constructs an instance of
+         * <code>ParseException</code> with the specified detail message.
+         *
          * @param msg the detail message.
          */
         public ParseException(String msg) {

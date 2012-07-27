@@ -56,7 +56,7 @@ public final class ST_Envelope extends AbstractScalarSpatialFunction {
         private static final GeometryFactory GF = new GeometryFactory();
 
         @Override
-        public Value evaluate(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 Envelope grEnv;
                 if (args[0] instanceof RasterValue) {
                         grEnv = args[0].getAsRaster().getMetadata().getEnvelope();

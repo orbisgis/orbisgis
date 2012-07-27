@@ -123,9 +123,9 @@ class SQLStatement(sql: String, op: Operation)(implicit p: Properties) {
     r 
   }
   
-  def cleanUp() {
+  def cleanUp()() {
     if (preparedButNotCleaned) {
-      com.cleanUp
+      com.cleanUp()
       preparedButNotCleaned = false
       
       // IMPORTANT: this lets the GC do its work

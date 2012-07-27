@@ -90,12 +90,12 @@ class DefaultTimeValue extends AbstractValue implements Serializable, TimeValue 
 
         @Override
         public BooleanValue equals(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
                 if (value instanceof TimeValue) {
-                        return new DefaultBooleanValue(this.value.equals(((TimeValue) value).getAsTime()));
+                        return ValueFactory.createValue(this.value.equals(value.getAsTime()));
                 } else {
                         throw new IncompatibleTypesException(
                                 NOTTIME
@@ -105,12 +105,12 @@ class DefaultTimeValue extends AbstractValue implements Serializable, TimeValue 
 
         @Override
         public BooleanValue greater(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
                 if (value instanceof TimeValue) {
-                        return new DefaultBooleanValue(this.value.compareTo(((TimeValue) value).getAsTime()) > 0);
+                        return ValueFactory.createValue(this.value.compareTo(((TimeValue) value).getAsTime()) > 0);
                 } else {
                         throw new IncompatibleTypesException(
                                 NOTTIME
@@ -120,12 +120,12 @@ class DefaultTimeValue extends AbstractValue implements Serializable, TimeValue 
 
         @Override
         public BooleanValue greaterEqual(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
                 if (value instanceof TimeValue) {
-                        return new DefaultBooleanValue(this.value.compareTo(((TimeValue) value).getAsTime()) >= 0);
+                        return ValueFactory.createValue(this.value.compareTo(((TimeValue) value).getAsTime()) >= 0);
                 } else {
                         throw new IncompatibleTypesException(
                                 NOTTIME
@@ -135,12 +135,12 @@ class DefaultTimeValue extends AbstractValue implements Serializable, TimeValue 
 
         @Override
         public BooleanValue less(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
                 if (value instanceof TimeValue) {
-                        return new DefaultBooleanValue(this.value.compareTo(((TimeValue) value).getAsTime()) < 0);
+                        return ValueFactory.createValue(this.value.compareTo(((TimeValue) value).getAsTime()) < 0);
                 } else {
                         throw new IncompatibleTypesException(
                                 NOTTIME
@@ -150,27 +150,12 @@ class DefaultTimeValue extends AbstractValue implements Serializable, TimeValue 
 
         @Override
         public BooleanValue lessEqual(Value value) {
-                if (value instanceof NullValue) {
+                if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
 
                 if (value instanceof TimeValue) {
-                        return new DefaultBooleanValue(this.value.compareTo(((TimeValue) value).getAsTime()) <= 0);
-                } else {
-                        throw new IncompatibleTypesException(
-                                NOTTIME
-                                + TypeFactory.getTypeName(value.getType()));
-                }
-        }
-
-        @Override
-        public BooleanValue notEquals(Value value) {
-                if (value instanceof NullValue) {
-                        return ValueFactory.createNullValue();
-                }
-
-                if (value instanceof TimeValue) {
-                        return new DefaultBooleanValue(!this.value.equals(((TimeValue) value).getAsTime()));
+                        return ValueFactory.createValue(this.value.compareTo(((TimeValue) value).getAsTime()) <= 0);
                 } else {
                         throw new IncompatibleTypesException(
                                 NOTTIME

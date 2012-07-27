@@ -56,7 +56,7 @@ class QueryOutputCommand extends Command with OutputCommand {
   // into a caching service in Gdms
   var resultFile: File = _
 
-  protected override def doPrepare = {
+  protected override def doPrepare() = {
     if (resultFile == null) {
       resultFile = new File(dsf.getTempFile("gdms"))
     }
@@ -86,7 +86,7 @@ class QueryOutputCommand extends Command with OutputCommand {
    */
   def materialize(dsf: DataSourceFactory) {
     this.dsf = dsf
-    doPrepare
+    doPrepare()
   }
   
   /**
@@ -119,7 +119,7 @@ class QueryOutputCommand extends Command with OutputCommand {
     SQLMetadata("", d)
   }
   
-  protected override def doCleanUp = {
+  protected override def doCleanUp() = {
     if (driver.isOpen) {
       driver.close
     }

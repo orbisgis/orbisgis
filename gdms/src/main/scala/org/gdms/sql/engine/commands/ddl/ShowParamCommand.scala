@@ -57,7 +57,7 @@ class ShowParamCommand(parameter: Option[String]) extends Command with OutputCom
   // just two columns: Name and Value
   val m = new DefaultMetadata(Array(TypeFactory.createType(Type.STRING), TypeFactory.createType(Type.STRING)), Array("Name", "Value"))
   
-  override def doPrepare = {
+  override def doPrepare() = {
     res = new MemoryDataSetDriver(m)
   }
   

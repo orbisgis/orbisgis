@@ -44,7 +44,7 @@ import org.gdms.sql.function.FunctionException;
  */
 public final class ST_IsValid extends AbstractSpatialPropertyFunction {
         @Override
-	public Value evaluateResult(DataSourceFactory dsf, Value[] args) throws FunctionException {
+	public Value evaluateResult(DataSourceFactory dsf, Value... args) throws FunctionException {
 		return ValueFactory.createValue(args[0].getAsGeometry().isValid());
 	}
 

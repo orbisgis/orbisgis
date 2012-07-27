@@ -51,7 +51,7 @@ public final class ST_CircleCompacity extends AbstractSpatialPropertyFunction {
         private static final double DPI = 2 * Math.PI;
 
         @Override
-        public Value evaluateResult(DataSourceFactory dsf, Value[] args) throws FunctionException {
+        public Value evaluateResult(DataSourceFactory dsf, Value... args) throws FunctionException {
                 final Geometry geomBuild = args[0].getAsGeometry();
                 if (GeometryTypeUtil.isPolygon(geomBuild)) {
                         final double sBuild = geomBuild.getArea();

@@ -58,12 +58,13 @@ public final class Shell {
          * Entry point.
          *
          * @param args
+         * @throws IOException  
          */
         public static void main(String[] args) throws IOException {
                 System.out.println("Gdms 2.0 Console");
                 System.out.println();
                 Console c = System.console();
-                c.readLine();
+                
                 if (c != null) {
                         DataSourceFactory dsf = new DataSourceFactory();
                         interactive(c.reader(), c.writer(), dsf);
@@ -99,76 +100,80 @@ public final class Shell {
                 while (true) {
                         writer.write("> ");
                         String line = bu.readLine();
-                        if (line.startsWith("sql")) {
-                                int idx = line.indexOf(' ');
-                                if (idx == -1 || idx == line.length() - 1) {
-                                        writer.println("Error with command 'sql': there"
-                                                + " must be some SQL statement after 'sql'.");
-                                        continue;
-                                }
-                                String sql = line.substring(idx + 1);
-                                SQLStatement[] s = null;
-                                try {
-                                        s = Engine.parse(sql, DataSourceFactory.getDefaultProperties());
-                                } catch (Exception e) {
-                                        writer.format("Error: %s", e.getLocalizedMessage());
-                                        writer.println();
-                                        continue;
-                                }
-                                if (s.length != 1) {
-                                        writer.println("Error: there must be only one statement.");
-                                        continue;
-                                }
-                                SQLStatement st = s[0];
-                                st.setDataSourceFactory(dsf);
-                                try {
-                                        st.prepare();
-                                } catch (Exception e) {
-                                        writer.format("Error: %s", e.getLocalizedMessage());
-                                        writer.println();
-                                        continue;
-                                }
-                                Metadata m = st.getResultMetadata();
-                                if (m == null) {
-                                        try {
-                                                st.execute();
-                                                st.cleanUp();
-                                        } catch (Exception e) {
-                                                writer.println("Error: there must be only one statement.");
+                        if (line != null) {
+                                if (line.startsWith("sql")) {
+                                        int idx = line.indexOf(' ');
+                                        if (idx == -1 || idx == line.length() - 1) {
+                                                writer.println("Error with command 'sql': there"
+                                                        + " must be some SQL statement after 'sql'.");
                                                 continue;
                                         }
-                                } else {
+                                        String sql = line.substring(idx + 1);
+                                        SQLStatement[] s;
                                         try {
-                                                DataSource ds = dsf.getDataSource(st, DataSourceFactory.DEFAULT, null);
-                                                ds.open();
-                                                int colCount = ds.getFieldCount();
-                                                writer.print(ds.getFieldName(0));
-                                                for (int i = 1; i < colCount; i++) {
-                                                        writer.print(", ");
-                                                        writer.print(ds.getFieldName(i));
-                                                }
-                                                writer.print('\n');
-                                                final long rC = ds.getRowCount();
-                                                int stop = rC > 20 ? 20 : (int) rC;
-                                                for (int i = 0; i < stop; i++) {
-                                                        writer.println(Arrays.toString(ds.getRow(i)));
-                                                }
-                                                if (stop < rC) {
-                                                        writer.format("and %d more rows.", rC - stop);
-
-                                                }
-                                                ds.close();
+                                                s = Engine.parse(sql, DataSourceFactory.getDefaultProperties());
                                         } catch (Exception e) {
                                                 writer.format("Error: %s", e.getLocalizedMessage());
                                                 writer.println();
                                                 continue;
                                         }
+                                        if (s.length != 1) {
+                                                writer.println("Error: there must be only one statement.");
+                                                continue;
+                                        }
+                                        SQLStatement st = s[0];
+                                        st.setDataSourceFactory(dsf);
+                                        try {
+                                                st.prepare();
+                                        } catch (Exception e) {
+                                                writer.format("Error: %s", e.getLocalizedMessage());
+                                                writer.println();
+                                                continue;
+                                        }
+                                        Metadata m = st.getResultMetadata();
+                                        if (m == null) {
+                                                try {
+                                                        st.execute();
+                                                        st.cleanUp();
+                                                } catch (Exception e) {
+                                                        writer.println("Error: there must be only one statement.");
+                                                        continue;
+                                                }
+                                        } else {
+                                                try {
+                                                        DataSource ds = dsf.getDataSource(st, DataSourceFactory.DEFAULT, null);
+                                                        ds.open();
+                                                        int colCount = ds.getFieldCount();
+                                                        writer.print(ds.getFieldName(0));
+                                                        for (int i = 1; i < colCount; i++) {
+                                                                writer.print(", ");
+                                                                writer.print(ds.getFieldName(i));
+                                                        }
+                                                        writer.print('\n');
+                                                        final long rC = ds.getRowCount();
+                                                        int stop = rC > 20 ? 20 : (int) rC;
+                                                        for (int i = 0; i < stop; i++) {
+                                                                writer.println(Arrays.toString(ds.getRow(i)));
+                                                        }
+                                                        if (stop < rC) {
+                                                                writer.format("and %d more rows.", rC - stop);
+
+                                                        }
+                                                        ds.close();
+                                                } catch (Exception e) {
+                                                        writer.format("Error: %s", e.getLocalizedMessage());
+                                                        writer.println();
+                                                        continue;
+                                                }
+                                        }
+                                } else if (line.startsWith("exit")) {
+                                        writer.println("Exiting.");
+                                        break;
+                                } else if (line.startsWith("help")) {
+                                        writer.println("");
+                                } else {
+                                        writer.println("Unknown command!");
                                 }
-                        } else if (line.startsWith("exit")) {
-                                writer.println("Exiting.");
-                                break;
-                        } else if (line.startsWith("help")) {
-                                writer.println("");
                         } else {
                                 writer.println("Unknown command!");
                         }

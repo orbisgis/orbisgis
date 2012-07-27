@@ -608,9 +608,9 @@ public class ST_TriangleContouring extends AbstractTableFunction {
                         String isolevelsStr = values[0].getAsString();
                         int spatialFieldIndex = sds.getSpatialFieldIndex();
 
-                        List<Double> iso_lvls = new LinkedList<Double>();
+                        List<Double> isoLvls = new LinkedList<Double>();
                         for (String isolvl : isolevelsStr.split(",")) {
-                                iso_lvls.add(Double.valueOf(isolvl));
+                                isoLvls.add(Double.valueOf(isolvl));
                                 spatialFieldIndex = sds.getSpatialFieldIndex();
                         }
 
@@ -638,7 +638,7 @@ public class ST_TriangleContouring extends AbstractTableFunction {
                                                 pts[1].z,
                                                 pts[2].z);
 
-                                        Map<Short, Deque<TriMarkers>> triangleToDriver = processTriangle(currentTriangle, iso_lvls);
+                                        Map<Short, Deque<TriMarkers>> triangleToDriver = processTriangle(currentTriangle, isoLvls);
 
                                         for (Entry<Short, Deque<TriMarkers>> entry : triangleToDriver.entrySet()) {
                                                 for (TriMarkers triExport : entry.getValue()) {

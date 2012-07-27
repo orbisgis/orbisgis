@@ -46,7 +46,7 @@ import org.gdms.sql.evaluator._
  */
 class ProjectionCommand(var expression: Array[(Expression, Option[String])]) extends ScalarCommand with ExpressionCommand {
 
-  override def doPrepare = {
+  override def doPrepare() = {
     // finds star expressions
     val stars = expression.filter(_._1 match {
         case star(_, _) => true
@@ -97,7 +97,7 @@ class ProjectionCommand(var expression: Array[(Expression, Option[String])]) ext
     }
     
     // expressions initialisation
-    super.doPrepare
+    super.doPrepare()
   }
   
   private def addAllFields(m: SQLMetadata, s: Expression, except: Seq[String]) {

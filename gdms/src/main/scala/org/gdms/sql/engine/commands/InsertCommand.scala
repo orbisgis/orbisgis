@@ -68,7 +68,7 @@ class InsertCommand(table: String, fields: Option[Seq[String]]) extends Command 
   // number of inserted rows
   var ro: Long = 0
 
-  override def doPrepare = {
+  override def doPrepare() = {
     // opens the DataSource in edition
     ds = dsf.getDataSource(table, DataSourceFactory.EDITABLE)
     ds.open
@@ -161,8 +161,8 @@ class InsertCommand(table: String, fields: Option[Seq[String]]) extends Command 
     Iterator.empty
   }
 
-  override def doCleanUp = {
-    ds.commit
+  override def doCleanUp() = {
+    ds.commit()
     ds.close
   }
 
