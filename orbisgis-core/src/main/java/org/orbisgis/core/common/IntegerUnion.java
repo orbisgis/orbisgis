@@ -62,13 +62,13 @@ public class IntegerUnion implements Iterable<Integer> {
     
     /**
      * Insert all values of the range [valueBegin-valueEnd].
-     * @param valueBegin 
-     * @param valueEnd 
+     * @param valueBegin Included begin of range
+     * @param valueEnd Included end of range
      * @throws IllegalArgumentException if valueEnd < valueBegin
      */
     IntegerUnion(int valueBegin, int valueEnd) {
         if(valueEnd<valueBegin) {
-            throw new IllegalArgumentException("Begin row index must be inferior or equal to end row index.");
+            throw new IllegalArgumentException("Begin value must be inferior or equal to the end value.");
         }
         intervals.add(valueBegin);
         intervals.add(valueEnd);
@@ -82,19 +82,19 @@ public class IntegerUnion implements Iterable<Integer> {
         return intervals.isEmpty();
     }
     /**
-     * Add a row index in the list
-     * @param value The row index. Duplicates are not pushed, and do not raise errors.
+     * Add a value index in the list
+     * @param value The value index. Duplicates are not pushed, and do not raise errors.
      * @TODO Add function to push a range instead of a single int
      */
     public void add(int value) {
-        // Iterate over the row range array and find contiguous row
+        // Iterate over the value range array and find contiguous value
         //Find the first nearest value in ranges
         int index = Collections.binarySearch(intervals, value);
         if(index>=0) {
                 return;
         }
         index=-index-1; //retrieve the nearest index by order
-        // intervals[index] > row
+        // intervals[index] > value
         if(index % 2==0) {
                 //If index corresponding to begin of a range
                 boolean mergeFirst = index>0 && intervals.get(index-1)==value-1;
