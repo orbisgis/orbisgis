@@ -59,7 +59,7 @@ public class IntegerUnionTest {
         }
 
         @Test
-        public void testDev() {
+        public void testUnion() {
                 IntegerUnion mergeTool = new IntegerUnion(15, 50);
 
                 mergeTool.add(51);
@@ -77,6 +77,8 @@ public class IntegerUnionTest {
                 mergeTool.add(15);
                 mergeTool.add(52);
                 check(mergeTool, new Integer[]{14, 53});
+                mergeTool.add(12);
+                check(mergeTool, new Integer[]{12,12,14, 53});
         }
 
         @Test
@@ -123,15 +125,11 @@ public class IntegerUnionTest {
                 while (it.hasNext()) {
                         int begin = it.next();
                         int end = it.next();
-                        System.out.print("[" + begin + "-" + end + "]");
                         Assert.assertTrue(correctRanges.contains(begin));
                         Assert.assertTrue(correctRanges.contains(end));
                         Assert.assertTrue(!(300 < begin && begin < 1499));
                         Assert.assertTrue(!(300 < end && end < 1499));
                 }
-                System.out.println("");
-                System.out.println("Merging of rows took :" + timeadd + " ms");
-
         }
 
         @BeforeClass
