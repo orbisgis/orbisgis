@@ -28,10 +28,10 @@
  */
 package org.orbisgis.core.common;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -61,7 +61,7 @@ public class IntegerUnionTest {
         @Test
         public void testIterator() {
                 IntegerUnion mergeTool = new IntegerUnion();
-                List<Integer> origin = new ArrayList<Integer>();
+                Set<Integer> origin = new TreeSet<Integer>();
                 
                 for (int i = 51; i < 60; i++) {
                         mergeTool.add(i);
@@ -75,9 +75,7 @@ public class IntegerUnionTest {
                         mergeTool.add(i);
                         origin.add(i);
                 }
-                
-                Collections.sort(origin);
-                
+                                
                 Iterator<Integer> itMerge = mergeTool.iterator();
                 Iterator<Integer> itOrigin = origin.iterator();
                 
