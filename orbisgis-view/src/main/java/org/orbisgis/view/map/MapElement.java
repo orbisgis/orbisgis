@@ -34,9 +34,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.layerModel.*;
+import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.layerModel.LayerCollectionEvent;
+import org.orbisgis.core.layerModel.LayerException;
+import org.orbisgis.core.layerModel.LayerListenerAdapter;
+import org.orbisgis.core.layerModel.LayerListenerEvent;
+import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.layerModel.MapContextListener;
+import org.orbisgis.core.layerModel.SelectionEvent;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.view.edition.AbstractEditableElement;
+import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.toc.Toc;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -45,12 +52,11 @@ import org.xnap.commons.i18n.I18nFactory;
  * MapElement is an editable document that contains a Map Context.
  * @note The source code, functionality is mainly provided by GeocognitionMapContext
  */
-public final class MapElement extends AbstractEditableElement {
+public final class MapElement extends EditableElement {
         public static final String EDITABLE_TYPE = "MapContext";
         private static final Logger LOGGER = Logger.getLogger("gui."+MapElement.class);
 	private static final I18n I18N = I18nFactory.getI18n(MapElement.class);
         
-        private Boolean modified = false;
 	private MapContext mapContext;
         private MapEditor editor;
         private String mapId;
@@ -65,26 +71,7 @@ public final class MapElement extends AbstractEditableElement {
                 this.mapContextFile = mapContextFile;
                 mapId = String.valueOf(mapContext.getIdTime());
 	}
-
-        /**
-         * Update the modified state
-         * @param modified 
-         */
-        public void setModified(Boolean modified) {
-            this.modified = modified;
-        }
-
-        /**
-         * Mark this MapContext as modified
-         */
-        public void setModified() {
-            setModified(true);
-        }
-	@Override
-	public boolean isModified() {
-            return modified;
-	}
-
+        
 	@Override
 	public void save() throws UnsupportedOperationException {
                 try {
@@ -92,15 +79,13 @@ public final class MapElement extends AbstractEditableElement {
                 } catch (FileNotFoundException ex) {
                         throw new UnsupportedOperationException(ex);
                 }
-                modified = false;
-                fireSave();
+                setModified(false);
 	}
 
 	@Override
 	public void open(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException {
-                //TODO add Edition Listener
-		modified = false;
+                setModified(false);
                 try {
                     mapContext.open(progressMonitor);
                     mapContext.addMapContextListener(updateListener);
@@ -170,18 +155,17 @@ public final class MapElement extends AbstractEditableElement {
 
             @Override
             public void nameChanged(LayerListenerEvent e) {
-                setModified();
+                setModified(true);
             }
 
             @Override
             public void visibilityChanged(LayerListenerEvent e) {
-                setModified();
+                setModified(true);
             }
 
             @Override
-            public void styleChanged(LayerListenerEvent e) {                
-                
-                setModified();
+            public void styleChanged(LayerListenerEvent e) {      
+                setModified(true);
             }
 
             @Override
@@ -189,7 +173,7 @@ public final class MapElement extends AbstractEditableElement {
                 for (final ILayer layer : e.getAffected()) {
                         layer.addLayerListenerRecursively(this);
                 }
-                setModified();
+                setModified(true);
             }
 
             @Override
@@ -197,17 +181,17 @@ public final class MapElement extends AbstractEditableElement {
                 for (final ILayer layer : e.getAffected()) {
                         layer.removeLayerListenerRecursively(this);
                 }
-                setModified();
+                setModified(true);
             }
 
             @Override
             public void layerMoved(LayerCollectionEvent e) {
-                setModified();
+                setModified(true);
             }
 
             @Override
             public void selectionChanged(SelectionEvent e) {
-                setModified();
+                setModified(true);
             }
             
         }

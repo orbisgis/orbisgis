@@ -50,21 +50,23 @@ public abstract class TableEditableElement extends EditableElement {
 	 * 
 	 * @return
 	 */
-	Selection getSelection();
+	Selection getSelection() {
+                return selection;
+        }
 
 	/**
 	 * Get the data to populate the table
 	 * 
 	 * @return
 	 */
-	DataSource getDataSource();
+	abstract DataSource getDataSource();
 
 	/**
 	 * Return true if the source can be edited
 	 * 
 	 * @return
 	 */
-	boolean isEditable();
+	abstract boolean isEditable();
 
 	/**
 	 * Return the MapContext containing the DataSource returned in
@@ -73,12 +75,8 @@ public abstract class TableEditableElement extends EditableElement {
 	 * 
 	 * @return
 	 */
-	MapContext getMapContext();
-
-        @Override
-        Object getObject() throws UnsupportedOperationException {
-                return dataSource;
-        }
+	abstract MapContext getMapContext();
+     
 	
 	
 }

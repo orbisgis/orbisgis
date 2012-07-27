@@ -28,7 +28,12 @@
  */
 package org.orbisgis.view.geocatalog;
 
-import org.gdms.data.*;
+
+import org.gdms.data.AlreadyClosedException;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.SourceEvent;
@@ -41,9 +46,8 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditableElementException;
 import org.orbisgis.view.table.Selection;
-import org.orbisgis.view.table.TableEditableElement;
 
-public class EditableSource extends TableEditableElement {
+public class EditableSource extends EditableElement {
 
 	public static final String EDITABLE_RESOURCE_TYPE = "EditableSource";
 
@@ -55,13 +59,11 @@ public class EditableSource extends TableEditableElement {
 	private NameChangeSourceListener listener = new NameChangeSourceListener();
 
 	public EditableSource(String sourceName) {
-		this.sourceName = sourceName;
+                id = sourceName;
+                setId(sourceName);
 	}
 
-	public String getId() {
-		return sourceName;
-	}
-
+        @Override
 	public void close(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		try {
@@ -76,10 +78,12 @@ public class EditableSource extends TableEditableElement {
 				.removeSourceListener(listener);
 	}
 
+        @Override
 	public String getTypeId() {
 		return EDITABLE_RESOURCE_TYPE;
 	}
 
+        @Override
 	public void open(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		try {
@@ -89,7 +93,6 @@ public class EditableSource extends TableEditableElement {
 				ds = dsf.getDataSource(sourceName);
 			}
 			ds.open();
-			super.open(progressMonitor);
 
 			dataManager.getSourceManager().addSourceListener(listener);
 		} catch (DriverException e) {
@@ -103,6 +106,7 @@ public class EditableSource extends TableEditableElement {
 		}
 	}
 
+        @Override
 	public boolean equals(Object obj) {
 		if (obj instanceof EditableSource) {
 			EditableSource er = (EditableSource) obj;
@@ -112,6 +116,7 @@ public class EditableSource extends TableEditableElement {
 		}
 	}
 
+        @Override
 	public int hashCode() {
 		return sourceName.hashCode();
 	}
@@ -149,16 +154,29 @@ public class EditableSource extends TableEditableElement {
                 this.editing = Editing;
         }
 
+        @Override
+        public void save() throws UnsupportedOperationException, EditableElementException {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Object getObject() throws UnsupportedOperationException {
+                return ds;
+        }
+
 	private class NameChangeSourceListener implements SourceListener {
 
+                @Override
 		public void sourceAdded(SourceEvent e) {
 		}
 
+                @Override
 		public void sourceNameChanged(SourceEvent e) {
 			sourceName = e.getNewName();
-			fireIdChanged();
+                        setId(sourceName);
 		}
 
+                @Override
 		public void sourceRemoved(SourceRemovalEvent e) {
 		}
 	}

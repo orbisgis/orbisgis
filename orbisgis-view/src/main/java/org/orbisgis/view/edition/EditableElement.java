@@ -95,7 +95,7 @@ public abstract class EditableElement extends BeanPropertyChangeSupport {
          *         
          * @return
          */
-        abstract String getTypeId();
+        public abstract String getTypeId();
 
         /**
          * Opens the element for edition. This method will typically be followed
@@ -107,7 +107,7 @@ public abstract class EditableElement extends BeanPropertyChangeSupport {
          * edited
          * @throws EditableElementException If the operation cannot be done
          */
-        abstract void open(ProgressMonitor progressMonitor)
+        public abstract void open(ProgressMonitor progressMonitor)
                 throws UnsupportedOperationException, EditableElementException;
 
         /**
@@ -120,7 +120,7 @@ public abstract class EditableElement extends BeanPropertyChangeSupport {
          * successful but there were some extraordinary conditions during the
          * saving. The saving must always be done
          */
-        abstract void save() throws UnsupportedOperationException, EditableElementException;
+        public abstract void save() throws UnsupportedOperationException, EditableElementException;
 
         /**
          * Closes the element. All resources should be freed and all memory
@@ -132,7 +132,7 @@ public abstract class EditableElement extends BeanPropertyChangeSupport {
          * edited
          * @throws EditableElementException If the closing was not done
          */
-        abstract void close(ProgressMonitor progressMonitor)
+        public abstract void close(ProgressMonitor progressMonitor)
                 throws UnsupportedOperationException, EditableElementException;
 
         /**
@@ -142,5 +142,5 @@ public abstract class EditableElement extends BeanPropertyChangeSupport {
          * not supported
          * @throws UnsupportedOperationException If this element is a folder
          */
-        abstract Object getObject() throws UnsupportedOperationException;
+        public abstract Object getObject() throws UnsupportedOperationException;
 }
