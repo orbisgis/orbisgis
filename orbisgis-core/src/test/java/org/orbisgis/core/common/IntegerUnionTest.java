@@ -60,26 +60,26 @@ public class IntegerUnionTest {
         }
 
         
-        
-        
-        /**
-         * 
-         */
         @Test
         public void testRemove() {
                 IntegerUnion mergeTool = new IntegerUnion(0, 50);
-                mergeTool.remove(0);
+                Assert.assertTrue(mergeTool.remove(0));
                 check(mergeTool, new Integer[]{1, 50});
-                mergeTool.remove(50);
+                Assert.assertTrue(mergeTool.remove(50));
                 check(mergeTool, new Integer[]{1, 49});
-                mergeTool.remove(2);
+                Assert.assertTrue(mergeTool.remove(2));
                 check(mergeTool, new Integer[]{1, 1, 3, 49});
-                mergeTool.remove(1);
+                Assert.assertTrue(mergeTool.remove(1));
                 check(mergeTool, new Integer[]{3, 49});
-                mergeTool.remove(48);
+                Assert.assertTrue(mergeTool.remove(48));
                 check(mergeTool, new Integer[]{3, 47, 49, 49});
-                mergeTool.remove(49);
+                Assert.assertTrue(mergeTool.remove(49));
                 check(mergeTool, new Integer[]{3, 47});
+                
+                mergeTool = new IntegerUnion(0);
+                Assert.assertTrue(mergeTool.remove(0));
+                check(mergeTool, new Integer[]{});                
+                Assert.assertFalse(mergeTool.remove(0));
         }
         
 
@@ -118,22 +118,22 @@ public class IntegerUnionTest {
         public void testAdd() {
                 IntegerUnion mergeTool = new IntegerUnion(15, 50);
 
-                mergeTool.add(51);
+                Assert.assertTrue(mergeTool.add(51));
                 check(mergeTool, new Integer[]{15, 51});
-                mergeTool.add(14);
+                Assert.assertTrue(mergeTool.add(14));
                 check(mergeTool, new Integer[]{14, 51});
-                mergeTool.add(53);
+                Assert.assertTrue(mergeTool.add(53));
                 check(mergeTool, new Integer[]{14, 51, 53, 53});
-                mergeTool.add(52);
+                Assert.assertTrue(mergeTool.add(52));
                 check(mergeTool, new Integer[]{14, 53});
-                mergeTool.add(14);
+                Assert.assertFalse(mergeTool.add(14));
                 check(mergeTool, new Integer[]{14, 53});
-                mergeTool.add(53);
+                Assert.assertFalse(mergeTool.add(53));
                 check(mergeTool, new Integer[]{14, 53});
-                mergeTool.add(15);
-                mergeTool.add(52);
+                Assert.assertFalse(mergeTool.add(15));
+                Assert.assertFalse(mergeTool.add(52));
                 check(mergeTool, new Integer[]{14, 53});
-                mergeTool.add(12);
+                Assert.assertTrue(mergeTool.add(12));
                 check(mergeTool, new Integer[]{12, 12, 14, 53});
         }
 

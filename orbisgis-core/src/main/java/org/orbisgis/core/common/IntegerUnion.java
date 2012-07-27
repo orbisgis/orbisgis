@@ -40,27 +40,45 @@ import java.util.SortedSet;
  * This class aggregates consecutive integers.
  * 
  * The goal is to reduce memory usage, ordering by ascending index,
- * the tradeoff is the additional CPU cycle for insertion.
+ * the tradeoff is the additional CPU cycle for insertion and deletion.
  * Values are returned sorted and without duplicates.
+ * 
+ * This class is not thread safe
+ * 
  * @TODO Add function to push a range instead of a single
  * @author Nicolas Fortin
  */
 public class IntegerUnion implements SortedSet<Integer> {
         // int intervals ex: 0,15,50,60 for 0 to 15 and 50 to 60    
 
-        private List<Integer> intervals = new ArrayList<Integer>();
+        private List<Integer> intervals;
 
         /**
          * Default constructor
          */
         IntegerUnion() {
+                intervals = new ArrayList<Integer>();
         }
 
+        /**
+         * Default constructor
+         */
+        IntegerUnion(SortedSet<Integer> externalSet) {
+                this();
+                if(externalSet instanceof IntegerUnion) {
+                        this.intervals = new ArrayList<Integer>(((IntegerUnion)externalSet).intervals);
+                } else {
+                        for(Integer value : externalSet) {
+                                add(value);
+                        }
+                }
+        }
         /**
          *
          * @param value First value
          */
         IntegerUnion(int value) {
+                this();
                 intervals.add(value);
                 intervals.add(value);
         }
@@ -73,6 +91,7 @@ public class IntegerUnion implements SortedSet<Integer> {
          * @throws IllegalArgumentException if valueEnd < valueBegin
          */
         IntegerUnion(int valueBegin, int valueEnd) {
+                this();
                 if (valueEnd < valueBegin) {
                         throw new IllegalArgumentException("Begin value must be inferior or equal to the end value.");
                 }
@@ -92,6 +111,9 @@ public class IntegerUnion implements SortedSet<Integer> {
 
         @Override
         public String toString() {
+                if(intervals.isEmpty()) {
+                        return "[]";
+                }
                 StringBuilder ret = new StringBuilder();
                 Iterator<Integer> it = intervals.iterator();
                 while(it.hasNext()) {
@@ -103,9 +125,8 @@ public class IntegerUnion implements SortedSet<Integer> {
                 }
                 return ret.toString();
         }
-        @Override
-        public boolean remove(Object o) {
-                Integer value = (Integer) o;
+        
+        protected final boolean internalRemove(Integer value) {
                 int index = Collections.binarySearch(intervals, value);
                 if(index>=0) {
                                 if(index > 0 && intervals.get(index - 1) == value) {
@@ -135,12 +156,18 @@ public class IntegerUnion implements SortedSet<Integer> {
                                 intervals.add(endValue);
                                 return true;
                         }
-                }
+                }                
+        }
+        
+        @Override
+        public boolean remove(Object o) {
+                Integer value = (Integer) o;
+                return internalRemove(value);
         }
 
-        @Override
-        public boolean add(Integer value) {
-                // Iterate over the value range array and find contiguous value
+        
+        protected final boolean internalAdd(Integer value) {
+               // Iterate over the value range array and find contiguous value
                 //Find the first nearest value in ranges
                 int index = Collections.binarySearch(intervals, value);
                 if (index >= 0) {
@@ -176,7 +203,12 @@ public class IntegerUnion implements SortedSet<Integer> {
                 //New range
                 intervals.add(index, value);
                 intervals.add(index, value);
-                return true;
+                return true;                
+        }
+        
+        @Override
+        public boolean add(Integer value) {
+                return internalAdd(value);
         }
 
         @Override
