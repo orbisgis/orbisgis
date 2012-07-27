@@ -53,24 +53,25 @@ public class IntegerUnion implements Iterable<Integer> {
     }
     /**
      * 
-     * @param row First row id
+     * @param value First value
      */
-    IntegerUnion(int row) {
-        intervals.add(row);
-        intervals.add(row);
+    IntegerUnion(int value) {
+        intervals.add(value);
+        intervals.add(value);
     }
     
     /**
-     * 
-     * @param rowbegin
-     * @param rowend 
+     * Insert all values of the range [valueBegin-valueEnd].
+     * @param valueBegin 
+     * @param valueEnd 
+     * @throws IllegalArgumentException if valueEnd < valueBegin
      */
-    IntegerUnion(int rowbegin, int rowend) {
-        if(rowend<rowbegin) {
+    IntegerUnion(int valueBegin, int valueEnd) {
+        if(valueEnd<valueBegin) {
             throw new IllegalArgumentException("Begin row index must be inferior or equal to end row index.");
         }
-        intervals.add(rowbegin);
-        intervals.add(rowend);
+        intervals.add(valueBegin);
+        intervals.add(valueEnd);
     }
     
     /**
@@ -82,15 +83,13 @@ public class IntegerUnion implements Iterable<Integer> {
     }
     /**
      * Add a row index in the list
-     * @param row The row index. Duplicates are not pushed, and do not raise errors.
+     * @param value The row index. Duplicates are not pushed, and do not raise errors.
      * @TODO Add function to push a range instead of a single int
      */
-    public void add(int row) {
+    public void add(int value) {
         // Iterate over the row range array and find contiguous row
-        boolean inserted = false;
-        
         //Find the first nearest value in ranges
-        int index = Collections.binarySearch(intervals, row);
+        int index = Collections.binarySearch(intervals, value);
         if(index>=0) {
                 return;
         }
@@ -98,38 +97,55 @@ public class IntegerUnion implements Iterable<Integer> {
         // intervals[index] > row
         if(index % 2==0) {
                 //If index corresponding to begin of a range
-                
+                boolean mergeFirst = index>0 && intervals.get(index-1)==value-1;
+                boolean mergeSecond = index<intervals.size() && intervals.get(index)==value+1;
+                if(mergeFirst && mergeSecond) {
+                        //Merge two ranges and update the end of the first range
+                        Integer endNextRange = intervals.get(index+1);
+                        intervals.remove(index);
+                        intervals.remove(index);
+                        intervals.set(index-1, endNextRange );
+                        return;
+                }else if(mergeFirst) {
+                        //Replace the value (merge to the previous range)
+                        intervals.set(index-1, value );    
+                        return;
+                } else if(mergeSecond) {
+                        //Replace the value (merge to the next range)
+                        intervals.set(index, value );
+                        return;
+                }
         } else {
                 //If index corresponding to the end of a range
+                //the provided value is in a range
+                return;
         }        
-        if(!inserted) {
-                //New range
-                intervals.add(index,row);
-                intervals.add(index,row);            
-        }        
+        //New range
+        intervals.add(index,value);
+        intervals.add(index,value);        
     }
 
     @Override
     public Iterator<Integer> iterator() {
-        return new RowIterator();
+        return new ValueIterator();
     }
     /**
-     * 
+     * Return the internal container
      * @return intervals ex: 0,0,50,60 for [0] and [50-60]
      */
-    public List<Integer> getRowRanges() {
-            return intervals;
+    public List<Integer> getValueRanges() {
+            return Collections.unmodifiableList(intervals);
     }
-    private class RowIterator implements Iterator<Integer> {
+    private class ValueIterator implements Iterator<Integer> {
         private Iterator<Integer> it;
         private Integer current = 0;
         private Integer itEnd = 0;
 
-        public RowIterator() {
+        public ValueIterator() {
             it = intervals.iterator();
             if(!intervals.isEmpty()) {
                     current = it.next();
-                    itEnd = it.next();
+                    itEnd = it.next() + 1;
             }
         }
         
@@ -140,7 +156,13 @@ public class IntegerUnion implements Iterable<Integer> {
 
         @Override
         public Integer next() {
-            return current++;
+            if(current<itEnd) {
+                return current++;
+            } else {
+                    current = it.next();
+                    itEnd = it.next() + 1;
+                    return current;
+            }
         }
 
         @Override
