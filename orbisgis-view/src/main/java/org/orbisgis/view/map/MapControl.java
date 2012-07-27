@@ -118,9 +118,7 @@ public class MapControl extends JComponent implements ContainerListener {
          */
         public void onMapContextBoundingBoxChange() {
 		Envelope boundingBox = mapContext.getBoundingBox();
-		if (boundingBox != null) {
-			mapTransform.setExtent(boundingBox);
-                }                
+                mapTransform.setExtent(boundingBox);
         }
         
         
@@ -455,6 +453,9 @@ public class MapControl extends JComponent implements ContainerListener {
 		public void layerRemoved(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
 				removeLayerListenerRecursively(layer, this);
+                                if(!mapContext.isLayerModelSpatial()){
+                                        mapTransform.setExtent(null);
+                                }
 				invalidateImage();
 			}
 		}
