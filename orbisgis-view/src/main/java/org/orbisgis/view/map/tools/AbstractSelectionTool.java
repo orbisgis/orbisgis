@@ -59,6 +59,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Iterator;
+import java.util.SortedSet;
 import org.gdms.data.DataSource;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.driver.DriverException;
@@ -90,29 +91,6 @@ public abstract class AbstractSelectionTool extends Selection {
                 }
         }
 
-        private int[] toggleSelection(IntegerUnion sel, int selectedItem) {
-                int indexInSel = -1;
-                for (int j = 0; j < sel.length; j++) {
-                        if (sel[j] == selectedItem) {
-                                indexInSel = j;
-                                break;
-                        }
-                }
-
-                if (indexInSel != -1) {
-                        int[] newSel = new int[sel.length - 1];
-                        System.arraycopy(sel, 0, newSel, 0, indexInSel);
-                        System.arraycopy(sel, indexInSel + 1, newSel, indexInSel,
-                                sel.length - (indexInSel + 1));
-                        return newSel;
-                } else {
-                        int[] newSel = new int[sel.length + 1];
-                        System.arraycopy(sel, 0, newSel, 0, sel.length);
-                        newSel[sel.length] = selectedItem;
-                        return newSel;
-                }
-        }
-
         /**
          * @param mc 
          * @param tm 
@@ -138,15 +116,14 @@ public abstract class AbstractSelectionTool extends Selection {
                                 if (g != null) {
                                         if (g.intersects(selectionRect)) {
                                                 if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
-                                                        IntegerUnion selected = new IntegerUnion(activeLayer.getSelection());
-                                                        if(!selected.contains(rowIndex)) {
-                                                                selected.add(rowIndex);
+                                                        IntegerUnion newSelection = new IntegerUnion(activeLayer.getSelection());
+                                                        if(!newSelection.contains(rowIndex)) {
+                                                                newSelection.add(rowIndex);
                                                         }else{
-                                                                selected.remove(rowIndex);
+                                                                newSelection.remove(rowIndex);
                                                         }
-                                                        mc.checkSelectionRefresh(newSel, activeLayer.getSelection(), ds);
-                                                        activeLayer.setSelection(newSel);
-                                                        if (newSel.length > 0) {
+                                                        activeLayer.setSelection(newSelection);
+                                                        if (newSelection.size() > 0) {
                                                                 transition(Code.SELECTION);
                                                         } else {
                                                                 transition(Code.INIT);
@@ -154,8 +131,7 @@ public abstract class AbstractSelectionTool extends Selection {
 
                                                         return;
                                                 } else {
-                                                        int[] newSelection = new int[]{rowIndex};
-                                                        mc.checkSelectionRefresh(newSelection, activeLayer.getSelection(), ds);
+                                                        IntegerUnion newSelection =  new IntegerUnion(rowIndex);
                                                         activeLayer.setSelection(newSelection);
                                                         transition(Code.SELECTION);
                                                         return;
@@ -210,11 +186,11 @@ public abstract class AbstractSelectionTool extends Selection {
 
                 DataSource ds = activeLayer.getDataSource();
                 try {
-                        ArrayList<Integer> newSelection = new ArrayList<Integer>();
+                        IntegerUnion newSelection = new IntegerUnion();
                         Iterator<Integer> l = queryLayer(ds, rect);
                         while (l.hasNext()) {
                                 int index = l.next();
-                                Geometry g = (Geometry) ds.getGeometry(index);
+                                Geometry g = ds.getGeometry(index);
                                 if (g != null) {
                                         if (intersects) {
                                                 if (g.intersects(selectionRect)) {
@@ -229,23 +205,17 @@ public abstract class AbstractSelectionTool extends Selection {
                         }
 
                         if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
-                                int[] newSel = activeLayer.getSelection();
-                                for (int i = 0; i < newSelection.size(); i++) {
-                                        newSel = toggleSelection(newSel, newSelection.get(i));
+                                IntegerUnion newSel = new IntegerUnion(activeLayer.getSelection());
+                                for (Integer selectedRow : newSelection) {
+                                        if(!newSel.remove(selectedRow)) {
+                                                newSel.add(selectedRow);
+                                        }
                                 }
-                                mc.checkSelectionRefresh(newSel, activeLayer.getSelection(), ds);
                                 activeLayer.setSelection(newSel);
-
                         } else {
-                                int[] ns = new int[newSelection.size()];
-                                for (int i = 0; i < ns.length; i++) {
-                                        ns[i] = newSelection.get(i);
-                                }
-                                mc.checkSelectionRefresh(ns, activeLayer.getSelection(), ds);
-                                activeLayer.setSelection(ns);
+                                activeLayer.setSelection(newSelection);
                         }
-
-                        if (activeLayer.getSelection().length == 0) {
+                        if (activeLayer.getSelection().isEmpty()) {
                                 transition(Code.NO_SELECTION);
                         } else {
                                 transition(Code.SELECTION);

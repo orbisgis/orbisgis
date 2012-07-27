@@ -475,10 +475,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
                 @Override
 		public void selectionChanged(SelectionEvent e) {
-                        if (mapContext.isSelectionInducedRefresh()) {
-                                invalidateImage();
-                                mapContext.setSelectionInducedRefresh(false);
-                        }
+                        invalidateImage();
 		}
 
                 @Override

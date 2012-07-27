@@ -71,7 +71,12 @@ public final class MapElement extends EditableElement {
                 this.mapContextFile = mapContextFile;
                 mapId = String.valueOf(mapContext.getIdTime());
 	}
-        
+        /**
+         * Call setModified(true);
+         */
+        public void setModified() {
+                setModified(true);
+        }
 	@Override
 	public void save() throws UnsupportedOperationException {
                 try {

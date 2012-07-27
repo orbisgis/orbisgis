@@ -33,28 +33,22 @@ import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.index.quadtree.Quadtree;
 import ij.process.ColorProcessor;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;
-import java.io.File;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import javax.imageio.ImageIO;
+import java.util.Set;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.indexes.FullIterator;
+import org.gdms.data.stream.GeoStream;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
-import org.gvsig.remoteClient.exceptions.ServerErrorException;
-import org.gvsig.remoteClient.exceptions.WMSException;
-import org.gvsig.remoteClient.wms.WMSStatus;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.map.MapTransform;
@@ -68,8 +62,6 @@ import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import org.gdms.data.stream.GeoStream;
 
 /**
  * Renderer contains all the logic of the Symbology Encoding process based on java
@@ -201,11 +193,7 @@ public abstract class Renderer {
                         pm.endTask();
                         if (it.hasNext()) {
 
-                                HashSet<Integer> selected = new HashSet<Integer>();
-                                for (long sFid : layer.getSelection()) {
-                                        selected.add((int) sFid);
-                                }
-
+                                Set<Integer> selected = layer.getSelection();
                                 pm.endTask();
                                 // And now, features will be rendered
                                 // Get a graphics for each symbolizer
@@ -256,7 +244,7 @@ public abstract class Renderer {
                                                 if (theGeom == null || (theGeom != null &&
                                                             theGeom.getEnvelopeInternal().intersects(extent))) {
                                                         somethingReached = true;
-                                                        boolean emphasis = selected.contains((int) originalIndex);
+                                                        boolean emphasis = selected.contains(originalIndex);
 
                                                         beginFeature(originalIndex, sds);
 

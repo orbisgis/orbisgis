@@ -437,7 +437,7 @@ public class LayerCollection extends BeanLayer {
 
         @Override
 	public IntegerUnion getSelection() {
-		throw new UnsupportedOperationException(I18N.tr("No row selection in a layer collection"));
+		return new IntegerUnion();
 	}
 
         @Override

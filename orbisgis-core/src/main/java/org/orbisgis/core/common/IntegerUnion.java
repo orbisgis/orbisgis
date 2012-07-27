@@ -50,26 +50,27 @@ import java.util.SortedSet;
  */
 public class IntegerUnion implements SortedSet<Integer> {
         // int intervals ex: 0,15,50,60 for 0 to 15 and 50 to 60    
-
-        private List<Integer> intervals;
+        protected List<Integer> intervals;
 
         /**
          * Default constructor
          */
-        IntegerUnion() {
+        public IntegerUnion() {
                 intervals = new ArrayList<Integer>();
         }
 
-        /**
-         * Default constructor
-         */
-        IntegerUnion(SortedSet<Integer> externalSet) {
+        
+        public IntegerUnion(IntegerUnion externalSet) {
+                this.intervals = new ArrayList<Integer>(externalSet.intervals);
+        }
+        
+        public IntegerUnion(SortedSet<Integer> externalSet) {
                 this();
                 if(externalSet instanceof IntegerUnion) {
                         this.intervals = new ArrayList<Integer>(((IntegerUnion)externalSet).intervals);
                 } else {
                         for(Integer value : externalSet) {
-                                add(value);
+                                internalAdd(value);
                         }
                 }
         }
@@ -77,7 +78,7 @@ public class IntegerUnion implements SortedSet<Integer> {
          *
          * @param value First value
          */
-        IntegerUnion(int value) {
+        public IntegerUnion(int value) {
                 this();
                 intervals.add(value);
                 intervals.add(value);
@@ -90,7 +91,7 @@ public class IntegerUnion implements SortedSet<Integer> {
          * @param valueEnd Included end of range
          * @throws IllegalArgumentException if valueEnd < valueBegin
          */
-        IntegerUnion(int valueBegin, int valueEnd) {
+        public IntegerUnion(int valueBegin, int valueEnd) {
                 this();
                 if (valueEnd < valueBegin) {
                         throw new IllegalArgumentException("Begin value must be inferior or equal to the end value.");

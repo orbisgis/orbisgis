@@ -138,7 +138,7 @@ public class ToolUtilities {
 		if (activeLayer == null) {
 			return false;
 		} else {
-			return activeLayer.getSelection().length>=i;
+			return activeLayer.getSelection().size()>=i;
 		}
         }
 
@@ -153,7 +153,7 @@ public class ToolUtilities {
 		if (activeLayer == null) {
 			return false;
 		} else {
-			return activeLayer.getSelection().length==i;
+			return activeLayer.getSelection().size()==i;
 		}
         }
 
@@ -162,7 +162,7 @@ public class ToolUtilities {
 		if (activeLayer == null) {
 			return false;
 		} else {
-			return activeLayer.getSelection().length >= i;
+			return activeLayer.getSelection().size() >= i;
 		}
 	}
 
