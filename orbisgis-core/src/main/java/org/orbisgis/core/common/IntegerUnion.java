@@ -42,133 +42,142 @@ import java.util.List;
  * @author Nicolas Fortin
  */
 public class IntegerUnion implements Iterable<Integer> {
-    // int intervals ex: 0,15,50,60 for 0 to 15 and 50 to 60    
-    private List<Integer> intervals=new ArrayList<Integer>();
-        
-    /**
-     * Default constructor
-     */
-    IntegerUnion() {
-        
-    }
-    /**
-     * 
-     * @param value First value
-     */
-    IntegerUnion(int value) {
-        intervals.add(value);
-        intervals.add(value);
-    }
-    
-    /**
-     * Insert all values of the range [valueBegin-valueEnd].
-     * @param valueBegin Included begin of range
-     * @param valueEnd Included end of range
-     * @throws IllegalArgumentException if valueEnd < valueBegin
-     */
-    IntegerUnion(int valueBegin, int valueEnd) {
-        if(valueEnd<valueBegin) {
-            throw new IllegalArgumentException("Begin value must be inferior or equal to the end value.");
+        // int intervals ex: 0,15,50,60 for 0 to 15 and 50 to 60    
+
+        private List<Integer> intervals = new ArrayList<Integer>();
+
+        /**
+         * Default constructor
+         */
+        IntegerUnion() {
         }
-        intervals.add(valueBegin);
-        intervals.add(valueEnd);
-    }
-    
-    /**
-     * Does this container has intervals
-     * @return True if this container is empty, false otherwise
-     */
-    public boolean isEmpty() {
-        return intervals.isEmpty();
-    }
-    /**
-     * Add a value index in the list
-     * @param value The value index. Duplicates are not pushed, and do not raise errors.
-     * @TODO Add function to push a range instead of a single int
-     */
-    public void add(int value) {
-        // Iterate over the value range array and find contiguous value
-        //Find the first nearest value in ranges
-        int index = Collections.binarySearch(intervals, value);
-        if(index>=0) {
-                return;
+
+        /**
+         *
+         * @param value First value
+         */
+        IntegerUnion(int value) {
+                intervals.add(value);
+                intervals.add(value);
         }
-        index=-index-1; //retrieve the nearest index by order
-        // intervals[index] > value
-        if(index % 2==0) {
-                //If index corresponding to begin of a range
-                boolean mergeFirst = index>0 && intervals.get(index-1)==value-1;
-                boolean mergeSecond = index<intervals.size() && intervals.get(index)==value+1;
-                if(mergeFirst && mergeSecond) {
-                        //Merge two ranges and update the end of the first range
-                        Integer endNextRange = intervals.get(index+1);
-                        intervals.remove(index);
-                        intervals.remove(index);
-                        intervals.set(index-1, endNextRange );
-                        return;
-                }else if(mergeFirst) {
-                        //Replace the value (merge to the previous range)
-                        intervals.set(index-1, value );    
-                        return;
-                } else if(mergeSecond) {
-                        //Replace the value (merge to the next range)
-                        intervals.set(index, value );
+
+        /**
+         * Insert all values of the range [valueBegin-valueEnd].
+         *
+         * @param valueBegin Included begin of range
+         * @param valueEnd Included end of range
+         * @throws IllegalArgumentException if valueEnd < valueBegin
+         */
+        IntegerUnion(int valueBegin, int valueEnd) {
+                if (valueEnd < valueBegin) {
+                        throw new IllegalArgumentException("Begin value must be inferior or equal to the end value.");
+                }
+                intervals.add(valueBegin);
+                intervals.add(valueEnd);
+        }
+
+        /**
+         * Does this container has intervals
+         *
+         * @return True if this container is empty, false otherwise
+         */
+        public boolean isEmpty() {
+                return intervals.isEmpty();
+        }
+
+        /**
+         * Add a value index in the list
+         *
+         * @param value The value index. Duplicates are not pushed, and do not
+         * raise errors. @TODO Add function to push a range instead of a single
+         * int
+         */
+        public void add(int value) {
+                // Iterate over the value range array and find contiguous value
+                //Find the first nearest value in ranges
+                int index = Collections.binarySearch(intervals, value);
+                if (index >= 0) {
                         return;
                 }
-        } else {
-                //If index corresponding to the end of a range
-                //the provided value is in a range
-                return;
-        }        
-        //New range
-        intervals.add(index,value);
-        intervals.add(index,value);        
-    }
-
-    @Override
-    public Iterator<Integer> iterator() {
-        return new ValueIterator();
-    }
-    /**
-     * Return the internal container
-     * @return intervals ex: 0,0,50,60 for [0] and [50-60]
-     */
-    public List<Integer> getValueRanges() {
-            return Collections.unmodifiableList(intervals);
-    }
-    private class ValueIterator implements Iterator<Integer> {
-        private Iterator<Integer> it;
-        private Integer current = 0;
-        private Integer itEnd = 0;
-
-        public ValueIterator() {
-            it = intervals.iterator();
-            if(!intervals.isEmpty()) {
-                    current = it.next();
-                    itEnd = it.next() + 1;
-            }
-        }
-        
-        @Override
-        public boolean hasNext() {
-            return current<itEnd && it.hasNext();
+                index = -index - 1; //retrieve the nearest index by order
+                // intervals[index] > value
+                if (index % 2 == 0) {
+                        //If index corresponding to begin of a range
+                        boolean mergeFirst = index > 0 && intervals.get(index - 1) == value - 1;
+                        boolean mergeSecond = index < intervals.size() && intervals.get(index) == value + 1;
+                        if (mergeFirst && mergeSecond) {
+                                //Merge two ranges and update the end of the first range
+                                Integer endNextRange = intervals.get(index + 1);
+                                intervals.remove(index);
+                                intervals.remove(index);
+                                intervals.set(index - 1, endNextRange);
+                                return;
+                        } else if (mergeFirst) {
+                                //Replace the value (merge to the previous range)
+                                intervals.set(index - 1, value);
+                                return;
+                        } else if (mergeSecond) {
+                                //Replace the value (merge to the next range)
+                                intervals.set(index, value);
+                                return;
+                        }
+                } else {
+                        //If index corresponding to the end of a range
+                        //the provided value is in a range
+                        return;
+                }
+                //New range
+                intervals.add(index, value);
+                intervals.add(index, value);
         }
 
         @Override
-        public Integer next() {
-            if(current<itEnd) {
-                return current++;
-            } else {
-                    current = it.next();
-                    itEnd = it.next() + 1;
-                    return current;
-            }
+        public Iterator<Integer> iterator() {
+                return new ValueIterator();
         }
 
-        @Override
-        public void remove() {
-            throw new UnsupportedOperationException("Not supported yet.");
+        /**
+         * Return the internal container
+         *
+         * @return intervals ex: 0,0,50,60 for [0] and [50-60]
+         */
+        public List<Integer> getValueRanges() {
+                return Collections.unmodifiableList(intervals);
         }
-        
-    }
+
+        private class ValueIterator implements Iterator<Integer> {
+
+                private Iterator<Integer> it;
+                private Integer current = -1;
+                private Integer itEnd = 0;
+
+                public ValueIterator() {
+                        it = intervals.iterator();
+                        if (!intervals.isEmpty()) {
+                                current = it.next() - 1;
+                                itEnd = it.next() + 1;
+                        }
+                }
+
+                @Override
+                public boolean hasNext() {
+                        return current + 1 < itEnd || it.hasNext();
+                }
+
+                @Override
+                public Integer next() {
+                        if (current + 1 < itEnd) {
+                                return ++current;
+                        } else {
+                                current = it.next();
+                                itEnd = it.next() + 1;
+                                return current;
+                        }
+                }
+
+                @Override
+                public void remove() {
+                        throw new UnsupportedOperationException("Not supported yet.");
+                }
+        }
 }

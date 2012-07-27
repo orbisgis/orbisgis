@@ -29,6 +29,7 @@
 package org.orbisgis.core.common;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.junit.AfterClass;
@@ -56,6 +57,39 @@ public class IntegerUnionTest {
                         }
                         i++;
                 }
+        }
+        @Test
+        public void testIterator() {
+                IntegerUnion mergeTool = new IntegerUnion();
+                List<Integer> origin = new ArrayList<Integer>();
+                
+                for (int i = 51; i < 60; i++) {
+                        mergeTool.add(i);
+                        origin.add(i);
+                }
+                for (int i = 75; i < 80; i++) {
+                        mergeTool.add(i);
+                        origin.add(i);
+                }
+                for (int i = 65; i < 74; i++) {
+                        mergeTool.add(i);
+                        origin.add(i);
+                }
+                
+                Collections.sort(origin);
+                
+                Iterator<Integer> itMerge = mergeTool.iterator();
+                Iterator<Integer> itOrigin = origin.iterator();
+                
+                while(itMerge.hasNext()) {
+                        Integer mergeValue = itMerge.next();
+                        Integer originValue = itOrigin.next();
+                        System.out.println(mergeValue+"//"+originValue);
+                        if(mergeValue!=originValue) {
+                                Assert.assertTrue(mergeValue+"!="+originValue,mergeValue==originValue);
+                        }
+                }
+                Assert.assertTrue(itMerge.hasNext()==itOrigin.hasNext());
         }
 
         @Test
