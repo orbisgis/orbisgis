@@ -57,13 +57,17 @@ public class CoreTest {
 
     /**
      * Test of startup method, of class Core.
+     * @throws InterruptedException
+     * @throws InvocationTargetException  
      */
     @BeforeClass
-    public static void setUp() {
+    public static void setUp() throws InterruptedException, InvocationTargetException {
         System.out.println("startup");
         if(!GraphicsEnvironment.isHeadless()) {
             instance = new Core(true);
             instance.startup();
+            //Wait
+            SwingUtilities.invokeAndWait(new DummyThread());
         }
     }
     
@@ -132,7 +136,8 @@ public class CoreTest {
    /**
     * This runnable is just to wait the execution of other runnables
     */
-    private class DummyThread implements Runnable {
+    private static class DummyThread implements Runnable {
+        @Override
         public void run(){
         }
     }
