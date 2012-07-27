@@ -29,9 +29,12 @@
 package org.orbisgis.core.common;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.SortedSet;
 
 /**
  * This class aggregates consecutive integers.
@@ -39,9 +42,10 @@ import java.util.List;
  * The goal is to reduce memory usage, ordering by ascending index,
  * the tradeoff is the additional CPU cycle for insertion.
  * Values are returned sorted and without duplicates.
+ * @TODO Add function to push a range instead of a single
  * @author Nicolas Fortin
  */
-public class IntegerUnion implements Iterable<Integer> {
+public class IntegerUnion implements SortedSet<Integer> {
         // int intervals ex: 0,15,50,60 for 0 to 15 and 50 to 60    
 
         private List<Integer> intervals = new ArrayList<Integer>();
@@ -81,23 +85,66 @@ public class IntegerUnion implements Iterable<Integer> {
          *
          * @return True if this container is empty, false otherwise
          */
+        @Override
         public boolean isEmpty() {
                 return intervals.isEmpty();
         }
 
-        /**
-         * Add a value index in the list
-         *
-         * @param value The value index. Duplicates are not pushed, and do not
-         * raise errors. @TODO Add function to push a range instead of a single
-         * int
-         */
-        public void add(int value) {
+        @Override
+        public String toString() {
+                StringBuilder ret = new StringBuilder();
+                Iterator<Integer> it = intervals.iterator();
+                while(it.hasNext()) {
+                        ret.append(" [");
+                        ret.append(it.next());
+                        ret.append("-");
+                        ret.append(it.next()+1);
+                        ret.append("[");
+                }
+                return ret.toString();
+        }
+        @Override
+        public boolean remove(Object o) {
+                Integer value = (Integer) o;
+                int index = Collections.binarySearch(intervals, value);
+                if(index>=0) {
+                                if(index > 0 && intervals.get(index - 1) == value) {
+                                        intervals.remove(index-1);
+                                        intervals.remove(index-1);
+                                } else if(index + 1 < intervals.size() && intervals.get(index + 1) == value) {
+                                        intervals.remove(index);
+                                        intervals.remove(index);
+                                } else {
+                                        if (index % 2 == 0) {
+                                                intervals.set(index,value+1);
+                                        } else {
+                                                intervals.set(index,value-1);
+                                        }
+                                }
+                                return true;
+                } else {
+                        index = -index - 1; //retrieve the nearest index by order
+                        if (index % 2 == 0) {
+                                //Not in the collection
+                                return false;                                
+                        } else {
+                                //Split in two ranges
+                                Integer endValue = intervals.get(index);
+                                intervals.set(index, value-1);
+                                intervals.add(value+1);
+                                intervals.add(endValue);
+                                return true;
+                        }
+                }
+        }
+
+        @Override
+        public boolean add(Integer value) {
                 // Iterate over the value range array and find contiguous value
                 //Find the first nearest value in ranges
                 int index = Collections.binarySearch(intervals, value);
                 if (index >= 0) {
-                        return;
+                        return false;
                 }
                 index = -index - 1; //retrieve the nearest index by order
                 // intervals[index] > value
@@ -111,24 +158,25 @@ public class IntegerUnion implements Iterable<Integer> {
                                 intervals.remove(index);
                                 intervals.remove(index);
                                 intervals.set(index - 1, endNextRange);
-                                return;
+                                return true;
                         } else if (mergeFirst) {
                                 //Replace the value (merge to the previous range)
                                 intervals.set(index - 1, value);
-                                return;
+                                return true;
                         } else if (mergeSecond) {
                                 //Replace the value (merge to the next range)
                                 intervals.set(index, value);
-                                return;
+                                return true;
                         }
                 } else {
                         //If index corresponding to the end of a range
                         //the provided value is in a range
-                        return;
+                        return false;
                 }
                 //New range
                 intervals.add(index, value);
                 intervals.add(index, value);
+                return true;
         }
 
         @Override
@@ -143,6 +191,102 @@ public class IntegerUnion implements Iterable<Integer> {
          */
         public List<Integer> getValueRanges() {
                 return Collections.unmodifiableList(intervals);
+        }
+
+        @Override
+        public Comparator<? super Integer> comparator() {
+                return new IntegerComparator();
+        }
+
+        @Override
+        public SortedSet<Integer> subSet(Integer e, Integer e1) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public SortedSet<Integer> headSet(Integer e) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public SortedSet<Integer> tailSet(Integer e) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Integer first() {
+                return intervals.get(0);
+        }
+
+        @Override
+        public Integer last() {
+                return intervals.get(intervals.size()-1);
+        }
+
+        @Override
+        public int size() {
+                Iterator<Integer> it = intervals.iterator();
+                int count=0;
+                while(it.hasNext()) {
+                        count+=-it.next()+(it.next()+1);
+                }
+                return count;
+        }
+
+        @Override
+        public boolean contains(Object o) {
+                Integer value = (Integer)o;
+                int index = Collections.binarySearch(intervals,value );
+                if(index>=0) {
+                        return true;
+                } else {
+                        //retrieve the nearest index by order
+                        index = -index - 1;     
+                        //value < than a end range
+                        return index % 2 != 0; 
+                }
+                
+        }
+
+        @Override
+        public Object[] toArray() {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public <T> T[] toArray(T[] ts) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public boolean containsAll(Collection<?> clctn) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public boolean addAll(Collection<? extends Integer> clctn) {
+                for(Object value : clctn) {
+                        if(!(value instanceof Integer)) {
+                                return false;
+                        }
+                        return add((Integer)value);
+                }
+                return true;
+        }
+
+        @Override
+        public boolean retainAll(Collection<?> clctn) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public boolean removeAll(Collection<?> clctn) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void clear() {
+                intervals.clear();
         }
 
         private class ValueIterator implements Iterator<Integer> {
@@ -179,5 +323,14 @@ public class IntegerUnion implements Iterable<Integer> {
                 public void remove() {
                         throw new UnsupportedOperationException("Not supported yet.");
                 }
+        }
+        
+        private class IntegerComparator implements Comparator<Integer> {
+
+                @Override
+                public int compare(Integer t, Integer t1) {
+                        return (t<t1 ? -1 : (t==t1 ? 0 : 1));
+                }
+                
         }
 }

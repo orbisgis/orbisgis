@@ -37,6 +37,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
+import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.common.Description;
@@ -340,7 +341,7 @@ public interface ILayer {
 	 * @throws UnsupportedOperationException
 	 *             If this layer doesn't support selection
 	 */
-	int[] getSelection() throws UnsupportedOperationException;
+	IntegerUnion getSelection() throws UnsupportedOperationException;
 
 	/**
 	 * Sets the array of the selected rows
@@ -349,7 +350,7 @@ public interface ILayer {
 	 * @throws UnsupportedOperationException
 	 *             If this layer doesn't support selection
 	 */
-	void setSelection(int[] newSelection) throws UnsupportedOperationException;
+	void setSelection(IntegerUnion newSelection) throws UnsupportedOperationException;
 
         /**
          * Gets the list of all the {@code Rule} embedded in the {@code Style}

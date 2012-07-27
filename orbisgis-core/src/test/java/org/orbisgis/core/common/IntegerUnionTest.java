@@ -38,7 +38,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
- *
+ * Unit test of IntegerUnion
  * @author Nicolas Fortin
  */
 public class IntegerUnionTest {
@@ -58,11 +58,36 @@ public class IntegerUnionTest {
                         i++;
                 }
         }
+
+        
+        
+        
+        /**
+         * 
+         */
+        @Test
+        public void testRemove() {
+                IntegerUnion mergeTool = new IntegerUnion(0, 50);
+                mergeTool.remove(0);
+                check(mergeTool, new Integer[]{1, 50});
+                mergeTool.remove(50);
+                check(mergeTool, new Integer[]{1, 49});
+                mergeTool.remove(2);
+                check(mergeTool, new Integer[]{1, 1, 3, 49});
+                mergeTool.remove(1);
+                check(mergeTool, new Integer[]{3, 49});
+                mergeTool.remove(48);
+                check(mergeTool, new Integer[]{3, 47, 49, 49});
+                mergeTool.remove(49);
+                check(mergeTool, new Integer[]{3, 47});
+        }
+        
+
         @Test
         public void testIterator() {
                 IntegerUnion mergeTool = new IntegerUnion();
                 Set<Integer> origin = new TreeSet<Integer>();
-                
+
                 for (int i = 51; i < 60; i++) {
                         mergeTool.add(i);
                         origin.add(i);
@@ -75,22 +100,22 @@ public class IntegerUnionTest {
                         mergeTool.add(i);
                         origin.add(i);
                 }
-                                
+
                 Iterator<Integer> itMerge = mergeTool.iterator();
                 Iterator<Integer> itOrigin = origin.iterator();
-                
-                while(itMerge.hasNext()) {
+
+                while (itMerge.hasNext()) {
                         Integer mergeValue = itMerge.next();
                         Integer originValue = itOrigin.next();
-                        if(mergeValue!=originValue) {
-                                Assert.assertTrue(mergeValue+"!="+originValue,mergeValue==originValue);
+                        if (mergeValue != originValue) {
+                                Assert.assertTrue(mergeValue + "!=" + originValue, mergeValue == originValue);
                         }
                 }
-                Assert.assertTrue(itMerge.hasNext()==itOrigin.hasNext());
+                Assert.assertTrue(itMerge.hasNext() == itOrigin.hasNext());
         }
 
         @Test
-        public void testUnion() {
+        public void testAdd() {
                 IntegerUnion mergeTool = new IntegerUnion(15, 50);
 
                 mergeTool.add(51);
@@ -109,7 +134,7 @@ public class IntegerUnionTest {
                 mergeTool.add(52);
                 check(mergeTool, new Integer[]{14, 53});
                 mergeTool.add(12);
-                check(mergeTool, new Integer[]{12,12,14, 53});
+                check(mergeTool, new Integer[]{12, 12, 14, 53});
         }
 
         @BeforeClass

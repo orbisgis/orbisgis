@@ -52,6 +52,7 @@ import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
@@ -652,12 +653,12 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 clearHandlers();
 
                 if ((activeLayer == null) || (!activeLayer.isVisible())
-                        || (activeLayer.getSelection().length == 0)) {
+                        || (activeLayer.getSelection().isEmpty())) {
                         return;
                 }
 
                 DataSource sds = activeLayer.getDataSource();
-                int[] selection = activeLayer.getSelection();
+                IntegerUnion selection = activeLayer.getSelection();
                 try {
                         for (int selectedRow : selection) {
                                 Primitive p;

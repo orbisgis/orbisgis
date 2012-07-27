@@ -62,6 +62,7 @@ import java.util.Iterator;
 import org.gdms.data.DataSource;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
@@ -89,7 +90,7 @@ public abstract class AbstractSelectionTool extends Selection {
                 }
         }
 
-        private int[] toggleSelection(int[] sel, int selectedItem) {
+        private int[] toggleSelection(IntegerUnion sel, int selectedItem) {
                 int indexInSel = -1;
                 for (int j = 0; j < sel.length; j++) {
                         if (sel[j] == selectedItem) {
@@ -113,8 +114,10 @@ public abstract class AbstractSelectionTool extends Selection {
         }
 
         /**
+         * @param mc 
+         * @param tm 
+         * @throws TransitionException 
          * @throws FinishedAutomatonException
-         * @throws
          */
         @Override
         public void transitionTo_OnePoint(MapContext mc, ToolManager tm)
@@ -131,11 +134,16 @@ public abstract class AbstractSelectionTool extends Selection {
                         Iterator<Integer> l = queryLayer(activeLayer.getDataSource(), p);
                         while (l.hasNext()) {
                                 int rowIndex = l.next();
-                                Geometry g = (Geometry) ds.getGeometry(rowIndex);
+                                Geometry g = ds.getGeometry(rowIndex);
                                 if (g != null) {
                                         if (g.intersects(selectionRect)) {
                                                 if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
-                                                        int[] newSel = toggleSelection(activeLayer.getSelection(), rowIndex);
+                                                        IntegerUnion selected = new IntegerUnion(activeLayer.getSelection());
+                                                        if(!selected.contains(rowIndex)) {
+                                                                selected.add(rowIndex);
+                                                        }else{
+                                                                selected.remove(rowIndex);
+                                                        }
                                                         mc.checkSelectionRefresh(newSel, activeLayer.getSelection(), ds);
                                                         activeLayer.setSelection(newSel);
                                                         if (newSel.length > 0) {
