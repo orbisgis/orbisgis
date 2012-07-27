@@ -31,21 +31,28 @@ package org.orbisgis.view.toc.actions.cui.legends;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
 import java.net.URL;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  *
  * @author Alexis Guéganno
  */
 public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
+        private static final I18n I18N = I18nFactory.getI18n(PnlUniqueAreaSE.class);
 
         /**
          * Here we can put all the Legend instances we want... but they have to
@@ -120,7 +127,7 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
         @Override
         public Legend copyLegend() {
                 UniqueSymbolArea ret = new UniqueSymbolArea();
-                ret.setFillColor(uniqueArea.getFillColor());
+                ret.getFillLegend().setColor(uniqueArea.getFillLegend().getColor());
                 return ret;
         }
 
@@ -133,19 +140,45 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
                 gbc.gridx = 0;
                 gbc.gridy = 0;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
-                JPanel p1 = getLegendBlock(uniqueArea.getParametersLine(), "Line configuration");
+                JPanel p1 = getLineBlock(uniqueArea.getPenStroke(), "Line configuration");
                 glob.add(p1, gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 1;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.insets = new Insets(5, 0, 5, 0);
-                JPanel p2 = getLegendBlock(uniqueArea.getParametersArea(), "Fill configuration");
+                JPanel p2 = getAreaBlock(uniqueArea.getFillLegend(), "Fill configuration");
                 glob.add(p2, gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 2;
                 glob.add(getPreview(), gbc);
                 this.add(glob);
+        }
+
+        /**
+         * Builds the UI block used to configure the fill color of the
+         * symbolizer.
+         * @param fillLegend
+         * @param title
+         * @return
+         */
+        public JPanel getAreaBlock(ConstantSolidFill fillLegend, String title) {
+                if(getPreview() == null && getLegend() != null){
+                        initPreview();
+                }
+                JPanel glob = new JPanel();
+                glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
+                JPanel jp = new JPanel();
+                GridLayout grid = new GridLayout(1,2);
+                grid.setVgap(5);
+                jp.setLayout(grid);
+                //Color
+                jp.add(buildText(I18N.tr("Fill color :")));
+                jp.add(getColorField(fillLegend));
+                glob.add(jp);
+                //We add a canvas to display a preview.
+                glob.setBorder(BorderFactory.createTitledBorder(title));
+                return glob;
         }
 }

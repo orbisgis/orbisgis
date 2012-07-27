@@ -103,7 +103,7 @@ public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUni
     }
 
     /**
-     * Get the {@code LegendStructure} associated to this {@code UniqueSymbolLine}.
+     * Gets the {@code LegendStructure} associated to this {@code UniqueSymbolLine}.
      * @return
      */
     @Override
@@ -111,44 +111,9 @@ public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUni
         return strokeLegend;
     }
 
-    /**
-     * Get the width of the lines to be drawn.
-     * @return
-     */
     @Override
-    public Double getLineWidth() {
-        return strokeLegend.getLineWidth();
-    }
-
-    /**
-     * Set the width of the lines to be drawn.
-     * @param d
-     */
-    @Override
-    public void setLineWidth(Double d) {
-        strokeLegend.setLineWidth(d);
-    }
-
-    /**
-     * Get the {@code String} that represent the dash pattern for this unique
-     * symbol. It is made of double values separated by spaces, stored in a
-     * String...
-     * @return
-     */
-    @Override
-    public String getDashArray(){
-        return strokeLegend.getDashArray();
-    }
-
-    /**
-     * Set the {@code String} that represent the dash pattern for this unique
-     * symbol. It must be made of double values separated by spaces, stored in a
-     * String...
-     * @param dashes
-     */
-    @Override
-    public void setDashArray(String dashes){
-        strokeLegend.setDashArray(dashes);
+    public ConstantPenStrokeLegend getPenStroke() {
+        return strokeLegend;
     }
 
     @Override
@@ -161,13 +126,4 @@ public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUni
         return "org.orbisgis.legend.thematic.constant.UniqueSymbolLine";
     }
 
-    @Override
-    public List<USParameter<?>> getParameters() {
-        return USParameterFactory.getParameters(this);
-    }
-
-    @Override
-    public List<USParameter<?>> getParametersLine() {
-        return USParameterFactory.getParametersLine(this);
-    }
 }

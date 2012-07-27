@@ -31,6 +31,7 @@ package org.orbisgis.legend.structure.stroke.constant;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.structure.fill.constant.ConstantFillLegend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
@@ -131,5 +132,10 @@ public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend impl
                 }
             }
             return true;
+        }
+
+        @Override
+        public ConstantSolidFill getFillLegend() {
+                return (ConstantSolidFill)getFillAnalysis();
         }
 }

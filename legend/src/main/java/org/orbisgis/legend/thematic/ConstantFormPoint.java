@@ -28,7 +28,6 @@
  */
 package org.orbisgis.legend.thematic;
 
-import java.awt.Color;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
@@ -67,69 +66,6 @@ public abstract class ConstantFormPoint extends SymbolizerLegend {
      */
     public abstract ConstantFormWKN getMarkGraphic();
 
-    /**
-     * A {@code ConstantFormPoint} is associated to a {@code MarkGraphic}, that
-     * is filled using a given {@code Color}.
-     * @return
-     */
-    public Color getFillColor(){
-        return getMarkGraphic().getFillColor();
-    }
 
-    /**
-     * Set the {@code Color} that will be used to fill the {@code MarkGraphic}.
-     * @param col
-     */
-    public void setFillColor(Color col){
-        getMarkGraphic().setFillColor(col);
-    }
-
-    /**
-     * Get the width of the line that outlines the inner {@code MarkGraphic}.
-     * @return
-     */
-    public Double getLineWidth(){
-        return getMarkGraphic().getLineWidth();
-    }
-
-    /**
-     * Set the width of the line that outlines the inner {@code MarkGraphic}.
-     * @param width
-     */
-    public void setLineWidth(Double width){
-        getMarkGraphic().setLineWidth(width);
-    }
-
-    /**
-     * Get the colour of the line that outlines the inner {@code MarkGraphic}.
-     * @return
-     */
-    public Color getLineColor() {
-        return getMarkGraphic().getLineColor();
-    }
-
-    /**
-     * Set the colour of the line that outlines the inner {@code MarkGraphic}.
-     * @param col
-     */
-    public void setLineColor(Color col) {
-        getMarkGraphic().setLineColor(col);
-    }
-
-    /**
-     * Gets the dash array used to draw the outer line of this PointSymbolizer.
-     * @return
-     */
-    public String getDashArray(){
-        return getMarkGraphic().getDashArray();
-    }
-
-    /**
-     * Sets the dash array used to draw the outer line of this PointSymbolizer.
-     * @param s
-     */
-    public void setDashArray(String s){
-        getMarkGraphic().setDashArray(s);
-    }
 
 }

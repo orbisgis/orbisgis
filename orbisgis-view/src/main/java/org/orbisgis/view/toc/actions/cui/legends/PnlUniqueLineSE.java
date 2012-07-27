@@ -41,7 +41,9 @@ import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 
 /**
- *
+ * {@code JPanel} that ca nbe used to configure simple constant {@code
+ * LineSymbolizer} instances that have been recognized as unique symbols made
+ * justof one simple {@code PenStroke}.
  * @author Alexis Guéganno
  */
 public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
@@ -120,10 +122,20 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         @Override
         public Legend copyLegend() {
                 UniqueSymbolLine usl = new UniqueSymbolLine();
-                usl.setDashArray(uniqueLine.getDashArray());
-                usl.setLineWidth(uniqueLine.getLineWidth());
-                usl.setLineColor(uniqueLine.getLineColor());
+                usl.getPenStroke().setDashArray(uniqueLine.getPenStroke().getDashArray());
+                usl.getPenStroke().setLineWidth(uniqueLine.getPenStroke().getLineWidth());
+                usl.getPenStroke().setLineColor(uniqueLine.getPenStroke().getLineColor());
                 return usl;
+        }
+
+        /**
+         * This method will be used during the panel construction to determine
+         * if the block of parameters can be disabled or not. In the case of
+         * pure lines (ie for this class), this method will return {@code true}.
+         * @return
+         */
+        protected boolean isLineOptional(){
+                return false;
         }
 
         private void initializeLegendFields() {
@@ -134,7 +146,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 GridBagConstraints gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 0;
-                JPanel p1 = getLegendBlock(uniqueLine.getParametersLine(), "Line configuration");
+                JPanel p1 = getLineBlock(uniqueLine.getPenStroke(), "Line configuration");
                 glob.add(p1, gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;

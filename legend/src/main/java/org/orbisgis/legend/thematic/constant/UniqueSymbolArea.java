@@ -28,15 +28,13 @@
  */
 package org.orbisgis.legend.thematic.constant;
 
-import java.awt.Color;
-import java.util.List;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.FillAnalyzer;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
-import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.thematic.ConstantStrokeArea;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -56,7 +54,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbolArea {
 
-//    private static final I18n I18N = I18nFactory.getI18n(UniqueSymbolArea.class);
+    private static final I18n I18N = I18nFactory.getI18n(UniqueSymbolArea.class);
     private ConstantSolidFill fillLegend;
 
     /**
@@ -68,7 +66,7 @@ public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbo
         super();
         AreaSymbolizer symbolizer = (AreaSymbolizer) getSymbolizer();
         Fill fill = symbolizer.getFill();
-        fillLegend = (ConstantSolidFillLegend) new FillAnalyzer(fill).getLegend();
+        fillLegend = (ConstantSolidFill) new FillAnalyzer(fill).getLegend();
     }
 
     /**
@@ -81,14 +79,12 @@ public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbo
         //If we're here, we have a constant stroke : it is either null or an instance
         //of ConstantPenStrokeLegend. Let's analyze the Fill.
         Fill fill = symbolizer.getFill();
-        if(fill != null){
-            LegendStructure fillLgd = new FillAnalyzer(fill).getLegend();
-            if(fillLgd instanceof ConstantSolidFillLegend){
-                fillLegend = (ConstantSolidFillLegend) fillLgd;
-            } else {
-                throw new IllegalArgumentException("The fill of this AreaSymbolizer "
-                        + "can't be recognized as constant.");
-            }
+        LegendStructure fillLgd = new FillAnalyzer(fill).getLegend();
+        if(fillLgd instanceof ConstantSolidFill){
+            fillLegend = (ConstantSolidFill) fillLgd;
+        } else {
+            throw new IllegalArgumentException("The fill of this AreaSymbolizer "
+                    + "can't be recognized as constant.");
         }
         //If we're here, we have a constant stroke and a constant fill. If we
         //can't manage the input Symbolizer, an exception has been thrown.
@@ -99,8 +95,14 @@ public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbo
      * made on the {@link Fill}.
      * @return 
      */
+    @Override
     public ConstantSolidFill getFillLegend(){
             return fillLegend;
+    }
+
+    @Override
+    public ConstantPenStroke getPenStroke() {
+        return (ConstantPenStroke) getStrokeLegend();
     }
 
     /**
@@ -119,43 +121,9 @@ public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbo
             symbolizer.setFill(fillLegend.getFill());
     }
 
-    /**
-     * A {@code UniqueSymbolArea} is associated to a {@code SolidFill}, that
-     * is filled using a given {@code Color}.
-     * @return
-     */
-    @Override
-    public Color getFillColor(){
-        return fillLegend.getColor();
-    }
-
-    /**
-     * Set the {@code Color} that will be used to fill the {@code SolidFill}.
-     * @param col
-     */
-    @Override
-    public void setFillColor(Color col){
-        fillLegend.setColor(col);
-    }
-
     @Override
     public String getLegendTypeName() {
-        return "Unique Symbol - Polygon";
-    }
-
-    @Override
-    public List<USParameter<?>> getParameters() {
-        return USParameterFactory.getParameters(this);
-    }
-    
-    @Override
-    public List<USParameter<?>> getParametersLine() {
-        return USParameterFactory.getParametersLine(this);
-    }
-
-    @Override
-    public List<USParameter<?>> getParametersArea() {
-        return USParameterFactory.getParametersArea(this);
+        return I18N.tr("Unique Symbol - Polygon");
     }
 
     @Override

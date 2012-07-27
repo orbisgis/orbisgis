@@ -59,7 +59,7 @@ public class FillAnalyzer extends AbstractAnalyzer{
         }
 
         private LegendStructure analyzeFill(Fill f){
-                if(f instanceof SolidFill){
+                if(f== null || f instanceof SolidFill){
                         return analyzeSolidFill((SolidFill) f);
                 }
                 throw new UnsupportedOperationException("We can't do such an anlysis "

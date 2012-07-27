@@ -98,7 +98,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         assertTrue(c.equals(new Color((int)SolidFill.GRAY50, (int)SolidFill.GRAY50, (int)SolidFill.GRAY50)));
         //We can continue... Let's build the UniqueSymbolPoint
         UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
-        assertTrue(uvp.getFillColor().equals(new Color((int)SolidFill.GRAY50, (int)SolidFill.GRAY50, (int)SolidFill.GRAY50)));
+        assertTrue(uvp.getFillLegend().getColor().equals(new Color((int)SolidFill.GRAY50, (int)SolidFill.GRAY50, (int)SolidFill.GRAY50)));
     }
 
     @Test
@@ -112,8 +112,8 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         assertTrue(c.equals(new Color((int)SolidFill.GRAY50, (int)SolidFill.GRAY50, (int)SolidFill.GRAY50)));
         //We can continue... Let's build the UniqueSymbolPoint
         UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
-        uvp.setFillColor(new Color(4,4,4));
-        assertTrue(uvp.getFillColor().equals(new Color(4,4,4)));
+        uvp.getFillLegend().setColor(new Color(4,4,4));;
+        assertTrue(uvp.getFillLegend().getColor().equals(new Color(4,4,4)));
     }
 
     @Test
@@ -126,7 +126,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         assertTrue(width == 1.0);
         //We've checked the width from the symbolizer, let's get it from the Legend
         UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
-        assertTrue(uvp.getLineWidth() == 1.0);
+        assertTrue(uvp.getPenStroke().getLineWidth() == 1.0);
     }
 
     @Test
@@ -139,8 +139,8 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         assertTrue(width == 1.0);
         //We've checked the width from the symbolizer, let's get it from the Legend
         UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
-        uvp.setLineWidth(4.0);
-        assertTrue(uvp.getLineWidth() == 4.0);
+        uvp.getPenStroke().setLineWidth(4.0);
+        assertTrue(uvp.getPenStroke().getLineWidth() == 4.0);
     }
 
     @Test
@@ -153,7 +153,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         assertTrue(col.equals(Color.BLACK));
         //We've checked the color we searched in the symbolizer, let's get it from the Legend
         UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
-        assertTrue(uvp.getLineColor().equals(Color.BLACK));
+        assertTrue(uvp.getPenStroke().getLineColor().equals(Color.BLACK));
     }
 
     @Test
@@ -166,8 +166,8 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         assertTrue(col.equals(Color.BLACK));
         //We've checked the color we searched in the symbolizer, let's get it from the Legend
         UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
-        uvp.setLineColor(Color.BLUE);
-        assertTrue(uvp.getLineColor().equals(Color.BLUE));
+        uvp.getPenStroke().setLineColor(Color.BLUE);
+        assertTrue(uvp.getPenStroke().getLineColor().equals(Color.BLUE));
     }
 
     @Test
@@ -180,7 +180,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         assertTrue(col.equals(Color.BLACK));
         //We've checked the color we searched in the symbolizer, let's get it from the Legend
         UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
-        assertTrue(uvp.getDashArray().isEmpty());
+        assertTrue(uvp.getPenStroke().getDashArray().isEmpty());
     }
 
     @Test
@@ -193,8 +193,8 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         assertTrue(col.equals(Color.BLACK));
         //We've checked the color we searched in the symbolizer, let's get it from the Legend
         UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
-        uvp.setDashArray("2 2");
-        assertTrue(uvp.getDashArray().equals("2 2"));
+        uvp.getPenStroke().setDashArray("2 2");
+        assertTrue(uvp.getPenStroke().getDashArray().equals("2 2"));
     }
 
     @Test
@@ -376,16 +376,5 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         ProportionalPoint uvp = new ProportionalPoint(ps);
         uvp.setSecondValue(250.0);
         assertTrue( uvp.getSecondValue()== 250.0);
-    }
-
-    /**
-     * We just test the default constructor
-     * @throws Exception 
-     */
-    @Test
-    public void testDefaultConstructorUniqueSymbol() throws Exception {
-        UniqueSymbolPoint usp = new UniqueSymbolPoint();
-        assertTrue(usp.getLineWidth() == 0.1);
-        assertTrue(usp.getLineColor().equals(Color.BLACK));
     }
 }

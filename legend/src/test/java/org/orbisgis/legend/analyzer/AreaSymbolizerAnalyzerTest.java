@@ -82,15 +82,15 @@ public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
     public void testConstantGetFillColor() throws Exception {
         AreaSymbolizer ls = getConstantSymbolizer();
         UniqueSymbolArea usl = new UniqueSymbolArea(ls);
-        assertTrue(usl.getFillColor().equals(new Color(0x12, 0x34, 0x56)));
+        assertTrue(usl.getFillLegend().getColor().equals(new Color(0x12, 0x34, 0x56)));
     }
 
     @Test
     public void testConstantSetFillColor() throws Exception {
         AreaSymbolizer ls = getConstantSymbolizer();
         UniqueSymbolArea usl = new UniqueSymbolArea(ls);
-        usl.setFillColor(Color.red);
-        assertTrue(usl.getFillColor().equals(Color.red));
+        usl.getFillLegend().setColor(Color.red);
+        assertTrue(usl.getFillLegend().getColor().equals(Color.red));
     }
 
     @Test

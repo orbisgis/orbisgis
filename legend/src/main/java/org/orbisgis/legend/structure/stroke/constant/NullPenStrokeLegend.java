@@ -30,6 +30,8 @@ package org.orbisgis.legend.structure.stroke.constant;
 
 import java.awt.Color;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
+import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 
 /**
  * A {@link PenStroke} that is null can be considered as a constant : it is not dependant upon any
@@ -38,6 +40,11 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
  * @author Alexis Guéganno
  */
 public class NullPenStrokeLegend implements ConstantPenStroke {
+
+    @Override
+    public ConstantSolidFill getFillLegend() {
+        return new NullSolidFillLegend();
+    }
 
     @Override
     public Color getLineColor() {

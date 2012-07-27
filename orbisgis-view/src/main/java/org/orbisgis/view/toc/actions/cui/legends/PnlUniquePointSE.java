@@ -29,23 +29,34 @@
 package org.orbisgis.view.toc.actions.cui.legends;
 
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
+import java.beans.EventHandler;
 import java.net.URL;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import javax.swing.event.ChangeListener;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.components.JNumericSpinner;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
+import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  *
  * @author Alexis Guéganno
  */
-public class PnlUniquePointSE extends PnlUniqueSymbolSE {
+public class PnlUniquePointSE extends PnlUniqueAreaSE {
+        private static final I18n I18N = I18nFactory.getI18n(PnlUniquePointSE.class);
 
         /**
          * Here we can put all the Legend instances we want... but they have to
@@ -132,21 +143,21 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
                 gbc.gridx = 0;
                 gbc.gridy = 0;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
-                JPanel p1 = getLegendBlock(uniquePoint.getParametersLine(), "Line configuration");
+                JPanel p1 = getLineBlock(uniquePoint.getPenStroke(), "Line configuration");
                 glob.add(p1, gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 1;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.insets = new Insets(5, 0, 5, 0);
-                JPanel p2 = getLegendBlock(uniquePoint.getParametersArea(), "Fill configuration");
+                JPanel p2 = getAreaBlock(uniquePoint.getFillLegend(), "Fill configuration");
                 glob.add(p2, gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 2;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.insets = new Insets(5, 0, 5, 0);
-                JPanel p3 = getLegendBlock(uniquePoint.getParametersPoint(), "Mark configuration");
+                JPanel p3 = getPointBlock(uniquePoint, "Mark configuration");
                 glob.add(p3, gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;
@@ -154,4 +165,72 @@ public class PnlUniquePointSE extends PnlUniqueSymbolSE {
                 glob.add(getPreview(), gbc);
                 this.add(glob);
         }
+
+        /**
+         * Builds the UI block used to configure the fill color of the
+         * symbolizer.
+         * @param fillLegend
+         * @param title
+         * @return
+         */
+        public JPanel getPointBlock(UniqueSymbolPoint point, String title) {
+                if(getPreview() == null && getLegend() != null){
+                        initPreview();
+                }
+                JPanel glob = new JPanel();
+                glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
+                JPanel jp = new JPanel();
+                GridLayout grid = new GridLayout(2,2);
+                grid.setVgap(5);
+                jp.setLayout(grid);
+                //Mark width
+                jp.add(buildText(I18N.tr("Mark width :")));
+                jp.add(getMarkWidth(point));
+                //Mark height
+                jp.add(buildText(I18N.tr("Mark height :")));
+                jp.add(getMarkHeight(point));
+                glob.add(jp);
+                //We add a canvas to display a preview.
+                glob.setBorder(BorderFactory.createTitledBorder(title));
+                return glob;
+        }
+
+        private JPanel getMarkWidth(UniqueSymbolPoint point){
+                CanvasSE prev = getPreview();
+                final JNumericSpinner jns = new JNumericSpinner(4, Integer.MIN_VALUE, Integer.MAX_VALUE, 0.01);
+                ChangeListener cl = EventHandler.create(ChangeListener.class, point, "viewBoxWidth", "source.value");
+                jns.addChangeListener(cl);
+//                        new ChangeListener() {
+//                        @Override
+//                        public void stateChanged(ChangeEvent evt) {
+//                                cps.setLineWidth(jns.getValue());
+//                    }
+//                });
+                jns.setValue(point.getViewBoxWidth() == null? point.getViewBoxHeight() : point.getViewBoxWidth());
+                jns.setMaximumSize(new Dimension(60,30));
+                jns.setPreferredSize(new Dimension(60,30));
+                ChangeListener cl2 = EventHandler.create(ChangeListener.class, prev, "repaint");
+                jns.addChangeListener(cl2);
+                return jns;
+        }
+
+        private JPanel getMarkHeight(UniqueSymbolPoint point){
+                CanvasSE prev = getPreview();
+                final JNumericSpinner jns = new JNumericSpinner(4, Integer.MIN_VALUE, Integer.MAX_VALUE, 0.01);
+                ChangeListener cl = EventHandler.create(ChangeListener.class, point, "viewBoxHeight", "source.value");
+                jns.addChangeListener(cl);
+//                        new ChangeListener() {
+//                        @Override
+//                        public void stateChanged(ChangeEvent evt) {
+//                                cps.setLineWidth(jns.getValue());
+//                    }
+//                });
+                jns.setValue(point.getViewBoxHeight() == null? point.getViewBoxWidth() : point.getViewBoxHeight());
+                jns.setMaximumSize(new Dimension(60,30));
+                jns.setPreferredSize(new Dimension(60,30));
+                ChangeListener cl2 = EventHandler.create(ChangeListener.class, prev, "repaint");
+                jns.addChangeListener(cl2);
+                return jns;
+        }
+
 }
