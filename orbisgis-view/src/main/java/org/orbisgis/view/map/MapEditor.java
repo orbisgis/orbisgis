@@ -102,6 +102,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private static final int CURSOR_COORDINATE_LOOKUP_INTERVAL = 100; //Ms
     private Point lastCursorPosition = new Point();
     private Point lastTranslatedCursorPosition = new Point();
+    private AtomicBoolean initialised = new AtomicBoolean(false);
     /**
      * Constructor
      */
@@ -137,24 +138,26 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             mapControl.getMapTransform().setScaleDenominator(newScale);
     }
     
-    /**
-     * Notifies this component that it now has a parent component.
-     * When this method is invoked, the chain of parent 
-     * components is set up with KeyboardAction event listeners.
-     */
-    @Override
-    public void addNotify() {
-        super.addNotify();
-        //Register listener
-        dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(Listener.class, this, "onDropEditable","editableList"));
-        mapControl.addMouseMotionListener(EventHandler.create(MouseMotionListener.class,this,"onMouseMove","point","mouseMoved"));
-        mapStatusBar.addVetoableChangeListener(
-                MapStatusBar.PROP_USER_DEFINED_SCALE_DENOMINATOR,
-                EventHandler.create(VetoableChangeListener.class, this,
-                "onUserSetScaleDenominator",""));
-    }
-    
-    
+        /**
+         * Notifies this component that it now has a parent component. When this
+         * method is invoked, the chain of parent components is set up with
+         * KeyboardAction event listeners.
+         */
+        @Override
+        public void addNotify() {
+                super.addNotify();
+                if (!initialised.getAndSet(true)) {
+                        //Register listener
+                        dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(Listener.class, this, "onDropEditable", "editableList"));
+                        mapControl.addMouseMotionListener(EventHandler.create(MouseMotionListener.class, this, "onMouseMove", "point", "mouseMoved"));
+                        mapStatusBar.addVetoableChangeListener(
+                                MapStatusBar.PROP_USER_DEFINED_SCALE_DENOMINATOR,
+                                EventHandler.create(VetoableChangeListener.class, this,
+                                "onUserSetScaleDenominator", ""));
+                }
+        }
+
+
     /**
      * The user Drop a list of Editable
      * @param editableList 
@@ -391,7 +394,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         loadMap((MapElement)editableElement);
                 }
         }
-    
+        
     /**
      * Internal Listener that store an automaton
      */

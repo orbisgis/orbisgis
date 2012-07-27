@@ -26,22 +26,19 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.filter;
-
-import java.util.EventObject;
-
+package org.orbisgis.view.sqlconsole.codereformat;
 
 /**
- * Event Data when filters must be regenerated
+ * An interface to allow alternate implementations of the CodeReformator to be configured by plugins.
  */
-public class FilterChangeEventData  extends EventObject {
-    private static final long serialVersionUID = 1L;
-    /**
-     * Event Data Constructor
-     * @param o Source, the FilterFactoryManager instance
-     */
-    public FilterChangeEventData(Object o) {
-        super(o);
-    }
-    
+public interface ICodeReformator
+{
+	/**
+	 * Reformats the specified String, returning the reformatted version.
+	 * 
+	 * @param in
+	 *           the string to apply formatting to.
+	 * @return the formatted result
+	 */
+	String reformat(String in);
 }

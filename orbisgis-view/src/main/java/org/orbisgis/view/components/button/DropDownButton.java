@@ -34,6 +34,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
 import java.beans.EventHandler;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -45,10 +46,12 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  * Drop Down Button, is a button that show a popup when clicked.
  */
 public class DropDownButton extends JToggleButton implements
-		ChangeListener, PopupMenuListener, ActionListener {
+	ChangeListener, PopupMenuListener, ActionListener {
+        private static final long serialVersionUID = 1L;
 	private boolean popupVisible = false;
         private JMenuItem selectedItem=null;
         private boolean buttonAsMenuItem = true; //Does this button will be replaced by the selected menu item
+        private AtomicBoolean listenerInstalled = new AtomicBoolean(false);
         /**
          * Constructor, use selectMenu to set the icon and other properties to this button
          */
@@ -82,14 +85,19 @@ public class DropDownButton extends JToggleButton implements
 		super(iconFile);
 	}
 
+        private void installListeners() {
+                if(!listenerInstalled.getAndSet(true)) {
+                        getModel().addChangeListener(this);
+                        this.addActionListener(this);                        
+                }
+        }
         /**
          * Component initialisation
          */
         @Override
         public void addNotify() {
             super.addNotify();
-            getModel().addChangeListener(this);
-            this.addActionListener(this);            
+            installListeners();
         }
 
         /**
