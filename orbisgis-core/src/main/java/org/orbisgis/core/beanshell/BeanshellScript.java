@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.WarningListener;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.DefaultDataManager;
 import org.orbisgis.core.Services;
@@ -66,21 +65,6 @@ public class BeanshellScript {
 
                 //Register the datasource
                 DataSourceFactory dsf = new DataSourceFactory();
-
-                // Pipeline the warnings in gdms to the warning system in the
-                // application
-                dsf.setWarninglistener(new WarningListener() {
-
-                        @Override
-                        public void throwWarning(String msg) {
-                                System.out.println(msg);
-                        }
-
-                        @Override
-                        public void throwWarning(String msg, Throwable t, Object source) {
-                                System.out.println(msg);
-                        }
-                });
 
                 dsf.loadPlugins();
 
