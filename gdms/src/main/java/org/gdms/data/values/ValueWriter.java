@@ -84,7 +84,7 @@ public interface ValueWriter {
          * constants: CHAR, VARCHAR, LONGVARCHAR)
          * @return SQL representation
          */
-        String getStatementString(String str, int sqlType);
+        String getStatementString(CharSequence str, int sqlType);
 
         /**
          * Gets the string representation of a date as it would appear in a SQL statement.

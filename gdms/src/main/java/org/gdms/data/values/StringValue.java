@@ -40,10 +40,12 @@ package org.gdms.data.values;
 public interface StringValue extends Value {
 
     /**
-     * Establece el valor de este objeto
+     * Sets the value of this String value.
      *
      * @param value
      */
-    void setValue(String value);
+    void setValue(CharSequence value);
+    
+    CharSequence getValue();
 
 }

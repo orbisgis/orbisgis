@@ -286,8 +286,8 @@ public final class CSVDriver extends AbstractDataSet implements FileReadWriteDri
         }
 
         @Override
-        public String getStatementString(String str, int sqlType) {
-                return str;
+        public String getStatementString(CharSequence str, int sqlType) {
+                return str.toString();
         }
 
         @Override

@@ -272,7 +272,7 @@ final class NullValue extends AbstractValue implements BinaryValue, BooleanValue
         }
 
         @Override
-        public void setValue(String value) {
+        public void setValue(CharSequence value) {
                 throw new UnsupportedOperationException(CANNOTSETNULL);
         }
 
@@ -385,6 +385,10 @@ final class NullValue extends AbstractValue implements BinaryValue, BooleanValue
         public CoordinateReferenceSystem getCRS() {
                 return null;
         }
-        
+
+        @Override
+        public CharSequence getValue() {
+                return null;
+        }
         
 }
