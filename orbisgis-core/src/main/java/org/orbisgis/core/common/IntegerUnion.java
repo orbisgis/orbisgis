@@ -138,10 +138,10 @@ public class IntegerUnion implements SortedSet<Integer> {
         protected final boolean internalRemove(Integer value) {
                 int index = Collections.binarySearch(intervals, value);
                 if(index>=0) {
-                                if(index > 0 && intervals.get(index - 1) == value) {
+                                if(index > 0 && intervals.get(index - 1).equals(value)) {
                                         intervals.remove(index-1);
                                         intervals.remove(index-1);
-                                } else if(index + 1 < intervals.size() && intervals.get(index + 1) == value) {
+                                } else if(index + 1 < intervals.size() && intervals.get(index + 1).equals(value)) {
                                         intervals.remove(index);
                                         intervals.remove(index);
                                 } else {
@@ -161,8 +161,8 @@ public class IntegerUnion implements SortedSet<Integer> {
                                 //Split in two ranges
                                 Integer endValue = intervals.get(index);
                                 intervals.set(index, value-1);
-                                intervals.add(value+1);
-                                intervals.add(endValue);
+                                intervals.add(index+1,value+1);
+                                intervals.add(index+2,endValue);
                                 return true;
                         }
                 }                
@@ -186,8 +186,8 @@ public class IntegerUnion implements SortedSet<Integer> {
                 // intervals[index] > value
                 if (index % 2 == 0) {
                         //If index corresponding to begin of a range
-                        boolean mergeFirst = index > 0 && intervals.get(index - 1) == value - 1;
-                        boolean mergeSecond = index < intervals.size() && intervals.get(index) == value + 1;
+                        boolean mergeFirst = index > 0 && intervals.get(index - 1).equals(value - 1);
+                        boolean mergeSecond = index < intervals.size() && intervals.get(index).equals(value + 1);
                         if (mergeFirst && mergeSecond) {
                                 //Merge two ranges and update the end of the first range
                                 Integer endNextRange = intervals.get(index + 1);
@@ -210,8 +210,8 @@ public class IntegerUnion implements SortedSet<Integer> {
                         return false;
                 }
                 //New range
-                intervals.add(index, value);
-                intervals.add(index, value);
+                intervals.add(index, new Integer(value));
+                intervals.add(index,  new Integer(value));
                 return true;                
         }
         
@@ -373,7 +373,7 @@ public class IntegerUnion implements SortedSet<Integer> {
 
                 @Override
                 public int compare(Integer t, Integer t1) {
-                        return (t<t1 ? -1 : (t==t1 ? 0 : 1));
+                        return (t<t1 ? -1 : (t.equals(t1) ? 0 : 1));
                 }
                 
         }

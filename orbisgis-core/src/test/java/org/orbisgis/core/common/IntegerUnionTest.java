@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.common;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
@@ -52,7 +53,7 @@ public class IntegerUnionTest {
                         ints.size() == check.length);
                 int i = 0;
                 for (Integer value : ints) {
-                        if (value != check[i]) {
+                        if (!value.equals(check[i])) {
                                 Assert.assertTrue("Union fails, different values " + value + "!=" + check[i], value == check[i]);
                         }
                         i++;
@@ -100,11 +101,37 @@ public class IntegerUnionTest {
                 Assert.assertFalse(mergeTool.remove(46));
                 Assert.assertTrue(mergeTool.remove(45));
                 check(mergeTool, new Integer[]{3, 42, 47, 47});
+                Assert.assertTrue(mergeTool.remove(47));
+                check(mergeTool, new Integer[]{3, 42});
 
                 mergeTool = new IntegerUnion(0);
                 Assert.assertTrue(mergeTool.remove(0));
                 check(mergeTool, new Integer[]{});                
                 Assert.assertFalse(mergeTool.remove(0));
+                
+                
+                mergeTool = new IntegerUnion();
+                mergeTool.add(51);
+                mergeTool.add(49);
+                mergeTool.remove(48);
+                mergeTool.remove(49);
+                mergeTool.remove(50);
+                check(mergeTool, new Integer[]{51,51});
+                
+                mergeTool = new IntegerUnion();
+                HashSet<Integer> set = new HashSet<Integer>();
+                
+                                
+                for (int i = 51; i < 60; i+=3) {
+                        Assert.assertTrue(mergeTool.add(i)==set.add(i));
+                }
+                for (int i = 45; i < 50; i++) {
+                        Assert.assertTrue(mergeTool.add(i)==set.add(i));             
+                }
+                for (int i = 45; i < 65; i+=2) {
+                        Assert.assertTrue("i="+i,mergeTool.remove(i)==set.remove(i));
+                }
+                Assert.assertTrue(set.containsAll(mergeTool));
         }
         
 
@@ -132,8 +159,8 @@ public class IntegerUnionTest {
                 while (itMerge.hasNext()) {
                         Integer mergeValue = itMerge.next();
                         Integer originValue = itOrigin.next();
-                        if (mergeValue != originValue) {
-                                Assert.assertTrue(mergeValue + "!=" + originValue, mergeValue == originValue);
+                        if (!mergeValue.equals(originValue)) {
+                                Assert.assertTrue(mergeValue + "!=" + originValue, mergeValue.equals(originValue));
                         }
                 }
                 Assert.assertTrue(itMerge.hasNext() == itOrigin.hasNext());

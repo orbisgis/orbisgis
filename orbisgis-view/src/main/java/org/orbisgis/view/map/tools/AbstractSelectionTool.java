@@ -59,6 +59,7 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Iterator;
+import java.util.Set;
 import org.gdms.data.DataSource;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.driver.DriverException;
@@ -203,7 +204,11 @@ public abstract class AbstractSelectionTool extends Selection {
 
                         if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
                                 IntegerUnion newSel = new IntegerUnion(activeLayer.getSelection());
-                                newSel.addAll(newSelection);
+                                for(int el : newSelection) {
+                                        if(!newSel.remove(el)) {
+                                                newSel.add(el);
+                                        }
+                                }                                
                                 activeLayer.setSelection(newSel);
                         } else {
                                 activeLayer.setSelection(newSelection);
