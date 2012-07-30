@@ -45,7 +45,6 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditableElementException;
-import org.orbisgis.view.table.Selection;
 
 public class EditableSource extends EditableElement {
 
@@ -54,8 +53,6 @@ public class EditableSource extends EditableElement {
 	private String sourceName;
         private boolean editing = false;
 	private DataSource ds;
-	private SourceSelection resourceSelection = new SourceSelection();
-
 	private NameChangeSourceListener listener = new NameChangeSourceListener();
 
 	public EditableSource(String sourceName) {
@@ -123,10 +120,6 @@ public class EditableSource extends EditableElement {
 
 	public DataSource getDataSource() {
 		return ds;
-	}
-
-	public Selection getSelection() {
-		return resourceSelection;
 	}
 
 	public boolean isEditable() {

@@ -29,10 +29,29 @@
 package org.orbisgis.view.table;
 
 import bibliothek.util.xml.XElement;
+import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
+import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.util.Set;
+import java.util.logging.Level;
+import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.NoSuchTableException;
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
+import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.view.docking.DockingPanelLayout;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * When the application close and start this layout retrieve/save
@@ -40,25 +59,94 @@ import org.orbisgis.view.docking.DockingPanelLayout;
  */
 
 public class TablePanelLayout implements DockingPanelLayout {
+        private TableEditableElement tableEditableElement;
+        private static final Logger LOGGER = Logger.getLogger(TablePanelLayout.class);
+        private static final I18n I18N = I18nFactory.getI18n(TablePanelLayout.class);
+        private static final int MAX_SELECTION_SERIALISATION_SIZE = 100;
+        
+        //Fields name (xml)
+        private static final String PROP_DATA_SOURCE_NAME = "datasource";
+        private static final String PROP_SELECTION = "selection";
 
-        @Override
-        public void writeStream(DataOutputStream out) throws IOException {
-                throw new UnsupportedOperationException("Not supported yet.");
+        public TablePanelLayout(TableEditableElement tableEditableElement) {
+                this.tableEditableElement = tableEditableElement;
         }
 
+        public TableEditableElement getTableEditableElement() {
+                return tableEditableElement;
+        }
+        
+        @Override
+        public void writeStream(DataOutputStream out) throws IOException {
+                //DataSource
+                out.writeUTF(tableEditableElement.getDataSource().getName());
+                //Selection
+                writeSelection(out);
+        }
+
+        private void writeSelection(OutputStream out) throws IOException {
+                ObjectOutputStream selectionOut = new ObjectOutputStream(out);
+                //Do not save byte consuming selection
+                if(((IntegerUnion)tableEditableElement.getSelection()).getValueRanges().size()>MAX_SELECTION_SERIALISATION_SIZE) {
+                        selectionOut.writeObject(new IntegerUnion());
+                } else {
+                        selectionOut.writeObject(tableEditableElement.getSelection());
+                }
+                selectionOut.flush();
+                selectionOut.close();                
+        }
+        
+        private IntegerUnion readSelection(InputStream in) {
+                try {
+                        ObjectInputStream selectionIn = new ObjectInputStream(in);
+                        return (IntegerUnion)selectionIn.readObject();
+                } catch (ClassNotFoundException ex) {
+                        LOGGER.error(I18N.tr("Selection deserialisation failed"),ex);
+                }  catch (IOException ex) {
+                        LOGGER.error(I18N.tr("Selection deserialisation failed"),ex);
+                }
+                return new IntegerUnion();
+        }
         @Override
         public void readStream(DataInputStream in) throws IOException {
-                throw new UnsupportedOperationException("Not supported yet.");
+                //DataSource
+                String dataSourceName = in.readUTF();
+                tableEditableElement = new TableEditableElement(
+                readSelection(in),getDataSource(dataSourceName));
+        }
+        
+        private DataSource getDataSource(String name) throws IOException {
+                DataManager dm = Services.getService(DataManager.class);
+                try {
+                        return dm.getDataSourceFactory().getDataSource(name); 
+                } catch (NoSuchTableException ex) {
+                        throw new IOException(I18N.tr("Unable to load the table editor"),ex);
+                } catch (DataSourceCreationException ex) {
+                        throw new IOException(I18N.tr("Unable to load the table editor"),ex);
+                }
         }
 
         @Override
         public void writeXML(XElement element) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                element.addString(PROP_DATA_SOURCE_NAME,tableEditableElement.getDataSource().getName());
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+                try {
+                        writeSelection(bytes);
+                } catch (IOException ex) {
+                        LOGGER.error(I18N.tr("Selection serialisation failed"),ex);
+                }                
+                element.addByteArray(PROP_SELECTION, bytes.toByteArray());
         }
 
         @Override
         public void readXML(XElement element) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                ByteArrayInputStream in = new ByteArrayInputStream(element.getByteArray(PROP_SELECTION));
+                try {
+                        tableEditableElement = new TableEditableElement(readSelection(in),
+                                getDataSource(element.getString(PROP_DATA_SOURCE_NAME)));
+                } catch (IOException ex) {
+                        throw new IllegalStateException(ex);
+                }
         }
         
         

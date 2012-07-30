@@ -59,7 +59,6 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Iterator;
-import java.util.Set;
 import org.gdms.data.DataSource;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.driver.DriverException;

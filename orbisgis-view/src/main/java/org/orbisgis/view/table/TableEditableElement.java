@@ -28,54 +28,86 @@
  */
 package org.orbisgis.view.table;
 
+import java.util.Set;
 import org.gdms.data.DataSource;
-import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.view.edition.EditableElementException;
 
 /**
  * Interface to be implemented by those EditableElements that need to be edited
  * by the table editor.
  * 
  */
-public abstract class TableEditableElement extends EditableElement {
-
+public class TableEditableElement extends EditableElement {
+        public static final String TYPE_ID = "TableEditableElement";
         // Properties names
         public static final String PROP_SELECTION = "selection";
         
         // Properties
-        protected Selection selection;
+        protected Set<Integer> selection;
+        protected DataSource dataSource;
+
+        public TableEditableElement(DataSource dataSource) {
+                this.dataSource = dataSource;
+                this.selection = new IntegerUnion();
+        }
+
+        public TableEditableElement(Set<Integer> selection, DataSource dataSource) {
+                this.selection = new IntegerUnion(selection);
+                this.dataSource = dataSource;
+        }
+        
+        
+        
+
+        public DataSource getDataSource() {
+                return dataSource;
+        }
         
 	/**
 	 * Get the object that manages selection
 	 * 
 	 * @return
 	 */
-	Selection getSelection() {
+	Set<Integer> getSelection() {
                 return selection;
         }
 
-	/**
-	 * Get the data to populate the table
-	 * 
-	 * @return
-	 */
-	abstract DataSource getDataSource();
+        public void setSelection(Set<Integer> selection) {
+                Set<Integer> oldSelection = this.selection;
+                this.selection = new IntegerUnion(selection);
+                propertyChangeSupport.firePropertyChange(PROP_SELECTION, oldSelection, this.selection);
+        }
+        
+        
 
-	/**
-	 * Return true if the source can be edited
-	 * 
-	 * @return
-	 */
-	abstract boolean isEditable();
+        @Override
+        public String getTypeId() {
+                return TYPE_ID;
+        }
 
-	/**
-	 * Return the MapContext containing the DataSource returned in
-	 * {@link #getDataSource()}. Return null if it is not contained in any
-	 * MapContext
-	 * 
-	 * @return
-	 */
-	abstract MapContext getMapContext();
+        @Override
+        public void open(ProgressMonitor progressMonitor) throws UnsupportedOperationException, EditableElementException {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void save() throws UnsupportedOperationException, EditableElementException {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void close(ProgressMonitor progressMonitor) throws UnsupportedOperationException, EditableElementException {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Object getObject() throws UnsupportedOperationException {
+                return dataSource;
+        }
      
 	
 	

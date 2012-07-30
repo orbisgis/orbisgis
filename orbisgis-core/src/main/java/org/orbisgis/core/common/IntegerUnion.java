@@ -78,9 +78,7 @@ public class IntegerUnion implements SortedSet<Integer> {
         }
         
         private void copyExternalIntegerUnion(IntegerUnion externalSet) {
-                for (Integer value : externalSet.intervals) {
-                        intervals.add(new Integer(value));
-                }
+                intervals.addAll(externalSet.intervals);
         }
         /**
          *
@@ -283,7 +281,7 @@ public class IntegerUnion implements SortedSet<Integer> {
                 } else {
                         //retrieve the nearest index by order
                         index = -index - 1;     
-                        //value < than a end range
+                        //value < than an end range
                         return index % 2 != 0; 
                 }
                 
