@@ -37,7 +37,6 @@ import net.opengis.ows_context.LayerType;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
-import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 
@@ -436,12 +435,7 @@ public class LayerCollection extends BeanLayer {
 	}
 
         @Override
-	public IntegerUnion getSelection() {
-		return new IntegerUnion();
-	}
-
-        @Override
-	public void setSelection(IntegerUnion newSelection) {
+	public void setSelection(Set<Integer> newSelection) {
 		throw new UnsupportedOperationException(I18N.tr("No row selection in a layer collection"));
         }
 

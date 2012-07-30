@@ -31,6 +31,7 @@ package org.orbisgis.core.layerModel;
 import com.vividsolutions.jts.geom.Envelope;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.edition.EditionEvent;
@@ -46,7 +47,6 @@ import org.orbisgis.core.renderer.se.Style;
 public class Layer extends BeanLayer {        
 	private DataSource dataSource;
 	private RefreshSelectionEditionListener editionListener;
-	private IntegerUnion selection = new IntegerUnion();
 
 	public Layer(String name, DataSource ds) {
 		super(name);
@@ -188,13 +188,8 @@ public class Layer extends BeanLayer {
 	}
 
 	@Override
-	public IntegerUnion getSelection() {
-		return selection;
-	}
-
-	@Override
-	public void setSelection(IntegerUnion newSelection) {
-		this.selection = newSelection;
+	public void setSelection(Set<Integer> newSelection) {
+		super.setSelection(newSelection);
 		fireSelectionChanged();
 	}
 

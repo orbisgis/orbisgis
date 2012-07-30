@@ -42,6 +42,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Set;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -658,7 +659,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 }
 
                 DataSource sds = activeLayer.getDataSource();
-                IntegerUnion selection = activeLayer.getSelection();
+                Set<Integer> selection = activeLayer.getSelection();
                 try {
                         for (int selectedRow : selection) {
                                 Primitive p;

@@ -34,6 +34,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 import java.util.SortedSet;
 
 /**
@@ -61,17 +62,24 @@ public class IntegerUnion implements SortedSet<Integer> {
 
         
         public IntegerUnion(IntegerUnion externalSet) {
-                this.intervals = new ArrayList<Integer>(externalSet.intervals);
+                this.intervals = new ArrayList<Integer>(externalSet.intervals.size());
+
         }
         
-        public IntegerUnion(SortedSet<Integer> externalSet) {
+        public IntegerUnion(Set<Integer> externalSet) {
                 this();
                 if(externalSet instanceof IntegerUnion) {
-                        this.intervals = new ArrayList<Integer>(((IntegerUnion)externalSet).intervals);
+                        copyExternalIntegerUnion((IntegerUnion)externalSet);
                 } else {
                         for(Integer value : externalSet) {
                                 internalAdd(value);
                         }
+                }
+        }
+        
+        private void copyExternalIntegerUnion(IntegerUnion externalSet) {
+                for (Integer value : externalSet.intervals) {
+                        intervals.add(new Integer(value));
                 }
         }
         /**
@@ -298,13 +306,16 @@ public class IntegerUnion implements SortedSet<Integer> {
 
         @Override
         public boolean addAll(Collection<? extends Integer> clctn) {
+                boolean isAllAdded=true;
                 for(Object value : clctn) {
                         if(!(value instanceof Integer)) {
                                 return false;
                         }
-                        return add((Integer)value);
+                        if(!add((Integer)value)) {
+                                isAllAdded = false;
+                        }
                 }
-                return true;
+                return isAllAdded;
         }
 
         @Override

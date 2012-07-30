@@ -59,7 +59,6 @@ import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Iterator;
-import java.util.SortedSet;
 import org.gdms.data.DataSource;
 import org.gdms.data.indexes.DefaultSpatialIndexQuery;
 import org.gdms.driver.DriverException;
@@ -117,10 +116,8 @@ public abstract class AbstractSelectionTool extends Selection {
                                         if (g.intersects(selectionRect)) {
                                                 if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
                                                         IntegerUnion newSelection = new IntegerUnion(activeLayer.getSelection());
-                                                        if(!newSelection.contains(rowIndex)) {
+                                                        if(!newSelection.remove(rowIndex)) {
                                                                 newSelection.add(rowIndex);
-                                                        }else{
-                                                                newSelection.remove(rowIndex);
                                                         }
                                                         activeLayer.setSelection(newSelection);
                                                         if (newSelection.size() > 0) {
@@ -206,11 +203,7 @@ public abstract class AbstractSelectionTool extends Selection {
 
                         if ((tm.getMouseModifiers() & MouseEvent.CTRL_DOWN_MASK) == MouseEvent.CTRL_DOWN_MASK) {
                                 IntegerUnion newSel = new IntegerUnion(activeLayer.getSelection());
-                                for (Integer selectedRow : newSelection) {
-                                        if(!newSel.remove(selectedRow)) {
-                                                newSel.add(selectedRow);
-                                        }
-                                }
+                                newSel.addAll(newSelection);
                                 activeLayer.setSelection(newSel);
                         } else {
                                 activeLayer.setSelection(newSelection);

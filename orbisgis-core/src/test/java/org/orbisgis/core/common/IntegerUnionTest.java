@@ -59,6 +59,22 @@ public class IntegerUnionTest {
                 }
         }
 
+        @Test
+        public void testContains() {
+                IntegerUnion mergeTool = new IntegerUnion(0, 50);
+                mergeTool.remove(25);
+                mergeTool.remove(26);
+                mergeTool.remove(27);
+                
+                Assert.assertFalse(mergeTool.contains(26));
+                Assert.assertFalse(mergeTool.contains(25));
+                Assert.assertFalse(mergeTool.contains(27));
+                
+                Assert.assertTrue(mergeTool.contains(24));
+                Assert.assertTrue(mergeTool.contains(28));
+                Assert.assertTrue(mergeTool.contains(0));
+                Assert.assertTrue(mergeTool.contains(50));
+        }
         
         @Test
         public void testRemove() {
@@ -75,7 +91,16 @@ public class IntegerUnionTest {
                 check(mergeTool, new Integer[]{3, 47, 49, 49});
                 Assert.assertTrue(mergeTool.remove(49));
                 check(mergeTool, new Integer[]{3, 47});
-                
+                Assert.assertTrue(mergeTool.remove(44));
+                check(mergeTool, new Integer[]{3, 43, 45, 47});
+                Assert.assertTrue(mergeTool.remove(43));
+                check(mergeTool, new Integer[]{3, 42, 45, 47});
+                Assert.assertTrue(mergeTool.remove(46));
+                check(mergeTool, new Integer[]{3, 42, 45, 45, 47, 47});
+                Assert.assertFalse(mergeTool.remove(46));
+                Assert.assertTrue(mergeTool.remove(45));
+                check(mergeTool, new Integer[]{3, 42, 47, 47});
+
                 mergeTool = new IntegerUnion(0);
                 Assert.assertTrue(mergeTool.remove(0));
                 check(mergeTool, new Integer[]{});                
