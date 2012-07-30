@@ -43,7 +43,6 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.WarningListener;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
@@ -93,7 +92,7 @@ public final class DBFDriver extends AbstractDataSet implements FileReadWriteDri
                 LOG.trace("Creating source file");
                 try {
                         FileOutputStream fos = new FileOutputStream(new File(path));
-                        DbaseFileHeader header = getHeader(metadata, 0, dataSourceFactory.getWarningListener());
+                        DbaseFileHeader header = getHeader(metadata, 0);
                         DbaseFileWriter writer = new DbaseFileWriter(header, fos.getChannel());
                         writer.close();
                 } catch (IOException e) {
@@ -106,17 +105,16 @@ public final class DBFDriver extends AbstractDataSet implements FileReadWriteDri
         @Override
         public void writeFile(File file, DataSet dataSource, ProgressMonitor pm)
                 throws DriverException {
-                writeFile(file, new DefaultRowProvider(dataSource), dataSourceFactory.getWarningListener(), pm);
+                writeFile(file, new DefaultRowProvider(dataSource), pm);
         }
 
-        public void writeFile(File file, RowProvider dataSource,
-                WarningListener warningListener, ProgressMonitor pm)
+        public void writeFile(File file, RowProvider dataSource, ProgressMonitor pm)
                 throws DriverException {
                 LOG.trace("Writing source file");
                 try {
                         FileOutputStream fos = new FileOutputStream(file);
                         DbaseFileHeader header = getHeader(dataSource.getMetadata(),
-                                (int) dataSource.getRowCount(), dataSourceFactory.getWarningListener());
+                                (int) dataSource.getRowCount());
                         DbaseFileWriter writer = new DbaseFileWriter(header, fos.getChannel());
                         final int numRecords = header.getNumRecords();
                         pm.startTask("Writing file", numRecords);
@@ -140,16 +138,14 @@ public final class DBFDriver extends AbstractDataSet implements FileReadWriteDri
                 pm.endTask();
         }
 
-        private DbaseFileHeader getHeader(Metadata m, int rowCount,
-                WarningListener warningListener) throws DriverException,
+        private DbaseFileHeader getHeader(Metadata m, int rowCount) throws DriverException,
                 DbaseFileException {
                 DbaseFileHeader header = new DbaseFileHeader();
                 for (int i = 0; i < m.getFieldCount(); i++) {
                         String fieldName = m.getFieldName(i);
                         Type gdmsType = m.getFieldType(i);
                         DBFType type = getDBFType(gdmsType);
-                        header.addColumn(fieldName, type.type, type.fieldLength,
-                                type.decimalCount, warningListener);
+                        header.addColumn(fieldName, type.type, type.fieldLength, type.decimalCount);
                 }
                 header.setNumRecords(rowCount);
 
@@ -173,8 +169,7 @@ public final class DBFDriver extends AbstractDataSet implements FileReadWriteDri
         public Value getFieldValue(long rowIndex, int fieldId)
                 throws DriverException {
                 try {
-                        return dbaseReader.getFieldValue((int) rowIndex, fieldId,
-                                dataSourceFactory.getWarningListener());
+                        return dbaseReader.getFieldValue((int) rowIndex, fieldId);
                 } catch (IOException e) {
                         throw new DriverException(e);
                 }
@@ -359,8 +354,7 @@ public final class DBFDriver extends AbstractDataSet implements FileReadWriteDri
                 LOG.trace("Opening file");
                 try {
                         FileInputStream fis = new FileInputStream(file);
-                        dbaseReader = new DbaseFileReader(fis.getChannel(),
-                                dataSourceFactory.getWarningListener());
+                        dbaseReader = new DbaseFileReader(fis.getChannel());
                         loadInternalMetadata();
                 } catch (IOException e) {
                         throw new DriverException(e);

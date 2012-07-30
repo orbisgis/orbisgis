@@ -55,7 +55,6 @@ import org.jproj.CoordinateReferenceSystem;
 import org.postgis.jts.JtsBinaryParser;
 import org.postgresql.PGConnection;
 
-import org.gdms.data.WarningListener;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.CRSConstraint;
@@ -201,7 +200,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                 geometryTypes.put(geomFieldName, res.getString("type"));
                                 int dim = res.getInt("coord_dimension");
                                 if ((dim != 2) && (dim != 3)) {
-                                        getWL().throwWarning(
+                                        LOG.warn(
                                                 "Dimension of " + geomFieldName + " is wrong: "
                                                 + dim);
                                         if (this.schemaName == null) {
@@ -374,7 +373,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                         String geometryType = geometryTypes.get(fieldName);
                         int geometryDimension = geometryDimensions.get(fieldName);
 
-                        return buildType(geometryType, geometryDimension, getWL());
+                        return buildType(geometryType, geometryDimension);
                 } else {
                         return super.getGDMSType(resultsetMetadata, pkFieldsList, fkFieldsList,
                                 jdbcFieldIndex);
@@ -382,7 +381,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
         }
 
         private Type buildType(String geometryType,
-                int geometryDimension, WarningListener wl) throws DriverException {
+                int geometryDimension) throws DriverException {
                 int desiredCode;
                 if ("POINT".equals(geometryType)) {
                         desiredCode = Type.POINT;
@@ -399,7 +398,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                 } else if (GEOMETRYFIELDNAME.equals(geometryType)) {
                         desiredCode = Type.GEOMETRY;
                 } else {
-                        wl.throwWarning("Unrecognized geometry type: " + geometryType
+                        LOG.warn("Unrecognized geometry type: " + geometryType
                                 + ". Using 'MIXED'");
                         desiredCode = Type.NULL;
                 }
@@ -496,8 +495,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                 case 3:
                                         return 3;
                                 default:
-                                        getWL().throwWarning(
-                                                "Unknown dimension: " + constraint.getDimension());
+                                        LOG.warn("Unknown dimension: " + constraint.getDimension());
                                         return 2;
                         }
                 }
@@ -525,8 +523,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                 case Type.GEOMETRY:
                                         return GEOMETRYFIELDNAME;
                                 default:
-                                        getWL().throwWarning(
-                                                "Bug in postgreSQL driver: "
+                                        LOG.warn("Bug in postgreSQL driver: "
                                                 + TypeFactory.getTypeName(foundType));
                                         return GEOMETRYFIELDNAME;
                         }
@@ -701,8 +698,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                         return ValueFactory.createValue(geom, crs);
                                 }
                         } catch (SQLException e) {
-                                getWL().throwWarning(
-                                        "Cannot get value: " + e.getMessage()
+                                LOG.warn("Cannot get value: " + e.getMessage()
                                         + ". Returning null instead.");
                                 return ValueFactory.createNullValue();
                         }
