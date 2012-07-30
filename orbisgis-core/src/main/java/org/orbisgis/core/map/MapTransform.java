@@ -181,35 +181,29 @@ public class MapTransform implements PointTransformation {
         private void calculateAffineTransform() {
                 if (extent == null) {
                         return;
-                } else if ((image == null) || (getWidth() == 0) || (getHeight() == 0)) {
+                } else if (image == null || getWidth() == 0 || getHeight() == 0) {
                         return;
                 }
 
                 if (adjustExtent) {
-                        double escalaX;
-                        double escalaY;
-
-                        escalaX = getWidth() / extent.getWidth();
-                        escalaY = getHeight() / extent.getHeight();
+                        double escalaX = getWidth() / extent.getWidth();
+                        double escalaY = getHeight() / extent.getHeight();
 
                         double xCenter = extent.getMinX() + extent.getWidth() / 2.0;
                         double yCenter = extent.getMinY() + extent.getHeight() / 2.0;
-                        double newHeight;
-                        double newWidth;
-
                         adjustedExtent = new Envelope();
 
                         double scale;
                         if (escalaX < escalaY) {
                                 scale = escalaX;
-                                newHeight = getHeight() / scale;
+                                double newHeight = getHeight() / scale;
                                 double newX = xCenter - (extent.getWidth() / 2.0);
                                 double newY = yCenter - (newHeight / 2.0);
                                 adjustedExtent = new Envelope(newX, newX + extent.getWidth(), newY,
                                         newY + newHeight);
                         } else {
                                 scale = escalaY;
-                                newWidth = getWidth() / scale;
+                                double newWidth = getWidth() / scale;
                                 double newX = xCenter - (newWidth / 2.0);
                                 double newY = yCenter - (extent.getHeight() / 2.0);
                                 adjustedExtent = new Envelope(newX, newX + newWidth, newY, newY
@@ -269,7 +263,7 @@ public class MapTransform implements PointTransformation {
         /**
          * Sets the extent of the transformation. This extent is not used directly
          * to calculate the transformation but is adjusted to obtain an extent with
-         * the same ration than the image
+         * the same ratio than the image
          *
          * @param newExtent
          */
@@ -306,7 +300,8 @@ public class MapTransform implements PointTransformation {
                 int oldHeight = getHeight();
                 // image = new BufferedImage(width, height,
                 // BufferedImage.TYPE_INT_ARGB);
-                GraphicsConfiguration configuration = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+                GraphicsConfiguration configuration = GraphicsEnvironment.getLocalGraphicsEnvironment().
+                        getDefaultScreenDevice().getDefaultConfiguration();
                 image = configuration.createCompatibleImage(width, height,
                         BufferedImage.TYPE_INT_ARGB);
                 calculateAffineTransform();
@@ -387,8 +382,9 @@ public class MapTransform implements PointTransformation {
 
         /**
          * Sets the scale denominator, the Map extent is updated
+         * @param denominator
          */
-        public void setScaleDenominator(double denominator) throws IllegalArgumentException {
+        public void setScaleDenominator(double denominator) {
                 if (adjustedExtent != null) {
                         double currentScale = getScaleDenominator();
                         Coordinate center = getExtent().centre();
