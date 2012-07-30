@@ -279,6 +279,17 @@ public final class OwsMapContext extends BeanMapContext {
                 }
         }
 
+        @Override
+        public boolean isLayerModelSpatial(){
+                ILayer[] layers = getLayers();
+                for(ILayer l : layers){
+                        if(!l.acceptsChilds()){
+                                return true;
+                        }
+                }
+                return false;
+        }
+
         /**
          * Implementation of public draw method
          *

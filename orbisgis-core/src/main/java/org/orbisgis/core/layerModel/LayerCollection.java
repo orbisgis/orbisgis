@@ -87,6 +87,7 @@ public class LayerCollection extends BeanLayer {
 	}
 
 
+        @Override
 	public void addLayer(final ILayer layer) throws LayerException {
 		addLayer(layer, false);
 	}
@@ -97,6 +98,7 @@ public class LayerCollection extends BeanLayer {
          * @param index
          * @throws LayerException
          */
+        @Override
 	public void insertLayer(final ILayer layer, int index)
 			throws LayerException {
 		insertLayer(layer, index, false);
@@ -110,6 +112,7 @@ public class LayerCollection extends BeanLayer {
 	 * @throws LayerException
 	 * 
 	 */
+        @Override
 	public ILayer remove(final String layerName) throws LayerException {
 		for (int i = 0; i < size(); i++) {
 			if (layerName.equals(layerCollection.get(i).getName())) {
@@ -123,6 +126,7 @@ public class LayerCollection extends BeanLayer {
          * Retrieve the children of this node as an array.
          * @return
          */
+        @Override
 	public ILayer[] getChildren() {
 		if (null != layerCollection) {
 			ILayer[] result = new ILayer[size()];
@@ -145,6 +149,7 @@ public class LayerCollection extends BeanLayer {
          * false otherwise.
 	 * @see org.orbisgis.core.layerModel.ILayer#isVisible()
 	 */
+        @Override
 	public boolean isVisible() {
 		for (ILayer layer : getChildren()) {
 			if (layer.isVisible()) {
@@ -183,6 +188,7 @@ public class LayerCollection extends BeanLayer {
          *
          * @return
          */
+        @Override
 	public Envelope getEnvelope() {
 		final GetEnvelopeLayerAction tmp = new GetEnvelopeLayerAction();
 		processLayersLeaves(this, tmp);
@@ -231,6 +237,7 @@ public class LayerCollection extends BeanLayer {
          * Close this layer and all its children.
          * @throws LayerException
          */
+        @Override
 	public void close() throws LayerException {
 		for (ILayer layer : layerCollection) {
 			layer.close();
@@ -240,18 +247,21 @@ public class LayerCollection extends BeanLayer {
          * Open the layer and all its children.
          * @throws LayerException
          */
+        @Override
 	public void open() throws LayerException {
 		for (ILayer layer : layerCollection) {
 			layer.open();
 		}
 	}
+
         /**
          * Add a new layer to this collection.
          * @param layer
          * @param isMoving
+         * if {@code false}, {@code fireLayerAddedEvent} is called. It is not
+         * called if {@code isMoving} is true.
          * @throws LayerException
          */
-
         @Override
 	public void addLayer(ILayer layer, boolean isMoving) throws LayerException {
 		if (null != layer) {
@@ -377,6 +387,7 @@ public class LayerCollection extends BeanLayer {
          * Used to determine if this layer is a raster layer. It is not, it is a layer collection.
          * @return false
          */
+        @Override
 	public boolean isRaster() {
 		return false;
 	}
@@ -385,6 +396,7 @@ public class LayerCollection extends BeanLayer {
          * Used to determine if this layer is a vector layer. It is not, it is a layer collection.
          * @return false
          */
+        @Override
 	public boolean isVectorial() {
 		return false;
 	}
@@ -394,6 +406,7 @@ public class LayerCollection extends BeanLayer {
          * so it is null. 
          * @return
          */
+        @Override
 	public DataSource getDataSource() {
 		return null;
 	}
@@ -417,14 +430,17 @@ public class LayerCollection extends BeanLayer {
 
         //////////////////Unsupported methods////////////////////////
 
+        @Override
 	public GeoRaster getRaster() throws DriverException {
 		throw new UnsupportedOperationException(I18N.tr("Cannot do this operation on a layer collection")); //$NON-NLS-1$
 	}
 
+        @Override
 	public int[] getSelection() {
 		return new int[0];
 	}
 
+        @Override
 	public void setSelection(int[] newSelection) {
 	}
 

@@ -170,14 +170,15 @@ public abstract class BeanMapContext implements MapContext {
         /**
          * Set the value of boundingBox
          *
-         * @param boundingBox new value of boundingBox
+         * @param bBox new value of boundingBox
          */
         @Override
-        public void setBoundingBox(Envelope boundingBox) {
-                if (boundingBox != null && !boundingBox.equals(this.boundingBox)) {
+        public void setBoundingBox(Envelope bBox) {
+                if ((bBox == null && boundingBox != null)
+                                || (bBox != null && !bBox.equals(this.boundingBox))) {
                         Envelope oldBoundingBox = this.boundingBox;
-                        this.boundingBox = boundingBox;
-                        propertyChangeSupport.firePropertyChange(PROP_BOUNDINGBOX, oldBoundingBox, boundingBox);
+                        this.boundingBox = bBox;
+                        propertyChangeSupport.firePropertyChange(PROP_BOUNDINGBOX, oldBoundingBox, bBox);
                 }
         }
 

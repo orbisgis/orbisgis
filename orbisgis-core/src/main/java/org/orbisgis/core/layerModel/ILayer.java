@@ -169,8 +169,20 @@ public interface ILayer {
 	 */
 	ILayer remove(String layerName) throws LayerException;
 
+        /**
+         * Adds a child to this {@code ILayer}.
+         * @param layer
+         * @throws LayerException If this can't accept a child.
+         */
 	void addLayer(ILayer layer) throws LayerException;
 
+        /**
+         * Adds a child to this {@code ILayer}. This method may behave differently
+         * if {@code layer} is a layer being moved or not.
+         * @param layer
+         * @param isMoving
+         * @throws LayerException
+         */
 	void addLayer(ILayer layer, boolean isMoving) throws LayerException;
 
 	/**
