@@ -51,7 +51,7 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * @author Alexis Guéganno
  */
-public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
+public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueAreaSE.class);
 
         /**

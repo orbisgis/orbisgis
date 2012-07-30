@@ -31,7 +31,6 @@ package org.orbisgis.view.toc.actions.cui.legends;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -41,7 +40,6 @@ import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -70,34 +68,6 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueSymbolSE.class);
         private String id;
         private CanvasSE preview;
-
-        public JPanel getLineBlock(ConstantPenStroke legend, String title){
-                if(preview == null && getLegend() != null){
-                        initPreview();
-                }
-                JPanel glob = new JPanel();
-                glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
-                JPanel jp = new JPanel();
-                GridLayout grid = new GridLayout(4,2);
-                grid.setVgap(5);
-                jp.setLayout(grid);
-                //Width
-                jp.add(buildText(I18N.tr("Line width :")));
-                jp.add(getLineWidthSpinner(legend));
-                //Color
-                jp.add(buildText(I18N.tr("Line color :")));
-                jp.add(getColorField(legend.getFillLegend()));
-                //Transparency
-                jp.add(buildText(I18N.tr("Line opacity :")));
-                jp.add(getLineOpacitySpinner(legend.getFillLegend()));
-                //Dash array
-                jp.add(buildText(I18N.tr("Dash array :")));
-                jp.add(getDashArrayField(legend));
-                glob.add(jp);
-                //We add a canvas to display a preview.
-                glob.setBorder(BorderFactory.createTitledBorder(title));
-                return glob;
-        }
 
         /**
          * Rebuild the {@code CanvasSe} instance used to display a preview of

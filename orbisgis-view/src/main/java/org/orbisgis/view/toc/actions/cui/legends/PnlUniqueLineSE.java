@@ -31,14 +31,20 @@ package org.orbisgis.view.toc.actions.cui.legends;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.net.URL;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * {@code JPanel} that ca nbe used to configure simple constant {@code
@@ -47,6 +53,7 @@ import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
  * @author Alexis Guéganno
  */
 public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
+        private static final I18n I18N = I18nFactory.getI18n(PnlUniqueLineSE.class);
 
         /**
          * Here we can put all the Legend instances we want... but they have to
@@ -136,6 +143,40 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          */
         protected boolean isLineOptional(){
                 return false;
+        }
+
+        /**
+         * Gets a panel containing all the fields to edit a unique line.
+         * @param legend
+         * @param title
+         * @return
+         */
+        public JPanel getLineBlock(ConstantPenStroke legend, String title){
+                if(getPreview() == null && getLegend() != null){
+                        initPreview();
+                }
+                JPanel glob = new JPanel();
+                glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
+                JPanel jp = new JPanel();
+                GridLayout grid = new GridLayout(4,2);
+                grid.setVgap(5);
+                jp.setLayout(grid);
+                //Width
+                jp.add(buildText(I18N.tr("Line width :")));
+                jp.add(getLineWidthSpinner(legend));
+                //Color
+                jp.add(buildText(I18N.tr("Line color :")));
+                jp.add(getColorField(legend.getFillLegend()));
+                //Transparency
+                jp.add(buildText(I18N.tr("Line opacity :")));
+                jp.add(getLineOpacitySpinner(legend.getFillLegend()));
+                //Dash array
+                jp.add(buildText(I18N.tr("Dash array :")));
+                jp.add(getDashArrayField(legend));
+                glob.add(jp);
+                //We add a canvas to display a preview.
+                glob.setBorder(BorderFactory.createTitledBorder(title));
+                return glob;
         }
 
         private void initializeLegendFields() {
