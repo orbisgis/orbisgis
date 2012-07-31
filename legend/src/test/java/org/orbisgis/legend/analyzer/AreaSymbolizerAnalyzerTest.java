@@ -268,6 +268,38 @@ public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
         }
     }
 
+    @Test
+    public void testNullFill() throws Exception {
+        AreaSymbolizer as = getConstantSymbolizer();
+        as.setFill(null);
+        AreaSymbolizerAnalyzer asa = new AreaSymbolizerAnalyzer(as);
+        assertTrue(asa.getLegend() instanceof UniqueSymbolArea);
+    }
+
+    @Test
+    public void testNullFillBis() throws Exception {
+        AreaSymbolizer as = getConstantSymbolizer();
+        as.setFill(null);
+        UniqueSymbolArea usa = new UniqueSymbolArea(as);
+        assertTrue(true);
+    }
+
+    @Test
+    public void testNullStroke() throws Exception {
+        AreaSymbolizer as = getConstantSymbolizer();
+        as.setStroke(null);
+        AreaSymbolizerAnalyzer asa = new AreaSymbolizerAnalyzer(as);
+        assertTrue(asa.getLegend() instanceof UniqueSymbolArea);
+    }
+
+    @Test
+    public void testNullStrokeBis() throws Exception {
+        AreaSymbolizer as = getConstantSymbolizer();
+        as.setStroke(null);
+        UniqueSymbolArea usa = new UniqueSymbolArea(as);
+        assertTrue(true);
+    }
+
     private AreaSymbolizer getChoroSymbolizer() throws Exception {
         Style st = getStyle(categorize);
         return (AreaSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);

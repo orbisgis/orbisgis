@@ -126,6 +126,11 @@ public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbo
         return markGraphic.getPenStroke();
     }
 
+    @Override
+    public void setPenStroke(ConstantPenStroke cpsl) {
+        markGraphic.setPenStroke(cpsl);
+    }
+
     /**
      * Get the width of the {@code ViewBox} we are going to draw our symbol in.
      * @return

@@ -105,6 +105,11 @@ public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbo
         return (ConstantPenStroke) getStrokeLegend();
     }
 
+    @Override
+    public void setPenStroke(ConstantPenStroke cpsl) {
+        setStrokeLegend(cpsl);
+    }
+
     /**
      * Sets the legend describing the structure of the fill contained in the
      * inner {@link AreaSymbolizer}. This will update the fill of the {@code

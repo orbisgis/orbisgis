@@ -28,12 +28,12 @@
  */
 package org.orbisgis.legend.thematic.constant;
 
-import java.util.List;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
 import org.xnap.commons.i18n.I18n;
@@ -54,7 +54,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUniqueSymbolLine {
 
     private static final I18n I18N = I18nFactory.getI18n(UniqueSymbolLine.class);
-    private ConstantPenStrokeLegend strokeLegend;
+    private ConstantPenStroke strokeLegend;
 
     /**
      * Build a new default {@code UniqueSymbolLine} from scratch. It contains a
@@ -112,8 +112,14 @@ public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUni
     }
 
     @Override
-    public ConstantPenStrokeLegend getPenStroke() {
+    public ConstantPenStroke getPenStroke() {
         return strokeLegend;
+    }
+
+    @Override
+    public void setPenStroke(ConstantPenStroke cpsl){
+            strokeLegend = cpsl;
+            ((LineSymbolizer)getSymbolizer()).setStroke(strokeLegend.getPenStroke());
     }
 
     @Override

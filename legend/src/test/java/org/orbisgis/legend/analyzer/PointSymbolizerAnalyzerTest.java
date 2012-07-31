@@ -49,14 +49,13 @@ import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
  */
 public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
     
-    private String xml = "src/test/resources/org/orbisgis/legend/constantWKN.se";
-    private String xml2 = "src/test/resources/org/orbisgis/legend/proportionalSymbol.se";
-    private String xml3 = "src/test/resources/org/orbisgis/legend/constant2DWKN.se";
-    private String proportional = "src/test/resources/org/orbisgis/legend/proportionalSymbol.se";
+    private static final String CONSTANT = "src/test/resources/org/orbisgis/legend/constantWKN.se";
+    private static final String CONSTANT2D = "src/test/resources/org/orbisgis/legend/constant2DWKN.se";
+    private static final String PROPORTIONAL = "src/test/resources/org/orbisgis/legend/proportionalSymbol.se";
 
     @Test
     public void testLegendConstructor() throws Exception {
-                Style st = getStyle(xml);
+                Style st = getStyle(CONSTANT);
                 PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
                 UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
                 assertTrue(true);
@@ -64,11 +63,33 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testLegendFromAnalyzer() throws Exception {
-                Style st = getStyle(xml);
+                Style st = getStyle(CONSTANT);
                 PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
                 PointSymbolizerAnalyzer psa = new PointSymbolizerAnalyzer(ps);
                 assertTrue(psa.getLegend() instanceof UniqueSymbolPoint);
 
+    }
+
+    @Test
+    public void testConstantNullFill() throws Exception {
+                Style st = getStyle(CONSTANT);
+                PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
+                MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
+                mg.setFill(null);
+                UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
+                PointSymbolizerAnalyzer psa = new PointSymbolizerAnalyzer(ps);
+                assertTrue(psa.getLegend() instanceof UniqueSymbolPoint);
+    }
+
+    @Test
+    public void testConstantNullStroke() throws Exception {
+                Style st = getStyle(CONSTANT);
+                PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
+                MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
+                mg.setStroke(null);
+                UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
+                PointSymbolizerAnalyzer psa = new PointSymbolizerAnalyzer(ps);
+                assertTrue(psa.getLegend() instanceof UniqueSymbolPoint);
     }
     
     /**
@@ -77,7 +98,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
      */
     @Test
     public void testLegendConstructorFail() throws Exception {
-                Style st = getStyle(xml2);
+                Style st = getStyle(PROPORTIONAL);
                 PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
                 try{
                     UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
@@ -89,7 +110,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testGetFillColor() throws Exception {
-        Style st = getStyle(xml);
+        Style st = getStyle(CONSTANT);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         //Let's check the color that is used for this Symbolizer. It should be something
         //like GRAY50
@@ -103,7 +124,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testSetFillColor() throws Exception {
-        Style st = getStyle(xml);
+        Style st = getStyle(CONSTANT);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         //Let's check the color that is used for this Symbolizer. It should be something
         //like GRAY50
@@ -112,13 +133,13 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         assertTrue(c.equals(new Color((int)SolidFill.GRAY50, (int)SolidFill.GRAY50, (int)SolidFill.GRAY50)));
         //We can continue... Let's build the UniqueSymbolPoint
         UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
-        uvp.getFillLegend().setColor(new Color(4,4,4));;
+        uvp.getFillLegend().setColor(new Color(4,4,4));
         assertTrue(uvp.getFillLegend().getColor().equals(new Color(4,4,4)));
     }
 
     @Test
     public void testGetLineWidth() throws Exception {
-        Style st = getStyle(xml);
+        Style st = getStyle(CONSTANT);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         //Let's get the current width
         MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
@@ -131,7 +152,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testSetLineWidth() throws Exception {
-        Style st = getStyle(xml);
+        Style st = getStyle(CONSTANT);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         //Let's get the current width
         MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
@@ -145,7 +166,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testGetLineColor() throws Exception {
-        Style st = getStyle(xml);
+        Style st = getStyle(CONSTANT);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         //Let's get the current width
         MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
@@ -158,7 +179,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testSetLineColor() throws Exception {
-        Style st = getStyle(xml);
+        Style st = getStyle(CONSTANT);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         //Let's get the current width
         MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
@@ -172,7 +193,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testGetLineDash() throws Exception {
-        Style st = getStyle(xml);
+        Style st = getStyle(CONSTANT);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         //Let's get the current width
         MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
@@ -185,7 +206,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testSetLineDash() throws Exception {
-        Style st = getStyle(xml);
+        Style st = getStyle(CONSTANT);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         //Let's get the current width
         MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
@@ -199,7 +220,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testGetViewBoxDimensions() throws Exception {
-        Style st = getStyle(xml3);
+        Style st = getStyle(CONSTANT2D);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         //Let's get the current width
         MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
@@ -212,7 +233,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testGetViewBoxOneDimensionOnly() throws Exception {
-        Style st = getStyle(xml);
+        Style st = getStyle(CONSTANT);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         //Let's get the current width
         MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
@@ -225,7 +246,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testSetViewBoxDimensions() throws Exception {
-        Style st = getStyle(xml3);
+        Style st = getStyle(CONSTANT2D);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         //Let's get the current width
         MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
@@ -246,7 +267,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testSetViewBoxOneDimensionOnly() throws Exception {
-        Style st = getStyle(xml);
+        Style st = getStyle(CONSTANT);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         //Let's get the current width
         MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
@@ -286,7 +307,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testProportionalPointConstructor() throws Exception {
-                Style st = getStyle(proportional);
+                Style st = getStyle(PROPORTIONAL);
                 PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
                 ProportionalPoint uvp = new ProportionalPoint(ps);
                 assertTrue(true);
@@ -294,7 +315,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testLegendFromAnalyzerProportionalPoint() throws Exception {
-                Style st = getStyle(proportional);
+                Style st = getStyle(PROPORTIONAL);
                 PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
                 PointSymbolizerAnalyzer psa = new PointSymbolizerAnalyzer(ps);
                 assertTrue(psa.getLegend() instanceof ProportionalPoint);
@@ -303,7 +324,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
     
     @Test
     public void testProportionalPointConstructorFail() throws Exception {
-                Style st = getStyle(xml);
+                Style st = getStyle(CONSTANT);
                 PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
                 try{
                     ProportionalPoint uvp = new ProportionalPoint(ps);
@@ -315,14 +336,14 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testProportionalGetFirstData() throws Exception {
-        Style st = getStyle(proportional);
+        Style st = getStyle(PROPORTIONAL);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         ProportionalPoint uvp = new ProportionalPoint(ps);
         assertTrue(uvp.getFirstData() == .0);
     }
     @Test
     public void testProportionalGetSecondData() throws Exception {
-        Style st = getStyle(proportional);
+        Style st = getStyle(PROPORTIONAL);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         ProportionalPoint uvp = new ProportionalPoint(ps);
         double youhou = uvp.getSecondData();
@@ -331,7 +352,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testProportionalSetFirstData() throws Exception {
-        Style st = getStyle(proportional);
+        Style st = getStyle(PROPORTIONAL);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         ProportionalPoint uvp = new ProportionalPoint(ps);
         uvp.setFirstData(25.2);
@@ -339,7 +360,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
     }
     @Test
     public void testProportionalSetSecondData() throws Exception {
-        Style st = getStyle(proportional);
+        Style st = getStyle(PROPORTIONAL);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         ProportionalPoint uvp = new ProportionalPoint(ps);
         uvp.setSecondData(42.0);
@@ -348,14 +369,14 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testProportionalGetFirstValue() throws Exception {
-        Style st = getStyle(proportional);
+        Style st = getStyle(PROPORTIONAL);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         ProportionalPoint uvp = new ProportionalPoint(ps);
         assertTrue(uvp.getFirstValue() == .0);
     }
     @Test
     public void testProportionalGetSecondValue() throws Exception {
-        Style st = getStyle(proportional);
+        Style st = getStyle(PROPORTIONAL);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         ProportionalPoint uvp = new ProportionalPoint(ps);
         assertTrue( uvp.getSecondValue()== 200.0);
@@ -363,7 +384,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testProportionalSetFirstValue() throws Exception {
-        Style st = getStyle(proportional);
+        Style st = getStyle(PROPORTIONAL);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         ProportionalPoint uvp = new ProportionalPoint(ps);
         uvp.setFirstValue(24.0);
@@ -371,7 +392,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
     }
     @Test
     public void testProportionalSetSecondValue() throws Exception {
-        Style st = getStyle(proportional);
+        Style st = getStyle(PROPORTIONAL);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         ProportionalPoint uvp = new ProportionalPoint(ps);
         uvp.setSecondValue(250.0);

@@ -75,4 +75,13 @@ public abstract class ConstantFormWKN extends MarkGraphicLegend {
     public ConstantPenStroke getPenStroke(){
             return (ConstantPenStroke) getStrokeLegend();
     }
+
+    /**
+     * Sets the {@code ConstantPenStroke} that is associated to this mark
+     * graphic.
+     * @param cps
+     */
+    public void setPenStroke(ConstantPenStroke cps){
+            setStrokeLegend(cps);
+    }
 }

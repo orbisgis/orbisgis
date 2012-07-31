@@ -36,7 +36,6 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
-import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 
 /**
@@ -70,15 +69,15 @@ public abstract class ConstantStrokeArea extends SymbolizerLegend {
     public ConstantStrokeArea(AreaSymbolizer symbolizer){
         areaSymbolizer=symbolizer;
         Stroke stroke = symbolizer.getStroke();
-        if(stroke instanceof PenStroke){
+        if(stroke instanceof PenStroke || stroke == null){
             LegendStructure strokeLgd = new PenStrokeAnalyzer((PenStroke) stroke).getLegend();
-            if(strokeLgd instanceof ConstantPenStrokeLegend){
-                strokeLegend = (ConstantPenStrokeLegend) strokeLgd;
+            if(strokeLgd instanceof ConstantPenStroke){
+                strokeLegend = (ConstantPenStroke) strokeLgd;
             } else {
                 throw new IllegalArgumentException("The stroke of this AreaSymbolizer "
                         + "can't be recognized as a constant PenStroke.");
             }
-        } else if (stroke != null){
+        } else {
             throw new IllegalArgumentException("We are not able to process Stroke"
                     + "that are not PenStroke.");
         }

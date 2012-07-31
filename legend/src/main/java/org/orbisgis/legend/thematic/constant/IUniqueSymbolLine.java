@@ -43,4 +43,10 @@ public interface IUniqueSymbolLine extends UniqueSymbol {
      */
     ConstantPenStroke getPenStroke();
 
+    /**
+     * Sets the analysis associated to the inner {@code PenStroke}.
+     * @param cpsl
+     */
+    void setPenStroke(ConstantPenStroke cpsl);
+
 }
