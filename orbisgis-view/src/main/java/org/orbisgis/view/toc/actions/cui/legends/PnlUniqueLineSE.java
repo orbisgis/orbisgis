@@ -188,11 +188,11 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 lineOpacity = getLineOpacitySpinner(legend.getFillLegend());
                 lineDash = getDashArrayField(legend);
                 if(isLineOptional()){
-                        lineCheckBox = new JCheckBox(I18N.tr("Enable line configuration"));
+                        jp.add(buildText(I18N.tr("Enable line : ")));
+                        lineCheckBox = new JCheckBox("");
                         ActionListener acl = EventHandler.create(ActionListener.class, this, "onClickLineCheckBox");
                         lineCheckBox.addActionListener(acl);
                         jp.add(lineCheckBox);
-                        jp.add(buildText(""));
                         //We must check the CheckBox according to leg, not to legend.
                         //legend is here mainly to let us fill safely all our
                         //parameters.
@@ -224,10 +224,10 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          * @param enable
          */
         public void setLineFieldsState(boolean enable){
-                setFieldState(enable,lineWidth.getComponents());
-                setFieldState(enable,lineColor.getComponents());
-                setFieldState(enable,lineOpacity.getComponents());
-                setFieldState(enable,lineDash.getComponents());
+                setFieldState(enable,lineWidth);
+                setFieldState(enable,lineColor);
+                setFieldState(enable,lineOpacity);
+                setFieldState(enable,lineDash);
         }
 
         /**
@@ -240,12 +240,14 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 if(lineCheckBox.isSelected()){
                         ((IUniqueSymbolLine)getLegend()).setPenStroke(penStrokeMemory);
                         setLineFieldsState(true);
+                        getPreview().repaint();
                 } else {
                         //We must replace the old PenStroke representation with
                         //its null representation
                         NullPenStrokeLegend npsl = new NullPenStrokeLegend();
                         ((IUniqueSymbolLine)getLegend()).setPenStroke(npsl);
                         setLineFieldsState(false);
+                        getPreview().repaint();
                 }
         }
 
@@ -266,11 +268,12 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          * @param enable
          * @param comps
          */
-        private void setFieldState(boolean enable, Component[] comps){
-                for(Component c: comps){
-                        c.setEnabled(enable);
-                        if(c instanceof Container){
-                                setFieldState(enable, ((Container)c).getComponents());
+        protected void setFieldState(boolean enable, Component comp){
+                comp.setEnabled(enable);
+                if(comp instanceof Container){
+                        Component[] comps = ((Container)comp).getComponents();
+                        for(Component c: comps){
+                                setFieldState(enable, c);
                         }
                 }
         }
