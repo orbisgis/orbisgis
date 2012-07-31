@@ -118,7 +118,7 @@ public class TocTreeNodeLayer implements TreeNode {
         }
 
         @Override
-        public Enumeration children() {
+        public Enumeration<TreeNode> children() {
                 List<TreeNode> nodes = new ArrayList<TreeNode>();
                 for(int i=0;i<getChildCount();i++) {
                         nodes.add(getChildAt(i));
@@ -130,10 +130,10 @@ public class TocTreeNodeLayer implements TreeNode {
          * this class is provide to convert an iterator to an enumeration
          * If such class exists already in java please replace it
          */
-        private class NodeEnumeration implements Enumeration {
-                private Iterator it;
+        private class NodeEnumeration implements Enumeration<TreeNode> {
+                private Iterator<TreeNode> it;
 
-                public NodeEnumeration(Iterator it) {
+                public NodeEnumeration(Iterator<TreeNode> it) {
                         this.it = it;
                 }
                 
@@ -143,7 +143,7 @@ public class TocTreeNodeLayer implements TreeNode {
                 }
 
                 @Override
-                public Object nextElement() {
+                public TreeNode nextElement() {
                         return it.next();
                 }
                 

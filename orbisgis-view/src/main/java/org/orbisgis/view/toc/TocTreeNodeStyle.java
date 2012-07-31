@@ -96,7 +96,7 @@ public class TocTreeNodeStyle implements TreeNode  {
         }
 
         @Override
-        public Enumeration children() {
+        public Enumeration<TreeNode> children() {
                 return null;
         }
         
