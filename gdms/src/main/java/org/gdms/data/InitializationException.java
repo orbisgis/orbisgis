@@ -38,7 +38,7 @@ package org.gdms.data;
  *
  * @author Fernando Gonzalez Cortes
  */
-public class InitializationException extends RuntimeException {
+public final class InitializationException extends RuntimeException {
         
         private static final long serialVersionUID = -4572390173506790160L;
 

@@ -37,7 +37,7 @@ package org.gdms.sql.engine;
  *
  * @author Antoine Gourlay
  */
-public class UnknownFieldException extends SemanticException {
+public final class UnknownFieldException extends SemanticException {
 
     /**
      * Creates a new instance of <code>UnknownFieldException</code> without detail message.

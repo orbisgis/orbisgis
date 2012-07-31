@@ -52,7 +52,7 @@ import org.gdms.data.values.ValueFactory;
 /**
  *
  */
-public class BTreeInteriorNode extends AbstractBTreeNode {
+public final class BTreeInteriorNode extends AbstractBTreeNode {
 
         private List<ChildReference> children;
 

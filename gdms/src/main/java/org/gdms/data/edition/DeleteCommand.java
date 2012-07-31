@@ -39,7 +39,7 @@ import org.gdms.driver.DriverException;
  * Delete a  row in the datasource.
  * 
  */
-public class DeleteCommand extends AbstractCommand implements Command {
+public final class DeleteCommand extends AbstractCommand implements Command {
 
         private DeleteCommandInfo info;
 

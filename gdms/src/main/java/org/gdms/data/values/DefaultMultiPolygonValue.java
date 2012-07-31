@@ -44,9 +44,9 @@ import org.gdms.data.types.Type;
  *
  * @author Antoine Gourlay
  */
-public class DefaultMultiPolygonValue extends DefaultGeometryCollectionValue implements MultiPolygonValue {
+final class DefaultMultiPolygonValue extends DefaultGeometryCollectionValue implements MultiPolygonValue {
 
-        public DefaultMultiPolygonValue(MultiPolygon g,  CoordinateReferenceSystem crs) {
+        DefaultMultiPolygonValue(MultiPolygon g,  CoordinateReferenceSystem crs) {
                 super(g, crs);
         }
 

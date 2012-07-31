@@ -35,7 +35,7 @@ package org.gdms.data.edition;
 
 import org.gdms.driver.DriverException;
 
-public class SetFieldNameCommand implements Command {
+public final class SetFieldNameCommand implements Command {
 
         private EditionDecorator dataSource;
         private int fieldIndex;

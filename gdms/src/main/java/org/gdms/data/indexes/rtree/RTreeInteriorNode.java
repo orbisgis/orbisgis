@@ -52,7 +52,7 @@ import org.gdms.data.indexes.tree.IndexVisitor;
  * @author Fernando Gonzalez Cortes
  *
  */
-public class RTreeInteriorNode extends AbstractRTreeNode {
+public final class RTreeInteriorNode extends AbstractRTreeNode {
 
         private List<ChildReference> children;
         private Envelope envelope = null;

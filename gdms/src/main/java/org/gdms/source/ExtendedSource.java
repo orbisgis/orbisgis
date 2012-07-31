@@ -68,7 +68,7 @@ import org.gdms.source.directory.Sources;
  * This source is linked to a DataSourceDefinition, and optionally to a DataSource.
  * @author Antoine Gourlay
  */
-public final class ExtendedSource implements org.gdms.source.Source {
+final class ExtendedSource implements org.gdms.source.Source {
 
         private DataSource dataSource;
         DataSourceDefinition def;

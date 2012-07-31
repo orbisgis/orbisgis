@@ -45,7 +45,7 @@ import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 
 /**
- * Default implementation for the Metadata interface
+ * Default implementation for the Metadata interface.
  * 
  */
 public class DefaultMetadata implements Metadata {

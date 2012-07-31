@@ -45,11 +45,11 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 
 /**
- * Wrapper for strings
+ * Wrapper for strings.
  *
  * @author Fernando Gonzalez Cortes
  */
-class DefaultStringValue extends AbstractValue implements Serializable, StringValue {
+final class DefaultStringValue extends AbstractValue implements Serializable, StringValue {
 
         private static final String NOTNUMBER = " is not a number";
         private String value;

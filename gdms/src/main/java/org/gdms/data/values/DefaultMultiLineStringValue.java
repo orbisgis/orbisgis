@@ -44,9 +44,9 @@ import org.gdms.data.types.Type;
  *
  * @author Antoine Gourlay
  */
-public class DefaultMultiLineStringValue extends DefaultGeometryCollectionValue implements MultiLineStringValue {
+final class DefaultMultiLineStringValue extends DefaultGeometryCollectionValue implements MultiLineStringValue {
 
-        public DefaultMultiLineStringValue(MultiLineString g,  CoordinateReferenceSystem crs) {
+        DefaultMultiLineStringValue(MultiLineString g,  CoordinateReferenceSystem crs) {
                 super(g, crs);
         }
 

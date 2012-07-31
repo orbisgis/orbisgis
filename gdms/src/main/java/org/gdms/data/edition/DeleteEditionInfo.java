@@ -37,7 +37,7 @@ import org.gdms.data.values.ValueCollection;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
-public class DeleteEditionInfo implements OriginalEditionInfo {
+public final class DeleteEditionInfo implements OriginalEditionInfo {
 
         private ValueCollection pk;
 

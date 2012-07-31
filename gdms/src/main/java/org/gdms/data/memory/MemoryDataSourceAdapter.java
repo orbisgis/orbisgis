@@ -57,7 +57,7 @@ import org.gdms.source.SourceManager;
  * DataSource implementation for accessing <code>MemoryDriver</code> sources.
  * @author Antoine Gourlay
  */
-public class MemoryDataSourceAdapter extends DriverDataSource implements
+public final class MemoryDataSourceAdapter extends DriverDataSource implements
         Commiter, CommitListener {
 
         private MemoryDriver driver;

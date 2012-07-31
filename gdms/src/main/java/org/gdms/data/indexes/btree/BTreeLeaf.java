@@ -48,7 +48,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 
-public class BTreeLeaf extends AbstractBTreeNode {
+public final class BTreeLeaf extends AbstractBTreeNode {
 
         private List<Integer> rows;
 

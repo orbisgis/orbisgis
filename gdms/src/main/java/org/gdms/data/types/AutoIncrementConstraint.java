@@ -37,10 +37,10 @@ import org.gdms.data.values.Value;
 
 /**
  * Indicates the field is incremented automatically without the need to specify
- * a value for it
+ * a value for it.
  * 
  */
-public class AutoIncrementConstraint extends AbstractBooleanConstraint {
+public final class AutoIncrementConstraint extends AbstractBooleanConstraint {
 
 	public AutoIncrementConstraint() {
 	}

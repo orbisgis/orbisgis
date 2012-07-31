@@ -43,9 +43,9 @@ import org.gdms.data.types.Type;
  *
  * @author Antoine Gourlay
  */
-public class DefaultPointValue extends DefaultGeometryValue implements PointValue {
+final class DefaultPointValue extends DefaultGeometryValue implements PointValue {
 
-        public DefaultPointValue(Point g,  CoordinateReferenceSystem crs) {
+        DefaultPointValue(Point g,  CoordinateReferenceSystem crs) {
                 super(g, crs);
         }
 

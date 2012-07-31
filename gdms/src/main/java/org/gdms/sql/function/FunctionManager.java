@@ -42,7 +42,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import org.gdms.data.InitializationException;
-import org.gdms.sql.function.spatial.export.ST_PLYExporter;
 import org.gdms.sql.function.alphanumeric.AutoNumeric;
 import org.gdms.sql.function.alphanumeric.Average;
 import org.gdms.sql.function.alphanumeric.Count;
@@ -75,6 +74,7 @@ import org.gdms.sql.function.math.StandardDeviation;
 import org.gdms.sql.function.math.Tan;
 import org.gdms.sql.function.math.ToDegrees;
 import org.gdms.sql.function.math.ToRadians;
+import org.gdms.sql.function.spatial.export.ST_PLYExporter;
 import org.gdms.sql.function.spatial.geometry.affineTransformation.ST_Rotate;
 import org.gdms.sql.function.spatial.geometry.affineTransformation.ST_Scale;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Centroid;

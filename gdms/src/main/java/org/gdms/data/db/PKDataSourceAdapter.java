@@ -53,7 +53,7 @@ import org.gdms.driver.DriverException;
  * @author Fernando Gonzalez Cortes
  *
  */
-class PKDataSourceAdapter extends AbstractDataSourceDecorator {
+final class PKDataSourceAdapter extends AbstractDataSourceDecorator {
 
 	private DefaultMetadata met;
 

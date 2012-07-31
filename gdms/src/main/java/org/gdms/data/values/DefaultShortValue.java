@@ -38,9 +38,9 @@ import java.sql.Types;
 import org.gdms.data.types.Type;
 
 /**
- *
+ * Wrapper for short values.
  */
-class DefaultShortValue extends DefaultNumericValue implements ShortValue {
+final class DefaultShortValue extends DefaultNumericValue implements ShortValue {
 
         private short value;
         

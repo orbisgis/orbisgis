@@ -42,7 +42,7 @@ import org.gdms.data.types.TypeFactory;
  * 
  * @author Fernando Gonzalez Cortes
  */
-class DefaultBooleanValue extends AbstractValue implements BooleanValue {
+final class DefaultBooleanValue extends AbstractValue implements BooleanValue {
 
         private static final String NOTBOOLEAN = "The specified value is not a boolean:";
         private boolean value;

@@ -41,7 +41,7 @@ import org.apache.log4j.Logger;
  *
  * @author Antoine Gourlay
  */
-public class GdmsProperties extends Properties {
+public final class GdmsProperties extends Properties {
 
         private static final long serialVersionUID = 4589314962048014060L;
         private static final Logger LOG = Logger.getLogger(GdmsProperties.class);

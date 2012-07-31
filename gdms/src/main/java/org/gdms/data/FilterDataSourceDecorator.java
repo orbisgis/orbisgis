@@ -71,7 +71,7 @@ import org.gdms.sql.engine.SQLStatement;
  * <p/>
  * @author Antoine Gourlay
  */
-public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
+public final class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
 
         private List<Integer> map;
         private String filter;

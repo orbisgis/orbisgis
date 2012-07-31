@@ -36,7 +36,7 @@ package org.gdms.data.edition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
-public class ModifyCommand extends AbstractCommand implements Command {
+public final class ModifyCommand extends AbstractCommand implements Command {
 
 	private int fieldIndex;
 

@@ -44,9 +44,9 @@ import org.gdms.data.types.Type;
  *
  * @author Antoine Gourlay
  */
-public class DefaultMultiPointValue extends DefaultGeometryCollectionValue implements MultiPointValue {
+final class DefaultMultiPointValue extends DefaultGeometryCollectionValue implements MultiPointValue {
 
-        public DefaultMultiPointValue(MultiPoint g,  CoordinateReferenceSystem crs) {
+        DefaultMultiPointValue(MultiPoint g,  CoordinateReferenceSystem crs) {
                 super(g, crs);
         }
 

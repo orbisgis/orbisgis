@@ -45,7 +45,7 @@ import org.gdms.driver.DriverException;
  * 
  * @author Fernando Gonzalez Cortes
  */
-public class CommandStack {
+public final class CommandStack {
 	private List<Command> commands = new ArrayList<Command>();
 
 	private int position = 0;

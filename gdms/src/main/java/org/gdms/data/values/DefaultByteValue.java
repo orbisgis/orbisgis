@@ -40,7 +40,7 @@ import org.gdms.data.types.Type;
 /**
  * Numeric value dedicated to the storage of Byte.
  */
-class DefaultByteValue extends DefaultNumericValue implements ByteValue {
+final class DefaultByteValue extends DefaultNumericValue implements ByteValue {
 
         private byte value;
 

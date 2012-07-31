@@ -43,9 +43,9 @@ import org.gdms.data.types.Type;
  *
  * @author Antoine Gourlay
  */
-public class DefaultPolygonValue extends DefaultGeometryValue implements PolygonValue {
+final class DefaultPolygonValue extends DefaultGeometryValue implements PolygonValue {
 
-        public DefaultPolygonValue(Polygon g,  CoordinateReferenceSystem crs) {
+        DefaultPolygonValue(Polygon g,  CoordinateReferenceSystem crs) {
                 super(g, crs);
         }
 

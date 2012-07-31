@@ -43,9 +43,9 @@ import org.gdms.data.types.Type;
  *
  * @author Antoine Gourlay
  */
-public class DefaultLineStringValue extends DefaultGeometryValue implements LineStringValue {
+final class DefaultLineStringValue extends DefaultGeometryValue implements LineStringValue {
 
-        public DefaultLineStringValue(LineString g,  CoordinateReferenceSystem crs) {
+        DefaultLineStringValue(LineString g,  CoordinateReferenceSystem crs) {
                 super(g, crs);
         }
 

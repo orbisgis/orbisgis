@@ -40,7 +40,7 @@ import org.gdms.driver.DriverException;
  * and closed
  * @author nurgle
  */
-public class OCCounterDecorator extends AbstractDataSourceDecorator {
+public final class OCCounterDecorator extends AbstractDataSourceDecorator {
 
 	private OpenCloseCounter ocCounter;
 

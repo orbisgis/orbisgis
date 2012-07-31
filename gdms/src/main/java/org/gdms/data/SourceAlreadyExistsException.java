@@ -33,7 +33,7 @@
  */
 package org.gdms.data;
 
-public class SourceAlreadyExistsException extends RuntimeException {
+public final class SourceAlreadyExistsException extends RuntimeException {
         
         private static final long serialVersionUID = 790123846900475190L;
 

@@ -36,7 +36,7 @@ package org.gdms.data.edition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 
-public class InsertAtCommand extends AbstractCommand implements Command {
+public final class InsertAtCommand extends AbstractCommand implements Command {
 
         private Value[] insertedRow;
 

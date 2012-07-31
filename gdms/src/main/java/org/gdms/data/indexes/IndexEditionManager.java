@@ -54,7 +54,7 @@ import org.gdms.driver.DriverException;
  * @author Antoine Gourlay
  * @author Fernando Gonzalez Cortes
  */
-public class IndexEditionManager {
+public final class IndexEditionManager {
 
         private DataSource ds;
         private IndexManager im;

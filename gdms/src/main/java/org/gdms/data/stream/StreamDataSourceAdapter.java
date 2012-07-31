@@ -47,7 +47,7 @@ import org.gdms.source.Source;
  * @author Antoine Gourlay
  * @author Vincent Dépériers
  */
-public class StreamDataSourceAdapter extends DriverDataSource {
+public final class StreamDataSourceAdapter extends DriverDataSource {
 
         private StreamDriver driver;
         private StreamSource def;

@@ -47,11 +47,11 @@ import org.gdms.data.values.Value;
 
 /**
  * Constraint indicating the type of the geometry: point, multilinestring, ...
- * @deprecated You must use directly the specialized geometry types, now.
  * 
+ * @deprecated You must use directly the specialized geometry types, now.
  */
 @Deprecated
-public class GeometryTypeConstraint extends AbstractIntConstraint {
+public final class GeometryTypeConstraint extends AbstractIntConstraint {
 	private static final String MULTI_POLYGON_TEXT = "MultiPolygon";
 
 	private static final String POLYGON_TEXT = "Polygon";

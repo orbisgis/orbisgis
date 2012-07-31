@@ -36,7 +36,7 @@ package org.gdms.data.edition;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
-public class RemoveFieldInfo implements EditionInfo {
+public final class RemoveFieldInfo implements EditionInfo {
 
 	private String fieldName;
 

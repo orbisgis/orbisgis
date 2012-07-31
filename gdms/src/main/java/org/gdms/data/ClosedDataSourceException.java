@@ -39,7 +39,7 @@ package org.gdms.data;
  * @author Fernando Gonzalez Cortes
  *
  */
-public class ClosedDataSourceException extends RuntimeException {
+public final class ClosedDataSourceException extends RuntimeException {
         
         private static final long serialVersionUID = -4578961202457860349L;
 

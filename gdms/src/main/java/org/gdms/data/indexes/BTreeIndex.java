@@ -48,7 +48,7 @@ import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 
-public class BTreeIndex implements DataSourceIndex<Value> {
+public final class BTreeIndex implements DataSourceIndex<Value> {
 
         private String[] fieldNames;
         private DiskBTree index;

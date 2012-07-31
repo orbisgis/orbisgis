@@ -51,7 +51,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 
-public class RTreeLeaf extends AbstractRTreeNode {
+public final class RTreeLeaf extends AbstractRTreeNode {
 
         private List<Envelope> geometries;
         private List<Integer> rows;

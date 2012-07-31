@@ -42,7 +42,7 @@ import org.gdms.data.types.TypeFactory;
 /**
  * A wrapper for binary values, as a table of bytes.
  */
-class DefaultBinaryValue extends AbstractValue implements BinaryValue {
+final class DefaultBinaryValue extends AbstractValue implements BinaryValue {
 
         private byte[] value;
 

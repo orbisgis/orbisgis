@@ -48,7 +48,7 @@ import org.gdms.data.types.Type;
  *
  * @author Fernando Gonzalez Cortes
  */
-class DefaultTimestampValue extends AbstractValue implements Serializable, TimestampValue {
+final class DefaultTimestampValue extends AbstractValue implements Serializable, TimestampValue {
 
         private Timestamp value;
 

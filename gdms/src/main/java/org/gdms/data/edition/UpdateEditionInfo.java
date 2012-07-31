@@ -45,7 +45,7 @@ import org.gdms.driver.DriverException;
  *
  * @author Fernando Gonzalez Cortes
  */
-public class UpdateEditionInfo implements OriginalEditionInfo {
+public final class UpdateEditionInfo implements OriginalEditionInfo {
 
         private ValueCollection originalPK;
         private PhysicalRowAddress dir;

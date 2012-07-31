@@ -58,7 +58,7 @@ import org.gdms.source.Source;
 /**
  * Adapter for file drivers.
  */
-public class FileDataSourceAdapter extends DriverDataSource implements
+public final class FileDataSourceAdapter extends DriverDataSource implements
 		Commiter, CommitListener {
 
 	private FileDriver driver;

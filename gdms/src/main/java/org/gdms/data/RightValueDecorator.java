@@ -37,7 +37,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 
-public class RightValueDecorator extends AbstractDataSourceDecorator {
+public final class RightValueDecorator extends AbstractDataSourceDecorator {
 
         public RightValueDecorator(DataSource internalDataSource) {
                 super(internalDataSource);

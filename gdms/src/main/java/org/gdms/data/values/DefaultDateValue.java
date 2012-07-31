@@ -52,7 +52,7 @@ import org.gdms.data.types.TypeFactory;
  *
  * @author Fernando Gonzalez Cortes
  */
-class DefaultDateValue extends AbstractValue implements Serializable, DateValue {
+final class DefaultDateValue extends AbstractValue implements Serializable, DateValue {
 
         private static final String DATE_FORMAT = "yyyy-MM-dd";
         private Date value;

@@ -38,7 +38,7 @@ import java.util.List;
 
 import org.gdms.data.DataSource;
 
-public class EditionListenerSupport {
+public final class EditionListenerSupport {
 
         private List<EditionListener> listeners = new ArrayList<EditionListener>();
         private int dispatchingMode = DataSource.DISPATCH;
