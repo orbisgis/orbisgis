@@ -198,6 +198,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 if(getPreview() == null && getLegend() != null){
                         initPreview();
                 }
+                ConstantSolidFill fl = fillLegend instanceof ConstantSolidFillLegend ? fillLegend : solidFillMemory;
                 JPanel glob = new JPanel();
                 glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
                 JPanel jp = new JPanel();
@@ -215,7 +216,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 //parameters.
                 areaCheckBox.setSelected(fillLegend instanceof ConstantSolidFillLegend);
                 //Color
-                fill = getColorField(fillLegend);
+                fill = getColorField(fl);
                 jp.add(buildText(I18N.tr("Fill color :")));
                 jp.add(fill);
                 glob.add(jp);
@@ -248,6 +249,13 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 return true;
         }
 
+        /**
+         * In order to improve the user experience, it may be interesting to
+         * store the {@code ConstantSolidFillLegend} as a field before removing
+         * it. This way, we will be able to use it back directly... unless the
+         * editor as been closed before, of course.
+         * @param csfl
+         */
         protected void setSolidFillMemory(ConstantSolidFillLegend csfl){
                 solidFillMemory = csfl;
         }

@@ -40,8 +40,16 @@ import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeListener;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.analyzer.FillAnalyzer;
+import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.JNumericSpinner;
@@ -78,6 +86,20 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
         public void setLegend(Legend legend) {
                 if (legend instanceof UniqueSymbolPoint) {
                         uniquePoint = (UniqueSymbolPoint) legend;
+                        ConstantPenStroke cps = uniquePoint.getPenStroke();
+                        if(cps instanceof ConstantPenStrokeLegend ){
+                                setPenStrokeMemory((ConstantPenStrokeLegend) cps);
+                        } else {
+                                PenStrokeAnalyzer psa = new PenStrokeAnalyzer(new PenStroke());
+                                setPenStrokeMemory((ConstantPenStrokeLegend) psa.getLegend());
+                        }
+                        ConstantSolidFill csf = uniquePoint.getFillLegend();
+                        if(csf instanceof ConstantSolidFillLegend){
+                                setSolidFillMemory((ConstantSolidFillLegend) csf);
+                        } else {
+                                FillAnalyzer fa = new FillAnalyzer(new SolidFill());
+                                setSolidFillMemory((ConstantSolidFillLegend) fa.getLegend());
+                        }
                         initPreview();
                         this.initializeLegendFields();
                 } else {
@@ -200,12 +222,6 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 final JNumericSpinner jns = new JNumericSpinner(4, Integer.MIN_VALUE, Integer.MAX_VALUE, 0.01);
                 ChangeListener cl = EventHandler.create(ChangeListener.class, point, "viewBoxWidth", "source.value");
                 jns.addChangeListener(cl);
-//                        new ChangeListener() {
-//                        @Override
-//                        public void stateChanged(ChangeEvent evt) {
-//                                cps.setLineWidth(jns.getValue());
-//                    }
-//                });
                 jns.setValue(point.getViewBoxWidth() == null? point.getViewBoxHeight() : point.getViewBoxWidth());
                 jns.setMaximumSize(new Dimension(60,30));
                 jns.setPreferredSize(new Dimension(60,30));
@@ -219,12 +235,6 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 final JNumericSpinner jns = new JNumericSpinner(4, Integer.MIN_VALUE, Integer.MAX_VALUE, 0.01);
                 ChangeListener cl = EventHandler.create(ChangeListener.class, point, "viewBoxHeight", "source.value");
                 jns.addChangeListener(cl);
-//                        new ChangeListener() {
-//                        @Override
-//                        public void stateChanged(ChangeEvent evt) {
-//                                cps.setLineWidth(jns.getValue());
-//                    }
-//                });
                 jns.setValue(point.getViewBoxHeight() == null? point.getViewBoxWidth() : point.getViewBoxHeight());
                 jns.setMaximumSize(new Dimension(60,30));
                 jns.setPreferredSize(new Dimension(60,30));

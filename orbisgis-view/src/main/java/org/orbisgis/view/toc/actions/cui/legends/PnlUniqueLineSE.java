@@ -252,7 +252,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         }
 
         /**
-         * In order to improve the user experience, it may be interested to
+         * In order to improve the user experience, it may be interesting to
          * store the {@code ConstantPenStrokeLegend} as a field before removing
          * it. This way, we will be able to use it back directly... unless the
          * editor as been closed before, of course.
