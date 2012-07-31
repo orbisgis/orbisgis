@@ -119,7 +119,7 @@ public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUni
     @Override
     public void setPenStroke(ConstantPenStroke cpsl){
             strokeLegend = cpsl;
-            ((LineSymbolizer)getSymbolizer()).setStroke(strokeLegend.getPenStroke());
+            ((LineSymbolizer)getSymbolizer()).setStroke(strokeLegend.getStroke());
     }
 
     @Override

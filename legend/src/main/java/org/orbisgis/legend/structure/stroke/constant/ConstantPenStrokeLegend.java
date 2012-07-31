@@ -102,7 +102,7 @@ public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend impl
         */
         @Override
         public void setDashArray(String str) {
-            PenStroke ps = getPenStroke();
+            PenStroke ps = (PenStroke) getStroke();
             StringLiteral rl = (StringLiteral) ps.getDashArray();
             String da = validateDashArray(str) ? str : "";
             if(!da.isEmpty()){

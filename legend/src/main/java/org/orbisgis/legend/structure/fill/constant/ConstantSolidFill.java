@@ -41,6 +41,7 @@ public interface ConstantSolidFill extends ConstantFillLegend {
          * Gets the {@link SolidFill} associated to this legend.
          * @return
          */
+        @Override
         SolidFill getFill();
 
         /**

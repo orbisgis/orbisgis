@@ -30,26 +30,19 @@ package org.orbisgis.legend.structure.stroke.constant;
 
 import java.awt.Color;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
-import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
+import org.orbisgis.legend.structure.stroke.StrokeLegend;
 /**
  * Interface to be implemented by legends that are associated to constant {@link PenStroke}.
  * @author Alexis Guéganno
  */
-public interface ConstantPenStroke  extends LegendStructure {
+public interface ConstantPenStroke extends StrokeLegend {
 
         /**
          * Gets the analysis obtained from the inner solid fill.
          * @return
          */
         ConstantSolidFill getFillLegend();
-
-        /**
-         * Gets the {@code PenStroke} that has been used to build this {@code
-         * ConstantPenStroke}.
-         * @return
-         */
-        PenStroke getPenStroke();
 
         /**
          * Gets the color of the associated {@code PenStroke}.

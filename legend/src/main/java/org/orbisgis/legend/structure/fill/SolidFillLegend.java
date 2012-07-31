@@ -39,7 +39,7 @@ import org.orbisgis.legend.structure.literal.RealLiteralLegend;
  * play with the color, not with the opacity.
  * @author Alexis Guéganno
  */
-public class SolidFillLegend implements LegendStructure {
+public class SolidFillLegend implements FillLegend {
 
         private SolidFill fill;
         private LegendStructure colorLegend;
@@ -80,6 +80,7 @@ public class SolidFillLegend implements LegendStructure {
          * Get the {@code Fill} that backs up this {@code LegendStructure}.
          * @return
          */
+        @Override
         public SolidFill getFill() {
                 return fill;
         }

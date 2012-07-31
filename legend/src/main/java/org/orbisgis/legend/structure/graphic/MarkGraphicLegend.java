@@ -30,6 +30,8 @@ package org.orbisgis.legend.structure.graphic;
 
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.structure.fill.FillLegend;
+import org.orbisgis.legend.structure.stroke.StrokeLegend;
 
 /**
  * <p>
@@ -51,8 +53,8 @@ public class MarkGraphicLegend implements LegendStructure {
 
     private MarkGraphic markGraphic;
     private LegendStructure viewBoxLegend;
-    private LegendStructure fillLegend;
-    private LegendStructure strokeLegend;
+    private FillLegend fillLegend;
+    private StrokeLegend strokeLegend;
     private LegendStructure wknLegend;
 
     /**
@@ -63,7 +65,7 @@ public class MarkGraphicLegend implements LegendStructure {
      * @param strokeLegend
      */
     public MarkGraphicLegend(MarkGraphic mark, LegendStructure wknLegend, LegendStructure viewBoxLegend,
-            LegendStructure fillLegend, LegendStructure strokeLegend) {
+            FillLegend fillLegend, StrokeLegend strokeLegend) {
         markGraphic = mark;
         this.wknLegend = wknLegend;
         this.viewBoxLegend = viewBoxLegend;
@@ -100,8 +102,9 @@ public class MarkGraphicLegend implements LegendStructure {
      * Set the {@code LegendStructure} associated to the {@code Fill} of the associated
      * @param fillLegend
      */
-    public void setFillLegend(LegendStructure fillLegend) {
+    public void setFillLegend(FillLegend fillLegend) {
         this.fillLegend = fillLegend;
+        markGraphic.setFill(this.fillLegend.getFill());
     }
 
     /**
@@ -118,8 +121,9 @@ public class MarkGraphicLegend implements LegendStructure {
      * inner {@code MarkGraphic} instance.
      * @param strokeLegend
      */
-    public void setStrokeLegend(LegendStructure strokeLegend) {
+    public void setStrokeLegend(StrokeLegend strokeLegend) {
         this.strokeLegend = strokeLegend;
+        markGraphic.setStroke(strokeLegend.getStroke());
     }
 
     /**

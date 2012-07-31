@@ -29,7 +29,7 @@
 package org.orbisgis.legend.structure.stroke.constant;
 
 import java.awt.Color;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 
@@ -52,7 +52,7 @@ public class NullPenStrokeLegend implements ConstantPenStroke {
     }
 
     @Override
-    public PenStroke getPenStroke() {
+    public Stroke getStroke() {
         return null;
     }
 

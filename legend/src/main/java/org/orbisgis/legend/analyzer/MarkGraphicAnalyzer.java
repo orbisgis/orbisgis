@@ -36,11 +36,13 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.AbstractAnalyzer;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.parameter.StringParameterAnalyzer;
+import org.orbisgis.legend.structure.fill.FillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.graphic.ConstantWKNLegend;
 import org.orbisgis.legend.structure.graphic.MarkGraphicLegend;
 import org.orbisgis.legend.structure.graphic.ProportionalWKNLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
+import org.orbisgis.legend.structure.stroke.StrokeLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.viewbox.ConstantViewBox;
 import org.orbisgis.legend.structure.viewbox.DefaultViewBox;
@@ -66,16 +68,18 @@ public class MarkGraphicAnalyzer extends AbstractAnalyzer {
         //the fill, the wellknown name and the viewbox) to determine what can be
         //this MarkGraphic.
         //The fill.
-        LegendStructure fillLeg = null;
+        FillLegend fillLeg = null;
         if(mark.getFill()!= null){
-            fillLeg = new FillAnalyzer(mark.getFill()).getLegend();
+                FillAnalyzer fa = new FillAnalyzer(mark.getFill());
+            fillLeg = (FillLegend)fa.getLegend();
         }
         boolean constantFill = fillLeg == null || fillLeg instanceof ConstantSolidFillLegend;
         //The stroke.
-        LegendStructure strokeLeg = null;
+        StrokeLegend strokeLeg = null;
         Stroke stroke = mark.getStroke();
         if(stroke instanceof PenStroke){
-            strokeLeg = new PenStrokeAnalyzer((PenStroke) stroke).getLegend();
+            PenStrokeAnalyzer psa = new PenStrokeAnalyzer((PenStroke) stroke);
+            strokeLeg = (StrokeLegend) psa.getLegend();
         }
         boolean constantStroke = strokeLeg == null || strokeLeg instanceof ConstantPenStrokeLegend;
         //The form.

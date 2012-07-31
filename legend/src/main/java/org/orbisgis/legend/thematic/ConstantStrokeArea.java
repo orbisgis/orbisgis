@@ -114,7 +114,7 @@ public abstract class ConstantStrokeArea extends SymbolizerLegend {
                     strokeLegend = cfl;
             }
             AreaSymbolizer symbolizer = (AreaSymbolizer) getSymbolizer();
-            symbolizer.setStroke(strokeLegend.getPenStroke());
+            symbolizer.setStroke(strokeLegend.getStroke());
     }
 
     /**
