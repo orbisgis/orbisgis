@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-07-31 14:19+0100\n"
-"PO-Revision-Date: 2012-07-31 14:19+0100\n"
+"PO-Revision-Date: 2012-07-31 14:47+0100\n"
 "Last-Translator: Nicolas Fortin <nicolas.fortin _at_ ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
@@ -703,7 +703,7 @@ msgstr ""
 #: java/org/orbisgis/view/map/MapStatusBar.java:147
 #, java-format
 msgid "Projection : {0}"
-msgstr ""
+msgstr "{0}"
 
 #: java/org/orbisgis/view/map/MapStatusBar.java:167
 #, java-format

@@ -28,14 +28,15 @@
  */
 package org.orbisgis.view.table;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
+import java.beans.EventHandler;
 import javax.swing.AbstractListModel;
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
+import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
@@ -46,14 +47,15 @@ import javax.swing.event.TableModelListener;
  *
  * @author ebocher
  */
-public class TableRowHeader extends JList implements TableModelListener {
-
-        private final TableComponent table;
+public class TableRowHeader extends JList {
+        private static final long serialVersionUID = 1L;
+        private TableModelListener listener = EventHandler.create(TableModelListener.class,this,"tableChanged","");
+        private final JTable table;
         private final RowHeaderListModel model;
         private static final Border CELL_BORDER =
                 BorderFactory.createEmptyBorder(0, 5, 0, 5);
 
-        public TableRowHeader(TableComponent table) {
+        public TableRowHeader(JTable table) {
                 this.table = table;
                 model = new RowHeaderListModel();
                 setModel(model);
@@ -65,11 +67,14 @@ public class TableRowHeader extends JList implements TableModelListener {
                 setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
                 syncRowCount(); // Initialize to initial size of table.
                 setBackground(table.getBackground());
-                table.getTable().getModel().addTableModelListener(this);
+                table.getModel().addTableModelListener(listener);
 
         }
 
-        @Override
+        /**
+         * Table model update
+         * @param tme 
+         */
         public void tableChanged(TableModelEvent tme) {
                 syncRowCount();
         }
@@ -77,7 +82,7 @@ public class TableRowHeader extends JList implements TableModelListener {
         private void syncRowCount() {
                 if (table.getRowCount() != model.getSize()) {
                         // Always keep 1 row, even if showing 0 bytes in editor
-                        model.setSize((int) Math.max(1, table.getRowCount()));
+                        model.setSize(Math.max(1, table.getRowCount()));
                 }
         }
 

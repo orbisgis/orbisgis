@@ -69,6 +69,7 @@ public class TableEditor extends JPanel implements EditorDockable {
         private TableEditableElement tableEditableElement;
         private DockingPanelParameters dockingPanelParameters;
         private JTable table;
+        private JScrollPane tableScrollPane;
         private DataSourceTableModel tableModel;
 
         public TableEditor(TableEditableElement element) {
@@ -77,7 +78,8 @@ public class TableEditor extends JPanel implements EditorDockable {
                 dockingPanelParameters = new DockingPanelParameters();
                 dockingPanelParameters.setTitle(I18N.tr("Table Editor of {0}",element.getSourceName()));
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("openattributes"));
-                add(new JScrollPane(makeTable()),BorderLayout.CENTER);
+                tableScrollPane = new JScrollPane(makeTable());
+                add(tableScrollPane,BorderLayout.CENTER);
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
                 bm.nonBlockingBackgroundOperation(new OpenEditableElement());
         }
@@ -166,6 +168,8 @@ public class TableEditor extends JPanel implements EditorDockable {
                 autoResizeColWidth(Math.min(5, tableModel.getRowCount()),
                 new HashMap<String, Integer>(),
                 new HashMap<String, TableCellRenderer>());
+                //Set the row count at left
+                tableScrollPane.setRowHeaderView(new TableRowHeader(table));
         }
         
         private void autoResizeColWidth(int rowsToCheck,
