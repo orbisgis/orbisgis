@@ -32,11 +32,11 @@ import bibliothek.extension.gui.dock.preference.PreferenceTreeDialog;
 import bibliothek.extension.gui.dock.preference.PreferenceTreeModel;
 import bibliothek.gui.DockStation;
 import bibliothek.gui.dock.common.CControl;
-import bibliothek.gui.dock.common.DefaultSingleCDockable;
 import bibliothek.gui.dock.common.MultipleCDockableFactory;
 import bibliothek.gui.dock.common.SingleCDockable;
 import bibliothek.gui.dock.common.event.CControlListener;
 import bibliothek.gui.dock.common.intern.CDockable;
+import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import bibliothek.gui.dock.common.menu.CLookAndFeelMenuPiece;
 import bibliothek.gui.dock.common.menu.SingleCDockableListMenuPiece;
 import bibliothek.gui.dock.facile.menu.RootMenuPiece;
@@ -54,7 +54,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import org.apache.log4j.Logger;
 import org.orbisgis.view.docking.internals.CustomMultipleCDockable;
-import org.orbisgis.view.docking.internals.CustomSingleCDockable;
+import org.orbisgis.view.docking.internals.CustomPanelHolder;
 import org.orbisgis.view.docking.internals.DockingArea;
 import org.orbisgis.view.docking.internals.InternalCommonFactory;
 import org.orbisgis.view.docking.internals.OrbisGISView;
@@ -77,10 +77,6 @@ public final class DockingManager {
         private CControl commonControl; /*!< link to the docking-frames */
         //Docking Area (DockingFrames feature named WorkingArea)
         private Map<String,DockingArea> dockingAreas = new HashMap<String,DockingArea>();
-        
-        //Correspondance between single docking panel and CDocking instance
-        private Map<DockingPanel,String> views = new HashMap<DockingPanel,String>();
-        
 	/** the available preferences for docking frames */
         private PreferenceTreeModel preferences;
 
@@ -165,11 +161,20 @@ public final class DockingManager {
         }
 
         /**
-         * For UnitTest purpose
+         * For UnitTest purpose only
+         * @param panel 
          * @return DefaultCDockable instance, null if not exists
          */
         public CDockable getDockable(DockingPanel panel) {
-            return commonControl.getSingleDockable(views.get(panel));
+                int count = commonControl.getCDockableCount();
+                for(int i=0; i<count; i++) {
+                        CDockable libComponent = commonControl.getCDockable(i);
+                        DockingPanel cPanel = ((CustomPanelHolder)libComponent).getDockingPanel();
+                        if(cPanel.equals(panel)) {
+                                return libComponent;
+                        }
+                }
+                return null;
         }
         
         /**
@@ -177,7 +182,12 @@ public final class DockingManager {
          * @return 
          */
         public List<DockingPanel> getPanels() {
-                return new ArrayList<DockingPanel>(views.keySet());
+                List<DockingPanel> activePanel = new ArrayList<DockingPanel>();
+                int count = commonControl.getCDockableCount();
+                for(int i=0; i<count; i++) {
+                        activePanel.add(((CustomPanelHolder)commonControl.getCDockable(i)).getDockingPanel());
+                }
+                return activePanel;
         }
         
 	/**
@@ -209,8 +219,7 @@ public final class DockingManager {
         /**
          * DockingManager will load and save the panels layout
          * in the specified file. Load the layout if the file exists.
-         * @param dockingState The filename
-         * @throws IOException 
+         * @param dockingStateFilePath Destination of the default persistence file
          */
         public void setDockingLayoutPersistanceFilePath(String dockingStateFilePath) {
             this.dockingState = new File(dockingStateFilePath);
@@ -272,20 +281,17 @@ public final class DockingManager {
                 dockArea.getWorkingArea().add(dockItem);
             }           
             commonControl.addDockable(dockItem);
-            views.put( frame, dockItem.getUniqueId());
-
 	}
         
         private class DockingListener implements CControlListener {
 
                 @Override
                 public void added(CControl control, CDockable dockable) {
-                        if(dockable instanceof CustomMultipleCDockable) {
-                                CustomMultipleCDockable dockItem = (CustomMultipleCDockable)dockable;
-                                OrbisGISView.setListeners(dockItem.getDockingPanel(), dockItem);
-                        } else if(dockable instanceof CustomSingleCDockable) {
-                                CustomSingleCDockable dockItem = (CustomSingleCDockable)dockable;
-                                OrbisGISView.setListeners(dockItem.getDockingPanel(), dockItem);
+                        if(dockable instanceof CustomPanelHolder && dockable instanceof DefaultCDockable) {
+                                CustomPanelHolder dockItem = (CustomPanelHolder)dockable;
+                                OrbisGISView.setListeners(dockItem.getDockingPanel(), (DefaultCDockable)dockable);
+                        } else {
+                                LOGGER.error("Unknown dockable, not an OrbisGIS approved component.");
                         }
                 }
 

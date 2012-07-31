@@ -97,7 +97,7 @@ public class TableEditor extends JPanel implements EditorDockable {
 
         @Override
         public void setEditableElement(EditableElement editableElement) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                
         }
 
         @Override

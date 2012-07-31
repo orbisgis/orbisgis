@@ -28,28 +28,12 @@
  */
 package org.orbisgis.view.docking.internals;
 
-import bibliothek.gui.dock.common.DefaultSingleCDockable;
-import bibliothek.gui.dock.common.action.CAction;
-import java.awt.Component;
 import org.orbisgis.view.docking.DockingPanel;
 
 /**
- * A custom cdockable that contains a reference to the dockingPanel instance.
+ * Common functions of the two specialised class
  * @author Nicolas Fortin
  */
-public class CustomSingleCDockable extends DefaultSingleCDockable implements CustomPanelHolder {
-        private DockingPanel dockingPanel;
-
-        public CustomSingleCDockable(DockingPanel dockingPanel, String id, Component content, CAction... actions) {
-                super(id, content, actions);
-                this.dockingPanel = dockingPanel;
-        }
-        @Override
-        public DockingPanel getDockingPanel() {
-                return dockingPanel;
-        }
-        
-
-
-        
+public interface CustomPanelHolder {
+        public DockingPanel getDockingPanel();
 }

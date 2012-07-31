@@ -37,7 +37,7 @@ import org.orbisgis.view.docking.DockingPanel;
 /**
  * A custom cdockable that contains a reference to the dockingPanel instance.
  */
-public class CustomMultipleCDockable extends DefaultMultipleCDockable {
+public class CustomMultipleCDockable extends DefaultMultipleCDockable implements CustomPanelHolder {
     private DockingPanel dockingPanel;
 
     public CustomMultipleCDockable(DockingPanel dockingPanel, MultipleCDockableFactory<?, ?> factory, CAction... actions) {
@@ -48,6 +48,7 @@ public class CustomMultipleCDockable extends DefaultMultipleCDockable {
      * 
      * @return a reference to the dockingPanel instance
      */
+    @Override
     public DockingPanel getDockingPanel() {
         return dockingPanel;
     }
