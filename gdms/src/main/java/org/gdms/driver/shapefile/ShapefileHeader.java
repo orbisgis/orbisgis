@@ -53,7 +53,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import org.gdms.data.WarningListener;
+import org.apache.log4j.Logger;
 import org.gdms.driver.WriteBufferManager;
 
 /**
@@ -64,6 +64,8 @@ import org.gdms.driver.WriteBufferManager;
  *         http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/ShapefileHeader.java $
  */
 public class ShapefileHeader {
+        
+        private static final Logger LOG = Logger.getLogger(ShapefileHeader.class);
 
 	public static final int MAGIC = 9994;
 
@@ -85,26 +87,26 @@ public class ShapefileHeader {
 
 	private double maxY;
 
-	private void checkMagic(WarningListener warningListener) {
+	private void checkMagic() {
 		if (fileCode != MAGIC) {
-			warningListener.throwWarning("Wrong magic number, expected "
+			LOG.warn("Wrong magic number, expected "
 					+ MAGIC + ", got " + fileCode);
 		}
 	}
 
-	private void checkVersion(WarningListener warningListener) {
+	private void checkVersion() {
 		if (version != VERSION) {
-			warningListener.throwWarning("Wrong version, expected " + MAGIC
+			LOG.warn("Wrong version, expected " + MAGIC
 					+ ", got " + version);
 		}
 	}
 
-	public void read(ByteBuffer file, WarningListener warningListener)
+	public void read(ByteBuffer file)
 			throws java.io.IOException {
 		file.order(ByteOrder.BIG_ENDIAN);
 		fileCode = file.getInt();
 
-		checkMagic(warningListener);
+		checkMagic();
 
 		// skip 5 ints...
 		file.position(file.position() + 20);
@@ -113,7 +115,7 @@ public class ShapefileHeader {
 
 		file.order(ByteOrder.LITTLE_ENDIAN);
 		version = file.getInt();
-		checkVersion(warningListener);
+		checkVersion();
 		shapeType = ShapeType.forID(file.getInt());
 
 		minX = file.getDouble();

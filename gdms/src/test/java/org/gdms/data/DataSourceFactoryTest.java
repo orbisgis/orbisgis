@@ -284,22 +284,6 @@ public class DataSourceFactoryTest extends TestBase {
         }
 
         @Test
-        public void testWarningSystem() throws Exception {
-                BasicWarningListener wl = new BasicWarningListener();
-                dsf.setWarninglistener(wl);
-                dsf.createDataSource(new FileSourceCreation(new File(currentWorkspace, "my.shp"), null) {
-
-                        @Override
-                        public DataSourceDefinition create(String name) throws DriverException {
-                                dsf.getWarningListener().throwWarning("Cannot add", null, null);
-                                return null;
-                        }
-                });
-
-                assertEquals(wl.warnings.size(), 1);
-        }
-
-        @Test
         public void testResultDirectory() throws Exception {
                 File resultDir = new File(currentWorkspace, "someresultdir");
 

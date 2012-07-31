@@ -53,9 +53,8 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.util.logging.Logger;
 
-import org.gdms.data.WarningListener;
+import org.apache.log4j.Logger;
 import org.gdms.driver.ReadBufferManager;
 
 /**
@@ -72,9 +71,6 @@ import org.gdms.driver.ReadBufferManager;
  *         http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/shp/IndexFile.java $
  */
 public class IndexFile {
-	private static final Logger LOGGER = Logger
-			.getLogger("org.gdms.driver.shapefile");
-
 	private FileChannel channel;
 
 	private ReadBufferManager buf = null;
@@ -95,11 +91,10 @@ public class IndexFile {
 	 * @throws IOException
 	 *             If an error occurs.
 	 */
-	public IndexFile(FileChannel channel, WarningListener warningListener)
+	public IndexFile(FileChannel channel)
 			throws IOException {
-		readHeader(channel, warningListener);
+		readHeader(channel);
 		this.channel = channel;
-		LOGGER.finest("Reading from file...");
 		this.buf = new ReadBufferManager(channel, 8 * 128);
 	}
 
@@ -112,15 +107,14 @@ public class IndexFile {
 		return header;
 	}
 
-	private void readHeader(ReadableByteChannel channel,
-			WarningListener warningListener) throws IOException {
+	private void readHeader(ReadableByteChannel channel) throws IOException {
 		ByteBuffer buffer = ByteBuffer.allocateDirect(100);
 		while (buffer.remaining() > 0) {
 			channel.read(buffer);
 		}
 		buffer.flip();
 		header = new ShapefileHeader();
-		header.read(buffer, warningListener);
+		header.read(buffer);
 	}
 
 	private void readRecord(int index) throws IOException {

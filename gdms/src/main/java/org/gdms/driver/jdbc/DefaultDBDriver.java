@@ -51,7 +51,6 @@ import java.util.List;
 import org.apache.log4j.Logger;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.WarningListener;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
@@ -138,8 +137,7 @@ public abstract class DefaultDBDriver extends DefaultSQL {
                                                 fieldsTypes[i] = getGDMSType(resultsetMetadata,
                                                         pKFieldsList, fKFieldsList, i + 1);
                                         } catch (SQLException e) {
-                                                getWL().throwWarning(
-                                                        "Cannot read type in field: " + i
+                                                LOG.warn("Cannot read type in field: " + i
                                                         + ". Using binary instead");
                                                 fieldsTypes[i] = TypeFactory.createType(Type.BINARY,
                                                         "Unknown_field_" + i);
@@ -439,15 +437,6 @@ public abstract class DefaultDBDriver extends DefaultSQL {
                 return resultsetMetadata;
         }
 
-        /**
-         * getter for the {@link WarningListener} of the {@link DataSourceFactory}
-         *
-         * @return
-         */
-        protected WarningListener getWL() {
-                return dsf.getWarningListener();
-        }
-
         @Override
         public void setDataSourceFactory(DataSourceFactory dsf) {
                 this.dsf = dsf;
@@ -581,8 +570,7 @@ public abstract class DefaultDBDriver extends DefaultSQL {
                                 return value;
                         }
                 } catch (SQLException e) {
-                        getWL().throwWarning(
-                                "Cannot get the value in row " + rowIndex + " field "
+                        LOG.warn("Cannot get the value in row " + rowIndex + " field "
                                 + fieldId + ". Returning null instead");
                         return ValueFactory.createNullValue();
                 }

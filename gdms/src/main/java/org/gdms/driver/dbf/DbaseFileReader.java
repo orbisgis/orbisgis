@@ -63,7 +63,6 @@ import java.util.Calendar;
 
 import org.apache.log4j.Logger;
 
-import org.gdms.data.WarningListener;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.ReadBufferManager;
@@ -119,12 +118,12 @@ public class DbaseFileReader {
          * @throws IOException
          *             If an error occurs while initializing.
          */
-        public DbaseFileReader(FileChannel channel, WarningListener listener)
+        public DbaseFileReader(FileChannel channel)
                 throws IOException {
                 this.channel = channel;
 
                 header = new DbaseFileHeader();
-                header.readHeader(channel, listener);
+                header.readHeader(channel);
 
                 init();
         }
@@ -198,8 +197,7 @@ public class DbaseFileReader {
                 return bytes;
         }
 
-        public Value getFieldValue(int row, int column,
-                WarningListener warningListener) throws IOException {
+        public Value getFieldValue(int row, int column) throws IOException {
                 int fieldPosition = getPositionFor(row, column);
                 int fieldLength = getLengthFor(column);
                 byte[] fieldBytes = getBytes(fieldPosition, fieldLength);
@@ -209,7 +207,7 @@ public class DbaseFileReader {
                 decoder.decode(field, charBuffer, true);
                 charBuffer.flip();
 
-                return readObject(0, column, warningListener);
+                return readObject(0, column);
 
         }
 
@@ -228,8 +226,7 @@ public class DbaseFileReader {
                 return fieldOffset + recordOffset;
         }
 
-        private Value readObject(final int fieldOffset, final int fieldNum,
-                WarningListener warningListener) throws IOException {
+        private Value readObject(final int fieldOffset, final int fieldNum) throws IOException {
                 final char type = fieldTypes[fieldNum];
                 final int fieldLen = fieldLengths[fieldNum];
                 Value object = null;
@@ -374,7 +371,7 @@ public class DbaseFileReader {
                                                 // with
                                                 // a zero Double.
                                                 object = ValueFactory.createValue(0.0d);
-                                                warningListener.throwWarning("Unparseable numeric value. 0.0 used: "
+                                                LOG.warn("Unparseable numeric value. 0.0 used: "
                                                         + numberString);
                                         }
                                         break;
