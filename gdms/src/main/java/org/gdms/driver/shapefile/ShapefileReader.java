@@ -58,7 +58,6 @@ import java.nio.channels.ReadableByteChannel;
 
 import com.vividsolutions.jts.geom.Geometry;
 
-import org.gdms.data.WarningListener;
 import org.gdms.driver.ReadBufferManager;
 
 /**
@@ -92,16 +91,15 @@ public class ShapefileReader {
          *
          * @param channel
          *            The ReadableByteChannel this reader will use.
-         * @param warningListener
          * @throws IOException
          *             If problems arise.
          * @throws ShapefileException
          *             If for some reason the file contains invalid records.
          */
-        public ShapefileReader(FileChannel channel, WarningListener warningListener) throws IOException,
+        public ShapefileReader(FileChannel channel) throws IOException,
                 ShapefileException {
                 this.channel = channel;
-                init(warningListener);
+                init();
         }
 
         // convenience to peak at a header
@@ -115,20 +113,19 @@ public class ShapefileReader {
          *             If problems arise.
          * @return A ShapefileHeader object.
          */
-        public static ShapefileHeader readHeader(ReadableByteChannel channel,
-                WarningListener warningListener) throws IOException {
+        public static ShapefileHeader readHeader(ReadableByteChannel channel) throws IOException {
                 ByteBuffer buffer = ByteBuffer.allocateDirect(100);
                 if (channel.read(buffer) != 100) {
                         throw new EOFException("Premature end of header");
                 }
                 buffer.flip();
                 ShapefileHeader header = new ShapefileHeader();
-                header.read(buffer, warningListener);
+                header.read(buffer);
                 return header;
         }
 
-        private void init(WarningListener warningListener) throws IOException, ShapefileException {
-                header = readHeader(channel, warningListener);
+        private void init() throws IOException, ShapefileException {
+                header = readHeader(channel);
                 fileShapeType = header.getShapeType();
                 handler = fileShapeType.getShapeHandler();
 

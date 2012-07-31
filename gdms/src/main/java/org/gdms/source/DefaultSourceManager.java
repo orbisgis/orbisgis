@@ -163,9 +163,7 @@ public final class DefaultSourceManager implements SourceManager {
                         try {
                                 source.init();
                         } catch (DriverException e) {
-                                dsf.getWarningListener().throwWarning(
-                                        "The source could not be created: " + source.getName(),
-                                        e, null);
+                                LOG.warn("The source could not be created: " + source.getName(), e);
                         }
                 }
                 LOG.trace("Source manager initialized");
@@ -1022,8 +1020,7 @@ public final class DefaultSourceManager implements SourceManager {
                                 register(SPATIAL_REF_SYSTEM, new SystemSourceDefinition(
                                         new SystemSource(new File(tempPath))));
                         } catch (IOException e) {
-                                dsf.getWarningListener().throwWarning(
-                                        "Cannot load the spatial reference system. The coordinate"
+                                LOG.warn("Cannot load the spatial reference system. The coordinate"
                                         + "tranformations won't be available.");
                         }
 

@@ -125,7 +125,6 @@ public final class DataSourceFactory {
         public static final int DEFAULT = EDITABLE | STATUS_CHECK;
         private String i18NLocale = "";
         private File tempDir = new File(".");
-        private WarningListener warningListener = new NullWarningListener();
         private DefaultSourceManager sourceManager;
         private IndexManager indexManager;
         private File resultDir;
@@ -916,24 +915,6 @@ public final class DataSourceFactory {
                 } while (new File(path).exists());
 
                 return path;
-        }
-
-        /**
-         * Gets the WarningListener associated wit this DataSourceFactory
-         *
-         * @return
-         */
-        public WarningListener getWarningListener() {
-                return warningListener;
-        }
-
-        /**
-         * Sets the WarningListener associated with this DataSourceFactory
-         *
-         * @param listener
-         */
-        public void setWarninglistener(WarningListener listener) {
-                this.warningListener = listener;
         }
 
         /**

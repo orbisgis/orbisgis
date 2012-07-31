@@ -33,44 +33,40 @@
  */
 package org.gdms.drivers;
 
-import org.gdms.data.values.GeometryCollectionValue;
-import com.vividsolutions.jts.geom.LineString;
-import org.gdms.data.types.Dimension3DConstraint;
-import org.junit.Test;
-import org.junit.Before;
 import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-
-import org.gdms.Geometries;
-import org.gdms.TestBase;
-import org.gdms.data.BasicWarningListener;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreation;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.file.FileSourceCreation;
-import org.gdms.data.schema.DefaultMetadata;
-import org.gdms.data.memory.MemorySourceDefinition;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.memory.MemoryDataSetDriver;
-import org.orbisgis.utils.FileUtils;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.io.WKTReader;
+import org.junit.Before;
+import org.junit.Test;
 
 import static org.junit.Assert.*;
 
+import org.gdms.Geometries;
+import org.gdms.TestBase;
 import org.gdms.TestResourceHandler;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreation;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.file.FileSourceCreation;
+import org.gdms.data.memory.MemorySourceDefinition;
+import org.gdms.data.schema.DefaultMetadata;
+import org.gdms.data.types.Dimension3DConstraint;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.data.values.GeometryCollectionValue;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.memory.MemoryDataSetDriver;
 
 public class ShapefileDriverTest extends TestBase {
 
@@ -173,22 +169,19 @@ public class ShapefileDriverTest extends TestBase {
 
         @Test
         public void testFieldNameTooLong() throws Exception {
-                BasicWarningListener listener = new BasicWarningListener();
-                dsf.setWarninglistener(listener);
-
                 DefaultMetadata m = new DefaultMetadata();
                 m.addField("thelongernameintheworld", Type.STRING);
                 m.addField("", Type.POLYGON);
                 File shpFile = getTempFile(".shp");
                 dsf.createDataSource(new FileSourceCreation(shpFile, m));
-                assertEquals(listener.warnings.size(), 1);
+                DataSource ds = dsf.getDataSource(shpFile);
+                ds.open();
+                assertEquals("thelongern", ds.getMetadata().getFieldName(1));
+                ds.close();
         }
 
         @Test
         public void testNullStringValue() throws Exception {
-                BasicWarningListener listener = new BasicWarningListener();
-                dsf.setWarninglistener(listener);
-
                 DefaultMetadata m = new DefaultMetadata();
                 m.addField("string", Type.STRING);
                 m.addField("int", Type.INT);
@@ -205,7 +198,6 @@ public class ShapefileDriverTest extends TestBase {
                 ds.open();
                 assertTrue(ds.getString(0, "string").equalsIgnoreCase(" "));
                 assertEquals(ds.getInt(0, "int"), 0);
-                assertTrue(listener.warnings.isEmpty());
         }
 
         @Test
@@ -319,9 +311,6 @@ public class ShapefileDriverTest extends TestBase {
 
         @Test
         public void testAllTypes() throws Exception {
-                BasicWarningListener listener = new BasicWarningListener();
-                dsf.setWarninglistener(listener);
-
                 DefaultMetadata m = new DefaultMetadata();
                 m.addField("the_geom", Type.POINT,
                         new Dimension3DConstraint(3));
@@ -352,8 +341,6 @@ public class ShapefileDriverTest extends TestBase {
                 assertEquals(m.getFieldType(9).getTypeCode(), Type.STRING);
                 ds.commit();
                 ds.close();
-
-                assertTrue(listener.warnings.isEmpty());
         }
 
         // SEE THE GT BUG REPORT :

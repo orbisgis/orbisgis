@@ -58,7 +58,6 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.FileUtils;
 
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.WarningListener;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.DefaultSchema;
 import org.gdms.data.schema.Metadata;
@@ -126,14 +125,13 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                 LOG.trace("Opening");
                 try {
                         FileInputStream shpFis = new FileInputStream(file);
-                        WarningListener warningListener = dataSourceFactory.getWarningListener();
-                        reader = new ShapefileReader(shpFis.getChannel(), warningListener);
+                        reader = new ShapefileReader(shpFis.getChannel());
                         File shx = FileUtils.getFileWithExtension(file, "shx");
                         if (shx == null || !shx.exists()) {
                                 throw new DriverException("The file " + file.getAbsolutePath() + " has no corresponding .shx file");
                         }
                         FileInputStream shxFis = new FileInputStream(shx);
-                        shxFile = new IndexFile(shxFis.getChannel(), warningListener);
+                        shxFile = new IndexFile(shxFis.getChannel());
 
                         ShapefileHeader header = reader.getHeader();
                         envelope = new Envelope(
@@ -482,12 +480,11 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
         public void writeFile(final File file, final DataSet dataSource,
                 ProgressMonitor pm) throws DriverException {
                 LOG.trace("Writing file " + file.getAbsolutePath());
-                WarningListener warningListener = dataSourceFactory.getWarningListener();
                 // write dbf
                 DBFDriver tempDbfDriver = new DBFDriver();
                 tempDbfDriver.setDataSourceFactory(dataSourceFactory);
                 tempDbfDriver.writeFile(replaceExtension(file, ".dbf"), new DBFRowProvider(
-                        dataSource), warningListener, pm);
+                        dataSource), pm);
 
                 // write shapefile and shx
                 try {
@@ -515,7 +512,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         if (isGeneral && typeCode != Type.NULL && noDimCons) {
                                 //We're in a case that is too general for a shape... let's
                                 //try to improve this as far as we can.
-                                warningListener.throwWarning("No geometry type in the "
+                                LOG.warn("No geometry type in the "
                                         + "metadata. Will take the type of the first geometry");
                                 shapeType = getFirstShapeType(dataSource, dimension);
                                 if (shapeType == null) {
