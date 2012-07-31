@@ -212,12 +212,14 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
          * @param e
          */
 	public void chooseFillColor(MouseEvent e) {
-		ColorPicker picker = new ColorPicker();
-		if (UIFactory.showDialog(picker)) {
-			Color color = picker.getColor();
-                        Component source = (Component)e.getSource();
-                        source.setBackground(color);
-		}
+                Component source = (Component)e.getSource();
+                if(source.isEnabled()){
+                        ColorPicker picker = new ColorPicker();
+                        if (UIFactory.showDialog(picker)) {
+                                Color color = picker.getColor();
+                                source.setBackground(color);
+                        }
+                }
 	}
 
         @Override

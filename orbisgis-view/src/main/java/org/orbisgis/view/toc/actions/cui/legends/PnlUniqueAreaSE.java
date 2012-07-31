@@ -37,9 +37,13 @@ import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
@@ -74,11 +78,18 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         public void setLegend(Legend legend) {
                 if (legend instanceof UniqueSymbolArea) {
                         uniqueArea = (UniqueSymbolArea) legend;
+                        ConstantPenStroke cps = uniqueArea.getPenStroke();
+                        if(cps instanceof ConstantPenStrokeLegend ){
+                                setPenStrokeMemory((ConstantPenStrokeLegend) cps);
+                        } else {
+                                PenStrokeAnalyzer psa = new PenStrokeAnalyzer(new PenStroke());
+                                setPenStrokeMemory((ConstantPenStrokeLegend) psa.getLegend());
+                        }
                         initPreview();
                         this.initializeLegendFields();
                 } else {
                         throw new IllegalArgumentException("The given Legend is not"
-                                + "a UniqueSymbolPoint");
+                                + "a UniqueSymbolArea");
                 }
         }
 
@@ -180,5 +191,10 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 //We add a canvas to display a preview.
                 glob.setBorder(BorderFactory.createTitledBorder(title));
                 return glob;
+        }
+
+        @Override
+        protected boolean isLineOptional(){
+                return true;
         }
 }

@@ -29,16 +29,25 @@
 package org.orbisgis.view.toc.actions.cui.legends;
 
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
 import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
+import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
+import org.orbisgis.legend.thematic.constant.IUniqueSymbolLine;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
@@ -54,7 +63,12 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueLineSE.class);
-
+        private ConstantPenStrokeLegend penStrokeMemory;
+        private JCheckBox lineCheckBox;
+        private JPanel lineWidth;
+        private JPanel lineColor;
+        private JPanel lineOpacity;
+        private JPanel lineDash;
         /**
          * Here we can put all the Legend instances we want... but they have to
          * be unique symbol (ie constant) Legends.
@@ -75,6 +89,12 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         public void setLegend(Legend legend) {
                 if (legend instanceof UniqueSymbolLine) {
                         uniqueLine = (UniqueSymbolLine) legend;
+                        if(uniqueLine.getPenStroke() instanceof ConstantPenStrokeLegend){
+                                penStrokeMemory = (ConstantPenStrokeLegend) uniqueLine.getPenStroke();
+                        } else {
+                                PenStrokeAnalyzer psa = new PenStrokeAnalyzer(new PenStroke());
+                                penStrokeMemory = (ConstantPenStrokeLegend) psa.getLegend();
+                        }
                         initPreview();
                         initializeLegendFields();
                 } else {
@@ -151,32 +171,108 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          * @param title
          * @return
          */
-        public JPanel getLineBlock(ConstantPenStroke legend, String title){
+        public JPanel getLineBlock(ConstantPenStroke leg, String title){
                 if(getPreview() == null && getLegend() != null){
                         initPreview();
                 }
+                ConstantPenStroke legend = leg instanceof ConstantPenStrokeLegend ? leg : penStrokeMemory;
+                int ilo = isLineOptional() ? 1 : 0;
                 JPanel glob = new JPanel();
                 glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
                 JPanel jp = new JPanel();
-                GridLayout grid = new GridLayout(4,2);
+                GridLayout grid = new GridLayout(4+ilo,2);
                 grid.setVgap(5);
                 jp.setLayout(grid);
+                lineWidth = getLineWidthSpinner(legend);
+                lineColor = getColorField(legend.getFillLegend());
+                lineOpacity = getLineOpacitySpinner(legend.getFillLegend());
+                lineDash = getDashArrayField(legend);
+                if(isLineOptional()){
+                        lineCheckBox = new JCheckBox(I18N.tr("Enable line configuration"));
+                        ActionListener acl = EventHandler.create(ActionListener.class, this, "onClickLineCheckBox");
+                        lineCheckBox.addActionListener(acl);
+                        jp.add(lineCheckBox);
+                        jp.add(buildText(""));
+                        //We must check the CheckBox according to leg, not to legend.
+                        //legend is here mainly to let us fill safely all our
+                        //parameters.
+                        lineCheckBox.setSelected(leg instanceof ConstantPenStrokeLegend);
+                }
                 //Width
                 jp.add(buildText(I18N.tr("Line width :")));
-                jp.add(getLineWidthSpinner(legend));
+                jp.add(lineWidth);
                 //Color
                 jp.add(buildText(I18N.tr("Line color :")));
-                jp.add(getColorField(legend.getFillLegend()));
+                jp.add(lineColor);
                 //Transparency
                 jp.add(buildText(I18N.tr("Line opacity :")));
-                jp.add(getLineOpacitySpinner(legend.getFillLegend()));
+                jp.add(lineOpacity);
                 //Dash array
                 jp.add(buildText(I18N.tr("Dash array :")));
-                jp.add(getDashArrayField(legend));
+                jp.add(lineDash);
                 glob.add(jp);
                 //We add a canvas to display a preview.
                 glob.setBorder(BorderFactory.createTitledBorder(title));
+                if(isLineOptional()){
+                        setLineFieldsState(leg instanceof ConstantPenStrokeLegend);
+                }
                 return glob;
+        }
+
+        /**
+         * Change the state of all the fields used for the line configuration.
+         * @param enable
+         */
+        public void setLineFieldsState(boolean enable){
+                setFieldState(enable,lineWidth.getComponents());
+                setFieldState(enable,lineColor.getComponents());
+                setFieldState(enable,lineOpacity.getComponents());
+                setFieldState(enable,lineDash.getComponents());
+        }
+
+        /**
+         * If {@code isLineOptional()}, a {@code JCheckBox} will be added in the
+         * UI to let the user enable or disable the line configuration. In fact,
+         * clicking on it will recursively enable or disable the containers
+         * contained in the configuration panel.
+         */
+        public void onClickLineCheckBox(){
+                if(lineCheckBox.isSelected()){
+                        ((IUniqueSymbolLine)getLegend()).setPenStroke(penStrokeMemory);
+                        setLineFieldsState(true);
+                } else {
+                        //We must replace the old PenStroke representation with
+                        //its null representation
+                        NullPenStrokeLegend npsl = new NullPenStrokeLegend();
+                        ((IUniqueSymbolLine)getLegend()).setPenStroke(npsl);
+                        setLineFieldsState(false);
+                }
+        }
+
+        /**
+         * In order to improve the user experience, it may be interested to
+         * store the {@code ConstantPenStrokeLegend} as a field before removing
+         * it. This way, we will be able to use it back directly... unless the
+         * editor as been closed before, of course.
+         * @param cpsl
+         */
+        protected void setPenStrokeMemory(ConstantPenStrokeLegend cpsl){
+                penStrokeMemory = cpsl;
+        }
+
+        /**
+         * Recursively enables or disables all the components contained in the
+         * containers of {@code comps}.
+         * @param enable
+         * @param comps
+         */
+        private void setFieldState(boolean enable, Component[] comps){
+                for(Component c: comps){
+                        c.setEnabled(enable);
+                        if(c instanceof Container){
+                                setFieldState(enable, ((Container)c).getComponents());
+                        }
+                }
         }
 
         private void initializeLegendFields() {
