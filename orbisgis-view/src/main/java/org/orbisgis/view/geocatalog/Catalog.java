@@ -513,11 +513,6 @@ public class Catalog extends JPanel implements DockingPanel {
                 addMenu.add(addFileItem);
                 
                 if (!sourceList.isSelectionEmpty()) {
-                        JMenuItem openTableMenu = new JMenuItem(I18N.tr("Open table"),
-                                OrbisGISIcon.getIcon("openattributes"));
-                        openTableMenu.addActionListener(EventHandler.create(ActionListener.class,
-                                this, "onMenuShowTable"));
-                        rootMenu.add(openTableMenu);
                         //Popup:Save
                         JMenu saveMenu = new JMenu(I18N.tr("Save"));
                         rootMenu.add(saveMenu);
@@ -539,6 +534,12 @@ public class Catalog extends JPanel implements DockingPanel {
                                 this,
                                 "onMenuSaveInDB"));
                         saveMenu.add(saveInDBItem);
+                        //Popup:Open attributes
+                        JMenuItem openTableMenu = new JMenuItem(I18N.tr("Open the attributes"),
+                                OrbisGISIcon.getIcon("openattributes"));
+                        openTableMenu.addActionListener(EventHandler.create(ActionListener.class,
+                                this, "onMenuShowTable"));
+                        rootMenu.add(openTableMenu);
                         
                 }
                 

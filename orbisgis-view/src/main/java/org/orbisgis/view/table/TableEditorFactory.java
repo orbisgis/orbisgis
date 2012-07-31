@@ -52,6 +52,7 @@ public class TableEditorFactory implements MultipleEditorFactory {
                 if(editable instanceof TableEditableElement) {
                         TableEditableElement editableTable = (TableEditableElement)editable;
                         if(isEditableAlreadyOpened(editableTable)) { //Panel already created
+                                LOGGER.info(I18N.tr("This data source ({0}) is already shown in an editor.",editableTable.getSourceName()));
                                 return null;
                         }
                         //Return null if the DataSource does not exist
@@ -70,7 +71,7 @@ public class TableEditorFactory implements MultipleEditorFactory {
         private boolean isEditableAlreadyOpened(EditableElement editable) {
                 EditorManager em = Services.getService(EditorManager.class);
                 for(EditorDockable editor : em.getEditors()) {
-                        if(editable.equals(editor.getEditableElement())) {
+                        if(editor instanceof TableEditor && editable.equals(editor.getEditableElement())) {
                                 return true;
                         }
                 }
