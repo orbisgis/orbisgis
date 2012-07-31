@@ -28,24 +28,53 @@
  */
 package org.orbisgis.view.table;
 
+import org.apache.log4j.Logger;
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
 import org.orbisgis.view.docking.DockingPanelLayout;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorDockable;
+import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.edition.MultipleEditorFactory;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  *  This factory receive the {@link TableEditableElement} and open a new editor.
  */
 public class TableEditorFactory implements MultipleEditorFactory {
         public static final String FACTORY_ID = "TableEditorFactory";
-
+        private static final Logger LOGGER = Logger.getLogger("gui."+TableEditorFactory.class);
+        protected final static I18n I18N = I18nFactory.getI18n(TableEditorFactory.class);
+        
         @Override
         public DockingPanelLayout makeEditableLayout(EditableElement editable) {
                 if(editable instanceof TableEditableElement) {
-                        return new TablePanelLayout((TableEditableElement)editable);
+                        TableEditableElement editableTable = (TableEditableElement)editable;
+                        if(isEditableAlreadyOpened(editableTable)) { //Panel already created
+                                return null;
+                        }
+                        //Return null if the DataSource does not exist
+                        DataManager dataManager = Services.getService(DataManager.class);
+			if(dataManager.getSourceManager().exists(editableTable.getSourceName())) {
+                                return new TablePanelLayout(editableTable);
+                        }else {
+                                LOGGER.info(I18N.tr("In a consequence of an unreachable data source {0},the associated data editor could not be recovered."));
+                                return null;
+                        }
                 } else {
                         return null;
                 }
+        }
+        
+        private boolean isEditableAlreadyOpened(EditableElement editable) {
+                EditorManager em = Services.getService(EditorManager.class);
+                for(EditorDockable editor : em.getEditors()) {
+                        if(editable.equals(editor.getEditableElement())) {
+                                return true;
+                        }
+                }
+                return false;
         }
 
         @Override

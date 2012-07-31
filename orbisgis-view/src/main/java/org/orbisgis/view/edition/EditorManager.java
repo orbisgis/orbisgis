@@ -67,6 +67,20 @@ public class EditorManager {
                         }
                 }
         }
+        
+        /**
+         * 
+         * @return All shown editors
+         */
+        public EditorDockable[] getEditors() {
+                List<EditorDockable> editors = new ArrayList<EditorDockable>();
+                for( DockingPanel panel : dockingManager.getPanels()) {
+                        if(panel instanceof EditorDockable) {
+                                editors.add((EditorDockable)panel);
+                        }
+                }
+                return editors.toArray(new EditorDockable[editors.size()]);
+        }
 
         /**
         * Open this editable with all compatible factories.
@@ -75,11 +89,8 @@ public class EditorManager {
         public void openEditable(EditableElement editableElement) {
                 
                 // Open the element in editors
-                for( DockingPanel panel : dockingManager.getPanels()) {
-                        if(panel instanceof EditorDockable) {
-                                EditorDockable editor = (EditorDockable)panel;
-                                editor.setEditableElement(editableElement);
-                        }
+                for(EditorDockable editor : getEditors()) {
+                        editor.setEditableElement(editableElement);                        
                 }
                 
                 //Open the element in MultipleEditorFactories

@@ -34,6 +34,8 @@ import org.orbisgis.view.docking.DockingPanelLayout;
  * This factory can create an unlimited number of editors.
  * The panels opened by this editor should by retrieved at the next
  * application startup thanks to lightweight custom panel layout
+ * Do not keep reference to the created panels, use the {@link EditorManager} 
+ * getEditors function to retrieve the created panels.
  */
 
 public interface MultipleEditorFactory extends EditorFactory {
