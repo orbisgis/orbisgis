@@ -176,7 +176,7 @@ public class ShapefileDriverTest extends TestBase {
                 dsf.createDataSource(new FileSourceCreation(shpFile, m));
                 DataSource ds = dsf.getDataSource(shpFile);
                 ds.open();
-                assertEquals("thelongern", ds.getMetadata().getFieldName(0));
+                assertEquals("thelongern", ds.getMetadata().getFieldName(1));
                 ds.close();
         }
 
