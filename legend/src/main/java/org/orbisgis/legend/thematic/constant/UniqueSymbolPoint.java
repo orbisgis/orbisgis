@@ -122,6 +122,11 @@ public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbo
     }
 
     @Override
+    public void setFillLegend(ConstantSolidFill csf) {
+            markGraphic.setFillLegend(csf);
+    }
+
+    @Override
     public ConstantPenStroke getPenStroke(){
         return markGraphic.getPenStroke();
     }

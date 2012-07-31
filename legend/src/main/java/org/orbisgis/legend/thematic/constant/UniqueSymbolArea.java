@@ -116,6 +116,7 @@ public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbo
      * AreaSymbolizer} in question.
      * @param cfl
      */
+    @Override
     public void setFillLegend(ConstantSolidFill cfl){
             if(cfl == null){
                     fillLegend = new NullSolidFillLegend();

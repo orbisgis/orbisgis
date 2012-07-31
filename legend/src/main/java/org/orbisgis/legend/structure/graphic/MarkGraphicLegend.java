@@ -37,9 +37,12 @@ import org.orbisgis.legend.LegendStructure;
  * it will be obtained only if we are unable to recognize a more accurate
  * pattern.</p>
  * <p>This {@code LegendStructure} realization is dependant upon the following
- * parameters, taht are stored here are {@code LegendStructure} instances :
+ * parameters, that are stored here are {@code LegendStructure} instances :
  * <ul>
- * <li></li>
+ * <li>The well-known name</li>
+ * <li>The view box</li>
+ * <li>The fill</li>
+ * <li>The stroke</li>
  * </ul>
  * </p>
  * @author Alexis Guéganno

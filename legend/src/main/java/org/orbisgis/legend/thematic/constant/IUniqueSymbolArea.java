@@ -43,4 +43,10 @@ public interface IUniqueSymbolArea extends IUniqueSymbolLine {
      */
     ConstantSolidFill getFillLegend();
 
+    /**
+     * Sets the Fill analysis embedded in this {@code IUniqueSymbolArea}.
+     * @param csf
+     */
+    void setFillLegend(ConstantSolidFill csf);
+
 }
