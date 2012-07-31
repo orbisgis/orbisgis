@@ -37,39 +37,44 @@ import org.orbisgis.view.edition.MultipleEditorFactory;
  *  This factory receive the {@link TableEditableElement} and open a new editor.
  */
 public class TableEditorFactory implements MultipleEditorFactory {
+        public static final String FACTORY_ID = "TableEditorFactory";
 
         @Override
         public DockingPanelLayout makeEditableLayout(EditableElement editable) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                if(editable instanceof TableEditableElement) {
+                        return new TablePanelLayout((TableEditableElement)editable);
+                } else {
+                        return null;
+                }
         }
 
         @Override
         public DockingPanelLayout makeEmptyLayout() {
-                throw new UnsupportedOperationException("Not supported yet.");
+                return new TablePanelLayout();
         }
 
         @Override
         public boolean match(DockingPanelLayout layout) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                return layout instanceof TablePanelLayout;
         }
 
         @Override
         public EditorDockable create(DockingPanelLayout layout) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                return new TableEditor(((TablePanelLayout)layout).getTableEditableElement());
         }
 
         @Override
         public DockingPanelLayout getLayout(EditorDockable panel) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                return new TablePanelLayout(((TableEditor)panel).getTableEditableElement());
         }
 
         @Override
         public String getId() {
-                throw new UnsupportedOperationException("Not supported yet.");
+                return FACTORY_ID;
         }
 
         @Override
         public void dispose() {
-                throw new UnsupportedOperationException("Not supported yet.");
+                //
         }        
 }

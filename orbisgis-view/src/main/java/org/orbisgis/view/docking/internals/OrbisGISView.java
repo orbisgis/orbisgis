@@ -64,18 +64,18 @@ public class OrbisGISView {
         this.internalDock = internalDock;
     }
     public static SingleCDockable createSingle(DockingPanel dockingPanel, CControl ccontrol) {
-        DefaultSingleCDockable dockItem = new DefaultSingleCDockable(dockingPanel.getDockingParameters().getName(),dockingPanel.getComponent());
-        ccontrol.addDockable(dockItem);
-        new OrbisGISView(dockingPanel,dockItem).init(dockItem);
+        CustomSingleCDockable dockItem = new CustomSingleCDockable(dockingPanel,dockingPanel.getDockingParameters().getName(),dockingPanel.getComponent());
         return dockItem;
     }
     public static CustomMultipleCDockable createMultiple(DockingPanel dockingPanel,InternalCommonFactory factory, CControl ccontrol) {
         CustomMultipleCDockable dockItem = new CustomMultipleCDockable(dockingPanel,factory);
-        ccontrol.addDockable(dockItem);
-        //Feed and link the CDockable
-        new OrbisGISView(dockingPanel,dockItem).init(dockItem);
         return dockItem;        
     }
+    
+    public static void setListeners(DockingPanel dockingPanel,DefaultCDockable dockItem) {
+        new OrbisGISView(dockingPanel,dockItem).init(dockItem);
+    }
+    
     
     /**
      * Add listeners 

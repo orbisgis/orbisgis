@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.common;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,7 +50,9 @@ import java.util.SortedSet;
  * @TODO Add function to push a range instead of a single
  * @author Nicolas Fortin
  */
-public class IntegerUnion implements SortedSet<Integer> {
+public class IntegerUnion implements SortedSet<Integer>, Serializable {
+        private static final long serialVersionUID = 1L;
+        
         // int intervals ex: 0,15,50,60 for 0 to 15 and 50 to 60    
         protected List<Integer> intervals;
 

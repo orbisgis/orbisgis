@@ -45,18 +45,22 @@ public class EditorPanelFactoryDecorator implements DockingPanelFactory {
                 this.multipleEditorFactory = multipleEditorFactory;
         }
 
+        @Override
         public DockingPanelLayout makeEmptyLayout() {
                 return multipleEditorFactory.makeEmptyLayout();
         }
 
+        @Override
         public boolean match(DockingPanelLayout layout) {
                 return multipleEditorFactory.match(layout);
         }
 
+        @Override
         public DockingPanel create(DockingPanelLayout layout) {
                 return multipleEditorFactory.create(layout);
         }
 
+        @Override
         public DockingPanelLayout getLayout(DockingPanel panel) {
                 if(!(panel instanceof EditorDockable)) {
                         throw new IllegalArgumentException("Editors factory accepts only EditorDockable layout");

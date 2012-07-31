@@ -41,7 +41,6 @@ import org.gdms.source.SourceListener;
 import org.gdms.source.SourceRemovalEvent;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditableElementException;
@@ -56,7 +55,11 @@ public class EditableSource extends EditableElement {
 	private NameChangeSourceListener listener = new NameChangeSourceListener();
 
 	public EditableSource(String sourceName) {
-                id = sourceName;
+                if(sourceName==null) {
+                        throw new IllegalArgumentException("Source name must "
+                                + "not be null");
+                }
+                this.sourceName = sourceName;
                 setId(sourceName);
 	}
 
@@ -129,9 +132,15 @@ public class EditableSource extends EditableElement {
 		return editing && ds.isEditable();
 	}
 
-	public MapContext getMapContext() {
-		return null;
-	}
+        /**
+         * Get the data source name
+         * @return 
+         */
+        public String getSourceName() {
+                return sourceName;
+        }
+        
+        
 
         /**
          * @return the Editing

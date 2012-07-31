@@ -32,8 +32,10 @@ import bibliothek.extension.gui.dock.preference.PreferenceTreeDialog;
 import bibliothek.extension.gui.dock.preference.PreferenceTreeModel;
 import bibliothek.gui.DockStation;
 import bibliothek.gui.dock.common.CControl;
+import bibliothek.gui.dock.common.DefaultSingleCDockable;
 import bibliothek.gui.dock.common.MultipleCDockableFactory;
 import bibliothek.gui.dock.common.SingleCDockable;
+import bibliothek.gui.dock.common.event.CControlListener;
 import bibliothek.gui.dock.common.intern.CDockable;
 import bibliothek.gui.dock.common.menu.CLookAndFeelMenuPiece;
 import bibliothek.gui.dock.common.menu.SingleCDockableListMenuPiece;
@@ -41,6 +43,7 @@ import bibliothek.gui.dock.facile.menu.RootMenuPiece;
 import bibliothek.gui.dock.layout.DockableProperty;
 import bibliothek.gui.dock.util.PropertyKey;
 import bibliothek.util.PathCombiner;
+import bibliothek.util.xml.XElement;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,6 +54,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import org.apache.log4j.Logger;
 import org.orbisgis.view.docking.internals.CustomMultipleCDockable;
+import org.orbisgis.view.docking.internals.CustomSingleCDockable;
 import org.orbisgis.view.docking.internals.DockingArea;
 import org.orbisgis.view.docking.internals.InternalCommonFactory;
 import org.orbisgis.view.docking.internals.OrbisGISView;
@@ -103,10 +107,16 @@ public final class DockingManager {
         private void loadLayout() {
             if(dockingState!=null) {
                 if(dockingState.exists()) {
+                    XElement backup = new XElement("layout");
+                    commonControl.writeXML(backup);
                     try {
                         commonControl.readXML(dockingState);
                     } catch (IOException ex) {
                         LOGGER.error(I18N.tr("Unable to load the docking layout."), ex);
+                        commonControl.readXML(backup);
+                    } catch (IllegalArgumentException ex) {
+                        LOGGER.error(I18N.tr("Unable to load the docking layout."), ex);
+                        commonControl.readXML(backup);
                     }
                 }
             }            
@@ -138,6 +148,8 @@ public final class DockingManager {
          * The multiple instances panels can be shown at the next start of application
          * if their factory is registered 
          * before loading the layout {@link setDockingStateFile}
+         * @param factoryName
+         * @param factory  
          */
         public void registerPanelFactory(String factoryName,DockingPanelFactory factory) {
             InternalCommonFactory dockingFramesFactory = new InternalCommonFactory(factory,commonControl);
@@ -176,6 +188,7 @@ public final class DockingManager {
                 this.owner = owner;
 		//this.frontend = new DockFrontend();
                 commonControl = new CControl(owner);
+                commonControl.addControlListener(new DockingListener());
                 dockableMenuTracker = new SingleCDockableListMenuPiece( commonControl);
                 //Retrieve the Docking Frames Preferencies
                 //preferences = new MergedPreferenceModel
@@ -206,20 +219,18 @@ public final class DockingManager {
 
         /**
          * Create a new dockable corresponding to this layout
+         * @param factoryId The factory id registerPanelFactory:factoryName
          * @param panelLayout 
          */
-        public void show( String factoryId, DockingPanelLayout panelLayout) {
-                MultipleCDockableFactory factory = commonControl.getMultipleDockableFactory(factoryId);
-                if(factory!=null && factory instanceof InternalCommonFactory) {
-                        InternalCommonFactory iFactory = (InternalCommonFactory)factory;
+        public void show(String factoryId, DockingPanelLayout panelLayout) {
+                MultipleCDockableFactory<?, ?> factory = commonControl.getMultipleDockableFactory(factoryId);
+                if (factory != null && factory instanceof InternalCommonFactory) {
+                        InternalCommonFactory iFactory = (InternalCommonFactory) factory;
                         CustomMultipleCDockable dockItem = iFactory.read(panelLayout);
-                        if(dockItem!=null) {
+                        if (dockItem != null) {
                                 commonControl.addDockable(dockItem);
                         }
                 }
-                
-                
-                
         }
 	/**
 	 * Shows a view at the given location as child
@@ -259,8 +270,39 @@ public final class DockingManager {
                 }
                 dockItem.setWorkingArea(dockArea.getWorkingArea());
                 dockArea.getWorkingArea().add(dockItem);
-            }                
+            }           
+            commonControl.addDockable(dockItem);
             views.put( frame, dockItem.getUniqueId());
 
 	}
+        
+        private class DockingListener implements CControlListener {
+
+                @Override
+                public void added(CControl control, CDockable dockable) {
+                        if(dockable instanceof CustomMultipleCDockable) {
+                                CustomMultipleCDockable dockItem = (CustomMultipleCDockable)dockable;
+                                OrbisGISView.setListeners(dockItem.getDockingPanel(), dockItem);
+                        } else if(dockable instanceof CustomSingleCDockable) {
+                                CustomSingleCDockable dockItem = (CustomSingleCDockable)dockable;
+                                OrbisGISView.setListeners(dockItem.getDockingPanel(), dockItem);
+                        }
+                }
+
+                @Override
+                public void removed(CControl control, CDockable dockable) {
+                        
+                }
+
+                @Override
+                public void opened(CControl control, CDockable dockable) {
+                        
+                }
+
+                @Override
+                public void closed(CControl control, CDockable dockable) {
+                        
+                }
+                
+        }
 }

@@ -42,7 +42,8 @@ public interface MultipleEditorFactory extends EditorFactory {
     /**
      * Return a layout corresponding to this editable element
      * @param editable editable element
-     * @return Instance of DockingPanelLayout or null
+     * @return Instance of DockingPanelLayout or null if the editable 
+     * is not compatible with this factory
      */
     public DockingPanelLayout makeEditableLayout(EditableElement editable);    
       

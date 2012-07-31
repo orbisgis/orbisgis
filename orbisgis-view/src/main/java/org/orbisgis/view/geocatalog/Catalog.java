@@ -63,6 +63,7 @@ import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
+import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.dialogs.OpenGdmsFilePanel;
 import org.orbisgis.view.geocatalog.dialogs.OpenGdmsFolderPanel;
 import org.orbisgis.view.geocatalog.filters.IFilter;
@@ -75,6 +76,7 @@ import org.orbisgis.view.geocatalog.sourceWizards.db.ConnectionPanel;
 import org.orbisgis.view.geocatalog.sourceWizards.db.TableExportPanel;
 import org.orbisgis.view.geocatalog.sourceWizards.db.TableSelectionPanel;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -253,6 +255,19 @@ public class Catalog extends JPanel implements DockingPanel {
         }
 
         /**
+         * The user select one or more data source and request to
+         * to table editor
+         */
+        public void onMenuShowTable() {
+                String[] res = getSelectedSources();
+                EditorManager editorManager = Services.getService(EditorManager.class);
+                for (String source : res) {
+                        TableEditableElement tableDocument = new TableEditableElement(source);
+                        editorManager.openEditable(tableDocument);
+                }
+        }
+        
+        /**
          * The user click on the menu item called "Add/File" The user wants to
          * open a file using the geocatalog. It will open a panel dedicated to
          * the selection of the wanted files. This panel will then return the
@@ -348,14 +363,14 @@ public class Catalog extends JPanel implements DockingPanel {
                                 I18N.tr("Save the source : " + source));
                         int type = sm.getSource(source).getType();
                         DriverFilter filter;
-                        if ((type & SourceManager.VECTORIAL) == sm.VECTORIAL) {
+                        if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
                                 // no other choice but to add CSV here
                                 // because of CSVStringDriver implementation
                                 filter = new OrDriverFilter(new VectorialDriverFilter(),
                                         new CSVFileDriverFilter());
-                        } else if ((type & SourceManager.RASTER) == sm.RASTER) {
+                        } else if ((type & SourceManager.RASTER) == SourceManager.RASTER) {
                                 filter = new RasterDriverFilter();
-                        } else if ((type & SourceManager.STREAM) == sm.STREAM) {
+                        } else if ((type & SourceManager.STREAM) == SourceManager.STREAM) {
                                 filter = new DriverFilter() {
                                         
                                         @Override
@@ -498,6 +513,11 @@ public class Catalog extends JPanel implements DockingPanel {
                 addMenu.add(addFileItem);
                 
                 if (!sourceList.isSelectionEmpty()) {
+                        JMenuItem openTableMenu = new JMenuItem(I18N.tr("Open table"),
+                                OrbisGISIcon.getIcon("openattributes"));
+                        openTableMenu.addActionListener(EventHandler.create(ActionListener.class,
+                                this, "onMenuShowTable"));
+                        rootMenu.add(openTableMenu);
                         //Popup:Save
                         JMenu saveMenu = new JMenu(I18N.tr("Save"));
                         rootMenu.add(saveMenu);

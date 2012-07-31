@@ -29,8 +29,6 @@
 package org.orbisgis.view.table;
 
 import bibliothek.util.xml.XElement;
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
-import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -40,14 +38,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.util.Set;
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.NoSuchTableException;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.view.docking.DockingPanelLayout;
 import org.xnap.commons.i18n.I18n;
@@ -68,6 +59,12 @@ public class TablePanelLayout implements DockingPanelLayout {
         private static final String PROP_DATA_SOURCE_NAME = "datasource";
         private static final String PROP_SELECTION = "selection";
 
+        public TablePanelLayout() {
+                this.tableEditableElement = null;
+        }
+
+        
+        
         public TablePanelLayout(TableEditableElement tableEditableElement) {
                 this.tableEditableElement = tableEditableElement;
         }
@@ -79,7 +76,7 @@ public class TablePanelLayout implements DockingPanelLayout {
         @Override
         public void writeStream(DataOutputStream out) throws IOException {
                 //DataSource
-                out.writeUTF(tableEditableElement.getDataSource().getName());
+                out.writeUTF(tableEditableElement.getSourceName());
                 //Selection
                 writeSelection(out);
         }
@@ -112,23 +109,12 @@ public class TablePanelLayout implements DockingPanelLayout {
                 //DataSource
                 String dataSourceName = in.readUTF();
                 tableEditableElement = new TableEditableElement(
-                readSelection(in),getDataSource(dataSourceName));
+                readSelection(in),dataSourceName);
         }
         
-        private DataSource getDataSource(String name) throws IOException {
-                DataManager dm = Services.getService(DataManager.class);
-                try {
-                        return dm.getDataSourceFactory().getDataSource(name); 
-                } catch (NoSuchTableException ex) {
-                        throw new IOException(I18N.tr("Unable to load the table editor"),ex);
-                } catch (DataSourceCreationException ex) {
-                        throw new IOException(I18N.tr("Unable to load the table editor"),ex);
-                }
-        }
-
         @Override
         public void writeXML(XElement element) {
-                element.addString(PROP_DATA_SOURCE_NAME,tableEditableElement.getDataSource().getName());
+                element.addString(PROP_DATA_SOURCE_NAME,tableEditableElement.getSourceName());
                 ByteArrayOutputStream bytes = new ByteArrayOutputStream();
                 try {
                         writeSelection(bytes);
@@ -141,14 +127,8 @@ public class TablePanelLayout implements DockingPanelLayout {
         @Override
         public void readXML(XElement element) {
                 ByteArrayInputStream in = new ByteArrayInputStream(element.getByteArray(PROP_SELECTION));
-                try {
-                        tableEditableElement = new TableEditableElement(readSelection(in),
-                                getDataSource(element.getString(PROP_DATA_SOURCE_NAME)));
-                } catch (IOException ex) {
-                        throw new IllegalStateException(ex);
-                }
+                tableEditableElement = new TableEditableElement(readSelection(in),
+                                element.getString(PROP_DATA_SOURCE_NAME));
+
         }
-        
-        
-        
 }

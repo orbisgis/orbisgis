@@ -48,13 +48,13 @@ import org.xnap.commons.i18n.I18nFactory;
 public class TableEditor extends JPanel implements EditorDockable {
         protected final static I18n I18N = I18nFactory.getI18n(TableEditor.class);
         private static final long serialVersionUID = 1L;
-        private TableEditableElement element;
+        private TableEditableElement tableEditableElement;
         private DockingPanelParameters dockingPanelParameters;
         private JTable table;
 
         public TableEditor(TableEditableElement element) {
                 super(new BorderLayout());
-                this.element = element;
+                this.tableEditableElement = element;
                 dockingPanelParameters = new DockingPanelParameters();
                 dockingPanelParameters.setTitle(I18N.tr("Data Source Table"));
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("openattributes"));
@@ -73,18 +73,26 @@ public class TableEditor extends JPanel implements EditorDockable {
                 return table;
         }
 
+        /**
+         * Return the editable document
+         * @return 
+         */
+        public TableEditableElement getTableEditableElement() {
+                return tableEditableElement;
+        }
+
         @Override
         public boolean match(EditableElement editableElement) {
                 if(editableElement instanceof TableEditableElement) {
                         TableEditableElement tableElement = (TableEditableElement) editableElement;
-                        return tableElement.getDataSource().equals(element.getDataSource());
+                        return tableElement.getDataSource().equals(tableEditableElement.getDataSource());
                 }
                 return false;
         }
 
         @Override
         public EditableElement getEditableElement() {
-                return element;
+                return tableEditableElement;
         }
 
         @Override
