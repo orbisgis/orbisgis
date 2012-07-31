@@ -62,7 +62,7 @@ import org.gdms.source.directory.StreamDefinitionType;
  * @author Antoine Gourlay
  * @author Vincent Dépériers
  */
-public class StreamSourceDefinition extends AbstractDataSourceDefinition {
+public class StreamSourceDefinition extends AbstractDataSourceDefinition<StreamDriver> {
 
         private StreamSource streamSource;
 
@@ -100,7 +100,7 @@ public class StreamSourceDefinition extends AbstractDataSourceDefinition {
         }
 
         @Override
-        protected Driver getDriverInstance() {
+        protected StreamDriver getDriverInstance() {
                 return DriverUtilities.getStreamDriver(getDataSourceFactory().getSourceManager().getDriverManager(), streamSource.getStreamType());
         }
 
