@@ -38,13 +38,15 @@ import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
 import org.orbisgis.legend.analyzer.parameter.StringParameterAnalyzer;
 import org.orbisgis.legend.structure.categorize.Categorize2StringLegend;
-import org.orbisgis.legend.structure.fill.ConstantFillLegend;
-import org.orbisgis.legend.structure.fill.ConstantSolidFillLegend;
+import org.orbisgis.legend.structure.fill.constant.ConstantFillLegend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 import org.orbisgis.legend.structure.recode.Recode2StringLegend;
 import org.orbisgis.legend.structure.stroke.*;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
+import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 
 /**
  * This class is dedicated to the detection of thematic analysis made inside the
@@ -79,6 +81,9 @@ public class PenStrokeAnalyzer extends AbstractAnalyzer {
          * @return
          */
         private LegendStructure analyzePenStroke(){
+                if(penStroke == null){
+                        return new NullPenStrokeLegend();
+                }
                 LegendStructure ret;
                 //We first make the analysis of the width attribute.
                 RealParameter width= penStroke.getWidth();

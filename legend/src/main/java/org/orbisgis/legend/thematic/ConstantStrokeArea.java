@@ -35,10 +35,11 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
-import org.orbisgis.legend.structure.stroke.ConstantPenStrokeLegend;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
+import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 
 /**
- * Represent an {@code AreaSymbolizer} of which the {@code Stroke} is a constant
+ * Represents an {@code AreaSymbolizer} of which the {@code Stroke} is a constant
  * {@code PenStroke} instance, that can be recognized as a {@code
  * ConstantPenStrokeLegend}.
  * @author Alexis Guéganno
@@ -47,7 +48,7 @@ public abstract class ConstantStrokeArea extends SymbolizerLegend {
 
     private AreaSymbolizer areaSymbolizer;
 
-    private ConstantPenStrokeLegend strokeLegend;
+    private ConstantPenStroke strokeLegend;
 
     /**
      * Build a new default {@code ConstantStrokeArea} from scratch. It contains a
@@ -57,7 +58,7 @@ public abstract class ConstantStrokeArea extends SymbolizerLegend {
     public ConstantStrokeArea() {
         areaSymbolizer = new AreaSymbolizer();
         Stroke stroke = areaSymbolizer.getStroke();
-        strokeLegend = (ConstantPenStrokeLegend) new PenStrokeAnalyzer((PenStroke) stroke).getLegend();
+        strokeLegend = (ConstantPenStroke) new PenStrokeAnalyzer((PenStroke) stroke).getLegend();
     }
 
     /**
@@ -68,15 +69,15 @@ public abstract class ConstantStrokeArea extends SymbolizerLegend {
     public ConstantStrokeArea(AreaSymbolizer symbolizer){
         areaSymbolizer=symbolizer;
         Stroke stroke = symbolizer.getStroke();
-        if(stroke instanceof PenStroke){
+        if(stroke instanceof PenStroke || stroke == null){
             LegendStructure strokeLgd = new PenStrokeAnalyzer((PenStroke) stroke).getLegend();
-            if(strokeLgd instanceof ConstantPenStrokeLegend){
-                strokeLegend = (ConstantPenStrokeLegend) strokeLgd;
+            if(strokeLgd instanceof ConstantPenStroke){
+                strokeLegend = (ConstantPenStroke) strokeLgd;
             } else {
                 throw new IllegalArgumentException("The stroke of this AreaSymbolizer "
                         + "can't be recognized as a constant PenStroke.");
             }
-        } else if (stroke != null){
+        } else {
             throw new IllegalArgumentException("We are not able to process Stroke"
                     + "that are not PenStroke.");
         }
@@ -89,6 +90,31 @@ public abstract class ConstantStrokeArea extends SymbolizerLegend {
     @Override
     public Symbolizer getSymbolizer() {
         return areaSymbolizer;
+    }
+
+    /**
+     * Exposes the inner {@link LegendStructure} that represents the analysis
+     * made on the {@link PenStroke}.
+     * @return
+     */
+    public ConstantPenStroke getStrokeLegend(){
+            return strokeLegend;
+    }
+
+    /**
+     * Sets the legend describing the structure of the fill contained in the
+     * inner {@link AreaSymbolizer}. This will update the fill of the {@code
+     * AreaSymbolizer} in question.
+     * @param cfl
+     */
+    public void setStrokeLegend(ConstantPenStroke cfl){
+            if(cfl == null){
+                    strokeLegend = new NullPenStrokeLegend();
+            } else {
+                    strokeLegend = cfl;
+            }
+            AreaSymbolizer symbolizer = (AreaSymbolizer) getSymbolizer();
+            symbolizer.setStroke(strokeLegend.getStroke());
     }
 
     /**

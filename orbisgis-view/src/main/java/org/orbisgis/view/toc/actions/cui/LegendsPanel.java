@@ -38,6 +38,7 @@ import java.util.LinkedList;
 import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JToolBar;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryTypeConstraint;
@@ -62,17 +63,19 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * This {@code Panel} contains all the needed informations to build an UI that
  * will let the user edit the legends. It is built with the following properties
- * :</p> <ul><li>Legends are displayed in the {@code LegendList}.</li> <li>An
- * inner list of available legends. It may be initialized using
+ * :</p>
+ * <ul><li>Legends are displayed in the {@code LegendList}.</li>
+ * <li>An inner list of available legends. It may be initialized using
  * {@code EPLegendHelper. It is used to validate a given {@code Legend}, in
- * order to determine if it can be edited or not.</li> <li>A {@code CardLayout}
- * that is used to switch fast between the {@code
- * Legend} instances stored in {@code legends}</li> <li>Two text fields : one
- * for the min scale, the other for the max scale.</li> <li>Two buttons that are
- * used to fastly set the min and/or max scales to the current one.</li> <li>A {@code MapTransform}
- * that represents the current state of the map</li> <li>A {@code Type} instance
- * (should be the type of the {@code DataSource} associated to the layer
- * associated to the legend we want to edit.</li> </ul>
+ * order to determine if it can be edited or not.</li>
+ * <li>A {@code CardLayout} that is used to switch fast between the {@code
+ * Legend} instances stored in {@code legends}</li>
+ * <li>Two text fields : one for the min scale, the other for the max scale.</li>
+ * <li>Two buttons that are used to fastly set the min and/or max scales to the
+ * current one.</li>
+ * <li>A {@code MapTransform} that represents the current state of the map</li>
+ * <li>A {@code Type} instance (should be the type of the {@code DataSource}
+ * associated to the layer associated to the legend we want to edit.</li> </ul>
  *
  * @author Alexis Guéganno, others...
  */
@@ -98,6 +101,9 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
          * @param style
          * @param availableLegends
          * @param layer
+         * @throws UnsupportedOperationException if at least one symbolizer of
+         * {@code style} can't be associated to a simple analysis.
+         *
          */
         public void init(MapTransform mt, Type gc, Style style, ILegendPanel[] availableLegends,
                 ILayer layer) {
@@ -139,7 +145,10 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                                 ILegendPanel ilp = getPanel(leg);
                                 ilp.setId(getNewId());
                                 ll.add(ilp);
-                                pnlContainer.add(ilp.getComponent(), ilp.getId());
+                                JScrollPane jsp = new JScrollPane(ilp.getComponent(),
+                                        JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                                pnlContainer.add(jsp, ilp.getId());
                         }
                         RuleWrapper rw = new RuleWrapper(r, ll);
                         rw.getPanel().setId(getNewId());

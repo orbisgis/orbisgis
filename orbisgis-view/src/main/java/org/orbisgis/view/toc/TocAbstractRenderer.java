@@ -31,7 +31,7 @@ package org.orbisgis.view.toc;
 import ij.ImagePlus;
 import java.io.IOException;
 import javax.swing.Icon;
-import javax.swing.tree.TreeCellRenderer;
+import javax.swing.JTree;
 import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
@@ -39,12 +39,17 @@ import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.view.components.renderers.TreeLaFRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-public abstract class TocAbstractRenderer implements TreeCellRenderer {
+public abstract class TocAbstractRenderer extends TreeLaFRenderer {
         private static final I18n I18N = I18nFactory.getI18n(TocAbstractRenderer.class);
+
+        public TocAbstractRenderer(JTree tree) {
+                super(tree);
+        }
 
         public static Icon getLayerIcon(ILayer layer) throws DriverException,
 			IOException {

@@ -29,6 +29,7 @@
 package org.orbisgis.legend.structure.stroke;
 
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.LegendStructure;
 
 /**
@@ -37,7 +38,7 @@ import org.orbisgis.legend.LegendStructure;
  * really better to instanciate the corresponding specialization of this class.
  * @author Alexis Guéganno
  */
-public class PenStrokeLegend implements LegendStructure {
+public class PenStrokeLegend implements StrokeLegend {
 
         private PenStroke penStroke;
 
@@ -62,7 +63,8 @@ public class PenStrokeLegend implements LegendStructure {
          * Retrieve the PenStroke contained in this {@code LegendStructure}.
          * @return
          */
-        public PenStroke getPenStroke() {
+        @Override
+        public Stroke getStroke() {
                 return penStroke;
         }
 

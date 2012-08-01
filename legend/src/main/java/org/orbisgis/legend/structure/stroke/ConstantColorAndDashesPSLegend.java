@@ -31,7 +31,7 @@ package org.orbisgis.legend.structure.stroke;
 import java.awt.Color;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.structure.fill.ConstantSolidFillLegend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 
 
 /**
@@ -68,6 +68,22 @@ public abstract class ConstantColorAndDashesPSLegend extends PenStrokeLegend {
      */
     public void setLineColor(Color col) {
         ((ConstantSolidFillLegend)getFillAnalysis()).setColor(col);
+    }
+
+    /**
+     * Gets the {@code Color} of the associated {@code PenStroke}.
+     * @return
+     */
+    public double getLineOpacity() {
+        return ((ConstantSolidFillLegend)getFillAnalysis()).getOpacity();
+    }
+
+    /**
+     * Sets the {@code Color} of the associated {@code PenStroke}.
+     * @param col
+     */
+    public void setLineOpacity(double opacity) {
+        ((ConstantSolidFillLegend)getFillAnalysis()).setOpacity(opacity);
     }
 
 

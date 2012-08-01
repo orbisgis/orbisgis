@@ -40,7 +40,6 @@ import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.analyzer.symbolizers.LineSymbolizerAnalyzer;
-import org.orbisgis.legend.thematic.constant.USParameter;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 
@@ -121,7 +120,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         Style st = getStyle(constant);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
-        assertTrue(usl.getLineWidth() == 8.0);
+        assertTrue(usl.getPenStroke().getLineWidth() == 8.0);
 
     }
 
@@ -130,8 +129,8 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         Style st = getStyle(constant);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
-        usl.setLineWidth(15.0);
-        assertTrue(usl.getLineWidth() == 15.0);
+        usl.getPenStroke().setLineWidth(15.0);
+        assertTrue(usl.getPenStroke().getLineWidth() == 15.0);
     }
 
     @Test
@@ -139,7 +138,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         Style st = getStyle(constantDash);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
-        assertTrue(usl.getDashArray().equals("1 2 1 3"));
+        assertTrue(usl.getPenStroke().getDashArray().equals("1 2 1 3"));
     }
 
     @Test
@@ -147,8 +146,8 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         Style st = getStyle(constantDash);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
-        usl.setDashArray("1 5 3");
-        assertTrue(usl.getDashArray().equals("1 5 3"));
+        usl.getPenStroke().setDashArray("1 5 3");
+        assertTrue(usl.getPenStroke().getDashArray().equals("1 5 3"));
     }
 
     @Test
@@ -156,11 +155,11 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         Style st = getStyle(constantDash);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
-        usl.setDashArray("");
+        usl.getPenStroke().setDashArray("");
         PenStroke ps = (PenStroke) ls.getStroke();
         StringLiteral sl = (StringLiteral) ps.getDashArray();
         assertTrue(sl == null);
-        assertTrue(usl.getDashArray().equals(""));
+        assertTrue(usl.getPenStroke().getDashArray().equals(""));
     }
 
     @Test
@@ -171,9 +170,9 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         PenStroke ps = (PenStroke) ls.getStroke();
         StringLiteral sl = (StringLiteral) ps.getDashArray();
         assertTrue(sl == null);
-        assertTrue(usl.getDashArray().equals(""));
-        usl.setDashArray("1 5 3");
-        assertTrue(usl.getDashArray().equals("1 5 3"));
+        assertTrue(usl.getPenStroke().getDashArray().equals(""));
+        usl.getPenStroke().setDashArray("1 5 3");
+        assertTrue(usl.getPenStroke().getDashArray().equals("1 5 3"));
         
     }
 
@@ -185,10 +184,10 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         PenStroke ps = (PenStroke) ls.getStroke();
         StringLiteral sl = (StringLiteral) ps.getDashArray();
         assertTrue(sl == null);
-        assertTrue(usl.getDashArray().equals(""));
-        usl.setDashArray("bonjour bonjour !");
+        assertTrue(usl.getPenStroke().getDashArray().equals(""));
+        usl.getPenStroke().setDashArray("bonjour bonjour !");
         assertTrue(sl == null);
-        assertTrue(usl.getDashArray().equals(""));
+        assertTrue(usl.getPenStroke().getDashArray().equals(""));
 
     }
 
@@ -197,11 +196,11 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         Style st = getStyle(constantDash);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
-        usl.setDashArray("bonjour bonjour !");
+        usl.getPenStroke().setDashArray("bonjour bonjour !");
         PenStroke ps = (PenStroke) ls.getStroke();
         StringLiteral sl = (StringLiteral) ps.getDashArray();
         assertTrue(sl == null);
-        assertTrue(usl.getDashArray().equals(""));
+        assertTrue(usl.getPenStroke().getDashArray().equals(""));
     }
 
     @Test
@@ -209,8 +208,8 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         Style st = getStyle(constantDash);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
-        usl.setDashArray("1 -5 3");
-        assertTrue(usl.getDashArray().equals(""));
+        usl.getPenStroke().setDashArray("1 -5 3");
+        assertTrue(usl.getPenStroke().getDashArray().equals(""));
     }
 
     @Test
@@ -218,36 +217,8 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         UniqueSymbolLine usl = new UniqueSymbolLine();
         LineSymbolizerAnalyzer lsa = new LineSymbolizerAnalyzer((LineSymbolizer)usl.getSymbolizer());
         assertTrue(lsa.getLegend() instanceof UniqueSymbolLine);
-        assertTrue(usl.getLineWidth() == 0.1);
+        assertTrue(usl.getPenStroke().getLineWidth() == 0.1);
         assertTrue(usl.getLineColor().equals(Color.BLACK));
-    }
-
-    @Test
-    public void testGetParameters() throws Exception {
-        Style st = getStyle(constantDash);
-        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        UniqueSymbolLine usl = new UniqueSymbolLine(ls);
-        List<USParameter<?>> params = usl.getParameters();
-        assertTrue(params.get(0).getValue().equals(usl.getLineWidth()));
-        assertTrue(params.get(1).getValue().equals(usl.getLineColor()));
-        assertTrue(params.get(2).getValue().equals(usl.getDashArray()));
-    }
-
-    @Test
-    public void testSetParameters() throws Exception {
-        Style st = getStyle(constantDash);
-        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        UniqueSymbolLine usl = new UniqueSymbolLine(ls);
-        List<USParameter<?>> params = usl.getParameters();
-        ((USParameter<Double>)params.get(0)).setValue(1000.0);
-        assertTrue(params.get(0).getValue().equals(usl.getLineWidth()));
-        assertTrue(params.get(0).getValue().equals(1000.0));
-        ((USParameter<Color>)params.get(1)).setValue(new Color(20, 45, 32));
-        assertTrue(params.get(1).getValue().equals(usl.getLineColor()));
-        assertTrue(params.get(1).getValue().equals(new Color(20, 45, 32)));
-        ((USParameter<String>)params.get(2)).setValue("2 5 3 9");
-        assertTrue(params.get(2).getValue().equals(usl.getDashArray()));
-        assertTrue(params.get(2).getValue().equals("2 5 3 9"));
     }
     
     /**************************************************************************/
