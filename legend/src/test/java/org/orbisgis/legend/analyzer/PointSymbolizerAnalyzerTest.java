@@ -109,6 +109,23 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
     }
 
     @Test
+    public void testGetWKN() throws Exception {
+        Style st = getStyle(CONSTANT);
+        PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
+        UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
+        assertTrue(uvp.getWellKnownName().equals("Circle"));
+    }
+
+    @Test
+    public void testSetWKN() throws Exception {
+        Style st = getStyle(CONSTANT);
+        PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
+        UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
+        uvp.setWellKnownName("Star");
+        assertTrue(uvp.getWellKnownName().equals("Star"));
+    }
+
+    @Test
     public void testGetFillColor() throws Exception {
         Style st = getStyle(CONSTANT);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));

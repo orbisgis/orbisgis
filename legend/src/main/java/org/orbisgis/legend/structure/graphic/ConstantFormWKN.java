@@ -29,6 +29,7 @@
 package org.orbisgis.legend.structure.graphic;
 
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
@@ -46,6 +47,8 @@ public abstract class ConstantFormWKN extends MarkGraphicLegend {
     /**
      * Build a default {@code LegendStructure} that describes a {@code MarkGraphic}
      * instance.
+     * @param mark
+     * @param wknLegend
      * @param viewBoxLegend
      * @param fillLegend
      * @param strokeLegend
@@ -83,5 +86,25 @@ public abstract class ConstantFormWKN extends MarkGraphicLegend {
      */
     public void setPenStroke(ConstantPenStroke cps){
             setStrokeLegend(cps);
+    }
+
+    /**
+     * Gets the well-known name that describes the shape of the inner {@link
+     * MarkGraphic}.
+     * @return
+     */
+    public String getWellKnownName(){
+            return ((StringLiteralLegend) getWknLegend()).getLiteral().getValue(null);
+    }
+
+    /**
+     * Sets the well-known name that describes the shape of the inner {@link
+     * MarkGraphic}.
+     * @param string
+     * The new {@code WellKnownName}.
+     */
+    public void setWellKnownName(String string){
+            StringLiteralLegend sll = new StringLiteralLegend(new StringLiteral(string));
+            setWknLegend(sll);
     }
 }
