@@ -267,5 +267,6 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
 
         private void setAreaFieldsState(boolean state){
                 setFieldState(state, fill);
+                setFieldState(state, fillOpacity);
         }
 }
