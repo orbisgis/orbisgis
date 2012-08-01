@@ -28,20 +28,19 @@
  */
 package org.orbisgis.view.table;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.beans.EventHandler;
 import javax.swing.AbstractListModel;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListCellRenderer;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.border.Border;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import org.orbisgis.view.components.renderers.ListLaFRenderer;
 
 /**
  *
@@ -52,25 +51,41 @@ public class TableRowHeader extends JList {
         private TableModelListener listener = EventHandler.create(TableModelListener.class,this,"tableChanged","");
         private final JTable table;
         private final RowHeaderListModel model;
-        private static final Border CELL_BORDER =
-                BorderFactory.createEmptyBorder(0, 5, 0, 5);
 
         public TableRowHeader(JTable table) {
                 this.table = table;
+                setFixedCellWidth(1); // Will be reset on syncRowCount
                 model = new RowHeaderListModel();
                 setModel(model);
                 setFocusable(false);
-                setFont(table.getFont());
                 setFixedCellHeight(table.getRowHeight());
-                setCellRenderer(new CellRenderer());
+                setCellRenderer(new CellRenderer(this));
                 setBorder(new RowHeaderBorder());
                 setSelectionMode(ListSelectionModel.SINGLE_INTERVAL_SELECTION);
                 syncRowCount(); // Initialize to initial size of table.
-                setBackground(table.getBackground());
                 table.getModel().addTableModelListener(listener);
-
+                setOpaque(false);
         }
 
+        @Override
+        public void updateUI() {
+                super.updateUI();
+                if(table!=null) {
+                        setFixedCellHeight(table.getRowHeight());
+                        computeCellWidth();
+                }
+        }
+        
+        private void computeCellWidth() {
+                int rowCount = table.getRowCount();
+                //The following lines are very important
+                //If you define a fixed cell width then
+                //the jlist does'nt have to compute the maximum width of
+                // the rowCount labels ! (this can take a very long time)
+                JLabel label = (JLabel)getCellRenderer().getListCellRendererComponent(this, rowCount - 1, rowCount - 1, false, false);
+                setFixedCellWidth(label.getPreferredSize().width);                
+        }
+      
         /**
          * Table model update
          * @param tme 
@@ -81,8 +96,9 @@ public class TableRowHeader extends JList {
 
         private void syncRowCount() {
                 if (table.getRowCount() != model.getSize()) {
-                        // Always keep 1 row, even if showing 0 bytes in editor
-                        model.setSize(Math.max(1, table.getRowCount()));
+                        // Always keep 1 row, even if showing 0 bytes in editor                        
+                        model.setSize(Math.max(1, table.getRowCount() ));
+                        computeCellWidth();
                 }
         }
 
@@ -116,29 +132,27 @@ public class TableRowHeader extends JList {
                 }
         }
 
-        /**
-         * Renders the cells of the row header.
-         *
-         * @author Robert Futrell
-         * @version 1.0
-         */
-        private class CellRenderer extends DefaultListCellRenderer {
+        private class CellRenderer extends ListLaFRenderer {
 
                 private static final long serialVersionUID = 1L;
 
-                public CellRenderer() {
-                        setHorizontalAlignment(JLabel.RIGHT);
+                public CellRenderer(JList list) {
+                        super(list);
                 }
 
                 @Override
                 public Component getListCellRendererComponent(JList list, Object value,
                         int index, boolean selected, boolean hasFocus) {
                         // Never paint cells as "selected."
-                        super.getListCellRendererComponent(list, value, index,
+                        
+                        Component comp = lookAndFeelRenderer.getListCellRendererComponent(list, value, index,
                                 false, hasFocus);
-                        setBorder(CELL_BORDER);
-                        setBackground(table.getBackground());
-                        return this;
+                        if(comp instanceof JLabel) {
+                                JLabel compLabel = (JLabel)comp;
+                                compLabel.setHorizontalAlignment(JLabel.RIGHT);
+                                compLabel.setBackground((new JLabel()).getBackground());
+                        }
+                        return comp;
                 }
         }
 

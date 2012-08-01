@@ -30,15 +30,13 @@ package org.orbisgis.view.table;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Dimension;
 import java.util.HashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -71,17 +69,17 @@ public class TableEditor extends JPanel implements EditorDockable {
         private JTable table;
         private JScrollPane tableScrollPane;
         private DataSourceTableModel tableModel;
+        private AtomicBoolean initialised = new AtomicBoolean(false);
 
         public TableEditor(TableEditableElement element) {
                 super(new BorderLayout());
+                LOGGER.debug("Create the GRID");
                 this.tableEditableElement = element;
                 dockingPanelParameters = new DockingPanelParameters();
                 dockingPanelParameters.setTitle(I18N.tr("Table Editor of {0}",element.getSourceName()));
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("openattributes"));
                 tableScrollPane = new JScrollPane(makeTable());
                 add(tableScrollPane,BorderLayout.CENTER);
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.nonBlockingBackgroundOperation(new OpenEditableElement());
         }
         
         private JComponent makeTable() {
@@ -112,6 +110,16 @@ public class TableEditor extends JPanel implements EditorDockable {
                 return false;
         }
 
+        @Override
+        public void addNotify() {
+                super.addNotify();
+                if(!initialised.getAndSet(true)) {
+                        BackgroundManager bm = Services.getService(BackgroundManager.class);
+                        bm.backgroundOperation(new OpenEditableElement());                        
+                }
+        }
+
+        
 
         private int getColumnOptimalWidth(int rowsToCheck, int maxWidth,
                 int column, ProgressMonitor pm) {
@@ -169,6 +177,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                 new HashMap<String, Integer>(),
                 new HashMap<String, TableCellRenderer>());
                 //Set the row count at left
+                //tableScrollPane.setRowHeaderView(new TableLineCountHeader(table));
                 tableScrollPane.setRowHeaderView(new TableRowHeader(table));
         }
         
