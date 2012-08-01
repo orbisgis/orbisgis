@@ -29,16 +29,20 @@
 package org.orbisgis.view.toc.actions.cui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
+import javax.swing.JTree;
 import javax.swing.event.TreeSelectionListener;
-import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import javax.swing.tree.TreeSelectionModel;
 import org.orbisgis.core.renderer.se.Rule;
@@ -49,6 +53,7 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.multiInputPanel.MIPValidation;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
+import org.orbisgis.view.components.renderers.TreeLaFRenderer;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.toc.actions.cui.components.LegendPicker;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
@@ -88,7 +93,7 @@ public class LegendTree extends JPanel {
                 LegendTreeModel ltm = new LegendTreeModel(tree, style);
                 tree.setModel(ltm);
                 //...and a custom TreeCellRenderer.
-                LegendCellRenderer lcr = new LegendCellRenderer();
+                LegendCellRenderer lcr = new LegendCellRenderer(tree);
                 tree.setCellRenderer(lcr);
                 //We want to select only one element at a time.
                 tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
@@ -99,9 +104,15 @@ public class LegendTree extends JPanel {
                 TreeSelectionListener tslb = EventHandler.create(TreeSelectionListener.class, legendsPanel, "legendSelected");
                 tree.addTreeSelectionListener(tslb);
                 initButtons();
+                setPreferredSize(new Dimension(200,200));
                 this.setLayout(new BorderLayout());
                 this.add(toolBar, BorderLayout.PAGE_START);
-                this.add(new JScrollPane(tree), BorderLayout.CENTER);
+                JScrollPane scrollPane = new JScrollPane(tree,
+                                        JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                                        JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+                scrollPane.getViewport().setViewSize(new Dimension(100,200));
+                scrollPane.getViewport().setExtentSize(new Dimension(100,200));
+                this.add(scrollPane, BorderLayout.CENTER);
                 refreshIcons();
         }
 
@@ -434,51 +445,53 @@ public class LegendTree extends JPanel {
          * A TreeCellRenderer dedicated to our tree. Paints text in red if the
          * cell is selected, in black otherwise.
          */
-        private static class LegendCellRenderer implements TreeCellRenderer {
+        private static class LegendCellRenderer extends TreeLaFRenderer {
 
-                private static final Color DESELECTED = Color.black;
-                private static final Color SELECTED = Color.red;
+                public LegendCellRenderer(JTree tree) {
+                        super(tree);
+                }
 
                 @Override
                 public Component getTreeCellRendererComponent(
                         JTree tree, Object value, boolean selected,
                         boolean expanded, boolean leaf, int row, boolean hasFocus) {
-                        if (value instanceof StyleWrapper) {
-                                return getComponent((StyleWrapper) value, selected);
-                        } else if (value instanceof RuleWrapper) {
-                                return getComponent((RuleWrapper) value, selected);
-                        } else if (value instanceof ILegendPanel) {
-                                return getComponent((ILegendPanel) value, selected);
+                        Component comp = lookAndFeelRenderer.getTreeCellRendererComponent(tree, value,
+                                selected, expanded, leaf, row, hasFocus);
+                        if(comp instanceof JLabel){
+                                JLabel lab = (JLabel) comp;
+                                if (value instanceof StyleWrapper) {
+                                        return getComponent((StyleWrapper) value, lab);
+                                } else if (value instanceof RuleWrapper) {
+                                        return getComponent((RuleWrapper) value, lab);
+                                } else if (value instanceof ILegendPanel) {
+                                        return getComponent((ILegendPanel) value, lab);
+                                } else {
+                                        lab.setText("root");
+                                }
                         }
-                        return new JLabel("root");
+                        return comp;
                 }
 
-                private Component getComponent(ILegendPanel legend, boolean selected) {
-                        JLabel lab = new JLabel(legend.getLegend().getName());
-                        lab.setForeground(selected ? SELECTED : DESELECTED);
-                        lab.setBackground(Color.blue);
+                private Component getComponent(ILegendPanel legend, JLabel lab) {
+                        lab.setText(legend.getLegend().getName());
                         return lab;
                 }
 
-                private Component getComponent(RuleWrapper rw, boolean selected) {
+                private Component getComponent(RuleWrapper rw, JLabel lab) {
                         String s = rw.getRule().getName();
                         if (s == null || s.isEmpty()) {
                                 s = "Unknown";
                         }
-                        JLabel lab = new JLabel(s);
-                        lab.setForeground(selected ? SELECTED : DESELECTED);
-                        lab.setBackground(Color.blue);
+                        lab.setText(s);
                         return lab;
                 }
 
-                private Component getComponent(StyleWrapper sw, boolean selected) {
+                private Component getComponent(StyleWrapper sw, JLabel lab) {
                         String s = sw.getStyle().getName();
                         if (s == null || s.isEmpty()) {
                                 s = "Unknown";
                         }
-                        JLabel lab = new JLabel(s);
-                        lab.setForeground(selected ? SELECTED : DESELECTED);
-                        lab.setBackground(Color.blue);
+                        lab.setText(s);
                         return lab;
                 }
         }

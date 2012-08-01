@@ -30,6 +30,7 @@ package org.orbisgis.legend.structure.fill;
 
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 
 /**
  * Generic {@code LegendStructure} representation of a SolidFill. The analysis can mainly
@@ -38,11 +39,11 @@ import org.orbisgis.legend.LegendStructure;
  * play with the color, not with the opacity.
  * @author Alexis Guéganno
  */
-public class SolidFillLegend implements LegendStructure {
+public class SolidFillLegend implements FillLegend {
 
         private SolidFill fill;
-
         private LegendStructure colorLegend;
+        private RealLiteralLegend opacityLegend;
 
         /**
          * Build a {@code SolidFillLegend} using the {@code Fill} and {@code
@@ -50,9 +51,10 @@ public class SolidFillLegend implements LegendStructure {
          * @param fill
          * @param colorLegend
          */
-        public SolidFillLegend(SolidFill fill, LegendStructure colorLegend) {
+        public SolidFillLegend(SolidFill fill, LegendStructure colorLegend, RealLiteralLegend rll) {
                 this.fill = fill;
                 this.colorLegend = colorLegend;
+                this.opacityLegend = rll;
         }
 
         /**
@@ -65,9 +67,20 @@ public class SolidFillLegend implements LegendStructure {
         }
 
         /**
+         * Gets the opacity associated to the inner {@link SolidFill}. As we don't recognize analysis madeon the opacity
+         * field of the SolidFill instances, we know that we won't be able to build SolidfillLegend with an opacity that can't be
+         * recognized as a {@link RealLiteralLegend}.
+         * @return
+         */
+        public RealLiteralLegend getOpacityLegend(){
+            return opacityLegend;
+        }
+
+        /**
          * Get the {@code Fill} that backs up this {@code LegendStructure}.
          * @return
          */
+        @Override
         public SolidFill getFill() {
                 return fill;
         }

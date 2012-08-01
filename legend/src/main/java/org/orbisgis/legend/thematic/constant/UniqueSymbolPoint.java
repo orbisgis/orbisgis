@@ -28,14 +28,15 @@
  */
 package org.orbisgis.legend.thematic.constant;
 
-import java.util.List;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.MarkGraphicAnalyzer;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
 import org.orbisgis.legend.structure.graphic.ConstantWKNLegend;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
 
 /**
@@ -115,6 +116,26 @@ public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbo
         return markGraphic;
     }
 
+    @Override
+    public ConstantSolidFill getFillLegend() {
+        return markGraphic.getSolidFill();
+    }
+
+    @Override
+    public void setFillLegend(ConstantSolidFill csf) {
+            markGraphic.setFillLegend(csf);
+    }
+
+    @Override
+    public ConstantPenStroke getPenStroke(){
+        return markGraphic.getPenStroke();
+    }
+
+    @Override
+    public void setPenStroke(ConstantPenStroke cpsl) {
+        markGraphic.setPenStroke(cpsl);
+    }
+
     /**
      * Get the width of the {@code ViewBox} we are going to draw our symbol in.
      * @return
@@ -163,25 +184,6 @@ public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbo
     @Override
     public String getLegendTypeId(){
         return "org.orbisgis.legend.thematic.constant.UniqueSymbolPoint";
-    }
-
-    @Override
-    public List<USParameter<?>> getParameters() {
-        return USParameterFactory.getParameters(this);
-    }
-
-    @Override
-    public List<USParameter<?>> getParametersArea() {
-        return USParameterFactory.getParametersArea(this);
-    }
-
-    @Override
-    public List<USParameter<?>> getParametersLine() {
-        return USParameterFactory.getParametersLine(this);
-    }
-    
-    public List<USParameter<?>> getParametersPoint() {
-        return USParameterFactory.getParametersPoint(this);
     }
 
 }

@@ -26,27 +26,51 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.legend.structure.fill;
+package org.orbisgis.legend.structure.fill.constant;
 
+import java.awt.Color;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.legend.structure.fill.SolidFillLegend;
+import org.orbisgis.legend.structure.literal.ColorLiteralLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
-import org.orbisgis.legend.structure.recode.Recode2ColorLegend;
 
 /**
- * A {@code Legend} that represents a {@code SolidFill} where the color is defined
- * accorgind to a {@code Recode} operation.
+ * A {@code Legend} that represents a {@code SolidFill} where the color is a
+ * {@code Literal} instance.
  * @author Alexis Guéganno
  */
-public class RecodedSolidFillLegend extends SolidFillLegend {
+public class ConstantSolidFillLegend extends SolidFillLegend implements ConstantSolidFill {
 
         /**
-         * Build a new {@code CategorizedSolidFillLegend} using the {@code 
-         * SolidFill} and {@code Recode2ColorLegend} given in parameter.
+         * Build a new {@code ConstantSolidFillLegend} using the {@code SolidFill}
+         * and {@code ColorLiteralLegend} given in parameter.
          * @param fill
          * @param colorLegend
          */
-        public RecodedSolidFillLegend(SolidFill fill, Recode2ColorLegend colorLegend, RealLiteralLegend opacity) {
+        public ConstantSolidFillLegend(SolidFill fill, ColorLiteralLegend colorLegend, RealLiteralLegend opacity) {
                 super(fill, colorLegend, opacity);
+        }
+
+        @Override
+        public Color getColor(){
+            ColorLiteralLegend cll = (ColorLiteralLegend) getColorLegend();
+            return cll.getColor();
+        }
+
+        @Override
+        public void setColor(Color col) {
+                ColorLiteralLegend cll = (ColorLiteralLegend) getColorLegend();
+                cll.setColor(col);
+        }
+
+        @Override
+        public double getOpacity(){
+            return getOpacityLegend().getDouble();
+        }
+
+        @Override
+        public void setOpacity(double d) {
+                getOpacityLegend().setDouble(d);
         }
 
 }

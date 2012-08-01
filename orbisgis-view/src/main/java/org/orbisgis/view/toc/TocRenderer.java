@@ -30,16 +30,11 @@ package org.orbisgis.view.toc;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import javax.swing.*;
-import javax.swing.tree.TreeCellRenderer;
 import org.apache.log4j.Logger;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
@@ -52,41 +47,16 @@ public class TocRenderer extends TocAbstractRenderer {
         private static Logger UILOGGER = Logger.getLogger("gui."+ TocRenderer.class);
         private static final long serialVersionUID = 1L;
         private static final int ROW_EMPTY_BORDER_SIZE = 2;
-
-        private TreeCellRenderer lookAndFeelRenderer;
         private Rectangle checkBoxRect;
+
         /**
-         * Install this renderer inside the tree
-         * @param tree 
+         * Builds a TocRenderer using the given JTree.
+         * @param tree
          */
-        public static void install( JTree tree) {
-                TocRenderer tocRenderer = new TocRenderer();
-                tocRenderer.initialize(tree);
-                tree.setCellRenderer(tocRenderer);
+        public TocRenderer(JTree tree) {
+                super(tree);
         }
-        
-        /**
-         * Update the native renderer.
-         * Warning, Using only by PropertyChangeListener on UI property
-         */
-        public void updateLFRenderer() {
-                lookAndFeelRenderer = new JTree().getCellRenderer();
-        }
-        
-        /**
-         * Listen for the arrival of Look&Feel
-         */
-        private void initialize(JTree tree) {
-                updateLFRenderer();
-                tree.addPropertyChangeListener("UI",
-                        EventHandler.create(PropertyChangeListener.class,this,"updateLFRenderer"));
-        }
-        /**
-         * Private constructor, use the static install method
-         * @param lfRenderer 
-         */
-        private TocRenderer() {
-        }
+
         private void copyComponentStyle(JComponent source, JComponent destination) {
                 destination.setOpaque(source.isOpaque());
                 destination.setBackground(source.getBackground());

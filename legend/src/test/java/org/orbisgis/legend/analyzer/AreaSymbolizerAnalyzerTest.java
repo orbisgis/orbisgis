@@ -82,15 +82,15 @@ public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
     public void testConstantGetFillColor() throws Exception {
         AreaSymbolizer ls = getConstantSymbolizer();
         UniqueSymbolArea usl = new UniqueSymbolArea(ls);
-        assertTrue(usl.getFillColor().equals(new Color(0x12, 0x34, 0x56)));
+        assertTrue(usl.getFillLegend().getColor().equals(new Color(0x12, 0x34, 0x56)));
     }
 
     @Test
     public void testConstantSetFillColor() throws Exception {
         AreaSymbolizer ls = getConstantSymbolizer();
         UniqueSymbolArea usl = new UniqueSymbolArea(ls);
-        usl.setFillColor(Color.red);
-        assertTrue(usl.getFillColor().equals(Color.red));
+        usl.getFillLegend().setColor(Color.red);
+        assertTrue(usl.getFillLegend().getColor().equals(Color.red));
     }
 
     @Test
@@ -266,6 +266,38 @@ public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
         } catch(IndexOutOfBoundsException ioobe){
             assertTrue(true);
         }
+    }
+
+    @Test
+    public void testNullFill() throws Exception {
+        AreaSymbolizer as = getConstantSymbolizer();
+        as.setFill(null);
+        AreaSymbolizerAnalyzer asa = new AreaSymbolizerAnalyzer(as);
+        assertTrue(asa.getLegend() instanceof UniqueSymbolArea);
+    }
+
+    @Test
+    public void testNullFillBis() throws Exception {
+        AreaSymbolizer as = getConstantSymbolizer();
+        as.setFill(null);
+        UniqueSymbolArea usa = new UniqueSymbolArea(as);
+        assertTrue(true);
+    }
+
+    @Test
+    public void testNullStroke() throws Exception {
+        AreaSymbolizer as = getConstantSymbolizer();
+        as.setStroke(null);
+        AreaSymbolizerAnalyzer asa = new AreaSymbolizerAnalyzer(as);
+        assertTrue(asa.getLegend() instanceof UniqueSymbolArea);
+    }
+
+    @Test
+    public void testNullStrokeBis() throws Exception {
+        AreaSymbolizer as = getConstantSymbolizer();
+        as.setStroke(null);
+        UniqueSymbolArea usa = new UniqueSymbolArea(as);
+        assertTrue(true);
     }
 
     private AreaSymbolizer getChoroSymbolizer() throws Exception {
