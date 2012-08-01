@@ -170,7 +170,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 gbc.gridx = 0;
                 gbc.gridy = 0;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
-                JPanel p1 = getLineBlock(uniqueArea.getPenStroke(), "Line configuration");
+                JPanel p1 = getLineBlock(uniqueArea.getPenStroke(), I18N.tr("Line configuration"));
                 glob.add(p1, gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;
@@ -178,7 +178,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.insets = new Insets(5, 0, 5, 0);
                 ConstantSolidFill leg = uniqueArea.getFillLegend();
-                JPanel p2 = getAreaBlock(leg, "Fill configuration");
+                JPanel p2 = getAreaBlock(leg, I18N.tr("Fill configuration"));
                 setAreaFieldsState(leg instanceof ConstantSolidFillLegend);
                 glob.add(p2, gbc);
                 gbc = new GridBagConstraints();
