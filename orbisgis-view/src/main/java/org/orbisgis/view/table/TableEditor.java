@@ -30,10 +30,15 @@ package org.orbisgis.view.table;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.beans.EventHandler;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -84,15 +89,49 @@ public class TableEditor extends JPanel implements EditorDockable {
         
         private JComponent makeTable() {
                 table = new JTable();
+                table.addMouseListener(EventHandler.create(MouseListener.class,
+                        this,
+                        "onMouseActionOnTableCells",
+                        ""));
+                table.getTableHeader().addMouseListener(EventHandler.create(MouseListener.class,
+                        this,
+                        "onMouseActionOnTableHeader",
+                        ""));
                 table.getSelectionModel().setSelectionMode(
                         ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
                 table.getTableHeader().setReorderingAllowed(false);
                 table.setColumnSelectionAllowed(true);
                 //table.setPreferredScrollableViewportSize(new Dimension(500, 70));
-                table.setFillsViewportHeight(true);                
+                table.setFillsViewportHeight(true);     
+                
                 return table;
         }
+        
+        public void onMouseActionOnTableHeader(MouseEvent e) {
+                //Does this action correspond to a popup request
+                if (e.isPopupTrigger()) { 
+                        int col = table.columnAtPoint(e.getPoint());
+                        LOGGER.info("Click on column:"+col);
+                        
+                        JPopupMenu menu = makeTableHeaderPopup(col);
+                        menu.show(e.getComponent(), e.getX(), e.getY());
+                }
+        }
 
+        public void onMouseActionOnTableCells(MouseEvent e) {
+                //Does this action correspond to a popup request
+                if (e.isPopupTrigger()) { 
+                        int row = table.rowAtPoint(e.getPoint());
+                        int col = table.columnAtPoint(e.getPoint());
+                        LOGGER.info("Click on col:"+col+" row:"+row);
+                }
+        }
+        
+        private JPopupMenu makeTableHeaderPopup(int col) {
+                JPopupMenu menu = new JPopupMenu(); 
+                return menu;
+        }
+        
         /**
          * Return the editable document
          * @return 
@@ -190,7 +229,6 @@ public class TableEditor extends JPanel implements EditorDockable {
                         TableColumn col = new TableColumn(i);
                         String columnName = tableModel.getColumnName(i);
                         int columnType = tableModel.getColumnType(i).getTypeCode();
-
                         col.setHeaderValue(columnName);
                         TableCellRenderer tableCellRenderer = renderers.get(columnName);
 
@@ -247,6 +285,7 @@ public class TableEditor extends JPanel implements EditorDockable {
         public JComponent getComponent() {
                 return this;
         }
+        
         private class OpenEditableElement implements BackgroundJob {
 
                 @Override
@@ -258,6 +297,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                         } catch (EditableElementException ex) {
                                 LOGGER.error(I18N.tr("Error while loading the table editor"),ex);
                         }
+                        
                         readDataSource();
                         
                 }
