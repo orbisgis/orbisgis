@@ -101,6 +101,9 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
          * @param style
          * @param availableLegends
          * @param layer
+         * @throws UnsupportedOperationException if at least one symbolizer of
+         * {@code style} can't be associated to a simple analysis.
+         *
          */
         public void init(MapTransform mt, Type gc, Style style, ILegendPanel[] availableLegends,
                 ILayer layer) {

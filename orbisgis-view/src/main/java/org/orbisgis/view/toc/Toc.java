@@ -680,6 +680,8 @@ public class Toc extends JPanel implements EditorDockable {
                                 LOGGER.error("The style you're trying to edit is not valid !");
                         } catch (DriverException de) {
                                 LOGGER.error("An error occurred while processing the DataSource");
+                        } catch (UnsupportedOperationException uoe){
+                                LOGGER.error(uoe.getMessage());
                         }
                 }
         }
