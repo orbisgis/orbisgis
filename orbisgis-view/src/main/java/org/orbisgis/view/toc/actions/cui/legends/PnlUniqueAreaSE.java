@@ -66,6 +66,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class PnlUniqueAreaSE extends PnlUniqueLineSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueAreaSE.class);
         private JPanel fill;
+        private JPanel fillOpacity;
         private JCheckBox areaCheckBox;
         private ConstantSolidFillLegend solidFillMemory;
 
@@ -202,7 +203,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 JPanel glob = new JPanel();
                 glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
                 JPanel jp = new JPanel();
-                GridLayout grid = new GridLayout(2,2);
+                GridLayout grid = new GridLayout(3,3);
                 grid.setVgap(5);
                 jp.setLayout(grid);
                 //The JCheckBox that can be used to enable/disable the fill conf.
@@ -219,8 +220,12 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                 fill = getColorField(fl);
                 jp.add(buildText(I18N.tr("Fill color :")));
                 jp.add(fill);
-                glob.add(jp);
+                //Opacity
+                fillOpacity = getLineOpacitySpinner(fl);
+                jp.add(buildText(I18N.tr("Fill opacity :")));
+                jp.add(fillOpacity);
                 //We add a canvas to display a preview.
+                glob.add(jp);
                 glob.setBorder(BorderFactory.createTitledBorder(title));
                 return glob;
         }
