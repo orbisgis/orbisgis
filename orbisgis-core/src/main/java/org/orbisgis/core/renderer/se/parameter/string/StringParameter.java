@@ -80,8 +80,10 @@ public interface StringParameter extends SeParameter {
     /**
      * Set the list of restrictions</p><p>
      * Restrictions are used to force {@code StringParameter} instances to match one 
-     * of the {@code String}s of the list.
-     * @param list 
+     * of the {@code String}s of the list. Note that comparisons are made ignoring
+     * case.
+     * @param list
+     * @throws InvalidString
      */
     void setRestrictionTo(String[] list);
 }
