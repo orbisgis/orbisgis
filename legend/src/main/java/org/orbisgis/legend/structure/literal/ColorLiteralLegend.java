@@ -29,8 +29,10 @@
 package org.orbisgis.legend.structure.literal;
 
 import java.awt.Color;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.structure.parameter.ParameterLegend;
 
 /**
  * {@code LegendStructure} associated to a numeric constant, that is represented as a
@@ -38,7 +40,7 @@ import org.orbisgis.legend.LegendStructure;
  *
  * @author Alexis Guéganno
  */
-public class ColorLiteralLegend implements LegendStructure {
+public class ColorLiteralLegend implements ParameterLegend {
 
         private ColorLiteral cl;
 
@@ -56,7 +58,7 @@ public class ColorLiteralLegend implements LegendStructure {
          * RealLiteralLegend}.
          * @return
          */
-        public ColorLiteral getColoraLiteral(){
+        public ColorLiteral getLiteral(){
                 return cl;
         }
 
@@ -74,5 +76,10 @@ public class ColorLiteralLegend implements LegendStructure {
          */
         public void setColor(Color col) {
             cl.setColor(col);
+        }
+
+        @Override
+        public SeParameter getParameter() {
+                return getLiteral();
         }
 }

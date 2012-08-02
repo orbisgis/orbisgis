@@ -34,13 +34,16 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.event.ChangeListener;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.graphic.WellKnownName;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.legend.Legend;
@@ -71,6 +74,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * be unique symbol (ie constant) Legends.
          */
         private UniqueSymbolPoint uniquePoint;
+        private String[] wkns;
 
         @Override
         public Component getComponent() {
@@ -202,9 +206,12 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 JPanel glob = new JPanel();
                 glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
                 JPanel jp = new JPanel();
-                GridLayout grid = new GridLayout(2,2);
+                GridLayout grid = new GridLayout(3,2);
                 grid.setVgap(5);
                 jp.setLayout(grid);
+                //Combobox
+                jp.add(buildText(I18N.tr("Symbol form :")));
+                jp.add(getWKNCombo(point));
                 //Mark width
                 jp.add(buildText(I18N.tr("Mark width :")));
                 jp.add(getMarkWidth(point));
@@ -243,4 +250,18 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 return jns;
         }
 
+        private JComboBox getWKNCombo(UniqueSymbolPoint point){
+                CanvasSE prev = getPreview();
+                wkns = WellKnownName.getValues();
+                String[] values = new String[wkns.length];
+                for (int i = 0; i < values.length; i++) {
+                        values[i] = I18N.tr(wkns[i]);
+                }
+                final JComboBox jcc = new JComboBox(values);
+                ActionListener acl = EventHandler.create(ActionListener.class, prev, "repaint");
+                ActionListener acl2 = EventHandler.create(ActionListener.class, point, "wellKnownName", "source.selectedItem");
+                jcc.addActionListener(acl2);
+                jcc.addActionListener(acl);
+                return jcc;
+        }
 }

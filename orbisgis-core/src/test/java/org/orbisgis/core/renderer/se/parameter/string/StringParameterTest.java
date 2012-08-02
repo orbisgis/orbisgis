@@ -28,22 +28,20 @@
  */
 package org.orbisgis.core.renderer.se.parameter.string;
 
-import org.orbisgis.core.renderer.se.graphic.PointTextGraphic;
-import org.orbisgis.core.renderer.se.PointSymbolizer;
-import net.opengis.se._2_0.core.StyleType;
-import org.orbisgis.core.renderer.se.Style;
-import java.io.FileOutputStream;
-import javax.xml.bind.Marshaller;
 import java.io.FileInputStream;
-import java.text.DecimalFormat;
-import java.util.Locale;
-import javax.xml.bind.Unmarshaller;
+import java.io.FileOutputStream;
 import javax.xml.bind.JAXBElement;
-import net.opengis.fes._2.ValueReferenceType;
-import org.orbisgis.core.AbstractTest;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import net.opengis.se._2_0.core.StyleType;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Test;
+import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.Services;
-import static org.junit.Assert.*;
+import org.orbisgis.core.renderer.se.PointSymbolizer;
+import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.graphic.PointTextGraphic;
 
 /**
  *
@@ -225,7 +223,7 @@ public class StringParameterTest extends AbstractTest {
                 conc = (StringConcatenate) sp;
                 assertTrue(conc.size()==4);
         }
-        
+
         @Test
         public void testBasicJAXBSerialization() throws Exception {
                 StringAttribute sa = new StringAttribute("bonjour");
@@ -233,5 +231,28 @@ public class StringParameterTest extends AbstractTest {
                 sa = new StringAttribute((JAXBElement<String>) je);
                 assertTrue(sa.getColumnName().equals("bonjour"));
         }
-        
+
+        @Test
+        public void testStringLiteralRestriction() throws Exception {
+                StringLiteral sl = new StringLiteral("youhou");
+                sl.setRestrictionTo(new String[]{"youhou","yaha"});
+                sl.setValue("yaha");
+                try{
+                        sl.setValue("bonjour");
+                        fail();
+                } catch(InvalidString is){
+                        assertTrue(true);
+                }
+        }
+
+        @Test
+        public void testStringLiteralSetNotCompatibleRestriction() throws Exception {
+                StringLiteral sl = new StringLiteral("youhou");
+                try {
+                        sl.setRestrictionTo(new String[]{"yoho","yaha"});
+                        fail();
+                } catch(InvalidString is){
+                        assertTrue(true);
+                }
+        }
 }

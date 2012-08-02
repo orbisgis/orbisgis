@@ -29,8 +29,10 @@
 package org.orbisgis.legend.structure.graphic;
 
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.structure.fill.FillLegend;
+import org.orbisgis.legend.structure.parameter.ParameterLegend;
 import org.orbisgis.legend.structure.stroke.StrokeLegend;
 
 /**
@@ -55,7 +57,7 @@ public class MarkGraphicLegend implements LegendStructure {
     private LegendStructure viewBoxLegend;
     private FillLegend fillLegend;
     private StrokeLegend strokeLegend;
-    private LegendStructure wknLegend;
+    private ParameterLegend wknLegend;
 
     /**
      * Build a default {@code LegendStructure} that describes a {@code MarkGraphic}
@@ -64,7 +66,7 @@ public class MarkGraphicLegend implements LegendStructure {
      * @param fillLegend
      * @param strokeLegend
      */
-    public MarkGraphicLegend(MarkGraphic mark, LegendStructure wknLegend, LegendStructure viewBoxLegend,
+    public MarkGraphicLegend(MarkGraphic mark, ParameterLegend wknLegend, LegendStructure viewBoxLegend,
             FillLegend fillLegend, StrokeLegend strokeLegend) {
         markGraphic = mark;
         this.wknLegend = wknLegend;
@@ -156,8 +158,9 @@ public class MarkGraphicLegend implements LegendStructure {
      * the inner {@MarkGraphic} of this {@code MarkGraphicLegend}.
      * @param wknLegend
      */
-    public void setWknLegend(LegendStructure wknLegend) {
+    public void setWknLegend(ParameterLegend wknLegend) {
         this.wknLegend = wknLegend;
+        markGraphic.setWkn((StringParameter)wknLegend.getParameter());
     }
 
 }

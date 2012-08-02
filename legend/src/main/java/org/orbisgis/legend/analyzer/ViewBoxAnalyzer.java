@@ -33,7 +33,7 @@ import org.orbisgis.core.renderer.se.graphic.ViewBox;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.legend.AbstractAnalyzer;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.NumericLegend;
+import org.orbisgis.legend.structure.parameter.NumericLegend;
 import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
 import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;

@@ -42,6 +42,7 @@ import org.orbisgis.legend.structure.graphic.ConstantWKNLegend;
 import org.orbisgis.legend.structure.graphic.MarkGraphicLegend;
 import org.orbisgis.legend.structure.graphic.ProportionalWKNLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
+import org.orbisgis.legend.structure.parameter.ParameterLegend;
 import org.orbisgis.legend.structure.stroke.StrokeLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.viewbox.ConstantViewBox;
@@ -83,10 +84,10 @@ public class MarkGraphicAnalyzer extends AbstractAnalyzer {
         }
         boolean constantStroke = strokeLeg == null || strokeLeg instanceof ConstantPenStrokeLegend;
         //The form.
-        LegendStructure wknLegend = null;
+        ParameterLegend wknLegend = null;
         StringParameter wkn = mark.getWkn();
         if(wkn != null){
-            wknLegend = new StringParameterAnalyzer(wkn).getLegend();
+            wknLegend = (ParameterLegend)new StringParameterAnalyzer(wkn).getLegend();
         }
         boolean constantWkn = wknLegend == null || wknLegend instanceof StringLiteralLegend;
         //The size

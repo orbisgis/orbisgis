@@ -28,14 +28,15 @@
  */
 package org.orbisgis.legend.structure.literal;
 
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
-import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.structure.parameter.ParameterLegend;
 
 /**
  * LegendStructure that can be associated to a simple string literal.
  * @author Alexis Guéganno
  */
-public class StringLiteralLegend implements LegendStructure{
+public class StringLiteralLegend implements ParameterLegend{
 
         private StringLiteral literal;
 
@@ -64,6 +65,11 @@ public class StringLiteralLegend implements LegendStructure{
          */
         public void setLiteral(StringLiteral sl) {
             literal = sl;
+        }
+
+        @Override
+        public SeParameter getParameter() {
+                return getLiteral();
         }
 
 }

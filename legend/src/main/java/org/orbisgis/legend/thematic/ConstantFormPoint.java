@@ -66,6 +66,23 @@ public abstract class ConstantFormPoint extends SymbolizerLegend {
      */
     public abstract ConstantFormWKN getMarkGraphic();
 
+    /**
+     * Gets the well-known name that describes the shape of the inner {@link
+     * MarkGraphic}.
+     * @return
+     */
+    public String getWellKnownName(){
+        return getMarkGraphic().getWellKnownName();
+    }
 
+    /**
+     * Sets the well-known name that describes the shape of the inner {@link
+     * MarkGraphic}.
+     * @param str
+     * The new {@code WellKnownName}.
+     */
+    public void setWellKnownName(String str){
+        getMarkGraphic().setWellKnownName(str);
+    }
 
 }

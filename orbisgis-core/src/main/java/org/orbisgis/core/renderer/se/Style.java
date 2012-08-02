@@ -34,17 +34,21 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.xml.bind.*;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.ValidationEvent;
+import javax.xml.bind.ValidationEventLocator;
 import javax.xml.bind.util.ValidationEventCollector;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.RuleType;
 import net.opengis.se._2_0.core.StyleType;
 import net.opengis.se._2_0.core.VersionType;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
@@ -53,7 +57,9 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
- *
+ * Usable representation of SE styles. This is the upper node of the symbology
+ * encoding implementation. It offers validation and edition mechanisms as well
+ * as the ability to render maps from a SE style.
  * @author Maxence Laurent
  * @author Alexis Guéganno
  */
@@ -61,9 +67,7 @@ public final class Style implements SymbolizerNode {
 
     public static final String PROP_VISIBLE = "visible";
     private static final String DEFAULT_NAME = "Unnamed Style";
-    
-    
-    
+    private static final Logger LOGGER = Logger.getLogger(Style.class);
     private String name;
     private ArrayList<Rule> rules;
     private ILayer layer;
@@ -133,7 +137,6 @@ public final class Style implements SymbolizerNode {
             }
 
         } catch (Exception ex) {
-            Logger.getLogger(Style.class.getName()).log(Level.SEVERE, "Error while loading style", ex);
             throw new SeExceptions.InvalidStyle("Error while loading the style (" + seFile + "): " + ex);
         }
 
@@ -234,9 +237,10 @@ public final class Style implements SymbolizerNode {
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.marshal(getJAXBElement(), new FileOutputStream(seFile));
         } catch (FileNotFoundException ex) {
-            Logger.getLogger(Style.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.error("Can't find the file "+seFile, ex);
         } catch (JAXBException ex) {
-            Logger.getLogger(Style.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.error("Can't export your style into "+seFile+". May there be"
+                    + "some error in it ?", ex);
         }
     }
 

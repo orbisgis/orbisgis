@@ -28,15 +28,16 @@
  */
 package org.orbisgis.legend.structure.recode;
 
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
-import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.structure.parameter.ParameterLegend;
 
 /**
  * Specialization of {@code LegendStructure} that is used to represent value
  * classifications that are used as {@code StringParameter} instances.
  * @author Alexis Guéganno
  */
-public class Recode2StringLegend implements LegendStructure{
+public class Recode2StringLegend implements ParameterLegend {
 
         private Recode2String recode;
 
@@ -55,6 +56,11 @@ public class Recode2StringLegend implements LegendStructure{
          */
         public Recode2String getRecode() {
                 return recode;
+        }
+
+        @Override
+        public SeParameter getParameter() {
+                return getRecode();
         }
 
 }
