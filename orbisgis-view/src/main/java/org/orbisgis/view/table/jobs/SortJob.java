@@ -31,8 +31,7 @@ package org.orbisgis.view.table.jobs;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.PriorityQueue;
-import java.util.Queue;
+import java.util.TreeSet;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.Type;
@@ -57,11 +56,35 @@ public class SortJob implements BackgroundJob {
         private DataSourceTableModel model;
         private boolean ascending;
         private Integer columnToSort;
+        private String columnSortName;
 
         public SortJob(boolean ascending, DataSourceTableModel model, int columnToSort) {
                 this.ascending = ascending;
                 this.model = model;
                 this.columnToSort = columnToSort;
+                try {
+                        columnSortName = model.getDataSource().getMetadata().getFieldName(columnToSort);
+                } catch (DriverException ex) {
+                        LOGGER.error(I18N.tr("Driver error"), ex);
+                }
+        }
+
+        public static Collection<Integer> sortArray(Collection<Integer> modelIndex, Comparator<Integer> comparator, ProgressMonitor pm) throws IllegalStateException, DriverException {
+                int rowCount = modelIndex.size();
+                Collection<Integer> columnValues = new TreeSet<Integer>(comparator);
+                int processedRows = 0;
+                for (int i : modelIndex) {
+                        columnValues.add(new Integer(i));
+                        if (i / 100 == i / 100.0) {
+                                if (pm.isCancelled()) {
+                                        throw new IllegalStateException(I18N.tr("Aborted by user"));
+                                } else {
+                                        pm.progressTo(100 * processedRows / rowCount);
+                                }
+                        }
+                        processedRows++;
+                }
+                return columnValues;
         }
 
         @Override
@@ -88,7 +111,6 @@ public class SortJob implements BackgroundJob {
                                 comparator = new SortValueComparator(source, columnToSort);
                         } else {
                                 //Cache values
-                                
                                 pm.startTask(I18N.tr("Cache table values"), 100);
                                 Value[] cache = new Value[rowCount];
                                 for (int i = 0; i < source.getRowCount(); i++) {
@@ -107,20 +129,7 @@ public class SortJob implements BackgroundJob {
                         if (!ascending) {
                                 comparator = Collections.reverseOrder(comparator);
                         }
-                        Queue<Integer> columnValues = new PriorityQueue<Integer>(rowCount, comparator);
-                        
-                        int processedRows = 0;
-                        for (int i : modelIndex) {
-                                columnValues.add(i);
-                                if (i / 100 == i / 100.0) {
-                                        if (pm.isCancelled()) {
-                                                return;
-                                        } else {
-                                                pm.progressTo(100 * processedRows / rowCount);
-                                        }
-                                }
-                                processedRows++;
-                        }
+                        Collection<Integer> columnValues = sortArray(modelIndex, comparator, pm);
                         //Update the table model
                         model.setCustomIndex(columnValues);
                 } catch (IllegalStateException ex) {
@@ -163,6 +172,6 @@ public class SortJob implements BackgroundJob {
 
         @Override
         public String getTaskName() {
-                return I18N.tr("Table column sorting");
+                return I18N.tr("Sorting {0}",columnSortName);
         }
 }

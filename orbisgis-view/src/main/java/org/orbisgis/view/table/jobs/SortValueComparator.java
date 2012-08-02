@@ -34,7 +34,8 @@ import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 
 /**
- *
+ * A comparator linked with a dataset,
+ * slower than cached comparator but require less memory
  * @author Nicolas Fortin
  */
 public class SortValueComparator implements Comparator<Integer> {
@@ -57,6 +58,10 @@ public class SortValueComparator implements Comparator<Integer> {
         
         @Override
         public int compare(Integer t, Integer t1) {
-                return getValue(t).compareTo(getValue(t1));
+                int res = getValue(t).compareTo(getValue(t1));
+                if(res==0) {
+                        res = t.compareTo(t1); //TreeSet remove duplicates
+                }
+                return res;
         }        
 }

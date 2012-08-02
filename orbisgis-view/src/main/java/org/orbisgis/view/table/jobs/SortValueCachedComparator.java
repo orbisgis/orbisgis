@@ -33,18 +33,24 @@ import org.gdms.data.values.Value;
 
 /**
  *
+ * A comparator with pre-loaded values,
+ * faster than non-cached comparator but require more memory
  * @author Nicolas Fortin
  */
 public class SortValueCachedComparator implements Comparator<Integer> {
 
-        private Value[] set;
+        private Value[] values;
 
-        public SortValueCachedComparator(Value[] set) {
-                this.set = set;
+        public SortValueCachedComparator(Value[] values) {
+                this.values = values;
         }
         
         @Override
         public int compare(Integer t, Integer t1) {
-                return set[t].compareTo(set[t1]);
+                int res = values[t].compareTo(values[t1]);
+                if(res==0) {
+                        res = t.compareTo(t1); //TreeSet remove duplicates
+                }
+                return res;
         }        
 }
