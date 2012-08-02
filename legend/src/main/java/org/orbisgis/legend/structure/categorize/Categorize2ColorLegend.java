@@ -29,16 +29,17 @@
 package org.orbisgis.legend.structure.categorize;
 
 import java.awt.Color;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.structure.parameter.ParameterLegend;
 
 /**
  * {@code LegendStructure} that describes a color set using a {@code Categorize} instance.
  * @author Alexis Guéganno
  */
-public class Categorize2ColorLegend implements LegendStructure {
+public class Categorize2ColorLegend implements ParameterLegend {
 
         private Categorize2Color c2c;
 
@@ -58,6 +59,11 @@ public class Categorize2ColorLegend implements LegendStructure {
          */
         public Categorize2Color getCategorize() {
                 return c2c;
+        }
+
+        @Override
+        public SeParameter getParameter() {
+                return getCategorize();
         }
 
         /**

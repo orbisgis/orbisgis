@@ -28,13 +28,13 @@
  */
 package org.orbisgis.core.renderer.se.parameter.string;
 
+import java.util.Arrays;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
 import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.parameter.Literal;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
  * A {@code StringParameter} with a stored, inner {@code String} value.
@@ -77,10 +77,19 @@ public class StringLiteral extends Literal implements StringParameter{
     }
 
     /**
+     *
      * Set the inner {@code String} of this {@code StringLiteral} to {@code value}.
+     * If {@code s} can't be found in the restrictions, an {@link InvalidString}
+     * will be thrown.
+     * @param value
+     * @throws InvalidString if value is not compatible with the restrictions.
      */
     public void setValue(String value){
-        v = value;
+        if(validateValue(value)){
+                v = value;
+        } else {
+                throw new InvalidString("Can't validate the value against the current restrictions !");
+        }
     }
 
     @Override
@@ -90,7 +99,27 @@ public class StringLiteral extends Literal implements StringParameter{
 
     @Override
     public void setRestrictionTo(String[] list) {
-        restriction = list.clone();
+        restriction = list == null ? new String[0] : list.clone();
+        for (int i = 0; i < restriction.length; i++) {
+                //We go to upper case in order to use binary search later.
+                restriction[i] = restriction[i].toUpperCase();
+        }
+        Arrays.sort(restriction);
+        if(!validateValue(v)){
+                v = restriction[0];
+                throw new InvalidString("Can't validate the current value against the new restrictions !");
+        }
+    }
+
+    /**
+     * Validate {@code s} against the restrictions set on this {@code
+     * StringLiteral}.
+     * @param s
+     * @return
+     */
+    public boolean validateValue(String s){
+            return restriction == null || restriction.length == 0 ||
+                    Arrays.binarySearch(restriction, s.toUpperCase()) >= 0;
     }
 
     /**

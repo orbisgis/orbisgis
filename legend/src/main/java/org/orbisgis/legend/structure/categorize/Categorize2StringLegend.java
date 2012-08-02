@@ -28,14 +28,15 @@
  */
 package org.orbisgis.legend.structure.categorize;
 
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.string.Categorize2String;
-import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.structure.parameter.ParameterLegend;
 
 /**
  *
  * @author Alexis Guéganno
  */
-public class Categorize2StringLegend implements LegendStructure {
+public class Categorize2StringLegend implements ParameterLegend {
 
         private Categorize2String categorize;
 
@@ -55,6 +56,11 @@ public class Categorize2StringLegend implements LegendStructure {
          */
         public Categorize2String getCategorize() {
                 return categorize;
+        }
+
+        @Override
+        public SeParameter getParameter() {
+                return getCategorize();
         }
 
 }

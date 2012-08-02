@@ -28,15 +28,16 @@
  */
 package org.orbisgis.legend.structure.categorize;
 
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.real.Categorize2Real;
-import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.structure.parameter.ParameterLegend;
 
 /**
  * {@code LegendStructure} that describes a classification made by intervals on a real
  * parameter.
  * @author Alexis Guéganno
  */
-public class Categorize2RealLegend implements LegendStructure {
+public class Categorize2RealLegend implements ParameterLegend {
 
         private Categorize2Real categorize;
 
@@ -56,6 +57,11 @@ public class Categorize2RealLegend implements LegendStructure {
          */
         public Categorize2Real getCategorize() {
                 return categorize;
+        }
+
+        @Override
+        public SeParameter getParameter() {
+                return getCategorize();
         }
         
 }

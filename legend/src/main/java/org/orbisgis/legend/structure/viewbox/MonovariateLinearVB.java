@@ -29,7 +29,7 @@
 package org.orbisgis.legend.structure.viewbox;
 
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
-import org.orbisgis.legend.NumericLegend;
+import org.orbisgis.legend.structure.parameter.NumericLegend;
 import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
 
 /**

@@ -28,8 +28,9 @@
  */
 package org.orbisgis.legend.structure.literal;
 
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.legend.NumericLegend;
+import org.orbisgis.legend.structure.parameter.NumericLegend;
 
 /**
  * {@code Legend} associated to a numeric constant, that is represented as a
@@ -54,7 +55,7 @@ public class RealLiteralLegend implements NumericLegend {
          * RealLiteralLegend}.
          * @return
          */
-        public RealLiteral getRealLiteral() {
+        public RealLiteral getLiteral() {
                 return rl;
         }
 
@@ -76,4 +77,8 @@ public class RealLiteralLegend implements NumericLegend {
             rl.setValue(width);
         }
 
+        @Override
+        public SeParameter getParameter() {
+                return getLiteral();
+        }
 }

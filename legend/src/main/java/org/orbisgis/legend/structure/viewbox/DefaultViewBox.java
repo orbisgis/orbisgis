@@ -30,7 +30,7 @@ package org.orbisgis.legend.structure.viewbox;
 
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.NumericLegend;
+import org.orbisgis.legend.structure.parameter.NumericLegend;
 
 /**
  * {@code ViewBox} instances can all be described as being associated to two
