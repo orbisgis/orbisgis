@@ -60,6 +60,7 @@ import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditableElementException;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.table.jobs.SortJob;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -186,6 +187,10 @@ public class TableEditor extends JPanel implements EditorDockable {
 
         }
         
+        private void launchJob(BackgroundJob job) {
+                Services.getService(BackgroundManager.class).nonBlockingBackgroundOperation(job);
+        }
+        
         /**
          * The user disable table sort
          */
@@ -195,10 +200,11 @@ public class TableEditor extends JPanel implements EditorDockable {
         
         public void onMenuSortAscending(String strCol) {
                 int col = Integer.valueOf(strCol);
-                
+                launchJob(new SortJob(true, tableModel, col));
         }
         public void onMenuSortDescending(String strCol) {
                 int col = Integer.valueOf(strCol);
+                launchJob(new SortJob(false, tableModel, col));
                 
         }
         public void onMenuOptimalWidth(String strCol) {

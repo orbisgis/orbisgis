@@ -28,32 +28,26 @@
  */
 package org.orbisgis.view.table.jobs;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Comparator;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 
 /**
- * Hold a gdms value for sorting and store the row index
+ *
  * @author Nicolas Fortin
  */
-public class ValueIndexDecorator implements Comparable<ValueIndexDecorator> {
-        private DataSet set;
-        private int row;
-        private Integer col;
+public class SortValueComparator implements Comparator<Integer> {
 
-        public ValueIndexDecorator(DataSet set, int row, Integer col) {
+        private DataSet set;
+        private int col;
+
+        public SortValueComparator(DataSet set, int col) {
                 this.set = set;
-                this.row = row;
                 this.col = col;
         }
 
-        public int getRow() {
-                return row;
-        }
-        
-        protected Value getValue() {
+        protected Value getValue(int row) {
                 try {
                         return set.getFieldValue(row, col);
                 } catch (DriverException ex) {
@@ -62,8 +56,7 @@ public class ValueIndexDecorator implements Comparable<ValueIndexDecorator> {
         }
         
         @Override
-        public int compareTo(ValueIndexDecorator t) {
-                return getValue().compareTo(t.getValue());
-        }
-        
+        public int compare(Integer t, Integer t1) {
+                return getValue(t).compareTo(getValue(t1));
+        }        
 }

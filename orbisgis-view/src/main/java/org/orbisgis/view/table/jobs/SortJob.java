@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.table.jobs;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.PriorityQueue;
@@ -55,7 +54,7 @@ public class SortJob implements BackgroundJob {
         private boolean ascending;
         private Integer columnToSort;
 
-        public SortJob(boolean ascending, DataSet set,DataSourceTableModel model,int columnToSort) {
+        public SortJob(boolean ascending, DataSourceTableModel model,int columnToSort) {
                 this.ascending = ascending;
                 this.model = model;
                 this.columnToSort = columnToSort;
@@ -75,17 +74,20 @@ public class SortJob implements BackgroundJob {
                 int rowCount = modelIndex.size();
                 DataSource source = model.getDataSource();
                 //Create a sorted collection, to follow the progression of order
-                Queue<ValueIndexDecorator> columnValues;
+                //The comparator will read the integer value and
+                //use the data source to compare
+                Queue<Integer> columnValues;
                 if(ascending) {
-                        columnValues = new PriorityQueue<ValueIndexDecorator>
-                                (rowCount);
+                        columnValues = new PriorityQueue<Integer>(rowCount,
+                                new SortValueComparator(source,columnToSort));
                 }else{
-                        columnValues = new PriorityQueue<ValueIndexDecorator>
-                                (rowCount,Collections.reverseOrder());
+                        columnValues = new PriorityQueue<Integer>(rowCount,
+                                Collections.reverseOrder(
+                                new SortValueComparator(source,columnToSort)));
                 }
                 try {
                         for (int i : modelIndex) {
-                                columnValues.add(new ValueIndexDecorator(source,i,columnToSort));
+                                columnValues.add(i);
                                 if (i / 100 == i / 100.0) {
                                         if (pm.isCancelled()) {
                                                 return;
@@ -98,13 +100,7 @@ public class SortJob implements BackgroundJob {
                         LOGGER.error(I18N.tr("Driver error"),ex);
                         return;
                 }
-                //Retrieve the sorted index
-                Collection<Integer> index = new ArrayList<Integer>(rowCount);
-                for(ValueIndexDecorator el : columnValues) {
-                        index.add(el.getRow());
-                }
-                columnValues.clear();
-                model.setCustomIndex(index);
+                model.setCustomIndex(columnValues);
                 /*
                 List<Boolean> order = new ArrayList<Boolean>();
                 order.add(ascending);
