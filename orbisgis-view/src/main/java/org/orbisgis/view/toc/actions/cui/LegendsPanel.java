@@ -124,7 +124,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                         List<ILegendPanel> ll = new LinkedList<ILegendPanel>();
                         for (Symbolizer s : sym) {
                                 Legend leg = LegendFactory.getLegend(s);
-                                ILegendPanel ilp = getPanel(leg);
+                                ILegendPanel ilp = getPanel(leg, geometryType);
                                 ilp.setId(getNewId());
                                 ll.add(ilp);
                                 JScrollPane jsp = new JScrollPane(ilp.getComponent(),
@@ -194,12 +194,13 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
          * @param legend
          * @return
          */
-        public ILegendPanel getPanel(Legend legend) {
+        public ILegendPanel getPanel(Legend legend, int type) {
                 for (ILegendPanel panel : availableLegends) {
                         if (panel.getLegend().getLegendTypeId().equals(
                                 legend.getLegendTypeId())) {
                                 ILegendPanel ilp = (ILegendPanel) newInstance(panel);
                                 ilp.setLegend(legend);
+                                ilp.setGeometryType(type);
                                 return ilp;
                         }
                 }

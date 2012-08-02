@@ -103,6 +103,10 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 }
         }
 
+        @Override
+        public void setGeometryType(int type){
+        }
+
         /**
          * Initialize the panel. This method is called just after the panel
          * creation.</p> <p>WARNING : the panel will be empty after calling this

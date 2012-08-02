@@ -39,9 +39,12 @@ import java.beans.EventHandler;
 import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.event.ChangeListener;
+import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.WellKnownName;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
@@ -68,6 +71,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class PnlUniquePointSE extends PnlUniqueAreaSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlUniquePointSE.class);
+        private int geometryType = SimpleGeometryType.ALL;
 
         /**
          * Here we can put all the Legend instances we want... but they have to
@@ -110,6 +114,11 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                         throw new IllegalArgumentException("The given Legend is not"
                                 + "a UniqueSymbolPoint");
                 }
+        }
+
+        @Override
+        public void setGeometryType(int type) {
+                geometryType = type;
         }
 
         /**
@@ -206,9 +215,27 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 JPanel glob = new JPanel();
                 glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
                 JPanel jp = new JPanel();
-                GridLayout grid = new GridLayout(3,2);
+                boolean canBeOnV = geometryType != SimpleGeometryType.POINT;
+                int onV = canBeOnV ? 1 : 0;
+                GridLayout grid = new GridLayout(4+onV,2);
                 grid.setVgap(5);
                 jp.setLayout(grid);
+                //If geometryType != POINT, we must let the user choose if he
+                //wants to draw symbols on centroid or on vertices.
+                if(geometryType != SimpleGeometryType.POINT){
+                        JRadioButton bVertex = new JRadioButton(I18N.tr("On vertex"));
+                        JRadioButton bCentroid = new JRadioButton(I18N.tr("On centroid"));
+                        ButtonGroup bg = new ButtonGroup();
+                        bg.add(bVertex);
+                        bg.add(bCentroid);
+                        ActionListener actionV = EventHandler.create(ActionListener.class, point, "setOnVertex");
+                        ActionListener actionC = EventHandler.create(ActionListener.class, point, "setOnCentroid");
+                        bVertex.addActionListener(actionV);
+                        bCentroid.addActionListener(actionC);
+                        bVertex.setSelected(((PointSymbolizer)point.getSymbolizer()).isOnVertex());
+                        jp.add(bVertex);
+                        jp.add(bCentroid);
+                }
                 //Combobox
                 jp.add(buildText(I18N.tr("Symbol form :")));
                 jp.add(getWKNCombo(point));
@@ -224,6 +251,12 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 return glob;
         }
 
+        /**
+         * JNumericSpinner embedded in a JPanel to configure the width of the symbol
+         * @param point
+         * @return
+         */
+
         private JPanel getMarkWidth(UniqueSymbolPoint point){
                 CanvasSE prev = getPreview();
                 final JNumericSpinner jns = new JNumericSpinner(4, Integer.MIN_VALUE, Integer.MAX_VALUE, 0.01);
@@ -237,6 +270,11 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 return jns;
         }
 
+        /**
+         * JNumericSpinner embedded in a JPane to configure the height of the symbol
+         * @param point
+         * @return
+         */
         private JPanel getMarkHeight(UniqueSymbolPoint point){
                 CanvasSE prev = getPreview();
                 final JNumericSpinner jns = new JNumericSpinner(4, Integer.MIN_VALUE, Integer.MAX_VALUE, 0.01);
@@ -250,6 +288,11 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 return jns;
         }
 
+        /**
+         * ComboBox to configure the WKN
+         * @param point
+         * @return
+         */
         private JComboBox getWKNCombo(UniqueSymbolPoint point){
                 CanvasSE prev = getPreview();
                 wkns = WellKnownName.getValues();
