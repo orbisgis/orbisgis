@@ -63,6 +63,11 @@ public class CoreTest {
         if(!GraphicsEnvironment.isHeadless()) {
             instance = new Core(true);
             instance.startup();
+            try {
+                    SwingUtilities.invokeAndWait(new DummyThread());
+            } catch (InterruptedException ex) {
+            } catch (InvocationTargetException ex) {
+            }
         }
     }
     
@@ -74,7 +79,6 @@ public class CoreTest {
     public void testGeoCatalogSuppliedFilter() throws Exception {
         org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
         //Retrieve instance of View And Gdms managers
-        SwingUtilities.invokeAndWait(new DummyThread());
         Catalog geoCatalog = instance.getGeoCatalog();
         SourceListModel UImodel = ((SourceListModel)geoCatalog.getSourceList().getModel());
         //Register a custom factory
@@ -104,7 +108,6 @@ public class CoreTest {
     public void testGeoCatalogLinkWithDataSourceManager() throws InterruptedException, InvocationTargetException {
         org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
         //Retrieve instance of View And Gdms managers
-        SwingUtilities.invokeAndWait(new DummyThread());
         Catalog geoCatalog = instance.getGeoCatalog();
         SourceManager gdmsSourceManager = instance.getMainContext().getDataSourceFactory().getSourceManager();
         SourceListModel UImodel = ((SourceListModel)geoCatalog.getSourceList().getModel());
@@ -133,7 +136,7 @@ public class CoreTest {
    /**
     * This runnable is just to wait the execution of other runnables
     */
-    private class DummyThread implements Runnable {
+    private static class DummyThread implements Runnable {
         public void run(){
         }
     }
@@ -143,7 +146,6 @@ public class CoreTest {
     @Test
     public void testDockingParameterChange() throws Exception{
         org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless());
-        SwingUtilities.invokeAndWait(new DummyThread());
        
         String newTitle = "new dummy name";
         //Create the instance of the panel
