@@ -29,6 +29,8 @@
 package org.orbisgis.view.table.jobs;
 
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
@@ -42,6 +44,7 @@ public class SortValueComparator implements Comparator<Integer> {
 
         private DataSet set;
         private int col;
+        private Map<Integer,Value> buffer = new HashMap<Integer,Value>();
 
         public SortValueComparator(DataSet set, int col) {
                 this.set = set;
@@ -49,13 +52,18 @@ public class SortValueComparator implements Comparator<Integer> {
         }
 
         protected Value getValue(int row) {
-                try {
-                        return set.getFieldValue(row, col);
-                } catch (DriverException ex) {
-                        throw new IllegalStateException(ex);
+                Value val = buffer.get(row);
+                if (val == null) {
+                        try {
+                                val = set.getFieldValue(row, col);
+                                buffer.put(row, val);
+                        } catch (DriverException ex) {
+                                throw new IllegalStateException(ex);
+                        }
                 }
+                return val;
         }
-        
+
         @Override
         public int compare(Integer t, Integer t1) {
                 int res = getValue(t).compareTo(getValue(t1));

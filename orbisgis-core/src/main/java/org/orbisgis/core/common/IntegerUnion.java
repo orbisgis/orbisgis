@@ -292,7 +292,13 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
 
         @Override
         public Object[] toArray() {
-                throw new UnsupportedOperationException("Not supported yet.");
+                int arraySize = size();
+                Object[] values = new Object[size()];
+                Iterator<Integer> it = iterator();
+                for(int i = 0; i < arraySize; i++) {
+                        values[i]=it.next();
+                }
+                return values;
         }
 
         @Override

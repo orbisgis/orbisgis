@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.table.jobs;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -137,37 +138,6 @@ public class SortJob implements BackgroundJob {
                 } catch (DriverException ex) {
                         LOGGER.error(I18N.tr("Driver error"), ex);
                 }
-                /*
-                List<Boolean> order = new ArrayList<Boolean>();
-                order.add(ascending);
-                TreeSet<Integer> sortset = new TreeSet<Integer>(
-                        new SortComparator(cache, order));
-                for (int i = 0; i < rowCount; i++) {
-                        if (i / 100 == i / 100.0) {
-                                if (pm.isCancelled()) {
-                                        break;
-                                } else {
-                                        pm.progressTo(100 * i / rowCount);
-                                }
-                        }
-                        sortset.add(new Integer(i));
-                }
-                ArrayList<Integer> indexes = new ArrayList<Integer>();
-                Iterator<Integer> it = sortset.iterator();
-                while (it.hasNext()) {
-                        Integer integer = (Integer) it.next();
-                        indexes.add(integer);
-                }
-                TableComponent.this.indexes = indexes;
-                SwingUtilities.invokeLater(new Runnable() {
-
-                        @Override
-                        public void run() {
-                                fireTableDataChanged();
-                        }
-                });
-                * 
-                */
         }
 
         @Override
