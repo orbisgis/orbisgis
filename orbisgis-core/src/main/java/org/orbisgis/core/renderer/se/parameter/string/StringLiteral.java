@@ -106,6 +106,7 @@ public class StringLiteral extends Literal implements StringParameter{
         }
         Arrays.sort(restriction);
         if(!validateValue(v)){
+                v = restriction[0];
                 throw new InvalidString("Can't validate the current value against the new restrictions !");
         }
     }

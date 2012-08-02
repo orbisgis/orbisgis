@@ -26,40 +26,15 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.legend.structure.recode;
-
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
-import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
-import org.orbisgis.legend.structure.parameter.ParameterLegend;
+package org.orbisgis.legend.structure.parameter;
 
 /**
- * {@code LegendStructure} specialization associated to {@code Recode2Real} instances.
+ * {@code LegendStructure} instances that are associated to numeric values have to
+ * realizes this interface rather than {@code LegendStructure}. Concretely, they will
+ * match the deepest elements of the legend (the values of the fields, and the
+ * functions that are applied on it).
  * @author Alexis Guéganno
  */
-public class Recode2RealLegend implements ParameterLegend {
-
-        private Recode2Real recode;
-
-        /**
-         * Build a new {@code Recode2Real} instance, using the given {@code
-         * Recode2Real}.
-         * @param recode
-         */
-        public Recode2RealLegend(Recode2Real recode) {
-                this.recode = recode;
-        }
-
-        /**
-         * Get the {@code Recode2Real} associated to this {@code LegendStructure}
-         * @return
-         */
-        public Recode2Real getRecode() {
-                return recode;
-        }
-
-        @Override
-        public SeParameter getParameter() {
-                return getRecode();
-        }
+public interface NumericLegend extends ParameterLegend {
 
 }

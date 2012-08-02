@@ -37,6 +37,7 @@ import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.string.InvalidString;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.analyzer.symbolizers.PointSymbolizerAnalyzer;
@@ -124,6 +125,10 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
         uvp.setWellKnownName("Star");
         assertTrue(uvp.getWellKnownName().equals("Star"));
+        //We must check the PointSymbolizer too !
+        MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
+        StringLiteral sl = (StringLiteral) mg.getWkn();
+        assertTrue(sl.getValue(null).equalsIgnoreCase("star"));
     }
 
     @Test
@@ -131,11 +136,13 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         Style st = getStyle(CONSTANT);
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
+        uvp.setWellKnownName("Star");
         try{
                 uvp.setWellKnownName("hello !");
+                fail();
         } catch (InvalidString is){
-                assertTrue(uvp.getWellKnownName().equals("Star"));
-        }
+                assertTrue(uvp.getWellKnownName().equalsIgnoreCase("CIRCLE"));
+       }
     }
 
     @Test

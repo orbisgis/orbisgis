@@ -29,9 +29,10 @@
 package org.orbisgis.legend.structure.interpolation;
 
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
-import org.orbisgis.legend.NumericLegend;
+import org.orbisgis.legend.structure.parameter.NumericLegend;
 
 /**
  * The default representation of an interpolation, in the legend. If obtained
@@ -59,6 +60,11 @@ public class InterpolationLegend implements NumericLegend {
          */
         public Interpolate2Real getInterpolation(){
                 return interp;
+        }
+
+        @Override
+        public SeParameter getParameter() {
+                return getInterpolation();
         }
 
         /**
