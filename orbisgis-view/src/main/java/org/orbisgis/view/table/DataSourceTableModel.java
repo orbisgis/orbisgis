@@ -29,6 +29,9 @@
 package org.orbisgis.view.table;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import javax.swing.table.AbstractTableModel;
 import org.apache.log4j.Logger;
@@ -54,8 +57,9 @@ public class DataSourceTableModel extends AbstractTableModel {
         private transient Metadata metadata;
         private DataSource dataSource;
         private TableEditableElement element;
+        
         //If the Model rows do not reflect the DataSource row number
-        //this array give the correspondance between the TableModel Row Id
+        //this array give the link between the TableModel Row Id
         //and the DataSource row ID
         private List<Integer> indexes = null;
 
@@ -70,6 +74,16 @@ public class DataSourceTableModel extends AbstractTableModel {
                 }
                 return metadata;
         }
+
+        /**
+         * 
+         * @return The data source used by this model
+         */
+        public DataSource getDataSource() {
+                return dataSource;
+        }
+        
+        
         
         @Override
         public String getColumnName(int col) {
@@ -78,6 +92,32 @@ public class DataSourceTableModel extends AbstractTableModel {
                 } catch (DriverException e) {
                         return null;
                 }
+        }
+        
+        /**
+         * Clear the local index. 
+         * The shown rows will be the same as the data source in the same order.
+         */
+        public void clearCustomIndex() {
+                this.indexes = null;
+                fireTableRowsUpdated(0, getRowCount()-1);
+        }
+        /**
+         * Set a local index
+         * Data source rows will be shown in the provided selection and order
+         * @param indexLink
+         */
+        public void setCustomIndex(Collection<Integer> indexLink) {
+                this.indexes = new ArrayList<Integer>(indexLink);
+                fireTableRowsUpdated(0, getRowCount()-1);
+        }
+
+        /**
+         * 
+         * @return The local index indexLink 
+         */
+        public List<Integer> getIndexes() {
+                return Collections.unmodifiableList(indexes);
         }
 
         /**
@@ -135,13 +175,17 @@ public class DataSourceTableModel extends AbstractTableModel {
 
         /**
          * Returns the values of a specific row
-         *
-         * @param i
+         * using the index
+         * @param row
          * @return
          */
-        protected Value[] getRow(long i) {
+        public Value[] getRow(int row) {
                 try {
-                        return dataSource.getRow(i);
+                        if(indexes!=null) {
+                                return dataSource.getRow(getRowIndex(row));
+                        } else {
+                                return dataSource.getRow(row);
+                        }
                 } catch (DriverException e) {
                         return null;
                 }

@@ -30,18 +30,21 @@ package org.orbisgis.view.table;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
-import java.awt.event.MouseAdapter;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.AbstractButton;
 import javax.swing.JComponent;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.MenuElement;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -126,12 +129,82 @@ public class TableEditor extends JPanel implements EditorDockable {
                         LOGGER.info("Click on col:"+col+" row:"+row);
                 }
         }
-        
-        private JPopupMenu makeTableHeaderPopup(int col) {
-                JPopupMenu menu = new JPopupMenu(); 
-                return menu;
+        /**
+         * Create the popup menu of the table header
+         * @param col
+         * @return 
+         */
+        private JPopupMenu makeTableHeaderPopup(Integer col) {
+                JPopupMenu pop = new JPopupMenu();
+                //Optimal width
+                JMenuItem optimalWidth = 
+                        new JMenuItem(I18N.tr("Optimal width"),
+                        OrbisGISIcon.getIcon("text_letterspacing")
+                        );
+                optimalWidth.addActionListener(
+                        EventHandler.create(ActionListener.class,this,
+                        "onMenuOptimalWidth","actionCommand"));
+                pop.add(optimalWidth);
+                // Additionnal functions for specific columns
+                if (tableModel.getColumnType(col).getTypeCode() != Type.GEOMETRY) {
+                        pop.addSeparator();
+                        //Sort Ascending
+                        JMenuItem sortAscending =
+                                new JMenuItem(I18N.tr("Sort ascending"),
+                                OrbisGISIcon.getIcon("thumb_up")
+                                );
+                        sortAscending.addActionListener(
+                        EventHandler.create(ActionListener.class,this,
+                        "onMenuSortAscending","actionCommand"));
+                        pop.add(sortAscending);
+                        //Sort Descending
+                        JMenuItem sortDescending =
+                                new JMenuItem(I18N.tr("Sort descending"),
+                                OrbisGISIcon.getIcon("thumb_down")
+                                );
+                        sortDescending.addActionListener(
+                        EventHandler.create(ActionListener.class,this,
+                        "onMenuSortDescending","actionCommand"));
+                        pop.add(sortAscending);
+                        //No sort
+                        JMenuItem noSort =
+                                new JMenuItem(I18N.tr("No sort"),
+                                OrbisGISIcon.getIcon("table_refresh")
+                                );
+                        noSort.addActionListener(
+                        EventHandler.create(ActionListener.class,this,
+                        "onMenuNoSort"));
+                        pop.add(sortAscending);
+                }                
+                //Add the column index in the ActionEvent
+                for(MenuElement element : pop.getSubElements()) {
+                        if(element instanceof AbstractButton) {
+                                ((AbstractButton)element).setActionCommand(col.toString());
+                        }
+                }
+                return pop;
+
         }
         
+        /**
+         * The user disable table sort
+         */
+        public void onMenuNoSort() {
+                tableModel.clearCustomIndex();
+        }
+        
+        public void onMenuSortAscending(String strCol) {
+                int col = Integer.valueOf(strCol);
+                
+        }
+        public void onMenuSortDescending(String strCol) {
+                int col = Integer.valueOf(strCol);
+                
+        }
+        public void onMenuOptimalWidth(String strCol) {
+                int col = Integer.valueOf(strCol);
+        }
+
         /**
          * Return the editable document
          * @return 
@@ -293,19 +366,16 @@ public class TableEditor extends JPanel implements EditorDockable {
                         try {
                                 tableEditableElement.open(pm);
                         } catch (UnsupportedOperationException ex) {
-                                LOGGER.error(I18N.tr("Error while loading the table editor"),ex);
+                                LOGGER.error(I18N.tr("Error while loading the table editor"), ex);
                         } catch (EditableElementException ex) {
-                                LOGGER.error(I18N.tr("Error while loading the table editor"),ex);
+                                LOGGER.error(I18N.tr("Error while loading the table editor"), ex);
                         }
-                        
                         readDataSource();
-                        
                 }
 
                 @Override
                 public String getTaskName() {
-                        return I18N.tr("Open the data source {0}",tableEditableElement.getSourceName());
+                        return I18N.tr("Open the data source {0}", tableEditableElement.getSourceName());
                 }
-                
         }
 }
