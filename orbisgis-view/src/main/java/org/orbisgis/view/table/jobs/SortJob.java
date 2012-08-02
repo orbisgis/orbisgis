@@ -30,11 +30,14 @@ package org.orbisgis.view.table.jobs;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.PriorityQueue;
 import java.util.Queue;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.gdms.driver.DataSet;
+import org.gdms.data.types.Type;
+import org.gdms.data.values.Value;
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
@@ -48,13 +51,14 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Nicolas Fortin
  */
 public class SortJob implements BackgroundJob {
+
         protected final static I18n I18N = I18nFactory.getI18n(SortJob.class);
         private static final Logger LOGGER = Logger.getLogger(SortJob.class);
         private DataSourceTableModel model;
         private boolean ascending;
         private Integer columnToSort;
 
-        public SortJob(boolean ascending, DataSourceTableModel model,int columnToSort) {
+        public SortJob(boolean ascending, DataSourceTableModel model, int columnToSort) {
                 this.ascending = ascending;
                 this.model = model;
                 this.columnToSort = columnToSort;
@@ -62,45 +66,68 @@ public class SortJob implements BackgroundJob {
 
         @Override
         public void run(ProgressMonitor pm) {
-                if(model.getRowCount()<2) {
+                if (model.getRowCount() < 2) {
                         return;
                 }
                 // Retrieve the index if the model have a restricted set of rows
                 Collection<Integer> modelIndex = model.getIndexes();
-                if(modelIndex==null) {
+                if (modelIndex == null) {
                         //Create an array [0 1 ..rows]
-                        modelIndex = new IntegerUnion(0,model.getRowCount()-1);
+                        modelIndex = new IntegerUnion(0, model.getRowCount() - 1);
                 }
                 int rowCount = modelIndex.size();
                 DataSource source = model.getDataSource();
                 //Create a sorted collection, to follow the progression of order
                 //The comparator will read the integer value and
                 //use the data source to compare
-                Queue<Integer> columnValues;
-                if(ascending) {
-                        columnValues = new PriorityQueue<Integer>(rowCount,
-                                new SortValueComparator(source,columnToSort));
-                }else{
-                        columnValues = new PriorityQueue<Integer>(rowCount,
-                                Collections.reverseOrder(
-                                new SortValueComparator(source,columnToSort)));
-                }
+                Comparator<Integer> comparator;
                 try {
+                        Type fieldType = source.getMetadata().getFieldType(columnToSort);
+                        if (fieldType.getTypeCode() == Type.STRING) {
+                                //Do not cache values
+                                comparator = new SortValueComparator(source, columnToSort);
+                        } else {
+                                //Cache values
+                                
+                                pm.startTask(I18N.tr("Cache table values"), 100);
+                                Value[] cache = new Value[rowCount];
+                                for (int i = 0; i < source.getRowCount(); i++) {
+                                        cache[i] = source.getFieldValue(i, columnToSort);
+                                        if (i / 100 == i / 100.0) {
+                                                if (pm.isCancelled()) {
+                                                        return;
+                                                } else {
+                                                        pm.progressTo(100 * i / rowCount);
+                                                }
+                                        }
+                                }
+                                pm.endTask();
+                                comparator = new SortValueCachedComparator(cache);
+                        }
+                        if (!ascending) {
+                                comparator = Collections.reverseOrder(comparator);
+                        }
+                        Queue<Integer> columnValues = new PriorityQueue<Integer>(rowCount, comparator);
+                        
+                        int processedRows = 0;
                         for (int i : modelIndex) {
                                 columnValues.add(i);
                                 if (i / 100 == i / 100.0) {
                                         if (pm.isCancelled()) {
                                                 return;
                                         } else {
-                                                pm.progressTo(100 * i / rowCount);
+                                                pm.progressTo(100 * processedRows / rowCount);
                                         }
                                 }
+                                processedRows++;
                         }
-                } catch(IllegalStateException ex) {
-                        LOGGER.error(I18N.tr("Driver error"),ex);
-                        return;
+                        //Update the table model
+                        model.setCustomIndex(columnValues);
+                } catch (IllegalStateException ex) {
+                        LOGGER.error(I18N.tr("Driver error"), ex);
+                } catch (DriverException ex) {
+                        LOGGER.error(I18N.tr("Driver error"), ex);
                 }
-                model.setCustomIndex(columnValues);
                 /*
                 List<Boolean> order = new ArrayList<Boolean>();
                 order.add(ascending);

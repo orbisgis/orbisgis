@@ -166,7 +166,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                         sortDescending.addActionListener(
                         EventHandler.create(ActionListener.class,this,
                         "onMenuSortDescending","actionCommand"));
-                        pop.add(sortAscending);
+                        pop.add(sortDescending);
                         //No sort
                         JMenuItem noSort =
                                 new JMenuItem(I18N.tr("No sort"),
@@ -175,7 +175,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                         noSort.addActionListener(
                         EventHandler.create(ActionListener.class,this,
                         "onMenuNoSort"));
-                        pop.add(sortAscending);
+                        pop.add(noSort);
                 }                
                 //Add the column index in the ActionEvent
                 for(MenuElement element : pop.getSubElements()) {

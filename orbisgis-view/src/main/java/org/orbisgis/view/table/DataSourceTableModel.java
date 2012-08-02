@@ -117,7 +117,11 @@ public class DataSourceTableModel extends AbstractTableModel {
          * @return The local index indexLink 
          */
         public List<Integer> getIndexes() {
-                return Collections.unmodifiableList(indexes);
+                if(indexes == null) {
+                        return null;
+                } else {
+                        return Collections.unmodifiableList(indexes);
+                }
         }
 
         /**
