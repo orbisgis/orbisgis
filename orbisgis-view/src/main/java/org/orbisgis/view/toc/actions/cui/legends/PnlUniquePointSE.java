@@ -45,7 +45,6 @@ import javax.swing.event.ChangeListener;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.WellKnownName;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.analyzer.FillAnalyzer;
 import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
@@ -57,6 +56,7 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.JNumericSpinner;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
+import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
@@ -131,7 +131,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
 
         @Override
         public boolean acceptsGeometryType(int geometryType) {
-                return (geometryType & GeometryProperties.ALL) != 0;
+                return (geometryType & SimpleGeometryType.ALL) != 0;
         }
 
         @Override
