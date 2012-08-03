@@ -38,6 +38,7 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.MessageDigest;
@@ -565,6 +566,24 @@ public final class FileUtils {
                 } else {
                         throw new IOException(file.getAbsolutePath() + " is a directory");
                 }
+        }
+        
+        public static String getNameFromURI(URI u) {
+                if ("file".equalsIgnoreCase(u.getScheme())) {
+                        return getFileNameWithoutExtensionU(new File(u.getPath()));
+                } else {
+                        String q = u.getQuery();
+                        if (q != null && !q.isEmpty()) {
+                                String[] pat = q.split("&");
+                                for (int i = 0; i < pat.length; i++) {
+                                        if (pat[i].toLowerCase().startsWith("tablename=")) {
+                                                return pat[i].toLowerCase().substring(10);
+                                        }
+                                }
+                        }
+                }
+                
+                throw new UnsupportedOperationException();
         }
 
         private FileUtils() {
