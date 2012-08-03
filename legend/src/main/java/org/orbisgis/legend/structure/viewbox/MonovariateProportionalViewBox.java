@@ -216,4 +216,20 @@ public class MonovariateProportionalViewBox extends DefaultViewBox {
             getInterpolation().setSecondValue(d);
         }
 
+        /**
+         * Gets the name of the field where values will be retrieved.
+         * @return
+         */
+        public String getLookupFieldName(){
+                return getInterpolation().getLookupFieldName();
+        }
+
+        /**
+         * Sets the name of the field where values will be retrieved.
+         * @param name
+         */
+        public void setLookupFieldName(String name){
+                getInterpolation().setLookupFieldName(name);
+        }
+
 }

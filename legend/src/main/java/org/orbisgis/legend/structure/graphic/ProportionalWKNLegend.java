@@ -143,8 +143,20 @@ public class ProportionalWKNLegend extends ConstantFormWKN {
         ((MonovariateProportionalViewBox) getViewBoxLegend()).setSecondValue(d);
     }
 
+    /**
+     * Gets the name of the field where the values will be retrieved.
+     * @return
+     */
     public String getLookupFieldName() {
-        throw new UnsupportedOperationException("Not yet implemented");
+        return ((MonovariateProportionalViewBox)getViewBoxLegend()).getLookupFieldName();
+    }
+
+    /**
+     * Sets the name of the field where values will be retrieved.
+     * @param name
+     */
+    public void setLookupFieldName(String name){
+        ((MonovariateProportionalViewBox)getViewBoxLegend()).setLookupFieldName(name);
     }
 
 }

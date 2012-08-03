@@ -144,4 +144,13 @@ public class ProportionalPointTest extends AnalyzerTest {
             Legend leg = (Legend) new PointSymbolizerAnalyzer(ps).getLegend();
             assertTrue(leg instanceof ProportionalPoint);
     }
+
+    @Test
+    public void testGetFieldName() throws Exception{
+        Style st = getStyle(PROPORTIONAL_POINT);//PTOT99
+        PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
+        ProportionalPoint uvp = new ProportionalPoint(ps);
+        assertTrue(uvp.getLookupFieldName().equals("PTOT99"));
+
+    }
 }

@@ -128,13 +128,10 @@ public class RealFunction implements RealParameter {
      *
      * @param i
      * @return the real parameter
-     * @throws ParameterException i is out of bounds
+     * @throws IndexOutOfBoundsException if i is out of bounds
      */
-    public RealParameter getOperand(int i) throws ParameterException {
-        if (i >= 0 && i < operands.size()) {
-            return operands.get(i);
-        }
-        throw new ParameterException("Index out of bounds");
+    public RealParameter getOperand(int i){
+        return operands.get(i);
     }
 
     /**

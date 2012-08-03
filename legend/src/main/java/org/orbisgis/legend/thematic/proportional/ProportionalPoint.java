@@ -103,8 +103,20 @@ public class ProportionalPoint extends ConstantFormPoint  {
         return markGraphic;
     }
 
+    /**
+     * Gets the name of the field where values will be retrieved.
+     * @return
+     */
     public String getLookupFieldName(){
             return markGraphic.getLookupFieldName();
+    }
+
+    /**
+     * Sets the name of the field where values will be retrieved.
+     * @param name
+     */
+    public void getLookupFieldName(String name){
+            markGraphic.setLookupFieldName(name);
     }
 
     /**
