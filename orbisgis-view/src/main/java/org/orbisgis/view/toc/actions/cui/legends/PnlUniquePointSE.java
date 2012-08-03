@@ -136,6 +136,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 if (uniquePoint == null) {
                         setLegend(new UniqueSymbolPoint());
                 }
+                setGeometryType(lc.getGeometryType());
         }
 
         @Override
@@ -233,6 +234,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                         bVertex.addActionListener(actionV);
                         bCentroid.addActionListener(actionC);
                         bVertex.setSelected(((PointSymbolizer)point.getSymbolizer()).isOnVertex());
+                        bCentroid.setSelected(!((PointSymbolizer)point.getSymbolizer()).isOnVertex());
                         jp.add(bVertex);
                         jp.add(bCentroid);
                 }
@@ -302,9 +304,19 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 }
                 final JComboBox jcc = new JComboBox(values);
                 ActionListener acl = EventHandler.create(ActionListener.class, prev, "repaint");
-                ActionListener acl2 = EventHandler.create(ActionListener.class, point, "wellKnownName", "source.selectedItem");
+                ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateComboBox", "source.selectedIndex");
                 jcc.addActionListener(acl2);
                 jcc.addActionListener(acl);
+                jcc.setSelectedItem(point.getWellKnownName().toUpperCase());
                 return jcc;
+        }
+
+        /**
+         * Sets the underlying graphic to use the ith element of the combobox
+         * as its well-known name. Used when changing the combobox selection.
+         * @param index
+         */
+        public void updateComboBox(int index){
+                uniquePoint.setWellKnownName(wkns[index]);
         }
 }

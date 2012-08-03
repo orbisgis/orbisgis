@@ -200,7 +200,6 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                                 legend.getLegendTypeId())) {
                                 ILegendPanel ilp = (ILegendPanel) newInstance(panel);
                                 ilp.setLegend(legend);
-                                ilp.setGeometryType(type);
                                 return ilp;
                         }
                 }
