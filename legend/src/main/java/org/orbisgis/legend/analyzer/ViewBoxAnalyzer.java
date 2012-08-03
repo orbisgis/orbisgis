@@ -28,16 +28,20 @@
  */
 package org.orbisgis.legend.analyzer;
 
-import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.legend.AbstractAnalyzer;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.structure.parameter.NumericLegend;
+import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
 import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
 import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
-import org.orbisgis.legend.structure.viewbox.*;
+import org.orbisgis.legend.structure.parameter.NumericLegend;
+import org.orbisgis.legend.structure.viewbox.BivariateProportionalViewBox;
+import org.orbisgis.legend.structure.viewbox.ConstantViewBox;
+import org.orbisgis.legend.structure.viewbox.DefaultViewBox;
+import org.orbisgis.legend.structure.viewbox.MonovariateLinearVB;
+import org.orbisgis.legend.structure.viewbox.MonovariateProportionalViewBox;
 
 /**
  * This {@code Analyzer} realization is dedicated to the study of {@code ViewBox}
@@ -127,9 +131,8 @@ public class ViewBoxAnalyzer  extends AbstractAnalyzer {
                         MonovariateProportionalViewBox mpv = new MonovariateProportionalViewBox(sqil, onheight, vb);
                         setLegend(mpv);
                 } else if(ld instanceof RealLiteralLegend){
-                        ConstantViewBox mpv = new ConstantViewBox((RealLiteralLegend) ld, onheight, vb);
-                        setLegend(mpv);
-
+                        ConstantViewBox cvb = new ConstantViewBox((RealLiteralLegend) ld, onheight, vb);
+                        setLegend(cvb);
                 }
         }
 

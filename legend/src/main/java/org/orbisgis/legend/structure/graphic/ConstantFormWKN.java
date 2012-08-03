@@ -44,6 +44,14 @@ import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
  * @author Alexis Guéganno
  */
 public abstract class ConstantFormWKN extends MarkGraphicLegend {
+
+    /**
+     * Builds a new default {@code ConstantFormWKN} associated to a default
+     * {@link MarkGraphic}.
+     */
+    public ConstantFormWKN(){
+            super();
+    }
     /**
      * Build a default {@code LegendStructure} that describes a {@code MarkGraphic}
      * instance.

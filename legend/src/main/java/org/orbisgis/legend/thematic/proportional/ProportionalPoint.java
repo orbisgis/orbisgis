@@ -49,6 +49,18 @@ public class ProportionalPoint extends ConstantFormPoint  {
     private ProportionalWKNLegend markGraphic;
 
     /**
+     * Builds a new {@code ProportionalPoint}. It has default {@code MarkGraphic}
+     * parameters except for the {@code ViewBox}, of course.
+     */
+    public ProportionalPoint(){
+        super();
+        markGraphic = new ProportionalWKNLegend();
+        PointSymbolizer ps = (PointSymbolizer) getSymbolizer();
+        ps.getGraphicCollection().delGraphic(0);
+        ps.getGraphicCollection().addGraphic(markGraphic.getMarkGraphic());
+    }
+
+    /**
      * Tries to build an instance of {@code ProportionalPoint} using the given
      * {@code PointSymbolizer}.
      * @param symbolizer
@@ -89,6 +101,10 @@ public class ProportionalPoint extends ConstantFormPoint  {
     @Override
     public ConstantFormWKN getMarkGraphic() {
         return markGraphic;
+    }
+
+    public String getLookupFieldName(){
+            return markGraphic.getLookupFieldName();
     }
 
     /**

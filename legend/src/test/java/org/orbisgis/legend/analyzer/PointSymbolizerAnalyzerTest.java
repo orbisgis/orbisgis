@@ -41,6 +41,7 @@ import org.orbisgis.core.renderer.se.parameter.string.InvalidString;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
+import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.analyzer.symbolizers.PointSymbolizerAnalyzer;
 import org.orbisgis.legend.structure.viewbox.ConstantViewBox;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
@@ -451,5 +452,13 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         ProportionalPoint uvp = new ProportionalPoint(ps);
         uvp.setSecondValue(250.0);
         assertTrue( uvp.getSecondValue()== 250.0);
+    }
+
+    @Test
+    public void testAnalyzeBackDefaultPropPoint() throws Exception {
+            ProportionalPoint pp = new ProportionalPoint();
+            PointSymbolizer ps = (PointSymbolizer) pp.getSymbolizer();
+            Legend leg = (Legend) new PointSymbolizerAnalyzer(ps).getLegend();
+            assertTrue(leg instanceof ProportionalPoint);
     }
 }

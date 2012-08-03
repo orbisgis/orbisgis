@@ -43,6 +43,14 @@ import org.orbisgis.legend.structure.viewbox.MonovariateProportionalViewBox;
 public class ProportionalWKNLegend extends ConstantFormWKN {
 
     /**
+     * Builds a new {@code ProportionalWKNLegend} with a default {@link
+     * MonovariateProportionalViewBox}.
+     */
+    public ProportionalWKNLegend(){
+        super();
+        setViewBoxLegend(new MonovariateProportionalViewBox());
+    }
+    /**
      * Build a new isntance of this {@code Legend} specialization.
      * @param mark
      * @param wknLegend
@@ -133,6 +141,10 @@ public class ProportionalWKNLegend extends ConstantFormWKN {
      */
     public void setSecondValue(double d) {
         ((MonovariateProportionalViewBox) getViewBoxLegend()).setSecondValue(d);
+    }
+
+    public String getLookupFieldName() {
+        throw new UnsupportedOperationException("Not yet implemented");
     }
 
 }
