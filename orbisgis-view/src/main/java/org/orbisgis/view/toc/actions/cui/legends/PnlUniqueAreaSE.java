@@ -42,7 +42,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.analyzer.FillAnalyzer;
 import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
@@ -55,6 +54,7 @@ import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
+import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -131,7 +131,7 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
 
         @Override
         public boolean acceptsGeometryType(int geometryType) {
-                return geometryType == GeometryProperties.POLYGON;
+                return geometryType == SimpleGeometryType.POLYGON;
         }
 
         @Override

@@ -33,6 +33,7 @@ import org.orbisgis.legend.Legend;
 /**
  * 
  * @author David Ortega
+ * @author Alexis Guéganno
  */
 public interface ILegendPanel  extends ISELegendPanel {
 
@@ -49,6 +50,13 @@ public interface ILegendPanel  extends ISELegendPanel {
 	 * @param legend
 	 */
 	void setLegend(Legend legend);
+
+        /**
+         * Sets the type of the geometry field of the data that must be
+         * represented.
+         * @param type
+         */
+        void setGeometryType(int type);
 
 	/**
 	 * Returns true if this legend can be applied to the specified geometry

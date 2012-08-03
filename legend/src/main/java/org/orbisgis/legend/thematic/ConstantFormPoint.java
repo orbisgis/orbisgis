@@ -85,4 +85,25 @@ public abstract class ConstantFormPoint extends SymbolizerLegend {
         getMarkGraphic().setWellKnownName(str);
     }
 
+    /**
+     * Gets whether symbols must be drawn on vertices or on centroid.
+     * @return
+     */
+    public boolean isOnVertex(){
+            return pointSymbolizer.isOnVertex();
+    }
+
+    /**
+     * Sets that symbols must be drawn on vertices or on centroid.
+     */
+    public void setOnVertex(){
+            pointSymbolizer.setOnVertex(true);
+    }
+
+    /**
+     * Sets that symbols must be drawn on vertices or on centroid.
+     */
+    public void setOnCentroid(){
+            pointSymbolizer.setOnVertex(false);
+    }
 }

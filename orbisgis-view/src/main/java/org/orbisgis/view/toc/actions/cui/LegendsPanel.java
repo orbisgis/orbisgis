@@ -48,7 +48,6 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.Symbolizer;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.factory.LegendFactory;
 import org.orbisgis.sif.UIFactory;
@@ -111,26 +110,9 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                 this.gc = gc;
                 this.layer = layer;
                 if (gc == null) {
-                        geometryType = GeometryProperties.ALL;
+                        geometryType = SimpleGeometryType.ALL;
                 } else {
-                        switch (gc.getTypeCode()) {
-                                case Type.POINT:
-                                case Type.MULTIPOINT:
-                                        geometryType = GeometryProperties.POINT;
-                                        break;
-                                case Type.LINESTRING:
-                                case Type.MULTILINESTRING:
-                                        geometryType = GeometryProperties.LINE;
-                                        break;
-                                case Type.POLYGON:
-                                case Type.MULTIPOLYGON:
-                                        geometryType = GeometryProperties.POLYGON;
-                                        break;
-                                case Type.GEOMETRYCOLLECTION:
-                                case Type.GEOMETRY:
-                                        geometryType = GeometryProperties.ALL;
-                                        break;
-                        }
+                        geometryType = SimpleGeometryType.getSimpleType(gc);
                 }
 
                 this.availableLegends = Arrays.copyOf(availableLegends, availableLegends.length);
@@ -142,7 +124,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                         List<ILegendPanel> ll = new LinkedList<ILegendPanel>();
                         for (Symbolizer s : sym) {
                                 Legend leg = LegendFactory.getLegend(s);
-                                ILegendPanel ilp = getPanel(leg);
+                                ILegendPanel ilp = getPanel(leg, geometryType);
                                 ilp.setId(getNewId());
                                 ll.add(ilp);
                                 JScrollPane jsp = new JScrollPane(ilp.getComponent(),
@@ -212,7 +194,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
          * @param legend
          * @return
          */
-        public ILegendPanel getPanel(Legend legend) {
+        public ILegendPanel getPanel(Legend legend, int type) {
                 for (ILegendPanel panel : availableLegends) {
                         if (panel.getLegend().getLegendTypeId().equals(
                                 legend.getLegendTypeId())) {
@@ -236,17 +218,17 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
         @Override
         public boolean isLine() {
-                return (geometryType & GeometryProperties.LINE) > 0;
+                return (geometryType & SimpleGeometryType.LINE) > 0;
         }
 
         @Override
         public boolean isPoint() {
-                return (geometryType & GeometryProperties.POINT) > 0;
+                return (geometryType & SimpleGeometryType.POINT) > 0;
         }
 
         @Override
         public boolean isPolygon() {
-                return (geometryType & GeometryProperties.POLYGON) > 0;
+                return (geometryType & SimpleGeometryType.POLYGON) > 0;
         }
 
         void refreshLegendContainer() {
