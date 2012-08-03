@@ -28,6 +28,7 @@
  */
 package org.orbisgis.legend.analyzer.function;
 
+import java.util.List;
 import org.orbisgis.core.renderer.se.parameter.Interpolate;
 import org.orbisgis.core.renderer.se.parameter.color.Interpolate2Color;
 import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
@@ -70,10 +71,14 @@ public class InterpolationAnalyzer extends AbstractAnalyzer{
                         setLegend(new LinearInterpolationLegend(inter));
                 } else if(rp instanceof RealFunction){
                         RealFunction rf = (RealFunction) rp;
-                        if(rf.getOperator().equals(RealFunction.Operators.SQRT)){
-                                setLegend(new SqrtInterpolationLegend(inter));
-                        } else {
-                                setLegend(new InterpolationLegend(inter));
+                        List<RealParameter> ops = rf.getOperands();
+                        if(!ops.isEmpty()){
+                                if(rf.getOperator().equals(RealFunction.Operators.SQRT)
+                                        && ops.size() == 1 && ops.get(0) instanceof RealAttribute){
+                                        setLegend(new SqrtInterpolationLegend(inter));
+                                } else {
+                                        setLegend(new InterpolationLegend(inter));
+                                }
                         }
                 } else {
                         setLegend(new InterpolationLegend(inter));
