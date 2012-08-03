@@ -62,7 +62,17 @@ public class RealFunction implements RealParameter {
     private ArrayList<RealParameter> operands;
 
     /**
-     * buld an empty <code>RealFunction</code>, where only the name of the operation
+     * Builds an empty <code>RealFunction</code>, where only the operation
+     * is defined.
+     * @param operator
+     */
+    public RealFunction(Operators operator){
+            op = operator;
+            operands = new ArrayList<RealParameter>();
+    }
+
+    /**
+     * Builds an empty <code>RealFunction</code>, where only the name of the operation
      * is defined.
      * @param name 
      */
@@ -106,6 +116,14 @@ public class RealFunction implements RealParameter {
     }
 
     /**
+     * Gets the list of operands
+     * @return
+     */
+    public List<RealParameter> getOperands() {
+        return operands;
+    }
+
+    /**
      * Return i'th operand
      *
      * @param i
@@ -135,7 +153,7 @@ public class RealFunction implements RealParameter {
                 if (operands.size() < 2) {
                     this.operands.add(operand);
                 } else {
-                    throw new ParameterException(op + " requiere exactly two operands");
+                    throw new ParameterException(op + " requires exactly two operands");
                 }
                 return;
             case SQRT:
@@ -144,7 +162,7 @@ public class RealFunction implements RealParameter {
                 if (operands.size() < 1) {
                     this.operands.add(operand);
                 } else {
-                    throw new ParameterException(op + " requiere exactly one operand");
+                    throw new ParameterException(op + " requires exactly one operand");
                 }
                 return;
         }
