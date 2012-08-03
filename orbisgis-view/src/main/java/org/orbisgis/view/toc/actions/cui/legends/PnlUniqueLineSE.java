@@ -41,7 +41,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JPanel;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
@@ -51,6 +50,7 @@ import org.orbisgis.legend.thematic.constant.IUniqueSymbolLine;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
+import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -103,6 +103,10 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 }
         }
 
+        @Override
+        public void setGeometryType(int type){
+        }
+
         /**
          * Initialize the panel. This method is called just after the panel
          * creation.</p> <p>WARNING : the panel will be empty after calling this
@@ -122,8 +126,8 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
         @Override
         public boolean acceptsGeometryType(int geometryType) {
-                return geometryType == GeometryProperties.LINE ||
-                        geometryType == GeometryProperties.POLYGON;
+                return geometryType == SimpleGeometryType.LINE ||
+                        geometryType == SimpleGeometryType.POLYGON;
         }
 
         @Override

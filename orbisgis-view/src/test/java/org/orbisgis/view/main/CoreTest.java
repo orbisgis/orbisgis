@@ -29,7 +29,6 @@
 package org.orbisgis.view.main;
 
 import bibliothek.gui.dock.common.intern.CDockable;
-import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import java.awt.GraphicsEnvironment;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -64,6 +63,11 @@ public class CoreTest {
         if(!GraphicsEnvironment.isHeadless()) {
             instance = new Core(true);
             instance.startup();
+            try {
+                    SwingUtilities.invokeAndWait(new DummyThread());
+            } catch (InterruptedException ex) {
+            } catch (InvocationTargetException ex) {
+            }
         }
     }
     
@@ -72,7 +76,7 @@ public class CoreTest {
      * Test adding custom filter factory to the GeoCatalog
      */
     @Test
-    public void testGeoCatalogSuppliedFilter() {
+    public void testGeoCatalogSuppliedFilter() throws Exception {
         org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
         //Retrieve instance of View And Gdms managers
         Catalog geoCatalog = instance.getGeoCatalog();
@@ -132,7 +136,7 @@ public class CoreTest {
    /**
     * This runnable is just to wait the execution of other runnables
     */
-    private class DummyThread implements Runnable {
+    private static class DummyThread implements Runnable {
         public void run(){
         }
     }
@@ -140,8 +144,8 @@ public class CoreTest {
      * Test propagation of docking parameters modifications
      */
     @Test
-    public void testDockingParameterChange() {
-        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless()); 
+    public void testDockingParameterChange() throws Exception{
+        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless());
        
         String newTitle = "new dummy name";
         //Create the instance of the panel

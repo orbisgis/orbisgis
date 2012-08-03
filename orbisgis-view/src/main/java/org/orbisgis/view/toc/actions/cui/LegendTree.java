@@ -371,7 +371,7 @@ public class LegendTree extends JPanel {
                         Legend leg = ilp.copyLegend();
                         ILegendPanel copy = (ILegendPanel) ilp.newInstance();
                         copy.setLegend(leg);
-
+                        copy.setGeometryType(legendsPanel.getGeometryType());
                         //We retrieve the rw where we will add it.
                         RuleWrapper currentrw = getSelectedRule();
                         if (currentrw == null) {
@@ -411,7 +411,7 @@ public class LegendTree extends JPanel {
                         temp.setName(s);
                         Legend leg = LegendFactory.getLegend(
                                 temp.getCompositeSymbolizer().getSymbolizerList().get(0));
-                        ILegendPanel ilp = legendsPanel.getPanel(leg);
+                        ILegendPanel ilp = legendsPanel.getPanel(leg,legendsPanel.getGeometryType());
                         List<ILegendPanel> list = new ArrayList<ILegendPanel>();
                         list.add(ilp);
                         RuleWrapper nrw = new RuleWrapper(temp, list);

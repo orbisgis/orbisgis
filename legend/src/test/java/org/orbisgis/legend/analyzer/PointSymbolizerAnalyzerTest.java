@@ -29,6 +29,7 @@
 package org.orbisgis.legend.analyzer;
 
 import java.awt.Color;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
@@ -143,6 +144,22 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         } catch (InvalidString is){
                 assertTrue(uvp.getWellKnownName().equalsIgnoreCase("CIRCLE"));
        }
+    }
+
+    @Test
+    public void testSetOnVertex() throws Exception{
+        Style st = getStyle(CONSTANT);
+        PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
+        UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
+        assertFalse(uvp.isOnVertex());
+        assertFalse(ps.isOnVertex());
+        uvp.setOnVertex();
+        assertTrue(uvp.isOnVertex());
+        assertTrue(ps.isOnVertex());
+        uvp.setOnCentroid();
+        assertFalse(uvp.isOnVertex());
+        assertFalse(ps.isOnVertex());
+
     }
 
     @Test
