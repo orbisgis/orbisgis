@@ -1,0 +1,22 @@
+#!/usr/bin/env sh
+#
+# Utility to fix the scaladoc for gdms.
+# Must be run from the root of the git repository, after generating the scaladoc in gdms
+
+# parameter, if exist, is the revision to display (git revision or branche name)
+# defaults to master
+if [ $# == 0 ]
+then
+  rev="master"
+else
+  rev="$1"
+fi
+
+src=$(pwd | sed 's/\//\\\//g')
+url=$(echo "https://github.com/irstv/orbisgis/tree/${rev}" | sed 's/\//\\\//g')
+files=$(find gdms/target/site/scaladocs/ -name "*.html" -type f)
+
+# fix for bug in scaladoc for java sources
+sed -i "s/\.java\.scala/.java/g" ${files}
+
+sed -i "s/file:${src}/${url}/g" ${files}
