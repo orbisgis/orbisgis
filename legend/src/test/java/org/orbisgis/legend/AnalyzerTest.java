@@ -43,6 +43,9 @@ public abstract class AnalyzerTest {
         
         protected FailErrorManager failErrorManager;
         private Appender consoleAppender;
+        public static final String CONSTANT_POINT = "src/test/resources/org/orbisgis/legend/constantWKN.se";
+        public static final String CONSTANT2D_POINT = "src/test/resources/org/orbisgis/legend/constant2DWKN.se";
+        public static final String PROPORTIONAL_POINT = "src/test/resources/org/orbisgis/legend/proportionalSymbol.se";
         
         public Style getStyle(String path) throws Exception {
             Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
