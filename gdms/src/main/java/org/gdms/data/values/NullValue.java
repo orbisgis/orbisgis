@@ -272,11 +272,6 @@ final class NullValue extends AbstractValue implements BinaryValue, BooleanValue
         }
 
         @Override
-        public void setValue(CharSequence value) {
-                throw new UnsupportedOperationException(CANNOTSETNULL);
-        }
-
-        @Override
         public void setValue(Time d) {
                 throw new UnsupportedOperationException(CANNOTSETNULL);
         }

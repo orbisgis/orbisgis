@@ -55,25 +55,24 @@ public class SubString extends AbstractScalarFunction {
                         return ValueFactory.createNullValue();
                 } else {
                         // Get the argument
-                        final String text = arg0[0].getAsString();
+                        final CharSequence text = arg0[0].getAsCharSequence();
                         final int firstRightString = arg0[1].getAsInt();
-                        String newText;
+                        CharSequence newText;
                         if (arg0.length == 3) {
                                 final int secondRightString = arg0[2].getAsInt();
                                 // The substring with two arguments
-                                newText = text.substring(firstRightString, secondRightString);
+                                newText = text.subSequence(firstRightString, secondRightString);
 
                         } else {
                                 // The substring with one argument
                                 if (text.length() < firstRightString) {
                                         newText = text;
                                 } else {
-                                        newText = text.substring(firstRightString);
+                                        newText = text.subSequence(firstRightString, text.length());
                                 }
                         }
 
-
-                        return ValueFactory.createValue(newText);
+                        return ValueFactory.createValue(newText.toString());
 
                 }
 

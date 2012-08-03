@@ -52,7 +52,6 @@ import org.gdms.sql.function.ScalarArgument;
  */
 public class Average extends AbstractAggregateFunction {
 
-        private static final Value NULLVALUE = ValueFactory.createNullValue();
         private double sumOfValues = 0;
         private int numberOfValues = 0;
         private static final Logger LOG = Logger.getLogger(Average.class);
@@ -95,7 +94,7 @@ public class Average extends AbstractAggregateFunction {
         public Value getAggregateResult() {
                 LOG.trace("Returning aggregated results");
                 if (0 == numberOfValues) {
-                        return NULLVALUE;
+                        return ValueFactory.createNullValue();
                 }
                 return ValueFactory.createValue(sumOfValues / numberOfValues);
         }

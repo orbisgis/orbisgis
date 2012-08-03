@@ -64,6 +64,31 @@ class DefaultStringValue extends AbstractValue implements Serializable, StringVa
         }
 
         /**
+         * Builds a DefaultStringValue from the given char array <tt>text</tt>.
+         *
+         * This makes a copy of the char array, it does not reuse the original one.
+         *
+         * @param text a char array
+         */
+        DefaultStringValue(char[] text) {
+                this.value = Arrays.copyOf(text, text.length);
+        }
+
+        /**
+         * Builds a DefaultStringValue from the given char array <tt>text</tt>.
+         *
+         * This makes a copy of the char array, it does not reuse the original one.
+         *
+         * @param text a char array
+         * @param start the start index
+         * @param length the length of the sub-array to keep
+         */
+        DefaultStringValue(char[] text, int start, int length) {
+                this.value = new char[length];
+                System.arraycopy(text, start, value, 0, length);
+        }
+
+        /**
          * Creates an empty StringValue object.
          */
         DefaultStringValue() {
@@ -212,8 +237,12 @@ class DefaultStringValue extends AbstractValue implements Serializable, StringVa
 
         @Override
         public byte[] getBytes() {
-                // this handles UTF-16 encoding for us
-                return new String(value).getBytes();
+                if (value.length == 0) {
+                        return new byte[0];
+                } else {
+                        // this handles UTF-16 encoding for us
+                        return new String(value).getBytes();
+                }
         }
 
         public static Value readBytes(byte[] buffer) {
@@ -229,6 +258,11 @@ class DefaultStringValue extends AbstractValue implements Serializable, StringVa
         @Override
         public String getAsString() {
                 return toString();
+        }
+
+        @Override
+        public CharSequence getAsCharSequence() {
+                return this;
         }
 
         @Override
