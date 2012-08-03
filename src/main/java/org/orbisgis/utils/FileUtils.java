@@ -568,6 +568,16 @@ public final class FileUtils {
                 }
         }
         
+        /**
+         * Gets a convenient name from an URI.
+         * 
+         * The URI scheme can be file or anything with a 'tablename' querystring parameter.
+         * Anything else is unsupported.
+         * 
+         * @param u an URI
+         * @return a name for it
+         * @throws UnsupportedOperationException if the URI is unsupported.
+         */
         public static String getNameFromURI(URI u) {
                 if ("file".equalsIgnoreCase(u.getScheme())) {
                         return getFileNameWithoutExtensionU(new File(u.getPath()));
