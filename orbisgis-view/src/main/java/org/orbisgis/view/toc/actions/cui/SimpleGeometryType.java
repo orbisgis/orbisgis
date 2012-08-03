@@ -42,12 +42,13 @@ public class SimpleGeometryType {
         private SimpleGeometryType(){};
 
         public static final int POINT = 1;
-	public static final int LINE = 2;
-	public static final int POLYGON = 4;
+        public static final int LINE = 2;
+        public static final int POLYGON = 4;
         public static final int ALL = POINT | LINE | POLYGON;
 
         /**
          * Gets the simple representation of {@code type}.
+         *
          * @param type
          * @return One of the constants defined in this class
          * @throws IllegalArgumentException If {@code type} is not a geometry
@@ -69,8 +70,9 @@ public class SimpleGeometryType {
                         case Type.GEOMETRYCOLLECTION:
                         case Type.GEOMETRY:
                                 return ALL;
+                        default:
+                                throw new IllegalArgumentException("Can't recognize " +
+                                        tc + " as a geometry type");
                 }
-                throw new IllegalArgumentException("Can't recognize "+tc+" as a geometry type");
         }
-
 }
