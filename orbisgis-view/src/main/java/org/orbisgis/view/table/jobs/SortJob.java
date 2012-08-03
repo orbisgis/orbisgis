@@ -33,12 +33,18 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.TreeSet;
+import java.util.logging.Level;
+import javax.swing.RowSorter;
+import javax.swing.RowSorter.SortKey;
+import javax.swing.SortOrder;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.core.events.EventException;
+import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.table.DataSourceTableModel;
@@ -54,21 +60,38 @@ public class SortJob implements BackgroundJob {
 
         protected final static I18n I18N = I18nFactory.getI18n(SortJob.class);
         private static final Logger LOGGER = Logger.getLogger(SortJob.class);
+        private RowSorter<DataSourceTableModel> tableSorter;
         private DataSourceTableModel model;
-        private boolean ascending;
+        private SortKey sortRequest;
         private Integer columnToSort;
         private String columnSortName;
+        private ListenerContainer<SortJobEventSorted> eventSortedListeners = new ListenerContainer<SortJobEventSorted>();
+        private Collection<Integer> modelIndex;
 
-        public SortJob(boolean ascending, DataSourceTableModel model, int columnToSort) {
-                this.ascending = ascending;
-                this.model = model;
-                this.columnToSort = columnToSort;
+        /**
+         * 
+         * @param sortRequest 
+         * @param tableSorter
+         * @param modelIndex Current state of Index, can be null if the index is the same as the model
+         */
+        public SortJob(SortKey sortRequest, RowSorter<DataSourceTableModel> tableSorter, Collection<Integer> modelIndex) {
+                this.sortRequest = sortRequest;
+                this.tableSorter = tableSorter;
+                this.columnToSort = sortRequest.getColumn();
+                this.modelIndex = modelIndex;
+                model = tableSorter.getModel();
                 try {
                         columnSortName = model.getDataSource().getMetadata().getFieldName(columnToSort);
                 } catch (DriverException ex) {
                         LOGGER.error(I18N.tr("Driver error"), ex);
                 }
         }
+
+        public ListenerContainer<SortJobEventSorted> getEventSortedListeners() {
+                return eventSortedListeners;
+        }
+        
+        
 
         public static Collection<Integer> sortArray(Collection<Integer> modelIndex, Comparator<Integer> comparator, ProgressMonitor pm) throws IllegalStateException, DriverException {
                 int rowCount = modelIndex.size();
@@ -94,7 +117,6 @@ public class SortJob implements BackgroundJob {
                         return;
                 }
                 // Retrieve the index if the model have a restricted set of rows
-                Collection<Integer> modelIndex = model.getIndexes();
                 if (modelIndex == null) {
                         //Create an array [0 1 ..rows]
                         modelIndex = new IntegerUnion(0, model.getRowCount() - 1);
@@ -127,16 +149,18 @@ public class SortJob implements BackgroundJob {
                                 pm.endTask();
                                 comparator = new SortValueCachedComparator(cache);
                         }
-                        if (!ascending) {
+                        if (sortRequest.getSortOrder().equals(SortOrder.DESCENDING)) {
                                 comparator = Collections.reverseOrder(comparator);
                         }
                         Collection<Integer> columnValues = sortArray(modelIndex, comparator, pm);
                         //Update the table model
-                        model.setCustomIndex(columnValues);
+                        eventSortedListeners.callListeners(new SortJobEventSorted(sortRequest,columnValues , this));
                 } catch (IllegalStateException ex) {
                         LOGGER.error(I18N.tr("Driver error"), ex);
                 } catch (DriverException ex) {
                         LOGGER.error(I18N.tr("Driver error"), ex);
+                } catch (EventException ex) {
+                        //Ignore
                 }
         }
 

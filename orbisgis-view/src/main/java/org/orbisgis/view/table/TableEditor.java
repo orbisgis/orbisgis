@@ -34,6 +34,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.AbstractButton;
@@ -45,9 +46,12 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.MenuElement;
+import javax.swing.RowSorter.SortKey;
+import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import jj2000.j2k.util.ArrayUtil;
 import org.apache.log4j.Logger;
 import org.gdms.data.types.Type;
 import org.orbisgis.core.Services;
@@ -77,6 +81,7 @@ public class TableEditor extends JPanel implements EditorDockable {
         private DockingPanelParameters dockingPanelParameters;
         private JTable table;
         private JScrollPane tableScrollPane;
+        private DataSourceRowSorter tableSorter;
         private DataSourceTableModel tableModel;
         private AtomicBoolean initialised = new AtomicBoolean(false);
 
@@ -97,17 +102,19 @@ public class TableEditor extends JPanel implements EditorDockable {
                         this,
                         "onMouseActionOnTableCells",
                         ""));
+                /*
                 table.getTableHeader().addMouseListener(EventHandler.create(MouseListener.class,
                         this,
                         "onMouseActionOnTableHeader",
                         ""));
+                        * 
+                        */
                 table.getSelectionModel().setSelectionMode(
                         ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
                 table.getTableHeader().setReorderingAllowed(false);
                 table.setColumnSelectionAllowed(true);
                 //table.setPreferredScrollableViewportSize(new Dimension(500, 70));
-                table.setFillsViewportHeight(true);     
-                
+                table.setFillsViewportHeight(true);                
                 return table;
         }
         
@@ -195,17 +202,16 @@ public class TableEditor extends JPanel implements EditorDockable {
          * The user disable table sort
          */
         public void onMenuNoSort() {
-                tableModel.clearCustomIndex();
+                tableSorter.setSortKeys(null);
         }
         
         public void onMenuSortAscending(String strCol) {
                 int col = Integer.valueOf(strCol);
-                launchJob(new SortJob(true, tableModel, col));
+                tableSorter.setSortKey(new SortKey(col,SortOrder.ASCENDING));
         }
         public void onMenuSortDescending(String strCol) {
                 int col = Integer.valueOf(strCol);
-                launchJob(new SortJob(false, tableModel, col));
-                
+                tableSorter.setSortKey(new SortKey(col,SortOrder.DESCENDING));                
         }
         public void onMenuOptimalWidth(String strCol) {
                 int col = Integer.valueOf(strCol);
@@ -294,6 +300,8 @@ public class TableEditor extends JPanel implements EditorDockable {
                 autoResizeColWidth(Math.min(5, tableModel.getRowCount()),
                 new HashMap<String, Integer>(),
                 new HashMap<String, TableCellRenderer>());
+                tableSorter = new DataSourceRowSorter(tableModel);
+                table.setRowSorter(tableSorter);
                 //Set the row count at left
                 //tableScrollPane.setRowHeaderView(new TableLineCountHeader(table));
                 tableScrollPane.setRowHeaderView(new TableRowHeader(table));

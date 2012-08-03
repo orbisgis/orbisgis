@@ -29,10 +29,6 @@
 package org.orbisgis.view.table;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
 import javax.swing.table.AbstractTableModel;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
@@ -58,11 +54,6 @@ public class DataSourceTableModel extends AbstractTableModel {
         private DataSource dataSource;
         private TableEditableElement element;
         
-        //If the Model rows do not reflect the DataSource row number
-        //this array give the link between the TableModel Row Id
-        //and the DataSource row ID
-        private List<Integer> indexes = null;
-
         public DataSourceTableModel(TableEditableElement element) {
                 this.element = element;
                 this.dataSource = element.getDataSource();
@@ -95,36 +86,6 @@ public class DataSourceTableModel extends AbstractTableModel {
         }
         
         /**
-         * Clear the local index. 
-         * The shown rows will be the same as the data source in the same order.
-         */
-        public void clearCustomIndex() {
-                this.indexes = null;
-                fireTableRowsUpdated(0, getRowCount()-1);
-        }
-        /**
-         * Set a local index
-         * Data source rows will be shown in the provided selection and order
-         * @param indexLink
-         */
-        public void setCustomIndex(Collection<Integer> indexLink) {
-                this.indexes = new ArrayList<Integer>(indexLink);
-                fireTableRowsUpdated(0, getRowCount()-1);
-        }
-
-        /**
-         * 
-         * @return The local index indexLink 
-         */
-        public List<Integer> getIndexes() {
-                if(indexes == null) {
-                        return null;
-                } else {
-                        return Collections.unmodifiableList(indexes);
-                }
-        }
-
-        /**
          * Returns the field index
          *
          * @param fieldName
@@ -138,6 +99,36 @@ public class DataSourceTableModel extends AbstractTableModel {
                 }
         }
 
+        @Override
+        public Class<?> getColumnClass(int i) {
+                Type type;
+                try {
+                        type = getMetadata().getFieldType(i);
+                        switch (type.getTypeCode()) {
+                                case Type.STRING:
+                                        return String.class;
+                                case Type.BOOLEAN:
+                                        return Boolean.class;
+                                case Type.DOUBLE:
+                                        return Double.class;
+                                case Type.LONG:
+                                        return Long.class;
+                                case Type.FLOAT:
+                                        return Float.class;
+                                case Type.INT:
+                                        return Integer.class;
+                                case Type.SHORT:
+                                        return Short.class;
+                                default:
+                                        return super.getColumnClass(i);
+                        }
+                } catch (DriverException ex) {
+                        LOGGER.error("Initialisation error", ex);
+                        return super.getColumnClass(i);
+                }
+        }
+
+        
         /**
          * Returns the type of field
          *
@@ -167,52 +158,35 @@ public class DataSourceTableModel extends AbstractTableModel {
                         return 0;
                 }
                 try {
-                        if(indexes==null) {
-                                return (int) dataSource.getRowCount();
-                        } else {
-                                return indexes.size();
-                        }
+                        return (int) dataSource.getRowCount();
                 } catch (DriverException e) {
                         return 0;
                 }
         }
-
-        /**
-         * Returns the values of a specific row
-         * using the index
-         * @param row
-         * @return
-         */
-        public Value[] getRow(int row) {
-                try {
-                        if(indexes!=null) {
-                                return dataSource.getRow(getRowIndex(row));
-                        } else {
-                                return dataSource.getRow(row);
-                        }
-                } catch (DriverException e) {
-                        return null;
-                }
-        }
-        
-        /**
-         * Retrieve the index of the data in the data source shown at the index row
-         * in the displayed table.
-         * 
-         * @param row
-         * @return
-         */
-        public int getRowIndex(int row) {
-                if (indexes != null) {
-                        row = indexes.get(row);
-                }
-                return row;
-        }
-        
+                
         @Override
         public Object getValueAt(int row, int col) {
                 try {
-                        return dataSource.getFieldValue(getRowIndex(row), col).toString();
+                        Value val = dataSource.getFieldValue(row, col);
+                        Type type = getMetadata().getFieldType(col);
+                        switch (type.getTypeCode()) {
+                                case Type.STRING:
+                                        return val.toString();
+                                case Type.BOOLEAN:
+                                        return val.getAsBoolean();
+                                case Type.DOUBLE:
+                                        return val.getAsBoolean();
+                                case Type.LONG:
+                                        return val.getAsLong();
+                                case Type.FLOAT:
+                                        return val.getAsFloat();
+                                case Type.INT:
+                                        return val.getAsInt();
+                                case Type.SHORT:
+                                        return val.getAsShort();
+                                default:
+                                        return val.toString();
+                        }
                 } catch (DriverException e) {
                         return ""; //$NON-NLS-1$
                 }
@@ -240,7 +214,7 @@ public class DataSourceTableModel extends AbstractTableModel {
                         Type type = getMetadata().getFieldType(columnIndex);
                         String strValue = aValue.toString().trim();
                         Value v = ValueFactory.createValueByType(strValue, type.getTypeCode());
-                        dataSource.setFieldValue(getRowIndex(rowIndex), columnIndex, v);
+                        dataSource.setFieldValue(rowIndex, columnIndex, v);
                 } catch (DriverException e1) {
                         LOGGER.error(e1.getLocalizedMessage(), e1);
                 } catch (NumberFormatException e) {

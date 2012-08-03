@@ -1,0 +1,209 @@
+/*
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information. 
+ * 
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * 
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ * 
+ * This file is part of OrbisGIS.
+ * 
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ * 
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ * 
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ * 
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
+ */
+package org.orbisgis.view.table;
+
+import java.beans.EventHandler;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
+import org.apache.log4j.Logger;
+import org.gdms.data.types.Type;
+import org.orbisgis.core.Services;
+import org.orbisgis.core.events.Listener;
+import org.orbisgis.view.background.BackgroundJob;
+import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.table.jobs.SortJob;
+import org.orbisgis.view.table.jobs.SortJobEventSorted;
+
+/**
+ *
+ * @author Nicolas Fortin
+ */
+public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
+        private static final Logger LOGGER = Logger.getLogger(DataSourceRowSorter.class);
+        private DataSourceTableModel model;        //If the Model rows do not reflect the DataSource row number
+        //this array give the link between the TableModel Row Id
+        //and the DataSource row ID
+        private List<Integer> viewToModel = null;
+        //The model can be filtered, then a model row can not be in the view
+        private Map<Integer,Integer> modelToView = null;
+        //Sorted columns
+        private List<SortKey> sortedColumns = new ArrayList<SortKey>();
+        
+        public DataSourceRowSorter(DataSourceTableModel model) {
+                this.model = model;
+        }
+        
+        @Override
+        public DataSourceTableModel getModel() {
+                return model;
+        }
+        
+        public void onRowSortDone(SortJobEventSorted sortData) {
+                int[] oldViewToModel = null;
+                if(viewToModel!=null) {
+                        oldViewToModel = new int[viewToModel.size()];
+                        for(int i=0;i<oldViewToModel.length;i++) {
+                                oldViewToModel[i]=viewToModel.get(i);
+                        }
+                }
+                viewToModel = new ArrayList<Integer>(sortData.getViewToModelIndex());
+                modelToView = new HashMap<Integer,Integer>();
+                for(int viewIndex = 0;viewIndex < viewToModel.size();viewIndex++) {
+                        Integer modelIndex = viewToModel.get(viewIndex);
+                        modelToView.put(modelIndex, viewIndex);
+                }
+                sortedColumns.clear();
+                sortedColumns.add(sortData.getSortRequest());
+                fireSortOrderChanged();
+                fireRowSorterChanged(oldViewToModel);
+        }
+
+        @Override
+        public void toggleSortOrder(int column) {
+                LOGGER.debug("toggleSortOrder"+column);
+                if(isSortable(column)) {
+                        SortKey sortRequest=new SortKey(column, SortOrder.ASCENDING);
+                        //Find if the user already set an order
+                        for(int i=0;i<sortedColumns.size();i++) {
+                                SortKey col = sortedColumns.get(i);
+                                if(col.getColumn()==column) {
+                                        SortOrder order;
+                                        if(col.getSortOrder().equals(SortOrder.ASCENDING)) {
+                                                order = SortOrder.DESCENDING;
+                                        } else {
+                                                order = SortOrder.ASCENDING;
+                                        }
+                                        sortRequest = new SortKey(column, order);
+                                        break;
+                                }
+                        }
+                        //Multiple order is not available
+                        //To enable it, a new TableHeaderRenderer need to be defined
+                        //UIManager.getIcon("Table.ascendingSortIcon");
+                        //UIManager.getIcon("Table.descendingSortIcon");
+                        //http://www.jroller.com/nweber/entry/multi_column_sorting_w_mustang
+                        launchSortProcess(sortRequest);
+                }
+        }
+        
+        private void launchSortProcess(SortKey sortInformation) {
+                SortJob sortJob = new SortJob(sortInformation, this, viewToModel);
+                sortJob.getEventSortedListeners().addListener(this, EventHandler.create(Listener.class,this,"onRowSortDone",""));
+                launchJob(sortJob);
+        }
+
+        @Override
+        public int convertRowIndexToModel(int index) {
+                if(viewToModel==null) {
+                        return index;
+                } else {
+                        return viewToModel.get(index);
+                }
+        }
+
+        private void launchJob(BackgroundJob job) {
+                Services.getService(BackgroundManager.class).nonBlockingBackgroundOperation(job);
+        }
+        
+        @Override
+        public int convertRowIndexToView(int index) {
+                return index;
+        }
+        
+        /**
+         * Sort the column in the provided order
+         * @param sortRequest 
+         */
+        public void setSortKey(SortKey sortRequest) {
+                launchSortProcess(sortRequest);
+        }
+
+        @Override
+        public void setSortKeys(List<? extends SortKey> list) {
+                if(list==null || list.isEmpty()) {
+                        sortedColumns.clear();
+                } else {
+                        setSortKey(list.get(0));
+                }
+        }
+        
+        private boolean isSortable(int columnIndex) {
+                return model.getColumnType(columnIndex).getTypeCode() != Type.GEOMETRY;
+        }
+
+        @Override
+        public List<? extends SortKey> getSortKeys() {
+                return sortedColumns;
+        }
+
+        @Override
+        public int getViewRowCount() {
+                return model.getRowCount();
+        }
+
+        @Override
+        public int getModelRowCount() {
+                return model.getRowCount();
+        }
+
+        @Override
+        public void modelStructureChanged() {
+                LOGGER.debug("modelStructureChanged");
+        }
+
+        @Override
+        public void allRowsChanged() {
+                LOGGER.debug("allRowsChanged");
+        }
+
+        @Override
+        public void rowsInserted(int i, int i1) {
+                LOGGER.debug("rowsInserted");
+        }
+
+        @Override
+        public void rowsDeleted(int i, int i1) {
+                LOGGER.debug("rowsDeleted");
+        }
+
+        @Override
+        public void rowsUpdated(int i, int i1) {
+                LOGGER.debug("rowsUpdated");
+        }
+
+        @Override
+        public void rowsUpdated(int i, int i1, int i2) {
+                LOGGER.debug("rowsUpdated");
+        }
+        
+}
