@@ -39,13 +39,6 @@ package org.gdms.data.values;
  */
 public interface StringValue extends Value {
 
-    /**
-     * Sets the value of this String value.
-     *
-     * @param value
-     */
-    void setValue(CharSequence value);
-    
     CharSequence getValue();
 
 }

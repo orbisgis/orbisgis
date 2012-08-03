@@ -64,23 +64,10 @@ class DefaultStringValue extends AbstractValue implements Serializable, StringVa
         }
 
         /**
-         * Creates a new StringValue object.
+         * Creates an empty StringValue object.
          */
         DefaultStringValue() {
                 value = new char[0];
-        }
-
-        @Override
-        public void setValue(CharSequence value) {
-                if (value instanceof String) {
-                        this.value = ((String) value).toCharArray();
-                } else {
-                        char[] temp = new char[value.length()];
-                        for (int i = 0; i < value.length(); i++) {
-                                temp[i] = value.charAt(i);
-                        }
-                        this.value = temp;
-                }
         }
 
         @Override
@@ -230,8 +217,13 @@ class DefaultStringValue extends AbstractValue implements Serializable, StringVa
         }
 
         public static Value readBytes(byte[] buffer) {
-                // this handles UTF-16 decoding for us
-                return new DefaultStringValue(new String(buffer));
+                if (buffer.length == 0) {
+                        // prevents duplicating the empty text value
+                        return ValueFactory.EMPTYTEXT;
+                } else {
+                        // this handles UTF-16 decoding for us
+                        return new DefaultStringValue(new String(buffer));
+                }
         }
 
         @Override
@@ -276,7 +268,7 @@ class DefaultStringValue extends AbstractValue implements Serializable, StringVa
                                         return c1 - c2;
                                 }
                         }
-                        
+
                         return value.length - comp.length();
                 } else {
                         return super.compareTo(o);

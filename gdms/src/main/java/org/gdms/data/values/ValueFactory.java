@@ -71,7 +71,7 @@ public final class ValueFactory {
         private static final Logger LOG = Logger.getLogger(ValueFactory.class);
         public static final BooleanValue TRUE = new DefaultBooleanValue(true);
         public static final BooleanValue FALSE = new DefaultBooleanValue(false);
-        private static final StringValue EMPTYTEXT = new DefaultStringValue();
+        static final StringValue EMPTYTEXT = new DefaultStringValue();
 
         /**
          * Creates a Value instance that contains the specified int value.
