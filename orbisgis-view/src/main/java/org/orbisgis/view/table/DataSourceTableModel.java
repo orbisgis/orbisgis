@@ -175,7 +175,7 @@ public class DataSourceTableModel extends AbstractTableModel {
                                 case Type.BOOLEAN:
                                         return val.getAsBoolean();
                                 case Type.DOUBLE:
-                                        return val.getAsBoolean();
+                                        return val.getAsDouble();
                                 case Type.LONG:
                                         return val.getAsLong();
                                 case Type.FLOAT:

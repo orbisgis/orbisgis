@@ -41,6 +41,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.table.filters.TableSelectionFilter;
 import org.orbisgis.view.table.jobs.SortJob;
 import org.orbisgis.view.table.jobs.SortJobEventSorted;
 
@@ -68,14 +69,13 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 return model;
         }
         
+        /**
+         * Called by the Sort job listener
+         * Update the internal indexes and inform the table.
+         * @param sortData 
+         */
         public void onRowSortDone(SortJobEventSorted sortData) {
-                int[] oldViewToModel = null;
-                if(viewToModel!=null) {
-                        oldViewToModel = new int[viewToModel.size()];
-                        for(int i=0;i<oldViewToModel.length;i++) {
-                                oldViewToModel[i]=viewToModel.get(i);
-                        }
-                }
+                int[] oldViewToModel = getViewToModelArray();
                 viewToModel = new ArrayList<Integer>(sortData.getViewToModelIndex());
                 modelToView = new HashMap<Integer,Integer>();
                 for(int viewIndex = 0;viewIndex < viewToModel.size();viewIndex++) {
@@ -86,6 +86,17 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 sortedColumns.add(sortData.getSortRequest());
                 fireSortOrderChanged();
                 fireRowSorterChanged(oldViewToModel);
+        }
+        
+        private int[] getViewToModelArray() {
+                int[] viewToModelArray = null;
+                if(viewToModel!=null) {
+                        viewToModelArray = new int[viewToModel.size()];
+                        for(int i=0;i<viewToModelArray.length;i++) {
+                                viewToModelArray[i]=viewToModel.get(i);
+                        }
+                }
+                return viewToModelArray;
         }
 
         @Override
@@ -137,26 +148,48 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         
         @Override
         public int convertRowIndexToView(int index) {
-                return index;
+                if(modelToView==null) {
+                        return index;
+                }
+                Integer viewIndex = modelToView.get(index);
+                if(viewIndex==null) {
+                        return -1;
+                } else {
+                        return viewIndex;
+                }
         }
         
         /**
          * Sort the column in the provided order
-         * @param sortRequest 
+         *
+         * @param sortRequest
          */
         public void setSortKey(SortKey sortRequest) {
-                launchSortProcess(sortRequest);
+                if (sortRequest != null) {
+                        launchSortProcess(sortRequest);
+                } else {
+                        clearSort();
+                }
+        }
+
+        private void clearSort() {
+                int[] oldViewToModel = getViewToModelArray();
+                sortedColumns.clear();
+                viewToModel = null;
+                modelToView = null;
+                fireSortOrderChanged();
+                fireRowSorterChanged(oldViewToModel);
         }
 
         @Override
         public void setSortKeys(List<? extends SortKey> list) {
-                if(list==null || list.isEmpty()) {
-                        sortedColumns.clear();
+                if (list == null || list.isEmpty()) {
+                        clearSort();
                 } else {
                         setSortKey(list.get(0));
                 }
         }
-        
+
         private boolean isSortable(int columnIndex) {
                 return model.getColumnType(columnIndex).getTypeCode() != Type.GEOMETRY;
         }
@@ -165,10 +198,25 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         public List<? extends SortKey> getSortKeys() {
                 return sortedColumns;
         }
+        
+        /**
+         * Replace the filter used in this table
+         * @param filter A filter instance or null (clear filter)
+         */
+        public void setFilter(TableSelectionFilter filter) {
+                if(filter==null) {
+                        
+                } else {
+                        
+                }
+        }
 
         @Override
         public int getViewRowCount() {
-                return model.getRowCount();
+                if(viewToModel==null) {
+                        return getModelRowCount();
+                }
+                return viewToModel.size();
         }
 
         @Override

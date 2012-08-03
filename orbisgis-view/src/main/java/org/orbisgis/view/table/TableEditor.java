@@ -34,7 +34,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.AbstractButton;
@@ -51,7 +50,6 @@ import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
-import jj2000.j2k.util.ArrayUtil;
 import org.apache.log4j.Logger;
 import org.gdms.data.types.Type;
 import org.orbisgis.core.Services;
@@ -59,12 +57,14 @@ import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditableElementException;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.table.jobs.SortJob;
+import org.orbisgis.view.table.filters.FieldsContainsFilterFactory;
+import org.orbisgis.view.table.filters.TableSelectionFilter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -84,6 +84,7 @@ public class TableEditor extends JPanel implements EditorDockable {
         private DataSourceRowSorter tableSorter;
         private DataSourceTableModel tableModel;
         private AtomicBoolean initialised = new AtomicBoolean(false);
+        private FilterFactoryManager<TableSelectionFilter> filterManager = new FilterFactoryManager<TableSelectionFilter>();
 
         public TableEditor(TableEditableElement element) {
                 super(new BorderLayout());
@@ -96,25 +97,35 @@ public class TableEditor extends JPanel implements EditorDockable {
                 add(tableScrollPane,BorderLayout.CENTER);
         }
         
+        private JComponent makeFilterManager() {
+                JPanel filterComp = filterManager.makeFilterPanel(false);
+                filterManager.setUserCanRemoveFilter(false);
+                filterManager.registerFilterFactory(new FieldsContainsFilterFactory(table));
+                filterManager.addFilter(FieldsContainsFilterFactory.FACTORY_ID,
+                                        "");
+                return filterComp;
+        }
+        
         private JComponent makeTable() {
                 table = new JTable();
                 table.addMouseListener(EventHandler.create(MouseListener.class,
                         this,
                         "onMouseActionOnTableCells",
                         ""));
-                /*
+                
                 table.getTableHeader().addMouseListener(EventHandler.create(MouseListener.class,
                         this,
                         "onMouseActionOnTableHeader",
                         ""));
-                        * 
-                        */
+                        
+                        
                 table.getSelectionModel().setSelectionMode(
                         ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
                 table.getTableHeader().setReorderingAllowed(false);
                 table.setColumnSelectionAllowed(true);
                 //table.setPreferredScrollableViewportSize(new Dimension(500, 70));
-                table.setFillsViewportHeight(true);                
+                table.setFillsViewportHeight(true);       
+                table.setUpdateSelectionOnSort(true);
                 return table;
         }
         
@@ -305,6 +316,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                 //Set the row count at left
                 //tableScrollPane.setRowHeaderView(new TableLineCountHeader(table));
                 tableScrollPane.setRowHeaderView(new TableRowHeader(table));
+                add(makeFilterManager(),BorderLayout.SOUTH);
         }
         
         private void autoResizeColWidth(int rowsToCheck,
