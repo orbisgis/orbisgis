@@ -28,14 +28,16 @@
  */
 package org.orbisgis.legend.thematic.constant;
 
-import java.awt.Color;
-import java.util.List;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.FillAnalyzer;
-import org.orbisgis.legend.structure.fill.ConstantSolidFillLegend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
+import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.thematic.ConstantStrokeArea;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Represents a {@code AreaSymbolizer} whose parameters are constant, whatever
@@ -50,12 +52,13 @@ import org.orbisgis.legend.thematic.ConstantStrokeArea;
  * We expect from its {@code Fill} to be a constant {@code SolidFill} instance.
  * @author Alexis Guéganno
  */
-public class UniqueSymbolArea extends  ConstantStrokeArea implements IUniqueSymbolArea {
+public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbolArea {
 
-    private ConstantSolidFillLegend fillLegend;
+    private static final I18n I18N = I18nFactory.getI18n(UniqueSymbolArea.class);
+    private ConstantSolidFill fillLegend;
 
     /**
-     * Build a new default {@code UniqueSymbolArea} from scratch. It contains a
+     * Builds a new default {@code UniqueSymbolArea} from scratch. It contains a
      * default {@code AreaSymbolizer}, which is consequently constant. The
      * associated {@code LegendStructure} structure is built during initialization.
      */
@@ -63,11 +66,11 @@ public class UniqueSymbolArea extends  ConstantStrokeArea implements IUniqueSymb
         super();
         AreaSymbolizer symbolizer = (AreaSymbolizer) getSymbolizer();
         Fill fill = symbolizer.getFill();
-        fillLegend = (ConstantSolidFillLegend) new FillAnalyzer(fill).getLegend();
+        fillLegend = (ConstantSolidFill) new FillAnalyzer(fill).getLegend();
     }
 
     /**
-     * Build a new {@code UniqueSymbolArea} directly from the given {@code
+     * Builds a new {@code UniqueSymbolArea} directly from the given {@code
      * AreaSymbolizer}.
      * @param symbolizer
      */
@@ -76,57 +79,57 @@ public class UniqueSymbolArea extends  ConstantStrokeArea implements IUniqueSymb
         //If we're here, we have a constant stroke : it is either null or an instance
         //of ConstantPenStrokeLegend. Let's analyze the Fill.
         Fill fill = symbolizer.getFill();
-        if(fill != null){
-            LegendStructure fillLgd = new FillAnalyzer(fill).getLegend();
-            if(fillLgd instanceof ConstantSolidFillLegend){
-                fillLegend = (ConstantSolidFillLegend) fillLgd;
-            } else {
-                throw new IllegalArgumentException("The fill of this AreaSymbolizer "
-                        + "can't be recognized as constant.");
-            }
+        LegendStructure fillLgd = new FillAnalyzer(fill).getLegend();
+        if(fillLgd instanceof ConstantSolidFill){
+            fillLegend = (ConstantSolidFill) fillLgd;
+        } else {
+            throw new IllegalArgumentException("The fill of this AreaSymbolizer "
+                    + "can't be recognized as constant.");
         }
         //If we're here, we have a constant stroke and a constant fill. If we
         //can't manage the input Symbolizer, an exception has been thrown.
     }
 
-
     /**
-     * A {@code UniqueSymbolArea} is associated to a {@code SolidFill}, that
-     * is filled using a given {@code Color}.
-     * @return
+     * Exposes the inner {@link LegendStructure} that represents the analysis
+     * made on the {@link Fill}.
+     * @return 
      */
     @Override
-    public Color getFillColor(){
-        return fillLegend.getColor();
+    public ConstantSolidFill getFillLegend(){
+            return fillLegend;
+    }
+
+    @Override
+    public ConstantPenStroke getPenStroke() {
+        return (ConstantPenStroke) getStrokeLegend();
+    }
+
+    @Override
+    public void setPenStroke(ConstantPenStroke cpsl) {
+        setStrokeLegend(cpsl);
     }
 
     /**
-     * Set the {@code Color} that will be used to fill the {@code SolidFill}.
-     * @param col
+     * Sets the legend describing the structure of the fill contained in the
+     * inner {@link AreaSymbolizer}. This will update the fill of the {@code
+     * AreaSymbolizer} in question.
+     * @param cfl
      */
     @Override
-    public void setFillColor(Color col){
-        fillLegend.setColor(col);
+    public void setFillLegend(ConstantSolidFill cfl){
+            if(cfl == null){
+                    fillLegend = new NullSolidFillLegend();
+            } else {
+                    fillLegend = cfl;
+            }
+            AreaSymbolizer symbolizer = (AreaSymbolizer) getSymbolizer();
+            symbolizer.setFill(fillLegend.getFill());
     }
 
     @Override
     public String getLegendTypeName() {
-        return "Unique Symbol - Polygon";
-    }
-
-    @Override
-    public List<USParameter<?>> getParameters() {
-        return USParameterFactory.getParameters(this);
-    }
-    
-    @Override
-    public List<USParameter<?>> getParametersLine() {
-        return USParameterFactory.getParametersLine(this);
-    }
-
-    @Override
-    public List<USParameter<?>> getParametersArea() {
-        return USParameterFactory.getParametersArea(this);
+        return I18N.tr("Unique Symbol - Polygon");
     }
 
     @Override

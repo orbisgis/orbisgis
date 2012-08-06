@@ -28,15 +28,16 @@
  */
 package org.orbisgis.legend.structure.recode;
 
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
-import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.structure.parameter.ParameterLegend;
 
 /**
  * LegendStructure associated to a {@code ColorParameter} set using a {@code
  * Recode2Color} instance.
  * @author Alexis Guéganno
  */
-public class Recode2ColorLegend implements LegendStructure {
+public class Recode2ColorLegend implements ParameterLegend {
 
         private Recode2Color rc;
 
@@ -56,6 +57,11 @@ public class Recode2ColorLegend implements LegendStructure {
          */
         public Recode2Color getRecode() {
                 return rc;
+        }
+
+        @Override
+        public SeParameter getParameter() {
+                return getRecode();
         }
 
 }

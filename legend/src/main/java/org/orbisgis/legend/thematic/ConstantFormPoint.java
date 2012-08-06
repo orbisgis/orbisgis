@@ -28,7 +28,6 @@
  */
 package org.orbisgis.legend.thematic;
 
-import java.awt.Color;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
@@ -68,68 +67,43 @@ public abstract class ConstantFormPoint extends SymbolizerLegend {
     public abstract ConstantFormWKN getMarkGraphic();
 
     /**
-     * A {@code ConstantFormPoint} is associated to a {@code MarkGraphic}, that
-     * is filled using a given {@code Color}.
+     * Gets the well-known name that describes the shape of the inner {@link
+     * MarkGraphic}.
      * @return
      */
-    public Color getFillColor(){
-        return getMarkGraphic().getFillColor();
+    public String getWellKnownName(){
+        return getMarkGraphic().getWellKnownName();
     }
 
     /**
-     * Set the {@code Color} that will be used to fill the {@code MarkGraphic}.
-     * @param col
+     * Sets the well-known name that describes the shape of the inner {@link
+     * MarkGraphic}.
+     * @param str
+     * The new {@code WellKnownName}.
      */
-    public void setFillColor(Color col){
-        getMarkGraphic().setFillColor(col);
+    public void setWellKnownName(String str){
+        getMarkGraphic().setWellKnownName(str);
     }
 
     /**
-     * Get the width of the line that outlines the inner {@code MarkGraphic}.
+     * Gets whether symbols must be drawn on vertices or on centroid.
      * @return
      */
-    public Double getLineWidth(){
-        return getMarkGraphic().getLineWidth();
+    public boolean isOnVertex(){
+            return pointSymbolizer.isOnVertex();
     }
 
     /**
-     * Set the width of the line that outlines the inner {@code MarkGraphic}.
-     * @param width
+     * Sets that symbols must be drawn on vertices or on centroid.
      */
-    public void setLineWidth(Double width){
-        getMarkGraphic().setLineWidth(width);
+    public void setOnVertex(){
+            pointSymbolizer.setOnVertex(true);
     }
 
     /**
-     * Get the colour of the line that outlines the inner {@code MarkGraphic}.
-     * @return
+     * Sets that symbols must be drawn on vertices or on centroid.
      */
-    public Color getLineColor() {
-        return getMarkGraphic().getLineColor();
+    public void setOnCentroid(){
+            pointSymbolizer.setOnVertex(false);
     }
-
-    /**
-     * Set the colour of the line that outlines the inner {@code MarkGraphic}.
-     * @param col
-     */
-    public void setLineColor(Color col) {
-        getMarkGraphic().setLineColor(col);
-    }
-
-    /**
-     * Gets the dash array used to draw the outer line of this PointSymbolizer.
-     * @return
-     */
-    public String getDashArray(){
-        return getMarkGraphic().getDashArray();
-    }
-
-    /**
-     * Sets the dash array used to draw the outer line of this PointSymbolizer.
-     * @param s
-     */
-    public void setDashArray(String s){
-        getMarkGraphic().setDashArray(s);
-    }
-
 }

@@ -40,7 +40,13 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.*;
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -60,10 +66,10 @@ import org.orbisgis.core.renderer.classification.ClassificationMethodException;
 import org.orbisgis.core.renderer.se.SeExceptions;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.sif.components.OpenFilePanel;
-import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.sif.components.OpenFilePanel;
+import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
@@ -191,13 +197,14 @@ public class Toc extends JPanel implements EditorDockable {
                 tree.setRootVisible(false);
                 tree.setShowsRootHandles(true);
                 tree.setEditable(true);
+                treeRenderer = new TocRenderer(tree);
+                tree.setCellRenderer(treeRenderer);
                 setEmptyLayerModel(tree);
-                TocRenderer.install(tree); //Set the TreeCellEditorRenderer
-                treeRenderer = (TocRenderer)tree.getCellRenderer();
                 tree.setCellEditor(new TocTreeEditor(tree));
                 tree.addMouseListener(new PopupMouselistener());
                 //Add a tree selection listener
-                tree.getSelectionModel().addTreeSelectionListener(EventHandler.create(TreeSelectionListener.class, this, "onTreeSelectionChange"));
+                tree.getSelectionModel().addTreeSelectionListener(
+                        EventHandler.create(TreeSelectionListener.class, this, "onTreeSelectionChange"));
                 return tree;
         }
 
@@ -673,6 +680,8 @@ public class Toc extends JPanel implements EditorDockable {
                                 LOGGER.error("The style you're trying to edit is not valid !");
                         } catch (DriverException de) {
                                 LOGGER.error("An error occurred while processing the DataSource");
+                        } catch (UnsupportedOperationException uoe){
+                                LOGGER.error(uoe.getMessage());
                         }
                 }
         }

@@ -254,13 +254,15 @@ public class LayerCollection extends BeanLayer {
 			layer.open();
 		}
 	}
+
         /**
          * Add a new layer to this collection.
          * @param layer
          * @param isMoving
+         * if {@code false}, {@code fireLayerAddedEvent} is called. It is not
+         * called if {@code isMoving} is true.
          * @throws LayerException
          */
-
         @Override
 	public void addLayer(ILayer layer, boolean isMoving) throws LayerException {
 		if (null != layer) {
@@ -438,7 +440,7 @@ public class LayerCollection extends BeanLayer {
 	public void setSelection(Set<Integer> newSelection) {
 		throw new UnsupportedOperationException(I18N.tr("No row selection in a layer collection"));
         }
-
+      
 	@Override
 	public boolean isStream() {
 		return false;

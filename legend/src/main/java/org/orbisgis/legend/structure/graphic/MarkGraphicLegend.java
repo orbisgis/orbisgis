@@ -29,7 +29,11 @@
 package org.orbisgis.legend.structure.graphic;
 
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.structure.fill.FillLegend;
+import org.orbisgis.legend.structure.parameter.ParameterLegend;
+import org.orbisgis.legend.structure.stroke.StrokeLegend;
 
 /**
  * <p>
@@ -37,9 +41,12 @@ import org.orbisgis.legend.LegendStructure;
  * it will be obtained only if we are unable to recognize a more accurate
  * pattern.</p>
  * <p>This {@code LegendStructure} realization is dependant upon the following
- * parameters, taht are stored here are {@code LegendStructure} instances :
+ * parameters, that are stored here are {@code LegendStructure} instances :
  * <ul>
- * <li></li>
+ * <li>The well-known name</li>
+ * <li>The view box</li>
+ * <li>The fill</li>
+ * <li>The stroke</li>
  * </ul>
  * </p>
  * @author Alexis Guéganno
@@ -48,9 +55,9 @@ public class MarkGraphicLegend implements LegendStructure {
 
     private MarkGraphic markGraphic;
     private LegendStructure viewBoxLegend;
-    private LegendStructure fillLegend;
-    private LegendStructure strokeLegend;
-    private LegendStructure wknLegend;
+    private FillLegend fillLegend;
+    private StrokeLegend strokeLegend;
+    private ParameterLegend wknLegend;
 
     /**
      * Build a default {@code LegendStructure} that describes a {@code MarkGraphic}
@@ -59,8 +66,8 @@ public class MarkGraphicLegend implements LegendStructure {
      * @param fillLegend
      * @param strokeLegend
      */
-    public MarkGraphicLegend(MarkGraphic mark, LegendStructure wknLegend, LegendStructure viewBoxLegend,
-            LegendStructure fillLegend, LegendStructure strokeLegend) {
+    public MarkGraphicLegend(MarkGraphic mark, ParameterLegend wknLegend, LegendStructure viewBoxLegend,
+            FillLegend fillLegend, StrokeLegend strokeLegend) {
         markGraphic = mark;
         this.wknLegend = wknLegend;
         this.viewBoxLegend = viewBoxLegend;
@@ -97,8 +104,9 @@ public class MarkGraphicLegend implements LegendStructure {
      * Set the {@code LegendStructure} associated to the {@code Fill} of the associated
      * @param fillLegend
      */
-    public void setFillLegend(LegendStructure fillLegend) {
+    public void setFillLegend(FillLegend fillLegend) {
         this.fillLegend = fillLegend;
+        markGraphic.setFill(this.fillLegend.getFill());
     }
 
     /**
@@ -115,8 +123,9 @@ public class MarkGraphicLegend implements LegendStructure {
      * inner {@code MarkGraphic} instance.
      * @param strokeLegend
      */
-    public void setStrokeLegend(LegendStructure strokeLegend) {
+    public void setStrokeLegend(StrokeLegend strokeLegend) {
         this.strokeLegend = strokeLegend;
+        markGraphic.setStroke(strokeLegend.getStroke());
     }
 
     /**
@@ -149,8 +158,9 @@ public class MarkGraphicLegend implements LegendStructure {
      * the inner {@MarkGraphic} of this {@code MarkGraphicLegend}.
      * @param wknLegend
      */
-    public void setWknLegend(LegendStructure wknLegend) {
+    public void setWknLegend(ParameterLegend wknLegend) {
         this.wknLegend = wknLegend;
+        markGraphic.setWkn((StringParameter)wknLegend.getParameter());
     }
 
 }

@@ -74,6 +74,10 @@ public class NoPanel implements ILegendPanel {
 		this.legend = legend;
 	}
 
+        @Override
+        public void setGeometryType(int type) {
+        }
+
 	@Override
 	public void initialize(LegendContext lc) {
 

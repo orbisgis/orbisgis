@@ -31,21 +31,44 @@ package org.orbisgis.view.toc.actions.cui.legends;
 import java.awt.Component;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.GridLayout;
 import java.awt.Insets;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
 import java.net.URL;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.JCheckBox;
 import javax.swing.JPanel;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.analyzer.FillAnalyzer;
+import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
+import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
+import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
+import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  *
  * @author Alexis Guéganno
  */
-public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
+public class PnlUniqueAreaSE extends PnlUniqueLineSE {
+        private static final I18n I18N = I18nFactory.getI18n(PnlUniqueAreaSE.class);
+        private JPanel fill;
+        private JPanel fillOpacity;
+        private JCheckBox areaCheckBox;
+        private ConstantSolidFillLegend solidFillMemory;
 
         /**
          * Here we can put all the Legend instances we want... but they have to
@@ -67,11 +90,25 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
         public void setLegend(Legend legend) {
                 if (legend instanceof UniqueSymbolArea) {
                         uniqueArea = (UniqueSymbolArea) legend;
+                        ConstantPenStroke cps = uniqueArea.getPenStroke();
+                        if(cps instanceof ConstantPenStrokeLegend ){
+                                setPenStrokeMemory((ConstantPenStrokeLegend) cps);
+                        } else {
+                                PenStrokeAnalyzer psa = new PenStrokeAnalyzer(new PenStroke());
+                                setPenStrokeMemory((ConstantPenStrokeLegend) psa.getLegend());
+                        }
+                        ConstantSolidFill csf = uniqueArea.getFillLegend();
+                        if(csf instanceof ConstantSolidFillLegend){
+                                setSolidFillMemory((ConstantSolidFillLegend) csf);
+                        } else {
+                                FillAnalyzer fa = new FillAnalyzer(new SolidFill());
+                                setSolidFillMemory((ConstantSolidFillLegend) fa.getLegend());
+                        }
                         initPreview();
                         this.initializeLegendFields();
                 } else {
                         throw new IllegalArgumentException("The given Legend is not"
-                                + "a UniqueSymbolPoint");
+                                + "a UniqueSymbolArea");
                 }
         }
 
@@ -94,7 +131,7 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
 
         @Override
         public boolean acceptsGeometryType(int geometryType) {
-                return geometryType == GeometryProperties.POLYGON;
+                return geometryType == SimpleGeometryType.POLYGON;
         }
 
         @Override
@@ -120,7 +157,7 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
         @Override
         public Legend copyLegend() {
                 UniqueSymbolArea ret = new UniqueSymbolArea();
-                ret.setFillColor(uniqueArea.getFillColor());
+                ret.getFillLegend().setColor(uniqueArea.getFillLegend().getColor());
                 return ret;
         }
 
@@ -133,19 +170,103 @@ public class PnlUniqueAreaSE extends PnlUniqueSymbolSE {
                 gbc.gridx = 0;
                 gbc.gridy = 0;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
-                JPanel p1 = getLegendBlock(uniqueArea.getParametersLine(), "Line configuration");
+                JPanel p1 = getLineBlock(uniqueArea.getPenStroke(), I18N.tr("Line configuration"));
                 glob.add(p1, gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 1;
                 gbc.fill = GridBagConstraints.HORIZONTAL;
                 gbc.insets = new Insets(5, 0, 5, 0);
-                JPanel p2 = getLegendBlock(uniqueArea.getParametersArea(), "Fill configuration");
+                ConstantSolidFill leg = uniqueArea.getFillLegend();
+                JPanel p2 = getAreaBlock(leg, I18N.tr("Fill configuration"));
+                setAreaFieldsState(leg instanceof ConstantSolidFillLegend);
                 glob.add(p2, gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 0;
                 gbc.gridy = 2;
                 glob.add(getPreview(), gbc);
                 this.add(glob);
+        }
+
+        /**
+         * Builds the UI block used to configure the fill color of the
+         * symbolizer.
+         * @param fillLegend
+         * @param title
+         * @return
+         */
+        public JPanel getAreaBlock(ConstantSolidFill fillLegend, String title) {
+                if(getPreview() == null && getLegend() != null){
+                        initPreview();
+                }
+                ConstantSolidFill fl = fillLegend instanceof ConstantSolidFillLegend ? fillLegend : solidFillMemory;
+                JPanel glob = new JPanel();
+                glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
+                JPanel jp = new JPanel();
+                GridLayout grid = new GridLayout(3,3);
+                grid.setVgap(5);
+                jp.setLayout(grid);
+                //The JCheckBox that can be used to enable/disable the fill conf.
+                jp.add(buildText(I18N.tr("Enable fill : ")));
+                areaCheckBox = new JCheckBox("");
+                ActionListener acl = EventHandler.create(ActionListener.class, this, "onClickAreaCheckBox");
+                areaCheckBox.addActionListener(acl);
+                jp.add(areaCheckBox);
+                //We must check the CheckBox according to leg, not to legend.
+                //legend is here mainly to let us fill safely all our
+                //parameters.
+                areaCheckBox.setSelected(fillLegend instanceof ConstantSolidFillLegend);
+                //Color
+                fill = getColorField(fl);
+                jp.add(buildText(I18N.tr("Fill color :")));
+                jp.add(fill);
+                //Opacity
+                fillOpacity = getLineOpacitySpinner(fl);
+                jp.add(buildText(I18N.tr("Fill opacity :")));
+                jp.add(fillOpacity);
+                //We add a canvas to display a preview.
+                glob.add(jp);
+                glob.setBorder(BorderFactory.createTitledBorder(title));
+                return glob;
+        }
+
+        /**
+         * If {@code isLineOptional()}, a {@code JCheckBox} will be added in the
+         * UI to let the user enable or disable the fill configuration. In fact,
+         * clicking on it will recursively enable or disable the containers
+         * contained in the configuration panel.
+         */
+        public void onClickAreaCheckBox(){
+                if(areaCheckBox.isSelected()){
+                        ((IUniqueSymbolArea)getLegend()).setFillLegend(solidFillMemory);
+                        setAreaFieldsState(true);
+                        getPreview().repaint();
+                } else {
+                        NullSolidFillLegend nsf = new NullSolidFillLegend();
+                        ((IUniqueSymbolArea)getLegend()).setFillLegend(nsf);
+                        setAreaFieldsState(false);
+                        getPreview().repaint();
+                }
+        }
+
+        @Override
+        protected boolean isLineOptional(){
+                return true;
+        }
+
+        /**
+         * In order to improve the user experience, it may be interesting to
+         * store the {@code ConstantSolidFillLegend} as a field before removing
+         * it. This way, we will be able to use it back directly... unless the
+         * editor as been closed before, of course.
+         * @param csfl
+         */
+        protected void setSolidFillMemory(ConstantSolidFillLegend csfl){
+                solidFillMemory = csfl;
+        }
+
+        private void setAreaFieldsState(boolean state){
+                setFieldState(state, fill);
+                setFieldState(state, fillOpacity);
         }
 }

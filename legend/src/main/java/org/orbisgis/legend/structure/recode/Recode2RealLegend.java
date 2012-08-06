@@ -28,14 +28,15 @@
  */
 package org.orbisgis.legend.structure.recode;
 
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
-import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.structure.parameter.ParameterLegend;
 
 /**
  * {@code LegendStructure} specialization associated to {@code Recode2Real} instances.
  * @author Alexis Guéganno
  */
-public class Recode2RealLegend implements LegendStructure {
+public class Recode2RealLegend implements ParameterLegend {
 
         private Recode2Real recode;
 
@@ -54,6 +55,11 @@ public class Recode2RealLegend implements LegendStructure {
          */
         public Recode2Real getRecode() {
                 return recode;
+        }
+
+        @Override
+        public SeParameter getParameter() {
+                return getRecode();
         }
 
 }

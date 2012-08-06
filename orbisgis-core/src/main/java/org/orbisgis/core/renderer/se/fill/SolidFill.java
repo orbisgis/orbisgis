@@ -63,7 +63,7 @@ public final class SolidFill extends Fill {
         /**
          * Default value for opacity : {@value DEFAULT_OPACITY}
          */
-        public static final double DEFAULT_OPACITY = 0.65;
+        public static final double DEFAULT_OPACITY = 1;
         /**
         * Default colour value : {@value GRAY50}
         */
@@ -109,17 +109,19 @@ public final class SolidFill extends Fill {
          * @param sf
          * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle 
          */
-	public SolidFill(JAXBElement<SolidFillType> sf) throws InvalidStyle {
-		if (sf.getValue().getColor() != null) {
-			setColor(SeParameterFactory.createColorParameter(sf.getValue().getColor()));
-		} else {
-            setColor(new ColorLiteral(new Color((int) GRAY50, (int) GRAY50, (int) GRAY50)));
-        }
+        public SolidFill(JAXBElement<SolidFillType> sf) throws InvalidStyle {
+                if (sf.getValue().getColor() != null) {
+                        setColor(SeParameterFactory.createColorParameter(sf.getValue().getColor()));
+                } else {
+                        setColor(new ColorLiteral(new Color((int) GRAY50, (int) GRAY50, (int) GRAY50)));
+                }
 
-		if (sf.getValue().getOpacity() != null) {
-			setOpacity(SeParameterFactory.createRealParameter(sf.getValue().getOpacity()));
-		}
-	}
+                if (sf.getValue().getOpacity() != null) {
+                            setOpacity(SeParameterFactory.createRealParameter(sf.getValue().getOpacity()));
+		} else {
+                            setOpacity(new RealLiteral(DEFAULT_OPACITY));
+                  }
+        }
 
         /**
          * Set the colour value for this SolidFill.
@@ -141,11 +143,8 @@ public final class SolidFill extends Fill {
          * @param opacity 
          */
 	public void setOpacity(RealParameter opacity) {
-		this.opacity = opacity;
-
-		if (opacity != null) {
-			this.opacity.setContext(RealParameterContext.PERCENTAGE_CONTEXT);
-		}
+                    this.opacity = opacity == null ? new RealLiteral(DEFAULT_OPACITY) : opacity;
+                    this.opacity.setContext(RealParameterContext.PERCENTAGE_CONTEXT);
 	}
 
         /**

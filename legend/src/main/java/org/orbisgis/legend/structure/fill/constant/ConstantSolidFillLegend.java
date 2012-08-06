@@ -26,18 +26,20 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.legend.structure.fill;
+package org.orbisgis.legend.structure.fill.constant;
 
 import java.awt.Color;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.legend.structure.fill.SolidFillLegend;
 import org.orbisgis.legend.structure.literal.ColorLiteralLegend;
+import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 
 /**
  * A {@code Legend} that represents a {@code SolidFill} where the color is a
  * {@code Literal} instance.
  * @author Alexis Guéganno
  */
-public class ConstantSolidFillLegend extends SolidFillLegend implements ConstantFillLegend {
+public class ConstantSolidFillLegend extends SolidFillLegend implements ConstantSolidFill {
 
         /**
          * Build a new {@code ConstantSolidFillLegend} using the {@code SolidFill}
@@ -45,26 +47,30 @@ public class ConstantSolidFillLegend extends SolidFillLegend implements Constant
          * @param fill
          * @param colorLegend
          */
-        public ConstantSolidFillLegend(SolidFill fill, ColorLiteralLegend colorLegend) {
-                super(fill, colorLegend);
+        public ConstantSolidFillLegend(SolidFill fill, ColorLiteralLegend colorLegend, RealLiteralLegend opacity) {
+                super(fill, colorLegend, opacity);
         }
 
-        /**
-         * Get the {@code Color} used to paint the inner {@code SolidFill}.
-         * @return
-         */
+        @Override
         public Color getColor(){
             ColorLiteralLegend cll = (ColorLiteralLegend) getColorLegend();
             return cll.getColor();
         }
 
-        /**
-         * Set the {@code Color} used to paint the inner {@code SolidFill}.
-         * @param col
-         */
-    public void setColor(Color col) {
-            ColorLiteralLegend cll = (ColorLiteralLegend) getColorLegend();
-            cll.setColor(col);
-    }
+        @Override
+        public void setColor(Color col) {
+                ColorLiteralLegend cll = (ColorLiteralLegend) getColorLegend();
+                cll.setColor(col);
+        }
+
+        @Override
+        public double getOpacity(){
+            return getOpacityLegend().getDouble();
+        }
+
+        @Override
+        public void setOpacity(double d) {
+                getOpacityLegend().setDouble(d);
+        }
 
 }

@@ -130,7 +130,7 @@ public class JNumericSpinner extends JPanel {
         }
 
 	private JButton createButton(Icon icon, final int sign) {
-		JButton button = new JButton(icon);
+		final JButton button = new JButton(icon);
 		Insets buttonMargin = new Insets(button.getMargin().top, 0, button
 				.getMargin().bottom, 0);
 		button.setMargin(buttonMargin);
@@ -140,14 +140,18 @@ public class JNumericSpinner extends JPanel {
 
 			@Override
 			public void mousePressed(MouseEvent e) {
-				incActionListener.init(sign);
-				incActionListener.actionPerformed(null);
-				incTimer.start();
+                                if(button.isEnabled()){
+                                        incActionListener.init(sign);
+                                        incActionListener.actionPerformed(null);
+                                        incTimer.start();
+                                }
 			}
 
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				incTimer.stop();
+                                if(button.isEnabled()){
+                                        incTimer.stop();
+                                }
 			}
 		});
 		return button;
