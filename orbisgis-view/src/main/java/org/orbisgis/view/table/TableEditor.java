@@ -30,6 +30,7 @@ package org.orbisgis.view.table;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -56,6 +57,7 @@ import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
@@ -90,6 +92,7 @@ public class TableEditor extends JPanel implements EditorDockable {
         private AtomicBoolean initialised = new AtomicBoolean(false);
         private FilterFactoryManager<TableSelectionFilter> filterManager = new FilterFactoryManager<TableSelectionFilter>();
         private TableRowHeader tableRowHeader;
+        private Point popupCellAdress = new Point();
 
         public TableEditor(TableEditableElement element) {
                 super(new BorderLayout());
@@ -138,8 +141,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                 //Does this action correspond to a popup request
                 if (e.isPopupTrigger()) { 
                         int col = table.columnAtPoint(e.getPoint());
-                        LOGGER.info("Click on column:"+col);
-                        
+                        popupCellAdress.setLocation(col,-1);
                         JPopupMenu menu = makeTableHeaderPopup(col);
                         menu.show(e.getComponent(), e.getX(), e.getY());
                 }
@@ -150,21 +152,29 @@ public class TableEditor extends JPanel implements EditorDockable {
                 if (e.isPopupTrigger()) { 
                         int row = table.rowAtPoint(e.getPoint());
                         int col = table.columnAtPoint(e.getPoint());
-                        LOGGER.info("Click on col:"+col+" row:"+row);
+                        popupCellAdress.setLocation(col,row);
+                        JPopupMenu menu = makeTableCellPopup(row,col);
+                        menu.show(e.getComponent(), e.getX(), e.getY());
                 }
         }
         
         private JPopupMenu makeTableCellPopup(int row,int col) {
-                JPopupMenu pop = new JPopupMenu();
+                JPopupMenu pop = new JPopupMenu();                
                 boolean hasGeometry=false;
                 try {
                         hasGeometry = MetadataUtilities.isGeometry(tableEditableElement.getDataSource().getMetadata());
                 }catch (DriverException ex) {
                         LOGGER.error(I18N.tr("Menu creation error"), ex);
                 }
-                
-                if(hasGeometry) {
-                        JMenuItem selectGeometries = new JMenuItem(I18N.tr("Select the geometries of the selected rows"));
+                if(table.getSelectedRowCount()>0) {
+                        JMenuItem addRowFilter = new JMenuItem(I18N.tr("Filter selected rows"));
+                        addRowFilter.setToolTipText(I18N.tr("Create a row filter with the selection"));
+                }
+                if(tableSorter.isFiltered()) {
+                        JMenuItem removeRowFilter = new JMenuItem(
+                                I18N.tr("Clear row filter"));
+                        removeRowFilter.setToolTipText(I18N.tr("Show all rows"));
+                        pop.add(removeRowFilter);
                 }
                 return pop;
         }
@@ -238,27 +248,23 @@ public class TableEditor extends JPanel implements EditorDockable {
         }
         /**
          * Ascending sort
-         * @param strCol column (Event action string)
          */
-        public void onMenuSortAscending(String strCol) {
-                int col = Integer.valueOf(strCol);
-                tableSorter.setSortKey(new SortKey(col,SortOrder.ASCENDING));
+        public void onMenuSortAscending() {
+                tableSorter.setSortKey(new SortKey(popupCellAdress.x,SortOrder.ASCENDING));
         }
         /**
          * Descending sort
          * @param strCol column (Event action string)
          */
-        public void onMenuSortDescending(String strCol) {
-                int col = Integer.valueOf(strCol);
-                tableSorter.setSortKey(new SortKey(col,SortOrder.DESCENDING));                
+        public void onMenuSortDescending() {
+                tableSorter.setSortKey(new SortKey(popupCellAdress.x,SortOrder.DESCENDING));                
         }
         /**
          * Compute the optimal width for this column
          * @param strCol  column (Event action string)
          */
-        public void onMenuOptimalWidth(String strCol) {
-                int col = Integer.valueOf(strCol);
-                launchJob(new OptimalWidthJob(table,col));
+        public void onMenuOptimalWidth() {
+                launchJob(new OptimalWidthJob(table,popupCellAdress.x));
         }
 
         /**

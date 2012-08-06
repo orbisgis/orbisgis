@@ -35,9 +35,11 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
+import org.apache.commons.collections.MapUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.types.Type;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
@@ -77,17 +79,22 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         public void onRowSortDone(SortJobEventSorted sortData) {
                 int[] oldViewToModel = getViewToModelArray();
                 viewToModel = new ArrayList<Integer>(sortData.getViewToModelIndex());
-                modelToView = new HashMap<Integer,Integer>();
-                for(int viewIndex = 0;viewIndex < viewToModel.size();viewIndex++) {
-                        Integer modelIndex = viewToModel.get(viewIndex);
-                        modelToView.put(modelIndex, viewIndex);
-                }
+                initModelToView();
                 sortedColumns.clear();
                 sortedColumns.add(sortData.getSortRequest());
                 fireSortOrderChanged();
                 fireRowSorterChanged(oldViewToModel);
         }
-        
+        /**
+         * Create the model to view from viewToModel
+         */
+        private void initModelToView() {
+                modelToView = new HashMap<Integer,Integer>();
+                for(int viewIndex = 0;viewIndex < viewToModel.size();viewIndex++) {
+                        Integer modelIndex = viewToModel.get(viewIndex);
+                        modelToView.put(modelIndex, viewIndex);
+                }
+        }
         private int[] getViewToModelArray() {
                 int[] viewToModelArray = null;
                 if(viewToModel!=null) {
@@ -173,12 +180,53 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         }
 
         private void clearSort() {
+                if(viewToModel!=null) {
+                        int[] oldViewToModel = getViewToModelArray();
+                        sortedColumns.clear();
+                        viewToModel = null;
+                        modelToView = null;
+                        fireSortOrderChanged();
+                        fireRowSorterChanged(oldViewToModel);
+                }
+        }
+
+        /**
+         * Show only the provided model row id
+         *
+         * @param rowsFilter Rows to show, must be already visible in the view
+         * row list (sort is not launch)
+         */
+        public void setRowsFilter(IntegerUnion rowsFilter) {
                 int[] oldViewToModel = getViewToModelArray();
-                sortedColumns.clear();
-                viewToModel = null;
-                modelToView = null;
-                fireSortOrderChanged();
-                fireRowSorterChanged(oldViewToModel);
+                List<Integer> nextViewToModel;
+                if (rowsFilter == null) {
+                        refreshSorter();
+                } else {
+                        if (viewToModel != null) {
+                                nextViewToModel = new ArrayList<Integer>(rowsFilter.size());
+                                //Keep the row order
+                                for (Integer modelRowId : viewToModel) {
+                                        if (rowsFilter.contains(modelRowId)) {
+                                                nextViewToModel.add(modelRowId);
+                                        }
+                                }
+                        } else {
+                                nextViewToModel = new ArrayList<Integer>(rowsFilter);
+                        }
+                        //Update the internal list
+                        viewToModel = nextViewToModel;
+                        initModelToView();
+                        fireSortOrderChanged();
+                        fireRowSorterChanged(oldViewToModel);
+                }
+        }
+
+        /**
+         * 
+         * @return True if the shown rows are filtered
+         */
+        public boolean isFiltered() {
+                return getModelRowCount()!=getViewRowCount();
         }
 
         @Override
@@ -199,18 +247,6 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 return sortedColumns;
         }
         
-        /**
-         * Replace the filter used in this table
-         * @param filter A filter instance or null (clear filter)
-         */
-        public void setFilter(TableSelectionFilter filter) {
-                if(filter==null) {
-                        
-                } else {
-                        
-                }
-        }
-
         @Override
         public int getViewRowCount() {
                 if(viewToModel==null) {
@@ -223,35 +259,51 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         public int getModelRowCount() {
                 return model.getRowCount();
         }
+        
+        /**
+         * Launch sort processing and remove the row filter
+         */
+        private void refreshSorter() {
+                if(sortedColumns!=null && !sortedColumns.isEmpty()) {
+                        launchSortProcess(sortedColumns.get(0));
+                }
+                clearSort();
+        }
 
         @Override
         public void modelStructureChanged() {
                 LOGGER.debug("modelStructureChanged");
+                refreshSorter();
         }
 
         @Override
         public void allRowsChanged() {
                 LOGGER.debug("allRowsChanged");
+                refreshSorter();
         }
 
         @Override
         public void rowsInserted(int i, int i1) {
                 LOGGER.debug("rowsInserted");
+                refreshSorter();
         }
 
         @Override
         public void rowsDeleted(int i, int i1) {
                 LOGGER.debug("rowsDeleted");
+                refreshSorter();
         }
 
         @Override
         public void rowsUpdated(int i, int i1) {
                 LOGGER.debug("rowsUpdated");
+                refreshSorter();
         }
 
         @Override
         public void rowsUpdated(int i, int i1, int i2) {
                 LOGGER.debug("rowsUpdated");
+                refreshSorter();
         }
         
 }
