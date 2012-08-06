@@ -120,6 +120,7 @@ class QueryOutputCommand extends Command with OutputCommand {
   }
   
   protected override def doCleanUp() = {
+    driver.writingFinished
     if (driver.isOpen) {
       driver.close
     }
