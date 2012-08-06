@@ -28,11 +28,9 @@
  */
 package org.orbisgis.view.table.filters;
 
-import com.kitfox.svg.Metadata;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.ByteArrayInputStream;
@@ -41,12 +39,12 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
@@ -105,12 +103,12 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
         @Override
         public Component makeFilterField(ActiveFilter filterValue) {
                 FilterParameters params = deserializeValue(filterValue.getCurrentFilterValue());                
-                JPanel filterFields = new JPanel(new BorderLayout());
+                JPanel filterFields = new JPanel();
+                filterFields.setLayout(new BoxLayout(filterFields, BoxLayout.X_AXIS));
                 // Searched Text
                 JTextField searchedTextBox = new JTextField(params.getSearchedChars());
                 filterFields.add(searchedTextBox,BorderLayout.CENTER);
-                JPanel rightSide = new JPanel();
-                filterFields.add(rightSide,BorderLayout.EAST);
+                searchedTextBox.setPreferredSize(new Dimension(Short.MAX_VALUE,Short.MIN_VALUE));
                 //Field selection
                 JComboBox fieldSelection = new JComboBox();
                 fieldSelection.addItem(I18N.tr("All"));
@@ -120,7 +118,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 if(params.getRowId()!=-1) {
                         fieldSelection.setSelectedIndex(params.getRowId()+1);
                 }
-                rightSide.add(fieldSelection);
+                filterFields.add(fieldSelection);
                 //Run filter, will update filterValue
                 JButton runButton = new JButton(I18N.tr("Search"));
                 FilterActionListener listener = new FilterActionListener(
@@ -128,7 +126,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                         searchedTextBox,
                         fieldSelection);
                 runButton.addActionListener(listener);
-                rightSide.add(runButton);
+                filterFields.add(runButton);
                 return filterFields;
         }
         

@@ -28,12 +28,10 @@
  */
 package org.orbisgis.view.table.jobs;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.TreeSet;
-import java.util.logging.Level;
 import javax.swing.RowSorter;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
@@ -60,7 +58,6 @@ public class SortJob implements BackgroundJob {
 
         protected final static I18n I18N = I18nFactory.getI18n(SortJob.class);
         private static final Logger LOGGER = Logger.getLogger(SortJob.class);
-        private RowSorter<DataSourceTableModel> tableSorter;
         private DataSourceTableModel model;
         private SortKey sortRequest;
         private Integer columnToSort;
@@ -74,12 +71,11 @@ public class SortJob implements BackgroundJob {
          * @param tableSorter
          * @param modelIndex Current state of Index, can be null if the index is the same as the model
          */
-        public SortJob(SortKey sortRequest, RowSorter<DataSourceTableModel> tableSorter, Collection<Integer> modelIndex) {
+        public SortJob(SortKey sortRequest, DataSourceTableModel tableModel, Collection<Integer> modelIndex) {
                 this.sortRequest = sortRequest;
-                this.tableSorter = tableSorter;
                 this.columnToSort = sortRequest.getColumn();
                 this.modelIndex = modelIndex;
-                model = tableSorter.getModel();
+                model = tableModel;
                 try {
                         columnSortName = model.getDataSource().getMetadata().getFieldName(columnToSort);
                 } catch (DriverException ex) {

@@ -43,31 +43,34 @@ public class TableEditableElement extends EditableSource {
         public static final String PROP_SELECTION = "selection";
         
         // Properties
-        protected Set<Integer> selection;
+        protected Set<Integer> selectedGeometries;
 
         public TableEditableElement(Set<Integer> selection, String sourceName) {
                 super(sourceName);
-                this.selection = new IntegerUnion(selection);
+                this.selectedGeometries = new IntegerUnion(selection);
         }
 
         public TableEditableElement(String sourceName) {
                 super(sourceName);
-                this.selection = new IntegerUnion();
+                this.selectedGeometries = new IntegerUnion();
         }
         
 	/**
-	 * Get the object that manages selection
-	 * 
+	 * Get the selected geometries in the table
 	 * @return
 	 */
 	Set<Integer> getSelection() {
-                return selection;
+                return selectedGeometries;
         }
 
+        /**
+         * Set the selected geometries in the table
+         * @param selection 
+         */
         public void setSelection(Set<Integer> selection) {
-                Set<Integer> oldSelection = this.selection;
-                this.selection = new IntegerUnion(selection);
-                propertyChangeSupport.firePropertyChange(PROP_SELECTION, oldSelection, this.selection);
+                Set<Integer> oldSelection = this.selectedGeometries;
+                this.selectedGeometries = new IntegerUnion(selection);
+                propertyChangeSupport.firePropertyChange(PROP_SELECTION, oldSelection, this.selectedGeometries);
         }
         
         

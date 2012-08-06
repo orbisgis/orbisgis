@@ -128,7 +128,7 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         }
         
         private void launchSortProcess(SortKey sortInformation) {
-                SortJob sortJob = new SortJob(sortInformation, this, viewToModel);
+                SortJob sortJob = new SortJob(sortInformation, model, viewToModel);
                 sortJob.getEventSortedListeners().addListener(this, EventHandler.create(Listener.class,this,"onRowSortDone",""));
                 launchJob(sortJob);
         }

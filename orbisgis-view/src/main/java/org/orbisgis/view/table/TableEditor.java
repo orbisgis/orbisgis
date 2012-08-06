@@ -47,11 +47,14 @@ import javax.swing.ListSelectionModel;
 import javax.swing.MenuElement;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
+import javax.swing.UIManager;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.apache.log4j.Logger;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.Type;
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
@@ -65,6 +68,7 @@ import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.table.filters.FieldsContainsFilterFactory;
 import org.orbisgis.view.table.filters.TableSelectionFilter;
+import org.orbisgis.view.table.jobs.OptimalWidthJob;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -85,6 +89,7 @@ public class TableEditor extends JPanel implements EditorDockable {
         private DataSourceTableModel tableModel;
         private AtomicBoolean initialised = new AtomicBoolean(false);
         private FilterFactoryManager<TableSelectionFilter> filterManager = new FilterFactoryManager<TableSelectionFilter>();
+        private TableRowHeader tableRowHeader;
 
         public TableEditor(TableEditableElement element) {
                 super(new BorderLayout());
@@ -148,6 +153,22 @@ public class TableEditor extends JPanel implements EditorDockable {
                         LOGGER.info("Click on col:"+col+" row:"+row);
                 }
         }
+        
+        private JPopupMenu makeTableCellPopup(int row,int col) {
+                JPopupMenu pop = new JPopupMenu();
+                boolean hasGeometry=false;
+                try {
+                        hasGeometry = MetadataUtilities.isGeometry(tableEditableElement.getDataSource().getMetadata());
+                }catch (DriverException ex) {
+                        LOGGER.error(I18N.tr("Menu creation error"), ex);
+                }
+                
+                if(hasGeometry) {
+                        JMenuItem selectGeometries = new JMenuItem(I18N.tr("Select the geometries of the selected rows"));
+                }
+                return pop;
+        }
+        
         /**
          * Create the popup menu of the table header
          * @param col
@@ -170,7 +191,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                         //Sort Ascending
                         JMenuItem sortAscending =
                                 new JMenuItem(I18N.tr("Sort ascending"),
-                                OrbisGISIcon.getIcon("thumb_up")
+                                UIManager.getIcon("Table.ascendingSortIcon")
                                 );
                         sortAscending.addActionListener(
                         EventHandler.create(ActionListener.class,this,
@@ -179,7 +200,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                         //Sort Descending
                         JMenuItem sortDescending =
                                 new JMenuItem(I18N.tr("Sort descending"),
-                                OrbisGISIcon.getIcon("thumb_down")
+                                UIManager.getIcon("Table.descendingSortIcon")
                                 );
                         sortDescending.addActionListener(
                         EventHandler.create(ActionListener.class,this,
@@ -215,17 +236,29 @@ public class TableEditor extends JPanel implements EditorDockable {
         public void onMenuNoSort() {
                 tableSorter.setSortKeys(null);
         }
-        
+        /**
+         * Ascending sort
+         * @param strCol column (Event action string)
+         */
         public void onMenuSortAscending(String strCol) {
                 int col = Integer.valueOf(strCol);
                 tableSorter.setSortKey(new SortKey(col,SortOrder.ASCENDING));
         }
+        /**
+         * Descending sort
+         * @param strCol column (Event action string)
+         */
         public void onMenuSortDescending(String strCol) {
                 int col = Integer.valueOf(strCol);
                 tableSorter.setSortKey(new SortKey(col,SortOrder.DESCENDING));                
         }
+        /**
+         * Compute the optimal width for this column
+         * @param strCol  column (Event action string)
+         */
         public void onMenuOptimalWidth(String strCol) {
                 int col = Integer.valueOf(strCol);
+                launchJob(new OptimalWidthJob(table,col));
         }
 
         /**
@@ -253,52 +286,6 @@ public class TableEditor extends JPanel implements EditorDockable {
                         bm.backgroundOperation(new OpenEditableElement());                        
                 }
         }
-
-        
-
-        private int getColumnOptimalWidth(int rowsToCheck, int maxWidth,
-                int column, ProgressMonitor pm) {
-                TableColumn col = table.getColumnModel().getColumn(column);
-                int margin = 5;
-                int headerMargin = 10;
-
-                // Get width of column header
-                TableCellRenderer renderer = col.getHeaderRenderer();
-
-                if (renderer == null) {
-                        renderer = table.getTableHeader().getDefaultRenderer();
-                }
-
-                Component comp = renderer.getTableCellRendererComponent(table, col.getHeaderValue(), false, false, 0, 0);
-
-                int width = comp.getPreferredSize().width;
-
-                // Check header
-                comp = renderer.getTableCellRendererComponent(table, col.getHeaderValue(), false, false, 0, column);
-                width = Math.max(width, comp.getPreferredSize().width + 2
-                        * headerMargin);
-                // Get maximum width of column data
-                for (int r = 0; r < rowsToCheck; r++) {
-                        if (r / 100 == r / 100.0) {
-                                if (pm.isCancelled()) {
-                                        break;
-                                } else {
-                                        pm.progressTo(100 * r / rowsToCheck);
-                                }
-                        }
-                        renderer = table.getCellRenderer(r, column);
-                        comp = renderer.getTableCellRendererComponent(table, table.getValueAt(r, column), false, false, r, column);
-                        width = Math.max(width, comp.getPreferredSize().width);
-                }
-
-                // limit
-                width = Math.min(width, maxWidth);
-
-                // Add margin
-                width += 2 * margin;
-
-                return width;
-        }
         
         /**
          * When the editable element is open, 
@@ -314,8 +301,8 @@ public class TableEditor extends JPanel implements EditorDockable {
                 tableSorter = new DataSourceRowSorter(tableModel);
                 table.setRowSorter(tableSorter);
                 //Set the row count at left
-                //tableScrollPane.setRowHeaderView(new TableLineCountHeader(table));
-                tableScrollPane.setRowHeaderView(new TableRowHeader(table));
+                tableRowHeader = new TableRowHeader(table);
+                tableScrollPane.setRowHeaderView(tableRowHeader);
                 add(makeFilterManager(),BorderLayout.SOUTH);
         }
         
@@ -330,16 +317,13 @@ public class TableEditor extends JPanel implements EditorDockable {
                         int columnType = tableModel.getColumnType(i).getTypeCode();
                         col.setHeaderValue(columnName);
                         TableCellRenderer tableCellRenderer = renderers.get(columnName);
-
-                        /*
-                        if (tableCellRenderer == null) {
-                                tableCellRenderer = new DefaultTableCellRenderer();
+                        
+                        if (tableCellRenderer != null) {
+                                col.setHeaderRenderer(tableCellRenderer);
                         }
-                        col.setHeaderRenderer(tableCellRenderer);
-                        */
                         Integer width = widths.get(columnName);
                         if (width == null) {
-                                width = getColumnOptimalWidth(rowsToCheck, maxWidth, i,
+                                width = OptimalWidthJob.getColumnOptimalWidth(table,rowsToCheck, maxWidth, i,
                                         new NullProgressMonitor());
                         }
                         col.setPreferredWidth(width);
