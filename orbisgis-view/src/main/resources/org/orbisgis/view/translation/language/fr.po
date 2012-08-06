@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-07-31 14:19+0100\n"
-"PO-Revision-Date: 2012-07-31 14:47+0100\n"
+"POT-Creation-Date: 2012-08-06 14:56+0100\n"
+"PO-Revision-Date: 2012-08-06 14:56+0100\n"
 "Last-Translator: Nicolas Fortin <nicolas.fortin _at_ ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
@@ -93,7 +93,7 @@ msgid "All data source of the GeoCatalog will be removed. Are you sure ?"
 msgstr ""
 
 #: java/org/orbisgis/view/geocatalog/Catalog.java:328
-#: java/org/orbisgis/view/geocatalog/Catalog.java:551
+#: java/org/orbisgis/view/geocatalog/Catalog.java:552
 msgid "Clear the GeoCatalog"
 msgstr ""
 
@@ -123,7 +123,7 @@ msgid "Add"
 msgstr ""
 
 #: java/org/orbisgis/view/geocatalog/Catalog.java:489
-#: java/org/orbisgis/view/geocatalog/Catalog.java:527
+#: java/org/orbisgis/view/geocatalog/Catalog.java:522
 msgid "File"
 msgstr ""
 
@@ -135,23 +135,23 @@ msgstr ""
 msgid "Folder"
 msgstr ""
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:516
-msgid "Open table"
-msgstr ""
-
-#: java/org/orbisgis/view/geocatalog/Catalog.java:522
+#: java/org/orbisgis/view/geocatalog/Catalog.java:517
 msgid "Save"
 msgstr ""
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:536
+#: java/org/orbisgis/view/geocatalog/Catalog.java:531
 msgid "Database"
 msgstr ""
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:563
+#: java/org/orbisgis/view/geocatalog/Catalog.java:538
+msgid "Open the attributes"
+msgstr ""
+
+#: java/org/orbisgis/view/geocatalog/Catalog.java:564
 msgid "Remove the source"
 msgstr ""
 
-#: java/org/orbisgis/view/geocatalog/Catalog.java:578
+#: java/org/orbisgis/view/geocatalog/Catalog.java:579
 msgid "An external code stop the creation of the PopUp menu"
 msgstr ""
 
@@ -421,8 +421,16 @@ msgstr ""
 msgid "Debug"
 msgstr ""
 
-#: java/org/orbisgis/view/output/MainOutputPanel.java:57
+#: java/org/orbisgis/view/output/MainOutputPanel.java:61
 msgid "Output"
+msgstr ""
+
+#: java/org/orbisgis/view/output/MainOutputPanel.java:67
+msgid "Clear all"
+msgstr ""
+
+#: java/org/orbisgis/view/output/MainOutputPanel.java:68
+msgid "Clear all log panels"
 msgstr ""
 
 #: java/org/orbisgis/view/output/OutputPanel.java:83
@@ -760,11 +768,11 @@ msgstr ""
 msgid "Load the data source droped into the map editor."
 msgstr ""
 
-#: java/org/orbisgis/view/map/MapControl.java:305
+#: java/org/orbisgis/view/map/MapControl.java:309
 msgid "Drawing"
 msgstr ""
 
-#: java/org/orbisgis/view/map/MapControl.java:593
+#: java/org/orbisgis/view/map/MapControl.java:607
 #, java-format
 msgid "Tool error {0}"
 msgstr ""
@@ -1016,6 +1024,7 @@ msgid "Get feature attributes"
 msgstr ""
 
 #: java/org/orbisgis/view/map/tools/PointTool.java:120
+#: java/org/orbisgis/view/map/tools/generated/Point.java:206
 msgid "Draw a point"
 msgstr ""
 
@@ -1139,7 +1148,6 @@ msgid "Cancel (transition)"
 msgstr ""
 
 #: java/org/orbisgis/view/map/tools/generated/Line.java:255
-#: java/org/orbisgis/view/map/tools/generated/Polygon.java:252
 msgid "Select the first point"
 msgstr ""
 
@@ -1178,7 +1186,6 @@ msgid "Terminate multipolygon"
 msgstr ""
 
 #: java/org/orbisgis/view/map/tools/generated/Multipolygon.java:60
-#: java/org/orbisgis/view/map/tools/generated/Polygon.java:53
 msgid "Terminate polygon"
 msgstr ""
 
@@ -1248,99 +1255,99 @@ msgstr ""
 msgid "&Configuration"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/TocAbstractRenderer.java:97
+#: java/org/orbisgis/view/toc/TocAbstractRenderer.java:102
 #, java-format
 msgid "Unable to find appropriate icon for typeCode {0}"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:120
+#: java/org/orbisgis/view/toc/Toc.java:126
 msgid "Toc"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:236
-#: java/org/orbisgis/view/toc/Toc.java:258
+#: java/org/orbisgis/view/toc/Toc.java:243
+#: java/org/orbisgis/view/toc/Toc.java:265
 #, java-format
 msgid "Cannot drop layer on {0}"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:261
+#: java/org/orbisgis/view/toc/Toc.java:268
 #, java-format
 msgid "Drop unknown editable of type : {0}"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:476
+#: java/org/orbisgis/view/toc/Toc.java:483
 msgid "Remove layer"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:477
+#: java/org/orbisgis/view/toc/Toc.java:484
 msgid "Remove the layer from the map context"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:479
+#: java/org/orbisgis/view/toc/Toc.java:486
 msgid "Zoom to"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:480
+#: java/org/orbisgis/view/toc/Toc.java:487
 msgid "Zoom to the layer bounding box"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:486
+#: java/org/orbisgis/view/toc/Toc.java:493
 msgid "Import style"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:487
+#: java/org/orbisgis/view/toc/Toc.java:494
 msgid "Import a style from a file."
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:504
+#: java/org/orbisgis/view/toc/Toc.java:511
 msgid "Simple style edition"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:505
+#: java/org/orbisgis/view/toc/Toc.java:512
 msgid "Open the simple editor for SE styles"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:509
+#: java/org/orbisgis/view/toc/Toc.java:516
 msgid "Advanced style edition"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:510
+#: java/org/orbisgis/view/toc/Toc.java:517
 msgid "Open the adavanced editor for SE styles"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:514
+#: java/org/orbisgis/view/toc/Toc.java:521
 msgid "Remove style"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:515
+#: java/org/orbisgis/view/toc/Toc.java:522
 msgid "Remove this style from the associater layer."
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:519
+#: java/org/orbisgis/view/toc/Toc.java:526
 msgid "Export style"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:520
+#: java/org/orbisgis/view/toc/Toc.java:527
 msgid "Export this style from the associater layer."
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:534
+#: java/org/orbisgis/view/toc/Toc.java:541
 msgid "Cannot delete layer"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:632
+#: java/org/orbisgis/view/toc/Toc.java:639
 msgid "Advanced Editor can't be loaded"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:642
+#: java/org/orbisgis/view/toc/Toc.java:649
 msgid "Error while editing the legend"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:834
+#: java/org/orbisgis/view/toc/Toc.java:843
 msgid "Cannot add the layer to the destination"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/Toc.java:847
+#: java/org/orbisgis/view/toc/Toc.java:856
 msgid "Load the data source droped into the toc."
 msgstr ""
 
@@ -1353,47 +1360,47 @@ msgstr ""
 msgid "bug !"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendsPanel.java:184
+#: java/org/orbisgis/view/toc/actions/cui/LegendsPanel.java:175
 msgid "Layer :"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendsPanel.java:194
+#: java/org/orbisgis/view/toc/actions/cui/LegendsPanel.java:185
 msgid "Add or select a legend on the left"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendsPanel.java:302
+#: java/org/orbisgis/view/toc/actions/cui/LegendsPanel.java:293
 msgid "You must create almost one legend"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:297
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:308
 msgid "Up"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:304
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:315
 msgid "Down"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:318
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:329
 msgid "Delete"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:325
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:336
 msgid "Rename"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:384
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:395
 msgid "Choose a name for your rule"
 msgstr ""
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:385
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:396
 msgid "Name of the Rule : "
 msgstr ""
 
-#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:390
+#: java/org/orbisgis/view/toc/actions/cui/LegendTree.java:401
 msgid "Rule name cannot be null or empty."
 msgstr ""
 
-#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueSymbolSE.java:193
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueSymbolSE.java:171
 msgid "Could not validate your input."
 msgstr ""
 
@@ -1422,8 +1429,74 @@ msgstr ""
 msgid "Max. scale is not a valid number"
 msgstr ""
 
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueAreaSE.java:173
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniquePointSE.java:182
+msgid "Line configuration"
+msgstr ""
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueAreaSE.java:181
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniquePointSE.java:189
+msgid "Fill configuration"
+msgstr ""
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueAreaSE.java:210
+msgid "Enable fill : "
+msgstr ""
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueAreaSE.java:221
+msgid "Fill color :"
+msgstr ""
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueAreaSE.java:225
+msgid "Fill opacity :"
+msgstr ""
+
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlStyle.java:94
 msgid "Style configuration"
+msgstr ""
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:195
+msgid "Enable line : "
+msgstr ""
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:206
+msgid "Line width :"
+msgstr ""
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:209
+msgid "Line color :"
+msgstr ""
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:212
+msgid "Line opacity :"
+msgstr ""
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:215
+msgid "Dash array :"
+msgstr ""
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniquePointSE.java:196
+msgid "Mark configuration"
+msgstr ""
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniquePointSE.java:227
+msgid "On vertex"
+msgstr ""
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniquePointSE.java:228
+msgid "On centroid"
+msgstr ""
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniquePointSE.java:242
+msgid "Symbol form :"
+msgstr ""
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniquePointSE.java:245
+msgid "Mark width :"
+msgstr ""
+
+#: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniquePointSE.java:248
+msgid "Mark height :"
 msgstr ""
 
 #: java/org/orbisgis/view/table/TableEditorFactory.java:55
@@ -1445,23 +1518,105 @@ msgstr ""
 msgid "Selection serialisation failed"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:78
+#: java/org/orbisgis/view/table/TableEditor.java:165
+msgid "Menu creation error"
+msgstr ""
+
+#: java/org/orbisgis/view/table/TableEditor.java:168
+msgid "Filter selected rows"
+msgstr ""
+
+#: java/org/orbisgis/view/table/TableEditor.java:169
+msgid "Show only the selected rows"
+msgstr ""
+
+#: java/org/orbisgis/view/table/TableEditor.java:177
+msgid "Clear row filter"
+msgstr ""
+
+#: java/org/orbisgis/view/table/TableEditor.java:178
+msgid "Show all rows"
+msgstr ""
+
+#: java/org/orbisgis/view/table/TableEditor.java:213
+msgid "Optimal width"
+msgstr ""
+
+#: java/org/orbisgis/view/table/TableEditor.java:225
+msgid "Sort ascending"
+msgstr ""
+
+#: java/org/orbisgis/view/table/TableEditor.java:234
+msgid "Sort descending"
+msgstr ""
+
+#: java/org/orbisgis/view/table/TableEditor.java:243
+msgid "No sort"
+msgstr ""
+
+#: java/org/orbisgis/view/table/TableEditor.java:345
 #, java-format
 msgid "Table Editor of {0}"
 msgstr "{0}"
 
-#: java/org/orbisgis/view/table/TableEditor.java:244
-#: java/org/orbisgis/view/table/TableEditor.java:246
+#: java/org/orbisgis/view/table/TableEditor.java:347
+#, java-format
+msgid "Table Editor of {0} (Filtered)"
+msgstr "{0} (Filtré)"
+
+#: java/org/orbisgis/view/table/TableEditor.java:420
+#: java/org/orbisgis/view/table/TableEditor.java:422
 msgid "Error while loading the table editor"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:254
+#: java/org/orbisgis/view/table/TableEditor.java:429
 #, java-format
 msgid "Open the data source {0}"
 msgstr ""
 
-#: java/org/orbisgis/view/table/DataSourceTableModel.java:199
+#: java/org/orbisgis/view/table/DataSourceTableModel.java:221
 msgid "Cannot parse number"
+msgstr ""
+
+#: java/org/orbisgis/view/table/jobs/OptimalWidthJob.java:123
+msgid "Computation of the optimal column width"
+msgstr ""
+
+#: java/org/orbisgis/view/table/jobs/SortJob.java:82
+#: java/org/orbisgis/view/table/jobs/SortJob.java:155
+#: java/org/orbisgis/view/table/jobs/SortJob.java:157
+msgid "Driver error"
+msgstr ""
+
+#: java/org/orbisgis/view/table/jobs/SortJob.java:100
+msgid "Aborted by user"
+msgstr ""
+
+#: java/org/orbisgis/view/table/jobs/SortJob.java:133
+msgid "Cache table values"
+msgstr ""
+
+#: java/org/orbisgis/view/table/jobs/SortJob.java:165
+#, java-format
+msgid "Sorting {0}"
+msgstr ""
+
+#: java/org/orbisgis/view/table/filters/FieldsContainsFilterFactory.java:77
+msgid "Find"
+msgstr ""
+
+#: java/org/orbisgis/view/table/filters/FieldsContainsFilterFactory.java:90
+#: java/org/orbisgis/view/table/filters/FieldsContainsFilterFactory.java:92
+#: java/org/orbisgis/view/table/filters/FieldsContainsFilterFactory.java:199
+msgid "Filter error"
+msgstr ""
+
+#: java/org/orbisgis/view/table/filters/FieldsContainsFilterFactory.java:123
+msgid "Search"
+msgstr ""
+
+#: java/org/orbisgis/view/table/filters/FieldsContainsFilterFactory.java:164
+msgid "Filter driver error"
 msgstr ""
 
 #~ msgid "orbisgis.view.docking.LookAndFeel"

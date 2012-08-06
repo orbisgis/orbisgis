@@ -48,7 +48,7 @@ import org.orbisgis.view.components.renderers.ListLaFRenderer;
  */
 public class TableRowHeader extends JList {
         private static final long serialVersionUID = 1L;
-        private TableModelListener listener = EventHandler.create(TableModelListener.class,this,"tableChanged","");
+        private TableModelListener listener = EventHandler.create(TableModelListener.class,this,"tableChanged");
         private final JTable table;
         private final RowHeaderListModel model;
 
@@ -82,15 +82,14 @@ public class TableRowHeader extends JList {
                 //If you define a fixed cell width then
                 //the jlist does'nt have to compute the maximum width of
                 // the rowCount labels ! (this can take a very long time)
-                JLabel label = (JLabel)getCellRenderer().getListCellRendererComponent(this, rowCount - 1, rowCount - 1, false, false);
+                JLabel label = (JLabel)getCellRenderer().getListCellRendererComponent(this, rowCount , rowCount - 1, false, false);
                 setFixedCellWidth(label.getPreferredSize().width);                
         }
       
         /**
-         * Table model update
-         * @param tme 
+         * Table update
          */
-        public void tableChanged(TableModelEvent tme) {
+        public void tableChanged() {
                 syncRowCount();
         }
 

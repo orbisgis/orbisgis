@@ -29,7 +29,6 @@
 package org.orbisgis.view.table;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -37,7 +36,6 @@ import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.AbstractButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -45,10 +43,10 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
-import javax.swing.MenuElement;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 import javax.swing.UIManager;
+import javax.swing.event.RowSorterListener;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -99,7 +97,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                 LOGGER.debug("Create the GRID");
                 this.tableEditableElement = element;
                 dockingPanelParameters = new DockingPanelParameters();
-                dockingPanelParameters.setTitle(I18N.tr("Table Editor of {0}",element.getSourceName()));
+                updateTitle(false);
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("openattributes"));
                 tableScrollPane = new JScrollPane(makeTable());
                 add(tableScrollPane,BorderLayout.CENTER);
@@ -321,6 +319,9 @@ public class TableEditor extends JPanel implements EditorDockable {
                 new HashMap<String, Integer>(),
                 new HashMap<String, TableCellRenderer>());
                 tableSorter = new DataSourceRowSorter(tableModel);
+                tableSorter.addRowSorterListener(
+                        EventHandler.create(RowSorterListener.class,this,
+                        "onShownRowsChanged"));
                 table.setRowSorter(tableSorter);
                 //Set the row count at left
                 tableRowHeader = new TableRowHeader(table);
@@ -328,6 +329,24 @@ public class TableEditor extends JPanel implements EditorDockable {
                 add(makeFilterManager(),BorderLayout.SOUTH);
         }
         
+        /**
+         * The model or the sorted have updated the table
+         */
+        public void onShownRowsChanged() {
+                updateTitle(tableSorter.isFiltered());
+                tableRowHeader.tableChanged();
+        }
+        /**
+         * 
+         * @param filtered If the shown rows do not reflect the model
+         */
+        private void updateTitle(boolean filtered) {
+                if(!filtered) {
+                        dockingPanelParameters.setTitle(I18N.tr("Table Editor of {0}",tableEditableElement.getSourceName()));
+                }else{
+                        dockingPanelParameters.setTitle(I18N.tr("Table Editor of {0} (Filtered)",tableEditableElement.getSourceName()));
+                }                
+        }
         private void autoResizeColWidth(int rowsToCheck,
                 HashMap<String, Integer> widths,
                 HashMap<String, TableCellRenderer> renderers) {
