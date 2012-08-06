@@ -48,8 +48,8 @@ import org.xnap.commons.i18n.I18nFactory;
 public class ListenerContainer<EventObjectType extends EventObject> {
     private static Logger logger = Logger.getLogger(ListenerContainer.class);
     private ListenerContainer<EventObject> upLevelContainer = null; /*!< This container will call the upLevelContainer on a new event */
-    private Map<Object,ArrayList<WeakReference<Listener>>> targetToListeners = Collections.synchronizedMap(new HashMap<Object,ArrayList<WeakReference<Listener>>>()); /*!< Contain the link between target and listeners */
-    private Set<Listener> listeners = Collections.synchronizedSet(new HashSet<Listener>()); /*!< Listerners of this container */
+    private Map<Object,ArrayList<WeakReference<Listener<EventObjectType>>>> targetToListeners = Collections.synchronizedMap(new HashMap<Object,ArrayList<WeakReference<Listener<EventObjectType>>>>()); /*!< Contain the link between target and listeners */
+    private Set<Listener<EventObjectType>> listeners = Collections.synchronizedSet(new HashSet<Listener<EventObjectType>>()); /*!< Listerners of this container */
     protected final static I18n I18N = I18nFactory.getI18n(ListenerContainer.class);
     /**
      * Declare the root or single event listener collection.
@@ -80,18 +80,18 @@ public class ListenerContainer<EventObjectType extends EventObject> {
      * @param target The target called by the listener.
      * @param listener The listener object. Created by EventHandler
      */
-    public void addListener(Object target,Listener listener) {
+    public void addListener(Object target,Listener<EventObjectType> listener) {
         if(listeners.contains(listener)) {
             throw(new InvalidParameterException(I18N.tr("This listener is already registered.")));
         }
-        ArrayList<WeakReference<Listener>> listenersOfTarget;
+        ArrayList<WeakReference<Listener<EventObjectType>>> listenersOfTarget;
         if(!targetToListeners.containsKey(target)) {
-            listenersOfTarget = new ArrayList<WeakReference<Listener>>();
+            listenersOfTarget = new ArrayList<WeakReference<Listener<EventObjectType>>>();
             targetToListeners.put(target,listenersOfTarget);
         } else {
             listenersOfTarget = targetToListeners.get(target);
         }
-        listenersOfTarget.add( new WeakReference<Listener>(listener));
+        listenersOfTarget.add( new WeakReference<Listener<EventObjectType>>(listener));
         listeners.add(listener);
     }
     /**
@@ -99,7 +99,7 @@ public class ListenerContainer<EventObjectType extends EventObject> {
      * @param listener The listener instance
      * @return True if the listener has been found and removed
      */
-    public boolean removeListener(Listener listener) {
+    public boolean removeListener(Listener<EventObjectType> listener) {
         if(listeners.contains(listener)) {
             listeners.remove(listener);
             return true;
@@ -113,9 +113,9 @@ public class ListenerContainer<EventObjectType extends EventObject> {
      */
     public void removeListeners(Object target) {
         if(targetToListeners.containsKey(target)) {
-            ArrayList<WeakReference<Listener>> listenersOfTarget = targetToListeners.get(target);
-            for(WeakReference<Listener> listenerRef : listenersOfTarget) {
-                Listener listener = listenerRef.get();
+            ArrayList<WeakReference<Listener<EventObjectType>>> listenersOfTarget = targetToListeners.get(target);
+            for(WeakReference<Listener<EventObjectType>> listenerRef : listenersOfTarget) {
+                Listener<EventObjectType> listener = listenerRef.get();
                 if(listener!=null) {
                     removeListener(listener);
                 }
@@ -137,12 +137,12 @@ public class ListenerContainer<EventObjectType extends EventObject> {
      * @throws InvalidParameterException if data is not null and is not EventObjectan instance of EventObject.
      */
     public void callListeners(EventObjectType data) throws EventException {
-        Iterator<Listener> itListener = listeners.iterator();
+        Iterator<Listener<EventObjectType>> itListener = listeners.iterator();
         while(itListener.hasNext()) {
-            Listener listener = itListener.next();
+            Listener<EventObjectType> listener = itListener.next();
             try {
                 if(data!=null) {
-                    listener.onEvent((EventObject)data);
+                    listener.onEvent(data);
                 }else{
                     listener.onEvent(null);                        
                 }

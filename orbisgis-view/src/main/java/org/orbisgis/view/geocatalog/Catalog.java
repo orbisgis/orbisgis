@@ -51,7 +51,6 @@ import org.gdms.source.*;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.events.EventException;
-import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
@@ -145,7 +144,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 filterFactoryManager.setDefaultFilterFactory(DEFAULT_FILTER_FACTORY);
                 //Set listener on filter change event, this event will update the filters
                 filterFactoryManager.getEventFilterChange().addListener(sourceListContent,
-                        EventHandler.create(Listener.class,
+                        EventHandler.create(FilterFactoryManager.FilterChangeListener.class,
                         sourceListContent, //target of event
                         "setFilters", //target method
                         "source.getFilters" //target method argument
@@ -601,7 +600,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 SourceListTransferHandler transferHandler = new SourceListTransferHandler();
                 //Call the method this.onDropURI when the user drop uri(like files) on the list control
                 transferHandler.getDropListenerHandler().addListener(this,
-                        EventHandler.create(Listener.class, this, "onDropURI", "uriList"));
+                        EventHandler.create(SourceListTransferHandler.DropUriListener.class, this, "onDropURI", "uriList"));
                 sourceList.setTransferHandler(transferHandler);
                 sourceList.setDragEnabled(true);
                 //Attach the content to the DataSource instance

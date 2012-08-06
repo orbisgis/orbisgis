@@ -109,7 +109,12 @@ public class TableEditor extends JPanel implements EditorDockable {
                 filterManager.registerFilterFactory(new FieldsContainsFilterFactory(table));
                 filterManager.addFilter(FieldsContainsFilterFactory.FACTORY_ID,
                                         "");
+                filterManager.getEventFilterChange().addListener(this, EventHandler.create(FilterFactoryManager.FilterChangeListener.class, this, "onApplySelectionFilter"));
                 return filterComp;
+        }
+        
+        public void onApplySelectionFilter() {
+                
         }
         
         private JComponent makeTable() {

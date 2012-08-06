@@ -32,18 +32,21 @@ import java.awt.Color;
 import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.Level;
 import org.apache.log4j.spi.LoggingEvent;
 import org.orbisgis.core.events.EventException;
+import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
 
 /**
  * A LOG4J Appender connected with the LogPanel.
  */
 public class PanelAppender extends AppenderSkeleton {
+    public interface ShowMessageListener extends Listener<ShowMessageEventData> {
+            
+    }
     //New duplicata message is ignored if the time interval is lower than this constant value.
     private static final int SAME_MESSAGE_IGNORE_INTERVAL = 500; //ms
     private static final Color COLOR_ERROR = Color.RED;

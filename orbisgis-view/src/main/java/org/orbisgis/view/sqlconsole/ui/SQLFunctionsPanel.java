@@ -45,7 +45,6 @@ import javax.swing.border.BevelBorder;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.events.Listener;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.sqlconsole.ui.functionFilters.NameFilterFactory;
@@ -70,7 +69,7 @@ public class SQLFunctionsPanel extends JPanel {
         private final FunctionManager functionManager;
         private final ActionListener collapseListener = EventHandler.create(ActionListener.class,this,"collapse");
         private final ActionListener expandListener = EventHandler.create(ActionListener.class,this,"expand");
-        private final Listener filterEvent = EventHandler.create(Listener.class,this,"doFilter");
+        private final FilterFactoryManager.FilterChangeListener filterEvent = EventHandler.create(FilterFactoryManager.FilterChangeListener.class,this,"doFilter");
         private AtomicBoolean initialised = new AtomicBoolean(false);
         
         protected final static I18n I18N = I18nFactory.getI18n(SQLFunctionsPanel.class);

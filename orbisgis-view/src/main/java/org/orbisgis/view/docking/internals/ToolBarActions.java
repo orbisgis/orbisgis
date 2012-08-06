@@ -167,6 +167,7 @@ public class ToolBarActions {
     }
     /**
      * Convert the swing toolbar into docking frames CAction
+     * @param viewToolBar 
      */
     public void convertToolBarToActions(JToolBar viewToolBar) {
         if(viewToolBar!=null) {
@@ -188,7 +189,7 @@ public class ToolBarActions {
                     dbutton.setTooltip(button.getToolTipText());
                     ItemListener[] listeners = button.getItemListeners();
                     for(ItemListener listener : listeners) {
-                        dbutton.getStateChanged().addListener(listener, EventHandler.create(Listener.class, listener, "itemStateChanged",""));
+                        dbutton.getStateChanged().addListener(listener, EventHandler.create(CToggleButton.StateListener.class, listener, "itemStateChanged",""));
                     }
                     //Retrieve and apply button group
                     applyButtonGroup(button,dbutton);

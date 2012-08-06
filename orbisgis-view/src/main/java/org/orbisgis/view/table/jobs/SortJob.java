@@ -42,6 +42,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.events.EventException;
+import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
@@ -55,7 +56,9 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Nicolas Fortin
  */
 public class SortJob implements BackgroundJob {
-
+        public interface SortJobListener extends Listener<SortJobEventSorted>{
+                
+        }
         protected final static I18n I18N = I18nFactory.getI18n(SortJob.class);
         private static final Logger LOGGER = Logger.getLogger(SortJob.class);
         private DataSourceTableModel model;

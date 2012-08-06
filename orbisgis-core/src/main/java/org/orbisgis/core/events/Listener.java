@@ -31,10 +31,11 @@ package org.orbisgis.core.events;
 import java.util.EventListener;
 import java.util.EventObject;
 /**
+ * @param <EventObjectType>  EventObject created by event source
  * @brief Interface of all listeners
  * All class that implements this interface can be listened for events through EventDispatcher
  */
-public interface Listener extends EventListener {
+public interface Listener<EventObjectType extends EventObject> extends EventListener {
     /**
      * @brief The event has been fired
      * Use java.beans.EventHandler.create to make a listener that will directly
@@ -42,8 +43,9 @@ public interface Listener extends EventListener {
      * You can also overload this method to call your related class method,
      * try to not write too much code in your functor.
      * @param evtData The event information, like the instance that fired the event.
+     * @throws ListenerException
      */
-    void onEvent(EventObject evtData) throws ListenerException;
+    void onEvent(EventObjectType evtData) throws ListenerException;
     
     
 }

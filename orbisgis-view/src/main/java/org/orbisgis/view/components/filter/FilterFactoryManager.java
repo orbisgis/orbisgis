@@ -41,6 +41,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.events.EventException;
+import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.view.components.ContainerItemProperties;
 import org.orbisgis.view.components.button.CustomButton;
@@ -59,6 +60,11 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 
 public class FilterFactoryManager<FilterInterface> {
+    /**
+     * Use this interface to register a listener
+     */
+    public interface FilterChangeListener extends Listener<FilterChangeEventData> {            
+    }
     private static final I18n I18N = I18nFactory.getI18n(FilterFactoryManager.class);
     private static final Logger LOGGER = Logger.getLogger(FilterFactoryManager.class);
     private JPanel filterListPanel;/*!< This panel contain the set of filters */
@@ -227,6 +233,13 @@ public class FilterFactoryManager<FilterInterface> {
         }
     }
 
+    public void addEventFilterListener(FilterChangeListener listener) {
+            eventFilterChange.addListener(null, listener);
+    }
+    
+    public boolean removeEventFilterListener(FilterChangeListener listener) {
+            return eventFilterChange.removeListener(listener);
+    }
     /**
      * Use the listener manager to track change on filters
      * Your list control must be updated with a new set of filters,
@@ -236,7 +249,7 @@ public class FilterFactoryManager<FilterInterface> {
     public ListenerContainer<FilterChangeEventData> getEventFilterChange() {
         return eventFilterChange;
     }
-
+    
     /**
      * Replace all FactoryComboBox by Labels
      * Navigation through components is quite difficult and verbose.

@@ -191,7 +191,7 @@ public class Toc extends JPanel implements EditorDockable {
                 TocTransferHandler handler = new TocTransferHandler(this);
                 //Add a drop listener
                 handler.getTransferEditableEvent().addListener(this,
-                        EventHandler.create(Listener.class, this, "onDropEditableElement", ""));
+                        EventHandler.create(TocTransferHandler.EditableTransferListener.class, this, "onDropEditableElement", ""));
                 tree.setDragEnabled(true);
                 tree.setTransferHandler(handler);
                 tree.setRootVisible(false);

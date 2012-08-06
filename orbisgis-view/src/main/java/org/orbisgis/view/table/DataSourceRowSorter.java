@@ -35,15 +35,12 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
-import org.apache.commons.collections.MapUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.types.Type;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
-import org.orbisgis.core.events.Listener;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.table.filters.TableSelectionFilter;
 import org.orbisgis.view.table.jobs.SortJob;
 import org.orbisgis.view.table.jobs.SortJobEventSorted;
 
@@ -136,7 +133,7 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         
         private void launchSortProcess(SortKey sortInformation) {
                 SortJob sortJob = new SortJob(sortInformation, model, viewToModel);
-                sortJob.getEventSortedListeners().addListener(this, EventHandler.create(Listener.class,this,"onRowSortDone",""));
+                sortJob.getEventSortedListeners().addListener(this, EventHandler.create(SortJob.SortJobListener.class,this,"onRowSortDone",""));
                 launchJob(sortJob);
         }
 

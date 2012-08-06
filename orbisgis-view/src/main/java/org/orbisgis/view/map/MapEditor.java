@@ -149,7 +149,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 super.addNotify();
                 if (!initialised.getAndSet(true)) {
                         //Register listener
-                        dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(Listener.class, this, "onDropEditable", "editableList"));
+                        dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(MapTransferHandler.EditableTransferListener.class, this, "onDropEditable", "editableList"));
                         mapControl.addMouseMotionListener(EventHandler.create(MouseMotionListener.class, this, "onMouseMove", "point", "mouseMoved"));
                         mapStatusBar.addVetoableChangeListener(
                                 MapStatusBar.PROP_USER_DEFINED_SCALE_DENOMINATOR,
