@@ -131,7 +131,7 @@ public class SortJob implements BackgroundJob {
                         } else {
                                 //Cache values
                                 pm.startTask(I18N.tr("Cache table values"), 100);
-                                Value[] cache = new Value[rowCount];
+                                Value[] cache = new Value[(int)source.getRowCount()];
                                 for (int i = 0; i < source.getRowCount(); i++) {
                                         cache[i] = source.getFieldValue(i, columnToSort);
                                         if (i / 100 == i / 100.0) {

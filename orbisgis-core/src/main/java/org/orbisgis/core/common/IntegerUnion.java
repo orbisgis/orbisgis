@@ -69,12 +69,12 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
 
         }
         
-        public IntegerUnion(Set<Integer> externalSet) {
+        public IntegerUnion(Collection<Integer> externalCollection) {
                 this();
-                if(externalSet instanceof IntegerUnion) {
-                        copyExternalIntegerUnion((IntegerUnion)externalSet);
+                if(externalCollection instanceof IntegerUnion) {
+                        copyExternalIntegerUnion((IntegerUnion)externalCollection);
                 } else {
-                        for(Integer value : externalSet) {
+                        for(Integer value : externalCollection) {
                                 internalAdd(value);
                         }
                 }

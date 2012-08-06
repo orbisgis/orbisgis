@@ -92,7 +92,7 @@ public class TableEditor extends JPanel implements EditorDockable {
         private AtomicBoolean initialised = new AtomicBoolean(false);
         private FilterFactoryManager<TableSelectionFilter> filterManager = new FilterFactoryManager<TableSelectionFilter>();
         private TableRowHeader tableRowHeader;
-        private Point popupCellAdress = new Point();
+        private Point popupCellAdress = new Point(); //Col(x) and row(y) that trigger a popup
 
         public TableEditor(TableEditableElement element) {
                 super(new BorderLayout());
@@ -168,15 +168,39 @@ public class TableEditor extends JPanel implements EditorDockable {
                 }
                 if(table.getSelectedRowCount()>0) {
                         JMenuItem addRowFilter = new JMenuItem(I18N.tr("Filter selected rows"));
-                        addRowFilter.setToolTipText(I18N.tr("Create a row filter with the selection"));
+                        addRowFilter.setToolTipText(I18N.tr("Show only the selected rows"));
+                        addRowFilter.addActionListener(
+                                EventHandler.create(ActionListener.class,
+                                this,"onMenuFilterRows"));
+                        pop.add(addRowFilter);
                 }
                 if(tableSorter.isFiltered()) {
                         JMenuItem removeRowFilter = new JMenuItem(
                                 I18N.tr("Clear row filter"));
                         removeRowFilter.setToolTipText(I18N.tr("Show all rows"));
+                        removeRowFilter.addActionListener(
+                                EventHandler.create(ActionListener.class,
+                                this,"onMenuClearFilter"));
                         pop.add(removeRowFilter);
                 }
                 return pop;
+        }
+        
+        /**
+         * Show all rows of the data source (remove the filter)
+         */
+        public void onMenuClearFilter() {
+                tableSorter.setRowsFilter(null);
+        }
+        /**
+         * Show only selected rows
+         */
+        public void onMenuFilterRows() {
+                IntegerUnion selectedModelIndex = new IntegerUnion();
+                for(int viewRowId : table.getSelectedRows()) {
+                        selectedModelIndex.add(tableSorter.convertRowIndexToModel(viewRowId));
+                }
+                tableSorter.setRowsFilter(selectedModelIndex);
         }
         
         /**
@@ -193,7 +217,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                         );
                 optimalWidth.addActionListener(
                         EventHandler.create(ActionListener.class,this,
-                        "onMenuOptimalWidth","actionCommand"));
+                        "onMenuOptimalWidth"));
                 pop.add(optimalWidth);
                 // Additionnal functions for specific columns
                 if (tableModel.getColumnType(col).getTypeCode() != Type.GEOMETRY) {
@@ -205,7 +229,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                                 );
                         sortAscending.addActionListener(
                         EventHandler.create(ActionListener.class,this,
-                        "onMenuSortAscending","actionCommand"));
+                        "onMenuSortAscending"));
                         pop.add(sortAscending);
                         //Sort Descending
                         JMenuItem sortDescending =
@@ -214,7 +238,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                                 );
                         sortDescending.addActionListener(
                         EventHandler.create(ActionListener.class,this,
-                        "onMenuSortDescending","actionCommand"));
+                        "onMenuSortDescending"));
                         pop.add(sortDescending);
                         //No sort
                         JMenuItem noSort =
@@ -225,12 +249,6 @@ public class TableEditor extends JPanel implements EditorDockable {
                         EventHandler.create(ActionListener.class,this,
                         "onMenuNoSort"));
                         pop.add(noSort);
-                }                
-                //Add the column index in the ActionEvent
-                for(MenuElement element : pop.getSubElements()) {
-                        if(element instanceof AbstractButton) {
-                                ((AbstractButton)element).setActionCommand(col.toString());
-                        }
                 }
                 return pop;
 
@@ -254,14 +272,12 @@ public class TableEditor extends JPanel implements EditorDockable {
         }
         /**
          * Descending sort
-         * @param strCol column (Event action string)
          */
         public void onMenuSortDescending() {
                 tableSorter.setSortKey(new SortKey(popupCellAdress.x,SortOrder.DESCENDING));                
         }
         /**
          * Compute the optimal width for this column
-         * @param strCol  column (Event action string)
          */
         public void onMenuOptimalWidth() {
                 launchJob(new OptimalWidthJob(table,popupCellAdress.x));

@@ -166,6 +166,14 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 }
         }
         
+        @Override
+        public void setSortKeys(List<? extends SortKey> list) {
+                if (list == null || list.isEmpty()) {
+                        setSortKey(null);
+                } else {
+                        setSortKey(list.get(0));
+                }
+        }
         /**
          * Sort the column in the provided order
          *
@@ -175,14 +183,20 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 if (sortRequest != null) {
                         launchSortProcess(sortRequest);
                 } else {
-                        clearSort();
+                        sortedColumns.clear();
+                        if(isFiltered()) {
+                                IntegerUnion shownRows = new IntegerUnion(viewToModel);
+                                clearIndex();
+                                setRowsFilter(shownRows);
+                        } else {
+                                clearIndex();
+                        }
                 }
         }
 
-        private void clearSort() {
+        private void clearIndex() {
                 if(viewToModel!=null) {
                         int[] oldViewToModel = getViewToModelArray();
-                        sortedColumns.clear();
                         viewToModel = null;
                         modelToView = null;
                         fireSortOrderChanged();
@@ -198,27 +212,18 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
          */
         public void setRowsFilter(IntegerUnion rowsFilter) {
                 int[] oldViewToModel = getViewToModelArray();
-                List<Integer> nextViewToModel;
-                if (rowsFilter == null) {
-                        refreshSorter();
-                } else {
-                        if (viewToModel != null) {
-                                nextViewToModel = new ArrayList<Integer>(rowsFilter.size());
-                                //Keep the row order
-                                for (Integer modelRowId : viewToModel) {
-                                        if (rowsFilter.contains(modelRowId)) {
-                                                nextViewToModel.add(modelRowId);
-                                        }
-                                }
-                        } else {
-                                nextViewToModel = new ArrayList<Integer>(rowsFilter);
-                        }
+                if(rowsFilter!=null) {
                         //Update the internal list
-                        viewToModel = nextViewToModel;
+                        viewToModel = new ArrayList<Integer>(rowsFilter);
                         initModelToView();
-                        fireSortOrderChanged();
-                        fireRowSorterChanged(oldViewToModel);
-                }
+                } else {
+                        viewToModel = null;
+                        modelToView = null;
+                }                
+                fireSortOrderChanged();
+                fireRowSorterChanged(oldViewToModel);
+                //Do sorting
+                refreshSorter();
         }
 
         /**
@@ -229,14 +234,6 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 return getModelRowCount()!=getViewRowCount();
         }
 
-        @Override
-        public void setSortKeys(List<? extends SortKey> list) {
-                if (list == null || list.isEmpty()) {
-                        clearSort();
-                } else {
-                        setSortKey(list.get(0));
-                }
-        }
 
         private boolean isSortable(int columnIndex) {
                 return model.getColumnType(columnIndex).getTypeCode() != Type.GEOMETRY;
@@ -267,7 +264,6 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 if(sortedColumns!=null && !sortedColumns.isEmpty()) {
                         launchSortProcess(sortedColumns.get(0));
                 }
-                clearSort();
         }
 
         @Override
@@ -285,12 +281,14 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
         @Override
         public void rowsInserted(int i, int i1) {
                 LOGGER.debug("rowsInserted");
+                clearIndex();
                 refreshSorter();
         }
 
         @Override
         public void rowsDeleted(int i, int i1) {
                 LOGGER.debug("rowsDeleted");
+                clearIndex();
                 refreshSorter();
         }
 
