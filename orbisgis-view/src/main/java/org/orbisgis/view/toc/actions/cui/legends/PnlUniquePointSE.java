@@ -317,6 +317,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * @param jp
          */
         public void addPointOnVertices(ConstantFormPoint point, JPanel jp){
+                CanvasSE prev = getPreview();
                 JRadioButton bVertex = new JRadioButton(I18N.tr("On vertex"));
                 JRadioButton bCentroid = new JRadioButton(I18N.tr("On centroid"));
                 ButtonGroup bg = new ButtonGroup();
@@ -324,8 +325,11 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 bg.add(bCentroid);
                 ActionListener actionV = EventHandler.create(ActionListener.class, point, "setOnVertex");
                 ActionListener actionC = EventHandler.create(ActionListener.class, point, "setOnCentroid");
+                ActionListener actionRef = EventHandler.create(ActionListener.class, prev, "repaint");
                 bVertex.addActionListener(actionV);
+                bVertex.addActionListener(actionRef);
                 bCentroid.addActionListener(actionC);
+                bCentroid.addActionListener(actionRef);
                 bVertex.setSelected(((PointSymbolizer)point.getSymbolizer()).isOnVertex());
                 bCentroid.setSelected(!((PointSymbolizer)point.getSymbolizer()).isOnVertex());
                 jp.add(bVertex);
