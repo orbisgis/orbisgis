@@ -784,11 +784,11 @@ public class ProcessorTest extends TestBase {
         }
 
         private SQLStatement getValidatedStatement(String sql) throws Exception {
-                return Engine.parse(sql, dsf.getProperties())[0];
+                return Engine.parse(sql, dsf.getProperties());
         }
 
         private SQLStatement getFullyValidatedStatement(String sql) throws Exception {
-                final SQLStatement st = Engine.parse(sql, dsf.getProperties())[0];
+                final SQLStatement st = Engine.parse(sql, dsf.getProperties());
                 st.setDataSourceFactory(dsf);
                 st.prepare();
                 return st;

@@ -33,19 +33,18 @@
  */
 package org.gdms.sql.engine
 
-import java.io.InputStream
-import java.io.ObjectInputStream
-import java.io.ObjectOutputStream
-import java.io.OutputStream
+import java.io.{ObjectOutputStream, OutputStream, IOException}
 import java.util.Properties
+import scala.collection.mutable.{Map => MutMap}
 import org.gdms.data.DataSourceFactory
 import org.gdms.data.schema.Metadata
-import org.gdms.driver.DataSet
-import org.gdms.driver.DriverException
+import org.gdms.data.values.Value
+import org.gdms.driver.{DataSet, DriverException}
 import org.gdms.sql.engine.commands.OutputCommand
 import org.gdms.sql.engine.operations._
 import org.gdms.sql.engine.step.builder.BuilderStep
 import org.gdms.sql.engine.step.functions.FunctionsStep
+import org.gdms.sql.engine.step.params.ParamsStep
 import org.gdms.sql.engine.step.physicalJoin.PhysicalJoinOptimStep
 import org.orbisgis.progress.ProgressMonitor
 
@@ -58,7 +57,7 @@ import org.orbisgis.progress.ProgressMonitor
  * @author AntoineGourlay
  * @since 0.4
  */
-class SQLStatement(sql: String, op: Operation)(implicit p: Properties) {
+sealed class SQLStatement(sql: String, private[engine] val op: Operation)(implicit p: Properties) {
   
   // sql string for display and serialization
   private val finalSql = sql + ';'
@@ -83,6 +82,22 @@ class SQLStatement(sql: String, op: Operation)(implicit p: Properties) {
     } toArray   
   }
   
+  private val vParams = MutMap[String, Value]()
+  private val fParams = MutMap[String, String]()
+  private val tParams = MutMap[String, String]()
+  
+  def setValueParameter(name: String, v: Value) {
+    vParams.put(name, v)
+  }
+  
+  def setFieldParameter(name: String, fieldName: String) {
+    fParams.put(name, fieldName)
+  }
+  
+  def setTableParameter(name: String, tableName: String) {
+    tParams.put(name, tableName)
+  }
+  
   def setDataSourceFactory(dsf: DataSourceFactory) {
     this.dsf = if (dsf == null) None else Some(dsf)
   }
@@ -98,7 +113,8 @@ class SQLStatement(sql: String, op: Operation)(implicit p: Properties) {
       }
       
       // duplicates the Operation tree before using it
-      com = (op.duplicate, dsf.get)   >=: 
+      com = (op.duplicate   >=: new ParamsStep(vParams, fParams, tParams), 
+             dsf.get)       >=: 
       FunctionsStep         >=: // resolve functions, process aggregates
       PhysicalJoinOptimStep >=: // choose join methods (indexes)
       BuilderStep               // build Command tree
@@ -128,6 +144,10 @@ class SQLStatement(sql: String, op: Operation)(implicit p: Properties) {
       com.cleanUp()
       preparedButNotCleaned = false
       
+      vParams.clear
+      fParams.clear
+      tParams.clear
+      
       // IMPORTANT: this lets the GC do its work
       r = null
       com = null
@@ -148,13 +168,14 @@ class SQLStatement(sql: String, op: Operation)(implicit p: Properties) {
   
   def getSQL(): String = finalSql
   
+  @throws(classOf[IOException])
   def save(out: OutputStream) {
     var o: ObjectOutputStream = null
     var o2: ObjectOutputStream = null
     
     try {
       o = new ObjectOutputStream(out)
-      o.writeObject(sql)
+      o.writeUTF(finalSql)
       o.flush
       o2 = new ObjectOutputStream(out)
       o2.writeObject(op)
@@ -162,25 +183,7 @@ class SQLStatement(sql: String, op: Operation)(implicit p: Properties) {
     } finally {
       if (o != null) o.close
       if (o2 != null) o2.close
-    }
-  }
-}
-
-object SQLStatement {
-  def load(i: InputStream, p: Properties): SQLStatement = {
-    var o: ObjectInputStream = null
-    var o2: ObjectInputStream = null
-    
-    try {
-      o = new ObjectInputStream(i)
-      val sql = o.readObject.asInstanceOf[String]
-      o2 = new ObjectInputStream(i)
-      val ope = o2.readObject.asInstanceOf[Operation]
-      
-      new SQLStatement(sql, ope)(p)
-    } finally {
-      if (o != null) o.close
-      if (o2 != null) o2.close
+      out.close // just to be sure
     }
   }
 }

@@ -33,39 +33,77 @@
  */
 package org.gdms.sql.engine
 
+import java.io.{InputStream, ObjectInputStream, IOException, File, FileInputStream}
 import java.util.Properties
 import org.gdms.data.DataSourceFactory
+import org.gdms.sql.engine.operations.Operation
 import org.gdms.sql.engine.step.filters.FiltersStep
 import org.gdms.sql.engine.step.logicalJoin.LogicalJoinOptimStep
 import org.gdms.sql.engine.step.parsing.ParsingStep
 import org.gdms.sql.engine.step.treeparsing.TreeParsingStep
 import org.gdms.sql.engine.step.validate.ValidationStep
+import scala.io.Source
 
 object Engine {
   
   @throws(classOf[ParseException])
-  def parse(sql: String): Array[SQLStatement] = parse(sql, DataSourceFactory.getDefaultProperties) toArray
-  
-  @throws(classOf[ParseException])
-  def parse(sql: String, p: Properties) = {
-    implicit val pp = p
-    
-    {
-      sql          >=: // original string
-      ParsingStep  >=: // parsing into AST
-      TreeParsingStep  // parsing into Seq[Operation]
-    } map { c =>
-      (c._1                    >=:
-      LogicalJoinOptimStep >=: // joins
-      FiltersStep          >=: // filters
-      ValidationStep           // validation
-     , c._2)
-    } map (c => new SQLStatement(c._2, c._1)) toArray
+  def parseScript(sqlFile: File): SQLScript = {
+    parseScript(Source.fromFile(sqlFile).mkString, DataSourceFactory.getDefaultProperties)
   }
   
   @throws(classOf[ParseException])
-  def execute(sql: String, dsf: DataSourceFactory, p: Properties) {
-    parse(sql, p) foreach { ss =>
+  def parseScript(sql: InputStream): SQLScript = {
+    parseScript(Source.fromInputStream(sql).mkString, DataSourceFactory.getDefaultProperties)
+  }
+  
+  @throws(classOf[ParseException])
+  def parseScript(sql: String): SQLScript = parseScript(sql, DataSourceFactory.getDefaultProperties)
+  
+  @throws(classOf[ParseException])
+  def parseScript(sql: String, p: Properties): SQLScript = {
+    implicit val pp = p
+    
+    new SQLScript({
+        sql          >=: // original string
+        ParsingStep  >=: // parsing into AST
+        TreeParsingStep  // parsing into Seq[Operation]
+      } map { c =>
+        (c._1                    >=:
+         LogicalJoinOptimStep >=: // joins
+         FiltersStep          >=: // filters
+         ValidationStep           // validation
+         , c._2)
+      } map (c => new SQLStatement(c._2, c._1)))
+  }
+  
+  @throws(classOf[ParseException])
+  def parse(sql: String): SQLStatement = parse(sql, DataSourceFactory.getDefaultProperties)
+  
+  @throws(classOf[ParseException])
+  def parse(sql: String, p: Properties): SQLStatement = {
+    implicit val pp = p
+    
+    val c = {
+      sql          >=: // original string
+      ParsingStep  >=: // parsing into AST
+      TreeParsingStep  // parsing into Seq[Operation]
+    }
+    
+    if (!c.tail.isEmpty) {
+      
+    }
+    
+    new SQLStatement(c.head._2, 
+                     c.head._1                 >=:
+                     LogicalJoinOptimStep >=: // joins
+                     FiltersStep          >=: // filters
+                     ValidationStep           // validation)
+    )
+  }
+  
+  @throws(classOf[ParseException])
+  def executeScript(sql: String, dsf: DataSourceFactory, p: Properties) {
+    parseScript(sql, p).sts foreach { ss =>
       ss.setDataSourceFactory(dsf)
       ss.prepare
       ss.execute
@@ -74,7 +112,64 @@ object Engine {
   }
   
   @throws(classOf[ParseException])
-  def execute(sql: String, dsf: DataSourceFactory) {
-    execute(sql, dsf, dsf.getProperties)
+  def executeScript(sql: String, dsf: DataSourceFactory) {
+    executeScript(sql, dsf, dsf.getProperties)
+  }
+  
+  @throws(classOf[IOException])
+  def load(f: File): SQLStatement = load(new FileInputStream(f), DataSourceFactory.getDefaultProperties)
+  
+  @throws(classOf[IOException])
+  def load(i: InputStream): SQLStatement = load(i, DataSourceFactory.getDefaultProperties)
+  
+  @throws(classOf[IOException])
+  def load(i: InputStream, p: Properties): SQLStatement = {
+    var o: ObjectInputStream = null
+    var o2: ObjectInputStream = null
+    
+    try {
+      o = new ObjectInputStream(i)
+      val sql = o.readUTF
+      o2 = new ObjectInputStream(i)
+      val ope = o2.readObject.asInstanceOf[Operation]
+      
+      new SQLStatement(sql, ope)(p)
+    } finally {
+      if (o != null) o.close
+      if (o2 != null) o2.close
+      i.close // just to be sure
+    }
+  }
+  
+  @throws(classOf[IOException])
+  def loadScript(f: File): SQLScript = loadScript(new FileInputStream(f), DataSourceFactory.getDefaultProperties)
+  
+  @throws(classOf[IOException])
+  def loadScript(i: InputStream): SQLScript = loadScript(i, DataSourceFactory.getDefaultProperties)
+  
+  @throws(classOf[IOException])
+  def loadScript(i: InputStream, p: Properties): SQLScript = {
+    var sts: List[SQLStatement] = Nil
+    var objs: List[ObjectInputStream] = Nil
+    
+    try {
+    val oNum = new ObjectInputStream(i)
+    val num = oNum.readInt
+    
+    objs = List(oNum)
+    
+    new SQLScript((1 to num) map {_ =>
+          // duplicating the ObjectInputStream is important here
+          val o = new ObjectInputStream(i)
+          val sql = o.readUTF
+          val o2 = new ObjectInputStream(i)
+          val ope = o2.readObject.asInstanceOf[Operation]
+        
+          new SQLStatement(sql, ope)(p)
+      })
+    } finally {
+      objs map (_.close)
+      i.close // just to be sure
+    }
   }
 }

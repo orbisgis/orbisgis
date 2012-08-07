@@ -149,7 +149,7 @@ case class FunctionEvaluator(name: String, l: List[Expression]) extends Evaluato
   override def toString = if (f == null) name else f.getName + "(" + l + ")"
   
   def duplicate: FunctionEvaluator = {
-    val ret = FunctionEvaluator(name, l)
+    val ret = FunctionEvaluator(name, l map (_.duplicate))
     if (dsf != null) {
       ret.dsf = dsf
       // if initialized, set a new the function instance on duplication - #699
@@ -211,7 +211,7 @@ case class AggregateEvaluator(f: AggregateFunction, l: List[Expression]) extends
     if (dsf == null) {
       throw new FunctionException("Internal Error: duplicating an uninitialized AggregateEvaluator")
     } else {
-      AggregateEvaluator(dsf.getFunctionManager.getFunction(f.getName).asInstanceOf[AggregateFunction], l)
+      AggregateEvaluator(dsf.getFunctionManager.getFunction(f.getName).asInstanceOf[AggregateFunction], l map (_.duplicate))
     }
   }
 }
@@ -497,5 +497,26 @@ case class QueryToScalarEvaluator(var op: Operation) extends QueryEvaluator {
     val c = QueryToScalarEvaluator(op.duplicate)
     c.dsf = dsf
     c
+  }
+}
+
+case class ParamEvaluator(name: String) extends Evaluator {
+  val sqlType = -1
+  
+  def eval = s => sys.error("Internal Error! A parameter placeholder survived until execution.")
+  
+  val index: Int = -1
+  override def doValidate() = throw new SemanticException("Parameter @{" + name + "} has not been set.")
+  override def toString = "Param(" + name + ")"
+  
+  def duplicate: ParamEvaluator = copy()
+}
+
+object param {
+  def unapply(e: Expression) = {
+    e.evaluator match {
+      case ParamEvaluator(n) => Some(n)
+      case _ => None
+    }
   }
 }

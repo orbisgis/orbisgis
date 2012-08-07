@@ -176,6 +176,6 @@ public class ExportTest extends AbstractDBTest {
 
         private void executeGDMSScript(String script) throws
                 DriverException, ParseException, SemanticException {
-                Engine.execute(script, dsf);
+                Engine.executeScript(script, dsf);
         }
 }

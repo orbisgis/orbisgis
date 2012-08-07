@@ -726,3 +726,9 @@ case class DropFunction(name: String, ifExists: Boolean) extends Operation {
   override def toString = "DropFunction (" + name + ", ifExists=" + ifExists + ")"
   def duplicate: DropFunction = DropFunction(name, ifExists)
 }
+
+case class ParamTable(name: String, alias: Option[String] = None) extends Operation {
+  def children = Nil
+  override def toString = "ParamTable (" + name + ")"
+  def duplicate: ParamTable = ParamTable(name)
+}
