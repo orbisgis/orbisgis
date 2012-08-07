@@ -251,7 +251,10 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
                 //We can cast safely as we KNOW we are already dealing with a LegendPanel.
                 panel.initialize(this);
                 panel.setId(getNewId());
-                pnlContainer.add(panel.getComponent(), panel.getId());
+                JScrollPane jsp = new JScrollPane(panel.getComponent(),
+                        JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
+                        JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                pnlContainer.add(jsp, panel.getId());
                 refreshLegendContainer();
         }
 
