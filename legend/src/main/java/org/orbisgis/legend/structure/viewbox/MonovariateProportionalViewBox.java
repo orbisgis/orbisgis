@@ -71,9 +71,13 @@ public class MonovariateProportionalViewBox extends DefaultViewBox {
                 //We build the height
                 Interpolate2Real ir = new Interpolate2Real(new RealLiteral(0));
                 InterpolationPoint<RealParameter> ip =new InterpolationPoint<RealParameter>();
-                ip.setData(1);
-                ip.setValue(new RealLiteral(1));
+                ip.setData(0);
+                ip.setValue(new RealLiteral(0));
                 ir.addInterpolationPoint(ip);
+                InterpolationPoint<RealParameter> ip2 =new InterpolationPoint<RealParameter>();
+                ip2.setData(1);
+                ip2.setValue(new RealLiteral(1));
+                ir.addInterpolationPoint(ip2);
                 setHeightLegend((NumericLegend)new RealParameterAnalyzer(ir).getLegend());
                 //We must not forget our interpolation function...
                 //It's empty ! Don't forget to fill it later !
