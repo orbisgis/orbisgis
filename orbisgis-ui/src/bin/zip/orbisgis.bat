@@ -6,7 +6,7 @@
 @REM OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
 @REM team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
 @REM
-@REM Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+@REM Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
 @REM
 @REM This file is part of OrbisGIS.
 @REM
