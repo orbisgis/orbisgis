@@ -34,8 +34,10 @@ import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.MarkGraphicAnalyzer;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
 import org.orbisgis.legend.structure.graphic.ProportionalWKNLegend;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
 
 /**
@@ -101,6 +103,38 @@ public class ProportionalPoint extends ConstantFormPoint  {
     @Override
     public ConstantFormWKN getMarkGraphic() {
         return markGraphic;
+    }
+
+    /**
+     * Gets the Fill analysis embedded in this {@code IUniqueSymbolArea}.
+     * @return
+     */
+    public ConstantSolidFill getFillLegend() {
+        return markGraphic.getSolidFill();
+    }
+
+    /**
+     * Sets the Fill analysis embedded in this {@code IUniqueSymbolArea}.
+     * @param csf
+     */
+    public void setFillLegend(ConstantSolidFill csf) {
+            markGraphic.setFillLegend(csf);
+    }
+
+    /**
+     * Gets the analysis associated to the inner {@code PenStroke}.
+     * @return
+     */
+    public ConstantPenStroke getPenStroke(){
+        return markGraphic.getPenStroke();
+    }
+
+    /**
+     * Sets the analysis associated to the inner {@code PenStroke}.
+     * @param cpsl
+     */
+    public void setPenStroke(ConstantPenStroke cpsl) {
+        markGraphic.setPenStroke(cpsl);
     }
 
     /**
