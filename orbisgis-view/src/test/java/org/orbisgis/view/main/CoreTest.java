@@ -87,7 +87,7 @@ public class CoreTest {
         UnitTestFilterFactory unitTestFactory = new UnitTestFilterFactory();
         geoCatalog.getFilterFactoryManager().registerFilterFactory(unitTestFactory);
         //Add a new filter with this factory
-        geoCatalog.getFilterFactoryManager().addFilter(unitTestFactory.getFactoryId(), "");
+        geoCatalog.getFilterFactoryManager().addFilter(unitTestFactory.getDefaultFilterValue());
         //In the SourceListModel, search the generated IFilter
         List<IFilter> filters = UImodel.getFilters();
         boolean filterFounds=false;

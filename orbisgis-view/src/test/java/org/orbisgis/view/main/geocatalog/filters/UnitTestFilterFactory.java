@@ -32,9 +32,10 @@ import java.awt.Component;
 import javax.swing.JTextField;
 import org.gdms.source.SourceManager;
 import org.orbisgis.view.components.filter.ActiveFilter;
+import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
-import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.components.filter.TextFieldDocumentListener;
+import org.orbisgis.view.geocatalog.filters.IFilter;
 
 /**
  * This is the data source name contains x filter.
@@ -47,6 +48,7 @@ public class UnitTestFilterFactory implements FilterFactory<IFilter> {
      *
      * @return Internal name of the filter type
      */
+    @Override
     public String getFactoryId() {
         return "unittest_factory";
     }
@@ -56,6 +58,7 @@ public class UnitTestFilterFactory implements FilterFactory<IFilter> {
      *
      * @return
      */
+    @Override
     public String getFilterLabel() {
         return "unittest_factory";
     }
@@ -66,7 +69,8 @@ public class UnitTestFilterFactory implements FilterFactory<IFilter> {
      * @param filterValue The new value fired by PropertyChangeEvent
      * @return
      */
-    public IFilter getFilter(String filterValue) {
+    @Override
+    public IFilter getFilter(ActiveFilter filterValue) {
         return new UnitTestFilter();
     }
 
@@ -77,18 +81,26 @@ public class UnitTestFilterFactory implements FilterFactory<IFilter> {
      * @param filterValue When the control change the ActiveFilter value must be updated
      * @return The swing component.
      */
+    @Override
     public Component makeFilterField(ActiveFilter filterValue) {
-        JTextField filterField = new JTextField(filterValue.getCurrentFilterValue());
+        JTextField filterField = new JTextField(((DefaultActiveFilter)filterValue).getCurrentFilterValue());
         //Update the field at each modification        
-        filterField.getDocument().addDocumentListener(new TextFieldDocumentListener(filterField,filterValue));
+        filterField.getDocument().addDocumentListener(new TextFieldDocumentListener(filterField, (DefaultActiveFilter)filterValue));
         return filterField;
     }
+
+    @Override
+    public ActiveFilter getDefaultFilterValue() {
+        return new DefaultActiveFilter(getFactoryId(),"");
+    }
+
     
     /**
      * Inner class text filter
      */
     public class UnitTestFilter implements IFilter {
 
+        @Override
         public boolean accepts(SourceManager sm, String sourceName) {
             return false;
         }     

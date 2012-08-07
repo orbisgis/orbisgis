@@ -32,9 +32,15 @@ import java.awt.Component;
 
 /**
  * Creates a filter and the compo.
+ * @param <FilterInterface>
  */
 public interface FilterFactory<FilterInterface> {
 
+    /**
+     * @return A newly empty created filter
+     */    
+    ActiveFilter getDefaultFilterValue();
+    
     /**
      * The factory ID
      *
@@ -55,7 +61,7 @@ public interface FilterFactory<FilterInterface> {
      * @param filterValue The new value fired by PropertyChangeEvent
      * @return
      */
-    FilterInterface getFilter(String filterValue);
+    FilterInterface getFilter(ActiveFilter filterValue);
 
    
     /**

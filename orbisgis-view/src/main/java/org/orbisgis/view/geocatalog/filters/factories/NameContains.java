@@ -32,6 +32,7 @@ import java.awt.Component;
 import javax.swing.JTextField;
 import org.gdms.source.SourceManager;
 import org.orbisgis.view.components.filter.ActiveFilter;
+import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.components.filter.TextFieldDocumentListener;
 import org.orbisgis.view.geocatalog.filters.IFilter;
@@ -72,8 +73,8 @@ public class NameContains implements FilterFactory<IFilter> {
      * @return
      */
     @Override
-    public IFilter getFilter(String filterValue) {
-        return new TextFilter(filterValue);
+    public IFilter getFilter(ActiveFilter filterValue) {
+        return new TextFilter(((DefaultActiveFilter)filterValue).getCurrentFilterValue());
     }
 
 
@@ -85,12 +86,17 @@ public class NameContains implements FilterFactory<IFilter> {
      */
     @Override
     public Component makeFilterField(ActiveFilter filterValue) {
-        JTextField filterField = new JTextField(filterValue.getCurrentFilterValue());
+        JTextField filterField = new JTextField(((DefaultActiveFilter)filterValue).getCurrentFilterValue());
         //Update the field at each modification   
         //The lifetime of the listener has the same lifetime than the ActiveFilter,
         //then this is useless to remove the listener.
-        filterField.getDocument().addDocumentListener(new TextFieldDocumentListener(filterField,filterValue));
+        filterField.getDocument().addDocumentListener(new TextFieldDocumentListener(filterField,((DefaultActiveFilter)filterValue)));
         return filterField;
+    }
+
+    @Override
+    public ActiveFilter getDefaultFilterValue() {
+        return new DefaultActiveFilter(getFactoryId(), "");
     }
     
     /**

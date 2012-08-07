@@ -33,18 +33,16 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import org.apache.log4j.Logger;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
@@ -58,6 +56,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Nicolas Fortin
  */
 public class FieldsContainsFilterFactory implements FilterFactory<TableSelectionFilter> {
+        private static final Logger LOGGER = Logger.getLogger(FieldsContainsFilterFactory.class);
         public static final String FACTORY_ID  ="FieldsContainsFilter";
         protected final static I18n I18N = I18nFactory.getI18n(FieldsContainsFilterFactory.class);
         private JTable table;
@@ -76,33 +75,20 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
         public String getFilterLabel() {
                 return I18N.tr("Find");
         }
-        
-        private static FilterParameters deserializeValue(String filterValue) {
-                if(filterValue.isEmpty()) {
-                        return new FilterParameters(-1,"");
-                }
-                ByteArrayInputStream buf = new ByteArrayInputStream(filterValue.getBytes());
-                try {
-                        ObjectInputStream objStream = new ObjectInputStream(buf);
-                        FilterParameters params = (FilterParameters)objStream.readObject();
-                        return params;
-                } catch (ClassNotFoundException ex) {
-                        throw new IllegalStateException(I18N.tr("Filter error"), ex);
-                } catch (IOException ex) {
-                        throw new IllegalStateException(I18N.tr("Filter error"), ex);
-                }
-                
+
+        @Override
+        public ActiveFilter getDefaultFilterValue() {
+                return new FilterParameters(-1,"");
         }
 
         @Override
-        public TableSelectionFilter getFilter(String filterValue) {
-                FilterParameters parameters = deserializeValue(filterValue);
-                return new FieldsContainsFilter(parameters);
+        public TableSelectionFilter getFilter(ActiveFilter filterValue) {
+                return new FieldsContainsFilter((FilterParameters)filterValue);
         }
 
         @Override
         public Component makeFilterField(ActiveFilter filterValue) {
-                FilterParameters params = deserializeValue(filterValue.getCurrentFilterValue());                
+                FilterParameters params = (FilterParameters)filterValue;
                 JPanel filterFields = new JPanel();
                 filterFields.setLayout(new BoxLayout(filterFields, BoxLayout.X_AXIS));
                 // Searched Text
@@ -122,7 +108,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 //Run filter, will update filterValue
                 JButton runButton = new JButton(I18N.tr("Search"));
                 FilterActionListener listener = new FilterActionListener(
-                        filterValue,
+                        params,
                         searchedTextBox,
                         fieldSelection);
                 runButton.addActionListener(listener);
@@ -133,13 +119,15 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
         private static class FieldsContainsFilter implements TableSelectionFilter {
 
                 private FilterParameters params;
+                private String searchChars;
 
                 public FieldsContainsFilter(FilterParameters params) {
                         this.params = params;
+                        searchChars = params.getSearchedChars().toLowerCase();
                 }
 
                 private boolean isFieldContains(Value field) {
-                        return field.toString().toLowerCase().contains(params.getSearchedChars());
+                        return field.toString().toLowerCase().contains(searchChars);
                 }
 
                 @Override
@@ -166,47 +154,75 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 }
         }
         /**
-        * Produced by the swing fields, read by the filter.
-        * Implements Serializable to convert from/to a String
+        * Add some parameters to ActiveFilter
         */
-        private static class FilterParameters implements Serializable {
+        public static class FilterParameters extends ActiveFilter {
                 private static final long serialVersionUID = 2L;
-                private int rowId;
                 private String searchedChars;
+                private int rowId;
 
                 public FilterParameters(int rowId, String searchedChars) {
-                        this.rowId = rowId;
+                        super(FieldsContainsFilterFactory.FACTORY_ID);
                         this.searchedChars = searchedChars;
+                        this.rowId = rowId;
+                }
+
+                @Override
+                public void readStream(DataInputStream in) throws IOException {
+                        super.readStream(in);
+                        rowId = in.readInt();
+                        searchedChars = in .readUTF();
+                }
+
+                @Override
+                public void writeStream(DataOutputStream out) throws IOException {
+                        super.writeStream(out);
+                        out.writeInt(rowId);
+                        out.writeUTF(searchedChars);
                 }
 
                 public int getRowId() {
                         return rowId;
                 }
 
-                public String getSearchedChars() {
-                        return searchedChars;
+                public void setValue(int rowId, String searchedChars) {
+                        FilterParameters oldParams = new FilterParameters(this.rowId, this.searchedChars);
+                        this.rowId = rowId;
+                        this.searchedChars = searchedChars;
+                        propertySupport.firePropertyChange(PROP_CURRENTFILTERVALUE, oldParams, this);
+                }
+
+                @Override
+                public boolean equals(Object o) {
+                        if(!(o instanceof FilterParameters)) {
+                                return false;
+                        }
+                        FilterParameters other = (FilterParameters)o;
+                        if(other.getRowId()!=rowId || !other.searchedChars.equals(searchedChars)) {
+                                return false;
+                        }
+                        return super.equals(o);
+                }
+
+                @Override
+                public int hashCode() {
+                        int hash = 5 + super.hashCode();
+                        hash = 47 * hash + this.searchedChars.hashCode();
+                        hash = 47 * hash + new Integer(this.rowId).hashCode();
+                        return hash;
                 }
                 
-                @Override
-                public String toString() {
-                        ByteArrayOutputStream out = new ByteArrayOutputStream();
-                        try {
-                                ObjectOutputStream objOut = new ObjectOutputStream(out);
-                                objOut.writeObject(this);
-                                objOut.flush();
-                                return out.toString();
-                        } catch (IOException ex) {
-                                throw new IllegalStateException(I18N.tr("Filter error"), ex);
-                        }
+                public String getSearchedChars() {
+                        return searchedChars;
                 }
         }
         
         private static class FilterActionListener implements ActionListener {
-                private ActiveFilter filter;
+                private FilterParameters filter;
                 private JTextField searchedTextBox;
                 private JComboBox fieldSelection;
 
-                public FilterActionListener(ActiveFilter filter, JTextField searchedTextBox, JComboBox fieldSelection) {
+                public FilterActionListener(FilterParameters filter, JTextField searchedTextBox, JComboBox fieldSelection) {
                         this.filter = filter;
                         this.searchedTextBox = searchedTextBox;
                         this.fieldSelection = fieldSelection;
@@ -214,11 +230,8 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 
                 @Override
                 public void actionPerformed(ActionEvent ae) {
-                        //Update the filter (apply)
-                        filter.setCurrentFilterValue(
-                                new FilterParameters(
-                                fieldSelection.getSelectedIndex()-1,
-                                searchedTextBox.getText()).toString());
+                        filter.setValue(fieldSelection.getSelectedIndex()-1,
+                                searchedTextBox.getText());
                 }
                 
         }

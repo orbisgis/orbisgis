@@ -71,7 +71,7 @@ public class SortJob implements BackgroundJob {
         /**
          * 
          * @param sortRequest 
-         * @param tableSorter
+         * @param tableModel 
          * @param modelIndex Current state of Index, can be null if the index is the same as the model
          */
         public SortJob(SortKey sortRequest, DataSourceTableModel tableModel, Collection<Integer> modelIndex) {

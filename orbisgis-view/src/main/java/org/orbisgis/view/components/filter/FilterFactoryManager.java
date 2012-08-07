@@ -34,7 +34,12 @@ import java.awt.GridLayout;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
@@ -145,7 +150,8 @@ public class FilterFactoryManager<FilterInterface> {
      */
     public void onAddFilter() {
         //Add the default filter
-        addFilter(defaultFilterFactory, "");
+        FilterFactory<FilterInterface> factory = filterFactories.get(defaultFilterFactory);
+        addFilter(factory.getDefaultFilterValue());
     }
     
     
@@ -213,15 +219,15 @@ public class FilterFactoryManager<FilterInterface> {
     
     /**
      * Create a new filter in the UI filter list
-     * @param filterFactoryId The factory identification
-     * @param filterValue The filter value
+     * @param activeFilter The filter value
      */
-    public void addFilter(String filterFactoryId,String filterValue) {
-        if(filterFactories.containsKey(filterFactoryId)) {
+    public void addFilter(ActiveFilter activeFilter) {
+        if(filterFactories.containsKey(activeFilter.getFactoryId())) {
             //Retrieve the factory
-            FilterFactory<FilterInterface> filterFactory = filterFactories.get(filterFactoryId);
-            //Make the active filter content instance
-            ActiveFilter activeFilter = new ActiveFilter(filterFactoryId,filterValue);
+            FilterFactory<FilterInterface> filterFactory = filterFactories.get(activeFilter.getFactoryId());
+            if(filterFactory==null) {
+                    throw new IllegalArgumentException(I18N.tr("The provided filter factory name has not been registered"));
+            }
             //If the filter value is modified reloadFilters must be called
             activeFilter.addPropertyChangeListener(ActiveFilter.PROP_CURRENTFILTERVALUE,
                     EventHandler.create(PropertyChangeListener.class, this,"onFilterChanged"));
@@ -323,8 +329,8 @@ public class FilterFactoryManager<FilterInterface> {
             if(filterFactories.containsKey(activeFilter.getFactoryId())) {
                 //Retrieve the factory
                 FilterFactory<FilterInterface> filterFactory = filterFactories.get(activeFilter.getFactoryId());
-                //Ask the factory to build 
-                FilterInterface generatedFilter = filterFactory.getFilter(activeFilter.getCurrentFilterValue());
+                //Ask the factory to build the filter with the current value
+                FilterInterface generatedFilter = filterFactory.getFilter(activeFilter);
                 generatedFilters.add(generatedFilter);     
             }
         }
@@ -338,7 +344,8 @@ public class FilterFactoryManager<FilterInterface> {
      */
     public void onChooseFilterFactory(String filterFactoryId) {
         //Add a new filter with an empty value
-        addFilter(filterFactoryId,"");
+        FilterFactory<FilterInterface> factory = filterFactories.get(filterFactoryId);
+        addFilter(factory.getDefaultFilterValue());
     }
     
     private JLabel makeFileFactoryLabel(String selectedFactory) {

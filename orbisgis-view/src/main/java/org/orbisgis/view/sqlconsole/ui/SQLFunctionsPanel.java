@@ -119,7 +119,7 @@ public class SQLFunctionsPanel extends JPanel {
                         functionFilters.getEventFilterChange().addListener(this, filterEvent);
                         NameFilterFactory nameFilter = new NameFilterFactory();
                         functionFilters.registerFilterFactory(nameFilter);
-                        functionFilters.addFilter(nameFilter.getFactoryId(), "");                
+                        functionFilters.addFilter(nameFilter.getDefaultFilterValue());                
                 }
         }
 

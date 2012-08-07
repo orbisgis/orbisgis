@@ -35,6 +35,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
@@ -69,6 +70,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.table.filters.FieldsContainsFilterFactory;
 import org.orbisgis.view.table.filters.TableSelectionFilter;
 import org.orbisgis.view.table.jobs.OptimalWidthJob;
+import org.orbisgis.view.table.jobs.SearchJob;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -106,15 +108,16 @@ public class TableEditor extends JPanel implements EditorDockable {
         private JComponent makeFilterManager() {
                 JPanel filterComp = filterManager.makeFilterPanel(false);
                 filterManager.setUserCanRemoveFilter(false);
-                filterManager.registerFilterFactory(new FieldsContainsFilterFactory(table));
-                filterManager.addFilter(FieldsContainsFilterFactory.FACTORY_ID,
-                                        "");
+                FieldsContainsFilterFactory factory = new FieldsContainsFilterFactory(table);
+                filterManager.registerFilterFactory(factory);
+                filterManager.addFilter(factory.getDefaultFilterValue());
                 filterManager.getEventFilterChange().addListener(this, EventHandler.create(FilterFactoryManager.FilterChangeListener.class, this, "onApplySelectionFilter"));
                 return filterComp;
         }
         
         public void onApplySelectionFilter() {
-                
+                List<TableSelectionFilter> filters = filterManager.getFilters();
+                launchJob(new SearchJob(filters.get(0), table, tableModel.getDataSource()));                                
         }
         
         private JComponent makeTable() {

@@ -32,9 +32,10 @@ import java.awt.Component;
 import javax.swing.JTextField;
 import org.gdms.source.SourceManager;
 import org.orbisgis.view.components.filter.ActiveFilter;
+import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
-import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.components.filter.TextFieldDocumentListener;
+import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -65,6 +66,11 @@ public class NameNotContains implements FilterFactory<IFilter> {
         return I18N.tr("Not contains");
     }
 
+    @Override
+    public ActiveFilter getDefaultFilterValue() {
+        return new DefaultActiveFilter(getFactoryId(), "");
+    }
+
     /**
      * Make the filter corresponding to the filter value
      *
@@ -72,8 +78,8 @@ public class NameNotContains implements FilterFactory<IFilter> {
      * @return
      */
     @Override
-    public IFilter getFilter(String filterValue) {
-        return new TextFilter(filterValue);
+    public IFilter getFilter(ActiveFilter filterValue) {
+        return new TextFilter(((DefaultActiveFilter)filterValue).getCurrentFilterValue());
     }
 
 
@@ -85,9 +91,9 @@ public class NameNotContains implements FilterFactory<IFilter> {
      */
     @Override
     public Component makeFilterField(ActiveFilter filterValue) {
-        JTextField filterField = new JTextField(filterValue.getCurrentFilterValue());
+        JTextField filterField = new JTextField(((DefaultActiveFilter)filterValue).getCurrentFilterValue());
         //Update the field at each modification        
-        filterField.getDocument().addDocumentListener(new TextFieldDocumentListener(filterField,filterValue));
+        filterField.getDocument().addDocumentListener(new TextFieldDocumentListener(filterField,((DefaultActiveFilter)filterValue)));
         return filterField;
     }
     
