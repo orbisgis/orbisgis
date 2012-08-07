@@ -49,6 +49,7 @@ import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.orbisgis.view.components.filter.ActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -114,7 +115,8 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 JCheckBox wholeWords = new JCheckBox(I18N.tr("Whole words"),params.isWholeWord());
                 filterFields.add(wholeWords);
                 //Run filter, will update filterValue
-                JButton runButton = new JButton(I18N.tr("Search"));
+                JButton runButton = new JButton(OrbisGISIcon.getIcon("execute"));
+                runButton.setToolTipText(I18N.tr("Search"));
                 FilterActionListener listener = new FilterActionListener(
                         params,
                         searchedTextBox,
