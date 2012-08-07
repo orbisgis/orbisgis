@@ -36,6 +36,7 @@ import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
@@ -48,6 +49,7 @@ import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 import javax.swing.UIManager;
 import javax.swing.event.RowSorterListener;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -142,6 +144,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                 //table.setPreferredScrollableViewportSize(new Dimension(500, 70));
                 table.setFillsViewportHeight(true);       
                 table.setUpdateSelectionOnSort(true);
+                table.setDragEnabled(true);
                 return table;
         }
         
@@ -389,14 +392,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                                 case Type.DOUBLE:
                                 case Type.INT:
                                 case Type.LONG:
-                                        /*
-                                        NumberFormat formatter = NumberFormat.getCurrencyInstance();
-                                        FormatRenderer formatRenderer = new FormatRenderer(formatter);
-                                        formatRenderer.setHorizontalAlignment(SwingConstants.RIGHT);
-                                        formatRenderer.setBackground(NUMERIC_COLOR);
-                                        col.setCellRenderer(formatRenderer);
-                                        * 
-                                        */
+                                        col.setCellRenderer(new TableNumberColumnRenderer(table));
                                         break;
                                 default:
                                         break;
