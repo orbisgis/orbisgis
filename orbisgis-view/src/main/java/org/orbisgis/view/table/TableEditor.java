@@ -37,6 +37,7 @@ import java.beans.EventHandler;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -226,7 +227,13 @@ public class TableEditor extends JPanel implements EditorDockable {
                         "onMenuOptimalWidth"));
                 pop.add(optimalWidth);
                 // Additionnal functions for specific columns
-                if (tableModel.getColumnType(col).getTypeCode() != Type.GEOMETRY) {
+                int geoIndex = -1;
+                try {
+                        geoIndex = MetadataUtilities.getGeometryFieldIndex(tableModel.getDataSource().getMetadata());
+                } catch (DriverException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(),ex);
+                }                
+                if (geoIndex!=col) {
                         pop.addSeparator();
                         //Sort Ascending
                         JMenuItem sortAscending =

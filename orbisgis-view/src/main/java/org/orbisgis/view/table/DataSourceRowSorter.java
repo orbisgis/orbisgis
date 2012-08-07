@@ -36,7 +36,9 @@ import java.util.Map;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import org.apache.log4j.Logger;
+import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.Type;
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.view.background.BackgroundJob;
@@ -177,6 +179,17 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
          * @param sortRequest
          */
         public void setSortKey(SortKey sortRequest) {
+                //Check if the sort request is not on the geometry column
+                int geoIndex = -1;
+                try {
+                        geoIndex = MetadataUtilities.getGeometryFieldIndex(this.model.getDataSource().getMetadata());
+                } catch (DriverException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(),ex);
+                }     
+                if(sortRequest.getColumn()==geoIndex) {
+                        //Ignore sort request
+                        return;
+                }
                 if (sortRequest != null) {
                         launchSortProcess(sortRequest);
                 } else {
