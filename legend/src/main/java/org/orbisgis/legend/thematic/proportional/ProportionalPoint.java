@@ -149,7 +149,7 @@ public class ProportionalPoint extends ConstantFormPoint  {
      * Sets the name of the field where values will be retrieved.
      * @param name
      */
-    public void getLookupFieldName(String name){
+    public void setLookupFieldName(String name){
             markGraphic.setLookupFieldName(name);
     }
 
@@ -205,8 +205,8 @@ public class ProportionalPoint extends ConstantFormPoint  {
      * @throws ParameterException
      * If a problem is encountered while retrieving the double value.
      */
-    public void setFirstValue(double d) {
-        markGraphic.setFirstValue(d);
+    public void setFirstValue(Number d) {
+        markGraphic.setFirstValue(d.doubleValue());
     }
 
     /**
@@ -229,8 +229,8 @@ public class ProportionalPoint extends ConstantFormPoint  {
      * @throws ParameterException
      * If a problem is encountered while retrieving the double value.
      */
-    public void setSecondValue(double d) {
-        markGraphic.setSecondValue(d);
+    public void setSecondValue(Number d) {
+        markGraphic.setSecondValue(d.doubleValue());
     }
 
     @Override
