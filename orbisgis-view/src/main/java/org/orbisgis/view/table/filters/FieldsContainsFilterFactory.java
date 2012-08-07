@@ -44,9 +44,10 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
-import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.components.filter.ActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -156,7 +157,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 }
 
                 @Override
-                public boolean isSelected(int rowId, DataSet source) {
+                public boolean isSelected(int rowId, DataSource source) {
                         Value val;
                         try {
 
@@ -176,6 +177,11 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                         } catch (DriverException ex) {
                                 throw new IllegalStateException(I18N.tr("Filter driver error"), ex);
                         }
+                }
+
+                @Override
+                public void initialise(ProgressMonitor pm, DataSource source) {
+                        //Nothing to do
                 }
         }
         /**

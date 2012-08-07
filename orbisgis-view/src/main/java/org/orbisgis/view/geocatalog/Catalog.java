@@ -143,12 +143,13 @@ public class Catalog extends JPanel implements DockingPanel {
                 //Set the factory that must be shown when the user click on add filter button
                 filterFactoryManager.setDefaultFilterFactory(DEFAULT_FILTER_FACTORY);
                 //Set listener on filter change event, this event will update the filters
-                filterFactoryManager.getEventFilterChange().addListener(sourceListContent,
-                        EventHandler.create(FilterFactoryManager.FilterChangeListener.class,
+                FilterFactoryManager.FilterChangeListener refreshFilterListener = EventHandler.create(FilterFactoryManager.FilterChangeListener.class,
                         sourceListContent, //target of event
                         "setFilters", //target method
                         "source.getFilters" //target method argument
-                        ));
+                        );
+                filterFactoryManager.getEventFilterChange().addListener(sourceListContent,refreshFilterListener);
+                filterFactoryManager.getEventFilterFactoryChange().addListener(sourceListContent,refreshFilterListener);
                 //Add the filter list at the top of the geocatalog
                 add(filterFactoryManager.makeFilterPanel(false), BorderLayout.NORTH);
                 //Create a toolbar to add a new filter
@@ -615,6 +616,7 @@ public class Catalog extends JPanel implements DockingPanel {
         public void dispose() {
                 //Remove listeners linked with the source list content
                 filterFactoryManager.getEventFilterChange().clearListeners();
+                filterFactoryManager.getEventFilterFactoryChange().clearListeners();
                 sourceListContent.dispose();
         }
 

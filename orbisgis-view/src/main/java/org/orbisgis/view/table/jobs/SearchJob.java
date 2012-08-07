@@ -56,14 +56,19 @@ public class SearchJob implements BackgroundJob {
         
         @Override
         public void run(ProgressMonitor pm) {
+                //Launch filter initialisation
+                activeFilter.initialise(pm,source);
+                //Iterate on rows
                 IntegerUnion nextViewSelection = new IntegerUnion();
                 int rowCount = table.getRowCount();
+                pm.startTask(getTaskName(), 100);
                 for(int viewId=0;viewId<rowCount;viewId++) {
                         if(activeFilter.isSelected(table.getRowSorter().convertRowIndexToModel(viewId), source)) {
                                 nextViewSelection.add(viewId);
                                 pm.progressTo(viewId / rowCount * 100);
                         }
                 }
+                pm.endTask();
                 Iterator<Integer> intervals = nextViewSelection.getValueRanges().iterator();
                 table.clearSelection();
                 while(intervals.hasNext()) {

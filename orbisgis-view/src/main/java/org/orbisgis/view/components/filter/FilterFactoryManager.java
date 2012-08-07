@@ -85,6 +85,7 @@ public class FilterFactoryManager<FilterInterface> {
     
     //Listener on filter change
     private ListenerContainer<FilterChangeEventData> eventFilterChange = new ListenerContainer<FilterChangeEventData>();
+    private ListenerContainer<FilterChangeEventData> eventFilterFactoryChange  = new ListenerContainer<FilterChangeEventData>();
     
     private boolean userCanRemoveFilter = true;
     /**
@@ -135,7 +136,7 @@ public class FilterFactoryManager<FilterInterface> {
         filterListPanel.remove(filterPanel);
         filterListPanel.updateUI();
         //Update filters
-        fireFilterChange();
+        fireFilterFactoryChange();
     }
     /**
      * The default factory when the user click on add filter button
@@ -235,17 +236,10 @@ public class FilterFactoryManager<FilterInterface> {
             Component swingFiterField = filterFactory.makeFilterField(activeFilter);
             addFilterComponent(swingFiterField, activeFilter);
             //Update the filters
-            fireFilterChange();
+            fireFilterFactoryChange();
         }
     }
-
-    public void addEventFilterListener(FilterChangeListener listener) {
-            eventFilterChange.addListener(null, listener);
-    }
     
-    public boolean removeEventFilterListener(FilterChangeListener listener) {
-            return eventFilterChange.removeListener(listener);
-    }
     /**
      * Use the listener manager to track change on filters
      * Your list control must be updated with a new set of filters,
@@ -256,6 +250,15 @@ public class FilterFactoryManager<FilterInterface> {
         return eventFilterChange;
     }
     
+    /**
+     * Use the listener manager to track change on filters factories
+     * Your list control must be updated with a new set of filters,
+     * through the getFilters method
+     * @return The listener manager
+     */
+    public ListenerContainer<FilterChangeEventData> getEventFilterFactoryChange() {
+        return eventFilterFactoryChange;
+    }
     /**
      * Replace all FactoryComboBox by Labels
      * Navigation through components is quite difficult and verbose.
@@ -292,6 +295,22 @@ public class FilterFactoryManager<FilterInterface> {
         }
     }
     /**
+     * The user Add/Change/Remove filter type (factory).
+     * @return true if the event has been accepted by all listeners
+     */
+    private boolean fireFilterFactoryChange() {
+        try {
+            //Fire event
+            eventFilterFactoryChange.callListeners(new FilterChangeEventData(this));
+            return true;
+        } catch (EventException ex) {
+            //The event has been refused by a listener
+            return false;
+        }              
+    }
+    
+    
+    /**
      * Fire the filter change event
      * The List must update the content according to the filters
      * @return true if the event has been accepted by all listeners
@@ -314,8 +333,10 @@ public class FilterFactoryManager<FilterInterface> {
         //The user change the content of the filter
         //Then the user accept the current factories
         //Replace all factories by labels to free spaces
-        replaceFactoryComboBoxByLabels();
-        
+        //Only if the user is able to remove factories
+        if(userCanRemoveFilter) {
+                replaceFactoryComboBoxByLabels();
+        }        
         fireFilterChange();
     }
     /**

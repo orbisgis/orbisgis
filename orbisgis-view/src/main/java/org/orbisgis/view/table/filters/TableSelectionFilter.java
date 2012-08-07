@@ -28,17 +28,25 @@
  */
 package org.orbisgis.view.table.filters;
 
-import org.gdms.driver.DataSet;
+import org.gdms.data.DataSource;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  * Common interface for all table selection filters
  * @author Nicolas Fortin
  */
 public interface TableSelectionFilter {
+        
+        /**
+         * If necessary do the initialisation of this filter
+         * @param pm 
+         */
+        void initialise(ProgressMonitor pm,DataSource source);
+        
         /***
          * @param rowId Row index (data source row)
          * @param source Table data set
          * @return True will select this row
          */
-        boolean isSelected(int rowId, DataSet source);
+        boolean isSelected(int rowId, DataSource source);
 }
