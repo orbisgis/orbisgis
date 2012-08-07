@@ -38,6 +38,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTable;
@@ -78,7 +79,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
 
         @Override
         public ActiveFilter getDefaultFilterValue() {
-                return new FilterParameters(-1,"");
+                return new FilterParameters();
         }
 
         @Override
@@ -95,39 +96,61 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 JTextField searchedTextBox = new JTextField(params.getSearchedChars());
                 filterFields.add(searchedTextBox,BorderLayout.CENTER);
                 searchedTextBox.setPreferredSize(new Dimension(Short.MAX_VALUE,Short.MIN_VALUE));
+                
                 //Field selection
                 JComboBox fieldSelection = new JComboBox();
                 fieldSelection.addItem(I18N.tr("All"));
                 for(int i=0; i< table.getColumnCount(); i++) {
                         fieldSelection.addItem(table.getColumnName(i));
                 }      
-                if(params.getRowId()!=-1) {
-                        fieldSelection.setSelectedIndex(params.getRowId()+1);
+                if(params.getColumnId()!=-1) {
+                        fieldSelection.setSelectedIndex(params.getColumnId()+1);
                 }
                 filterFields.add(fieldSelection);
+                // Match Case
+                JCheckBox matchCase = new JCheckBox(I18N.tr("Match case"),params.isMatchCase());
+                filterFields.add(matchCase);
+                //Whole word
+                JCheckBox wholeWords = new JCheckBox(I18N.tr("Whole words"),params.isWholeWord());
+                filterFields.add(wholeWords);
                 //Run filter, will update filterValue
                 JButton runButton = new JButton(I18N.tr("Search"));
                 FilterActionListener listener = new FilterActionListener(
                         params,
                         searchedTextBox,
-                        fieldSelection);
+                        fieldSelection,
+                        matchCase,
+                        wholeWords);
                 runButton.addActionListener(listener);
+                searchedTextBox.addActionListener(listener); //VK_ENTER validate
                 filterFields.add(runButton);
                 return filterFields;
         }
         
         private static class FieldsContainsFilter implements TableSelectionFilter {
 
-                private FilterParameters params;
-                private String searchChars;
+                private final FilterParameters params;
+                private final String searchChars;
 
                 public FieldsContainsFilter(FilterParameters params) {
                         this.params = params;
-                        searchChars = params.getSearchedChars().toLowerCase();
+                        if(!params.isMatchCase()) {
+                                searchChars = params.getSearchedChars().toLowerCase();
+                        }else {
+                                searchChars = params.getSearchedChars();
+                        }
                 }
 
                 private boolean isFieldContains(Value field) {
-                        return field.toString().toLowerCase().contains(searchChars);
+                        String fieldValue = field.toString();
+                        if(!params.isMatchCase()) {
+                                fieldValue=fieldValue.toLowerCase();
+                        }
+                        if(!params.isWholeWord()) {
+                                return fieldValue.contains(searchChars);
+                        } else {
+                                return fieldValue.equals(searchChars);
+                        }
                 }
 
                 @Override
@@ -135,8 +158,8 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                         Value val;
                         try {
 
-                                if (params.getRowId() != -1) {
-                                        val = source.getFieldValue(rowId, params.getRowId());
+                                if (params.getColumnId() != -1) {
+                                        val = source.getFieldValue(rowId, params.getColumnId());
                                         return isFieldContains(val);
 
                                 } else {
@@ -158,37 +181,66 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
         */
         public static class FilterParameters extends ActiveFilter {
                 private static final long serialVersionUID = 2L;
+                private int columnId;
                 private String searchedChars;
-                private int rowId;
-
-                public FilterParameters(int rowId, String searchedChars) {
+                private boolean matchCase;
+                private boolean wholeWord;
+                
+                public FilterParameters() {
                         super(FieldsContainsFilterFactory.FACTORY_ID);
+                        this.columnId = -1;
+                        this.searchedChars = "";
+                        this.matchCase = false;
+                        this.wholeWord = false;                        
+                }
+
+                public FilterParameters(int columnId, String searchedChars, boolean matchCase, boolean wholeWord) {
+                        super(FieldsContainsFilterFactory.FACTORY_ID);
+                        this.columnId = columnId;
                         this.searchedChars = searchedChars;
-                        this.rowId = rowId;
+                        this.matchCase = matchCase;
+                        this.wholeWord = wholeWord;
                 }
 
                 @Override
                 public void readStream(DataInputStream in) throws IOException {
                         super.readStream(in);
-                        rowId = in.readInt();
+                        columnId = in.readInt();
                         searchedChars = in .readUTF();
+                        matchCase = in.readBoolean();
+                        wholeWord = in.readBoolean();
                 }
 
                 @Override
                 public void writeStream(DataOutputStream out) throws IOException {
                         super.writeStream(out);
-                        out.writeInt(rowId);
+                        out.writeInt(columnId);
                         out.writeUTF(searchedChars);
+                        out.writeBoolean(matchCase);
+                        out.writeBoolean(wholeWord);
+                }
+                /**
+                * 
+                * @return Data model Column id
+                */
+                public int getColumnId() {
+                        return columnId;
                 }
 
-                public int getRowId() {
-                        return rowId;
+                public boolean isMatchCase() {
+                        return matchCase;
                 }
 
-                public void setValue(int rowId, String searchedChars) {
-                        FilterParameters oldParams = new FilterParameters(this.rowId, this.searchedChars);
-                        this.rowId = rowId;
+                public boolean isWholeWord() {
+                        return wholeWord;
+                }
+
+                public void setValue(int columnId, String searchedChars, boolean matchCase, boolean wholeWord) {
+                        FilterParameters oldParams = new FilterParameters(this.columnId, this.searchedChars,this.matchCase,this.wholeWord);
+                        this.columnId = columnId;
                         this.searchedChars = searchedChars;
+                        this.matchCase = matchCase;
+                        this.wholeWord = wholeWord;
                         propertySupport.firePropertyChange(PROP_CURRENTFILTERVALUE, oldParams, this);
                 }
 
@@ -198,7 +250,10 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                                 return false;
                         }
                         FilterParameters other = (FilterParameters)o;
-                        if(other.getRowId()!=rowId || !other.searchedChars.equals(searchedChars)) {
+                        if(other.columnId!=columnId ||
+                                !other.searchedChars.equals(searchedChars) ||
+                                other.matchCase!=this.matchCase ||
+                                other.wholeWord!=this.wholeWord) {
                                 return false;
                         }
                         return super.equals(o);
@@ -206,9 +261,11 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
 
                 @Override
                 public int hashCode() {
-                        int hash = 5 + super.hashCode();
-                        hash = 47 * hash + this.searchedChars.hashCode();
-                        hash = 47 * hash + new Integer(this.rowId).hashCode();
+                        int hash = 3 + super.hashCode();
+                        hash = 83 * hash + this.columnId;
+                        hash = 83 * hash + (this.searchedChars != null ? this.searchedChars.hashCode() : 0);
+                        hash = 83 * hash + (this.matchCase ? 1 : 0);
+                        hash = 83 * hash + (this.wholeWord ? 1 : 0);
                         return hash;
                 }
                 
@@ -221,17 +278,22 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 private FilterParameters filter;
                 private JTextField searchedTextBox;
                 private JComboBox fieldSelection;
+                private JCheckBox matchCase;
+                private JCheckBox wholeWord;
 
-                public FilterActionListener(FilterParameters filter, JTextField searchedTextBox, JComboBox fieldSelection) {
+                public FilterActionListener(FilterParameters filter, JTextField searchedTextBox, JComboBox fieldSelection, JCheckBox matchCase, JCheckBox wholeWord) {
                         this.filter = filter;
                         this.searchedTextBox = searchedTextBox;
                         this.fieldSelection = fieldSelection;
+                        this.matchCase = matchCase;
+                        this.wholeWord = wholeWord;
                 }
+                
                 
                 @Override
                 public void actionPerformed(ActionEvent ae) {
                         filter.setValue(fieldSelection.getSelectedIndex()-1,
-                                searchedTextBox.getText());
+                                searchedTextBox.getText(),matchCase.isSelected(),wholeWord.isSelected());
                 }
                 
         }

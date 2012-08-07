@@ -179,18 +179,18 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
          * @param sortRequest
          */
         public void setSortKey(SortKey sortRequest) {
-                //Check if the sort request is not on the geometry column
-                int geoIndex = -1;
-                try {
-                        geoIndex = MetadataUtilities.getGeometryFieldIndex(this.model.getDataSource().getMetadata());
-                } catch (DriverException ex) {
-                        LOGGER.error(ex.getLocalizedMessage(),ex);
-                }     
-                if(sortRequest.getColumn()==geoIndex) {
-                        //Ignore sort request
-                        return;
-                }
-                if (sortRequest != null) {
+                if (sortRequest != null) {     
+                        //Check if the sort request is not on the geometry column
+                        int geoIndex = -1;
+                        try {
+                                geoIndex = MetadataUtilities.getGeometryFieldIndex(this.model.getDataSource().getMetadata());
+                        } catch (DriverException ex) {
+                                LOGGER.error(ex.getLocalizedMessage(),ex);
+                        }
+                        if(sortRequest.getColumn()==geoIndex) {
+                                //Ignore sort request
+                                return;
+                        }
                         launchSortProcess(sortRequest);
                 } else {
                         sortedColumns.clear();

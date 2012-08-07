@@ -35,12 +35,14 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 
 /**
- * @brief Manage the content of a single filter component instance
+ * Manage the content of a single filter component instance.
  * 
  * This class is created thanks to the NetBeans user interface.
  * Use the "Add property" NetBeans function to add properties easily.
  * See documentation related to java.beans management systems
  * 
+ * This class provide a serialisation algorithm
+ * through readStream and writeStream
  */
 public abstract class ActiveFilter {
     protected final PropertyChangeSupport propertySupport;
