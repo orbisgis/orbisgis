@@ -46,6 +46,10 @@ public class MinQuery implements IndexQuery {
                 this.fields = fields;
         }
         
+        public MinQuery(String field) {
+                this.fields = new String[]{field};
+        }
+        
         @Override
         public String[] getFieldNames() {
                 return fields;

@@ -45,6 +45,10 @@ public class MaxQuery implements IndexQuery {
         public MaxQuery(String[] fields) {
                 this.fields = fields;
         }
+        
+        public MaxQuery(String field) {
+                this.fields = new String[]{field};
+        }
 
         @Override
         public String[] getFieldNames() {
