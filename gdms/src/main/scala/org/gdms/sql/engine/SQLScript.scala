@@ -39,30 +39,68 @@ import org.gdms.data.DataSourceFactory
 import org.gdms.data.values.Value
 import org.orbisgis.progress.ProgressMonitor
 
-class SQLScript(private[engine] val sts: Seq[SQLStatement]) {
+/**
+ * An SQL Script.
+ * 
+ * @param sts the SQL statements that compose the script
+ * @author Antoine Gourlay
+ * @since 2.0
+ */
+class SQLScript private[engine] (private[engine] val sts: Seq[SQLStatement]) {
 
+  /**
+   * Gets the SQL representation of this script.
+   */
   def getSQL = sts.map(_.getSQL).mkString("\n")
   
+  /**
+   * Sets the DSF to use for this script.
+   * @param dsf the DSF to use
+   */
   def setDataSourceFactory(dsf: DataSourceFactory): Unit = {
     sts foreach (_.setDataSourceFactory(dsf))
   }
   
+  /**
+   * Sets a progress monitor to use for this script.
+   * @param p a progress monitor
+   */
   def setProgressMonitor(p: ProgressMonitor) {
     sts foreach (_.setProgressMonitor(p))
   }
   
+  /**
+   * Sets a value parameter.
+   * @param name name of the parameter
+   * @param v a constant value
+   */
   def setValueParameter(name: String, v: Value) {
     sts foreach (_.setValueParameter(name, v))
   }
   
+  /**
+   * Sets a field parameter.
+   * @param name name of the parameter
+   * @param fieldName name of the field
+   */
   def setFieldParameter(name: String, fieldName: String) {
     sts foreach (_.setFieldParameter(name, fieldName))
   }
   
+  /**
+   * Sets a table parameter.
+   * @param name name of the parameter
+   * @param tableName name of the table
+   */
   def setTableParameter(name: String, tableName: String) {
     sts foreach (_.setTableParameter(name, tableName))
   }
   
+  /**
+   * Executes the whole script.
+   * 
+   * [[[setDataSourceFactory]]] must have been called before.
+   */
   def execute() {
     sts foreach { s =>
       s.prepare
@@ -71,8 +109,23 @@ class SQLScript(private[engine] val sts: Seq[SQLStatement]) {
     }
   }
   
+  /**
+   * Gets the size of the script: the number of statements in it.
+   */
   def getSize: Int = sts.size
   
+  /**
+   * Saves this script in its compiled form.
+   * 
+   * The compiled script can be reloaded with
+   * {{{
+   * val s = Engine.loadScript(...)
+   * s.setDataSourceFactory(dsf)
+   * s.execute()
+   * }}}
+   * 
+   * @param out an output stream to save to
+   */
   @throws(classOf[IOException])
   def save(out: OutputStream) {
     var objs: List[ObjectOutputStream] = Nil

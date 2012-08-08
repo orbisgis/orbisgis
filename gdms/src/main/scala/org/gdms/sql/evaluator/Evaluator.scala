@@ -500,6 +500,14 @@ case class QueryToScalarEvaluator(var op: Operation) extends QueryEvaluator {
   }
 }
 
+/**
+ * Placeholder evaluator for an external parameter.
+ * 
+ * These should not survive beyond the 'params' pass.
+ * 
+ * @author Antoine Gourlay
+ * @since 2.0
+ */
 case class ParamEvaluator(name: String) extends Evaluator {
   val sqlType = -1
   

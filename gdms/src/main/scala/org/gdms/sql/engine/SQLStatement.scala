@@ -33,7 +33,7 @@
  */
 package org.gdms.sql.engine
 
-import java.io.{ObjectOutputStream, OutputStream, IOException}
+import java.io.{ObjectOutputStream, OutputStream, IOException, File, FileOutputStream}
 import java.util.Properties
 import scala.collection.mutable.{Map => MutMap}
 import org.gdms.data.DataSourceFactory
@@ -51,16 +51,31 @@ import org.orbisgis.progress.ProgressMonitor
 /**
  * An executable SQL Statement.
  * 
+ * The specific workflow to use with a statement is:
+ * {{{
+ * // set a DSF once
+ * st.setDataSourceFactory(dsf)
+ * 
+ * // then do the following for every execution
+ * 
+ * // prepare the statement (final validation + open resources)
+ * st.prepare()
+ * // run the statement
+ * val ds = st.execute()
+ * // use ds ...
+ * println(ds.getInt(0,0))
+ * ...
+ * // clean the statement (closes resources)
+ * st.cleanUp()
+ * }}}
+ * 
  * @param op the operation tree of this statement
  * @param sql the original SQL string
  * @param p some flags and properties
  * @author AntoineGourlay
  * @since 0.4
  */
-sealed class SQLStatement(sql: String, private[engine] val op: Operation)(implicit p: Properties) {
-  
-  // sql string for display and serialization
-  private val finalSql = sql + ';'
+sealed class SQLStatement private[engine] (sql: String, private[engine] val op: Operation)(implicit p: Properties) {
   
   // holds the actual command that will be executed
   private var com: OutputCommand = _
@@ -75,37 +90,65 @@ sealed class SQLStatement(sql: String, private[engine] val op: Operation)(implic
   private var preparedButNotCleaned: Boolean = false
   
   // tables that this statement references
-  private lazy val refs: Array[String] = { op.allChildren flatMap {
+  private lazy val refs: Seq[String] = { op.allChildren flatMap {
       case s: Scan => s.table :: Nil
       case c: CustomQueryScan => c.tables.flatMap (_.fold(_ :: Nil, _ => Nil))
       case _ => Nil
-    } toArray   
+    }
   }
   
   private val vParams = MutMap[String, Value]()
   private val fParams = MutMap[String, String]()
   private val tParams = MutMap[String, String]()
   
+  /**
+   * Sets a value parameter.
+   * @param name name of the parameter
+   * @param v a constant value
+   */
   def setValueParameter(name: String, v: Value) {
     vParams.put(name, v)
   }
   
+  /**
+   * Sets a field parameter.
+   * @param name name of the parameter
+   * @param fieldName name of the field
+   */
   def setFieldParameter(name: String, fieldName: String) {
     fParams.put(name, fieldName)
   }
   
+  /**
+   * Sets a table parameter.
+   * @param name name of the parameter
+   * @param tableName name of the table
+   */
   def setTableParameter(name: String, tableName: String) {
     tParams.put(name, tableName)
   }
   
+  /**
+   * Sets the DSF to use for this statement.
+   * @param dsf the DSF to use
+   */
   def setDataSourceFactory(dsf: DataSourceFactory) {
     this.dsf = if (dsf == null) None else Some(dsf)
   }
   
+  /**
+   * Sets a progress monitor to use for this statement's execution.
+   * @param p a progress monitor
+   */
   def setProgressMonitor(p: ProgressMonitor) {
     pm = if (p != null) Some(p) else None
   }
 
+  /**
+   * Prepares the statement.
+   * 
+   * Subsequent calls (without a call to cleanUp in between) are ignored.
+   */
   def prepare() { 
     if (!preparedButNotCleaned) {
       if (dsf.isEmpty) {
@@ -129,6 +172,12 @@ sealed class SQLStatement(sql: String, private[engine] val op: Operation)(implic
     }
   }
   
+  /**
+   * Executes the statement.
+   * 
+   * @return the resulting dataset (if any)
+   * @throws DriverException if there is any error executing the statement
+   */
   @throws(classOf[DriverException])
   def execute() = { 
     try {
@@ -139,6 +188,13 @@ sealed class SQLStatement(sql: String, private[engine] val op: Operation)(implic
     r 
   }
   
+  /**
+   * Cleans up resources.
+   * 
+   * This resets this statement to its original state. Its content cannot be read anymore,
+   * and the statement can be reused with a call to prepare().
+   * Subsequent call to this method are ignored.
+   */
   def cleanUp()() {
     if (preparedButNotCleaned) {
       com.cleanUp()
@@ -164,10 +220,49 @@ sealed class SQLStatement(sql: String, private[engine] val op: Operation)(implic
     }
   }
   
-  def getReferencedSources(): Array[String] = refs
+  /**
+   * Gets all gdms sources referenced by this statement.
+   */
+  def getReferencedSources(): Array[String] = (refs ++ tParams.values).toArray
   
-  def getSQL(): String = finalSql
+  /**
+   * Gets the SQL string representation of this statement
+   */
+  def getSQL: String = sql
   
+  /**
+   * Saves this statement to a file in compiled form.
+   * 
+   * The compiled statement can be reloaded with
+   * {{{
+   * val s = Engine.load(...)
+   * s.setDataSourceFactory(dsf)
+   * s.prepare()
+   * s.execute()
+   * s.cleanUp()
+   * }}}
+   * 
+   * @throw IOException if there is any error writing
+   */
+  @throws(classOf[IOException])
+  def save(out: File) {
+    save(new FileOutputStream(out))
+  }
+  
+  /**
+   * Saves this statement to a stream in compiled form.
+   * 
+   * The compiled statement can be reloaded with
+   * {{{
+   * val s = Engine.load(...)
+   * s.setDataSourceFactory(dsf)
+   * s.prepare()
+   * s.execute()
+   * s.cleanUp()
+   * }}}
+   * 
+   * @throw IOException if there is any error writing
+   */
   @throws(classOf[IOException])
   def save(out: OutputStream) {
     var o: ObjectOutputStream = null
@@ -175,7 +270,7 @@ sealed class SQLStatement(sql: String, private[engine] val op: Operation)(implic
     
     try {
       o = new ObjectOutputStream(out)
-      o.writeUTF(finalSql)
+      o.writeUTF(getSQL)
       o.flush
       o2 = new ObjectOutputStream(out)
       o2.writeObject(op)

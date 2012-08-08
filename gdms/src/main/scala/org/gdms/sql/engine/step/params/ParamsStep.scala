@@ -42,6 +42,15 @@ import org.gdms.sql.engine.logical.LogicPlanOptimizer
 import org.gdms.sql.engine.operations.{Operation, ExpressionOperation, Scan, ParamTable}
 import org.gdms.sql.evaluator.{StaticEvaluator, param, FieldEvaluator}
 
+/**
+ * Param replacement step: Replaces all parameters with values
+ * 
+ * Parameters are replaced with constant evaluators, field evaluators of table scans, and checked to
+ * be sure no parameter is left unset.
+ * 
+ * @author Antoine Gourlay
+ * @since 2.0
+ */
 class ParamsStep(vParams: MutMap[String, Value], fParams: MutMap[String, String],
                  tParams: MutMap[String, String]) 
 extends AbstractEngineStep[Operation, Operation]("Parameter remplacement") with LogicPlanOptimizer {
