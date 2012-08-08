@@ -54,6 +54,11 @@ class SQLScript private[engine] (private[engine] val sts: Seq[SQLStatement]) {
   def getSQL = sts.map(_.getSQL).mkString("\n")
   
   /**
+   * Gets the underlying statements.
+   */
+  def getStatements = sts.toArray
+  
+  /**
    * Sets the DSF to use for this script.
    * @param dsf the DSF to use
    */
