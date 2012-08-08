@@ -136,6 +136,23 @@ public final class BTreeIndex implements DataSourceIndex<Value> {
         @Override
         public int[] query(IndexQuery query)
                 throws IndexQueryException, IndexException {
+
+                if (query instanceof MinQuery) {
+                        try {
+                                return new int[]{index.smallest()};
+                        } catch (IOException e) {
+                                throw new IndexException("Cannot access the index", e);
+                        }
+                }
+                
+                if (query instanceof MaxQuery) {
+                        try {
+                                return new int[]{index.largest()};
+                        } catch (IOException e) {
+                                throw new IndexException("Cannot access the index", e);
+                        }
+                }
+
                 if (!(query instanceof AlphaQuery)) {
                         throw new IllegalArgumentException("Wrong query type. BTreeIndex only supports AlphaQuery.");
                 }
@@ -150,6 +167,23 @@ public final class BTreeIndex implements DataSourceIndex<Value> {
         @Override
         public void query(IndexQuery query, IndexVisitor<Value> visitor)
                 throws IndexQueryException, IndexException {
+                
+                if (query instanceof MinQuery) {
+                        try {
+                                visitor.visitElement(index.smallest(), index.getSmallestValue());
+                        } catch (IOException e) {
+                                throw new IndexException("Cannot access the index", e);
+                        }
+                }
+                
+                if (query instanceof MaxQuery) {
+                        try {
+                                visitor.visitElement(index.largest(), index.getLargestValue());
+                        } catch (IOException e) {
+                                throw new IndexException("Cannot access the index", e);
+                        }
+                }
+                
                 if (!(query instanceof AlphaQuery)) {
                         throw new IllegalArgumentException("Wrong query type. BTreeIndex only supports AlphaQuery.");
                 }

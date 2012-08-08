@@ -635,6 +635,21 @@ public final class BTreeInteriorNode extends AbstractBTreeNode {
                 return count;
         }
 
+        @Override
+        public int smallest() throws IOException {
+                return getChild(0).smallest();
+        }
+
+        @Override
+        public int largest() throws IOException {
+                return getChild(children.size() - 1).largest();
+        }
+
+        @Override
+        public Value getLargestValue() throws IOException {
+                return getChild(children.size() - 1).getLargestValue();
+        }
+
         private static class ChildReference {
 
                 private BTreeNode object;

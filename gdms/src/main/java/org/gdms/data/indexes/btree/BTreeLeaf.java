@@ -405,4 +405,19 @@ public final class BTreeLeaf extends AbstractBTreeNode {
         public int getValueCount() {
                 return values.size();
         }
+
+        @Override
+        public int smallest() throws IOException {
+                return rows.get(0);
+        }
+
+        @Override
+        public int largest() throws IOException {
+                return rows.get(rows.size() - 1);
+        }
+
+        @Override
+        public Value getLargestValue() throws IOException {
+                return values.get(values.size() - 1);
+        }
 }
