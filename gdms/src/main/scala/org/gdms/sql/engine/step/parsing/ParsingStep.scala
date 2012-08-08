@@ -69,7 +69,6 @@ case object ParsingStep extends AbstractEngineStep[String, (CommonTree, String)]
       case e: RecognitionException => throw new ParseException(getErrorMessage(e), e)
       case e if e.getCause.isInstanceOf[RecognitionException] => 
         throw new ParseException(getErrorMessage(e.getCause.asInstanceOf[RecognitionException]), e)
-      case e => throw e
     }
   }
   

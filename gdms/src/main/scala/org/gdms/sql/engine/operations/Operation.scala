@@ -220,13 +220,12 @@ case class Output(var child: Operation) extends Operation {
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
   
   override def doValidate() = {
-    val aliases = allChildren flatMap { _ match {
-        case Scan(_, a, _) => a
-        case CustomQueryScan(_, _, _, a) => a
-        case SubQuery(a, _) => a :: Nil
-        case ValuesScan(_, a, _) => a
-        case _ => Nil
-      }
+    val aliases = allChildren flatMap {
+      case Scan(_, a, _) => a
+      case CustomQueryScan(_, _, _, a) => a
+      case SubQuery(a, _) => a :: Nil
+      case ValuesScan(_, a, _) => a
+      case _ => Nil
     }
     if (hasDuplicates(aliases)) {
       throw new SemanticException("Two tables cannot have the same alias!")
