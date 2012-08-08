@@ -94,7 +94,7 @@ public class BTreeTest extends TestBase {
                         }
                 }
         }
-        
+
         @After
         public void after() {
                 indexFile.delete();
@@ -159,7 +159,7 @@ public class BTreeTest extends TestBase {
                 setUp();
                 testIndexRealData(new DiskBTree(32, 64, false), dsf.getDataSource(file), "type", 100.0);
         }
-        
+
         private void testIndexRealData(BTree tree, DataSource ds, String fieldName,
                 double checkPeriod) throws Exception {
                 ds.open();
@@ -348,15 +348,61 @@ public class BTreeTest extends TestBase {
                 assertTrue(iV.fired);
         }
 
+        @Test
+        public void testMin() throws IOException {
+                BTree tree = new DiskBTree(3, 256, false);
+                tree.newIndex(indexFile);
+                tree.insert(ValueFactory.createValue(-1), 0);
+                tree.insert(ValueFactory.createValue(0), 7);
+                tree.insert(ValueFactory.createValue(1), 2);
+                tree.insert(ValueFactory.createValue(1), 3);
+                tree.insert(ValueFactory.createValue(1), 4);
+                tree.insert(ValueFactory.createValue(2), 5);
+                tree.insert(ValueFactory.createValue(2), 6);
+                tree.insert(ValueFactory.createValue(2), 1);
+                tree.insert(ValueFactory.createValue(3), 8);
+                tree.insert(ValueFactory.createValue(4), 9);
+                tree.checkTree();
+
+                assertEquals(0, tree.smallest());
+
+                tree.delete(ValueFactory.createValue(-1), 0);
+                
+                assertEquals(7, tree.smallest());
+        }
+        
+        @Test
+        public void testMax() throws IOException {
+                BTree tree = new DiskBTree(3, 256, false);
+                tree.newIndex(indexFile);
+                tree.insert(ValueFactory.createValue(-1), 0);
+                tree.insert(ValueFactory.createValue(0), 7);
+                tree.insert(ValueFactory.createValue(1), 2);
+                tree.insert(ValueFactory.createValue(1), 8);
+                tree.insert(ValueFactory.createValue(1), 4);
+                tree.insert(ValueFactory.createValue(2), 5);
+                tree.insert(ValueFactory.createValue(2), 6);
+                tree.insert(ValueFactory.createValue(2), 1);
+                tree.insert(ValueFactory.createValue(3), 3);
+                tree.insert(ValueFactory.createValue(4), 9);
+                tree.checkTree();
+
+                assertEquals(9, tree.largest());
+
+                tree.delete(ValueFactory.createValue(4), 9);
+                
+                assertEquals(3, tree.largest());
+        }
+
         private static class IV implements IndexVisitor<Value> {
 
                 boolean fired = false;
-                int [] t;
+                int[] t;
 
                 public IV(int[] t) {
                         this.t = t;
                 }
-                
+
                 @Override
                 public void visitElement(int row, Value env) {
                         fired = true;

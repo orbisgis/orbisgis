@@ -645,4 +645,24 @@ public final class DiskBTree implements BTree {
                                         new GreaterEqualComparator(value)}, visitor);
                 }
         }
+
+        @Override
+        public int smallest() throws IOException {
+                return root.smallest();
+        }
+
+        @Override
+        public int largest() throws IOException {
+                return root.largest();
+        }
+
+        @Override
+        public Value getSmallestValue() throws IOException {
+                return root.getSmallestValue();
+        }
+
+        @Override
+        public Value getLargestValue() throws IOException {
+                return root.getLargestValue();
+        }
 }
