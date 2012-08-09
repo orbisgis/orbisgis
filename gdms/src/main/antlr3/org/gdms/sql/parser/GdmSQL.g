@@ -35,6 +35,7 @@ tokens {
     T_CREATE_TABLE = 't_create_table';
     T_CREATE_VIEW = 't_create_view';
     T_EXECUTOR = 't_executor';
+    T_PARAM = 't_param';
 
     T_ADD = 'ADD';
     T_ALL = 'ALL';
@@ -493,6 +494,7 @@ table_reference
         -> ^( T_TABLE_FUNCTION custom_query_call $alias? )
         | T_VALUES multiple_insert_value_list T_AS? alias=LONG_ID
         -> ^(T_TABLE_VALUES multiple_insert_value_list $alias)
+        | LPARAM a=LONG_ID RPARAM -> ^(T_PARAM $a)
         ;
 
 subquery
@@ -839,6 +841,7 @@ expression_final
         | bool_const -> bool_const
         | expression_cast -> expression_cast
         | LPAREN subquery RPAREN -> subquery
+        | LPARAM a=LONG_ID RPARAM -> ^(T_PARAM $a)
         ) (CASTCOLON type=LONG_ID -> ^(T_CAST $expression_final $type) )?
         ;
 
@@ -917,6 +920,7 @@ expression_cond_final
         | expression_exists
         | bool_const
         | LPAREN! expression_cond RPAREN!
+        | LPARAM LONG_ID RPARAM -> ^(T_PARAM LONG_ID)
         ;
 
 expression_comp
@@ -1021,6 +1025,15 @@ ASTERISK
 AT_SIGN
 	:	'@'
 	;
+
+LPARAM
+        :       '@{'
+        ;
+
+RPARAM
+        :       '}'
+        ;
+
 RPAREN
 	:	')'
 	;

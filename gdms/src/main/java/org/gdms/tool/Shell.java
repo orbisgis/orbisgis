@@ -109,19 +109,15 @@ public final class Shell {
                                                 continue;
                                         }
                                         String sql = line.substring(idx + 1);
-                                        SQLStatement[] s;
+                                        SQLStatement st;
                                         try {
-                                                s = Engine.parse(sql, DataSourceFactory.getDefaultProperties());
+                                                st = Engine.parse(sql, DataSourceFactory.getDefaultProperties());
                                         } catch (Exception e) {
                                                 writer.format("Error: %s", e.getLocalizedMessage());
                                                 writer.println();
                                                 continue;
                                         }
-                                        if (s.length != 1) {
-                                                writer.println("Error: there must be only one statement.");
-                                                continue;
-                                        }
-                                        SQLStatement st = s[0];
+                                        
                                         st.setDataSourceFactory(dsf);
                                         try {
                                                 st.prepare();

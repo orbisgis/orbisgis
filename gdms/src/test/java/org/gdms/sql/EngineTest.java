@@ -36,7 +36,7 @@ package org.gdms.sql;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.IOException;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.orbisgis.progress.NullProgressMonitor;
@@ -46,7 +46,9 @@ import static org.junit.Assert.*;
 import org.gdms.TestBase;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.engine.Engine;
+import org.gdms.sql.engine.SQLScript;
 import org.gdms.sql.engine.SQLStatement;
 
 /**
@@ -64,16 +66,16 @@ public class EngineTest extends TestBase {
         public void testSerializationOfQuery() throws Exception {
                 final String sql = "SELECT abs(42), 'toto';";
                 
-                SQLStatement[] c = Engine.parse(sql, dsf.getProperties());
+                SQLStatement c = Engine.parse(sql, dsf.getProperties());
                 File a = File.createTempFile("sql", null);
                 a.delete();
                 
                 FileOutputStream s = new FileOutputStream(a);
-                c[0].save(s);
+                c.save(s);
                 s.close();
                 
                 FileInputStream is = new FileInputStream(a);
-                SQLStatement st = SQLStatement.load(is, dsf.getProperties());
+                SQLStatement st = Engine.load(is, dsf.getProperties());
                 assertEquals(sql, st.getSQL());
                 DataSource d = dsf.getDataSource(st, DataSourceFactory.DEFAULT, new NullProgressMonitor());
                 
@@ -84,5 +86,95 @@ public class EngineTest extends TestBase {
                 d.close();
                 
                 a.delete();
+        }
+        
+                
+        @Test
+        public void testSerializationOfScript() throws Exception {
+                SQLScript s = Engine.parseScript(EngineTest.class.getResourceAsStream("test-script-serialization.sql"));
+                
+                File a = File.createTempFile("gdms-", ".bsql");
+                a.delete();
+                
+                FileOutputStream out = new FileOutputStream(a);
+                s.save(out);
+                out.close();
+                
+                s = Engine.loadScript(a);
+                s.setDataSourceFactory(dsf);
+                s.setValueParameter("othervalue", ValueFactory.createValue(12));
+                s.execute();
+                
+                assertTrue(sm.exists("tata"));
+                DataSource d = dsf.getDataSource("tata");
+                d.open();
+                assertEquals(54, d.getInt(0,0));
+                assertEquals(8, d.getInt(0,1));
+                d.close();
+                
+                sm.delete("tata");
+                a.delete();
+        }
+        
+        @Test
+        public void testSimpleParametrizedQuery() throws Exception {
+                final String sql = "SELECT abs(@{myParam}), 'toto';";
+                
+                SQLStatement st = Engine.parse(sql, dsf.getProperties());
+                st.setValueParameter("myParam", ValueFactory.createValue(42));
+                
+                DataSource d = dsf.getDataSource(st, DataSourceFactory.DEFAULT, new NullProgressMonitor());
+                
+                d.open();
+                assertEquals(1, d.getRowCount());
+                assertEquals(42, d.getInt(0, 0));
+                assertEquals("toto", d.getString(0, 1));
+                d.close();
+                
+                sm.delete(d.getName());
+                st.setValueParameter("myParam", ValueFactory.createValue(12));
+                d = dsf.getDataSource(st, DataSourceFactory.DEFAULT, new NullProgressMonitor());
+                
+                d.open();
+                assertEquals(1, d.getRowCount());
+                assertEquals(12, d.getInt(0, 0));
+                assertEquals("toto", d.getString(0, 1));
+                d.close();
+                
+                sm.delete(d.getName());
+        }
+        
+        @Test
+        public void testFieldAndTableParametrizedQuery() throws Exception {
+                sm.register("toto", "SELECT 42 as hi, 'hello!' AS bonjour;");
+                
+                final String sql = "SELECT @{myfield} FROM @{mytable};";
+                
+                SQLStatement st = Engine.parse(sql, dsf.getProperties());
+                st.setFieldParameter("myfield", "hi");
+                st.setTableParameter("mytable", "toto");
+                
+                DataSource d = dsf.getDataSource(st, DataSourceFactory.DEFAULT, new NullProgressMonitor());
+                
+                d.open();
+                assertEquals(1, d.getRowCount());
+                assertEquals(1, d.getFieldCount());
+                assertEquals(42, d.getInt(0, 0));
+                d.close();
+                
+                sm.delete(d.getName());
+                
+                st.setFieldParameter("myfield", "bonjour");
+                st.setTableParameter("mytable", "toto");
+                
+                d = dsf.getDataSource(st, DataSourceFactory.DEFAULT, new NullProgressMonitor());
+                
+                d.open();
+                assertEquals(1, d.getRowCount());
+                assertEquals(1, d.getFieldCount());
+                assertEquals("hello!", d.getString(0, 0));
+                d.close();
+                
+                sm.delete(d.getName());
         }
 }

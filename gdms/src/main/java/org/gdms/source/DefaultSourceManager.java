@@ -470,11 +470,8 @@ public final class DefaultSourceManager implements SourceManager {
 
         @Override
         public void register(String name, String sql) throws ParseException {
-                SQLStatement[] s = Engine.parse(sql, dsf.getProperties());
-                if (s.length > 1) {
-                        throw new ParseException("Cannot create a DataSource from multiple SQL instructions!");
-                }
-                register(name, new SQLSourceDefinition(s[0]));
+                SQLStatement s = Engine.parse(sql, dsf.getProperties());
+                register(name, new SQLSourceDefinition(s));
         }
 
         @Override
@@ -673,11 +670,8 @@ public final class DefaultSourceManager implements SourceManager {
 
         @Override
         public String nameAndRegister(String sql) throws ParseException {
-                SQLStatement[] s = Engine.parse(sql, dsf.getProperties());
-                if (s.length > 1) {
-                        throw new ParseException("Cannot create a DataSource from multiple SQL instructions!");
-                }
-                return nameAndRegister(new SQLSourceDefinition(s[0]));
+                SQLStatement s = Engine.parse(sql, dsf.getProperties());
+                return nameAndRegister(new SQLSourceDefinition(s));
         }
 
         @Override

@@ -33,39 +33,154 @@
  */
 package org.gdms.sql.engine
 
+import java.io.{InputStream, ObjectInputStream, IOException, File, FileInputStream}
 import java.util.Properties
+import scala.io.Source
 import org.gdms.data.DataSourceFactory
+import org.gdms.sql.engine.operations.Operation
 import org.gdms.sql.engine.step.filters.FiltersStep
 import org.gdms.sql.engine.step.logicalJoin.LogicalJoinOptimStep
 import org.gdms.sql.engine.step.parsing.ParsingStep
 import org.gdms.sql.engine.step.treeparsing.TreeParsingStep
 import org.gdms.sql.engine.step.validate.ValidationStep
 
+/**
+ * The entry point of the SQL Engine.
+ * 
+ * @author Antoine Gourlay
+ * @since 2.0
+ */
 object Engine {
   
+  /**
+   * Parses a SQL script file.
+   * 
+   * @param sqlFile a valid sql file
+   * @throws ParseException if there is an error while parsing
+   */
   @throws(classOf[ParseException])
-  def parse(sql: String): Array[SQLStatement] = parse(sql, DataSourceFactory.getDefaultProperties) toArray
+  def parseScript(sqlFile: File): SQLScript = parseScript(sqlFile, DataSourceFactory.getDefaultProperties)
   
+  /**
+   * Parses a SQL script file.
+   * 
+   * @param sqlFile a valid sql file
+   * @param p some properties to control the engine
+   * @throws ParseException if there is an error while parsing
+   */
   @throws(classOf[ParseException])
-  def parse(sql: String, p: Properties) = {
+  def parseScript(sqlFile: File, p: Properties): SQLScript = {
+    parseScript(Source.fromFile(sqlFile).mkString, p)
+  }
+  
+  /**
+   * Parses a SQL script from an input stream.
+   * 
+   * @param sql a stream to a valid sql script
+   * @throws ParseException if there is an error while parsing
+   */
+  @throws(classOf[ParseException])
+  def parseScript(sql: InputStream): SQLScript = {
+    parseScript(Source.fromInputStream(sql).mkString, DataSourceFactory.getDefaultProperties)
+  }
+  
+  /**
+   * Parses a SQL script from an input stream.
+   * 
+   * @param sql a stream to a valid sql script
+   * @param p some properties to control the engine
+   * @throws ParseException if there is an error while parsing
+   */
+  @throws(classOf[ParseException])
+  def parseScript(sql: InputStream, p: Properties): SQLScript = {
+    parseScript(Source.fromInputStream(sql).mkString, p)
+  }
+  
+  /**
+   * Parses a SQL script from a string.
+   * 
+   * @param sql a SQL script as a String
+   * @param p some properties to control the engine
+   * @throws ParseException if there is an error while parsing
+   */
+  @throws(classOf[ParseException])
+  def parseScript(sql: String): SQLScript = parseScript(sql, DataSourceFactory.getDefaultProperties)
+  
+  /**
+   * Parses a SQL script from a string.
+   * 
+   * @param sql a SQL script as a String
+   * @param p some properties to control the engine
+   * @throws ParseException if there is an error while parsing
+   */
+  @throws(classOf[ParseException])
+  def parseScript(sql: String, p: Properties): SQLScript = {
     implicit val pp = p
     
-    {
+    new SQLScript({
+        sql          >=: // original string
+        ParsingStep  >=: // parsing into AST
+        TreeParsingStep  // parsing into Seq[Operation]
+      } map { c =>
+        (c._1                    >=:
+         LogicalJoinOptimStep >=: // joins
+         FiltersStep          >=: // filters
+         ValidationStep           // validation
+         , c._2)
+      } map (c => new SQLStatement(c._2, c._1)))
+  }
+  
+  /**
+   * Parses a single SQL statement from a string.
+   * 
+   * @param sql a SQL statement as a String
+   * @throws ParseException if there is an error while parsing
+   */
+  @throws(classOf[ParseException])
+  def parse(sql: String): SQLStatement = parse(sql, DataSourceFactory.getDefaultProperties)
+  
+  /**
+   * Parses a single SQL statement from a string.
+   * 
+   * @param sql a SQL statement as a String
+   * @param p some properties to control the engine
+   * @throws ParseException if there is an error while parsing
+   */
+  @throws(classOf[ParseException])
+  def parse(sql: String, p: Properties): SQLStatement = {
+    implicit val pp = p
+    
+    val c = {
       sql          >=: // original string
       ParsingStep  >=: // parsing into AST
       TreeParsingStep  // parsing into Seq[Operation]
-    } map { c =>
-      (c._1                    >=:
-      LogicalJoinOptimStep >=: // joins
-      FiltersStep          >=: // filters
-      ValidationStep           // validation
-     , c._2)
-    } map (c => new SQLStatement(c._2, c._1)) toArray
+    }
+    
+    if (!c.tail.isEmpty) {
+      throw new ParseException("There shoudn't be more than one statement. Found " + c.size + ".")
+    }
+    
+    // SQLStatement is always built with a complete (ending in ';') sql string
+    // but the parsing above removes it
+    new SQLStatement(c.head._2 + ';', 
+                     c.head._1                 >=:
+                     LogicalJoinOptimStep >=: // joins
+                     FiltersStep          >=: // filters
+                     ValidationStep           // validation)
+    )
   }
   
+  /**
+   * Parses and executes a SQL Script.
+   * 
+   * @param sql a SQL statement as a String
+   * @param dsf the current DataSourceFactory
+   * @param p some properties to control the engine
+   * @throws ParseException if there is an error while parsing
+   */
   @throws(classOf[ParseException])
-  def execute(sql: String, dsf: DataSourceFactory, p: Properties) {
-    parse(sql, p) foreach { ss =>
+  def executeScript(sql: String, dsf: DataSourceFactory, p: Properties) {
+    parseScript(sql, p).sts foreach { ss =>
       ss.setDataSourceFactory(dsf)
       ss.prepare
       ss.execute
@@ -73,8 +188,133 @@ object Engine {
     }
   }
   
+  /**
+   * Parses and executes a SQL Script.
+   * 
+   * @param sql a SQL statement as a String
+   * @param dsf the current DataSourceFactory
+   * @throws ParseException if there is an error while parsing
+   */
   @throws(classOf[ParseException])
-  def execute(sql: String, dsf: DataSourceFactory) {
-    execute(sql, dsf, dsf.getProperties)
+  def executeScript(sql: String, dsf: DataSourceFactory) {
+    executeScript(sql, dsf, dsf.getProperties)
+  }
+  
+  /**
+   * Loads a compiled sql statement from a file.
+   * 
+   * @param f a compiled sql statement
+   * @param p some properties to control the engine
+   * @throws IOException if there is an error while accessing the resource
+   */
+  @throws(classOf[IOException])
+  def load(f: File): SQLStatement = load(new FileInputStream(f), DataSourceFactory.getDefaultProperties)
+  
+  /**
+   * Loads a compiled sql statement from a file.
+   * 
+   * @param f a compiled sql statement
+   * @param p some properties to control the engine
+   * @throws IOException if there is an error while accessing the resource
+   */
+  @throws(classOf[IOException])
+  def load(f: File, p: Properties): SQLStatement = load(new FileInputStream(f), p)
+  
+  /**
+   * Loads a compiled sql statement from a stream.
+   * 
+   * @param i a stream over a compiled sql statement
+   * @throws ParseException if there is an error while accessing the resource
+   */
+  @throws(classOf[IOException])
+  def load(i: InputStream): SQLStatement = load(i, DataSourceFactory.getDefaultProperties)
+  
+  /**
+   * Loads a compiled sql statement from a stream.
+   * 
+   * @param i a stream over a compiled sql statement
+   * @param p some properties to control the engine
+   * @throws ParseException if there is an error while accessing the resource
+   */
+  @throws(classOf[IOException])
+  def load(i: InputStream, p: Properties): SQLStatement = {
+    var o: ObjectInputStream = null
+    var o2: ObjectInputStream = null
+    
+    try {
+      o = new ObjectInputStream(i)
+      val sql = o.readUTF
+      o2 = new ObjectInputStream(i)
+      val ope = o2.readObject.asInstanceOf[Operation]
+      
+      new SQLStatement(sql, ope)(p)
+    } finally {
+      if (o != null) o.close
+      if (o2 != null) o2.close
+      i.close // just to be sure
+    }
+  }
+  
+  /**
+   * Loads a compiled sql script from a file.
+   * 
+   * @param f a compiled sql script file
+   * @param p some properties to control the engine
+   * @throws IOException if there is an error while accessing the resource
+   */
+  @throws(classOf[IOException])
+  def loadScript(f: File): SQLScript = loadScript(new FileInputStream(f), DataSourceFactory.getDefaultProperties)
+  
+  /**
+   * Loads a compiled sql script from a file.
+   * 
+   * @param f a compiled sql script file
+   * @param p some properties to control the engine
+   * @throws IOException if there is an error while accessing the resource
+   */
+  @throws(classOf[IOException])
+  def loadScript(f: File, p: Properties): SQLScript =
+    loadScript(new FileInputStream(f), p)
+  
+  /**
+   * Loads a compiled sql script from a stream.
+   * 
+   * @param i a stream over a compiled sql script
+   * @throws IOException if there is an error while accessing the resource
+   */
+  @throws(classOf[IOException])
+  def loadScript(i: InputStream): SQLScript = loadScript(i, DataSourceFactory.getDefaultProperties)
+  
+  /**
+   * Loads a compiled sql script from a stream.
+   * 
+   * @param i a stream over a compiled sql script
+   * @param p some properties to control the engine
+   * @throws IOException if there is an error while accessing the resource
+   */
+  @throws(classOf[IOException])
+  def loadScript(i: InputStream, p: Properties): SQLScript = {
+    var sts: List[SQLStatement] = Nil
+    var objs: List[ObjectInputStream] = Nil
+    
+    try {
+    val oNum = new ObjectInputStream(i)
+    val num = oNum.readInt
+    
+    objs = List(oNum)
+    
+    new SQLScript((1 to num) map {_ =>
+          // duplicating the ObjectInputStream is important here
+          val o = new ObjectInputStream(i)
+          val sql = o.readUTF
+          val o2 = new ObjectInputStream(i)
+          val ope = o2.readObject.asInstanceOf[Operation]
+        
+          new SQLStatement(sql, ope)(p)
+      })
+    } finally {
+      objs map (_.close)
+      i.close // just to be sure
+    }
   }
 }

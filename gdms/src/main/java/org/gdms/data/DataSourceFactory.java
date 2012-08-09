@@ -639,7 +639,7 @@ public final class DataSourceFactory {
         public void executeSQL(String sql, ProgressMonitor pm, int mode) throws ParseException, DriverException {
                 LOG.trace("Execute SQL Statement" + '\n' + sql);
 
-                Engine.execute(sql, this, properties);
+                Engine.executeScript(sql, this, properties);
         }
 
         /**
@@ -739,11 +739,9 @@ public final class DataSourceFactory {
                         pm = new NullProgressMonitor();
                 }
 
-                SQLStatement[] s = Engine.parse(sql, properties);
-                if (s.length > 1) {
-                        throw new ParseException("Cannot create a DataSource from multiple SQL instructions!");
-                }
-                return getDataSource(s[0], mode, pm);
+                SQLStatement s = Engine.parse(sql, properties);
+                
+                return getDataSource(s, mode, pm);
         }
 
         /**

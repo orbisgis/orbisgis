@@ -725,3 +725,17 @@ case class DropFunction(name: String, ifExists: Boolean) extends Operation {
   override def toString = "DropFunction (" + name + ", ifExists=" + ifExists + ")"
   def duplicate: DropFunction = DropFunction(name, ifExists)
 }
+
+/**
+ * Placeholder operation for a table parameter.
+ * 
+ * @param name name of the parameter
+ * @param alias alias to give to the table
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
+case class ParamTable(name: String, alias: Option[String] = None) extends Operation {
+  def children = Nil
+  override def toString = "ParamTable (" + name + ")"
+  def duplicate: ParamTable = ParamTable(name)
+}

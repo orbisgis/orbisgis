@@ -549,43 +549,45 @@ object LogicPlanBuilder {
   private def parseTableRef(head: Tree): Operation = {
     head.getType match {
       // there is only one table --> we insert a scan after 'last'
-      case T_TABLE_ITEM => {
-          // AST:
-          // ^(T_TABLE_ITEM table_id alias?)
-          val alias = if (head.getChildCount == 1) None else Some(head.getChild(1).getText)
-          Scan(getFullTableName(head.getChild(0)), alias)
-        }
+      case T_TABLE_ITEM => 
+        // AST:
+        // ^(T_TABLE_ITEM table_id alias?)
+        val alias = if (head.getChildCount == 1) None else Some(head.getChild(1).getText)
+        Scan(getFullTableName(head.getChild(0)), alias)
+        
 
         // there is only one custom_query --> we insert a custom_query after 'last'
-      case T_TABLE_FUNCTION => {
-          // AST:
-          // ^(T_TABLE_FUNCTION ^(T_FUNCTION_CALL name ...) alias?)
-          val res = doCustomQuery(head.getChild(0))
-          val alias = if (head.getChildCount == 1) None else Some(head.getChild(1).getText)
-          CustomQueryScan(head.getChild(0).getChild(0).getText, res._1, res._2, alias)
-        }
+      case T_TABLE_FUNCTION => 
+        // AST:
+        // ^(T_TABLE_FUNCTION ^(T_FUNCTION_CALL name ...) alias?)
+        val res = doCustomQuery(head.getChild(0))
+        val alias = if (head.getChildCount == 1) None else Some(head.getChild(1).getText)
+        CustomQueryScan(head.getChild(0).getChild(0).getText, res._1, res._2, alias)
+        
 
-      case T_TABLE_QUERY => {
-          // AST:
-          // ^( T_TABLE_QUERY select_statement )
-          SubQuery(head.getChild(1).getText, buildOperationTree("", head.getChild(0)))
-        }
+      case T_TABLE_QUERY => 
+        // AST:
+        // ^( T_TABLE_QUERY select_statement )
+        SubQuery(head.getChild(1).getText, buildOperationTree("", head.getChild(0)))
+        
     
-      case T_TABLE_VALUES => {
-          // AST:
-          // ^(T_TABLE_VALUES 
-          //   ^(T_VALUES ^(T_VALUES expression_main+ )+) <-- rows
-          //   alias
-          //  )
-          val alias = if (head.getChildCount == 1) None else Some(head.getChild(1).getText)
-          var e: List[List[Expression]] = Nil
-          val ch = getChildren(head.getChild(0))
-          ch foreach { g => e = (getChildren(g) map (parseExpression(_))) :: e }
-          e = e reverse
+      case T_TABLE_VALUES => 
+        // AST:
+        // ^(T_TABLE_VALUES 
+        //   ^(T_VALUES ^(T_VALUES expression_main+ )+) <-- rows
+        //   alias
+        //  )
+        val alias = if (head.getChildCount == 1) None else Some(head.getChild(1).getText)
+        var e: List[List[Expression]] = Nil
+        val ch = getChildren(head.getChild(0))
+        ch foreach { g => e = (getChildren(g) map (parseExpression(_))) :: e }
                 
-          val s = ValuesScan(e, alias, false)
-          s
-        }}
+        ValuesScan(e reverse, alias, false)
+      case T_PARAM =>
+        // AST:
+        // ^(T_PARAM paramName)
+        ParamTable(head.getChild(0).getText)
+    }
   }
 
   private def doCustomQuery(ch: Tree) : (Seq[Expression],Seq[Either[String,Operation]]) = {
@@ -641,12 +643,10 @@ object LogicPlanBuilder {
 
     tree.getType match {
       case PLUS => left + right
-      case MINUS => {
-          l.length match {
-            // -a  (unary operator)
-            case 1 => -left
-            case _ => left - right
-          }
+      case MINUS => l.length match {
+          // -a  (unary operator)
+          case 1 => -left
+          case _ => left - right
         }
       case ASTERISK => left * right
       case DIVIDE => left / right
@@ -666,30 +666,22 @@ object LogicPlanBuilder {
       case GEQ => left >= right
       case LTH => left < right
       case LEQ => left <= right
-      case SQRT => {
-          // converting SQRT operator into the corresponding function
-          Expression("Sqrt", List(left))
-        }
-
+      case SQRT => 
+        // converting SQRT operator into the corresponding function
+        Expression("Sqrt", List(left))
       case CBRT => Expression("cbrt", List(left))
-      case AT_SIGN => {
-          // converting ABS operator into the corresponding function
-          Expression("Abs", List(left))
-        }
-
-        
-      case TILDE => { if (l.tail.isEmpty) {
-            // TODO: bitwize NOT (or drop it?)
-            throw new UnsupportedOperationException("Not yet implemented.")
-          } else {
-            left ~ right
-          }
+      case AT_SIGN => 
+        // converting ABS operator into the corresponding function
+        Expression("Abs", List(left))
+      case TILDE =>  if (l.tail.isEmpty) {
+          // TODO: bitwize NOT (or drop it?)
+          throw new UnsupportedOperationException("Not yet implemented.")
+        } else {
+          left ~ right
         }
       case ITILDE => left.~(right, true)
       case NOTILDE => !(left ~ right)
       case NOITILDE => !(left.~(right, true))
-
-        // TODO: factorial operator
       case FACTORIAL_PREFIX | FACTORIAL => Expression("Fac", List(left))
       case T_NULL => Expression(ValueFactory.createNullValue[Value])
 
@@ -704,60 +696,56 @@ object LogicPlanBuilder {
       case T_ILIKE => left.like(right, true)
         // sql imilar to operator.
       case T_SIMILAR => left similarTo right
-      case T_SELECT_COLUMN => {
-	  // AST:
-	  // ^(T_SELECT_COLUMN LONG_ID+ )
-          val rev = l.reverse
-          val name = rev.head.getText.replace("\"", "")
-          if (rev.tail.isEmpty) {
-            Field(name)
-          } else {
-            Field(name, rev.tail.map(_.getText).reduceLeft(_ + "." + _))
-          }
-        }
-      case T_SELECT_COLUMN_STAR => {
-	  // AST:
-	  // ^(T_SELECT_COLUMN_STAR LONG_ID* ASTERISK select_star_except? )
-          var rev = l.reverse
-          var except: Seq[String] = List.empty
-          if (rev.head.getType == T_EXCEPT) {
-            except = getChildren(rev.head).map (_.getText.replace("\"", ""))
-            rev = rev.tail
-          }
-          if (rev.tail.isEmpty) {
-            Field.star(except, None)
-          } else {
-            Field.star(except, Some(rev.tail.map(_.getText).reduceLeft(_ + "." + _)))
-          }
-        }
-        // all ISNULL, NOTNULL, IS NULL are encoded into the same expression
-      case T_NULL_CHECK => Expression(IsNullEvaluator(left))
-      case T_IN => {
-          right.getType match {
-            // AST:
-            // ^(T_IN expression_main ^(T_SELECT ... ))
-            case T_SELECT => left in buildOperationTree("", right)
-
-              // AST:
-              // ^(T_IN expression_main ^(T_EXPR_LIST expression_main+ ))
-            case T_EXPR_LIST => left in getChildren(right).map (parseExpression)
-          }
-        }
-      case T_BETWEEN => (l(0) >= l(1)) & (l(0) <= l(2))
-      case T_FUNCTION_CALL => {
-	  // AST:
-	  // ^( T_FUNCTION_CALL name ^(T_EXPR_LIST expression_main+ )? )
-          // evaluate parameters iif there is parameters (cf. grammar)
-          val li = if (l.tail.isEmpty) (Nil) else (getChildren(right).map (parseExpression))
-          Expression(left.getText, li)
+      case T_SELECT_COLUMN => 
+        // AST:
+        // ^(T_SELECT_COLUMN LONG_ID+ )
+        val rev = l.reverse
+        val name = rev.head.getText.replace("\"", "")
+        if (rev.tail.isEmpty) {
+          Field(name)
+        } else {
+          Field(name, rev.tail.map(_.getText).reduceLeft(_ + "." + _))
         }
         
-      case T_EXISTS => {
-          Expression(ExistsEvaluator(buildOperationTree("", left)))
+      case T_SELECT_COLUMN_STAR => 
+        // AST:
+        // ^(T_SELECT_COLUMN_STAR LONG_ID* ASTERISK select_star_except? )
+        var rev = l.reverse
+        var except: Seq[String] = List.empty
+        if (rev.head.getType == T_EXCEPT) {
+          except = getChildren(rev.head).map (_.getText.replace("\"", ""))
+          rev = rev.tail
         }
-      case T_TABLE_QUERY => {
-          Expression(QueryToScalarEvaluator(buildOperationTree("", left)))
-      }
+        if (rev.tail.isEmpty) {
+          Field.star(except, None)
+        } else {
+          Field.star(except, Some(rev.tail.map(_.getText).reduceLeft(_ + "." + _)))
+        }
+        
+        // all ISNULL, NOTNULL, IS NULL are encoded into the same expression
+      case T_NULL_CHECK => Expression(IsNullEvaluator(left))
+      case T_IN => right.getType match {
+          // AST:
+          // ^(T_IN expression_main ^(T_SELECT ... ))
+          case T_SELECT => left in buildOperationTree("", right)
+
+            // AST:
+            // ^(T_IN expression_main ^(T_EXPR_LIST expression_main+ ))
+          case T_EXPR_LIST => left in getChildren(right).map (parseExpression)
+        }
+        
+      case T_BETWEEN => (l(0) >= l(1)) & (l(0) <= l(2))
+      case T_FUNCTION_CALL => 
+        // AST:
+        // ^( T_FUNCTION_CALL name ^(T_EXPR_LIST expression_main+ )? )
+        // evaluate parameters iif there is parameters (cf. grammar)
+        val li = if (l.tail.isEmpty) (Nil) else (getChildren(right).map (parseExpression))
+        Expression(left.getText, li)
+        
+      case T_EXISTS => Expression(ExistsEvaluator(buildOperationTree("", left)))
+      case T_TABLE_QUERY => Expression(QueryToScalarEvaluator(buildOperationTree("", left)))
+      case T_PARAM => Expression(ParamEvaluator(l(0).getText))
+      
         // constant values are built from String by SQLValueFactory
       case a => Expression(SQLValueFactory.createValue(tree.getText, a))
     }
