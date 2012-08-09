@@ -46,6 +46,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.sql.SQLSourceDefinition;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.engine.Engine;
+import org.gdms.sql.engine.SQLScript;
 import org.gdms.sql.engine.SQLStatement;
 
 public class InstructionTest extends TestBase {
@@ -60,31 +61,17 @@ public class InstructionTest extends TestBase {
         }
 
         @Test
-        public void testGetScriptInstructionMetadata() throws Exception {
-                String script = "select * from alltypes; select * from alltypes;";
-                SQLStatement[] st = Engine.parse(script, dsf.getProperties());
-                st[0].setDataSourceFactory(dsf);
-                st[1].setDataSourceFactory(dsf);
-                st[0].prepare();
-                st[1].prepare();
-                assertNotNull(st[0].getResultMetadata());
-                assertNotNull(st[1].getResultMetadata());
-                st[0].cleanUp();
-                st[1].cleanUp();
-        }
-
-        @Test
         public void testCommentsInTheMiddleOfTheScript() throws Exception {
                 String script = "/*description*/\nselect * from mytable;\n/*select * from mytable*/";
-                SQLStatement[] st = Engine.parse(script, dsf.getProperties());
-                assertEquals(st.length, 1);
+                SQLScript st = Engine.parseScript(script, dsf.getProperties());
+                assertEquals(st.getSize(), 1);
 
         }
 
         @Test
         public void testSQLSource() throws Exception {
-                SQLStatement[] st = Engine.parse("select * from alltypes;", dsf.getProperties());
-                DataSource ds = dsf.getDataSource(st[0], DataSourceFactory.DEFAULT,
+                SQLStatement st = Engine.parse("select * from alltypes;", dsf.getProperties());
+                DataSource ds = dsf.getDataSource(st, DataSourceFactory.DEFAULT,
                         null);
                 assertEquals((ds.getSource().getType() & SourceManager.SQL), SourceManager.SQL);
                 String sql = ((SQLSourceDefinition) ds.getSource().getDataSourceDefinition()).getSQL();
@@ -93,8 +80,8 @@ public class InstructionTest extends TestBase {
 
         @Test
         public void testCancelledInstructions() throws Exception {
-                SQLStatement[] st = Engine.parse("select * from alltypes;", dsf.getProperties());
-                DataSource ds = dsf.getDataSource(st[0], DataSourceFactory.DEFAULT,
+                SQLStatement st = Engine.parse("select * from alltypes;", dsf.getProperties());
+                DataSource ds = dsf.getDataSource(st, DataSourceFactory.DEFAULT,
                         cancelPM);
                 assertNull(ds);
 

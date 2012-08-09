@@ -109,7 +109,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
                 try {
                         logger.debug("Preparing script: " + script);
                         try {
-                                statements = Engine.parse(script, dsf.getProperties());
+                                statements = Engine.parseScript(script, dsf.getProperties()).getStatements();
                         } catch (ParseException e) {
                                 Services.getErrorManager().error("Cannot parse script", e);
                                 if (panel != null) {

@@ -117,7 +117,7 @@ public class GrammarTest {
 
         @Test
         public void testScript() throws Exception {
-                parse("select * from gis; select * from alltypes, (select * from gis) as tutu where false;");
+                parseScript("select * from gis; select * from alltypes, (select * from gis) as tutu where false;");
         }
 
         @Test
@@ -336,8 +336,8 @@ public class GrammarTest {
 
         @Test
         public void testScriptWithComments() throws Exception {
-                parse("select * from mytable;-- comment\nselect * from mytable;");
-                parse("select * from mytable;/* com\nment\n*/select * from mytable;");
+                parseScript("select * from mytable;-- comment\nselect * from mytable;");
+                parseScript("select * from mytable;/* com\nment\n*/select * from mytable;");
         }
 
         @Test
@@ -401,5 +401,9 @@ public class GrammarTest {
 
         private void parse(String sql) throws ParseException, SemanticException {
                 Engine.parse(sql);
+        }
+        
+        private void parseScript(String sql) throws ParseException, SemanticException {
+                Engine.parseScript(sql);
         }
 }
