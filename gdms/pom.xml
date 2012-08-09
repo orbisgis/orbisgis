@@ -126,7 +126,7 @@
                         <plugin>
                                 <groupId>net.alchim31.maven</groupId>
                                 <artifactId>scala-maven-plugin</artifactId>
-                                <version>3.0.2</version>
+                                <version>3.1.0</version>
                                 <executions>
                                         <execution>
                                                 <id>scala-compile-first</id>
@@ -213,6 +213,39 @@
                 </plugins>
         </build>
         <profiles>
+                <profile>
+                        <id>incremental</id>
+                        <build>
+                                <plugins>
+                                        <plugin>
+                                                <groupId>net.alchim31.maven</groupId>
+                                                <artifactId>scala-maven-plugin</artifactId>
+                                                <version>3.1.0</version>
+                                                <executions>
+                                                        <execution>
+                                                                <id>scala-compile-first</id>
+                                                                <phase>process-resources</phase>
+                                                                <goals>
+                                                                        <goal>add-source</goal>
+                                                                        <goal>compile</goal>
+                                                                </goals>
+                                                        </execution>									
+                                                        <execution>
+                                                                <id>scala-test-compile</id>
+                                                                <phase>process-test-resources</phase>
+                                                                <goals>
+                                                                        <goal>testCompile</goal>
+                                                                </goals>
+                                                        </execution>
+                                                </executions>
+                                                <configuration>
+                                                        <recompileMode>incremental</recompileMode>
+                                                        <useZincServer>true</useZincServer>
+                                                </configuration>
+                                        </plugin>
+                                </plugins>
+                        </build>
+                </profile>
                 <profile>
                         <id>coverage</id>
                         <repositories>
