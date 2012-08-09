@@ -68,6 +68,13 @@ public interface BTreeNode extends TreeNode<Value, BTreeNode, RangeComparator[]>
          * @throws IOException 
          */
         Value getSmallestValue() throws IOException;
+        
+        /**
+         * Gets the largest value in the whole tree.
+         * @return the largest value
+         * @throws IOException 
+         */
+        Value getLargestValue() throws IOException;
 
         /**
          * True if the node (or its child) contains the specified value.
@@ -79,4 +86,16 @@ public interface BTreeNode extends TreeNode<Value, BTreeNode, RangeComparator[]>
          * @throws IOException 
          */
         boolean contains(Value value) throws IOException;
+        
+        /**
+         * @return the smallest row in the tree
+         * @throws IOException 
+         */
+        int smallest() throws IOException;
+        
+        /**
+         * @return the largest row in the tree
+         * @throws IOException 
+         */
+        int largest() throws IOException;
 }
