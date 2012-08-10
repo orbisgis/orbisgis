@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
 
 import org.apache.log4j.Logger;
 import org.jproj.CRSFactory;
@@ -134,6 +135,7 @@ public final class DataSourceFactory {
         private FunctionManager functionManager = new FunctionManager();
         private GdmsProperties properties = new GdmsProperties(defaultProperties);
         private static final GdmsProperties defaultProperties;
+        private static final String BNUMBER;
 
         static {
                 defaultProperties = new GdmsProperties();
@@ -145,6 +147,19 @@ public final class DataSourceFactory {
                         LOG.warn("Failed to load the default config flags, falling back to the internal"
                                 + " default values (not good).", ex);
                 }
+                
+                String bNum = "UNKNOWN";
+                try {
+                        final InputStream bNumber = DataSourceFactory.class.getResourceAsStream("/org/gdms/buildNumber.properties");
+                        Properties p = new Properties();
+                        p.load(bNumber);
+                        bNum = p.getProperty("git-sha-1");
+                        bNumber.close();
+                } catch (IOException ex) {
+                        LOG.warn("Failed to load a property file.", ex);
+                }
+                
+                BNUMBER = bNum;
         }
 
         /**
@@ -826,7 +841,11 @@ public final class DataSourceFactory {
          * If the initialization fails
          */
         private void initialize(String sourceInfoDir, String tempDir, String pluginDir) {
-                LOG.trace("DataSourceFactory initializing");
+                LOG.info("Gdms 2.0 Starting.");
+                LOG.info("Built from revision " + BNUMBER);
+                LOG.info("source info dir: " + sourceInfoDir);
+                LOG.info("temp dir: " + tempDir);
+                LOG.info("plugin dir: " + pluginDir);
 
                 I18N.addI18n(i18NLocale, "gdms", this.getClass());
                 indexManager = new IndexManager(this);

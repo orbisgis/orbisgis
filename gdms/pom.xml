@@ -210,7 +210,30 @@
                                         </reportPlugins>
                                 </configuration>
                         </plugin>
+                        <plugin>
+                                <groupId>org.codehaus.mojo</groupId>
+                                <artifactId>buildnumber-maven-plugin</artifactId>
+                                <version>1.1</version>
+                                <configuration>
+                                        <revisionOnScmFailure>${version}</revisionOnScmFailure>
+                                </configuration>
+                                <executions>
+                                        <execution>
+                                                <phase>validate</phase>
+                                                <goals>
+                                                        <goal>create</goal>
+                                                </goals>
+                                        </execution>
+                                </executions>
+                        </plugin>
                 </plugins>
+                <resources>
+                        <resource>
+                                 <!-- Filtering to include the git SHA1 -->
+                                <directory>${basedir}/src/main/resources/</directory>
+                                <filtering>true</filtering>
+                        </resource>
+                </resources>
         </build>
         <profiles>
                 <profile>
