@@ -31,7 +31,7 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.sql.function.alphanumeric;
+package org.gdms.sql.function;
 
 import org.junit.Test;
 import java.text.DateFormat;
@@ -46,6 +46,13 @@ import org.gdms.sql.FunctionTest;
 import org.gdms.sql.function.ScalarFunction;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.data.types.IncompatibleTypesException;
+import org.gdms.sql.function.alphanumeric.AutoNumeric;
+import org.gdms.sql.function.alphanumeric.Average;
+import org.gdms.sql.function.alphanumeric.Count;
+import org.gdms.sql.function.alphanumeric.Max;
+import org.gdms.sql.function.alphanumeric.Min;
+import org.gdms.sql.function.alphanumeric.StrLength;
+import org.gdms.sql.function.alphanumeric.Sum;
 
 import static org.junit.Assert.*;
 
