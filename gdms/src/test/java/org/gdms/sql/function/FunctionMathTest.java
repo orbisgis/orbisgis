@@ -31,7 +31,7 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.sql.function.math;
+package org.gdms.sql.function;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -35,7 +35,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package org.gdms.sql.function.spatial.edit;
+package org.gdms.sql.function;
 
 import com.vividsolutions.jts.geom.Polygon;
 import org.orbisgis.progress.NullProgressMonitor;

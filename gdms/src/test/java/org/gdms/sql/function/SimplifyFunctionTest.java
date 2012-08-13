@@ -31,7 +31,7 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.sql.function.spatial.simplify;
+package org.gdms.sql.function;
 
 import org.junit.Test;
 import com.vividsolutions.jts.geom.Coordinate;
