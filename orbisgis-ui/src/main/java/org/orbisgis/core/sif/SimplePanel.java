@@ -293,14 +293,6 @@ public class SimplePanel extends JPanel {
                         msgPanel.setError(I18N.getString(
                                 "orbisgis.org.orbisgis.sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
                                 + e.getMessage());
-                    } catch (NoSuchTableException e) {
-                        logger.error(
-                                I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.bugInSIF"),
-                                     e); //$NON-NLS-1$
-                        msgPanel.setError(I18N.getString(
-                                "orbisgis.org.orbisgis.sif.simplePanel.couldNotValidateDialog") //$NON-NLS-1$
-                                + e.getMessage());
                     }
                 }
             }
