@@ -31,7 +31,7 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.sql.function.spatial.raster;
+package org.gdms.sql.function;
 
 import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.data.types.Type;

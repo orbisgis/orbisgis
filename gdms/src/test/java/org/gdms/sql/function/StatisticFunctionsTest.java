@@ -31,7 +31,7 @@
  * or contact directly:
  * info@orbisgis.org
  */
-package org.gdms.sql.function.statistics;
+package org.gdms.sql.function;
 
 import org.junit.Test;
 import org.gdms.data.types.Type;
