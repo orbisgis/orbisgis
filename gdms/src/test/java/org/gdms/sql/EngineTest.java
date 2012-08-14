@@ -240,4 +240,16 @@ public class EngineTest extends TestBase {
                         // ok
                 }
         }
+        
+        @Test
+        public void testParamInExecutorPresent() throws Exception {
+                String sql = "EXECUTE Register(@{hi});";
+                // should not fail
+                SQLStatement st = Engine.parse(sql, dsf.getProperties());
+                
+                st.setDataSourceFactory(dsf);
+                st.setValueParameter("hi", ValueFactory.createValue("hello"));
+                st.prepare();
+                st.cleanUp();
+        }
 }

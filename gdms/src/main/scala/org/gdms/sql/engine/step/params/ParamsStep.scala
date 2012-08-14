@@ -104,6 +104,11 @@ extends AbstractEngineStep[Operation, Operation]("Parameter remplacement") with 
         case a => a
       })
     
+    op match {
+      case e: ExpressionOperation => processExpressionOp(e)
+      case _ =>
+    }
+    
     op
   }
 }
