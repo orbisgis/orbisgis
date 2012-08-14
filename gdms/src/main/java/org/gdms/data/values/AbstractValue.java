@@ -287,6 +287,15 @@ public abstract class AbstractValue implements Value {
                 throw new IncompatibleTypesException("This value is not string: "
                         + toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
         }
+        
+        @Override
+        public CharSequence getAsCharSequence() {
+                if (isNull()) {
+                        return null;
+                }
+                throw new IncompatibleTypesException("This value is not string: "
+                        + toString() + "(" + TypeFactory.getTypeName(getType()) + ")");
+        }
 
         @Override
         public Time getAsTime() {

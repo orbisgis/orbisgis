@@ -210,7 +210,7 @@ public class ReadDriver extends DefaultDBDriver implements MemoryDriver,
         }
 
         @Override
-        public String getStatementString(String str, int sqlType) {
+        public String getStatementString(CharSequence str, int sqlType) {
                 return null;
         }
 

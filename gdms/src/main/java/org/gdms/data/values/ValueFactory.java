@@ -71,6 +71,7 @@ public final class ValueFactory {
         private static final Logger LOG = Logger.getLogger(ValueFactory.class);
         public static final BooleanValue TRUE = new DefaultBooleanValue(true);
         public static final BooleanValue FALSE = new DefaultBooleanValue(false);
+        static final StringValue EMPTYTEXT = new DefaultStringValue();
 
         /**
          * Creates a Value instance that contains the specified int value.
@@ -113,14 +114,60 @@ public final class ValueFactory {
         }
 
         /**
-         * Creates a Value instance that contains the specified String value.
+         * Creates a Value instance that contains the specified text (as a String value).
          *
          * @param s a string
-         * @return a wrapper over the string
+         * @return a wrapper over the text
          */
         public static StringValue createValue(String s) {
                 if (s != null) {
-                        return new DefaultStringValue(s);
+                        if (s.isEmpty()) {
+                                return EMPTYTEXT;
+                        } else {
+                                return new DefaultStringValue(s);
+                        }
+                } else {
+                        return createNullValue();
+                }
+        }
+        
+        /**
+         * Creates a Value instance that contains the specified text (as a char array).
+         * 
+         * No reference to the char array <tt>s</tt> is kept, the array is copied.
+         *
+         * @param s a char array
+         * @return a wrapper over the text
+         */
+        public static StringValue createValue(char[] s) {
+                if (s != null) {
+                        if (s.length == 0) {
+                                return EMPTYTEXT;
+                        } else {
+                                return new DefaultStringValue(s);
+                        }
+                } else {
+                        return createNullValue();
+                }
+        }
+        
+        /**
+         * Creates a Value instance that contains a portion of the specified text (as a char array).
+         * 
+         * No reference to the char array <tt>s</tt> is kept, the required part of the array is copied.
+         *
+         * @param s a char array
+         * @param start the start index in the array
+         * @param length the length of the sub-array to keep
+         * @return a wrapper over the text
+         */
+        public static StringValue createValue(char[] s, int start, int length) {
+                if (s != null) {
+                        if (s.length == 0 || length == 0) {
+                                return EMPTYTEXT;
+                        } else {
+                                return new DefaultStringValue(s, start, length);
+                        }
                 } else {
                         return createNullValue();
                 }

@@ -54,7 +54,7 @@ public class StrLength  extends AbstractScalarFunction {
 		if (args[0].isNull()) {
 			return ValueFactory.createNullValue();
 		} else {
-			return ValueFactory.createValue(args[0].getAsString().length());
+			return ValueFactory.createValue(args[0].getAsCharSequence().length());
 		}
 	}
 

@@ -264,7 +264,7 @@ public abstract class DefaultSQL extends AbstractDataSet implements DBReadWriteD
         }
 
         @Override
-        public String getStatementString(String str, int sqlType) {
+        public String getStatementString(CharSequence str, int sqlType) {
                 return valueWriter.getStatementString(str, sqlType);
         }
 
