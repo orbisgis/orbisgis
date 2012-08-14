@@ -304,7 +304,7 @@ case class SubQuery(alias: String,var child: Operation) extends Operation {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Projection(exp: List[(Expression, Option[String])],var child: Operation) 
+case class Projection(exp: List[(Expression, Option[Either[String, String]])],var child: Operation) 
 extends Operation with ExpressionOperation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
@@ -324,7 +324,7 @@ extends Operation with ExpressionOperation {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Aggregate(var exp: List[(Expression, Option[String])],var child: Operation) 
+case class Aggregate(var exp: List[(Expression, Option[Either[String, String]])],var child: Operation) 
 extends Operation with ExpressionOperation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
@@ -384,7 +384,7 @@ case class Sort(names: Seq[(Expression, Boolean)],var child: Operation) extends 
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class Grouping(var exp: List[(Expression, Option[String])],var child: Operation) extends Operation with ExpressionOperation {
+case class Grouping(var exp: List[(Expression, Option[Either[String, String]])],var child: Operation) extends Operation with ExpressionOperation {
   def children = List(child)
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
   override def doValidate() = exp foreach (_._1 preValidate)

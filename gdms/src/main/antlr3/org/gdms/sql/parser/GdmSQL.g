@@ -440,7 +440,7 @@ select_list
 
 select_list_first
         : select_column_star -> ^(T_COLUMN_ITEM select_column_star)
-        | expression_main ( T_AS? alias=LONG_ID )?
+        | expression_main ( T_AS? alias=select_param_element )?
         -> ^(T_COLUMN_ITEM expression_main $alias? )
         | a=ASTERISK select_star_except? -> ^(T_COLUMN_ITEM ^(T_SELECT_COLUMN_STAR $a select_star_except? ))
         ;
@@ -465,12 +465,12 @@ select_column_star
 
 select_star_except
         : T_EXCEPT (
-          select_star_except_element
-        | LPAREN select_star_except_element (COMMA select_star_except_element)* RPAREN )
-        -> ^(T_EXCEPT select_star_except_element+ )
+          select_param_element
+        | LPAREN select_param_element (COMMA select_param_element)* RPAREN )
+        -> ^(T_EXCEPT select_param_element+ )
         ;
 
-select_star_except_element
+select_param_element
         : LONG_ID -> LONG_ID
         | LPARAM LONG_ID RPARAM -> ^(T_PARAM LONG_ID)
         ;

@@ -206,4 +206,38 @@ public class EngineTest extends TestBase {
                 
                 st.cleanUp();
         }
+        
+        @Test
+        public void testParamInAlias() throws Exception {
+                String sql = "SELECT 42 as @{hi}, 'hello!' AS bonjour;";
+                // should not fail
+                SQLStatement st = Engine.parse(sql, dsf.getProperties());
+                
+                st.setDataSourceFactory(dsf);
+                st.setFieldParameter("hi", "hello");
+                st.prepare();
+                DataSet d = st.execute();
+                
+                assertEquals("hello", d.getMetadata().getFieldName(0));
+                
+                st.cleanUp();
+                
+                st.setDataSourceFactory(dsf);
+                st.setFieldParameter("hi", "hi");
+                st.prepare();
+                d = st.execute();
+                
+                assertEquals("hi", d.getMetadata().getFieldName(0));
+                
+                st.cleanUp();
+                
+                st.setDataSourceFactory(dsf);
+                try {
+                        // should fail
+                        st.prepare();
+                        fail();
+                } catch (Exception e) {
+                        // ok
+                }
+        }
 }

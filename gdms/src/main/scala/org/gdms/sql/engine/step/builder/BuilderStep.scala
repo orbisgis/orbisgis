@@ -105,11 +105,15 @@ case object BuilderStep extends AbstractEngineStep[(Operation, DataSourceFactory
         new ValuesScanCommand(ex, alias, internal)
       case Projection(exp, ch) => 
         exp foreach (a => processExp(a._1))
-        new ProjectionCommand(exp toArray) withChild ch
-      case Aggregate(exp, Grouping(e, ch)) => new AggregateCommand(exp, e) withChild ch
-      case Aggregate(exp, ch) => new AggregateCommand(exp, Nil) withChild ch
+        new ProjectionCommand(exp.map(e => (e._1, e._2.map(_.left.get))) toArray) withChild ch
+      case Aggregate(exp, Grouping(e, ch)) => 
+        new AggregateCommand(exp.map(e => (e._1, e._2.map(_.left.get))), 
+                             e.map(e => (e._1, e._2.map(_.left.get)))) withChild ch
+      case Aggregate(exp, ch) => 
+        new AggregateCommand(exp.map(e => (e._1, e._2.map(_.left.get))), Nil) withChild ch
       case Distinct(ch) => new MemoryDistinctCommand() withChild ch
-      case Grouping(e, ch) =>  new AggregateCommand(Nil, e) withChild ch
+      case Grouping(e, ch) =>  
+        new AggregateCommand(Nil, e.map(e => (e._1, e._2.map(_.left.get)))) withChild ch
       case Filter(exp, ch, _) => 
         processExp(exp)
         new ExpressionFilterCommand(exp) withChild ch

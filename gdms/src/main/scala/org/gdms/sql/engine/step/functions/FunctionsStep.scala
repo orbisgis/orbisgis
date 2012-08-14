@@ -69,18 +69,16 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
     // push down aggregates in Having into the Grouping clause
     op match {
       case f @ Filter(e, a, true) =>
-        var aliases: List[String] = Nil
         // replaces aggregate functions by fields and returns the aggregates
         var i = -2
-        def replaceAggregateFunctions(e: Expression): Seq[(Expression, Option[String])] = {
+        def replaceAggregateFunctions(e: Expression): Seq[(Expression, Option[Either[String, String]])] = {
           e match {
             case agg(f, li) => 
               val func = e.evaluator
               i = i + 1
               val name = '$' + f.getName + (if (i == -1) "" else i)
-              aliases = name :: aliases
               e.evaluator = FieldEvaluator(name)
-              (Expression(func), Some(name)) :: Nil
+              (Expression(func), Some(Left(name))) :: Nil
             case e => e.children flatMap replaceAggregateFunctions
           }
         }
@@ -140,18 +138,18 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
   
   private def processAggregates(op: Operation) {
     op.allChildren foreach { case p @ Projection(exp, ch) =>
-        var aliases: List[String] = Nil
+        var aliases: List[Either[String, String]] = Nil
         
         // replaces aggregate functions by fields and returns the aggregates
         var i = -2
-        def replaceAggregateFunctions(e: (Expression, Option[String])): Seq[(Expression, Option[String])] = {
+        def replaceAggregateFunctions(e: (Expression, Option[Either[String, String]])): Seq[(Expression, Option[Either[String, String]])] = {
           e._1 match {
-            case agg(f, li) => 
+            case agg(f, _) => 
               val func = e._1.evaluator
               i = i + 1
-              val name = e._2.getOrElse(f.getName + (if (i == -1) "" else i))
+              val name = e._2.getOrElse(Left(f.getName + (if (i == -1) "" else i)))
               aliases = name :: aliases
-              e._1.evaluator = FieldEvaluator(name)
+              e._1.evaluator = FieldEvaluator(name.left.get)
               (Expression(func), Some(name)) :: Nil
             case e => e.children flatMap (ex => replaceAggregateFunctions((ex, None)))
           }
@@ -182,7 +180,7 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
             aliases = group.exp flatMap (a =>
               a._2 orElse {
                 a._1 match {
-                  case field(name, _) => Some(name)
+                  case field(name, _) => Some(Left(name))
                   case _ => None
                 }
               }
@@ -198,11 +196,12 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
               if (aliases.contains(al)) {
                 val t = f._1.evaluator
                 // we replace the evaluator with a FieldEvaluator with the alias name
-                f._1.evaluator = FieldEvaluator(al)
+                f._1.evaluator = FieldEvaluator(al.left.get)
               
                 // we replace the Field in the GROUP BY clause by the actual expression
+                val alname = al.merge
                 group.exp = group.exp map {g => g._1 match {
-                    case field(name,_) if name == al => (Expression(t), Some(al))
+                    case field(name,_) if name == alname => (Expression(t), Some(al))
                     case _ => g
                   }}
               }
@@ -241,7 +240,7 @@ case object FunctionsStep extends AbstractEngineStep[(Operation, DataSourceFacto
           // checks directly selected fields are referenced in GROUP BY clause
           exp foreach (_._1 match {
               case field(name, _) => 
-                if (!aliases.contains(name)) {
+                if (!aliases.contains(Left(name))) {
                   throw new SemanticException("field " + name + " cannot be selected because it is not present in the GROUP BY clause.")
                 }
               case star(_,_) => throw new SemanticException("Selected alls field using the STAR '*' is not allowed with" + 

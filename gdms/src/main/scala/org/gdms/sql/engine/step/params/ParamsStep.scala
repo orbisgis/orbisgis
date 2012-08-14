@@ -39,7 +39,7 @@ import scala.collection.mutable.{Map => MutMap}
 import org.gdms.data.values.Value
 import org.gdms.sql.engine.{AbstractEngineStep, SemanticException}
 import org.gdms.sql.engine.logical.LogicPlanOptimizer
-import org.gdms.sql.engine.operations.{Operation, ExpressionOperation, Scan, ParamTable}
+import org.gdms.sql.engine.operations.{Operation, ExpressionOperation, Scan, ParamTable, Projection}
 import org.gdms.sql.evaluator.{StaticEvaluator, param, FieldEvaluator, star, StarFieldEvaluator}
 
 /**
@@ -56,37 +56,51 @@ class ParamsStep(vParams: MutMap[String, Value], fParams: MutMap[String, String]
 extends AbstractEngineStep[Operation, Operation]("Parameter remplacement") with LogicPlanOptimizer {
 
   def doOperation(op: Operation)(implicit p: Properties): Operation = {
+    def processExpressionOp(e: ExpressionOperation) = {
+      e.expr foreach { ee => ee :: ee.allChildren foreach { ex => ex match {
+            case star(vals, t) =>
+              val clean = vals map { _ match {
+                  case Right(pName) => fParams.get(pName) match {
+                      case Some(par) => Left(par)
+                      case None => throw new SemanticException("No value was given for parameter named '" + pName + "'!")
+                    }
+                  case a => a
+                }}
+              ex.evaluator = StarFieldEvaluator(clean, t)
+            case param(m) => 
+              val value = vParams.get(m)
+              if (value.isDefined) {
+                ex.evaluator = StaticEvaluator(value.get)
+              } else {
+                val field = fParams.get(m)
+                if (field.isDefined) {
+                  ex.evaluator = FieldEvaluator(field.get)
+                } else {
+                  throw new SemanticException("No value was given for parameter named '" + m + "'!")
+                }
+              }
+            case _ =>
+          }} }
+      e
+    }
+    
     replaceOperationFromBottom(op, {
         case ParamTable(n, alias) => tParams.get(n) match {
             case Some(table) => Scan(table, alias)
             case None => throw new SemanticException("No value was given for table parameter named '" + n + "'!")
           }
-        case e: ExpressionOperation =>
-          e.expr foreach { ee => ee :: ee.allChildren foreach { ex => ex match {
-                case star(vals, t) =>
-                  val clean = vals map { _ match {
-                      case Right(pName) => fParams.get(pName) match {
-                          case Some(par) => Left(par)
-                          case None => throw new SemanticException("No value was given for parameter named '" + pName + "'!")
-                      }
-                      case a => a
-                    }}
-                  ex.evaluator = StarFieldEvaluator(clean, t)
-                case param(m) => 
-                  val value = vParams.get(m)
-                  if (value.isDefined) {
-                    ex.evaluator = StaticEvaluator(value.get)
-                  } else {
-                    val field = fParams.get(m)
-                    if (field.isDefined) {
-                      ex.evaluator = FieldEvaluator(field.get)
-                    } else {
-                      throw new SemanticException("No value was given for parameter named '" + m + "'!")
+        case p: Projection =>
+          val newexps = p.exp map { e =>
+           e._2 match {
+             case Some(Right(pName)) => fParams.get(pName) match {
+                      case Some(par) => (e._1, Some(Left(par)))
+                      case None => throw new SemanticException("No value was given for parameter named '" + pName + "'!")
                     }
-                  }
-                case _ =>
-              }} }
-          e
+             case _ => e
+           }
+          }
+          processExpressionOp(Projection(newexps, p.child))
+        case e: ExpressionOperation => processExpressionOp(e)
         case a => a
       })
     

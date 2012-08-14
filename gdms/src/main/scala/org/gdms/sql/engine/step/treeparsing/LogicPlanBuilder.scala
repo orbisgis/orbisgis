@@ -70,7 +70,7 @@ object LogicPlanBuilder {
           var distinct = false
           
           // projection
-          var projexpr: List[(Expression, Option[String])] = Nil
+          var projexpr: List[(Expression, Option[Either[String, String]])] = Nil
           
           // joins
           var upperjoin: Operation = null
@@ -82,7 +82,7 @@ object LogicPlanBuilder {
           var sort: List[(Expression, Boolean)] = Nil
           
           // group
-          var group: List[(Expression, Option[String])] = Nil
+          var group: List[(Expression, Option[Either[String, String]])] = Nil
           
           // having
           var having: Expression = null
@@ -96,10 +96,13 @@ object LogicPlanBuilder {
                   // AST:
                   // ^(T_COLUMN_LIST ^(T_COLUMN_ITEM ...) ^(T_COLUMN_ITEM ...) ...)
                   
-                  val exprs = getChildren(t).map { tr =>
-                    (parseExpression(tr.getChild(0)), if (tr.getChildCount == 1) None else Some(tr.getChild(1).getText))
-                  } ;
-                  projexpr = exprs
+                  projexpr = getChildren(t).map { tr =>
+                    (parseExpression(tr.getChild(0)), if (tr.getChildCount == 1) None else {
+                        tr.getChild(1).getType match {
+                          case T_PARAM => Some(Right(tr.getChild(1).getChild(0).getText))
+                          case _ => Some(Left(tr.getChild(1).getText))
+                        }
+                      })}
                 }
                 // everything inside the FROM clause, including joins
               case T_FROM => {
@@ -185,8 +188,8 @@ object LogicPlanBuilder {
                   )
                 }
               case T_GROUP => { // group by clause
-		  // AST:
-		  // ^(T_GROUP expression_main+ )
+                  // AST:
+                  // ^(T_GROUP expression_main+ )
                   group = getChildren(t) map (c => (parseExpression(c), None))
                 }
               case T_HAVING => {
@@ -219,7 +222,7 @@ object LogicPlanBuilder {
           // Special case of "SELECT select_list ;" (without FROM clause)
           // converted into "SELECT ... FROM VALUES (...);""
           if (upperjoin == null) {
-            var newproj: List[(Expression, Option[String])] = Nil
+            var newproj: List[(Expression, Option[Either[String, String]])] = Nil
             var vals: List[Expression] = Nil
             projexpr.zipWithIndex foreach { z =>
               newproj = (Field("exp" + z._2), z._1._2) :: newproj
@@ -258,8 +261,8 @@ object LogicPlanBuilder {
           end = Output(down)
         }
       case T_UPDATE => {
-	  // AST:
-	  // ^(T_UPDATE table_id update_set+ ^(T_WHERE expression_cond)?)
+          // AST:
+          // ^(T_UPDATE table_id update_set+ ^(T_WHERE expression_cond)?)
           val c = getChildren(node)
           // add a scan for the selected table
           var last: Operation = new Scan(getFullTableName(c.head), None, true)
@@ -268,8 +271,8 @@ object LogicPlanBuilder {
           var e: List[(String, Expression)] = Nil
           c.tail.foreach { t => t.getType match {
               case T_UPDATE_SET => {
-		  // AST:
-		  // ^(T_UPDATE_SET ^(T_UPDATE_COLUMNS update_field+) ^(T_UPDATE_EXPRS (expression_main | T_DEFAULT)+) )
+                  // AST:
+                  // ^(T_UPDATE_SET ^(T_UPDATE_COLUMNS update_field+) ^(T_UPDATE_EXPRS (expression_main | T_DEFAULT)+) )
 
                   // tuples like (column_name, value)
                   val col = getChildren(t.getChild(0)) map (_.getChild(0).getText.replace("\"", ""))
@@ -295,11 +298,11 @@ object LogicPlanBuilder {
           c(1).getType match {
             // static insert with INSERT INTO ... VALUES ( .. )
             case T_VALUES => {
-		// AST:
-		// ^(T_INSERT table_id 
-		//   ^(T_VALUES ^(T_VALUES (expression_main | T_DEFAULT)+ )+) <-- rows
-		//   ^(T_COLUMN_LIST LONG_ID+)? <-- field names
-		//  )
+                // AST:
+                // ^(T_INSERT table_id 
+                //   ^(T_VALUES ^(T_VALUES (expression_main | T_DEFAULT)+ )+) <-- rows
+                //   ^(T_COLUMN_LIST LONG_ID+)? <-- field names
+                //  )
                 var e: List[List[Expression]] = Nil
                 val ch = getChildren(c(1))
                 ch foreach { g => e = (getChildren(g) map { t => t.getType match {
@@ -322,8 +325,8 @@ object LogicPlanBuilder {
           }
         }
       case T_DELETE => {
-	  // AST:
-	  // ^(T_DELETE table_id ^(T_WHERE expression_cond)?)
+          // AST:
+          // ^(T_DELETE table_id ^(T_WHERE expression_cond)?)
           val scan = Scan(getFullTableName(node.getChild(0)), None, true)
           if (node.getChildCount() == 2) {
             val filter = Filter(parseExpression(node.getChild(1).getChild(0)), scan)
@@ -336,13 +339,13 @@ object LogicPlanBuilder {
       case T_CREATE_TABLE => {
           // building the select statement, resulting in an Output o
           if (node.getChild(1).getType == T_SELECT) {
-	    // AST:
-	    // ^(T_CREATE_TABLE table_id select_statement)
+            // AST:
+            // ^(T_CREATE_TABLE table_id select_statement)
             val o = buildOperationTree("", node.getChild(1).asInstanceOf[CommonTree])
             end = CreateTableAs(getFullTableName(node.getChild(0)), o)
           } else {
-	    // AST:
-	    // ^(T_CREATE_TABLE table_id ^(T_CREATE_TABLE ^(T_TABLE_ITEM name type 
+            // AST:
+            // ^(T_CREATE_TABLE table_id ^(T_CREATE_TABLE ^(T_TABLE_ITEM name type 
             // ^(T_TABLE_CONSTRAINT cons)*
             // )*))
             val ch = getChildren(node.getChild(1))
@@ -363,8 +366,8 @@ object LogicPlanBuilder {
           }
         }
       case T_CREATE_VIEW => {
-	  // AST:
-	  // ^(T_CREATE_VIEW table_id select_statement T_OR?)
+          // AST:
+          // ^(T_CREATE_VIEW table_id select_statement T_OR?)
 
           // building the select statement, resulting in an Output o
           val o = buildOperationTree("", node.getChild(1).asInstanceOf[CommonTree])
@@ -372,15 +375,15 @@ object LogicPlanBuilder {
         }
       case T_ALTER => {
           // alter table statement
-	  // AST:
-	  // ^(T_ALTER table_id alter_action*)
+          // AST:
+          // ^(T_ALTER table_id alter_action*)
 
           val children = getChildren(node)
           val name = getFullTableName(children.head)        
           // get all alter actions
           val elems = children.tail map { c => c.getType match {
-	      // AST:
-	      // ^(T_ADD ^(T_TABLE_ITEM name type))
+              // AST:
+              // ^(T_ADD ^(T_TABLE_ITEM name type))
               case T_ADD => AddColumn(c.getChild(0).getChild(0).getText.replace("\"", ""), c.getChild(0).getChild(1).getText)
 
                 // AST:
@@ -404,14 +407,14 @@ object LogicPlanBuilder {
         }
       case T_RENAME => {
           // alter table toto rename to titi
-	  // AST:
-	  // ^(T_RENAME old=table_id new=table_id)
+          // AST:
+          // ^(T_RENAME old=table_id new=table_id)
           end = RenameTable(getFullTableName(node.getChild(0)), getFullTableName(node.getChild(1)))
         }
       case T_DROP => {
           // drop table statement
-	  // AST:
-	  // ^(T_DROP ^(T_TABLE table_id+) T_IF? T_PURGE?)
+          // AST:
+          // ^(T_DROP ^(T_TABLE table_id+) T_IF? T_PURGE?)
           val names = getChildren(node.getChild(0)) map (getFullTableName)
           var ifE = false
           var drop = false
@@ -428,16 +431,16 @@ object LogicPlanBuilder {
       case T_INDEX => {
           node.getChild(0).getType match {
             case T_CREATE => {
-	        // AST:
-	        // ^(T_INDEX T_CREATE table_id field+ )
+                // AST:
+                // ^(T_INDEX T_CREATE table_id field+ )
                 val cch = getChildren(node).tail
                 val table = getFullTableName(cch.head)
                 val cols = cch.tail.map (_.getText.replace("\"", ""))
                 end = CreateIndex(table, cols)
               }
             case T_DROP => {
-	        // AST:
-	        // ^(T_INDEX T_CREATE table_id field+ )
+                // AST:
+                // ^(T_INDEX T_CREATE table_id field+ )
                 val cch = getChildren(node).tail
                 val table = getFullTableName(cch.head)
                 val cols = cch.tail.map (_.getText.replace("\"", ""))
@@ -446,8 +449,8 @@ object LogicPlanBuilder {
           }
         }
       case T_EXECUTOR => {
-	  // AST:
-	  // ^( T_EXECUTOR function_call)
+          // AST:
+          // ^( T_EXECUTOR function_call)
           val l = getChildren(node.getChild(0))
           val name = l(0).getText
           val res = doCustomQuery(node.getChild(0))
