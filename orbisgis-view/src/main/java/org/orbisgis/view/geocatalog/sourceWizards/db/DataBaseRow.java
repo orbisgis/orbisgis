@@ -284,15 +284,4 @@ public class DataBaseRow {
         public void setInputSpatialField(String inputSpatialField) {
                 this.inputSpatialField = inputSpatialField;
         }
-
-        public String toSQL() {
-                StringBuilder sb = new StringBuilder();
-                sb.append("SELECT ");
-                sb.append("* EXCEPT( ").append(getOutputSpatialField()).append(") ");
-                sb.append(" , ST_Transform(").append(getInputSpatialField()).append(", 'EPSG:").
-                        append(getInputEpsgCode()).append("') AS ").append(getOutputSpatialField());
-                sb.append(" FROM ");
-                sb.append(getInputSourceName());                
-                return sb.toString();
-        }
 }
