@@ -36,7 +36,7 @@ package org.gdms.data.edition;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 
-public class AddFieldCommand implements Command {
+public final class AddFieldCommand implements Command {
 
 	private String name;
 

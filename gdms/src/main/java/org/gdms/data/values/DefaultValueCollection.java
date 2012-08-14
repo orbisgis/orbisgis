@@ -51,7 +51,7 @@ import org.gdms.data.types.Type;
  *
  * @author Fernando Gonzalez Cortes
  */
-class DefaultValueCollection extends AbstractValue implements ValueCollection {
+final class DefaultValueCollection extends AbstractValue implements ValueCollection {
 
         private List<Value> values = new ArrayList<Value>();
 

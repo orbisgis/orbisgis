@@ -39,7 +39,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
-public class InsertEditionInfo implements EditionInfo {
+public final class InsertEditionInfo implements EditionInfo {
 
         private PhysicalRowAddress dir;
 

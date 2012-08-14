@@ -62,7 +62,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import org.gdms.data.WarningListener;
+import org.apache.log4j.Logger;
+
 import org.gdms.driver.ReadBufferManager;
 
 /**
@@ -73,6 +74,8 @@ import org.gdms.driver.ReadBufferManager;
  *         http://svn.geotools.org/geotools/tags/2.3.1/plugin/shapefile/src/org/geotools/data/shapefile/dbf/DbaseFileHeader.java $
  */
 public class DbaseFileHeader {
+        
+        private static final Logger LOG = Logger.getLogger(DbaseFileHeader.class);
         private static final String FIELD_LENGTH_FOR = "Field Length for ";
 	// Constant for the size of a record
 	private static final int FILE_DESCRIPTOR_SIZE = 32;
@@ -155,8 +158,7 @@ public class DbaseFileHeader {
 	 *             If the type is not recognized.
 	 */
 	public void addColumn(String inFieldName, char inFieldType,
-			int inFieldLength, int inDecimalCount,
-			WarningListener warningListener) throws DbaseFileException {
+			int inFieldLength, int inDecimalCount) throws DbaseFileException {
 		if (inFieldLength <= 0) {
 			throw new DbaseFileException("field length <= 0");
 		}
@@ -185,7 +187,7 @@ public class DbaseFileHeader {
 		// Sorry folks.
 		if (tempFieldName.length() > 10) {
 			tempFieldName = tempFieldName.substring(0, 10);
-			warningListener.throwWarning("FieldName " + inFieldName
+			LOG.warn("FieldName " + inFieldName
 					+ " is longer than 10 characters, truncating to "
 					+ tempFieldName);
 		}
@@ -195,8 +197,7 @@ public class DbaseFileHeader {
 		if ((inFieldType == 'C') || (inFieldType == 'c')) {
 			tempFieldDescriptors[fields.length].fieldType = 'C';
 			if (inFieldLength > 254) {
-				warningListener
-						.throwWarning(FIELD_LENGTH_FOR
+				LOG.warn(FIELD_LENGTH_FOR
 								+ inFieldName
 								+ SET_TO
 								+ inFieldLength
@@ -204,13 +205,11 @@ public class DbaseFileHeader {
 			}
 		} else if ((inFieldType == 'S') || (inFieldType == 's')) {
 			tempFieldDescriptors[fields.length].fieldType = 'C';
-			warningListener
-					.throwWarning("Field type for "
+			LOG.warn("Field type for "
 							+ inFieldName
 							+ " set to S which is flat out wrong people!, I am setting this to C, in the hopes you meant character.");
 			if (inFieldLength > 254) {
-				warningListener
-						.throwWarning(FIELD_LENGTH_FOR
+				LOG.warn(FIELD_LENGTH_FOR
 								+ inFieldName
 								+ SET_TO
 								+ inFieldLength
@@ -220,7 +219,7 @@ public class DbaseFileHeader {
 		} else if ((inFieldType == 'D') || (inFieldType == 'd')) {
 			tempFieldDescriptors[fields.length].fieldType = 'D';
 			if (inFieldLength != 8) {
-				warningListener.throwWarning(FIELD_LENGTH_FOR + inFieldName
+				LOG.warn(FIELD_LENGTH_FOR + inFieldName
 						+ SET_TO + inFieldLength
 						+ " Setting to 8 digets YYYYMMDD");
 			}
@@ -228,8 +227,7 @@ public class DbaseFileHeader {
 		} else if ((inFieldType == 'F') || (inFieldType == 'f')) {
 			tempFieldDescriptors[fields.length].fieldType = 'F';
 			if (inFieldLength > 20) {
-				warningListener
-						.throwWarning(FIELD_LENGTH_FOR
+				LOG.warn(FIELD_LENGTH_FOR
 								+ inFieldName
 								+ SET_TO
 								+ inFieldLength
@@ -238,21 +236,20 @@ public class DbaseFileHeader {
 		} else if ((inFieldType == 'N') || (inFieldType == 'n')) {
 			tempFieldDescriptors[fields.length].fieldType = 'N';
 			if (inFieldLength > 18) {
-				warningListener
-						.throwWarning(FIELD_LENGTH_FOR
+				LOG.warn(FIELD_LENGTH_FOR
 								+ inFieldName
 								+ SET_TO
 								+ inFieldLength
 								+ " Preserving length, but should be set to Max of 18 for dbase III specification.");
 			}
 			if (inDecimalCount < 0) {
-				warningListener.throwWarning("Field Decimal Position for "
+				LOG.warn("Field Decimal Position for "
 						+ inFieldName + SET_TO + inDecimalCount
 						+ " Setting to 0 no decimal data will be saved.");
 				tempFieldDescriptors[fields.length].decimalCount = 0;
 			}
 			if (inDecimalCount > inFieldLength - 1) {
-				warningListener.throwWarning("Field Decimal Position for "
+				LOG.warn("Field Decimal Position for "
 						+ inFieldName + SET_TO + inDecimalCount
 						+ " Setting to " + (inFieldLength - 1)
 						+ " no non decimal data will be saved.");
@@ -261,7 +258,7 @@ public class DbaseFileHeader {
 		} else if ((inFieldType == 'L') || (inFieldType == 'l')) {
 			tempFieldDescriptors[fields.length].fieldType = 'L';
 			if (inFieldLength != 1) {
-				warningListener.throwWarning(FIELD_LENGTH_FOR + inFieldName
+				LOG.warn(FIELD_LENGTH_FOR + inFieldName
 						+ SET_TO + inFieldLength
 						+ " Setting to length of 1 for logical fields.");
 			}
@@ -423,7 +420,7 @@ public class DbaseFileHeader {
          * @throws IOException
 	 *             If errors occur while reading.
 	 */
-	public void readHeader(FileChannel channel, WarningListener listener) throws IOException {
+	public void readHeader(FileChannel channel) throws IOException {
 		// we'll read in chunks of 1K
 		ReadBufferManager in = new ReadBufferManager(channel);
 		// do this or GO CRAZY
@@ -433,7 +430,7 @@ public class DbaseFileHeader {
 		// type of file.
 		byte magic = in.get();
 		if (magic != MAGIC) {
-			listener.throwWarning("Unsupported DBF file Type "
+			LOG.warn("Unsupported DBF file Type "
 					+ Integer.toHexString(magic));
 		}
 

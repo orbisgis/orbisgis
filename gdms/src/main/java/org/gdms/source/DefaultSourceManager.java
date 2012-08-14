@@ -163,9 +163,7 @@ public final class DefaultSourceManager implements SourceManager {
                         try {
                                 source.init();
                         } catch (DriverException e) {
-                                dsf.getWarningListener().throwWarning(
-                                        "The source could not be created: " + source.getName(),
-                                        e, null);
+                                LOG.warn("The source could not be created: " + source.getName(), e);
                         }
                 }
                 LOG.trace("Source manager initialized");
@@ -472,11 +470,8 @@ public final class DefaultSourceManager implements SourceManager {
 
         @Override
         public void register(String name, String sql) throws ParseException {
-                SQLStatement[] s = Engine.parse(sql, dsf.getProperties());
-                if (s.length > 1) {
-                        throw new ParseException("Cannot create a DataSource from multiple SQL instructions!");
-                }
-                register(name, new SQLSourceDefinition(s[0]));
+                SQLStatement s = Engine.parse(sql, dsf.getProperties());
+                register(name, new SQLSourceDefinition(s));
         }
 
         @Override
@@ -675,11 +670,8 @@ public final class DefaultSourceManager implements SourceManager {
 
         @Override
         public String nameAndRegister(String sql) throws ParseException {
-                SQLStatement[] s = Engine.parse(sql, dsf.getProperties());
-                if (s.length > 1) {
-                        throw new ParseException("Cannot create a DataSource from multiple SQL instructions!");
-                }
-                return nameAndRegister(new SQLSourceDefinition(s[0]));
+                SQLStatement s = Engine.parse(sql, dsf.getProperties());
+                return nameAndRegister(new SQLSourceDefinition(s));
         }
 
         @Override
@@ -1022,8 +1014,7 @@ public final class DefaultSourceManager implements SourceManager {
                                 register(SPATIAL_REF_SYSTEM, new SystemSourceDefinition(
                                         new SystemSource(new File(tempPath))));
                         } catch (IOException e) {
-                                dsf.getWarningListener().throwWarning(
-                                        "Cannot load the spatial reference system. The coordinate"
+                                LOG.warn("Cannot load the spatial reference system. The coordinate"
                                         + "tranformations won't be available.");
                         }
 

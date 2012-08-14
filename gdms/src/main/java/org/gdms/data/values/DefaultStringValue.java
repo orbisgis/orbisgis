@@ -50,7 +50,7 @@ import org.gdms.data.types.TypeFactory;
  *
  * @author Antoine Gourlay
  */
-class DefaultStringValue extends AbstractValue implements Serializable, StringValue, CharSequence {
+final class DefaultStringValue extends AbstractValue implements Serializable, StringValue, CharSequence {
 
         private char[] value;
 

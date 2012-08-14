@@ -35,7 +35,7 @@ package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
 
-public class RasterTypeConstraint extends AbstractIntConstraint {
+public final class RasterTypeConstraint extends AbstractIntConstraint {
 
 	/**
 	 * Builds a new RasterTypeConstraint

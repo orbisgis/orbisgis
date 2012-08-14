@@ -38,10 +38,10 @@ import com.vividsolutions.jts.geom.Geometry;
 import org.gdms.data.values.Value;
 
 /**
- * Constraint indicating the dimension of the geometry
+ * Constraint indicating the dimension of the geometry.
  * 
  */
-public class GeometryDimensionConstraint extends AbstractIntConstraint {
+public final class GeometryDimensionConstraint extends AbstractIntConstraint {
 
     /**
      * Constant to use to display human constraint name for unknown geometry.

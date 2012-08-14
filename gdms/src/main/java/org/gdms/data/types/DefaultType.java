@@ -41,7 +41,7 @@ import org.apache.log4j.Logger;
 
 import org.gdms.data.values.Value;
 
-public class DefaultType implements Type {
+public final class DefaultType implements Type {
 
         private Constraint[] constraints;
         private int typeCode;

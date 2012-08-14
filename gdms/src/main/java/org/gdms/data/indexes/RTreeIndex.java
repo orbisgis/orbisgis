@@ -51,7 +51,7 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 
-public class RTreeIndex implements DataSourceIndex<Envelope> {
+public final class RTreeIndex implements DataSourceIndex<Envelope> {
 
         private String[] fieldNames;
         private DiskRTree index;

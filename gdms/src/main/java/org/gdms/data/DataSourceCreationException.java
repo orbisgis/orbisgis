@@ -33,7 +33,7 @@
  */
 package org.gdms.data;
 
-public class DataSourceCreationException extends Exception {
+public final class DataSourceCreationException extends Exception {
 
         private static final long serialVersionUID = 5017903078004571399L;
 

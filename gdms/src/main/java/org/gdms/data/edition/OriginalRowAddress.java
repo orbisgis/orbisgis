@@ -33,8 +33,6 @@
  */
 package org.gdms.data.edition;
 
-import java.io.Serializable;
-
 import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;

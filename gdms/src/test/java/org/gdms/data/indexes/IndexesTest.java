@@ -424,6 +424,28 @@ public class IndexesTest extends TestBase {
                 assertEquals(getCount(ds.queryIndex(spatialQuery)), ds.getRowCount());
                 ds.close();
         }
+        
+        @Test
+        public void testMinMaxFromIndexManager() throws Exception {
+                dsf.executeSQL("CREATE TABLE toto AS SELECT 42 AS hi;");
+                dsf.executeSQL("INSERT INTO toto VALUES (3), (12), (60);");
+                
+                im.buildIndex("toto", "hi", IndexManager.BTREE_ALPHANUMERIC_INDEX, null);
+                
+                DataSource ds = dsf.getDataSource("toto");
+                ds.open();
+                MinQuery mi = new MinQuery("hi");
+                int[] res = im.queryIndex("toto", mi);
+                assertEquals(1, res.length);
+                assertEquals(3, ds.getInt(res[0], 0));
+                
+                MaxQuery ma = new MaxQuery("hi");
+                res = im.queryIndex("toto", ma);
+                assertEquals(1, res.length);
+                assertEquals(60, ds.getInt(res[0], 0));
+                
+                ds.close();
+        }
 
         @Before
         public void setUp() throws Exception {

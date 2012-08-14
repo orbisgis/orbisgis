@@ -35,7 +35,7 @@ package org.gdms.data.types;
 
 import org.gdms.data.values.Value;
 
-public class DefaultStringConstraint extends AbstractConstraint {
+public final class DefaultStringConstraint extends AbstractConstraint {
 
 	private String defaultValue;
 

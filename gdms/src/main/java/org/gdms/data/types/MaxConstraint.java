@@ -36,10 +36,10 @@ package org.gdms.data.types;
 import org.gdms.data.values.Value;
 
 /**
- * Indicates the maximum value a field can have
+ * Indicates the maximum value a field can have.
  * 
  */
-public class MaxConstraint extends AbstractIntConstraint {
+public final class MaxConstraint extends AbstractIntConstraint {
 
 	public MaxConstraint(final int constraintValue) {
 		super(constraintValue);

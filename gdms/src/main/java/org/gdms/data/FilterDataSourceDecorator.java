@@ -71,7 +71,7 @@ import org.gdms.sql.engine.SQLStatement;
  * <p/>
  * @author Antoine Gourlay
  */
-public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
+public final class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
 
         private List<Integer> map;
         private String filter;
@@ -181,7 +181,7 @@ public class FilterDataSourceDecorator extends AbstractDataSourceDecorator {
 
                 SQLStatement s = null;
                 try {
-                        s = Engine.parse(sb.toString(), getDataSourceFactory().getProperties())[0];
+                        s = Engine.parse(sb.toString(), getDataSourceFactory().getProperties());
                 } catch (ParseException ex) {
                         throw new DriverException(ex);
                 }

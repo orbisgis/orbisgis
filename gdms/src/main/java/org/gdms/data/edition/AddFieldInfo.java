@@ -37,7 +37,7 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DBReadWriteDriver;
 import org.gdms.driver.DriverException;
 
-public class AddFieldInfo implements EditionInfo {
+public final class AddFieldInfo implements EditionInfo {
 
 	private String fieldName;
 

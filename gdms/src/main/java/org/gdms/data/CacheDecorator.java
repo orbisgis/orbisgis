@@ -47,122 +47,114 @@ import org.gdms.source.DefaultSourceManager;
  * This decorator implements caching of getMetadata, getRowCount and getScope for
  * the underlying DataSource.
  *
- * Note that is does reset its cache on its own when the underlying source is committed to.
+ * Note that it does reset its cache on its own when the underlying source is committed to.
  */
+public final class CacheDecorator extends AbstractDataSourceDecorator implements CommitListener {
 
-public class CacheDecorator extends AbstractDataSourceDecorator implements
-		CommitListener {
+        private Metadata metadata;
+        private long rc;
+        private Envelope extent;
 
-	private Metadata metadata;
-
-	private long rc;
-
-	private Envelope extent;
-
-	public CacheDecorator(DataSource internalDataSource) {
-		super(internalDataSource);
-	}
-
-	@Override
-	public void open() throws DriverException {
-		commitDone(getName());
-		getDataSource().open();
-
-		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
-				.getSourceManager();
-		sm.addCommitListener(this);
-	}
-
-	@Override
-	public void close() throws DriverException {
-		DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory()
-				.getSourceManager();
-		sm.removeCommitListener(this);
-
-		getDataSource().close();
-	}
+        public CacheDecorator(DataSource internalDataSource) {
+                super(internalDataSource);
+        }
 
         @Override
-	public Metadata getMetadata() throws DriverException {
-		if (metadata == null) {
-			metadata = getDataSource().getMetadata();
-		}
+        public void open() throws DriverException {
+                commitDone(getName());
+                getDataSource().open();
 
-		return metadata;
-	}
-
-        @Override
-	public long getRowCount() throws DriverException {
-		if (rc == -1) {
-			rc = getDataSource().getRowCount();
-		}
-
-		return rc;
-	}
+                DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory().getSourceManager();
+                sm.addCommitListener(this);
+        }
 
         @Override
-	public Number[] getScope(int dimension) throws DriverException {
-		if (extent == null) {
-			Number[] x = getDataSource().getScope(X);
-			Number[] y = getDataSource().getScope(Y);
-			if ((x != null) && (y != null)) {
-				extent = new Envelope(new Coordinate(x[0].doubleValue(), y[0]
-						.doubleValue()), new Coordinate(x[1].doubleValue(),
-						y[1].doubleValue()));
-			} else {
-				for (int i = 0; i < getRowCount(); i++) {
-					Metadata m = getMetadata();
-					for (int j = 0; j < m.getFieldCount(); j++) {
-						if ((m.getFieldType(j).getTypeCode() & Type.GEOMETRY)!=0) {
+        public void close() throws DriverException {
+                DefaultSourceManager sm = (DefaultSourceManager) getDataSourceFactory().getSourceManager();
+                sm.removeCommitListener(this);
 
-							Value v = getFieldValue(i, j);
-							if ((v != null) && (!v.isNull())) {
-								Envelope r = v.getAsGeometry()
-										.getEnvelopeInternal();
-								if (extent == null) {
-									extent = new Envelope(r);
-								} else {
-									extent.expandToInclude(r);
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-
-		if (extent == null) {
-			return null;
-		} else {
-			if (dimension == X) {
-				return new Number[] { extent.getMinX(), extent.getMaxX() };
-			} else if (dimension == Y) {
-				return new Number[] { extent.getMinY(), extent.getMaxY() };
-			} else {
-				throw new UnsupportedOperationException(
-						"Unsupported dimension: " + dimension);
-			}
-		}
-	}
+                getDataSource().close();
+        }
 
         @Override
-	public void isCommiting(String name, Object source) {
-	}
+        public Metadata getMetadata() throws DriverException {
+                if (metadata == null) {
+                        metadata = getDataSource().getMetadata();
+                }
+
+                return metadata;
+        }
 
         @Override
-	public void commitDone(String name) {
-		sync();
-	}
+        public long getRowCount() throws DriverException {
+                if (rc == -1) {
+                        rc = getDataSource().getRowCount();
+                }
+
+                return rc;
+        }
 
         @Override
-	public void syncWithSource() throws DriverException {
-		getDataSource().syncWithSource();
-		sync();
-	}
+        public Number[] getScope(int dimension) throws DriverException {
+                if (extent == null) {
+                        Number[] x = getDataSource().getScope(X);
+                        Number[] y = getDataSource().getScope(Y);
+                        if ((x != null) && (y != null)) {
+                                extent = new Envelope(new Coordinate(x[0].doubleValue(), y[0].doubleValue()), new Coordinate(x[1].doubleValue(),
+                                        y[1].doubleValue()));
+                        } else {
+                                for (int i = 0; i < getRowCount(); i++) {
+                                        Metadata m = getMetadata();
+                                        for (int j = 0; j < m.getFieldCount(); j++) {
+                                                if ((m.getFieldType(j).getTypeCode() & Type.GEOMETRY) != 0) {
 
-	private void sync() {
-		rc = -1;
-		metadata = null;
-		extent = null;
-	}
+                                                        Value v = getFieldValue(i, j);
+                                                        if ((v != null) && (!v.isNull())) {
+                                                                Envelope r = v.getAsGeometry().getEnvelopeInternal();
+                                                                if (extent == null) {
+                                                                        extent = new Envelope(r);
+                                                                } else {
+                                                                        extent.expandToInclude(r);
+                                                                }
+                                                        }
+                                                }
+                                        }
+                                }
+                        }
+                }
+
+                if (extent == null) {
+                        return null;
+                } else {
+                        if (dimension == X) {
+                                return new Number[]{extent.getMinX(), extent.getMaxX()};
+                        } else if (dimension == Y) {
+                                return new Number[]{extent.getMinY(), extent.getMaxY()};
+                        } else {
+                                throw new UnsupportedOperationException(
+                                        "Unsupported dimension: " + dimension);
+                        }
+                }
+        }
+
+        @Override
+        public void isCommiting(String name, Object source) {
+        }
+
+        @Override
+        public void commitDone(String name) {
+                sync();
+        }
+
+        @Override
+        public void syncWithSource() throws DriverException {
+                getDataSource().syncWithSource();
+                sync();
+        }
+
+        private void sync() {
+                rc = -1;
+                metadata = null;
+                extent = null;
+        }
 }

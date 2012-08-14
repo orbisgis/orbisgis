@@ -48,11 +48,11 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 
 /**
- * Wrapper for times
+ * Wrapper for times.
  *
  * @author Fernando Gonzalez Cortes
  */
-class DefaultTimeValue extends AbstractValue implements Serializable, TimeValue {
+final class DefaultTimeValue extends AbstractValue implements Serializable, TimeValue {
 
         private static final String NOTTIME = "The specified value is not a time:";
         private static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";

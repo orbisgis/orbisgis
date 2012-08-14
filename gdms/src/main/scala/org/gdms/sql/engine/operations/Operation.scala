@@ -220,13 +220,12 @@ case class Output(var child: Operation) extends Operation {
   override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
   
   override def doValidate() = {
-    val aliases = allChildren flatMap { _ match {
-        case Scan(_, a, _) => a
-        case CustomQueryScan(_, _, _, a) => a
-        case SubQuery(a, _) => a :: Nil
-        case ValuesScan(_, a, _) => a
-        case _ => Nil
-      }
+    val aliases = allChildren flatMap {
+      case Scan(_, a, _) => a
+      case CustomQueryScan(_, _, _, a) => a
+      case SubQuery(a, _) => a :: Nil
+      case ValuesScan(_, a, _) => a
+      case _ => Nil
     }
     if (hasDuplicates(aliases)) {
       throw new SemanticException("Two tables cannot have the same alias!")
@@ -725,4 +724,18 @@ case class DropFunction(name: String, ifExists: Boolean) extends Operation {
   def children = Nil
   override def toString = "DropFunction (" + name + ", ifExists=" + ifExists + ")"
   def duplicate: DropFunction = DropFunction(name, ifExists)
+}
+
+/**
+ * Placeholder operation for a table parameter.
+ * 
+ * @param name name of the parameter
+ * @param alias alias to give to the table
+ * @author Antoine Gourlay
+ * @since 0.3
+ */
+case class ParamTable(name: String, alias: Option[String] = None) extends Operation {
+  def children = Nil
+  override def toString = "ParamTable (" + name + ")"
+  def duplicate: ParamTable = ParamTable(name)
 }

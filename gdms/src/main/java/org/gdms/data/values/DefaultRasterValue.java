@@ -57,7 +57,7 @@ import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 
-class DefaultRasterValue extends AbstractValue implements RasterValue {
+final class DefaultRasterValue extends AbstractValue implements RasterValue {
 
         /**
          * the length, in bytes, of a RasterMetadata object. Used to be stored efficiently in GDMS, particularly in

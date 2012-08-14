@@ -36,9 +36,9 @@ package org.gdms.data.types;
 import org.gdms.data.values.Value;
 
 /**
- * indicates that the field is read only
+ * Indicates that the field is read only.
  */
-public class ReadOnlyConstraint extends AbstractBooleanConstraint {
+public final class ReadOnlyConstraint extends AbstractBooleanConstraint {
 
 	public ReadOnlyConstraint() {
 	}

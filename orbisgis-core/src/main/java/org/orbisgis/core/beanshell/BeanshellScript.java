@@ -6,7 +6,7 @@
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -34,7 +34,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.WarningListener;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.DefaultDataManager;
 import org.orbisgis.core.Services;
@@ -43,7 +42,7 @@ import org.orbisgis.core.Services;
  *
  * @author ebocher
  */
-public class BeanshellScript {
+public final class BeanshellScript {
 
         /**
          * Entry point.
@@ -66,21 +65,6 @@ public class BeanshellScript {
 
                 //Register the datasource
                 DataSourceFactory dsf = new DataSourceFactory();
-
-                // Pipeline the warnings in gdms to the warning system in the
-                // application
-                dsf.setWarninglistener(new WarningListener() {
-
-                        @Override
-                        public void throwWarning(String msg) {
-                                System.out.println(msg);
-                        }
-
-                        @Override
-                        public void throwWarning(String msg, Throwable t, Object source) {
-                                System.out.println(msg);
-                        }
-                });
 
                 dsf.loadPlugins();
 
@@ -137,5 +121,8 @@ public class BeanshellScript {
          */
         public static String getHelp() {
                 return "Usage : orbisshell <beanshell-script-file> [<argument-1> <argument-2> ...].\n";
+        }
+
+        private BeanshellScript() {
         }
 }

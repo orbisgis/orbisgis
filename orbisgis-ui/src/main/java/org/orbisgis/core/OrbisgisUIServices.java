@@ -6,7 +6,7 @@
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -32,7 +32,6 @@ import java.io.File;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.WarningListener;
 import org.gdms.plugins.GdmsPlugIn;
 import org.gdms.plugins.PlugInManagerListener;
 import org.orbisgis.core.configuration.BasicConfiguration;
@@ -96,19 +95,6 @@ public class OrbisgisUIServices {
 
                 DataSourceFactory dsf = new DataSourceFactory(sourcesDir.getAbsolutePath(), ews.getTempFolder().getAbsolutePath(), Main.PLUGIN_DIRECTORY);
                 dsf.setResultDir(ews.getResultsFolder());
-
-                // Pipeline the warnings in gdms to the warning system in the
-                // application
-                dsf.setWarninglistener(new WarningListener() {
-
-                        public void throwWarning(String msg) {
-                                Services.getService(ErrorManager.class).warning(msg, null);
-                        }
-
-                        public void throwWarning(String msg, Throwable t, Object source) {
-                                Services.getService(ErrorManager.class).warning(msg, t);
-                        }
-                });
 
                 dsf.getPlugInManager().registerListener(new PlugInManagerListener() {
 

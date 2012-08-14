@@ -44,7 +44,7 @@ import org.gdms.driver.DriverException;
  * 
  * This mostly checks that the DataSource is actually open before doing the action.
  */
-public class StatusCheckDecorator extends AbstractDataSourceDecorator {
+public final class StatusCheckDecorator extends AbstractDataSourceDecorator {
         private static final String MUST_BE_OPEN = "The data source must be open to call this method";
 
 	public StatusCheckDecorator(DataSource ds) {

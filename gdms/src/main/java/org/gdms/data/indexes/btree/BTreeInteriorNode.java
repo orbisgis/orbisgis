@@ -52,7 +52,7 @@ import org.gdms.data.values.ValueFactory;
 /**
  *
  */
-public class BTreeInteriorNode extends AbstractBTreeNode {
+public final class BTreeInteriorNode extends AbstractBTreeNode {
 
         private List<ChildReference> children;
 
@@ -633,6 +633,21 @@ public class BTreeInteriorNode extends AbstractBTreeNode {
                         count += getChild(i).getValueCount();
                 }
                 return count;
+        }
+
+        @Override
+        public int smallest() throws IOException {
+                return getChild(0).smallest();
+        }
+
+        @Override
+        public int largest() throws IOException {
+                return getChild(children.size() - 1).largest();
+        }
+
+        @Override
+        public Value getLargestValue() throws IOException {
+                return getChild(children.size() - 1).getLargestValue();
         }
 
         private static class ChildReference {

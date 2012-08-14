@@ -39,10 +39,10 @@ import org.jproj.CoordinateReferenceSystem;
 import org.gdms.data.values.Value;
 
 /**
- * Indicates that the field is part of the primary key
+ * Indicates that the field is part of the primary key.
  *
  */
-public class CRSConstraint extends AbstractConstraint {
+public final class CRSConstraint extends AbstractConstraint {
 
         private CoordinateReferenceSystem crs;
 

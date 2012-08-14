@@ -37,7 +37,7 @@ package org.gdms.data.schema;
  * Root Gdms Schema.
  * @author Antoine Gourlay
  */
-public class RootSchema extends DefaultSchema {
+public final class RootSchema extends DefaultSchema {
 
         public RootSchema() {
                 super("PUBLIC");

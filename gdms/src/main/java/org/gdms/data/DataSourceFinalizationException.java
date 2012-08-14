@@ -38,7 +38,7 @@ package org.gdms.data;
  * 
  * @author Antoine Gourlay
  */
-public class DataSourceFinalizationException extends Exception {
+public final class DataSourceFinalizationException extends Exception {
         
         private static final long serialVersionUID = -1204793256804775002L;
 

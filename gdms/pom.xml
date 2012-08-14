@@ -124,9 +124,9 @@
                                 </configuration>
                         </plugin>
                         <plugin>
-                                <groupId>org.scala-tools</groupId>
-                                <artifactId>maven-scala-plugin</artifactId>
-                                <version>2.15.2</version>
+                                <groupId>net.alchim31.maven</groupId>
+                                <artifactId>scala-maven-plugin</artifactId>
+                                <version>3.1.0</version>
                                 <executions>
                                         <execution>
                                                 <id>scala-compile-first</id>
@@ -190,9 +190,85 @@
                                         </includes>
                                 </configuration>
                         </plugin>
+                        <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-site-plugin</artifactId>
+                                <version>3.1</version>
+                                <configuration>
+                                        <reportPlugins>
+                                                <plugin>
+                                                        <groupId>net.alchim31.maven</groupId>
+                                                        <artifactId>scala-maven-plugin</artifactId>
+                                                        <version>3.0.2</version>
+                                                        <configuration>
+                                                                <args>
+                                                                        <arg>-doc-source-url</arg>
+                                                                        <arg>file://€{FILE_PATH}.scala</arg>
+                                                                </args>
+                                                        </configuration>
+                                                </plugin>
+                                        </reportPlugins>
+                                </configuration>
+                        </plugin>
+                        <plugin>
+                                <groupId>org.codehaus.mojo</groupId>
+                                <artifactId>buildnumber-maven-plugin</artifactId>
+                                <version>1.1</version>
+                                <configuration>
+                                        <revisionOnScmFailure>${version}</revisionOnScmFailure>
+                                </configuration>
+                                <executions>
+                                        <execution>
+                                                <phase>validate</phase>
+                                                <goals>
+                                                        <goal>create</goal>
+                                                </goals>
+                                        </execution>
+                                </executions>
+                        </plugin>
                 </plugins>
+                <resources>
+                        <resource>
+                                 <!-- Filtering to include the git SHA1 -->
+                                <directory>${basedir}/src/main/resources/</directory>
+                                <filtering>true</filtering>
+                        </resource>
+                </resources>
         </build>
         <profiles>
+                <profile>
+                        <id>incremental</id>
+                        <build>
+                                <plugins>
+                                        <plugin>
+                                                <groupId>net.alchim31.maven</groupId>
+                                                <artifactId>scala-maven-plugin</artifactId>
+                                                <version>3.1.0</version>
+                                                <executions>
+                                                        <execution>
+                                                                <id>scala-compile-first</id>
+                                                                <phase>process-resources</phase>
+                                                                <goals>
+                                                                        <goal>add-source</goal>
+                                                                        <goal>compile</goal>
+                                                                </goals>
+                                                        </execution>									
+                                                        <execution>
+                                                                <id>scala-test-compile</id>
+                                                                <phase>process-test-resources</phase>
+                                                                <goals>
+                                                                        <goal>testCompile</goal>
+                                                                </goals>
+                                                        </execution>
+                                                </executions>
+                                                <configuration>
+                                                        <recompileMode>incremental</recompileMode>
+                                                        <useZincServer>true</useZincServer>
+                                                </configuration>
+                                        </plugin>
+                                </plugins>
+                        </build>
+                </profile>
                 <profile>
                         <id>coverage</id>
                         <repositories>

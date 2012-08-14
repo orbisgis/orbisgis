@@ -66,5 +66,30 @@ public interface BTree extends Tree<Value> {
 	 */
 	void rangeQuery(Value min, boolean minIncluded, Value max,
 			boolean maxIncluded, IndexVisitor<Value> visitor) throws IOException;
+        
+        /**
+         * Gets the smallest value in the whole tree.
+         * @return the smallest value
+         * @throws IOException 
+         */
+        Value getSmallestValue() throws IOException;
+        
+        /**
+         * Gets the largest value in the whole tree.
+         * @return the largest value
+         * @throws IOException 
+         */
+        Value getLargestValue() throws IOException;
 
+        /**
+         * @return the smallest row in the tree
+         * @throws IOException 
+         */
+        int smallest() throws IOException;
+        
+        /**
+         * @return the largest row in the tree
+         * @throws IOException 
+         */
+        int largest() throws IOException;
 }

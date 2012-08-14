@@ -33,6 +33,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.crs;
 
+import org.jproj.CRSFactory;
 import org.jproj.CoordinateReferenceSystem;
 
 import org.gdms.data.DataSourceFactory;
@@ -46,7 +47,8 @@ import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
 /**
- * Re-project a geometry from a CRS to new CRS. Only EPSG code allowed.
+ * Re-project a geometry from a CRS to new CRS. Only authority codes are allowed, like "EPSG:4326"
+ * or "IGNF:WGS84".
  */
 public final class ST_Transform extends AbstractScalarSpatialFunction {
 
@@ -56,8 +58,18 @@ public final class ST_Transform extends AbstractScalarSpatialFunction {
         public Value evaluate(DataSourceFactory dsf, Value... values) throws FunctionException {
                 GeometryValue geomVal = (GeometryValue) values[0];
                 if (spatialReferenceSystem == null) {
-                        CoordinateReferenceSystem inputCRS = geomVal.getCRS();
-                        CoordinateReferenceSystem targetCRS = dsf.getCrsFactory().createFromName(values[1].getAsString());
+                        CoordinateReferenceSystem inputCRS;
+                        CoordinateReferenceSystem targetCRS;
+                        
+                        final CRSFactory crsFactory = dsf.getCrsFactory();
+                        if (values.length == 3) {
+                                inputCRS = crsFactory.createFromName(values[1].getAsString());
+                                targetCRS = crsFactory.createFromName(values[2].getAsString());
+                        } else {
+                                inputCRS = geomVal.getCRS();
+                                targetCRS = crsFactory.createFromName(values[1].getAsString());
+                        }
+                        
                         spatialReferenceSystem = new SpatialReferenceSystem(inputCRS, targetCRS);
                 }
                 return spatialReferenceSystem.transform(geomVal);
@@ -65,7 +77,8 @@ public final class ST_Transform extends AbstractScalarSpatialFunction {
 
         @Override
         public String getDescription() {
-                return "Re-project a geometry from a CRS to a new CRS.  EPSG, IGNF and ESRI code allowed.";
+                return "Re-project a geometry from a CRS to a new CRS.  EPSG, IGNF and ESRI code allowed."
+                        + " The default source CRS is the internal one of the input geometry.";
         }
 
         @Override
@@ -75,14 +88,16 @@ public final class ST_Transform extends AbstractScalarSpatialFunction {
 
         @Override
         public String getSqlOrder() {
-                return "SELECT ST_TRANSFORM(the_geom, targetCRSCode) from myTable";
+                return "SELECT ST_TRANSFORM(the_geom, [sourceCRSCode, ] targetCRSCode) from myTable";
         }
 
         @Override
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
                                 new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY,
-                                ScalarArgument.STRING)
+                                ScalarArgument.STRING),
+                                new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY,
+                                ScalarArgument.STRING, ScalarArgument.STRING)
                         };
         }
 }

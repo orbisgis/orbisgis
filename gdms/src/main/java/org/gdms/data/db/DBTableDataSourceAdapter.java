@@ -61,7 +61,7 @@ import org.gdms.source.Source;
 /**
  * Adapter for database drivers.
  */
-public class DBTableDataSourceAdapter extends DriverDataSource implements
+public final class DBTableDataSourceAdapter extends DriverDataSource implements
         Commiter, CommitListener {
 
         private static final String GDMS_DRIVER_ERROR_CONNECTION_OPEN = "gdms.driver.error.connection.open";

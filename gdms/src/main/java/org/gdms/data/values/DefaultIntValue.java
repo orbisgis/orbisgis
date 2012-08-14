@@ -44,7 +44,7 @@ import org.gdms.data.types.Type;
  *
  * @author Fernando Gonzalez Cortes
  */
-class DefaultIntValue extends DefaultNumericValue implements IntValue {
+final class DefaultIntValue extends DefaultNumericValue implements IntValue {
 
         private int value;
 

@@ -93,7 +93,7 @@ case class OppositeEvaluator(e1: Expression) extends Evaluator {
 object - {
   def unapply(e: Expression) = {
     e match {
-      case a + (b: OppositeEvaluator) => Some(Some(a), b.e1)
+      case a + (b: OppositeEvaluator) => Some((Some(a), b.e1))
       case b: OppositeEvaluator => Some((None, b.e1))
       case _ => None
     }

@@ -42,7 +42,6 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 
 import org.gdms.data.InitializationException;
-import org.gdms.sql.function.spatial.export.ST_PLYExporter;
 import org.gdms.sql.function.alphanumeric.AutoNumeric;
 import org.gdms.sql.function.alphanumeric.Average;
 import org.gdms.sql.function.alphanumeric.Count;
@@ -75,6 +74,7 @@ import org.gdms.sql.function.math.StandardDeviation;
 import org.gdms.sql.function.math.Tan;
 import org.gdms.sql.function.math.ToDegrees;
 import org.gdms.sql.function.math.ToRadians;
+import org.gdms.sql.function.spatial.export.ST_PLYExporter;
 import org.gdms.sql.function.spatial.geometry.affineTransformation.ST_Rotate;
 import org.gdms.sql.function.spatial.geometry.affineTransformation.ST_Scale;
 import org.gdms.sql.function.spatial.geometry.convert.ST_Centroid;
@@ -107,6 +107,8 @@ import org.gdms.sql.function.spatial.geometry.create.ST_MinimumRectangle;
 import org.gdms.sql.function.spatial.geometry.create.ST_OctogonalEnvelope;
 import org.gdms.sql.function.spatial.geometry.create.ST_RandomGeometry;
 import org.gdms.sql.function.spatial.geometry.create.ST_RemoveDuplicateCoordinate;
+import org.gdms.sql.function.spatial.geometry.crs.ST_CRS;
+import org.gdms.sql.function.spatial.geometry.crs.ST_SetCRS;
 import org.gdms.sql.function.spatial.geometry.crs.ST_Transform;
 import org.gdms.sql.function.spatial.geometry.distance.ST_FurthestPoint;
 import org.gdms.sql.function.spatial.geometry.distance.ST_LocateAlong;
@@ -366,6 +368,8 @@ public final class FunctionManager {
                 addFunction(ST_PixelValue.class);
                 addFunction(ST_TIN.class);
                 addFunction(ST_PLYExporter.class);
+                addFunction(ST_SetCRS.class);
+                addFunction(ST_CRS.class);
         }
 
         /**

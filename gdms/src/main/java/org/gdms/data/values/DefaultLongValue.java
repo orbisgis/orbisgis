@@ -42,7 +42,7 @@ import org.gdms.data.types.Type;
  *
  * @author Fernando Gonzalez Cortes
  */
-class DefaultLongValue extends DefaultNumericValue implements LongValue {
+final class DefaultLongValue extends DefaultNumericValue implements LongValue {
 
         private long value;
         

@@ -33,7 +33,7 @@
  */
 package org.gdms.data.types;
 
-public class InvalidTypeException extends RuntimeException {
+public final class InvalidTypeException extends RuntimeException {
 
 	/**
 	 *

@@ -45,7 +45,7 @@ import org.gdms.data.types.Type;
  *
  * @author Fernando Gonzalez Cortes
  */
-class DefaultFloatValue extends DefaultNumericValue implements FloatValue {
+final class DefaultFloatValue extends DefaultNumericValue implements FloatValue {
 
         private float value;
 

@@ -55,7 +55,7 @@ import org.gdms.data.DataSourceFactory;
  * @author Antoine Gourlay
  * @since 2.0
  */
-public class PlugInManager {
+public final class PlugInManager {
 
         private Logger log = Logger.getLogger(PlugInManager.class);
         private File plugInDirectory;

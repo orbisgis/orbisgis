@@ -38,7 +38,7 @@ package org.gdms.data;
  *
  * @author Fernando Gonz�lez Cort�s
  */
-public class OpenCloseCounter {
+public final class OpenCloseCounter {
 
         private int counter = 0;
         private String dsName;

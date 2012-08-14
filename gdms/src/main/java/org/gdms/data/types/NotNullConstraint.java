@@ -36,10 +36,10 @@ package org.gdms.data.types;
 import org.gdms.data.values.Value;
 
 /**
- * Indicates that the field cannot accept null values
+ * Indicates that the field cannot accept null values.
  * 
  */
-public class NotNullConstraint extends AbstractBooleanConstraint {
+public final class NotNullConstraint extends AbstractBooleanConstraint {
 
 	public NotNullConstraint() {
 	}

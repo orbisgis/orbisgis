@@ -47,7 +47,7 @@ import org.gdms.driver.StreamDriver;
  * @author Antoine Gourlay
  * @author Vincent Dépériers
  */
-public class DefaultGeoStream implements GeoStream {
+public final class DefaultGeoStream implements GeoStream {
 
         private Envelope envelope;
         private StreamDriver streamDriver;

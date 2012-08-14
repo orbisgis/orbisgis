@@ -44,7 +44,7 @@ import org.gdms.data.DataSource;
  *
  * @author Fernando Gonzalez Cortes
  */
-public class EditionEvent extends FieldEditionEvent {
+public final class EditionEvent extends FieldEditionEvent {
 
         private long rowIndex;
         public static final int MODIFY = 0;

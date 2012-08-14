@@ -52,7 +52,7 @@ import org.gdms.driver.WriteBufferManager;
  * Command to delete a {@link org.gdms.data.edition.Field} in a datasource.
  * 
  */
-public class DelFieldCommand implements Command {
+public final class DelFieldCommand implements Command {
 
         private EditionDecorator dataSource;
         private int fieldIndex;

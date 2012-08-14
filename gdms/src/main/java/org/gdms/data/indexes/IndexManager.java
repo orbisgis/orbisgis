@@ -71,7 +71,7 @@ import org.gdms.sql.engine.UnknownFieldException;
  *
  * @author Antoine Gourlay
  */
-public class IndexManager {
+public final class IndexManager {
 
         private static final String TEMPINDEXPREFIX = "tempindex";
         private static final Logger LOG = Logger.getLogger(IndexManager.class);

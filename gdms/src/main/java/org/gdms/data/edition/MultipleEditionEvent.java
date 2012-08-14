@@ -41,7 +41,7 @@ import java.util.List;
  * 
  * @author Fernando Gonz�lez Cort�s
  */
-public class MultipleEditionEvent {
+public final class MultipleEditionEvent {
 
         private List<EditionEvent> events = new ArrayList<EditionEvent>();
 

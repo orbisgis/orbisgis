@@ -41,7 +41,7 @@ import org.gdms.data.values.Value;
  *
  * @author fernando, alexis, antoine
  */
-public class PrecisionConstraint extends AbstractIntConstraint {
+public final class PrecisionConstraint extends AbstractIntConstraint {
 
         /**
          * Build a new PrecisionConstraint that will check that the number of

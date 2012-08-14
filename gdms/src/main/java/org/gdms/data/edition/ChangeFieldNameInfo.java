@@ -40,7 +40,7 @@ import org.gdms.driver.DriverException;
  * Info used to change a field name in a datasource.
  * 
  */
-public class ChangeFieldNameInfo implements EditionInfo {
+public final class ChangeFieldNameInfo implements EditionInfo {
 
         private String oldName;
         private String newName;

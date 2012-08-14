@@ -43,7 +43,7 @@ import org.gdms.driver.DriverException;
  * A row address within the internal buffer for edition.
  * @author Fernando Gonzalez Cortes
  */
-class InternalBufferRowAddress implements PhysicalRowAddress {
+final class InternalBufferRowAddress implements PhysicalRowAddress {
 
 	private InternalBuffer buffer;
 

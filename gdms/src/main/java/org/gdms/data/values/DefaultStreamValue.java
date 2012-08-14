@@ -47,7 +47,7 @@ import org.gdms.data.types.TypeFactory;
  * @author Antoine Gourlay
  * @author Vincent Dépériers
  */
-class DefaultStreamValue extends AbstractValue implements StreamValue {
+final class DefaultStreamValue extends AbstractValue implements StreamValue {
 
         private GeoStream geoStream;
 

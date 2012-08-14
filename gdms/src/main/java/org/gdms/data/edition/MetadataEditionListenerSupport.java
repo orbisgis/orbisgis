@@ -38,7 +38,7 @@ import java.util.List;
 
 import org.gdms.data.DataSource;
 
-public class MetadataEditionListenerSupport {
+public final class MetadataEditionListenerSupport {
 
         private DataSource dataSource;
         private List<MetadataEditionListener> listeners = new ArrayList<MetadataEditionListener>();

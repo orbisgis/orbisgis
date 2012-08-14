@@ -20,6 +20,10 @@
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <netbeans.hint.license>OrbisGIS</netbeans.hint.license>
         </properties>
+        <scm>
+                <connection>scm:git:https://github.com/irstv/orbisgis.git</connection>
+                <url>https://github.com/irstv/orbisgis</url>
+        </scm>
         <repositories>
                 <repository>
                         <id>IRSTV</id>

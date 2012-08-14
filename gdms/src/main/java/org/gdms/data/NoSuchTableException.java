@@ -41,7 +41,7 @@ package org.gdms.data;
  *
  * @author Fernando Gonzalez Cortes
  */
-public class NoSuchTableException extends Exception {
+public final class NoSuchTableException extends Exception {
 
         private static final long serialVersionUID = -7461400187366540811L;
 

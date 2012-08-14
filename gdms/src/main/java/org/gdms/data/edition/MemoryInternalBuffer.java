@@ -42,7 +42,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueCollection;
 import org.gdms.data.values.ValueFactory;
 
-public class MemoryInternalBuffer implements InternalBuffer {
+public final class MemoryInternalBuffer implements InternalBuffer {
 
         private List<List<Value>> rows = new ArrayList<List<Value>>();
         private DataSource dataSource;

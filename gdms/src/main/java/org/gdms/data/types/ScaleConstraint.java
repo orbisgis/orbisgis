@@ -36,9 +36,9 @@ package org.gdms.data.types;
 import org.gdms.data.values.Value;
 
 /**
- * indicates the scale of the field
+ * Indicates the scale of the field.
  */
-public class ScaleConstraint extends AbstractIntConstraint {
+public final class ScaleConstraint extends AbstractIntConstraint {
 
 	ScaleConstraint(byte[] constraintBytes) {
 		super(constraintBytes);

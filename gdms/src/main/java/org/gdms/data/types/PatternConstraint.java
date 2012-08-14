@@ -39,10 +39,10 @@ import java.util.regex.Pattern;
 import org.gdms.data.values.Value;
 
 /**
- * Indicates the pattern that the field values must have
+ * Indicates the pattern that the field values must have.
  * 
  */
-public class PatternConstraint extends AbstractConstraint {
+public final class PatternConstraint extends AbstractConstraint {
 	private String constraintValue;
 	private Pattern pattern;
 

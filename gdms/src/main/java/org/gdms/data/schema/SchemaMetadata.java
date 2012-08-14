@@ -41,7 +41,7 @@ import org.gdms.driver.DriverException;
  *
  * @author Antoine Gourlay
  */
-public class SchemaMetadata extends DefaultMetadata {
+public final class SchemaMetadata extends DefaultMetadata {
 
         private Schema schema;
 
