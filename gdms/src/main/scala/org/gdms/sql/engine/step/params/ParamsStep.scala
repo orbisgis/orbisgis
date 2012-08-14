@@ -40,7 +40,7 @@ import org.gdms.data.values.Value
 import org.gdms.sql.engine.{AbstractEngineStep, SemanticException}
 import org.gdms.sql.engine.logical.LogicPlanOptimizer
 import org.gdms.sql.engine.operations.{Operation, ExpressionOperation, Scan, ParamTable}
-import org.gdms.sql.evaluator.{StaticEvaluator, param, FieldEvaluator}
+import org.gdms.sql.evaluator.{StaticEvaluator, param, FieldEvaluator, star, StarFieldEvaluator}
 
 /**
  * Param replacement step: Replaces all parameters with values
@@ -63,6 +63,15 @@ extends AbstractEngineStep[Operation, Operation]("Parameter remplacement") with 
           }
         case e: ExpressionOperation =>
           e.expr foreach { ee => ee :: ee.allChildren foreach { ex => ex match {
+                case star(vals, t) =>
+                  val clean = vals map { _ match {
+                      case Right(pName) => fParams.get(pName) match {
+                          case Some(par) => Left(par)
+                          case None => throw new SemanticException("No value was given for parameter named '" + pName + "'!")
+                      }
+                      case a => a
+                    }}
+                  ex.evaluator = StarFieldEvaluator(clean, t)
                 case param(m) => 
                   val value = vParams.get(m)
                   if (value.isDefined) {

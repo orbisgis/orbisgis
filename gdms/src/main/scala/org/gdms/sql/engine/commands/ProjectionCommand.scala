@@ -62,7 +62,7 @@ class ProjectionCommand(var expression: Array[(Expression, Option[String])]) ext
       optName match {
         case None => {
             // no table names, add all fields, except the ones 
-            metadata map (addAllFields(_, s._1, ev.except))
+            metadata map (addAllFields(_, s._1, ev.except.map(_.left.get)))
           }
         case Some(name) => {
             // there is a table name...
@@ -84,7 +84,7 @@ class ProjectionCommand(var expression: Array[(Expression, Option[String])]) ext
               insertFields(s._1, newexp)
             } else {
               // ... and it is an input table. Let's just add it.
-              addAllFields(m.get, s._1, ev.except)
+              addAllFields(m.get, s._1, ev.except.map(_.left.get))
             }
           }
       }

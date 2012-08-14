@@ -251,7 +251,7 @@ object Field {
     new Expression(FieldEvaluator(name, Some(table)))
   }
   
-  def star(except: Seq[String], table: Option[String]) = {
+  def star(except: Seq[Either[String, String]], table: Option[String]) = {
     new Expression(StarFieldEvaluator(except, table))
   }
 }

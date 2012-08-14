@@ -465,9 +465,14 @@ select_column_star
 
 select_star_except
         : T_EXCEPT (
-          LONG_ID
-        | LPAREN LONG_ID (COMMA LONG_ID)* RPAREN )
-        -> ^(T_EXCEPT LONG_ID+ )
+          select_star_except_element
+        | LPAREN select_star_except_element (COMMA select_star_except_element)* RPAREN )
+        -> ^(T_EXCEPT select_star_except_element+ )
+        ;
+
+select_star_except_element
+        : LONG_ID -> LONG_ID
+        | LPARAM LONG_ID RPARAM -> ^(T_PARAM LONG_ID)
         ;
 
 where_block

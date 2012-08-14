@@ -312,7 +312,7 @@ object outerField {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class StarFieldEvaluator(except: Seq[String], table: Option[String]) extends Evaluator {
+case class StarFieldEvaluator(except: Seq[Either[String, String]], table: Option[String]) extends Evaluator {
   def eval = throw new UnsupportedOperationException
   val sqlType = -1
   override def toString = "StarField(except=" + except + ")"

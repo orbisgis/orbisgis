@@ -711,9 +711,14 @@ object LogicPlanBuilder {
         // AST:
         // ^(T_SELECT_COLUMN_STAR LONG_ID* ASTERISK select_star_except? )
         var rev = l.reverse
-        var except: Seq[String] = List.empty
+        var except: Seq[Either[String, String]] = List.empty
         if (rev.head.getType == T_EXCEPT) {
-          except = getChildren(rev.head).map (_.getText.replace("\"", ""))
+          except = getChildren(rev.head).map { cc =>
+            cc.getType match {
+              case T_PARAM => Right(cc.getChild(0).getText.replace("\"", ""))
+              case _ => Left(cc.getText.replace("\"", ""))
+            }
+          }
           rev = rev.tail
         }
         if (rev.tail.isEmpty) {
