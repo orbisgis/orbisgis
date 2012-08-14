@@ -40,6 +40,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
+import java.util.regex.Pattern;
 
 import com.vividsolutions.jts.geom.Geometry;
 
@@ -72,7 +73,7 @@ class ValueWriterImpl implements ValueWriter {
         }
 
         @Override
-        public String getStatementString(String str, int sqlType) {
+        public String getStatementString(CharSequence str, int sqlType) {
                 return "'" + escapeString(str) + "'";
         }
 
@@ -122,8 +123,9 @@ class ValueWriterImpl implements ValueWriter {
                 return "null";
         }
 
-        static String escapeString(String string) {
-                return string.replaceAll("\\Q'\\E", "''");
+        static String escapeString(CharSequence string) {
+                Pattern p = Pattern.compile("\\Q'\\E");
+                return p.matcher(string).replaceAll("''");
         }
 
         @Override

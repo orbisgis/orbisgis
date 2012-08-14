@@ -288,11 +288,9 @@ public class DbaseFileReader {
                                                 }
                                         }
                                         // set up the new indexes for start and end
-                                        charBuffer.position(start).limit(end + 1);
-                                        String s = charBuffer.toString();
-                                        // this resets the limit...
-                                        charBuffer.clear();
-                                        object = ValueFactory.createValue(s);
+                                        
+                                        // this prevents one array copy (the one made by String)
+                                        object = ValueFactory.createValue(charBuffer.array(), start, end + 1 - start);
                                         break;
                                 // (D)date (Date)
                                 case 'd':

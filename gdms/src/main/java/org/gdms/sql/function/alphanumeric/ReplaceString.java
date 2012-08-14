@@ -55,8 +55,10 @@ public class ReplaceString extends AbstractScalarFunction {
                         return ValueFactory.createNullValue();
                 } else {
                         String text = arg0[0].getAsString();
-                        String textFrom = arg0[1].getAsString();
-                        String textTo = arg0[2].getAsString();
+                        // it is faster to go through CharSequence
+                        // one less arraycopy
+                        CharSequence textFrom = arg0[1].getAsCharSequence();
+                        CharSequence textTo = arg0[2].getAsCharSequence();
 
                         return ValueFactory.createValue(text.replace(textFrom, textTo));
                 }

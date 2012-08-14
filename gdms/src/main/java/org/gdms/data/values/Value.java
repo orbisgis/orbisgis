@@ -381,6 +381,14 @@ public interface Value extends Comparable<Value>, Serializable {
          * converted
          */
         String getAsString();
+        
+        /**
+         * @return this value if it is a string value or can implicitly be converted to it.
+         *
+         * @throws IncompatibleTypesException if the value is not of the required type or cannot be
+         * converted
+         */
+        CharSequence getAsCharSequence();
 
         /**
          * @return this value if it is a timestamp value or can implicitly be converted to it.

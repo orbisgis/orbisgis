@@ -36,6 +36,7 @@ package org.gdms.data.values;
 import java.io.Serializable;
 import java.sql.Types;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import org.orbisgis.utils.TextUtils;
@@ -45,176 +46,77 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 
 /**
- * Wrapper for strings.
+ * Efficient wrapper for strings.
  *
- * @author Fernando Gonzalez Cortes
+ * @author Antoine Gourlay
  */
-final class DefaultStringValue extends AbstractValue implements Serializable, StringValue {
+final class DefaultStringValue extends AbstractValue implements Serializable, StringValue, CharSequence {
 
-        private static final String NOTNUMBER = " is not a number";
-        private String value;
+        private char[] value;
 
         /**
-         * Builds a DefaultStringValue from the given String <tt>text</tt>
+         * Builds a DefaultStringValue from the given String <tt>text</tt>.
          *
          * @param text a string
          */
         DefaultStringValue(String text) {
-                this.value = text;
+                this.value = text.toCharArray();
         }
 
         /**
-         * Creates a new StringValue object.
+         * Builds a DefaultStringValue from the given char array <tt>text</tt>.
+         *
+         * This makes a copy of the char array, it does not reuse the original one.
+         *
+         * @param text a char array
+         */
+        DefaultStringValue(char[] text) {
+                this.value = Arrays.copyOf(text, text.length);
+        }
+
+        /**
+         * Builds a DefaultStringValue from the given char array <tt>text</tt>.
+         *
+         * This makes a copy of the char array, it does not reuse the original one.
+         *
+         * @param text a char array
+         * @param start the start index
+         * @param length the length of the sub-array to keep
+         */
+        DefaultStringValue(char[] text, int start, int length) {
+                this.value = new char[length];
+                System.arraycopy(text, start, value, 0, length);
+        }
+
+        /**
+         * Creates an empty StringValue object.
          */
         DefaultStringValue() {
-        }
-
-        /**
-         * Sets the content
-         *
-         * @param value
-         */
-        @Override
-        public void setValue(String value) {
-                this.value = value;
-        }
-
-        /**
-         * Gets the content
-         *
-         * @return
-         */
-        public String getValue() {
-                return value;
+                value = new char[0];
         }
 
         @Override
-        public NumericValue sum(Value v) {
-                if (v instanceof IntValue) {
-                        try {
-                                DoubleValue ret = new DefaultDoubleValue();
-                                ret.setValue(Double.parseDouble(this.value)
-                                        + ((IntValue) v).getAsDouble());
-
-                                return ret;
-                        } catch (NumberFormatException e) {
-                                throw new IncompatibleTypesException(getValue()
-                                        + NOTNUMBER, e);
-                        }
-                } else if (v instanceof LongValue) {
-                        try {
-                                DoubleValue ret = new DefaultDoubleValue();
-                                ret.setValue(Double.parseDouble(this.value)
-                                        + ((LongValue) v).getAsDouble());
-
-                                return ret;
-                        } catch (NumberFormatException e) {
-                                throw new IncompatibleTypesException(getValue()
-                                        + NOTNUMBER, e);
-                        }
-                } else if (v instanceof FloatValue) {
-                        try {
-                                DoubleValue ret = new DefaultDoubleValue();
-                                ret.setValue(Double.parseDouble(this.value)
-                                        + ((FloatValue) v).getAsDouble());
-
-                                return ret;
-                        } catch (NumberFormatException e) {
-                                throw new IncompatibleTypesException(getValue()
-                                        + NOTNUMBER, e);
-                        }
-                } else if (v instanceof DoubleValue) {
-                        try {
-                                DoubleValue ret = new DefaultDoubleValue();
-                                ret.setValue(Double.parseDouble(this.value)
-                                        + ((DoubleValue) v).getAsDouble());
-
-                                return ret;
-                        } catch (NumberFormatException e) {
-                                throw new IncompatibleTypesException(getValue()
-                                        + NOTNUMBER, e);
-                        }
-                } else if (v instanceof StringValue) {
-                        try {
-                                DoubleValue ret = new DefaultDoubleValue();
-                                ret.setValue(Double.parseDouble(this.value)
-                                        + Double.parseDouble(((StringValue) v).getAsString()));
-
-                                return ret;
-                        } catch (NumberFormatException e) {
-                                throw new IncompatibleTypesException(getValue()
-                                        + NOTNUMBER, e);
-                        }
-                } else {
-                        throw new IncompatibleTypesException();
-                }
-        }
-
-        @Override
-        public NumericValue multiply(Value v) {
-                if (v instanceof IntValue) {
-                        try {
-                                DoubleValue ret = new DefaultDoubleValue();
-                                ret.setValue(Double.parseDouble(this.value)
-                                        * ((IntValue) v).getAsDouble());
-
-                                return ret;
-                        } catch (NumberFormatException e) {
-                                throw new IncompatibleTypesException(getAsDouble()
-                                        + NOTNUMBER, e);
-                        }
-                } else if (v instanceof LongValue) {
-                        try {
-                                DoubleValue ret = new DefaultDoubleValue();
-                                ret.setValue(Double.parseDouble(this.value)
-                                        * ((LongValue) v).getAsDouble());
-
-                                return ret;
-                        } catch (NumberFormatException e) {
-                                throw new IncompatibleTypesException(getAsDouble()
-                                        + NOTNUMBER, e);
-                        }
-                } else if (v instanceof FloatValue) {
-                        try {
-                                DoubleValue ret = new DefaultDoubleValue();
-                                ret.setValue(Double.parseDouble(this.value)
-                                        * ((FloatValue) v).getAsDouble());
-
-                                return ret;
-                        } catch (NumberFormatException e) {
-                                throw new IncompatibleTypesException(getAsDouble()
-                                        + NOTNUMBER, e);
-                        }
-                } else if (v instanceof DoubleValue) {
-                        try {
-                                DoubleValue ret = new DefaultDoubleValue();
-                                ret.setValue(Double.parseDouble(this.value)
-                                        * ((DoubleValue) v).getAsDouble());
-
-                                return ret;
-                        } catch (NumberFormatException e) {
-                                throw new IncompatibleTypesException(getAsDouble()
-                                        + NOTNUMBER, e);
-                        }
-                } else if (v instanceof StringValue) {
-                        try {
-                                DoubleValue ret = new DefaultDoubleValue();
-                                ret.setValue(Double.parseDouble(this.value)
-                                        * Double.parseDouble(((StringValue) v).getAsString()));
-
-                                return ret;
-                        } catch (NumberFormatException e) {
-                                throw new IncompatibleTypesException(getValue()
-                                        + NOTNUMBER, e);
-                        }
-                } else {
-                        throw new IncompatibleTypesException();
-                }
+        public CharSequence getValue() {
+                return this;
         }
 
         @Override
         public String toString() {
-                return value;
+                return String.valueOf(value);
+        }
+
+        private boolean charEquals(CharSequence s1, CharSequence s2) {
+                if (s1.length() != s2.length()) {
+                        return false;
+                }
+
+                for (int i = 0; i < s1.length(); i++) {
+                        if (s1.charAt(i) != s2.charAt(i)) {
+                                return false;
+                        }
+                }
+
+                return true;
         }
 
         @Override
@@ -222,9 +124,9 @@ final class DefaultStringValue extends AbstractValue implements Serializable, St
                 if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
-                
+
                 if (value instanceof StringValue) {
-                        return ValueFactory.createValue(this.value.equals(value.getAsString()));
+                        return ValueFactory.createValue(charEquals(this, ((StringValue) value).getValue()));
                 } else {
                         throw new IncompatibleTypesException(
                                 "The specified value is not a text value:"
@@ -237,14 +139,8 @@ final class DefaultStringValue extends AbstractValue implements Serializable, St
                 if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
-                
-                if (value instanceof StringValue) {
-                        return ValueFactory.createValue(this.value.compareTo(value.toString()) > 0);
-                } else {
-                        throw new IncompatibleTypesException(
-                                "The specified value is not a text value:"
-                                + TypeFactory.getTypeName(value.getType()));
-                }
+
+                return ValueFactory.createValue(compareTo(value) > 0);
         }
 
         @Override
@@ -252,14 +148,8 @@ final class DefaultStringValue extends AbstractValue implements Serializable, St
                 if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
-                
-                if (value instanceof StringValue) {
-                        return ValueFactory.createValue(this.value.compareTo(value.toString()) >= 0);
-                } else {
-                        throw new IncompatibleTypesException(
-                                "The specified value is not a text value:"
-                                + TypeFactory.getTypeName(value.getType()));
-                }
+
+                return ValueFactory.createValue(compareTo(value) >= 0);
         }
 
         @Override
@@ -267,14 +157,8 @@ final class DefaultStringValue extends AbstractValue implements Serializable, St
                 if (value.isNull()) {
                         return ValueFactory.createNullValue();
                 }
-                
-                if (value instanceof StringValue) {
-                        return ValueFactory.createValue(this.value.compareTo(value.toString()) < 0);
-                } else {
-                        throw new IncompatibleTypesException(
-                                "The specified value is not a text value:"
-                                + TypeFactory.getTypeName(value.getType()));
-                }
+
+                return ValueFactory.createValue(compareTo(value) < 0);
         }
 
         @Override
@@ -283,16 +167,7 @@ final class DefaultStringValue extends AbstractValue implements Serializable, St
                         return ValueFactory.createNullValue();
                 }
 
-                return ValueFactory.createValue(this.value.compareTo(value.toString()) <= 0);
-        }
-
-        @Override
-        public BooleanValue notEquals(Value value) {
-                if (value.isNull()) {
-                        return ValueFactory.createNullValue();
-                }
-
-                return ValueFactory.createValue(!this.value.equals(value.toString()));
+                return ValueFactory.createValue(compareTo(value) <= 0);
         }
 
         @Override
@@ -312,7 +187,7 @@ final class DefaultStringValue extends AbstractValue implements Serializable, St
 
         @Override
         public BooleanValue matches(Pattern value) {
-                return ValueFactory.createValue(value.matcher(this.value).matches());
+                return ValueFactory.createValue(value.matcher(this).matches());
         }
 
         @Override
@@ -329,7 +204,7 @@ final class DefaultStringValue extends AbstractValue implements Serializable, St
                         throw new IncompatibleTypesException();
                 }
         }
-        
+
         @Override
         public BooleanValue similarTo(Value value) {
                 if (value.isNull()) {
@@ -347,12 +222,12 @@ final class DefaultStringValue extends AbstractValue implements Serializable, St
 
         @Override
         public int hashCode() {
-                return 67 * 5 + value.hashCode();
+                return 67 * 5 + Arrays.hashCode(value);
         }
 
         @Override
         public String getStringValue(ValueWriter writer) {
-                return writer.getStatementString(value, Types.VARCHAR);
+                return writer.getStatementString(this, Types.VARCHAR);
         }
 
         @Override
@@ -362,22 +237,38 @@ final class DefaultStringValue extends AbstractValue implements Serializable, St
 
         @Override
         public byte[] getBytes() {
-                return value.getBytes();
+                if (value.length == 0) {
+                        return new byte[0];
+                } else {
+                        // this handles UTF-16 encoding for us
+                        return new String(value).getBytes();
+                }
         }
 
         public static Value readBytes(byte[] buffer) {
-                return new DefaultStringValue(new String(buffer));
+                if (buffer.length == 0) {
+                        // prevents duplicating the empty text value
+                        return ValueFactory.EMPTYTEXT;
+                } else {
+                        // this handles UTF-16 decoding for us
+                        return new DefaultStringValue(new String(buffer));
+                }
         }
 
         @Override
         public String getAsString() {
-                return value;
+                return toString();
+        }
+
+        @Override
+        public CharSequence getAsCharSequence() {
+                return this;
         }
 
         @Override
         public Value toType(int typeCode) {
                 try {
-                        Value ret = ValueFactory.createValueByType(value, typeCode);
+                        Value ret = ValueFactory.createValueByType(toString(), typeCode);
                         if ((ret.getType() & typeCode) != 0) {
                                 return ret;
                         } else {
@@ -401,10 +292,61 @@ final class DefaultStringValue extends AbstractValue implements Serializable, St
                         // by default, NULL FIRST
                         return -1;
                 } else if (o instanceof StringValue) {
-                        StringValue sv = (StringValue) o;
-                        return value.compareTo(sv.getAsString());
+                        CharSequence comp = ((StringValue) o).getValue();
+                        // lexicographic comparison
+                        int minSize = Math.min(value.length, comp.length());
+                        for (int i = 0; i < minSize; i++) {
+                                char c1 = value[i];
+                                char c2 = comp.charAt(i);
+                                if (c1 != c2) {
+                                        return c1 - c2;
+                                }
+                        }
+
+                        return value.length - comp.length();
                 } else {
                         return super.compareTo(o);
+                }
+        }
+
+        @Override
+        public int length() {
+                return value.length;
+        }
+
+        @Override
+        public char charAt(int index) {
+                return value[index];
+        }
+
+        @Override
+        public CharSequence subSequence(int start, int end) {
+                return new SubSequence(start, end - start);
+        }
+
+        private class SubSequence implements CharSequence {
+
+                private int start;
+                private int length;
+
+                private SubSequence(int start, int length) {
+                        this.start = start;
+                        this.length = length;
+                }
+
+                @Override
+                public int length() {
+                        return length;
+                }
+
+                @Override
+                public char charAt(int index) {
+                        return DefaultStringValue.this.charAt(start + index);
+                }
+
+                @Override
+                public CharSequence subSequence(int start, int end) {
+                        return new SubSequence(this.start + start, end - start);
                 }
         }
 }
