@@ -38,6 +38,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
@@ -46,7 +48,6 @@ import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
-import org.gdms.sql.engine.ParseException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.workspace.CoreWorkspace;
@@ -61,6 +62,12 @@ import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.engine.Engine;
+import org.gdms.sql.engine.SQLScript;
+import org.gdms.sql.engine.SemanticException;
 
 /**
  * This {@code JDialog} is used to export the content of one or more {@code
@@ -213,7 +220,6 @@ public class TableExportPanel extends JDialog {
         /**
          * This method is used to export the selected sources in a database
          *
-         * @return
          */
         public void onExport() {
 
@@ -229,18 +235,14 @@ public class TableExportPanel extends JDialog {
                         for (int i = 0; i < count; i++) {
                                 DataBaseRow row = model.getRow(i);
                                 if (row.isExport()) {
-                                        StringBuilder sb = new StringBuilder("EXECUTE EXPORT(");
-                                        sb.append(row.toSQL());
-                                        sb.append(", ");
-                                        sb.append("'").append(dbParameters[0]).append("',");
-                                        sb.append("'").append(dbParameters[1]).append("',");
-                                        sb.append(dbParameters[2]).append(",");
-                                        sb.append("'").append(dbParameters[4]).append("',");
-                                        sb.append("'").append(dbParameters[5]).append("',");
-                                        sb.append("'").append(dbpassWord).append("',");
-                                        sb.append("'").append(row.getSchema()).append("',");
-                                        sb.append("'").append(row.getOutPutsourceName()).append("');");
-                                        backgroundManager.backgroundOperation(new ExportToDatabase(i, sb.toString()));
+                                        Map<String, String> userParams = new HashMap<String, String>();
+                                        userParams.put("vendor", dbParameters[0]);
+                                        userParams.put("host", dbParameters[1]);
+                                        int port = Integer.valueOf(dbParameters[2]);
+                                        userParams.put("dbName", dbParameters[4]);
+                                        userParams.put("userName", dbParameters[5]);
+                                        userParams.put("password", dbpassWord);
+                                        backgroundManager.backgroundOperation(new ExportToDatabase(i, row, userParams, port));
                                 }
                         }
                 }
@@ -291,7 +293,6 @@ public class TableExportPanel extends JDialog {
          *
          * @param parameters
          * @param passWord
-         * @return
          * @throws SQLException
          */
         public void populateSchemas(String[] parameters, String passWord) throws SQLException {
@@ -350,23 +351,41 @@ public class TableExportPanel extends JDialog {
          */
         private class ExportToDatabase implements BackgroundJob {
 
-                private final String sql;
+                private final DataBaseRow row;
+                private final Map<String, String> params;
                 private final int rowId;
+                private final int port;
 
-                private ExportToDatabase(int rowId, String sql) {
-                        this.sql = sql;
+                private ExportToDatabase(int rowId, DataBaseRow row, Map<String, String> params, int port) {
+                        this.row = row;
                         this.rowId = rowId;
+                        this.params = params;
+                        this.port = port;
                 }
 
                 @Override
                 public void run(ProgressMonitor pm) {
-                        DataManager dataManager = Services.getService(DataManager.class);
+                        DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
                         try {
-                                dataManager.getDataSourceFactory().executeSQL(sql, pm);
+                                SQLScript s = Engine.loadScript(TableExportPanel.class.getResourceAsStream("export-to-database.bsql"));
+                                s.setDataSourceFactory(dsf);
+                                s.setTableParameter("tableName", row.getInputSourceName());
+                                s.setFieldParameter("outputGeomField", row.getOutputSpatialField());
+                                s.setFieldParameter("inputGeomField", row.getInputSpatialField());
+                                s.setValueParameter("outputSchema", ValueFactory.createValue(row.getSchema()));
+                                s.setValueParameter("outputTableName", ValueFactory.createValue(row.getOutputSourceName()));
+                                s.setValueParameter("crs", ValueFactory.createValue("EPSG:" + row.getInputEpsgCode()));
+                                s.setValueParameter("port", ValueFactory.createValue(port));
+                                for (Map.Entry<String, String> e : params.entrySet()) {
+                                        s.setValueParameter(e.getKey(), ValueFactory.createValue(e.getValue()));
+                                }
+                                s.execute();
                                 jtableExporter.remove(rowId);
-                        } catch (ParseException ex) {
+                        } catch (SemanticException ex) {
+                                LOGGER.warn(ex.getMessage(), ex);
                                 JOptionPane.showMessageDialog(jScrollPane, ex.getMessage());
-                        } catch (DriverException ex) {
+                        } catch (IOException ex) {
+                                LOGGER.warn(ex.getMessage(), ex);
                                 JOptionPane.showMessageDialog(jScrollPane, ex.getMessage());
                         }
                 }
