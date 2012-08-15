@@ -34,74 +34,56 @@
 
 package org.gdms.driver.geojson
 
-import com.fasterxml.jackson.core.JsonFactory
-import com.fasterxml.jackson.core.JsonParser
-import com.vividsolutions.jts.geom.GeometryFactory
+import com.fasterxml.jackson.core.{JsonFactory, JsonParser, JsonEncoding}
 import java.io.File
 import org.gdms.data.DataSourceFactory
-import org.gdms.data.schema.DefaultMetadata
-import org.gdms.data.schema.DefaultSchema
+import org.gdms.data.schema.{DefaultMetadata, DefaultSchema, MetadataUtilities}
+import org.gdms.driver.io.FileExporter
+import org.gdms.driver.DataSet
 import org.gdms.driver.DriverException
 import org.gdms.driver.driverManager.DriverManager.{DEFAULT_SINGLE_TABLE_NAME => MainTable}
-import org.gdms.driver.io.FileImporter
-import org.gdms.driver.io.RowWriter
 import org.gdms.source.SourceManager
 
-/**
- * A geo-json importer for Gdms.
- * 
- * @author Antoine Gourlay
- */
-class GeoJsonImporter extends FileImporter with Parser {
-   
+class GeoJsonExporter extends FileExporter with Writer {
+  
   // internal usefull stuff
   private var file: File = _
   private val metadata = new DefaultMetadata()
   private lazy val jsonFactory = loadJsonFactory
-  private implicit var jp: JsonParser = _
   
-  // constant values for Importer
+
+  // constant values for Exporter
   val getType = SourceManager.FILE | SourceManager.VECTORIAL
   val getSupportedType = getType
   val getTypeName = "GeoJSON"
   val getTypeDescription = "Geo-JSON file format"
-  val getImporterId = "geojson"
+  val getExporterId = "geojson"
   val getFileExtensions = Array("js", "json")
   val getSchema = new DefaultSchema("json")
   
-  // initialization at object creation
-  getSchema.addTable(MainTable, metadata)
+  def open() {}
   
-  def open {
-    // parse metadata
-    jp = jsonFactory.createJsonParser(file)
-    metadata.clear
-    metadata.addAll(parseMetadata)
-  }
+  def close() {}
   
-  def close {
-    jp.close
-    jp = null
+  def export(ds: DataSet, table: String) {
+    if (table != MainTable) {
+      throw new DriverException("Unknown table '" + table + "'!")
+    }
+    
+    val g = jsonFactory.createJsonGenerator(file, JsonEncoding.UTF8)
+    val met = ds.getMetadata
+    val spatialIndex = MetadataUtilities.getSpatialFieldIndex(met)
+    
+    val m = Map((0 until met.getFieldCount) map (i => met.getFieldName(i) -> i): _*)
+    
+    import scala.collection.JavaConversions._
+    
+    write(g, ds.iterator, m)
   }
   
   def setFile(f: File) {file = f}
     
   def setDataSourceFactory(dsf: DataSourceFactory) {}
-    
-  def convertTable(name: String, rw: RowWriter) = {
-    if (jp == null) {
-      throw new DriverException("This driver is closed.")
-    }
-    
-    if (name != MainTable) {
-      throw new DriverException("There is no table '" + name + "' in this driver.")
-    }
-    
-    // reload parser (was used parsing metadata)
-    jp = jsonFactory.createJsonParser(file)
-    
-    parse(rw.addValues, metadata)
-  }
   
   private def loadJsonFactory: JsonFactory = {
     import JsonParser.Feature._
