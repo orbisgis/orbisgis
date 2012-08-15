@@ -405,7 +405,7 @@ public final class DefaultSourceManager implements SourceManager {
                 return namesToChange;
         }
 
-        public ExtendedSource getExtendedSource(String name) {
+        private ExtendedSource getExtendedSource(String name) {
                 try {
                         name = getMainNameFor(name);
                         return nameSource.get(name);
