@@ -96,6 +96,7 @@ import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.dxf.DXFDriver;
 import org.gdms.driver.gdms.GdmsDriver;
+import org.gdms.driver.geojson.GeoJsonExporter;
 import org.gdms.driver.geojson.GeoJsonImporter;
 import org.gdms.driver.geotif.TifDriver;
 import org.gdms.driver.hsqldb.HSQLDBDriver;
@@ -145,6 +146,7 @@ public final class DefaultSourceManager implements SourceManager {
                 dm.registerImporter(DXFDriver.class);
                 dm.registerImporter(MifMidDriver.class);
                 dm.registerImporter(GeoJsonImporter.class);
+                dm.registerExporter(GeoJsonExporter.class);
                 this.dsf = dsf;
                 this.baseDir = baseDir;
                 contextPaths.add("org.gdms.source.directory");
@@ -403,7 +405,7 @@ public final class DefaultSourceManager implements SourceManager {
                 return namesToChange;
         }
 
-        public ExtendedSource getExtendedSource(String name) {
+        private ExtendedSource getExtendedSource(String name) {
                 try {
                         name = getMainNameFor(name);
                         return nameSource.get(name);
@@ -1215,18 +1217,18 @@ public final class DefaultSourceManager implements SourceManager {
                         DataSource d = getDataSource(name, new NullProgressMonitor());
 
                         def.setDataSourceFactory(dsf);
+                        d.open();
                         if (def.getSchema().getTableCount() > 1) {
                                 throw new DriverException("This export definition expects a schema with "
                                         + def.getSchema().getTableCount() + " table, not a single table.");
-                        }
-                        final Metadata met = def.getSchema().getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
-                        d.open();
-
-                        // checks metadata are compatible
-                        String error = MetadataUtilities.check(met, d.getMetadata());
-                        if (error != null) {
-                                throw new DriverException("Cannot export '" + name + "': "
-                                        + error);
+                        } else if (def.getSchema().getTableCount() == 1) {
+                                final Metadata met = def.getSchema().getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+                                // checks metadata are compatible
+                                String error = MetadataUtilities.check(met, d.getMetadata());
+                                if (error != null) {
+                                        throw new DriverException("Cannot export '" + name + "': "
+                                                + error);
+                                }
                         }
                         def.export(d, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
                         d.close();
@@ -1239,23 +1241,24 @@ public final class DefaultSourceManager implements SourceManager {
 
                                         def.setDataSourceFactory(dsf);
                                         String intName = names[i].substring(names[i].lastIndexOf('.') + 1);
-                                        final Metadata met = def.getSchema().getTableByName(intName);
-
-                                        // checks the table is allowed
-                                        if (met == null) {
-                                                throw new DriverException("This export definition does not expect"
-                                                        + " a table named '" + intName + "'. Expected tables are: "
-                                                        + Arrays.toString(def.getSchema().getTableNames()));
-                                        }
-
                                         d.open();
-                                        // checks metadata are compatible
-                                        String error = MetadataUtilities.check(met, d.getMetadata());
-                                        if (error != null) {
-                                                throw new DriverException("Cannot export '" + names[i] + "': "
-                                                        + error);
-                                        }
+                                        if (def.getSchema().getTableCount() != 0) {
+                                                final Metadata met = def.getSchema().getTableByName(intName);
 
+                                                // checks the table is allowed
+                                                if (met == null) {
+                                                        throw new DriverException("This export definition does not expect"
+                                                                + " a table named '" + intName + "'. Expected tables are: "
+                                                                + Arrays.toString(def.getSchema().getTableNames()));
+                                                }
+
+                                                // checks metadata are compatible
+                                                String error = MetadataUtilities.check(met, d.getMetadata());
+                                                if (error != null) {
+                                                        throw new DriverException("Cannot export '" + names[i] + "': "
+                                                                + error);
+                                                }
+                                        }
                                         def.export(d, intName);
                                         d.close();
                                 }

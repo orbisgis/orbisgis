@@ -34,24 +34,13 @@
 
 package org.gdms.driver.geojson
 
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonToken
-import com.vividsolutions.jts.geom.Coordinate
-import com.vividsolutions.jts.geom.GeometryCollection
-import com.vividsolutions.jts.geom.GeometryFactory
-import com.vividsolutions.jts.geom.LineString
-import com.vividsolutions.jts.geom.MultiLineString
-import com.vividsolutions.jts.geom.MultiPoint
-import com.vividsolutions.jts.geom.MultiPolygon
-import com.vividsolutions.jts.geom.Point
-import com.vividsolutions.jts.geom.Polygon
+import com.fasterxml.jackson.core.{JsonParser, JsonToken}
+import com.vividsolutions.jts.geom._
 import org.gdms.data.schema.DefaultMetadata
 import org.gdms.data.schema.Metadata
-import org.gdms.data.types.Type
 import org.gdms.data.types.Type._
 import org.gdms.data.types.TypeFactory
-import org.gdms.data.values.GeometryValue
-import org.gdms.data.values.Value
+import org.gdms.data.values.{GeometryValue, Value}
 import org.gdms.data.values.ValueFactory.{createValue => value, createNullValue => nullV}
 import org.gdms.driver.DriverException
 import scala.collection.immutable.SortedMap
