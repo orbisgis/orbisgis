@@ -1215,18 +1215,18 @@ public final class DefaultSourceManager implements SourceManager {
                         DataSource d = getDataSource(name, new NullProgressMonitor());
 
                         def.setDataSourceFactory(dsf);
+                        d.open();
                         if (def.getSchema().getTableCount() > 1) {
                                 throw new DriverException("This export definition expects a schema with "
                                         + def.getSchema().getTableCount() + " table, not a single table.");
-                        }
-                        final Metadata met = def.getSchema().getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
-                        d.open();
-
-                        // checks metadata are compatible
-                        String error = MetadataUtilities.check(met, d.getMetadata());
-                        if (error != null) {
-                                throw new DriverException("Cannot export '" + name + "': "
-                                        + error);
+                        } else if (def.getSchema().getTableCount() == 1) {
+                                final Metadata met = def.getSchema().getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+                                // checks metadata are compatible
+                                String error = MetadataUtilities.check(met, d.getMetadata());
+                                if (error != null) {
+                                        throw new DriverException("Cannot export '" + name + "': "
+                                                + error);
+                                }
                         }
                         def.export(d, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
                         d.close();
@@ -1239,23 +1239,24 @@ public final class DefaultSourceManager implements SourceManager {
 
                                         def.setDataSourceFactory(dsf);
                                         String intName = names[i].substring(names[i].lastIndexOf('.') + 1);
-                                        final Metadata met = def.getSchema().getTableByName(intName);
-
-                                        // checks the table is allowed
-                                        if (met == null) {
-                                                throw new DriverException("This export definition does not expect"
-                                                        + " a table named '" + intName + "'. Expected tables are: "
-                                                        + Arrays.toString(def.getSchema().getTableNames()));
-                                        }
-
                                         d.open();
-                                        // checks metadata are compatible
-                                        String error = MetadataUtilities.check(met, d.getMetadata());
-                                        if (error != null) {
-                                                throw new DriverException("Cannot export '" + names[i] + "': "
-                                                        + error);
-                                        }
+                                        if (def.getSchema().getTableCount() != 0) {
+                                                final Metadata met = def.getSchema().getTableByName(intName);
 
+                                                // checks the table is allowed
+                                                if (met == null) {
+                                                        throw new DriverException("This export definition does not expect"
+                                                                + " a table named '" + intName + "'. Expected tables are: "
+                                                                + Arrays.toString(def.getSchema().getTableNames()));
+                                                }
+
+                                                // checks metadata are compatible
+                                                String error = MetadataUtilities.check(met, d.getMetadata());
+                                                if (error != null) {
+                                                        throw new DriverException("Cannot export '" + names[i] + "': "
+                                                                + error);
+                                                }
+                                        }
                                         def.export(d, intName);
                                         d.close();
                                 }
