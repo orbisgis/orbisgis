@@ -40,7 +40,16 @@ import org.gdms.data.types.{Type, TypeFactory}
 import org.gdms.data.values.Value
 import org.gdms.driver.DriverException
 
-private[geojson] trait Writer {
+/**
+ * A simple geo-json writer.
+ * 
+ * This writer is completely stream-based and does not keep in memory more than a single feature
+ * (i.e. an array of Value object) of the input table.
+ * 
+ * @see http://www.geojson.org/geojson-spec.html
+ * @author Antoine Gourlay
+ */
+trait Writer {
 
   def write(g: JsonGenerator, it: Iterator[Array[Value]], props: Map[String, Int]) {
     // header
@@ -77,7 +86,7 @@ private[geojson] trait Writer {
     g.close
   }
   
-  def writeValue(g: JsonGenerator, name: String, v: Value) {
+  private def writeValue(g: JsonGenerator, name: String, v: Value) {
     if (v.isNull) g.writeNullField(name)
     else v.getType match {
       case Type.INT | Type.BYTE | Type.SHORT => g.writeNumberField(name, v.getAsInt)
@@ -91,7 +100,7 @@ private[geojson] trait Writer {
     }
   }
   
-  def writeGeometry(g: JsonGenerator, a: Geometry) {
+  private def writeGeometry(g: JsonGenerator, a: Geometry) {
     // maybe we shoudn't depend on JTS's geometry types...?
     val typ = a.getGeometryType
     g.writeStringField("type", typ)
@@ -115,14 +124,14 @@ private[geojson] trait Writer {
     g.writeEndArray
   }
   
-  def writePoint(g: JsonGenerator, p: Point) {
+  private def writePoint(g: JsonGenerator, p: Point) {
     val c = p.getCoordinate
     g.writeNumber(c.x)
     g.writeNumber(c.y)
     if (!c.z.isNaN) g.writeNumber(c.z)
   }
   
-  def writeMultiPoint(g: JsonGenerator, mp: MultiPoint) {
+  private def writeMultiPoint(g: JsonGenerator, mp: MultiPoint) {
     (0 until mp.getNumGeometries) foreach { i=>
       g.writeStartArray
       // one more thing JTS forgets about: covariant return types
@@ -132,11 +141,11 @@ private[geojson] trait Writer {
     }
   }
   
-  def writeLineString(g: JsonGenerator, li: LineString) {
+  private def writeLineString(g: JsonGenerator, li: LineString) {
     li.getCoordinates foreach (writeCoord(g, _))
   }
   
-  def writeMultiLineString(g: JsonGenerator, mli: MultiLineString) {
+  private def writeMultiLineString(g: JsonGenerator, mli: MultiLineString) {
     (0 until mli.getNumGeometries) foreach { i=>
       g.writeStartArray
       writeLineString(g, mli.getGeometryN(i).asInstanceOf[LineString])
@@ -144,7 +153,7 @@ private[geojson] trait Writer {
     }
   }
   
-  def writePolygon(g: JsonGenerator, p: Polygon) {
+  private def writePolygon(g: JsonGenerator, p: Polygon) {
     g.writeStartArray
     writeLineString(g, p.getExteriorRing)
     g.writeEndArray
@@ -155,7 +164,7 @@ private[geojson] trait Writer {
     }
   }
   
-  def writeMultiPolygon(g: JsonGenerator, mli: MultiPolygon) {
+  private def writeMultiPolygon(g: JsonGenerator, mli: MultiPolygon) {
     (0 until mli.getNumGeometries) foreach { i=>
       g.writeStartArray
       writePolygon(g, mli.getGeometryN(i).asInstanceOf[Polygon])
@@ -163,7 +172,7 @@ private[geojson] trait Writer {
     }
   }
   
-  def writeGeometryCollection(g: JsonGenerator, col: GeometryCollection) {
+  private def writeGeometryCollection(g: JsonGenerator, col: GeometryCollection) {
     (0 until col.getNumGeometries) foreach {i =>
       g.writeStartObject
       writeGeometry(g, col.getGeometryN(i))
@@ -171,7 +180,7 @@ private[geojson] trait Writer {
     }
   }
   
-  def writeCoord(g: JsonGenerator, c: Coordinate) {
+  private def writeCoord(g: JsonGenerator, c: Coordinate) {
     g.writeStartArray
     g.writeNumber(c.x)
     g.writeNumber(c.y)

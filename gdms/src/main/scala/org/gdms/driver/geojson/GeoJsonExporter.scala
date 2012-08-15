@@ -39,11 +39,15 @@ import java.io.File
 import org.gdms.data.DataSourceFactory
 import org.gdms.data.schema.{DefaultMetadata, DefaultSchema, MetadataUtilities}
 import org.gdms.driver.io.FileExporter
-import org.gdms.driver.DataSet
-import org.gdms.driver.DriverException
+import org.gdms.driver.{DataSet, DriverException}
 import org.gdms.driver.driverManager.DriverManager.{DEFAULT_SINGLE_TABLE_NAME => MainTable}
 import org.gdms.source.SourceManager
 
+/**
+ * A geo-json exporter for Gdms.
+ * 
+ * @author Antoine Gourlay
+ */
 class GeoJsonExporter extends FileExporter with Writer {
   
   // internal usefull stuff
@@ -58,7 +62,7 @@ class GeoJsonExporter extends FileExporter with Writer {
   val getTypeName = "GeoJSON"
   val getTypeDescription = "Geo-JSON file format"
   val getExporterId = "geojson"
-  val getFileExtensions = Array("js", "json")
+  val getFileExtensions = Array("json", "js")
   val getSchema = new DefaultSchema("json")
   
   def open() {}
