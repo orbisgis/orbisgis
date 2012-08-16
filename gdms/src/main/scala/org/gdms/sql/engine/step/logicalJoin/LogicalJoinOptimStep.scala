@@ -38,7 +38,7 @@ import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.AbstractEngineStep
 import org.gdms.sql.engine.logical.LogicPlanOptimizer
 import org.gdms.sql.engine.operations._
-import org.gdms.sql.evaluator.func
+import org.gdms.sql.evaluator.Evaluators._
 import org.gdms.sql.function.SpatialIndexedFunction
 
 /**

@@ -38,7 +38,8 @@ import org.gdms.data.DataSourceFactory
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.AbstractEngineStep
 import org.gdms.sql.engine.operations._
-import org.gdms.sql.evaluator._
+import org.gdms.sql.evaluator.Evaluators._
+import org.gdms.sql.evaluator.{Expression, Field}
 
 /**
  * Step P1: Join ptimisations that do require access to the DataSourceFactory.

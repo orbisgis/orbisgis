@@ -38,7 +38,7 @@ import util.control.Breaks._
 import org.gdms.data.indexes.IndexQuery
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.evaluator.Expression
-import org.gdms.sql.evaluator.field
+import org.gdms.sql.evaluator.Evaluators._
 
 /**
  * Abstract query operation.

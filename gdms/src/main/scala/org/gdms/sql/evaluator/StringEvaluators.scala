@@ -60,15 +60,6 @@ case class StringConcatEvaluator(e1: Expression, e2: Expression) extends Evaluat
   def duplicate: StringConcatEvaluator = StringConcatEvaluator(e1.duplicate, e2.duplicate)
 }
 
-object || {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: StringConcatEvaluator => Some((a.e1, a.e2))
-      case _ => None
-    }
-  }
-}
-
 /**
  * Evaluator for like operation on string values.
  *
@@ -107,15 +98,6 @@ case class LikeEvaluator(e1: Expression, e2: Expression, caseInsensitive: Boolea
   }
   override def toString = "(" + e1 + " LIKE " + e2 + ")"
   def duplicate: LikeEvaluator = LikeEvaluator(e1.duplicate, e2.duplicate, caseInsensitive)
-}
-
-object like {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: LikeEvaluator => Some((a.e1, a.e2, a.caseInsensitive))
-      case _ => None
-    }
-  }
 }
 
 
@@ -157,15 +139,6 @@ case class SimilarToEvaluator(e1: Expression, e2: Expression) extends Evaluator 
   }
   override def toString = "(" + e1 + " LIKE " + e2 + ")"
   def duplicate: SimilarToEvaluator = SimilarToEvaluator(e1.duplicate, e2.duplicate)
-}
-
-object similarTo {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: SimilarToEvaluator => Some((a.e1, a.e2))
-      case _ => None
-    }
-  }
 }
 
 /**
@@ -210,13 +183,4 @@ case class POSIXEvaluator(e1: Expression, e2: Expression, caseInsensitive: Boole
   }
   override def toString = "(" + e1 + " LIKE " + e2 + ")"
   def duplicate: POSIXEvaluator = POSIXEvaluator(e1.duplicate, e2.duplicate, caseInsensitive)
-}
-
-object matches {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: POSIXEvaluator => Some((a.e1, a.e2, a.caseInsensitive))
-      case _ => None
-    }
-  }
 }

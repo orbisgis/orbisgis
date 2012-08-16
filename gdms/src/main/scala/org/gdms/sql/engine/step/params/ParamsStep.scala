@@ -40,7 +40,8 @@ import org.gdms.data.values.Value
 import org.gdms.sql.engine.{AbstractEngineStep, SemanticException}
 import org.gdms.sql.engine.logical.LogicPlanOptimizer
 import org.gdms.sql.engine.operations.{Operation, ExpressionOperation, Scan, ParamTable, Projection}
-import org.gdms.sql.evaluator.{StaticEvaluator, param, FieldEvaluator, star, StarFieldEvaluator}
+import org.gdms.sql.evaluator.{StaticEvaluator, FieldEvaluator, StarFieldEvaluator}
+import org.gdms.sql.evaluator.Evaluators._
 
 /**
  * Param replacement step: Replaces all parameters with values

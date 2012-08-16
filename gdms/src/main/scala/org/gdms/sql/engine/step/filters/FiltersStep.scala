@@ -40,7 +40,8 @@ import org.gdms.sql.engine.logical.LogicPlanOptimizer
 import org.gdms.sql.engine.operations._
 import org.gdms.sql.engine.step.logicalJoin.LogicalJoinOptimStep
 import org.gdms.sql.engine.step.validate.ValidationStep
-import org.gdms.sql.evaluator._
+import org.gdms.sql.evaluator.{Expression, QueryEvaluator, FieldEvaluator}
+import org.gdms.sql.evaluator.Evaluators._
 import org.gdms.sql.function.SpatialIndexedFunction
 
 /**

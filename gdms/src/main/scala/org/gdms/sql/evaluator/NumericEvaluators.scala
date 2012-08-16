@@ -67,15 +67,6 @@ case class AddEvaluator(val e1: Expression,val e2: Expression) extends NumericEv
   def duplicate: AddEvaluator = AddEvaluator(e1.duplicate, e2.duplicate)
 }
 
-object + {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: AddEvaluator => Some((a.e1, a.e2))
-      case _ => None
-    }
-  }
-}
-
 /**
  * Evaluator for -value1.
  *
@@ -90,16 +81,6 @@ case class OppositeEvaluator(e1: Expression) extends Evaluator {
   def duplicate: OppositeEvaluator = OppositeEvaluator(e1.duplicate)
 }
 
-object - {
-  def unapply(e: Expression) = {
-    e match {
-      case a + (b: OppositeEvaluator) => Some((Some(a), b.e1))
-      case b: OppositeEvaluator => Some((None, b.e1))
-      case _ => None
-    }
-  }
-}
-
 /**
  * Evaluator for value1 * value2.
  *
@@ -110,15 +91,6 @@ case class MultiplyEvaluator(val e1: Expression,val e2: Expression) extends Nume
   def eval = s => e1.evaluate(s) multiply e2.evaluate(s)
   override def toString = "(" + e1 + " * " + e2 + ")"
   def duplicate: MultiplyEvaluator = MultiplyEvaluator(e1.duplicate, e2.duplicate)
-}
-
-object x {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: MultiplyEvaluator => Some((a.e1, a.e2))
-      case _ => None
-    }
-  }
 }
 
 /**
@@ -133,15 +105,6 @@ case class InverseEvaluator(e1: Expression) extends Evaluator {
   override val childExpressions = List(e1)
   override def toString = "Inverse(" + e1 + ")"
   def duplicate: InverseEvaluator = InverseEvaluator(e1.duplicate)
-}
-
-object inv {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: InverseEvaluator => Some(a.e1)
-      case _ => None
-    }
-  }
 }
 
 /**
@@ -159,15 +122,6 @@ case class DivideEvaluator(e1: Expression, e2: Expression) extends NumericEvalua
   def duplicate: DivideEvaluator = DivideEvaluator(e1.duplicate, e2.duplicate)
 }
 
-object / {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: DivideEvaluator => Some((a.e1, a.e2))
-      case _ => None
-    }
-  }
-}
-
 /**
  * Evaluator for value1 < value2.
  *
@@ -180,15 +134,6 @@ case class LessThanEvaluator(val e1: Expression,val e2: Expression) extends Nume
   override val childExpressions = List(e1,e2)
   override def toString = "(" + e1 + " < " + e2 + ")"
   def duplicate: LessThanEvaluator = LessThanEvaluator(e1.duplicate, e2.duplicate)
-}
-
-object < {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: LessThanEvaluator => Some((a.e1, a.e2))
-      case _ => None
-    }
-  }
 }
 
 /**
@@ -205,15 +150,6 @@ case class LessEqualThanEvaluator(val e1: Expression,val e2: Expression) extends
   def duplicate: LessEqualThanEvaluator = LessEqualThanEvaluator(e1.duplicate, e2.duplicate)
 }
 
-object <= {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: LessEqualThanEvaluator => Some((a.e1, a.e2))
-      case _ => None
-    }
-  }
-}
-
 /**
  * Evaluator for value1 > value2.
  *
@@ -226,15 +162,6 @@ case class GreaterThanEvaluator(val e1: Expression,val e2: Expression) extends N
   override val childExpressions = List(e1,e2)
   override def toString = "(" + e1 + " > " + e2 + ")"
   def duplicate: GreaterThanEvaluator = GreaterThanEvaluator(e1.duplicate, e2.duplicate)
-}
-
-object > {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: GreaterThanEvaluator => Some((a.e1, a.e2))
-      case _ => None
-    }
-  }
 }
 
 /**
@@ -251,15 +178,6 @@ case class GreaterEqualThanEvaluator(val e1: Expression,val e2: Expression) exte
   def duplicate: GreaterEqualThanEvaluator = GreaterEqualThanEvaluator(e1.duplicate, e2.duplicate)
 }
 
-object >= {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: GreaterEqualThanEvaluator => Some((a.e1, a.e2))
-      case _ => None
-    }
-  }
-}
-
 /**
  * Evaluator for value1 % value2.
  *
@@ -272,15 +190,6 @@ case class ModuloEvaluator(val e1: Expression,val e2: Expression) extends Numeri
   def duplicate: ModuloEvaluator = ModuloEvaluator(e1.duplicate, e2.duplicate)
 }
 
-object % {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: ModuloEvaluator => Some((a.e1, a.e2))
-      case _ => None
-    }
-  }
-}
-
 /**
  * Evaluator for value1 ^ value2.
  *
@@ -291,13 +200,4 @@ case class ExponentEvaluator(val e1: Expression,val e2: Expression) extends Nume
   def eval = s => e1.evaluate(s) pow e2.evaluate(s)
   override def toString = "(" + e1 + " ^ " + e2 + ")"
   def duplicate: ExponentEvaluator = ExponentEvaluator(e1.duplicate, e2.duplicate)
-}
-
-object ^ {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: ExponentEvaluator => Some((a.e1, a.e2))
-      case _ => None
-    }
-  }
 }

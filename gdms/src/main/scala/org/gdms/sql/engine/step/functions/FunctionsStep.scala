@@ -38,9 +38,9 @@ import org.gdms.data.DataSourceFactory
 import org.gdms.sql.engine.AbstractEngineStep
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.operations._
-import org.gdms.sql.evaluator._
-import org.gdms.sql.function.AggregateFunction
-import org.gdms.sql.function.ScalarFunction
+import org.gdms.sql.evaluator.{Expression, FieldEvaluator, FunctionEvaluator, AggregateEvaluator}
+import org.gdms.sql.evaluator.Evaluators._
+import org.gdms.sql.function.{AggregateFunction, ScalarFunction}
 import org.gdms.sql.function.executor.ExecutorFunction
 import org.gdms.sql.function.table.TableFunction
 

@@ -36,7 +36,8 @@ package org.gdms.sql.engine.commands
 import org.gdms.data.NoSuchTableException
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.SemanticException
-import org.gdms.sql.evaluator._
+import org.gdms.sql.evaluator.{Expression, Field, StarFieldEvaluator}
+import org.gdms.sql.evaluator.Evaluators._
 
 /**
  * Command for evaluating expressions for every rows of a data stream.

@@ -70,15 +70,6 @@ case class AndEvaluator(e1: Expression, e2: Expression) extends BooleanEvaluator
   def duplicate: AndEvaluator = AndEvaluator(e1.duplicate, e2.duplicate)
 }
 
-object & {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: AndEvaluator => Some((a.e1, a.e2))
-      case _ => None
-    }
-  }
-}
-
 /**
  * Evaluator for value1 or value2.
  *
@@ -92,15 +83,6 @@ case class OrEvaluator(e1: Expression, e2: Expression) extends BooleanEvaluator 
   def duplicate: OrEvaluator = OrEvaluator(e1.duplicate, e2.duplicate)
 }
 
-object | {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: OrEvaluator => Some((a.e1, a.e2))
-      case _ => None
-    }
-  }
-}
-
 /**
  * Evaluator for "not value1".
  *
@@ -112,15 +94,6 @@ case class NotEvaluator(e1: Expression) extends BooleanEvaluator {
   override val childExpressions = List(e1)
   override def toString = "NOT (" + e1 + ")"
   def duplicate: NotEvaluator = NotEvaluator(e1.duplicate)
-}
-
-object ! {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: NotEvaluator => Some(a.e1)
-      case _ => None
-    }
-  }
 }
 
 /**
@@ -145,15 +118,6 @@ case class EqualsEvaluator(e1: Expression, e2: Expression) extends BooleanEvalua
   def duplicate: EqualsEvaluator = EqualsEvaluator(e1.duplicate, e2.duplicate)
 }
 
-object === {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: EqualsEvaluator => Some((a.e1, a.e2))
-      case _ => None
-    }
-  }
-}
-
 /**
  * Evaluator for value1 IS NULL.
  *
@@ -166,15 +130,6 @@ case class IsNullEvaluator(e1: Expression) extends BooleanEvaluator {
   override def doValidate() = {}
   override def toString = "ISNULL (" + e1 + ")"
   def duplicate: IsNullEvaluator = IsNullEvaluator(e1.duplicate)
-}
-
-object isNull {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: IsNullEvaluator => Some(a.e1)
-      case _ => None
-    }
-  }
 }
 
 /**
@@ -204,15 +159,6 @@ case class InListEvaluator(e1: Expression, e2:Seq[Expression]) extends BooleanEv
   def duplicate: InListEvaluator = InListEvaluator(e1.duplicate, e2 map (_.duplicate))
 }
 
-object inList {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: InListEvaluator => Some((a.e1, a.e2))
-      case _ => None
-    }
-  }
-}
-
 /**
  * Evaluator for WHERE EXISTS (SELECT ...).
  * 
@@ -232,59 +178,41 @@ case class ExistsEvaluator(var op: Operation) extends BooleanEvaluator with Quer
   }
 }
 
-object exists {
-  def unapply(e: Expression) = {
-    e.evaluator match {
-      case a: ExistsEvaluator => Some(a.op)
-      case _ => None
-    }
-  }
-}
-
 /**
  * Evaluator for "value IN (SELECT ...)".
  * 
  * @author Antoine Gourlay
  * @since 0.3
  */
- case class InEvaluator(e: Expression, var op: Operation) extends BooleanEvaluator with QueryEvaluator {
+case class InEvaluator(e: Expression, var op: Operation) extends BooleanEvaluator with QueryEvaluator {
   
-    override val childExpressions = List(e)
+  override val childExpressions = List(e)
   
-    def eval = s => {
-      val b = e.evaluate(s)
-      var ret: Value = ValueFactory.FALSE
+  def eval = s => {
+    val b = e.evaluate(s)
+    var ret: Value = ValueFactory.FALSE
     
-      if (b.isNull) {
-        ret = b
-      } else {
-        var break: Boolean = false
-        val ex = evalInner(s)
-        while (!break && ex.hasNext) {
-          val next = ex.next.array(0).equals(b)
-          if (next.isNull) {
-            ret = ValueFactory.createNullValue[Value]
-          } else if (next.getAsBoolean) {
-            ret = ValueFactory.TRUE
-            break = true
-          }
+    if (b.isNull) {
+      ret = b
+    } else {
+      var break: Boolean = false
+      val ex = evalInner(s)
+      while (!break && ex.hasNext) {
+        val next = ex.next.array(0).equals(b)
+        if (next.isNull) {
+          ret = ValueFactory.createNullValue[Value]
+        } else if (next.getAsBoolean) {
+          ret = ValueFactory.TRUE
+          break = true
         }
       }
-      ret
     }
+    ret
+  }
     
   def duplicate: InEvaluator = {
-      val c = InEvaluator(e.duplicate, op.duplicate)
-      c.dsf = dsf
-      c
-    }
+    val c = InEvaluator(e.duplicate, op.duplicate)
+    c.dsf = dsf
+    c
   }
-
- object in {
-    def unapply(e: Expression) = {
-      e.evaluator match {
-        case i : InEvaluator => Some((i.e, i.op))
-        case _ => None
-      }
-    }
-  }
+}

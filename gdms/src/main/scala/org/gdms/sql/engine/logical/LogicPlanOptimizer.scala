@@ -34,7 +34,7 @@
 package org.gdms.sql.engine.logical
 
 import org.gdms.sql.engine.operations._
-import org.gdms.sql.evaluator.&
+import org.gdms.sql.evaluator.Evaluators._
 import org.gdms.sql.evaluator.Expression
 
 trait LogicPlanOptimizer { 

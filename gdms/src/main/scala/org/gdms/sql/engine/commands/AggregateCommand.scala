@@ -37,7 +37,7 @@ import org.gdms.sql.evaluator.Expression
 import org.gdms.sql.evaluator.AggregateEvaluator
 import org.gdms.data.values.Value
 import org.gdms.sql.engine.GdmSQLPredef._
-import org.gdms.sql.evaluator._
+import org.gdms.sql.evaluator.Evaluators._
 import org.orbisgis.progress.ProgressMonitor
 import scala.collection.mutable.HashMap
 
