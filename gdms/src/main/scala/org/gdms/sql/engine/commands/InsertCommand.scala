@@ -33,15 +33,12 @@
  */
 package org.gdms.sql.engine.commands
 
-import org.gdms.data.DataSource
-import org.gdms.data.DataSourceFactory
-import org.gdms.data.types.Type
-import org.gdms.data.types.TypeFactory
+import org.gdms.data.{DataSource, DataSourceFactory}
+import org.gdms.data.types.{Type, TypeFactory}
 import org.gdms.data.schema.DefaultMetadata
 import org.gdms.data.types.IncompatibleTypesException
 import org.gdms.sql.engine.SemanticException
-import org.gdms.data.values.Value
-import org.gdms.data.values.ValueFactory
+import org.gdms.data.values.{Value, ValueFactory}
 import org.gdms.driver.memory.MemoryDataSetDriver
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.orbisgis.progress.ProgressMonitor

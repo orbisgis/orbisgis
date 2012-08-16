@@ -34,7 +34,7 @@
 package org.gdms.sql.engine.commands.ddl
 
 import org.gdms.data.sql.SQLSourceDefinition
-import org.gdms.sql.engine.SQLStatement
+import org.gdms.sql.engine.{SQLStatement, SemanticException}
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands.Command
 import org.gdms.sql.engine.commands.OutputCommand

@@ -34,7 +34,7 @@
 
 package org.gdms.driver.geojson
 
-import com.fasterxml.jackson.core.{JsonFactory, JsonParser, JsonEncoding}
+import com.fasterxml.jackson.core.{JsonFactory, JsonEncoding}
 import java.io.File
 import org.gdms.data.DataSourceFactory
 import org.gdms.data.schema.{DefaultMetadata, DefaultSchema, MetadataUtilities}
@@ -53,7 +53,7 @@ class GeoJsonExporter extends FileExporter with Writer {
   // internal usefull stuff
   private var file: File = _
   private val metadata = new DefaultMetadata()
-  private lazy val jsonFactory = loadJsonFactory
+  private lazy val jsonFactory = new JsonFactory
   
 
   // constant values for Exporter
@@ -88,13 +88,4 @@ class GeoJsonExporter extends FileExporter with Writer {
   def setFile(f: File) {file = f}
     
   def setDataSourceFactory(dsf: DataSourceFactory) {}
-  
-  private def loadJsonFactory: JsonFactory = {
-    import JsonParser.Feature._
-    
-    (new JsonFactory)
-    .configure(ALLOW_COMMENTS, true)
-    .configure(ALLOW_SINGLE_QUOTES, true)
-    .configure(ALLOW_NON_NUMERIC_NUMBERS, true)
-  }
 }

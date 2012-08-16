@@ -33,8 +33,7 @@
  */
 package org.gdms.sql.evaluator
 
-import org.gdms.data.schema.DefaultMetadata
-import org.gdms.data.schema.Metadata
+import org.gdms.data.schema.{DefaultMetadata, Metadata}
 import org.gdms.data.values.Value
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.operations.Operation

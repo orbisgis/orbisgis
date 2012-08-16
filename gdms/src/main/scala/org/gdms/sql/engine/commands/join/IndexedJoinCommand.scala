@@ -36,13 +36,11 @@ package org.gdms.sql.engine.commands.join
 
 import org.gdms.data.indexes.ExpressionBasedAlphaQuery
 import org.gdms.data.schema.DefaultMetadata
-import org.gdms.data.types.Type
-import org.gdms.data.types.TypeFactory
+import org.gdms.data.types.{Type, TypeFactory}
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.commands.Row
 import org.gdms.sql.engine.SemanticException
-import org.gdms.sql.engine.commands.Command
-import org.gdms.sql.engine.commands.ExpressionCommand
+import org.gdms.sql.engine.commands.{Command, ExpressionCommand}
 import org.gdms.sql.engine.commands.scan.IndexQueryScanCommand
 import org.gdms.sql.engine.commands.SQLMetadata
 import org.gdms.sql.evaluator.Expression

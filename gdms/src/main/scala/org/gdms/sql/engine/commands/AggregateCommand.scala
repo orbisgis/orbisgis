@@ -33,8 +33,7 @@
  */
 package org.gdms.sql.engine.commands
 
-import org.gdms.sql.evaluator.Expression
-import org.gdms.sql.evaluator.AggregateEvaluator
+import org.gdms.sql.evaluator.{Expression, AggregateEvaluator}
 import org.gdms.data.values.Value
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.evaluator.Evaluators._

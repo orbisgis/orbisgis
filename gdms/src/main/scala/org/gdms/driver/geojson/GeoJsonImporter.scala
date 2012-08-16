@@ -36,7 +36,6 @@ package org.gdms.driver.geojson
 
 import com.fasterxml.jackson.core.JsonFactory
 import com.fasterxml.jackson.core.JsonParser
-import com.vividsolutions.jts.geom.GeometryFactory
 import java.io.File
 import org.gdms.data.DataSourceFactory
 import org.gdms.data.schema.DefaultMetadata

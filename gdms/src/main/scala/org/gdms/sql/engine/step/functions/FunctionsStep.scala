@@ -35,8 +35,7 @@ package org.gdms.sql.engine.step.functions
 
 import java.util.Properties
 import org.gdms.data.DataSourceFactory
-import org.gdms.sql.engine.AbstractEngineStep
-import org.gdms.sql.engine.SemanticException
+import org.gdms.sql.engine.{AbstractEngineStep, SemanticException}
 import org.gdms.sql.engine.operations._
 import org.gdms.sql.evaluator.{Expression, FieldEvaluator, FunctionEvaluator, AggregateEvaluator}
 import org.gdms.sql.evaluator.Evaluators._

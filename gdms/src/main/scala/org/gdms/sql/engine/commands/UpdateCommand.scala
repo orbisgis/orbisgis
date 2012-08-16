@@ -38,13 +38,10 @@ import org.gdms.sql.engine.commands.scan.ScanCommand
 import org.gdms.sql.evaluator.Expression
 import org.gdms.data.DataSource
 import org.gdms.data.schema.DefaultMetadata
-import org.gdms.data.types.IncompatibleTypesException
-import org.gdms.data.types.Type
-import org.gdms.data.types.TypeFactory
+import org.gdms.data.types.{IncompatibleTypesException, Type, TypeFactory}
 import org.gdms.data.values.ValueFactory
 import org.gdms.driver.memory.MemoryDataSetDriver
 import org.gdms.sql.engine.GdmSQLPredef._
-import org.gdms.sql.evaluator.Field
 import org.orbisgis.progress.ProgressMonitor
 
 /**

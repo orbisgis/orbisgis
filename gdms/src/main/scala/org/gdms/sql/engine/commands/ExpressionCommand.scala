@@ -33,8 +33,7 @@
  */
 package org.gdms.sql.engine.commands
 
-import org.gdms.sql.evaluator.Expression
-import org.gdms.sql.evaluator.FieldEvaluator
+import org.gdms.sql.evaluator.{Expression, FieldEvaluator}
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.evaluator.DsfEvaluator
 import org.gdms.sql.engine.GdmSQLPredef._

@@ -38,10 +38,8 @@ import org.gdms.data.schema.Metadata
 import org.gdms.data.types.Type
 import org.gdms.driver.DataSet
 import org.gdms.sql.engine.commands._
-import org.gdms.sql.evaluator.CastEvaluator
-import org.gdms.sql.evaluator.Expression
-import org.gdms.sql.function.FunctionValidator
-import org.gdms.sql.function.ScalarArgument
+import org.gdms.sql.evaluator.{CastEvaluator, Expression}
+import org.gdms.sql.function.{FunctionValidator, ScalarArgument}
 import org.gdms.sql.function.table.TableFunction
 import org.orbisgis.progress.NullProgressMonitor
 import org.gdms.sql.engine.GdmSQLPredef._

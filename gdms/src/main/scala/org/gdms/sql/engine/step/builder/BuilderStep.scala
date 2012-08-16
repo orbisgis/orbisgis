@@ -44,8 +44,7 @@ import org.gdms.sql.engine.commands.scan._
 import org.gdms.sql.engine.operations._
 import org.gdms.sql.engine.step.functions.FunctionsStep
 import org.gdms.sql.engine.step.physicalJoin.PhysicalJoinOptimStep
-import org.gdms.sql.evaluator.Expression
-import org.gdms.sql.evaluator.QueryEvaluator
+import org.gdms.sql.evaluator.{Expression, QueryEvaluator}
 
 /**
  * Step P2: Building of the command tree

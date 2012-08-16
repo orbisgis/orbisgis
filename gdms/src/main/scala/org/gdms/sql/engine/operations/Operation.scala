@@ -34,7 +34,6 @@
 package org.gdms.sql.engine.operations
 
 import org.gdms.sql.function.table.TableFunction
-import util.control.Breaks._
 import org.gdms.data.indexes.IndexQuery
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.evaluator.Expression
@@ -234,17 +233,13 @@ case class Output(var child: Operation) extends Operation {
 
   def hasDuplicates(seq: Seq[String]): Boolean = {
     val h = collection.mutable.HashSet[String]()
-    var ret = false
-    breakable {
-      for (x <- seq) {
-        if (h(x)) {
-          ret = true; break
-        } else {
-          h+=x
-        }
-      }
+    var size = 0
+    for (x <- seq) {
+      size = size + 1
+      h.add(x)
     }
-    ret
+    
+    h.size != size
   }
   
   override def toString = "Output(" + children +")"
@@ -273,469 +268,469 @@ case class Distinct(var child: Operation) extends Operation {
  * @author Antoine Gourlay
  * @since 0.1
  */
-case class LimitOffset(limit: Int = -1, offset:Int = 0,var child: Operation) extends Operation {
-  def children = List(child)
-  override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+ case class LimitOffset(limit: Int = -1, offset:Int = 0,var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
     
-  override def toString = "LimitOffset lim=" + limit + " offset=" + offset + "of(" + children + ")"
-  def duplicate: LimitOffset = LimitOffset(limit, offset, child.duplicate)
-}
+    override def toString = "LimitOffset lim=" + limit + " offset=" + offset + "of(" + children + ")"
+    def duplicate: LimitOffset = LimitOffset(limit, offset, child.duplicate)
+  }
 
-/**
- * Reprensents a subquery. Its only child has to be an Output operation.
- *
- * @param alias reprensents a mandatory alias for the resulting 'table'
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class SubQuery(alias: String,var child: Operation) extends Operation {
-  def children = List(child)
-  override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  "SubQuery called(" + alias + ") of(" + children + ")"
-  def duplicate: SubQuery = SubQuery(alias, child.duplicate)
-}
+ /**
+  * Reprensents a subquery. Its only child has to be an Output operation.
+  *
+  * @param alias reprensents a mandatory alias for the resulting 'table'
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class SubQuery(alias: String,var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+    "SubQuery called(" + alias + ") of(" + children + ")"
+    def duplicate: SubQuery = SubQuery(alias, child.duplicate)
+  }
 
-/**
- * Represents a projection with expression evaluation.
- * 
- * Then given expressions are evaluated for each input rows, with an optional alias.
- * 
- * @param exp list of expressions, with an optional alias name for the resulting 'column'
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class Projection(exp: List[(Expression, Option[Either[String, String]])],var child: Operation) 
-extends Operation with ExpressionOperation {
-  def children = List(child)
-  override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def doValidate() = exp foreach (_._1 preValidate)
-  override def toString = "Projection of(" + exp + ") on(" + children + ")"
-  def expr = exp map (_._1)
-  def duplicate: Projection = Projection(exp map (a => (a._1.duplicate, a._2)), child.duplicate)
-}
+ /**
+  * Represents a projection with expression evaluation.
+  * 
+  * Then given expressions are evaluated for each input rows, with an optional alias.
+  * 
+  * @param exp list of expressions, with an optional alias name for the resulting 'column'
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class Projection(exp: List[(Expression, Option[Either[String, String]])],var child: Operation) 
+ extends Operation with ExpressionOperation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+    override def doValidate() = exp foreach (_._1 preValidate)
+    override def toString = "Projection of(" + exp + ") on(" + children + ")"
+    def expr = exp map (_._1)
+    def duplicate: Projection = Projection(exp map (a => (a._1.duplicate, a._2)), child.duplicate)
+  }
 
-/**
- * Represents an aggregation of rows.
- * 
- * The AggregateEvaluator objects are evaluated for every input row. Then they are replaced with their aggregate result
- * and the expressions are evaluated and returned as a single row.
- * 
- * @param exp list of expressions, with an optional alias name for the resulting 'column'
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class Aggregate(var exp: List[(Expression, Option[Either[String, String]])],var child: Operation) 
-extends Operation with ExpressionOperation {
-  def children = List(child)
-  override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def doValidate() = exp foreach (_._1 preValidate)
-  override def toString = "Aggregate exp(" + exp + ") on(" + children + ")"
-  def expr = exp map (_._1)
-  def duplicate: Aggregate = Aggregate(exp map (a => (a._1.duplicate, a._2)), child.duplicate)
-}
+ /**
+  * Represents an aggregation of rows.
+  * 
+  * The AggregateEvaluator objects are evaluated for every input row. Then they are replaced with their aggregate result
+  * and the expressions are evaluated and returned as a single row.
+  * 
+  * @param exp list of expressions, with an optional alias name for the resulting 'column'
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class Aggregate(var exp: List[(Expression, Option[Either[String, String]])],var child: Operation) 
+ extends Operation with ExpressionOperation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+    override def doValidate() = exp foreach (_._1 preValidate)
+    override def toString = "Aggregate exp(" + exp + ") on(" + children + ")"
+    def expr = exp map (_._1)
+    def duplicate: Aggregate = Aggregate(exp map (a => (a._1.duplicate, a._2)), child.duplicate)
+  }
 
-/**
- * Represents a filter operation.
- * 
- * For every input row, the given expression is evaluated and acts as the condition for keeping the current row.
- * 
- * @param e an expression whose result must be a SQL tri-state Boolean value.
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class Filter(e: Expression,var child: Operation, having: Boolean = false) extends Operation with ExpressionOperation {
-  def children = List(child)
-  override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def doValidate() = e.preValidate
-  override def toString = "Filter of(" + e + ") on(" + children + ")"
-  def expr = Seq(e)
-  def duplicate: Filter = Filter(e.duplicate, child.duplicate, having)
-}
+ /**
+  * Represents a filter operation.
+  * 
+  * For every input row, the given expression is evaluated and acts as the condition for keeping the current row.
+  * 
+  * @param e an expression whose result must be a SQL tri-state Boolean value.
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class Filter(e: Expression,var child: Operation, having: Boolean = false) extends Operation with ExpressionOperation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+    override def doValidate() = e.preValidate
+    override def toString = "Filter of(" + e + ") on(" + children + ")"
+    def expr = Seq(e)
+    def duplicate: Filter = Filter(e.duplicate, child.duplicate, having)
+  }
 
-/**
- * Represents a sorting operation.
- * 
- * The rows are sorted according to the parameter sequence of expressions, in descending order if the boolean parameter is
- * set to true.
- * No guaranty is made on the specific ordering algorithm nor on it being stable. The method is not guaranteed to be pure,
- * although it does not have any side-effect on the dataset itself.
- * 
- * @param names a list of expressions and orders (false = asc, true = desc) to be sorted against
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class Sort(names: Seq[(Expression, Boolean)],var child: Operation) extends Operation with ExpressionOperation {
-  def children = List(child)
-  override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def doValidate() = names foreach (_._1 preValidate)
-  override def toString = "Sort fields(" + names + ") on(" + children + ")"
-  def expr = names map (_._1)
-  def duplicate: Sort = Sort(names map (a => (a._1.duplicate, a._2)), child.duplicate)
-}
+ /**
+  * Represents a sorting operation.
+  * 
+  * The rows are sorted according to the parameter sequence of expressions, in descending order if the boolean parameter is
+  * set to true.
+  * No guaranty is made on the specific ordering algorithm nor on it being stable. The method is not guaranteed to be pure,
+  * although it does not have any side-effect on the dataset itself.
+  * 
+  * @param names a list of expressions and orders (false = asc, true = desc) to be sorted against
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class Sort(names: Seq[(Expression, Boolean)],var child: Operation) extends Operation with ExpressionOperation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+    override def doValidate() = names foreach (_._1 preValidate)
+    override def toString = "Sort fields(" + names + ") on(" + children + ")"
+    def expr = names map (_._1)
+    def duplicate: Sort = Sort(names map (a => (a._1.duplicate, a._2)), child.duplicate)
+  }
 
-/**
- * Represents a grouping operation.
- * 
- * The input rows are grouped using the result of the evaluation of the parameter sequence of expression.
- * No guaranty is made on the specific grouping method, nor on the ordering within the groups. It is guaranteed however
- * that the groups will always be the same and will use the ordering defined in Gdms for {@link Value} objects.
- * 
- * @param exp a list of expressions whose result are used to group the rows, with an optional alias for each expression
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class Grouping(var exp: List[(Expression, Option[Either[String, String]])],var child: Operation) extends Operation with ExpressionOperation {
-  def children = List(child)
-  override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def doValidate() = exp foreach (_._1 preValidate)
-  override def toString = "Group over(" + exp + ") on(" + children + ")"
-  def expr = exp map (_._1)
-  def duplicate: Grouping = Grouping(exp map (a => (a._1.duplicate, a._2)), child.duplicate)
-}
+ /**
+  * Represents a grouping operation.
+  * 
+  * The input rows are grouped using the result of the evaluation of the parameter sequence of expression.
+  * No guaranty is made on the specific grouping method, nor on the ordering within the groups. It is guaranteed however
+  * that the groups will always be the same and will use the ordering defined in Gdms for {@link Value} objects.
+  * 
+  * @param exp a list of expressions whose result are used to group the rows, with an optional alias for each expression
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class Grouping(var exp: List[(Expression, Option[Either[String, String]])],var child: Operation) extends Operation with ExpressionOperation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+    override def doValidate() = exp foreach (_._1 preValidate)
+    override def toString = "Group over(" + exp + ") on(" + children + ")"
+    def expr = exp map (_._1)
+    def duplicate: Grouping = Grouping(exp map (a => (a._1.duplicate, a._2)), child.duplicate)
+  }
 
-/**
- * Represents a join operation.
- * 
- * @param joinType the type of the join on the child operations.
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class Join(var joinType: JoinType, var left: Operation,var right: Operation) extends Operation
-                                                                                     with ExpressionOperation {
-  def children = List(left, right)
-  override def children_=(o: List[Operation]) = {o match {
-      case a :: b :: Nil => left = a; right = b;
-      case _ => throw new IllegalArgumentException("Needs two children extactly.")
-    }}
-  override def toString = "Join type(" + joinType + ") on(" + children + ")"
-  def expr = {
-    joinType match {
-      case OuterLeft(c) => c.toSeq
-      case OuterFull(c) => c.toSeq
-      case Inner(c,_,_) => Seq(c)
+ /**
+  * Represents a join operation.
+  * 
+  * @param joinType the type of the join on the child operations.
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class Join(var joinType: JoinType, var left: Operation,var right: Operation) extends Operation
+                                                                                      with ExpressionOperation {
+    def children = List(left, right)
+    override def children_=(o: List[Operation]) = {o match {
+        case a :: b :: Nil => left = a; right = b;
+        case _ => throw new IllegalArgumentException("Needs two children extactly.")
+      }}
+    override def toString = "Join type(" + joinType + ") on(" + children + ")"
+    def expr = {
+      joinType match {
+        case OuterLeft(c) => c.toSeq
+        case OuterFull(c) => c.toSeq
+        case Inner(c,_,_) => Seq(c)
+        case _ => Nil
+      }
+    }
+    def duplicate: Join = Join(joinType.duplicate, left.duplicate, right.duplicate)
+  }
+
+
+ /**
+  * Represents an Union of two Select instructions.
+  * 
+  * @author Antoine Gourlay
+  * @since 0.3
+  */
+ case class Union(var left: Operation,var right: Operation) extends Operation {
+    def children = List(left, right)
+    override def children_=(o: List[Operation]) = {o match {
+        case a :: b :: Nil => left = a; right = b;
+        case _ => throw new IllegalArgumentException("Needs two children extactly.")
+      }}
+    override def toString = "Union of (" + children + ")"
+    def duplicate: Union = Union(left.duplicate, right.duplicate)
+  }
+
+ /**
+  * Represents an Update instruction.
+  * 
+  * For every input row, the parameter expressions are evaluated and the results are attributed to the given column names.
+  * 
+  * @param exp a list of columns and expressions which results set the new values of the columns.
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class Update(exp: Seq[(String, Expression)],var child: Operation) extends Operation with ExpressionOperation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+    override def doValidate() = exp foreach (_._2 preValidate)
+    override def toString = "Update exp(" + exp + ") on (" + children + ")"
+    def expr = exp map (_._2)
+    def duplicate: Update = Update(exp map (a => (a._1, a._2.duplicate)), child.duplicate)
+  }
+
+ /**
+  * Represents a insert into a table. Values to insert are taken from the child command.
+  * 
+  * @param table the table that has to be updated
+  * @author Antoine Gourlay
+  * @since 0.3
+  */
+ case class Insert(table: String, fields: Option[Seq[String]], var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+    override def toString = "Insert into(" + table + ") from (" + child + ")"
+    def duplicate: Insert = Insert(table, fields, child.duplicate)
+  }
+
+ /**
+  * Represents a deletion operation.
+  * 
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class Delete(var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+    override def toString = "Deletes on(" + children + ")"
+    def duplicate: Delete = Delete(child.duplicate)
+  }
+
+
+ /**
+  * Represents the creation of a table from the results of a query.
+  * 
+  * @param name the name of the resulting table
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class CreateTableAs(name: String,var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+    override def toString = "CreateTableAs name(" + name + ") as(" + children + ")"
+    def duplicate: CreateTableAs = CreateTableAs(name, child.duplicate)
+  }
+
+ /**
+  * Represents the creation of a view from a query.
+  * 
+  * @param name the name of the resulting view
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class CreateView(name: String, sql: String, orReplace: Boolean,var child: Operation) extends Operation {
+    def children = List(child)
+    override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
+    override def toString = "CreateViewAs name(" + name + ", '" + sql + "') as(" + children + ")" +
+    (if (orReplace) " replace" else "")
+    def duplicate: CreateView = CreateView(name, sql, orReplace, child.duplicate)
+  }
+
+
+ /**
+  * Represents the creation of an empty table from some metadata.
+  * 
+  * @param name the name of the resulting table
+  * @param cols a list of column names and types
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class CreateTable(name: String, cols: Seq[(String, String, Seq[ConstraintType])]) extends Operation {
+    def children = Nil
+    override def toString = "CreateTableAs name(" + name + ") as(" + cols + ")"
+    def duplicate: CreateTable = CreateTable(name, cols)
+  }
+
+ /**
+  * Represents an alter instruction.
+  * 
+  * @param name the name of the table to alter.
+  * @param actions the list of actions to make on the table
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class AlterTable(name: String, actions: Seq[AlterElement]) extends Operation with ExpressionOperation {
+    def children = Nil
+    override def toString = "AlterTable name(" + name + ") do(" + actions + ")"
+    def duplicate: AlterTable = AlterTable(name, actions)
+    val expr: Seq[Expression] = actions.flatMap {
+      case AlterTypeOfColumn(_,_,ex) => ex
       case _ => Nil
     }
   }
-  def duplicate: Join = Join(joinType.duplicate, left.duplicate, right.duplicate)
-}
 
 
-/**
- * Represents an Union of two Select instructions.
- * 
- * @author Antoine Gourlay
- * @since 0.3
- */
-case class Union(var left: Operation,var right: Operation) extends Operation {
-  def children = List(left, right)
-  override def children_=(o: List[Operation]) = {o match {
-      case a :: b :: Nil => left = a; right = b;
-      case _ => throw new IllegalArgumentException("Needs two children extactly.")
-    }}
-  override def toString = "Union of (" + children + ")"
-  def duplicate: Union = Union(left.duplicate, right.duplicate)
-}
-
-/**
- * Represents an Update instruction.
- * 
- * For every input row, the parameter expressions are evaluated and the results are attributed to the given column names.
- * 
- * @param exp a list of columns and expressions which results set the new values of the columns.
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class Update(exp: Seq[(String, Expression)],var child: Operation) extends Operation with ExpressionOperation {
-  def children = List(child)
-  override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def doValidate() = exp foreach (_._2 preValidate)
-  override def toString = "Update exp(" + exp + ") on (" + children + ")"
-  def expr = exp map (_._2)
-  def duplicate: Update = Update(exp map (a => (a._1, a._2.duplicate)), child.duplicate)
-}
-
-/**
- * Represents a insert into a table. Values to insert are taken from the child command.
- * 
- * @param table the table that has to be updated
- * @author Antoine Gourlay
- * @since 0.3
- */
-case class Insert(table: String, fields: Option[Seq[String]], var child: Operation) extends Operation {
-  def children = List(child)
-  override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def toString = "Insert into(" + table + ") from (" + child + ")"
-  def duplicate: Insert = Insert(table, fields, child.duplicate)
-}
-
-/**
- * Represents a deletion operation.
- * 
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class Delete(var child: Operation) extends Operation {
-  def children = List(child)
-  override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def toString = "Deletes on(" + children + ")"
-  def duplicate: Delete = Delete(child.duplicate)
-}
-
-
-/**
- * Represents the creation of a table from the results of a query.
- * 
- * @param name the name of the resulting table
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class CreateTableAs(name: String,var child: Operation) extends Operation {
-  def children = List(child)
-  override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def toString = "CreateTableAs name(" + name + ") as(" + children + ")"
-  def duplicate: CreateTableAs = CreateTableAs(name, child.duplicate)
-}
-
-/**
- * Represents the creation of a view from a query.
- * 
- * @param name the name of the resulting view
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class CreateView(name: String, sql: String, orReplace: Boolean,var child: Operation) extends Operation {
-  def children = List(child)
-  override def children_=(o: List[Operation]) = {o.headOption.map(child = _)}
-  override def toString = "CreateViewAs name(" + name + ", '" + sql + "') as(" + children + ")" +
-  (if (orReplace) " replace" else "")
-  def duplicate: CreateView = CreateView(name, sql, orReplace, child.duplicate)
-}
-
-
-/**
- * Represents the creation of an empty table from some metadata.
- * 
- * @param name the name of the resulting table
- * @param cols a list of column names and types
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class CreateTable(name: String, cols: Seq[(String, String, Seq[ConstraintType])]) extends Operation {
-  def children = Nil
-  override def toString = "CreateTableAs name(" + name + ") as(" + cols + ")"
-  def duplicate: CreateTable = CreateTable(name, cols)
-}
-
-/**
- * Represents an alter instruction.
- * 
- * @param name the name of the table to alter.
- * @param actions the list of actions to make on the table
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class AlterTable(name: String, actions: Seq[AlterElement]) extends Operation with ExpressionOperation {
-  def children = Nil
-  override def toString = "AlterTable name(" + name + ") do(" + actions + ")"
-  def duplicate: AlterTable = AlterTable(name, actions)
-  val expr: Seq[Expression] = actions.flatMap {
-    case AlterTypeOfColumn(_,_,ex) => ex
-    case _ => Nil
+ /**
+  * Represents an ALTER TABLE .. RENAME TO .. instruction.
+  * 
+  * @param name the name of the table to alter.
+  * @param newname the new name of the table
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class RenameTable(name: String, newname: String) extends Operation {
+    def children = Nil
+    override def toString = "RenameTable name(" + name + ") newname(" + newname + ")"
+    def duplicate: RenameTable = RenameTable(name, newname)
   }
-}
 
-
-/**
- * Represents an ALTER TABLE .. RENAME TO .. instruction.
- * 
- * @param name the name of the table to alter.
- * @param newname the new name of the table
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class RenameTable(name: String, newname: String) extends Operation {
-  def children = Nil
-  override def toString = "RenameTable name(" + name + ") newname(" + newname + ")"
-  def duplicate: RenameTable = RenameTable(name, newname)
-}
-
-/**
- * Represents a drop instruction, i.e. unregisters tables
- * 
- * @param names a list of names of tables to drop
- * @param ifExists true if no error should be thrown in the case of a non-existent table
- * @param purge true if the tables are to be physically deleted, not just unregistered
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class DropTables(names: Seq[String], ifExists: Boolean, purge: Boolean) extends Operation {
-  def children = Nil
-  override def toString = "DropTables names(" + names + ") ifExists=" + ifExists + " purge=" + purge
-  def duplicate: DropTables = DropTables(names, ifExists, purge)
-}
+ /**
+  * Represents a drop instruction, i.e. unregisters tables
+  * 
+  * @param names a list of names of tables to drop
+  * @param ifExists true if no error should be thrown in the case of a non-existent table
+  * @param purge true if the tables are to be physically deleted, not just unregistered
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class DropTables(names: Seq[String], ifExists: Boolean, purge: Boolean) extends Operation {
+    def children = Nil
+    override def toString = "DropTables names(" + names + ") ifExists=" + ifExists + " purge=" + purge
+    def duplicate: DropTables = DropTables(names, ifExists, purge)
+  }
   
-/**
- * Represents a drop instruction, i.e. unregisters whole schemas (with sub-tables)
- * 
- * @param names a list of names of tables to drop
- * @param ifExists true if no error should be thrown in the case of a non-existent table
- * @param purge true if the tables are to be physically deleted, not just unregistered
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class DropSchemas(names: Seq[String], ifExists: Boolean, purge: Boolean) extends Operation {
-  def children = Nil
-  override def toString = "DropSchemas names(" + names + ") ifExists=" + ifExists + " purge=" + purge
-  def duplicate: DropSchemas = DropSchemas(names, ifExists, purge)
-}
+ /**
+  * Represents a drop instruction, i.e. unregisters whole schemas (with sub-tables)
+  * 
+  * @param names a list of names of tables to drop
+  * @param ifExists true if no error should be thrown in the case of a non-existent table
+  * @param purge true if the tables are to be physically deleted, not just unregistered
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class DropSchemas(names: Seq[String], ifExists: Boolean, purge: Boolean) extends Operation {
+    def children = Nil
+    override def toString = "DropSchemas names(" + names + ") ifExists=" + ifExists + " purge=" + purge
+    def duplicate: DropSchemas = DropSchemas(names, ifExists, purge)
+  }
 
-/**
- * Represents a drop view instruction, i.e. unregisters views
- * 
- * @param names a list of names of views to drop
- * @param ifExists true if no error should be thrown in the case of a non-existent table
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class DropViews(names: Seq[String], ifExists: Boolean) extends Operation {
-  def children = Nil
-  override def toString = "DropViews names(" + names + ") ifExists=" + ifExists
-  def duplicate: DropViews = DropViews(names, ifExists)
-}
+ /**
+  * Represents a drop view instruction, i.e. unregisters views
+  * 
+  * @param names a list of names of views to drop
+  * @param ifExists true if no error should be thrown in the case of a non-existent table
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class DropViews(names: Seq[String], ifExists: Boolean) extends Operation {
+    def children = Nil
+    override def toString = "DropViews names(" + names + ") ifExists=" + ifExists
+    def duplicate: DropViews = DropViews(names, ifExists)
+  }
 
-/**
- * Represents an index-creation instruction.
- * 
- * @param table the name of the table to index
- * @param column the name of the field to index
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class CreateIndex(table: String, columns: Seq[String]) extends Operation {
-  def children = Nil
-  override def toString = "CreateIndex on(" + table + ", " + columns + ")"
-  def duplicate: CreateIndex = CreateIndex(table, columns)
-}
+ /**
+  * Represents an index-creation instruction.
+  * 
+  * @param table the name of the table to index
+  * @param column the name of the field to index
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class CreateIndex(table: String, columns: Seq[String]) extends Operation {
+    def children = Nil
+    override def toString = "CreateIndex on(" + table + ", " + columns + ")"
+    def duplicate: CreateIndex = CreateIndex(table, columns)
+  }
 
-/**
- * Represents an index-deletion instruction.
- * 
- * @param table the name of the table with an index
- * @param column the name of the field whose index is to be removed
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class DropIndex(table: String, columns: Seq[String]) extends Operation {
-  def children = Nil
-  override def toString = "DropIndex on(" + table + ", " + columns + ")"
-  def duplicate: DropIndex = DropIndex(table, columns)
-}
+ /**
+  * Represents an index-deletion instruction.
+  * 
+  * @param table the name of the table with an index
+  * @param column the name of the field whose index is to be removed
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class DropIndex(table: String, columns: Seq[String]) extends Operation {
+    def children = Nil
+    override def toString = "DropIndex on(" + table + ", " + columns + ")"
+    def duplicate: DropIndex = DropIndex(table, columns)
+  }
 
-/**
- * Represents a call to a non procedure or ExecutorFunction, i.e. a function that does not return anything.
- * 
- * Parameter expressions can only be constant expressions or operators applied on constant expressions and scalar
- * function calls.
- * 
- * @param name the name of the procedure to call
- * @param params the list of parameter expressions.
- * @author Antoine Gourlay
- * @since 0.1
- */
-case class ExecutorCall(name: String, tables: Seq[Either[String, Operation]], params: Seq[Expression]) extends Operation with ExpressionOperation {
-  def children = tables.flatMap(_.right.toOption).toList
-  override def doValidate() = {
-    params foreach (_ preValidate)
+ /**
+  * Represents a call to a non procedure or ExecutorFunction, i.e. a function that does not return anything.
+  * 
+  * Parameter expressions can only be constant expressions or operators applied on constant expressions and scalar
+  * function calls.
+  * 
+  * @param name the name of the procedure to call
+  * @param params the list of parameter expressions.
+  * @author Antoine Gourlay
+  * @since 0.1
+  */
+ case class ExecutorCall(name: String, tables: Seq[Either[String, Operation]], params: Seq[Expression]) extends Operation with ExpressionOperation {
+    def children = tables.flatMap(_.right.toOption).toList
+    override def doValidate() = {
+      params foreach (_ preValidate)
     
-    def check(e: Expression) {
-      e match {
-        case field(n,_) => throw new SemanticException("No field is allowed in an executor function: found '" + n + "'.")
-        case _ => e.children map (check)
+      def check(e: Expression) {
+        e match {
+          case field(n,_) => throw new SemanticException("No field is allowed in an executor function: found '" + n + "'.")
+          case _ => e.children map (check)
+        }
+      }
+    
+      params map (check)
+    }
+    override def toString = "ExecutorFunction name(" + name + ") " + " params(" + params + ")"
+    def expr = params
+    def duplicate: ExecutorCall = ExecutorCall(name, tables map { 
+        case Right(a) => Right(a.duplicate)
+        case b => b
+      }, params)
+  }
+
+ /**
+  * Represents setting a runtime parameter of the Engine.
+  * 
+  * @param parameter name of the runtime parameter, or None for all values
+  * @param value the value, or None if to use the default value
+  * @author Antoine Gourlay
+  * @since 0.3
+  */
+ case class Set(parameter: Option[String], value: Option[String]) extends Operation {
+    def children = Nil
+    override def toString = "Set '" + parameter + "' TO " + value
+    def duplicate: Set = Set(parameter, value)
+  }
+
+ /**
+  * Represents showing a runtime parameter of the Engine.
+  * 
+  * @param parameter name of the runtime parameter, or None if all must be shown
+  * @author Antoine Gourlay
+  * @since 0.3
+  */
+ case class Show(parameter: Option[String]) extends Operation {
+    def children = Nil
+    override def toString = "Show '" + parameter + "'"
+    def duplicate: Show = Show(parameter)
+  }
+
+ /**
+  * Adds a function to the Gdms funtion manager.
+  * 
+  * @param name name of the function
+  * @param as language specific string describing the function
+  * @param language language name
+  * @param replace true if any existing function must be silently replaced
+  * @author Antoine Gourlay
+  * @since 0.3
+  */
+ case class CreateFunction(name: String, as: String, language: String, replace: Boolean) extends Operation {
+    def children = Nil
+    override def doValidate() = {
+      if (language != "java") {
+        throw new SemanticException("Unknown language: '" + language + "'. The only supported language is 'java'.")
       }
     }
-    
-    params map (check)
+    override def toString = "CreateFunction (" + name + ", " + as + ", " + language + ", replace=" + replace + ")"
+    def duplicate: CreateFunction = CreateFunction(name, as, language, replace)
   }
-  override def toString = "ExecutorFunction name(" + name + ") " + " params(" + params + ")"
-  def expr = params
-  def duplicate: ExecutorCall = ExecutorCall(name, tables map { 
-      case Right(a) => Right(a.duplicate)
-      case b => b
-    }, params)
-}
 
-/**
- * Represents setting a runtime parameter of the Engine.
- * 
- * @param parameter name of the runtime parameter, or None for all values
- * @param value the value, or None if to use the default value
- * @author Antoine Gourlay
- * @since 0.3
- */
-case class Set(parameter: Option[String], value: Option[String]) extends Operation {
-  def children = Nil
-  override def toString = "Set '" + parameter + "' TO " + value
-  def duplicate: Set = Set(parameter, value)
-}
-
-/**
- * Represents showing a runtime parameter of the Engine.
- * 
- * @param parameter name of the runtime parameter, or None if all must be shown
- * @author Antoine Gourlay
- * @since 0.3
- */
-case class Show(parameter: Option[String]) extends Operation {
-  def children = Nil
-  override def toString = "Show '" + parameter + "'"
-  def duplicate: Show = Show(parameter)
-}
-
-/**
- * Adds a function to the Gdms funtion manager.
- * 
- * @param name name of the function
- * @param as language specific string describing the function
- * @param language language name
- * @param replace true if any existing function must be silently replaced
- * @author Antoine Gourlay
- * @since 0.3
- */
-case class CreateFunction(name: String, as: String, language: String, replace: Boolean) extends Operation {
-  def children = Nil
-  override def doValidate() = {
-    if (language != "java") {
-      throw new SemanticException("Unknown language: '" + language + "'. The only supported language is 'java'.")
-    }
+ /**
+  * Removes a function from the Gdms function manager.
+  * 
+  * @param name name of the function
+  * @param ifExists true if no error should be thrown when there is no function with that name
+  * @author Antoine Gourlay
+  * @since 0.3
+  */
+ case class DropFunction(name: String, ifExists: Boolean) extends Operation {
+    def children = Nil
+    override def toString = "DropFunction (" + name + ", ifExists=" + ifExists + ")"
+    def duplicate: DropFunction = DropFunction(name, ifExists)
   }
-  override def toString = "CreateFunction (" + name + ", " + as + ", " + language + ", replace=" + replace + ")"
-  def duplicate: CreateFunction = CreateFunction(name, as, language, replace)
-}
 
-/**
- * Removes a function from the Gdms function manager.
- * 
- * @param name name of the function
- * @param ifExists true if no error should be thrown when there is no function with that name
- * @author Antoine Gourlay
- * @since 0.3
- */
-case class DropFunction(name: String, ifExists: Boolean) extends Operation {
-  def children = Nil
-  override def toString = "DropFunction (" + name + ", ifExists=" + ifExists + ")"
-  def duplicate: DropFunction = DropFunction(name, ifExists)
-}
-
-/**
- * Placeholder operation for a table parameter.
- * 
- * @param name name of the parameter
- * @param alias alias to give to the table
- * @author Antoine Gourlay
- * @since 0.3
- */
-case class ParamTable(name: String, alias: Option[String] = None) extends Operation {
-  def children = Nil
-  override def toString = "ParamTable (" + name + ")"
-  def duplicate: ParamTable = ParamTable(name)
-}
+ /**
+  * Placeholder operation for a table parameter.
+  * 
+  * @param name name of the parameter
+  * @param alias alias to give to the table
+  * @author Antoine Gourlay
+  * @since 0.3
+  */
+ case class ParamTable(name: String, alias: Option[String] = None) extends Operation {
+    def children = Nil
+    override def toString = "ParamTable (" + name + ")"
+    def duplicate: ParamTable = ParamTable(name)
+  }

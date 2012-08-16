@@ -34,8 +34,7 @@
 package org.gdms.sql.engine.commands
 
 import org.gdms.data.schema.DefaultMetadata
-import org.gdms.data.types.IncompatibleTypesException
-import org.gdms.data.types.TypeFactory
+import org.gdms.data.types.{IncompatibleTypesException, TypeFactory}
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.SemanticException
 import org.orbisgis.progress.ProgressMonitor

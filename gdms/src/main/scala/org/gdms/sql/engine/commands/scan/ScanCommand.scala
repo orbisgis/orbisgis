@@ -33,7 +33,7 @@
  */
 package org.gdms.sql.engine.commands.scan
 
-import org.gdms.data.DataSource
+import org.gdms.data.{DataSource, DataSourceFactory}
 import org.gdms.data.DataSourceFactory
 import org.gdms.data.schema.Metadata
 import org.gdms.sql.engine.commands._

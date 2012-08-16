@@ -36,15 +36,10 @@ package org.gdms.sql.engine.step.parsing
 import java.io.ByteArrayInputStream
 import java.io.IOException
 import java.util.Properties
-import org.antlr.runtime.CommonTokenStream
-import org.antlr.runtime.MismatchedTokenException
-import org.antlr.runtime.RecognitionException
+import org.antlr.runtime.{CommonTokenStream, MismatchedTokenException, RecognitionException}
 import org.antlr.runtime.tree.CommonTree
-import org.gdms.sql.engine.ANTLRCaseInsensitiveInputStream
-import org.gdms.sql.engine.AbstractEngineStep
-import org.gdms.sql.engine.ParseException
-import org.gdms.sql.parser.GdmSQLLexer
-import org.gdms.sql.parser.GdmSQLParser
+import org.gdms.sql.engine.{AbstractEngineStep, ANTLRCaseInsensitiveInputStream, ParseException}
+import org.gdms.sql.parser.{GdmSQLLexer, GdmSQLParser}
 
 /**
  * Step 1: The very first step of the SQL interpreter.

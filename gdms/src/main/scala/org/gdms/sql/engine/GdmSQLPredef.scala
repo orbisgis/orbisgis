@@ -37,8 +37,7 @@ import java.util.Properties
 import org.gdms.data.schema.Metadata
 import scala.collection.mutable.ArrayOps
 import org.gdms.data.values.Value
-import org.gdms.sql.engine.commands.Row
-import org.gdms.sql.engine.commands.SQLMetadata
+import org.gdms.sql.engine.commands.{Row, SQLMetadata}
 
 /**
  * Holds all the predefined implicits and values for use in GdmSQL

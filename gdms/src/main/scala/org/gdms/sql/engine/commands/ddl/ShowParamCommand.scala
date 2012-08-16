@@ -35,8 +35,7 @@ package org.gdms.sql.engine.commands.ddl
 
 import collection.JavaConversions._
 import org.gdms.data.schema.DefaultMetadata
-import org.gdms.data.types.Type
-import org.gdms.data.types.TypeFactory
+import org.gdms.data.types.{Type, TypeFactory}
 import org.gdms.data.values.ValueFactory
 import org.gdms.driver.memory.MemoryDataSetDriver
 import org.gdms.sql.engine.GdmSQLPredef._

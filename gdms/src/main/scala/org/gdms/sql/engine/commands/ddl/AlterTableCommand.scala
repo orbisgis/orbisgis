@@ -33,11 +33,8 @@
  */
 package org.gdms.sql.engine.commands.ddl
 
-import org.gdms.data.DataSource
-import org.gdms.data.DataSourceFactory
-import org.gdms.data.NoSuchTableException
-import org.gdms.data.types.IncompatibleTypesException
-import org.gdms.data.types.TypeFactory
+import org.gdms.data.{DataSource, DataSourceFactory, NoSuchTableException}
+import org.gdms.data.types.{IncompatibleTypesException, TypeFactory}
 import org.gdms.data.values.SQLValueFactory
 import org.gdms.sql.engine.SemanticException
 import org.gdms.sql.engine.commands._

@@ -33,11 +33,9 @@
  */
 package org.gdms.sql.engine.commands.join
 
-import org.gdms.sql.engine.commands.Command
-import org.gdms.sql.engine.commands.Row
+import org.gdms.sql.engine.commands.{Command, Row}
 import org.gdms.sql.evaluator.Expression
-import org.gdms.data.values.Value
-import org.gdms.data.values.ValueFactory
+import org.gdms.data.values.{Value, ValueFactory}
 import org.gdms.sql.engine.GdmSQLPredef._
 
 /**

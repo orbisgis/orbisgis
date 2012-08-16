@@ -33,14 +33,12 @@
  */
 package org.gdms.sql.engine.commands.scan
 
-import org.gdms.data.DataSource
-import org.gdms.data.DataSourceFactory
+import org.gdms.data.{DataSource, DataSourceFactory}
 import org.gdms.data.indexes.IndexQuery
 import org.gdms.data.schema.Metadata
 import org.gdms.sql.engine.commands._
 import org.gdms.sql.engine.GdmSQLPredef._
-import org.orbisgis.progress.NullProgressMonitor
-import org.orbisgis.progress.ProgressMonitor
+import org.orbisgis.progress.{NullProgressMonitor, ProgressMonitor}
 
 /**
  * Scan command based on an index query.

@@ -37,13 +37,8 @@ import org.gdms.data.DataSource
 import org.gdms.data.schema.Metadata
 import org.gdms.data.types.Type
 import org.gdms.sql.engine.SemanticException
-import org.gdms.sql.evaluator.CastEvaluator
-import org.gdms.sql.evaluator.Expression
-import org.gdms.sql.function.AggregateFunction
-import org.gdms.sql.function.FunctionException
-import org.gdms.sql.function.FunctionValidator
-import org.gdms.sql.function.ScalarArgument
-import org.gdms.sql.function.ScalarFunction
+import org.gdms.sql.evaluator.{CastEvaluator, Expression}
+import org.gdms.sql.function._
 import org.gdms.sql.function.executor.ExecutorFunction
 import org.gdms.sql.function.table.TableFunction
 import org.orbisgis.progress.NullProgressMonitor

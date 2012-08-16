@@ -33,9 +33,7 @@
  */
 package org.gdms.sql.engine.commands
 
-import org.gdms.data.types.IncompatibleTypesException
-import org.gdms.data.types.Type
-import org.gdms.data.types.TypeFactory
+import org.gdms.data.types.{IncompatibleTypesException, Type, TypeFactory}
 import org.gdms.sql.engine.GdmSQLPredef._
 import collection.JavaConversions._
 import org.gdms.sql.evaluator.Expression
