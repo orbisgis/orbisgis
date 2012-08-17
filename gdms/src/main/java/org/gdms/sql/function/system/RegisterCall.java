@@ -35,9 +35,9 @@ package org.gdms.sql.function.system;
 
 import java.io.File;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.utils.FileUtils;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SourceAlreadyExistsException;
@@ -69,7 +69,7 @@ public final class RegisterCall extends AbstractExecutorFunction {
                                         throw new FunctionException("The specified file does not exist! "
                                                 + "Path: " + file.getAbsolutePath());
                                 }
-                                String name = FileUtils.getFileNameWithoutExtensionU(file);
+                                String name = FilenameUtils.removeExtension(file.getName());
                                 sourceManager.register(name, file);
                         } else if (values.length == 2) {
                                 final String name = values[1].toString();

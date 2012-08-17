@@ -239,9 +239,9 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                 File inSHX = FileUtils.getFileWithExtension(in, "shx");
                 File outDBF = FileUtils.getFileWithExtension(out, "dbf");
                 File outSHX = FileUtils.getFileWithExtension(out, "shx");
-                FileUtils.copy(inDBF, outDBF);
-                FileUtils.copy(inSHX, outSHX);
-                FileUtils.copy(in, out);
+                org.apache.commons.io.FileUtils.copyFile(inDBF, outDBF);
+                org.apache.commons.io.FileUtils.copyFile(inSHX, outSHX);
+                org.apache.commons.io.FileUtils.copyFile(in, out);
         }
 
         private static Geometry convertGeometry(Geometry geom, ShapeType type)

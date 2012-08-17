@@ -73,6 +73,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
+import org.apache.commons.io.FilenameUtils;
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
@@ -100,7 +101,6 @@ import org.orbisgis.core.ui.plugins.views.geocatalog.filters.WMSFilter;
 import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.SourceRenderer;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.utils.CollectionUtils;
-import org.orbisgis.utils.FileUtils;
 import org.orbisgis.utils.I18N;
 
 public class Catalog extends JPanel implements DragGestureListener,
@@ -203,7 +203,7 @@ public class Catalog extends JPanel implements DragGestureListener,
                                         // open the file.
                                         if (OrbisConfiguration.isFileEligible(file)) {
                                                 try {
-                                                        String name = sourceManager.getUniqueName(FileUtils.getFileNameWithoutExtensionU(file));
+                                                        String name = sourceManager.getUniqueName(FilenameUtils.removeExtension(file.getName()));
                                                         sourceManager.register(name, file);
                                                 } catch (SourceAlreadyExistsException e) {
                                                         ErrorMessages.error(ErrorMessages.SourceAlreadyRegistered

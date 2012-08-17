@@ -37,13 +37,13 @@ import java.io.File;
 import java.io.IOException;
 
 import com.vividsolutions.jts.geom.Envelope;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.grap.model.GeoRaster;
 import org.grap.model.GeoRasterFactory;
 import org.grap.model.RasterMetadata;
 import org.jproj.CoordinateReferenceSystem;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.utils.FileUtils;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;
@@ -90,7 +90,7 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
                         Constraint[] constraints;
                         Constraint dc = new RasterTypeConstraint(geoRaster.getType());
 
-                        File prj = FileUtils.getFileWithExtension(file, "prj");
+                        File prj = org.orbisgis.utils.FileUtils.getFileWithExtension(file, "prj");
                         if (prj != null && prj.exists()) {
                                 crs = dsf.getCrsFactory().createFromPrj(prj);
                                 if (crs != null) {
@@ -129,7 +129,7 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
 
         @Override
         public void copy(File in, File out) throws IOException {
-                FileUtils.copy(in, out);
+                FileUtils.copyFile(in, out);
         }
 
         @Override

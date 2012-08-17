@@ -34,12 +34,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.sif.UIFactory;
 import org.orbisgis.core.workspace.DefaultWorkspace;
 import org.orbisgis.core.workspace.Workspace;
-import org.orbisgis.utils.FileUtils;
 
 public class DefaultSwingWorkspace extends DefaultWorkspace implements
 		Workspace {
@@ -56,7 +56,7 @@ public class DefaultSwingWorkspace extends DefaultWorkspace implements
 			File defaultWorkspace = getDefaultWorkspaceFile();
 			if (defaultWorkspace.exists()) {
 				if (clean) {
-					FileUtils.deleteDir(new File(getWorkspaceFolder()));
+					FileUtils.deleteDirectory(new File(getWorkspaceFolder()));
 				} else {
 					readCurrentworkspace(defaultWorkspace);
 					setWorkspaceFolder(workspaceFolder.getAbsolutePath());

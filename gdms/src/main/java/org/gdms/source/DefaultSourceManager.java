@@ -52,10 +52,10 @@ import java.util.regex.Pattern;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.utils.FileUtils;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreation;
@@ -921,7 +921,7 @@ public final class DefaultSourceManager implements SourceManager {
                                 continue;
                         }
                         try {
-                                FileUtils.copy(file, new File(newDirectory, file.getName()));
+                                FileUtils.copyFile(file, new File(newDirectory, file.getName()));
                         } catch (IOException e) {
                                 throw new DriverException(e);
                         }
@@ -1012,7 +1012,7 @@ public final class DefaultSourceManager implements SourceManager {
                         String tempPath = getSourceInfoDirectory().getAbsolutePath()
                                 + File.separator + SPATIAL_REF_TABLE_SYSTEM_PATH;
                         try {
-                                FileUtils.copy(in, new File(tempPath));
+                                FileUtils.copyInputStreamToFile(in, new File(tempPath));
                                 register(SPATIAL_REF_SYSTEM, new SystemSourceDefinition(
                                         new SystemSource(new File(tempPath))));
                         } catch (IOException e) {

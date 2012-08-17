@@ -39,10 +39,11 @@ import java.sql.DriverManager;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.junit.After;
 import org.junit.BeforeClass;
-import org.orbisgis.utils.FileUtils;
 
 import static org.gdms.TestResourceHandler.*;
 
@@ -171,10 +172,7 @@ public abstract class TestBase {
                         sm.removeAll();
                         dsf.freeResources();
 
-                        if (!FileUtils.deleteDir(dsf.getResultDir().getParentFile())) {
-                                LOG.warn("Failed to cleanup after test");
-                        }
-
+                        FileUtils.deleteDirectory(dsf.getResultDir().getParentFile());
                 }
         }
 
@@ -290,13 +288,13 @@ public abstract class TestBase {
                 File p = dsf.getResultDir().getParentFile();
                 File dest = File.createTempFile("temp", f.getName(), p);
                 dest.delete();
-                if (f.getName().toLowerCase().endsWith(".shp")) {
-                        String destbase = FileUtils.getFileNameWithoutExtensionU(dest);
-                        FileUtils.copy(FileUtils.getFileWithExtension(f, "dbf"), new File(dest.getParent(), destbase + ".dbf"));
-                        FileUtils.copy(FileUtils.getFileWithExtension(f, "shx"), new File(dest.getParent(), destbase + ".shx"));
+                if (FilenameUtils.isExtension(f.getName(), "shp")) {
+                        String destbase = FilenameUtils.removeExtension(dest.getName());
+                        FileUtils.copyFile(org.orbisgis.utils.FileUtils.getFileWithExtension(f, "dbf"), new File(dest.getParent(), destbase + ".dbf"));
+                        FileUtils.copyFile(org.orbisgis.utils.FileUtils.getFileWithExtension(f, "shx"), new File(dest.getParent(), destbase + ".shx"));
                 }
 
-                FileUtils.copy(f, dest);
+                FileUtils.copyFile(f, dest);
                 dest.deleteOnExit();
                 return dest;
         }

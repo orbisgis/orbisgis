@@ -32,6 +32,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
+import org.apache.commons.io.FilenameUtils;
 import org.gdms.source.SourceManager;
 import org.grap.model.GeoProcessorType;
 import org.grap.model.GeoRaster;
@@ -47,7 +48,6 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.geocatalog.newSourceWizards.xyzdem.ConvertXYZDEMWizard;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
-import org.orbisgis.utils.FileUtils;
 
 public class ConvertXYZDemGeocatalogPlugIn extends AbstractPlugIn {
 
@@ -72,7 +72,7 @@ public class ConvertXYZDemGeocatalogPlugIn extends AbstractPlugIn {
 				DataManager dm = (DataManager) Services
 						.getService(DataManager.class);
 				SourceManager sourceManager = dm.getSourceManager();
-				String name = FileUtils.getFileNameWithoutExtensionU(outfile);
+				String name = FilenameUtils.removeExtension(outfile.getName());
 				name = sourceManager.getUniqueName(name);
 				sourceManager.register(name, outfile);
 

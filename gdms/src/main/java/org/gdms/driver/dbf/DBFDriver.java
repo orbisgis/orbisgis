@@ -38,9 +38,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.utils.FileUtils;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;
@@ -260,7 +260,7 @@ public final class DBFDriver extends AbstractDataSet implements FileReadWriteDri
 
         @Override
         public void copy(File in, File out) throws IOException {
-                FileUtils.copy(in, out);
+                FileUtils.copyFile(in, out);
         }
 
         private void loadInternalMetadata() throws DriverException {

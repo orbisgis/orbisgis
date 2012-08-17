@@ -57,6 +57,7 @@ package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.io.File;
 
+import org.apache.commons.io.FilenameUtils;
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.DataManager;
@@ -72,7 +73,6 @@ import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.preferences.lookandfeel.OrbisGISIcon;
 import org.orbisgis.core.ui.wizards.OpenGdmsFilePanel;
-import org.orbisgis.utils.FileUtils;
 import org.orbisgis.utils.I18N;
 
 /**
@@ -108,8 +108,8 @@ public class NewGeocatalogFilePlugIn extends AbstractPlugIn {
 							.getService(DataManager.class);
 					SourceManager sourceManager = dm.getSourceManager();
 					try {
-						String name = sourceManager.getUniqueName(FileUtils
-								.getFileNameWithoutExtensionU(file));
+						String name = sourceManager.getUniqueName(
+                                                        FilenameUtils.removeExtension(file.getName()));
 						sourceManager.register(name, file);
 					} catch (SourceAlreadyExistsException e) {
 						ErrorMessages

@@ -36,11 +36,11 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.ApplicationInfo;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.ui.plugins.orbisgisFrame.configuration.PeriodicSaveWorkspace;
-import org.orbisgis.utils.FileUtils;
 
 public class DefaultWorkspace implements Workspace {
 
@@ -122,7 +122,7 @@ public class DefaultWorkspace implements Workspace {
 					.debug("Using workspace "
 							+ workspaceFolder.getAbsolutePath());
 			if (clean) {
-				FileUtils.deleteDir(new File(getWorkspaceFolder()));
+				FileUtils.deleteDirectory(new File(getWorkspaceFolder()));
 			}
 		} catch (IOException ioe) {
 			Services.getErrorManager().error("Error while init workspace", ioe);

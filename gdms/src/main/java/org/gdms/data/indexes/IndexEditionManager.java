@@ -39,9 +39,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.utils.FileUtils;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
@@ -162,7 +162,7 @@ public final class IndexEditionManager {
                                         }
                                         File indexFile = toClone[i].getFile();
                                         File copied = new File(ds.getDataSourceFactory().getTempFile());
-                                        FileUtils.copy(indexFile, copied);
+                                        FileUtils.copyFile(indexFile, copied);
                                         DataSourceIndex cloned = toClone[i].getClass().newInstance();
                                         cloned.setFieldNames(toClone[i].getFieldNames());
                                         cloned.setFile(copied);

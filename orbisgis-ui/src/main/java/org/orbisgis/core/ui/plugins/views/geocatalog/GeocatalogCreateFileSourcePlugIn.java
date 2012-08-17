@@ -30,6 +30,7 @@ package org.orbisgis.core.ui.plugins.views.geocatalog;
 
 import java.io.File;
 
+import org.apache.commons.io.FilenameUtils;
 import org.gdms.data.DataSourceCreation;
 import org.gdms.data.DataSourceDefinition;
 import org.gdms.data.InitializationException;
@@ -54,7 +55,6 @@ import org.orbisgis.core.ui.pluginSystem.workbench.Names;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchContext;
 import org.orbisgis.core.ui.pluginSystem.workbench.WorkbenchFrame;
 import org.orbisgis.core.ui.plugins.views.geocatalog.actions.create.MetadataCreation;
-import org.orbisgis.utils.FileUtils;
 import org.orbisgis.utils.I18N;
 
 public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
@@ -164,7 +164,7 @@ public class GeocatalogCreateFileSourcePlugIn extends AbstractPlugIn {
 					}
 					dsc = new FileSourceCreation(selectedFile, mc.getMetadata());
 					dsd = new FileSourceDefinition(selectedFile, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
-					name = FileUtils.getFileNameWithoutExtensionU(selectedFile);
+					name = FilenameUtils.removeExtension(selectedFile.getName());
 				} else {
 					throw new UnsupportedOperationException(
 							ErrorMessages.NotImplementedYet);

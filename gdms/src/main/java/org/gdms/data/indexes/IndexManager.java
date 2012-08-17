@@ -33,11 +33,8 @@
  */
 package org.gdms.data.indexes;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,10 +43,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.utils.FileUtils;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
@@ -541,26 +538,16 @@ public final class IndexManager {
                                                 BufferedOutputStream out = null;
 
                                                 try {
-                                                        out = new BufferedOutputStream(
-                                                                new FileOutputStream(dest));
-
                                                         dataSourceIndex.save();
                                                         dataSourceIndex.close();
-
-                                                        BufferedInputStream in = null;
-                                                        try {
-                                                                in = new BufferedInputStream(
-                                                                        new FileInputStream(source));
-                                                                FileUtils.copy(in, out);
-                                                        } finally {
-                                                                if (in != null) {
-                                                                        in.close();
-                                                                }
-                                                        }
+                                                        
+                                                        FileUtils.copyFile(source, dest);
 
                                                 } catch (IOException ex) {
+                                                        LOG.warn("Error copying index. Ignoring it.", ex);
                                                         src.deleteProperty(indexProperty);
                                                 } catch (IndexException ex) {
+                                                        LOG.warn("Error closing index. Ignoring it..", ex);
                                                         src.deleteProperty(indexProperty);
                                                 } finally {
                                                         if (out != null) {

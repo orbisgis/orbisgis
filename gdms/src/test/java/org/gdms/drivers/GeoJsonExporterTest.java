@@ -38,9 +38,9 @@ import java.io.FileReader;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonFactory.Feature;
 import com.vividsolutions.jts.geom.GeometryFactory;
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.orbisgis.utils.FileUtils;
 
 import org.gdms.TestResourceHandler;
 import static org.junit.Assert.*;
@@ -67,7 +67,7 @@ public class GeoJsonExporterTest extends TestBase {
                 File f = File.createTempFile("gdms", ".json");
                 sm.exportTo("toto", f);
                 
-                String s = new String(FileUtils.getContent(f));
+                String s = new String(FileUtils.readFileToByteArray(f));
                 String comp = "{\"type\":\"FeatureCollection\",\"features\":[{\"type\":\"Feature\","
                         + "\"geometry\":{\"type\":\"Point\",\"coordinates\":[1.0,2.0,3.0]},"
                         + "\"properties\":{\"id\":42}}]}";

@@ -49,9 +49,9 @@ import java.util.List;
 import au.com.bytecode.opencsv.CSVReader;
 import au.com.bytecode.opencsv.CSVWriter;
 import com.vividsolutions.jts.geom.Geometry;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.utils.FileUtils;
 
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;
@@ -311,7 +311,7 @@ public final class CSVDriver extends AbstractDataSet implements FileReadWriteDri
 
         @Override
         public void copy(File in, File out) throws IOException {
-                FileUtils.copy(in, out);
+                FileUtils.copyFile(in, out);
         }
 
         @Override
