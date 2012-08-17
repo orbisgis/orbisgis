@@ -49,6 +49,9 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+
 /**
  * Contains some utility functions for dealing with files.
  */
@@ -62,7 +65,9 @@ public final class FileUtils {
          * @param sourceDir
          * @param destDir
          * @throws IOException
+         * @deprecated use {@link org.apache.commons.io.FileUtils#copyDirectory(java.io.File, java.io.File) }
          */
+        @Deprecated
         public static void copyDirsRecursively(File sourceDir, File destDir)
                 throws IOException {
                 File[] sourceChildren = sourceDir.listFiles();
@@ -84,7 +89,9 @@ public final class FileUtils {
          *
          * @param file
          * @return true iif the file vas deleted
+         * @deprecated use {@link File#delete() } this method adds nothing to it
          */
+        @Deprecated
         public static boolean deleteFile(File file) {
                 if (file != null && file.exists()) {
                         return file.delete();
@@ -103,10 +110,10 @@ public final class FileUtils {
                 File fileDbf = getFileWithExtension(fileShp, "dbf");
                 File filePrj = getFileWithExtension(fileShp, "prj");
 
-                deleteFile(fileShp);
-                deleteFile(fileShx);
-                deleteFile(fileDbf);
-                deleteFile(filePrj);
+                fileShp.delete();
+                fileShx.delete();
+                fileDbf.delete();
+                filePrj.delete();
         }
 
         /**
@@ -117,7 +124,9 @@ public final class FileUtils {
          * @param dir
          * @return
          *      false is a problem is encountered, true otherwise
+         * @deprecated use {@link org.apache.commons.io.FileUtils#cleanDirectory(java.io.File) }
          */
+        @Deprecated
         public static boolean deleteFileInDir(File dir) {
                 if (dir.isDirectory()) {
                         // we iterate over the children
@@ -155,7 +164,9 @@ public final class FileUtils {
          * @param dir
          * @return
          *      true if successful, false otherwise.
+         * @deprecated use {@link org.apache.commons.io.FileUtils#deleteDirectory(java.io.File) }
          */
+        @Deprecated
         public static boolean deleteDir(File dir) {
                 return deleteFileInDir(dir) && dir.delete();
         }
@@ -168,7 +179,9 @@ public final class FileUtils {
          *          the destination directory.
          * @throws IOException
          *          If destDir does not exist and can't be created.
+         * @deprecated use {@link org.apache.commons.io.FileUtils#copyFileToDirectory(java.io.File, java.io.File) }
          */
+        @Deprecated
         public static void copyFileToDirectory(File file, File destDir)
                 throws IOException {
                 if (!destDir.exists() && !destDir.mkdirs()) {
@@ -186,7 +199,11 @@ public final class FileUtils {
          * @return
          * @throws IOException
          *          If there is a problem while copying the file.
+         * @deprecated use {@link org.apache.commons.io.FileUtils#copyFile(java.io.File, java.io.File) }
+         * or one of the {@link org.apache.commons.io.IOUtils#copy(java.io.InputStream, java.io.OutputStream) }
+         * methods.
          */
+        @Deprecated
         public static long copy(File input, File output) throws IOException {
                 FileInputStream in = null;
                 try {
@@ -207,7 +224,11 @@ public final class FileUtils {
          * @return
          * @throws IOException
          *          If a problem is encountered during the copy.
+         * @deprecated use {@link org.apache.commons.io.FileUtils#copyFile(java.io.File, java.io.File) }
+         * or one of the {@link org.apache.commons.io.IOUtils#copy(java.io.InputStream, java.io.OutputStream) }
+         * methods.
          */
+        @Deprecated
         public static long copy(File input, File output, byte[] copyBuffer)
                 throws IOException {
                 FileInputStream in = null;
@@ -236,7 +257,11 @@ public final class FileUtils {
          * @return
          * @throws IOException
          *      If a probem is encountered during the copy.
+         * @deprecated use {@link org.apache.commons.io.FileUtils#copyFile(java.io.File, java.io.File) }
+         * or one of the {@link org.apache.commons.io.IOUtils#copy(java.io.InputStream, java.io.OutputStream) }
+         * methods.
          */
+        @Deprecated
         public static long copy(InputStream in, File outputFile) throws IOException {
                 FileOutputStream out = null;
                 try {
@@ -256,7 +281,11 @@ public final class FileUtils {
          * @return
          * @throws IOException
          *      If a problem is encountered during the copy.
+         * @deprecated use {@link org.apache.commons.io.FileUtils#copyFile(java.io.File, java.io.File) }
+         * or one of the {@link org.apache.commons.io.IOUtils#copy(java.io.InputStream, java.io.OutputStream) }
+         * methods.
          */
+        @Deprecated
         public static long copy(InputStream in, OutputStream out)
                 throws IOException {
                 byte[] buf = new byte[BUF_SIZE];
@@ -271,7 +300,11 @@ public final class FileUtils {
          * @return
          * @throws IOException
          *      If a problem is encountered during the copy.
+         * @deprecated use {@link org.apache.commons.io.FileUtils#copyFile(java.io.File, java.io.File) }
+         * or one of the {@link org.apache.commons.io.IOUtils#copy(java.io.InputStream, java.io.OutputStream) }
+         * methods.
          */
+        @Deprecated
         public static long copy(InputStream in, OutputStream out, byte[] copyBuffer)
                 throws IOException {
                 long bytesCopied = 0;
@@ -291,7 +324,9 @@ public final class FileUtils {
          * @param file
          * @throws IOException
          *          If a problem is encountered while downloading the file.
+         * @deprecated use {@link org.apache.commons.io.FileUtils#copyURLToFile(java.net.URL, java.io.File, int, int) }
          */
+        @Deprecated
         public static void download(URL url, File file) throws IOException {
                 OutputStream out = null;
                 InputStream in = null;
@@ -435,7 +470,9 @@ public final class FileUtils {
          * @param file
          * @return
          * @throws IOException
+         * @deprecated use {@link org.apache.commons.io.FileUtils#readFileToByteArray(java.io.File) }
          */
+        @Deprecated
         public static byte[] getContent(File file) throws IOException {
                 FileInputStream fis = new FileInputStream(file);
                 return getContent(fis);
@@ -446,7 +483,9 @@ public final class FileUtils {
          * @param fis
          * @return
          * @throws IOException
+         * @deprecated use {@link org.apache.commons.io.IOUtils#toByteArray(java.io.InputStream) }
          */
+        @Deprecated
         public static byte[] getContent(InputStream fis) throws IOException {
                 DataInputStream dis = null;
                 byte[] buffer;
@@ -473,7 +512,7 @@ public final class FileUtils {
          *      if the MD5 algorithm can't be found.
          */
         public static byte[] getMD5(File file) throws IOException, NoSuchAlgorithmException {
-                byte[] content = getContent(file);
+                byte[] content = org.apache.commons.io.FileUtils.readFileToByteArray(file);
                 MessageDigest m = MessageDigest.getInstance("MD5");
                 m.update(content, 0, content.length);
                 return m.digest();
@@ -483,7 +522,9 @@ public final class FileUtils {
          * Transform an array of bytes to a hexadecimal String
          * @param messageDigest
          * @return
+         * @deprecated use {@link org.apache.commons.io.HexDump }
          */
+        @Deprecated
         public static String toHexString(byte[] messageDigest) {
                 StringBuilder hexString = new StringBuilder();
                 for (int i = 0; i < messageDigest.length; i++) {
@@ -498,7 +539,9 @@ public final class FileUtils {
          * @param file
          * @param content
          * @throws IOException
+         * @deprecated use {@link org.apache.commons.io.FileUtils#write(java.io.File, java.lang.CharSequence) }
          */
+        @Deprecated
         public static void setContents(File file, String content)
                 throws IOException {
                 BufferedOutputStream bos = null;
@@ -517,7 +560,9 @@ public final class FileUtils {
          * Get the name of a filie without its extension.
          * @param file
          * @return
+         * @deprecated use {@link org.apache.commons.io.FilenameUtils#removeExtension(java.lang.String) }
          */
+        @Deprecated
         public static String getFileNameWithoutExtensionU(File file) {
                 String name = file.getName();
                 int extensionStart = name.lastIndexOf('.');
@@ -540,7 +585,7 @@ public final class FileUtils {
         public static File getFileWithExtension(File file, final String extension)
                 throws IOException {
                 if (!file.isDirectory()) {
-                        final String ret = FileUtils.getFileNameWithoutExtensionU(file);
+                        final String ret = FilenameUtils.removeExtension(file.getName());
                         File[] files = file.getParentFile().listFiles(new FilenameFilter() {
 
                                 @Override
@@ -580,7 +625,7 @@ public final class FileUtils {
          */
         public static String getNameFromURI(URI u) {
                 if ("file".equalsIgnoreCase(u.getScheme())) {
-                        return getFileNameWithoutExtensionU(new File(u.getPath()));
+                        return FilenameUtils.removeExtension(new File(u.getPath()).getName());
                 } else {
                         String q = u.getQuery();
                         if (q != null && !q.isEmpty()) {
