@@ -33,6 +33,8 @@
  */
 package org.gdms.sql.engine;
 
+import org.gdms.sql.engine.step.parsing.ErrorLocation;
+
 /**
  * This exception denotes that something happened during the parsing of a SQL script.
  *
@@ -41,6 +43,8 @@ package org.gdms.sql.engine;
 public final class ParseException extends Exception {
 
         private static final long serialVersionUID = 7891440179352170045L;
+        
+        private ErrorLocation location;
 
         /**
          * Creates a new instance of
@@ -58,6 +62,11 @@ public final class ParseException extends Exception {
         public ParseException(String msg) {
                 super(msg);
         }
+        
+        public ParseException(String msg, ErrorLocation location) {
+                super(msg);
+                this.location = location;
+        }
 
         public ParseException(Throwable cause) {
                 super(cause);
@@ -65,5 +74,14 @@ public final class ParseException extends Exception {
 
         public ParseException(String message, Throwable cause) {
                 super(message, cause);
+        }
+        
+        public ParseException(String message, ErrorLocation location, Throwable cause) {
+                super(message, cause);
+                this.location = location;
+        }
+
+        public ErrorLocation getLocation() {
+                return location;
         }
 }

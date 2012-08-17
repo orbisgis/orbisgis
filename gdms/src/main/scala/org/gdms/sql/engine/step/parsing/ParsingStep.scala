@@ -61,9 +61,10 @@ case object ParsingStep extends AbstractEngineStep[String, (CommonTree, String)]
       // entry point of the parser
       (parser.start_rule.getTree.asInstanceOf[CommonTree], sql)
     } catch {
-      case e: RecognitionException => throw new ParseException(getErrorMessage(e), e)
+      case e: RecognitionException => throw new ParseException(getErrorMessage(e), ErrorLocation(e.line, e.charPositionInLine, sql), e)
       case e if e.getCause.isInstanceOf[RecognitionException] => 
-        throw new ParseException(getErrorMessage(e.getCause.asInstanceOf[RecognitionException]), e)
+        val cause = e.getCause.asInstanceOf[RecognitionException]
+        throw new ParseException(getErrorMessage(cause), ErrorLocation(cause.line, cause.charPositionInLine, sql), e)
     }
   }
   
@@ -95,7 +96,7 @@ case object ParsingStep extends AbstractEngineStep[String, (CommonTree, String)]
   private def setErrorDescription(e: RecognitionException)(implicit b: StringBuilder) {
     e.getUnexpectedType match {
       case -1 => b.append("unexpected end of query")
-      case GdmSQLParser.ID => b.append("found identifier '" + e.token.getText)
+      case GdmSQLParser.LONG_ID => b.append("found identifier '").append(e.token.getText).append('\'')
       case i => b.append("found ").append(getTokenName(i))
     }
     
