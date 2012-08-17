@@ -1,0 +1,20 @@
+#!/usr/bin/env sh
+#
+# Utility to add javadoc links to the online (GitHub) source
+# Must be run from the root of the git repository, after generating the javadoc for any/all the modules
+
+# parameter, if exist, is the revision to display (git revision or branche name)
+# defaults to master
+if [ $# == 0 ]
+then
+  rev="master"
+else
+  rev="$1"
+fi
+
+url=$(echo "https://github.com/irstv/orbisgis/tree/${rev}/gdms/src/main/java" | sed 's/\//\\\//g')
+
+rm -rf */target/site/apidocs/src-html
+files=$(find */target/site/apidocs/ -name "*.html" -type f)
+
+sed -i "s/\(\\.\\.\/\)\+src-html\(.*\).html#line\.\([0-9]\+\)\">/${url}\2.java#L\3\" target=\"_blank\"/g" ${files}
