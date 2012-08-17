@@ -34,11 +34,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.EventHandler;
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,6 +57,7 @@ import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.fife.ui.rtextarea.RTextScrollPane;
@@ -310,31 +307,20 @@ public class SQLConsolePanel extends JPanel {
          * of the sql editor into this file.
          */
         public void onSaveFile() {
-                BufferedWriter out = null;
-                try {
-                        final SaveFilePanel outfilePanel = new SaveFilePanel(
-                                "sqlConsoleOutFile", I18N.tr("Save script"));
-                        outfilePanel.addFilter("sql", I18N.tr("SQL script (*.sql)"));
-
-                        if (UIFactory.showDialog(outfilePanel)) {
-                                out = new BufferedWriter(
-                                        new FileWriter(outfilePanel.getSelectedFile()));
-                                out.write(scriptPanel.getText());
-                                setStatusMessage(I18N.tr("The file has been saved."));
-
-                        } else {
-                                setStatusMessage("");
+                final SaveFilePanel outfilePanel = new SaveFilePanel(
+                        "sqlConsoleOutFile", I18N.tr("Save script"));
+                outfilePanel.addFilter("sql", I18N.tr("SQL script (*.sql)"));
+                if (UIFactory.showDialog(outfilePanel)) {
+                        try {
+                        FileUtils.write(outfilePanel.getSelectedFile(), scriptPanel.getText());
+                        } catch (IOException e1) {
+                                LOGGER.error(I18N.tr("IO error."), e1);
+                                return;
                         }
-                } catch (IOException e1) {
-                        LOGGER.error(I18N.tr("IO error."), e1);
-                } finally {
-                        if(out!=null) {
-                                try {
-                                        out.close();
-                                } catch (IOException ex) {
-                                        LOGGER.error(I18N.tr("Fail to close the file"), ex);
-                                }
-                        }
+                        setStatusMessage(I18N.tr("The file has been saved."));
+
+                } else {
+                        setStatusMessage("");
                 }
         }
 
@@ -343,49 +329,35 @@ public class SQLConsolePanel extends JPanel {
          * and add or replace the content of the sql editor.
          */
         public void onOpenFile() {
-                BufferedReader in=null;
-                try {
-                        final OpenFilePanel inFilePanel = new OpenFilePanel(
-                                "sqlConsoleInFile",
-                                I18N.tr("Open script"));
-                        inFilePanel.addFilter("sql", I18N.tr("SQL script (*.sql)"));
-                        if (UIFactory.showDialog(inFilePanel)) {
-                                File selectedFile = inFilePanel.getSelectedFile();
-                                in = new BufferedReader(
-                                        new FileReader(selectedFile));
-                                
-                                int answer = JOptionPane.NO_OPTION;
-                                if (scriptPanel.getDocument().getLength() > 0) {
-                                        answer = JOptionPane.showConfirmDialog(
-                                                this,
-                                                I18N.tr("Do you want to clear all before loading the file ?"),
-                                                I18N.tr("Open file"),
-                                                JOptionPane.YES_NO_CANCEL_OPTION);
-                                }
-
-                                if (answer == JOptionPane.YES_OPTION) {
-                                        scriptPanel.setText("");
-                                }
-                                
-                                if(answer != JOptionPane.CANCEL_OPTION) {
-                                        while(in.ready()) {
-                                                scriptPanel.append(in.readLine()+"\n");
-                                        }
-                                }
+                final OpenFilePanel inFilePanel = new OpenFilePanel("sqlConsoleInFile",
+                        I18N.tr("Open script"));
+                inFilePanel.addFilter("sql", I18N.tr("SQL script (*.sql)"));
+                if (UIFactory.showDialog(inFilePanel)) {
+                        int answer = JOptionPane.NO_OPTION;
+                        if (scriptPanel.getDocument().getLength() > 0) {
+                                answer = JOptionPane.showConfirmDialog(
+                                        this,
+                                        I18N.tr("Do you want to clear all before loading the file ?"),
+                                        I18N.tr("Open file"),
+                                        JOptionPane.YES_NO_CANCEL_OPTION);
                         }
-                } catch (IOException e1) {
-                        LOGGER.error(I18N.tr("IO error."), e1);
-                } finally {
-                        if(in!=null) {
-                                try {
-                                        in.close();
-                                } catch (IOException ex) {
-                                        LOGGER.error(I18N.tr("Fail to close the file"), ex);
-                                }
+
+                        String text;
+                        try {
+                                text = FileUtils.readFileToString(inFilePanel.getSelectedFile());
+                        } catch (IOException e1) {
+                                LOGGER.error(I18N.tr("IO error."), e1);
+                                return;
+                        }
+                        
+                        if (answer == JOptionPane.YES_OPTION) {
+                                scriptPanel.setText(text);
+                        } else if (answer == JOptionPane.NO_OPTION) {
+                                scriptPanel.append(text);
                         }
                 }
         }
-        
+
         
         /**
          * Add quote to the selected sql

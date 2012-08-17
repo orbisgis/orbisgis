@@ -112,7 +112,7 @@ public class MainContext {
         try {
                 dataSourceFactory.getSourceManager().saveStatus(); 
         } catch (DriverException ex) {
-                LOGGER.error("Unable to save the source list");
+                LOGGER.error("Unable to save the source list", ex);
         }
     }
     

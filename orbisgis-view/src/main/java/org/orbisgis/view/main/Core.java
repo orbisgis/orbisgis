@@ -328,7 +328,7 @@ public class Core {
                         if(!mapContextFolder.exists()) {
                                 mapContextFolder.mkdir();
                         }
-                        File mapContextFile = new File(viewWorkspace.getMapContextPath()+File.separator+"mapcontext");
+                        File mapContextFile = new File(mapContextFolder, "mapcontext");
                         if(mapContextFile.exists()) {
                                 try {
                                         mapContext.read(new FileInputStream(mapContextFile));

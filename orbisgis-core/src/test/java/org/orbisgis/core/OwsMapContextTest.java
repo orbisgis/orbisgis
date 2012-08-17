@@ -28,9 +28,6 @@
  */
 package org.orbisgis.core;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import net.opengis.ows_context.OWSContextType;
 import org.junit.Before;
 import org.junit.Test;
 import org.orbisgis.core.layerModel.ILayer;
