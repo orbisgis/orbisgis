@@ -1,0 +1,9 @@
+# This list is there to fix some author names returned
+# by git log/shortlog and affiliates.
+# This helps getting clean changelogs and commit counts
+# by author.
+#
+# See "git shortlog -nse" with and without this file
+
+Erwan Bocher <erwan.bocher@ec-nantes.fr> <ebocher@irstv>
+Guéganno <a9emen@gmail.com>
