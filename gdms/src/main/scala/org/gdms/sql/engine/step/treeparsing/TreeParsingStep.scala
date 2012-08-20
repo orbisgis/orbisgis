@@ -61,7 +61,8 @@ case object TreeParsingStep extends AbstractEngineStep[(CommonTree, String), Seq
     }
     
     // splits the SQL String
-    val sts = spl.split(ts._2) map (_.trim)
+    val filteredSql = ts._2.lines filterNot (_.startsWith("--")) mkString("\n")
+    val sts = spl.split(filteredSql) map (_.trim) filterNot (_.isEmpty)
     
     // all commands
     val a = (0 until tree.getChildCount) map (tree.getChild);

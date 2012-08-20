@@ -127,7 +127,9 @@ object Engine {
          FiltersStep          >=: // filters
          ValidationStep           // validation
          , c._2)
-      } map (c => new SQLStatement(c._2, c._1)))
+        // SQLStatement is always built with a complete (ending in ';') sql string
+        // but the parsing above removes it
+      } map (c => new SQLStatement(c._2 + ';', c._1)))
   }
   
   /**
@@ -298,12 +300,12 @@ object Engine {
     var objs: List[ObjectInputStream] = Nil
     
     try {
-    val oNum = new ObjectInputStream(i)
-    val num = oNum.readInt
+      val oNum = new ObjectInputStream(i)
+      val num = oNum.readInt
     
-    objs = List(oNum)
+      objs = List(oNum)
     
-    new SQLScript((1 to num) map {_ =>
+      new SQLScript((1 to num) map {_ =>
           // duplicating the ObjectInputStream is important here
           val o = new ObjectInputStream(i)
           val sql = o.readUTF
@@ -311,7 +313,7 @@ object Engine {
           val ope = o2.readObject.asInstanceOf[Operation]
         
           new SQLStatement(sql, ope)(p)
-      })
+        })
     } finally {
       objs map (_.close)
       i.close // just to be sure
