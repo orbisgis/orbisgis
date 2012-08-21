@@ -36,6 +36,7 @@ package org.gdms.sql.engine
 import java.io.{InputStream, ObjectInputStream, IOException, File, FileInputStream}
 import java.util.Properties
 import scala.io.Source
+import org.apache.commons.io.input.ClassLoaderObjectInputStream
 import org.gdms.data.DataSourceFactory
 import org.gdms.sql.engine.operations.Operation
 import org.gdms.sql.engine.step.filters.FiltersStep
@@ -296,6 +297,24 @@ object Engine {
    */
   @throws(classOf[IOException])
   def loadScript(i: InputStream, p: Properties): SQLScript = {
+    loadScript(i, p, new ObjectInputStream(_))
+  }
+  
+  /**
+   * Loads a compiled sql script from a stream, using the provided ClassLoader
+   * instead of the system default.
+   * 
+   * @param i a stream over a compiled sql script
+   * @param p some properties to control the engine
+   * @param classLoader a specific class loader to use to deserialize the script
+   * @throws IOException if there is an error while accessing the resource
+   */
+  @throws(classOf[IOException])
+  def loadScript(i: InputStream, p: Properties, classLoader: ClassLoader): SQLScript = {
+    loadScript(i, p, new ClassLoaderObjectInputStream(classLoader, _))
+  }
+  
+  private def loadScript(i: InputStream, p: Properties, obPr: InputStream => ObjectInputStream) = {
     var sts: List[SQLStatement] = Nil
     var objs: List[ObjectInputStream] = Nil
     
@@ -307,9 +326,9 @@ object Engine {
     
       new SQLScript((1 to num) map {_ =>
           // duplicating the ObjectInputStream is important here
-          val o = new ObjectInputStream(i)
+          val o = obPr(i)
           val sql = o.readUTF
-          val o2 = new ObjectInputStream(i)
+          val o2 = obPr(i)
           val ope = o2.readObject.asInstanceOf[Operation]
         
           new SQLStatement(sql, ope)(p)
