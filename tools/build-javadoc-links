@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/usr/bin/env bash
 #
 # Utility to add javadoc links to the online (GitHub) source
 # Must be run from the root of the git repository, after generating the javadoc for any/all the modules
