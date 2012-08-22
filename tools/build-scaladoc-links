@@ -5,7 +5,7 @@
 
 # parameter, if exist, is the revision to display (git revision or branche name)
 # defaults to master
-if [ $# == 0 ]
+if [ $# -eq 0 ]
 then
   rev="master"
 else
