@@ -246,7 +246,13 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
 
 
         private boolean isSortable(int columnIndex) {
-                return model.getColumnType(columnIndex).getTypeCode() != Type.GEOMETRY;
+                int geoIndex = -1;                
+                try {
+                        geoIndex = MetadataUtilities.getGeometryFieldIndex(model.getDataSource().getMetadata());
+                } catch (DriverException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(),ex);
+                }
+                return geoIndex!=columnIndex;
         }
 
         @Override

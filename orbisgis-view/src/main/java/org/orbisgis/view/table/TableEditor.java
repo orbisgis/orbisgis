@@ -36,7 +36,6 @@ import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
@@ -47,9 +46,11 @@ import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.RowSorterListener;
-import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -63,6 +64,7 @@ import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.components.filter.ActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
@@ -107,6 +109,14 @@ public class TableEditor extends JPanel implements EditorDockable {
                 tableScrollPane = new JScrollPane(makeTable());
                 add(tableScrollPane,BorderLayout.CENTER);
         }
+
+        @Override
+        public void removeNotify() {
+                super.removeNotify();
+                tableModel.dispose();
+        }
+        
+        
         
         private JComponent makeFilterManager() {
                 JPanel filterComp = filterManager.makeFilterPanel(false);
@@ -116,6 +126,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                 filterManager.registerFilterFactory(new WhereSQLFilterFactory());
                 filterManager.addFilter(factory.getDefaultFilterValue());
                 filterManager.getEventFilterChange().addListener(this, EventHandler.create(FilterFactoryManager.FilterChangeListener.class, this, "onApplySelectionFilter"));
+                tableModel.addTableModelListener(EventHandler.create(TableModelListener.class,this,"onFieldsUpdate",""));
                 return filterComp;
         }
         
@@ -124,6 +135,31 @@ public class TableEditor extends JPanel implements EditorDockable {
                 launchJob(new SearchJob(filters.get(0), table, tableModel.getDataSource()));                                
         }
         
+        /**
+         * Reload the filter ui on header update
+         * @param evt Update event information         
+         */
+        public void onFieldsUpdate(TableModelEvent evt) {
+                LOGGER.debug("onFieldsUpdate "+evt.getType());                
+                if(evt.getFirstRow() == TableModelEvent.HEADER_ROW) {
+                        SwingUtilities.invokeLater(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                        reloadFilters();
+                                }
+                        });
+                }
+        }
+        /**
+         * Reload filter GUI components
+         */
+        private void reloadFilters() {
+                LOGGER.debug("Reload Filter");
+                ActiveFilter currentFilter = filterManager.getFilterValues().iterator().next();
+                filterManager.clearFilters();
+                filterManager.addFilter(currentFilter);
+        }
         private JComponent makeTable() {
                 table = new JTable();
                 table.addMouseListener(EventHandler.create(MouseListener.class,
@@ -171,12 +207,6 @@ public class TableEditor extends JPanel implements EditorDockable {
         
         private JPopupMenu makeTableCellPopup(int row,int col) {
                 JPopupMenu pop = new JPopupMenu();                
-                boolean hasGeometry=false;
-                try {
-                        hasGeometry = MetadataUtilities.isGeometry(tableEditableElement.getDataSource().getMetadata());
-                }catch (DriverException ex) {
-                        LOGGER.error(I18N.tr("Menu creation error"), ex);
-                }
                 if(table.getSelectedRowCount()>0) {
                         JMenuItem addRowFilter = new JMenuItem(I18N.tr("Filter selected rows"));
                         addRowFilter.setToolTipText(I18N.tr("Show only the selected rows"));

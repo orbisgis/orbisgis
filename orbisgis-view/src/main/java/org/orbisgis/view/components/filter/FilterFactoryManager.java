@@ -35,6 +35,7 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -216,7 +217,23 @@ public class FilterFactoryManager<FilterInterface> {
         this.userCanRemoveFilter = userCanRemoveFilter;
     }
     
+    /**
+     * Remove all filters
+     * Do not fire events
+     */
+    public void clearFilters() {
+        filterValues.clear();
+        filterListPanel.removeAll();
+        filterListPanel.updateUI();
+    }
     
+    /**
+     * Get all filter values currently shown
+     * @return 
+     */
+    public Collection<ActiveFilter> getFilterValues() {
+            return filterValues.values();
+    }
     
     /**
      * Create a new filter in the UI filter list

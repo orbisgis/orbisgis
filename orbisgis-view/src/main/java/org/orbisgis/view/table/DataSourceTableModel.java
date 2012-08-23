@@ -29,15 +29,23 @@
 package org.orbisgis.view.table;
 
 import java.text.ParseException;
+import java.util.Iterator;
+import java.util.Set;
 import javax.swing.table.AbstractTableModel;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
+import org.gdms.data.edition.EditionEvent;
+import org.gdms.data.edition.EditionListener;
+import org.gdms.data.edition.FieldEditionEvent;
+import org.gdms.data.edition.MetadataEditionListener;
+import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.common.IntegerUnion;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -53,10 +61,13 @@ public class DataSourceTableModel extends AbstractTableModel {
         private transient Metadata metadata;
         private DataSource dataSource;
         private TableEditableElement element;
+        private ModificationListener dataSourceListener = new ModificationListener();
         
         public DataSourceTableModel(TableEditableElement element) {
                 this.element = element;
-                this.dataSource = element.getDataSource();
+                dataSource = element.getDataSource();
+                dataSource.addEditionListener(dataSourceListener);
+                dataSource.addMetadataEditionListener(dataSourceListener);
         }
 
         private Metadata getMetadata() throws DriverException {
@@ -64,6 +75,13 @@ public class DataSourceTableModel extends AbstractTableModel {
                         metadata = dataSource.getMetadata();
                 }
                 return metadata;
+        }
+        /**
+         * Remove data source listeners
+         */
+        public void dispose() {
+                dataSource.removeEditionListener(dataSourceListener);
+                dataSource.removeMetadataEditionListener(dataSourceListener);
         }
 
         /**
@@ -221,6 +239,107 @@ public class DataSourceTableModel extends AbstractTableModel {
                         LOGGER.error(I18N.tr("Cannot parse number"), e); //$NON-NLS-1$
                 } catch (ParseException e) {
                         LOGGER.error(e.getLocalizedMessage(), e);
+                }
+        }
+        
+        /**
+         * Track data source changes, update the table model
+         */
+        private class ModificationListener implements EditionListener,
+                MetadataEditionListener {
+                
+
+                @Override
+                public void multipleModification(MultipleEditionEvent me) {
+                        LOGGER.debug("ModificationListener:multipleModification");
+                        IntegerUnion deletedRows = new IntegerUnion();
+                        IntegerUnion insertedRows = new IntegerUnion();
+                        IntegerUnion updatedRows = new IntegerUnion();
+                        
+                        for (EditionEvent e : me.getEvents()) {
+                                if (e.getType() == EditionEvent.RESYNC) {
+                                        fireTableStructureChanged();
+                                        LOGGER.debug("ModificationListener:Update whole table!");
+                                        return;
+                                }
+                                int row = (int) e.getRowIndex();
+                                if (e.getType() == EditionEvent.DELETE) {
+                                        deletedRows.add(row);
+                                } else if (e.getType() == EditionEvent.INSERT) {
+                                        insertedRows.add(row);
+                                } else {
+                                        int fieldIndex = e.getFieldIndex();
+                                        if (fieldIndex >= 0) {
+                                                fireTableCellUpdated(row, fieldIndex);
+                                        } else {
+                                                updatedRows.add(row);
+                                        }
+                                }
+                        }
+                        if(!updatedRows.isEmpty()) {
+                                LOGGER.debug("ModificationListener:Update rows");
+                                Iterator<Integer> intervalsIt = updatedRows.getValueRanges().iterator();
+                                while(intervalsIt.hasNext()) {
+                                        int begin = intervalsIt.next();
+                                        int end = intervalsIt.next();
+                                        fireTableRowsUpdated(begin, end);
+                                }
+                        }
+                        if(!deletedRows.isEmpty()) {
+                                LOGGER.debug("ModificationListener:Delete rows");
+                                Iterator<Integer> intervalsIt = deletedRows.getValueRanges().iterator();
+                                while(intervalsIt.hasNext()) {
+                                        int begin = intervalsIt.next();
+                                        int end = intervalsIt.next();
+                                        fireTableRowsDeleted(begin, end);
+                                }                                
+                        }
+                        if(!insertedRows.isEmpty()) {
+                                LOGGER.debug("ModificationListener:Insert rows");
+                                Iterator<Integer> intervalsIt = insertedRows.getValueRanges().iterator();
+                                while(intervalsIt.hasNext()) {
+                                        int begin = intervalsIt.next();
+                                        int end = intervalsIt.next();
+                                        fireTableRowsInserted(begin, end);
+                                }   
+                        }
+                }
+                
+                @Override
+                public void singleModification(EditionEvent e) {
+                        MultipleEditionEvent me = new MultipleEditionEvent();
+                        me.addEvent(e);
+                        multipleModification(me);
+                }
+
+                /**
+                 * New Column
+                 * @param event 
+                 */
+                @Override
+                public void fieldAdded(FieldEditionEvent event) {
+                        LOGGER.debug("ModificationListener:fieldAdded");
+                        fireTableStructureChanged();
+                }
+
+                /**
+                 * Update column
+                 * @param event 
+                 */
+                @Override
+                public void fieldModified(FieldEditionEvent event) {
+                        LOGGER.debug("ModificationListener:fieldModified");
+                        fireTableStructureChanged();
+                }
+
+                /**
+                 * Remove column
+                 * @param event 
+                 */
+                @Override
+                public void fieldRemoved(FieldEditionEvent event) {
+                        LOGGER.debug("ModificationListener:fieldRemoved");
+                        fireTableStructureChanged();
                 }
         }
 }
