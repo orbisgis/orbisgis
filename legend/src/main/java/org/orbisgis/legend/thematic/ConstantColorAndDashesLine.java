@@ -31,8 +31,10 @@ package org.orbisgis.legend.thematic;
 import java.awt.Color;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
+import org.orbisgis.legend.structure.stroke.PenStrokeLegend;
 
 /**
  * Abstract a representation of line whose {@code Color} and dash array are
@@ -83,5 +85,20 @@ public abstract class ConstantColorAndDashesLine extends SymbolizerLegend {
      */
     public void setLineColor(Color col) {
         ((ConstantColorAndDashesPSLegend) getStrokeLegend()).setLineColor(col);
+    }
+    /**
+     * Gets the unit of measure used to draw the associated {@code Stroke}.
+     * @return
+     */
+    public Uom getStrokeUom(){
+            return ((PenStrokeLegend) getStrokeLegend()).getUom();
+    }
+
+    /**
+     * Sets the unit of measure used to draw the associated {@code Stroke}.
+     * @param u
+     */
+    public void setStrokeUom(Uom u){
+            ((PenStrokeLegend) getStrokeLegend()).setUom(u);
     }
 }

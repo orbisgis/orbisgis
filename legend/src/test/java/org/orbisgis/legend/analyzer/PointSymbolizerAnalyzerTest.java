@@ -35,6 +35,7 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.string.InvalidString;
@@ -353,5 +354,26 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         }
     }
 
+    @Test
+    public void testGetUom() throws Exception {
+        Style st = getStyle(CONSTANT_POINT);
+        PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
+        UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
+        assertTrue(uvp.getSymbolUom() == Uom.PX);
+        assertTrue(uvp.getStrokeUom() == Uom.PX);
+    }
+
+    @Test
+    public void testSetUoms() throws Exception {
+        Style st = getStyle(CONSTANT_POINT);
+        PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
+        UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
+        assertTrue(uvp.getSymbolUom() == Uom.PX);
+        uvp.setSymbolUom(Uom.IN);
+        assertTrue(uvp.getSymbolUom() == Uom.IN);
+        assertTrue(uvp.getStrokeUom() == Uom.IN);
+        uvp.setStrokeUom(Uom.GM);
+        assertTrue(uvp.getStrokeUom() == Uom.GM);
+    }
 
 }

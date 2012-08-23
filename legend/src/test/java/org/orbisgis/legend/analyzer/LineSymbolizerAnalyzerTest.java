@@ -29,12 +29,12 @@
 package org.orbisgis.legend.analyzer;
 
 import java.awt.Color;
-import java.util.List;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
@@ -325,4 +325,23 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         assertTrue(usl.getSecondValue() == 24.3);
     }
 
+    @Test
+    public void testGetUom() throws Exception {
+        Style st = getStyle(proportional);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        ProportionalLine usl = new ProportionalLine(ls);
+        assertTrue(usl.getStrokeUom() == Uom.MM);
+    }
+
+    @Test
+    public void testSetUom() throws Exception {
+        Style st = getStyle(proportional);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        ProportionalLine usl = new ProportionalLine(ls);
+        assertTrue(usl.getStrokeUom() == Uom.MM);
+        usl.setStrokeUom(Uom.IN);
+        assertTrue(usl.getStrokeUom() == Uom.IN);
+        usl.setStrokeUom(null);
+        assertTrue(usl.getStrokeUom() == Uom.MM);
+    }
 }

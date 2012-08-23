@@ -31,6 +31,7 @@ package org.orbisgis.legend.thematic;
 import java.awt.Color;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.LegendStructure;
@@ -165,4 +166,19 @@ public abstract class ConstantStrokeArea extends SymbolizerLegend {
         strokeLegend.setDashArray(s);
     }
 
+    /**
+     * Gets the unit of measure used to draw the associated {@code Stroke}.
+     * @return
+     */
+    public Uom getStrokeUom(){
+            return getStrokeLegend().getUom();
+    }
+
+    /**
+     * Sets the unit of measure used to draw the associated {@code Stroke}.
+     * @param u
+     */
+    public void setStrokeUom(Uom u){
+            getStrokeLegend().setUom(u);
+    }
 }
