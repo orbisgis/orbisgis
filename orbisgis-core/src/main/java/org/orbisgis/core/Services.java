@@ -6,7 +6,7 @@
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -28,18 +28,13 @@
  */
 package org.orbisgis.core;
 
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.InputStream;
-import java.util.*;
-
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.TreeSet;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.stream.StreamResult;
-import javax.xml.transform.stream.StreamSource;
 
 /**
  * 
@@ -149,35 +144,6 @@ public class Services {
 		for (Object service : services) {
 			System.out.println(service);
 		}
-	}
-
-	public static void generateDoc(File output) throws TransformerException {
-		// Create the xml with the services information
-		StringBuffer xmlContent = new StringBuffer();
-		xmlContent.append("<services>");
-		Iterator<Class<?>> it = services.keySet().iterator();
-		it = getSortedIterator(it);
-		while (it.hasNext()) {
-			Class<?> service = it.next();
-			String description = servicesDoc.get(service);
-			xmlContent.append("<service name=\"" + service + "\" interface=\""
-					+ service.getName() + "\" description=\"" + description
-					+ "\"/>");
-		}
-		xmlContent.append("</services>");
-
-		// Use a XSTL to get a nice (well not so nice) HTML
-		TransformerFactory transFact = TransformerFactory.newInstance();
-		StreamSource xmlSource = new StreamSource(new ByteArrayInputStream(
-				xmlContent.toString().getBytes()));
-		InputStream is = Services.class
-				.getResourceAsStream("/org/orbisgis/services-documentation.xsl");
-		StreamSource xsltSource = new StreamSource(is);
-
-		Transformer trans = transFact.newTransformer(xsltSource);
-		new File("docs").mkdirs();
-		trans.transform(xmlSource, new StreamResult(output));
-
 	}
 
 	private static Iterator<Class<?>> getSortedIterator(Iterator<Class<?>> it) {

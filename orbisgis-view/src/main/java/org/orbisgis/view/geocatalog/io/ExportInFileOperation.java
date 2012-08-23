@@ -6,7 +6,7 @@
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -31,6 +31,8 @@ package org.orbisgis.view.geocatalog.io;
 import java.io.File;
 
 import javax.swing.JOptionPane;
+
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceCreationException;
 
@@ -79,11 +81,8 @@ public class ExportInFileOperation implements BackgroundJob {
 
         @Override
         public void run(ProgressMonitor pm) {   
-                String fileName = savedFile.getName();
-                int index = fileName.lastIndexOf('.');
-                if (index != -1) {
-                        fileName = fileName.substring(0, index);
-                }
+                String fileName = FilenameUtils.removeExtension(savedFile.getName());
+                
                 final FileSourceDefinition def = new FileSourceDefinition(savedFile, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
                 final SourceManager sourceManager = dsf.getSourceManager();
                 if (sourceManager.exists(fileName)) {

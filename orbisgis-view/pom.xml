@@ -104,7 +104,19 @@
                                         <unsignAlreadySignedJars>true</unsignAlreadySignedJars>
                                         <verifyjar>false</verifyjar>
                                 </configuration>
-                        </plugin>    
+                        </plugin>
+                        <plugin>
+                                <groupId>org.gdms.maven</groupId>
+                                <artifactId>gdmsql-maven-plugin</artifactId>
+                                <version>1.0-SNAPSHOT</version>
+                                <executions>
+                                        <execution>
+                                                <goals>
+                                                        <goal>sqlCompile</goal>
+                                                </goals>
+                                        </execution>
+                                </executions>
+                        </plugin>
                 </plugins>
         </build>  
         <properties>

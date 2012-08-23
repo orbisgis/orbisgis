@@ -6,7 +6,7 @@
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -38,6 +38,8 @@ import java.net.URI;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
+
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SourceAlreadyExistsException;
@@ -185,7 +187,7 @@ public class Catalog extends JPanel implements DockingPanel {
                         // Use the file name as the data source name
                         if(uri.getScheme().equals("file")) {
                                 File file = new File(uri);
-                                src.register(src.getUniqueName(FileUtils.getFileNameWithoutExtensionU(file)),uri);
+                                src.register(src.getUniqueName(FilenameUtils.removeExtension(file.getName())),uri);
                         } else {
                                 src.nameAndRegister(uri);
                         }
@@ -290,7 +292,7 @@ public class Catalog extends JPanel implements DockingPanel {
                                 if (sourceManager.getDriverManager().isFileSupported(file)) {
                                         //Try to add the data source
                                         try {
-                                                String name = sourceManager.getUniqueName(FileUtils.getFileNameWithoutExtensionU(file));
+                                                String name = sourceManager.getUniqueName(FilenameUtils.removeExtension(file.getName()));
                                                 sourceManager.register(name, file);
                                         } catch (SourceAlreadyExistsException e) {
                                                 LOGGER.error(I18N.tr("This source was already registered"), e);
@@ -390,7 +392,7 @@ public class Catalog extends JPanel implements DockingPanel {
                         }
                         
                         if (UIFactory.showDialog(outfilePanel, true, true)) {
-                                final File savedFile = new File(outfilePanel.getSelectedFile().getAbsolutePath());
+                                final File savedFile = outfilePanel.getSelectedFile().getAbsoluteFile();
                                 BackgroundManager bm = Services.getService(BackgroundManager.class);
                                 bm.backgroundOperation(new ExportInFileOperation(dsf, source,
                                         savedFile, this));
@@ -464,7 +466,7 @@ public class Catalog extends JPanel implements DockingPanel {
                         if (filter.accept(file) && dr.isFileSupported(file)) {
                                 SourceManager sourceManager = dm.getSourceManager();
                                 try {
-                                        String name = sourceManager.getUniqueName(FileUtils.getFileNameWithoutExtensionU(file));
+                                        String name = sourceManager.getUniqueName(FilenameUtils.removeExtension(file.getName()));
                                         sourceManager.register(name, file);
                                 } catch (SourceAlreadyExistsException e) {
                                         LOGGER.error(I18N.tr("The source is already registered : "), e);

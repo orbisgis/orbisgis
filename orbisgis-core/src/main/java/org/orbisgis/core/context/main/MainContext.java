@@ -6,7 +6,7 @@
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -63,15 +63,17 @@ public class MainContext {
      * @param debugMode 
      */
     public MainContext(boolean debugMode) {
-            this(debugMode,null);
+            this(debugMode,null, true);
     }
     /**
      * Constructor of the workspace
      * @param debugMode Use the Debug logging on console output
      * @param customWorkspace Do not use a default folders for
-     * application initialisation
+     * application initialization
+     * @param initLogger if this context handles logging. Set to false to let the calling application
+     * configure log4j.
      */
-    public MainContext(boolean debugMode, CoreWorkspace customWorkspace ) {
+    public MainContext(boolean debugMode, CoreWorkspace customWorkspace, boolean initLogger) {
         this.debugMode = debugMode;
         if(customWorkspace!=null) {
                 coreWorkspace = customWorkspace;
@@ -79,8 +81,10 @@ public class MainContext {
                 coreWorkspace = new CoreWorkspace();
         }
         //Redirect root logging to console
-        initConsoleLogger();
-        initFileLogger(coreWorkspace);
+        if (initLogger) {
+                initConsoleLogger();
+                initFileLogger(coreWorkspace);
+        }
         dataSourceFactory = new DataSourceFactory(coreWorkspace.getSourceFolder(), coreWorkspace.getTempFolder(), coreWorkspace.getPluginFolder());
         dataManager = new DefaultDataManager(dataSourceFactory);
         registerServices();
@@ -108,7 +112,7 @@ public class MainContext {
         try {
                 dataSourceFactory.getSourceManager().saveStatus(); 
         } catch (DriverException ex) {
-                LOGGER.error("Unable to save the source list");
+                LOGGER.error("Unable to save the source list", ex);
         }
     }
     

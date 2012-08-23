@@ -6,7 +6,7 @@
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -28,11 +28,6 @@
  */
 package org.orbisgis.core.renderer;
 
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
-import ij.process.ColorProcessor;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -42,13 +37,13 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.index.quadtree.Quadtree;
+import ij.process.ColorProcessor;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
-import org.gdms.data.indexes.FullIterator;
-import org.gdms.data.stream.GeoStream;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.map.MapTransform;
@@ -62,6 +57,11 @@ import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+import org.gdms.data.DataSource;
+import org.gdms.data.indexes.FullIterator;
+import org.gdms.data.stream.GeoStream;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 
 /**
  * Renderer contains all the logic of the Symbology Encoding process based on java
@@ -82,7 +82,6 @@ public abstract class Renderer {
          * This method shall returns a graphics2D for each symbolizers in the list.
          * This is useful to make the diff bw pdf purpose and image purpose
          * Is called just before a new layer is drawn
-         * @return
          */
         //public abstract HashMap<Symbolizer, Graphics2D> getGraphics2D(ArrayList<Symbolizer> symbs,
         //        Graphics2D g2, MapTransform mt);
@@ -466,7 +465,7 @@ public abstract class Renderer {
                 private Envelope drawExtent;
                 //private Area extent;
 
-                public DefaultRendererPermission(Envelope drawExtent) {
+                DefaultRendererPermission(Envelope drawExtent) {
                         this.drawExtent = drawExtent;
                         this.quadtree = new Quadtree();
                         //this.extent = new Area(new Rectangle2D.Double(drawExtent.getMinX(), drawExtent.getMinY(), drawExtent.getWidth(), drawExtent.getHeight()));

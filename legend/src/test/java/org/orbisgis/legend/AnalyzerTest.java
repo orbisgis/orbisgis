@@ -6,7 +6,7 @@
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -28,13 +28,11 @@
  */
 package org.orbisgis.legend;
 
-import java.io.FileInputStream;
-import javax.xml.bind.JAXBContext;
+import java.io.File;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
 import net.opengis.se._2_0.core.StyleType;
 import org.apache.log4j.*;
-import org.apache.log4j.varia.LevelRangeFilter;
 import org.junit.After;
 import org.junit.Before;
 import org.orbisgis.core.Services;
@@ -48,8 +46,7 @@ public abstract class AnalyzerTest {
         
         public Style getStyle(String path) throws Exception {
             Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
-            JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
-                    new FileInputStream(path));
+            JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(new File(path));
             return new Style(ftsElem, null);
         }
 

@@ -6,7 +6,7 @@
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
- * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
  * This file is part of OrbisGIS.
  *
@@ -28,14 +28,14 @@
  */
 package org.orbisgis.core;
 
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
 import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
-import static org.junit.Assert.assertTrue;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.orbisgis.core.layerModel.ILayer;
@@ -44,7 +44,8 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.core.map.export.MapExportManager;
 import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.utils.FileUtils;
+
+import static org.junit.Assert.assertTrue;
 
 public class MapContextTest extends AbstractTest {
 
@@ -378,9 +379,9 @@ public class MapContextTest extends AbstractTest {
 		File dbf = new File("target/bv_sap.dbf");
 		File shx = new File("target/bv_sap.shx");
 		File originalShp = new File("src/test/resources/data/bv_sap.shp");
-		FileUtils.copy(originalShp, shp);
-		FileUtils.copy(new File("src/test/resources/data/bv_sap.dbf"), dbf);
-		FileUtils.copy(new File("src/test/resources/data/bv_sap.shx"), shx);
+		FileUtils.copyFile(originalShp, shp);
+		FileUtils.copyFile(new File("src/test/resources/data/bv_sap.dbf"), dbf);
+		FileUtils.copyFile(new File("src/test/resources/data/bv_sap.shx"), shx);
 		MapContext mc = new OwsMapContext();
 		mc.open(null);
 		mc.getLayerModel().addLayer(getDataManager().createLayer(shp));
