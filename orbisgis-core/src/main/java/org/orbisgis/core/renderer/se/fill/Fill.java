@@ -44,6 +44,7 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
@@ -55,9 +56,10 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  *
  * @author Maxence Laurent
  */
-public abstract class Fill implements SymbolizerNode {
+public abstract class Fill implements UomNode {
 
-    protected SymbolizerNode parent;
+    protected UomNode parent;
+    private Uom uom;
     /**
      * Create a new fill based on the jaxbelement
      *
@@ -88,17 +90,27 @@ public abstract class Fill implements SymbolizerNode {
 
     @Override
     public void setParent(SymbolizerNode node){
-        parent = node;
+        parent = (UomNode)node;
+    }
+    
+    @Override
+    public void setUom(Uom u){
+            uom = u;
+    }
+
+    @Override
+    public Uom getOwnUom(){
+            return uom;
+    }
+
+    @Override
+    public Uom getUom(){
+        return uom == null ? parent.getUom() : uom;
     }
 
     @Override
     public SymbolizerNode getParent(){
         return parent;
-    }
-
-    @Override
-    public Uom getUom(){
-        return parent.getUom();
     }
 
     /**

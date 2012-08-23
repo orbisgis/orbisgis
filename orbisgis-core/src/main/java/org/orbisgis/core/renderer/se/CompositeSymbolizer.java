@@ -45,7 +45,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  * and that is not directly associated to any rendering or representation hint.
  * @author Maxence Laurent
  */
-public final class CompositeSymbolizer implements SymbolizerNode {
+public final class CompositeSymbolizer implements UomNode {
 
         private ArrayList<Symbolizer> symbolizers;
         private SymbolizerNode parent;
@@ -198,6 +198,14 @@ public final class CompositeSymbolizer implements SymbolizerNode {
         public Uom getUom() {
                 return null;
         }
+
+        @Override
+        public Uom getOwnUom() {
+                return null;
+        }
+
+        @Override
+        public void setUom(Uom unit){}
 
         @Override
         public SymbolizerNode getParent() {

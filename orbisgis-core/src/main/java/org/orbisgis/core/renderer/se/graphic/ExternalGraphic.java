@@ -133,9 +133,11 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     @Override
     public Uom getUom() {
         if (uom != null) {
-            return this.uom;
+            return uom;
+        } else if(parent instanceof UomNode){
+            return ((UomNode)parent).getUom();
         } else {
-            return parent.getUom();
+            return Uom.PX;
         }
     }
 

@@ -85,7 +85,6 @@ public class RasterSymbolizer extends Symbolizer {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
     public Uom getUom() {
         return Uom.MM;
     }

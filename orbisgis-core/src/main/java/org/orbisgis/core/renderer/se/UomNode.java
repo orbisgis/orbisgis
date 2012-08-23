@@ -31,18 +31,18 @@ package org.orbisgis.core.renderer.se;
 import org.orbisgis.core.renderer.se.common.Uom;
 
 /**
- * Define UOM setter
+ * Defines unit of measure management.
  *
  * @author Maxence Laurent
  */
-public interface UomNode {
+public interface UomNode extends SymbolizerNode {
         /**
          * Associates a unit of measure to this node
          * @param u 
          */
 	void setUom(Uom u);
         /**
-         * Get the Uom associated to this node. It differs from SymbolizerNode#getUom
+         * Get the Uom associated to this node. It differs from {@code getUom}
          * in the sense that the method in SymbolizerNode will search for the nearest
          * Uom int the tree of Nodes, if this node does not contain one, while this
          * method is expected to return null if it can't find an Uom directly.
@@ -50,4 +50,9 @@ public interface UomNode {
          * A Uom instance, if this has got one, null otherwise.
          */
 	Uom getOwnUom();
+        /**
+         * Get the unit of measure associated with the current node.
+         * @return
+         */
+        Uom getUom();
 }

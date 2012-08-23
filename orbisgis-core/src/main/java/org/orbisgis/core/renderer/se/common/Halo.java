@@ -61,7 +61,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * It is mainly used to improve the readability of text labels on the map.
  * @author Alexis Guéganno
  */
-public final class Halo implements SymbolizerNode, UomNode, FillNode {
+public final class Halo implements  UomNode, FillNode {
 
     private static final Logger LOGGER = Logger.getLogger(Halo.class);
     private static final I18n I18N = I18nFactory.getI18n(Halo.class);
@@ -115,7 +115,7 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
     @Override
     public Uom getUom() {
         if (uom == null) {
-            return getParent().getUom();
+            return ((UomNode)getParent()).getUom();
         } else {
             return uom;
         }

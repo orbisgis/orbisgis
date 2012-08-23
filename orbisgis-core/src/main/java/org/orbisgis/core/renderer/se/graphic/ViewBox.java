@@ -35,6 +35,7 @@ import net.opengis.se._2_0.core.ViewBoxType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -59,7 +60,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  */
 public final class ViewBox implements SymbolizerNode {
         
-        private SymbolizerNode parent;
+        private UomNode parent;
         private RealParameter x;
         private RealParameter y;
 
@@ -142,18 +143,13 @@ public final class ViewBox implements SymbolizerNode {
         }
 
         @Override
-        public Uom getUom() {
-                return parent.getUom();
-        }
-
-        @Override
         public SymbolizerNode getParent() {
                 return parent;
         }
 
         @Override
         public void setParent(SymbolizerNode node) {
-                parent = node;
+                parent = (UomNode) node;
         }
 
         @Override
@@ -210,8 +206,8 @@ public final class ViewBox implements SymbolizerNode {
                 }
 
 
-                dx = Uom.toPixel(dx, this.getUom(), dpi, scale, width);
-                dy = Uom.toPixel(dy, this.getUom(), dpi, scale, height);
+                dx = Uom.toPixel(dx, parent.getUom(), dpi, scale, width);
+                dy = Uom.toPixel(dy, parent.getUom(), dpi, scale, height);
 
                 if (dx <= 0.00021 || dy <= 0.00021) {
                         throw new ParameterException("View-box is too small: (" + dx + ";" + dy + ")");

@@ -45,7 +45,6 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Description;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.ExternalGraphic;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
@@ -278,11 +277,6 @@ public final class Rule implements SymbolizerNode {
         rt.setSymbolizer(this.symbolizer.getJAXBElement());
 
         return rt;
-    }
-
-    @Override
-    public Uom getUom() {
-        return null;
     }
 
     @Override

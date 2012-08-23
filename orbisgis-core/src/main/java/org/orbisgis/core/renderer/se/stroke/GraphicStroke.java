@@ -75,7 +75,6 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
     private RealParameter length;
     private RelativeOrientation orientation;
     private RealParameter relativePosition;
-    private Uom uom;
 
     /**
      * Build a new {@code GraphicStroke} using the {@code JAXBElement} given in argument.
@@ -394,8 +393,8 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
         this.setJAXBProperties(s);
 
 
-        if (uom != null) {
-            s.setUom(uom.toURN());
+        if (getOwnUom() != null) {
+            s.setUom(getOwnUom().toURN());
         }
 
         if (graphic != null) {
@@ -414,28 +413,6 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
             s.setRelativePosition(relativePosition.getJAXBParameterValueType());
         }
         return s;
-    }
-
-
-    @Override
-    public Uom getUom() {
-        if (uom != null) {
-            return uom;
-        } else {
-            return parent.getUom();
-        }
-    }
-
-
-    @Override
-    public void setUom(Uom u) {
-        uom = u;
-    }
-
-
-    @Override
-    public Uom getOwnUom() {
-        return uom;
     }
 
 

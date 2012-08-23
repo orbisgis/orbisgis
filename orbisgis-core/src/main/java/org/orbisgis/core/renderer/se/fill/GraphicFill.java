@@ -46,7 +46,6 @@ import net.opengis.se._2_0.core.TileGapType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -62,10 +61,9 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * stored as <code>RealParameter</code> instances.
  * @author Alexis Guéganno, Maxence Laurent
  */
-public final class GraphicFill extends Fill implements UomNode {
+public final class GraphicFill extends Fill {
 
     private GraphicCollection graphic;
-    private Uom uom;
     /**
      * Distance between two graphics in the fill, in X direction.
      */
@@ -131,25 +129,6 @@ public final class GraphicFill extends Fill implements UomNode {
      */
     public GraphicCollection getGraphic() {
         return graphic;
-    }
-
-    @Override
-    public void setUom(Uom uom) {
-        this.uom = uom;
-    }
-
-    @Override
-    public Uom getOwnUom() {
-        return uom;
-    }
-
-    @Override
-    public Uom getUom() {
-        if (uom == null) {
-            return parent.getUom();
-        } else {
-            return uom;
-        }
     }
 
     /**
@@ -310,8 +289,8 @@ public final class GraphicFill extends Fill implements UomNode {
     public GraphicFillType getJAXBType() {
         GraphicFillType f = new GraphicFillType();
 
-        if (uom != null) {
-            f.setUom(uom.toURN());
+        if (getOwnUom() != null) {
+            f.setUom(getOwnUom().toURN());
         }
 
         if (graphic != null) {

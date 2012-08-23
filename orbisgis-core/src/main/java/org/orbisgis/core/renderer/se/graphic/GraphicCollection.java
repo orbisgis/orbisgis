@@ -42,6 +42,7 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
@@ -53,7 +54,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * It is a set of graphic symbols, as defined in SE.
  * @author Maxence Laurent
  */
-public final class GraphicCollection implements SymbolizerNode {
+public final class GraphicCollection implements UomNode {
 
     private static final Logger LOGGER = Logger.getLogger(GraphicCollection.class);
     private static final I18n I18N = I18nFactory.getI18n(GraphicCollection.class);
@@ -208,11 +209,6 @@ public final class GraphicCollection implements SymbolizerNode {
     }
 
     @Override
-    public Uom getUom() {
-        return parent.getUom();
-    }
-
-    @Override
     public SymbolizerNode getParent() {
         return parent;
     }
@@ -343,6 +339,34 @@ public final class GraphicCollection implements SymbolizerNode {
         } else {
             return null;
         }
+    }
+
+    /**
+     * Won't do anything : graphic collections are not intended to have a
+     * dedicated unit of measure.
+     * @param u
+     */
+    @Override
+    public void setUom(Uom u) {
+    }
+
+    /**
+     * Returns {@link Uom#PX}, as it is the default value for {@code Uom}
+     * instances.
+     * @return
+     */
+    @Override
+    public Uom getOwnUom() {
+            return Uom.PX;
+    }
+
+    @Override
+    public Uom getUom() {
+            if(parent instanceof UomNode){
+                    return ((UomNode)parent).getUom();
+            } else {
+                    return Uom.PX;
+            }
     }
 
 }

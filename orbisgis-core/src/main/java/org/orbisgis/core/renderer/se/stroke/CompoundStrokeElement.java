@@ -68,11 +68,6 @@ public abstract class CompoundStrokeElement implements SymbolizerNode {
 	public abstract Object getJAXBType();
 
 	@Override
-	public Uom getUom() {
-		return parent.getUom();
-	}
-
-	@Override
 	public SymbolizerNode getParent() {
 		return parent;
 	}
