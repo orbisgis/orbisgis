@@ -28,6 +28,11 @@
  */
 package org.orbisgis.core.renderer;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.index.quadtree.Quadtree;
+import ij.process.ColorProcessor;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
@@ -37,13 +42,13 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
-
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.index.quadtree.Quadtree;
-import ij.process.ColorProcessor;
+import java.util.Set;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
+import org.gdms.data.indexes.FullIterator;
+import org.gdms.data.stream.GeoStream;
+import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverLoadException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.map.MapTransform;
@@ -57,11 +62,6 @@ import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-import org.gdms.data.DataSource;
-import org.gdms.data.indexes.FullIterator;
-import org.gdms.data.stream.GeoStream;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.driverManager.DriverLoadException;
 
 /**
  * Renderer contains all the logic of the Symbology Encoding process based on java
