@@ -47,7 +47,6 @@ import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.engine.ParseException;
 import org.orbisgis.core.DataManager;
@@ -116,10 +115,18 @@ public class CanvasSE extends JPanel {
                 }
 	}
 
+        /**
+         * Sets if the canvas must be drawn or not.
+         * @param dis
+         */
         public void setDisplayed(boolean dis){
                 displayed = dis;
         }
 
+        /**
+         * Used to know if the canvas will be displayed or not.
+         * @return
+         */
         public boolean isDisplayed() {
                 return displayed;
         }
@@ -156,8 +163,6 @@ public class CanvasSE extends JPanel {
                 } catch (DriverException ex) {
                         LOGGER.error("", ex);
                 } catch (ParseException ex) {
-                        LOGGER.error("", ex);
-                } catch (NoSuchTableException ex) {
                         LOGGER.error("", ex);
                 }
         }

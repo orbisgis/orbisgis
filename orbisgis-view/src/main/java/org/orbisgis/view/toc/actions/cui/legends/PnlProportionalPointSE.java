@@ -38,6 +38,8 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.net.URL;
 import java.text.DecimalFormat;
+import java.util.HashMap;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JComboBox;
@@ -294,12 +296,14 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                                                 fieldCombo.addItem(md.getFieldName(i));
                                         }
                                 }
-                                ActionListener acl = EventHandler.create(ActionListener.class, prev, "repaint");
                                 ActionListener acl2 = EventHandler.create(ActionListener.class,
                                         this, "updateField", "source.selectedItem");
-                                fieldCombo.addActionListener(acl);
+                                String field = proportionalPoint.getLookupFieldName();
+                                if(field != null && !field.isEmpty()){
+                                        fieldCombo.setSelectedItem(field);
+                                }
                                 fieldCombo.addActionListener(acl2);
-
+                                updateField((String)fieldCombo.getSelectedItem());
                         } catch (DriverException ex) {
                                 LOGGER.error(ex);
                         }
@@ -312,6 +316,11 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                         proportionalPoint.setFirstData(mnm[0]);
                         proportionalPoint.setSecondData(mnm[1]);
                         proportionalPoint.setLookupFieldName(obj);
+                        Map<String, Object> sample = new HashMap<String, Object>();
+                        sample.put(obj, mnm[1]);
+                        getPreview().setSampleDatasource(sample);
+                        getPreview().setDisplayed(true);
+                        getPreview().repaint();
                 } catch (DriverException ex) {
                         LOGGER.error("", ex);
                 } catch (ParameterException ex) {
