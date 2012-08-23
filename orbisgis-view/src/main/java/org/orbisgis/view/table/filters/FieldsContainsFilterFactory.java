@@ -244,12 +244,11 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 }
 
                 public void setValue(int columnId, String searchedChars, boolean matchCase, boolean wholeWord) {
-                        FilterParameters oldParams = new FilterParameters(this.columnId, this.searchedChars,this.matchCase,this.wholeWord);
                         this.columnId = columnId;
                         this.searchedChars = searchedChars;
                         this.matchCase = matchCase;
                         this.wholeWord = wholeWord;
-                        propertySupport.firePropertyChange(PROP_CURRENTFILTERVALUE, oldParams, this);
+                        propertySupport.firePropertyChange(PROP_CURRENTFILTERVALUE, null, this);
                 }
 
                 @Override

@@ -32,7 +32,6 @@ import java.awt.Component;
 import java.text.NumberFormat;
 import java.util.Locale;
 import javax.swing.JFormattedTextField;
-import javax.swing.JFormattedTextField.AbstractFormatterFactory;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.text.DefaultFormatterFactory;
