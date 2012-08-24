@@ -196,7 +196,7 @@ object Engine {
    * 
    * @param sql a SQL statement as a String
    * @param dsf the current DataSourceFactory
-   * @throws IOException if there is an error while parsing
+   * @throws ParseException if there is an error while parsing
    */
   @throws(classOf[ParseException])
   def executeScript(sql: String, dsf: DataSourceFactory) {
@@ -227,7 +227,7 @@ object Engine {
    * Loads a compiled sql statement from a stream.
    * 
    * @param i a stream over a compiled sql statement
-   * @throws ParseException if there is an error while accessing the resource
+   * @throws IOException if there is an error while accessing the resource
    */
   @throws(classOf[IOException])
   def load(i: InputStream): SQLStatement = load(i, DataSourceFactory.getDefaultProperties)
@@ -237,7 +237,7 @@ object Engine {
    * 
    * @param i a stream over a compiled sql statement
    * @param p some properties to control the engine
-   * @throws ParseException if there is an error while accessing the resource
+   * @throws IOException if there is an error while accessing the resource
    */
   @throws(classOf[IOException])
   def load(i: InputStream, p: Properties): SQLStatement = {
