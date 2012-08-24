@@ -29,6 +29,8 @@
 package org.orbisgis.view.table.jobs;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
@@ -40,16 +42,15 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.MemoryDataSetDriver;
+import org.gdms.sql.engine.Engine;
+import org.gdms.sql.engine.SQLScript;
+import org.gdms.sql.engine.SQLStatement;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-import org.gdms.sql.engine.Engine;
-import org.gdms.sql.engine.ParseException;
-import org.gdms.sql.engine.SQLScript;
-import org.gdms.sql.engine.SQLStatement;
 
 /**
  *
@@ -57,7 +58,7 @@ import org.gdms.sql.engine.SQLStatement;
  */
 public class ComputeFieldStatistics implements BackgroundJob {
         protected final static I18n I18N = I18nFactory.getI18n(ComputeFieldStatistics.class);
-        private static final Logger LOGGER = Logger.getLogger(ComputeFieldStatistics.class);
+        private static final Logger LOGGER = Logger.getLogger("gui."+ComputeFieldStatistics.class);
         private Set<Integer> statisticsRowFilter;
         private DataSource ds;
         private int columnId;
@@ -76,26 +77,49 @@ public class ComputeFieldStatistics implements BackgroundJob {
                         final DataSourceFactory dsf = (Services.getService(DataManager.class)).getDataSourceFactory();
                         Metadata metadata = ds.getMetadata();
                         String fieldName = metadata.getFieldName(columnId);
-                        String tableName = ds.getDriverTableName();
+                        String tableName = ds.getName();
+                        long rowCount = ds.getRowCount();
                         boolean doRowFiltering = !statisticsRowFilter.isEmpty() && statisticsRowFilter.size() < ds.getRowCount();
                         if(doRowFiltering) {
                                 // Create a smaller data source then compute the stats
+                                rowCount = statisticsRowFilter.size();
                                 tableName = makeFilteredData(dsf,fieldName);                                
                         }
                         // Compute statistics for the whole table
                         SQLScript s = Engine.loadScript(
                                 ComputeFieldStatistics.class.getResourceAsStream("compute_stats.bsql"));
-                        s.setDataSourceFactory(dsf);
-                        s.setFieldParameter("fieldName", fieldName);
-                        s.setTableParameter("tableName", tableName);
+                        LOGGER.debug("Set Table name : "+tableName);
                         //Retrieve the first statement
                         SQLStatement statement = s.getStatements()[0];
+                        statement.setFieldParameter("fieldName", fieldName);
+                        statement.setTableParameter("tableName", tableName);
+                        statement.setDataSourceFactory(dsf);
                         DataSource d = dsf.getDataSource(statement, DataSourceFactory.DEFAULT,pm);
-                        //TODO Release filtered column values
+                        //Read statistics
+                        d.open();
+                        Value[] row = d.getRow(0);
+                        String[] rowLabels = d.getMetadata().getFieldNames();
+                        Map<String,Value> values = new HashMap<String,Value>();
+                        for(int col=0;col<row.length;col++) {
+                                values.put(rowLabels[col],row[col]);
+                        }
+                        // Show table statistics
+                        StringBuilder message = new StringBuilder();
+                        message.append(I18N.tr("Table {0}, statistics of the column {1}.\n",ds.getName(),fieldName));
+                        message.append(I18N.tr("Row count : {0}\n",rowCount));
+                        message.append(I18N.tr("Minimum : {0}\n",values.get("min")));
+                        message.append(I18N.tr("Maximum : {0}\n",values.get("max")));
+                        message.append(I18N.tr("Sum : {0}\n",values.get("sum")));
+                        message.append(I18N.tr("Average : {0}\n",values.get("avg")));
+                        message.append(I18N.tr("Standart deviation : {0}\n",values.get("std")));
+                        LOGGER.info(message.toString());
+                        
+                        //Free temporary tables
                         d.close();
                         if(doRowFiltering) {
                                 dsf.getSourceManager().remove(tableName);
                         }
+                        statement.cleanUp();
                 } catch (DriverException ex) {
                         LOGGER.error(ex.getLocalizedMessage(),ex);
                 } catch (DataSourceCreationException ex) {

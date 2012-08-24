@@ -36,6 +36,7 @@ import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
@@ -74,6 +75,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.table.filters.FieldsContainsFilterFactory;
 import org.orbisgis.view.table.filters.TableSelectionFilter;
 import org.orbisgis.view.table.filters.WhereSQLFilterFactory;
+import org.orbisgis.view.table.jobs.ComputeFieldStatistics;
 import org.orbisgis.view.table.jobs.OptimalWidthJob;
 import org.orbisgis.view.table.jobs.SearchJob;
 import org.xnap.commons.i18n.I18n;
@@ -360,7 +362,12 @@ public class TableEditor extends JPanel implements EditorDockable {
          * Compute and show the selected field statistics
          */
         public void onMenuShowStatistics() {
-                
+                //Compute row id selection
+                Set<Integer> selectionModelRowId = new IntegerUnion();
+                for(int viewRowId : table.getSelectedRows()) {
+                        selectionModelRowId.add(tableSorter.convertRowIndexToModel(viewRowId));
+                }
+                launchJob(new ComputeFieldStatistics(selectionModelRowId, tableModel.getDataSource(), popupCellAdress.x));
         }
         /**
          * Compute the optimal width for this column

@@ -35,7 +35,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.SortedSet;
 
 /**
@@ -223,7 +222,7 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
 
         @Override
         public Iterator<Integer> iterator() {
-                return new ValueIterator();
+                return new ValueIterator(intervals.iterator());
         }
 
         /**
@@ -340,15 +339,15 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
                 intervals.clear();
         }
 
-        private class ValueIterator implements Iterator<Integer> {
+        private static class ValueIterator implements Iterator<Integer> {
 
                 private Iterator<Integer> it;
                 private Integer current = -1;
                 private Integer itEnd = 0;
 
-                public ValueIterator() {
-                        it = intervals.iterator();
-                        if (!intervals.isEmpty()) {
+                public ValueIterator(Iterator<Integer> intervals) {
+                        it = intervals;
+                        if (it.hasNext()) {
                                 current = it.next() - 1;
                                 itEnd = it.next() + 1;
                         }
