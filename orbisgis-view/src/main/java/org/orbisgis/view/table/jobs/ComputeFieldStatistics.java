@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.Set;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
@@ -106,7 +105,7 @@ public class ComputeFieldStatistics implements BackgroundJob {
                         }
                         // Show table statistics
                         StringBuilder message = new StringBuilder();
-                        message.append(I18N.tr("Table {0}, statistics of the column {1}.\n",ds.getName(),fieldName));
+                        message.append(I18N.tr("\nTable {0}, statistics of the column {1}.\n",ds.getName(),fieldName));
                         message.append(I18N.tr("Row count : {0}\n",rowCount));
                         message.append(I18N.tr("Minimum : {0}\n",values.get("min")));
                         message.append(I18N.tr("Maximum : {0}\n",values.get("max")));

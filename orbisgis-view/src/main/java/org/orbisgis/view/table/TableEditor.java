@@ -29,6 +29,7 @@
 package org.orbisgis.view.table;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -39,6 +40,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -212,8 +214,9 @@ public class TableEditor extends JPanel implements EditorDockable {
         }
         
         private JPopupMenu makeTableCellPopup(int row,int col) {
-                JPopupMenu pop = new JPopupMenu();                
-                if(table.getSelectedRowCount()>0) {
+                JPopupMenu pop = new JPopupMenu();
+                boolean hasSelectedRows = table.getSelectedRowCount()>0;
+                if(hasSelectedRows) {
                         JMenuItem addRowFilter = new JMenuItem(I18N.tr("Filter selected rows"));
                         addRowFilter.setToolTipText(I18N.tr("Show only the selected rows"));
                         addRowFilter.addActionListener(
@@ -230,6 +233,22 @@ public class TableEditor extends JPanel implements EditorDockable {
                                 this,"onMenuClearFilter"));
                         pop.add(removeRowFilter);
                 }
+                if(hasSelectedRows) {
+                        JMenuItem deselectAll = new JMenuItem(
+                                I18N.tr("Clear selection"),OrbisGISIcon.getIcon("edit-clear"));
+                        deselectAll.addActionListener(
+                                EventHandler.create(ActionListener.class,
+                                this,"onMenuClearSelection"));
+                        pop.add(deselectAll);
+                        
+                }
+                JMenuItem findSameCells = new JMenuItem(
+                        I18N.tr("Select same cell"),OrbisGISIcon.getIcon("selectsame_row"));
+                findSameCells.setToolTipText(I18N.tr("Select all rows that match this cell value"));
+                findSameCells.addActionListener(
+                        EventHandler.create(ActionListener.class,
+                        this,"onMenuSelectSameCellValue"));
+                pop.add(findSameCells);                
                 return pop;
         }
         
@@ -239,6 +258,59 @@ public class TableEditor extends JPanel implements EditorDockable {
         public void onMenuClearFilter() {
                 tableSorter.setRowsFilter(null);
         }
+        
+        /**
+         * Return the formated version of the cell
+         * @param row View row Id
+         * @param col Col id
+         * @return 
+         */
+        private String getFormatedCellValue(int row,int col) {
+                TableCellRenderer cellRenderer = table.getCellRenderer(row, col);
+                Component ctrl = cellRenderer.getTableCellRendererComponent(table,
+                        tableModel.getValueAt(tableSorter.convertRowIndexToModel(row), col),
+                        false,false,row,col);
+                if(ctrl instanceof JLabel) {
+                        return ((JLabel)ctrl).getText();
+                } else {
+                        return tableModel.getValueAt(tableSorter.convertRowIndexToModel(row), col).toString();
+                }
+        }
+        
+        /**
+         * Select all rows that have the same value of the selected cell
+         */
+        public void onMenuSelectSameCellValue() {
+                int colId = popupCellAdress.x;
+                int rowId = popupCellAdress.y;
+                //
+                //Build the appropriate search filter
+                String cellValue;
+                try {
+                        cellValue = tableModel.getDataSource().
+                        getFieldValue(rowId,colId).toString();
+                } catch ( DriverException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(),ex);
+                        return;
+                }
+                ActiveFilter filter = new FieldsContainsFilterFactory.
+                        FilterParameters(colId, cellValue, true, true);
+                //Clear current filter
+                filterManager.clearFilters();
+                //Add the find filter
+                filterManager.addFilter(filter);
+                //Trigger the filter job
+                onApplySelectionFilter();
+                
+        }
+        
+        /**
+         * Clear the table selection
+         */
+        public void onMenuClearSelection() {
+                table.clearSelection();
+        }
+        
         /**
          * Show only selected rows
          */
@@ -304,6 +376,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                         "onMenuNoSort"));
                         pop.add(noSort);
                 }
+                pop.addSeparator();
                 //Get Field informations
                 JMenuItem showFieldInformations =
                         new JMenuItem(I18N.tr("Show column informations"),

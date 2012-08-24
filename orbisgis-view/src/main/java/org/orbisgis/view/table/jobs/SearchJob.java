@@ -66,6 +66,9 @@ public class SearchJob implements BackgroundJob {
                         if(activeFilter.isSelected(table.getRowSorter().convertRowIndexToModel(viewId), source)) {
                                 nextViewSelection.add(viewId);
                                 pm.progressTo(viewId / rowCount * 100);
+                                if(pm.isCancelled()) {
+                                        return;
+                                }
                         }
                 }
                 pm.endTask();
@@ -75,6 +78,9 @@ public class SearchJob implements BackgroundJob {
                         int begin = intervals.next();
                         int end = intervals.next();
                         table.addRowSelectionInterval(begin, end);
+                        if(pm.isCancelled()) {
+                                return;
+                        }
                 }
         }
 
