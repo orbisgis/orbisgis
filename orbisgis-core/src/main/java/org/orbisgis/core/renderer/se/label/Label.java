@@ -54,7 +54,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  * about its alignment, vertical or horizontal.
  * @author Maxence Laurent, Alexis Guéganno
  */
-public abstract class Label implements SymbolizerNode, UomNode {
+public abstract class Label implements UomNode {
 
     private SymbolizerNode parent;
     private Uom uom;
@@ -227,13 +227,15 @@ public abstract class Label implements SymbolizerNode, UomNode {
     public Uom getOwnUom() {
         return uom;
     }
-
+    
     @Override
     public Uom getUom() {
         if (uom != null) {
             return uom;
+        } else if(parent instanceof UomNode){
+            return ((UomNode)parent).getUom();
         } else {
-            return parent.getUom();
+                return Uom.PX;
         }
     }
 

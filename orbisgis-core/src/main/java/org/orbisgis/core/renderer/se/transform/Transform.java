@@ -50,7 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  *
  * @author Maxence Laurent, Alexis Guéganno
  */
-public class Transform implements SymbolizerNode, UomNode {
+public class Transform implements UomNode {
 
         private Uom uom;
         private SymbolizerNode parent;
@@ -284,9 +284,11 @@ public class Transform implements SymbolizerNode, UomNode {
         @Override
         public Uom getUom() {
                 if (uom != null) {
-                        return this.uom;
+                        return uom;
+                } else if(parent instanceof UomNode){
+                        return ((UomNode)parent).getUom();
                 } else {
-                        return parent.getUom();
+                        return Uom.PX;
                 }
         }
 

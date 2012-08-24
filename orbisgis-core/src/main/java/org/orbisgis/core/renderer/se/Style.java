@@ -342,11 +342,6 @@ public final class Style implements SymbolizerNode {
     }
 
     @Override
-    public Uom getUom() {
-        return null;
-    }
-
-    @Override
     public SymbolizerNode getParent() {
         return null;
     }

@@ -68,20 +68,24 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
 
         /**
          * The default constructor only instanciates an empty list of 
-         * <code>InterpolationPoint</code>
+         * <code>InterpolationPoint</code> and sets the interpolation mode to
+         * {@link InterpolationMode#LINEAR}.
          */
         protected Interpolate() {
                 this.iPoints = new ArrayList<InterpolationPoint<ToType>>();
+                mode = InterpolationMode.LINEAR;
         }
 
         /**
-         * Build an <code>Interpolate</code> instance where the default value for 
-         * unprocessable cases is <code>fallbackValue</code>
+         * Builds an <code>Interpolate</code> instance where the default value for
+         * unprocessable cases is <code>fallbackValue</code>and the interpolation
+         * mode is {@link InterpolationMode#LINEAR}.
          * @param fallbackValue 
          */
         public Interpolate(FallbackType fallbackValue) {
                 this.fallbackValue = fallbackValue;
                 this.iPoints = new ArrayList<InterpolationPoint<ToType>>();
+                mode = InterpolationMode.LINEAR;
         }
 
         @Override

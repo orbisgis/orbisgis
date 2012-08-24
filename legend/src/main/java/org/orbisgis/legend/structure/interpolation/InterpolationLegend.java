@@ -36,9 +36,9 @@ import org.orbisgis.legend.structure.parameter.NumericLegend;
 
 /**
  * The default representation of an interpolation, in the legend. If obtained
- * during an analysis, it is supposed to mean that non of the other, more
+ * during an analysis, it is supposed to mean that none of the other, more
  * accurate cases, has been recognized in the input {@code Interpolate2Real}
- * instanceused by the analyzer.
+ * instance used by the analyzer.
  * @author Alexis Guéganno
  */
 public class InterpolationLegend implements NumericLegend {

@@ -32,7 +32,6 @@ import java.util.HashSet;
 import net.opengis.se._2_0.thematic.SliceType;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -125,11 +124,6 @@ public class Slice implements SymbolizerNode, FillNode {
                 if (value != null) {
                         value.setContext(RealParameterContext.REAL_CONTEXT);
                 }
-        }
-
-        @Override
-        public Uom getUom() {
-                return parent.getUom();
         }
 
         @Override

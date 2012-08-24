@@ -40,7 +40,6 @@ import net.opengis.se._2_0.core.TextStrokeType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.LineLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
@@ -157,8 +156,4 @@ public final class TextStroke extends Stroke {
                 return bounds.getWidth();
         }
 
-        @Override
-        public Uom getUom() {
-                return parent.getUom();
-        }
 }

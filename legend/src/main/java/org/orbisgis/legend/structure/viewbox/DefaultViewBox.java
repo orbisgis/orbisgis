@@ -29,7 +29,9 @@
 package org.orbisgis.legend.structure.viewbox;
 
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
-import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
 import org.orbisgis.legend.structure.parameter.NumericLegend;
 
 /**
@@ -39,12 +41,22 @@ import org.orbisgis.legend.structure.parameter.NumericLegend;
  * accurate descriptions.
  * @author Alexis Guéganno
  */
-public class DefaultViewBox implements LegendStructure{
+public class DefaultViewBox implements ViewBoxLegend{
 
         private ViewBox viewBox;
         private NumericLegend height;
         private NumericLegend width;
 
+        /**
+         * Builds a new DefaultViewBox with 3 as height and width.
+         */
+        public DefaultViewBox(){
+                viewBox = new ViewBox();
+                height = (NumericLegend) new RealParameterAnalyzer(new RealLiteral(3)).getLegend();
+                width = (NumericLegend) new RealParameterAnalyzer(new RealLiteral(3)).getLegend();
+                viewBox.setWidth((RealParameter)width.getParameter());
+                viewBox.setHeight((RealParameter)height.getParameter());
+        }
         /**
          * Build a new {@code DefaultViewBox} with the given parameters, using
          * directly the two needed {@code NumericLegend} instances.
@@ -83,6 +95,7 @@ public class DefaultViewBox implements LegendStructure{
          * Gets the {@code ViewBox} associated to this LegendStructure.
          * @return
          */
+        @Override
         public ViewBox getViewBox() {
                 return viewBox;
         }

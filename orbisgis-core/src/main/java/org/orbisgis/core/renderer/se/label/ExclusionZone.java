@@ -43,7 +43,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
  * labels' displaying will be forbidden.
  * @author Alexis Guéganno, Maxence Laurent
  */
-public abstract class ExclusionZone implements SymbolizerNode, UomNode {
+public abstract class ExclusionZone implements UomNode {
         private SymbolizerNode parent;
         private Uom uom;
 
@@ -72,10 +72,12 @@ public abstract class ExclusionZone implements SymbolizerNode, UomNode {
 
         @Override
         public Uom getUom() {
-                if (uom == null) {
-                        return parent.getUom();
-                } else {
+                if (uom != null) {
                         return uom;
+                } else if(parent instanceof UomNode){
+                        return ((UomNode)parent).getUom();
+                } else {
+                        return Uom.PX;
                 }
         }
 

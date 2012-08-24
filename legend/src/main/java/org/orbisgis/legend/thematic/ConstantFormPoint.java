@@ -42,6 +42,14 @@ public abstract class ConstantFormPoint extends SymbolizerLegend {
     private PointSymbolizer pointSymbolizer;
 
     /**
+     * Builds a new {@code ConstantFormPoint} that just have a default {@link
+     * PointSymbolizer} in it.
+     */
+    public ConstantFormPoint(){
+            pointSymbolizer = new PointSymbolizer();
+    }
+
+    /**
      * Basically set the associated {@link PointSymbolizer}.
      * @param symbolizer
      */

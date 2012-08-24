@@ -38,6 +38,8 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.UomNode;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
@@ -45,7 +47,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  *
  * @author Maxence Laurent, Alexis Guéganno.
  */
-public abstract class Stroke implements SymbolizerNode {
+public abstract class Stroke implements UomNode {
 
 
     /**
@@ -53,6 +55,7 @@ public abstract class Stroke implements SymbolizerNode {
      */
     protected SymbolizerNode parent;
 
+    private Uom uom;
     private boolean linearRapport;
     private boolean offsetRapport;
 
@@ -247,6 +250,27 @@ public abstract class Stroke implements SymbolizerNode {
     public Double getNaturalLengthForCompound(Map<String,Value> map,
             Shape shp, MapTransform mt) throws ParameterException, IOException {
         return getNaturalLength(map, shp, mt);
+    }
+
+    @Override
+    public Uom getUom() {
+        if (uom != null) {
+            return uom;
+        } else if(parent instanceof UomNode){
+            return ((UomNode)parent).getUom();
+        } else {
+                return Uom.PX;
+        }
+    }
+
+    @Override
+    public void setUom(Uom u) {
+        uom = u;
+    }
+
+    @Override
+    public Uom getOwnUom() {
+        return uom;
     }
     
 }

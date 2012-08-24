@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.renderer.se;
 
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.orbisgis.core.AbstractTest;
@@ -52,7 +53,11 @@ public class PointSymbolizerTest extends AbstractTest {
                 MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
                 assertTrue(mg.getWkn().getValue(null, 0).equalsIgnoreCase("circle"));
                 assertTrue(mg.getViewBox().getWidth().getValue(null, 0) == 3.0);
-                assertTrue(mg.getViewBox().getUom() == Uom.MM);
+                assertTrue(mg.getUom() == Uom.MM);
+                //We're dealing with the default symbolizer, so we obtain a MarKgraphic
+                //where the UOM has been set to MM. Consequently, even if not
+                //set from here, the own Uom of the MarkGraphic is not null.
+                assertNotNull(mg.getOwnUom());
         }
 
         @Test

@@ -28,25 +28,27 @@
  */
 package org.orbisgis.legend.analyzer;
 
-import org.orbisgis.legend.analyzer.function.InterpolationAnalyzer;
-import org.orbisgis.legend.structure.interpolation.InterpolationLegend;
-import org.orbisgis.core.renderer.se.LineSymbolizer;
-import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
-import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
-import org.orbisgis.legend.AnalyzerTest;
-import javax.xml.bind.Unmarshaller;
-import org.orbisgis.core.renderer.se.Style;
-import net.opengis.se._2_0.core.StyleType;
-import javax.xml.bind.JAXBElement;
 import java.io.FileInputStream;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Unmarshaller;
+import net.opengis.se._2_0.core.StyleType;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
 import org.orbisgis.core.renderer.se.parameter.real.RealFunction;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.legend.AnalyzerTest;
+import org.orbisgis.legend.analyzer.function.InterpolationAnalyzer;
+import org.orbisgis.legend.structure.interpolation.InterpolationLegend;
+import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
 import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;
-import static org.junit.Assert.*;
 
 /**
  * We test the good behaviour of the interpolation analyzer here. We will
@@ -64,33 +66,32 @@ public class InterpolationAnalyzerTest extends AnalyzerTest{
          */
         @Test
         public void testFindSqrtInterp() throws Exception {
-                //First we build the JAXB tree
-                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
-                JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
-                        new FileInputStream(xml));
-                Style st = new Style(ftsElem, null);
-                PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
-                MarkGraphic mg = (MarkGraphic) (ps.getGraphicCollection().getGraphic(0));
-                Interpolate2Real ir = (Interpolate2Real) mg.getViewBox().getWidth();
+                Interpolate2Real ir = getSqrtInterpolate();
                 //We make our analyze
                 InterpolationAnalyzer ia = new InterpolationAnalyzer(ir);
                 assertTrue(ia.getLegend() instanceof SqrtInterpolationLegend);
         }
 
         /**
+         * We test that an interpolation made on the square root of a numeric
+         * field is not considered as an analysis.
+         */
+        @Test
+        public void testFindinvalidSqrtInterp() throws Exception {
+                Interpolate2Real ir = getSqrtInterpolate();
+                ir.setLookupValue(new RealLiteral(49675));
+                //We make our analyze
+                InterpolationAnalyzer ia = new InterpolationAnalyzer(ir);
+                assertFalse(ia.getLegend() instanceof SqrtInterpolationLegend);
+                assertTrue(ia.getLegend() instanceof InterpolationLegend);
+        }
+        /**
          * We test that we are able to retrieve an interpolation made on
          * a numeric field.
          */
         @Test
         public void testInterpolationLinear() throws Exception {
-                //First we build the JAXB tree
-                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
-                JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
-                        new FileInputStream(linearInterpo));
-                Style st = new Style(ftsElem, null);
-                LineSymbolizer ls = (LineSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
-                PenStroke mg = (PenStroke) (ls.getStroke());
-                Interpolate2Real ir = (Interpolate2Real) mg.getWidth();
+                Interpolate2Real ir = getLinearInterpolate();
                 //We make our analyze
                 InterpolationAnalyzer ia = new InterpolationAnalyzer(ir);
                 assertTrue(ia.getLegend() instanceof LinearInterpolationLegend);
@@ -102,14 +103,7 @@ public class InterpolationAnalyzerTest extends AnalyzerTest{
          */
         @Test
         public void testInterpolationOnOtherFunction() throws Exception {
-                //First we build the JAXB tree
-                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
-                JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
-                        new FileInputStream(xml));
-                Style st = new Style(ftsElem, null);
-                PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
-                MarkGraphic mg = (MarkGraphic) (ps.getGraphicCollection().getGraphic(0));
-                Interpolate2Real ir = (Interpolate2Real) mg.getViewBox().getWidth();
+                Interpolate2Real ir = getSqrtInterpolate();
                 RealFunction rf = (RealFunction)(ir.getLookupValue());
                 RealFunction tb = new RealFunction("log");
                 tb.addOperand(rf.getOperand(0));
@@ -120,5 +114,29 @@ public class InterpolationAnalyzerTest extends AnalyzerTest{
                 boolean b2 = (ia.getLegend() instanceof SqrtInterpolationLegend);
                 assertTrue(b1
                         && !b2);
+        }
+
+        private Interpolate2Real getSqrtInterpolate() throws Exception {
+                //First we build the JAXB tree
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
+                JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
+                        new FileInputStream(xml));
+                Style st = new Style(ftsElem, null);
+                PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
+                MarkGraphic mg = (MarkGraphic) (ps.getGraphicCollection().getGraphic(0));
+                return (Interpolate2Real) mg.getViewBox().getWidth();
+
+        }
+
+        private Interpolate2Real getLinearInterpolate() throws Exception {
+                //First we build the JAXB tree
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
+                JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
+                        new FileInputStream(linearInterpo));
+                Style st = new Style(ftsElem, null);
+                LineSymbolizer ls = (LineSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
+                PenStroke mg = (PenStroke) (ls.getStroke());
+                return (Interpolate2Real) mg.getWidth();
+
         }
 }
