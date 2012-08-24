@@ -39,8 +39,8 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.AreaSymbolizerType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -205,7 +205,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
          * @throws DriverException
          */
         @Override
-        public void draw(Graphics2D g2, DataSource sds, long fid,
+        public void draw(Graphics2D g2, DataSet sds, long fid,
                 boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
                 throws ParameterException, IOException, DriverException {
 

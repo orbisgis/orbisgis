@@ -39,7 +39,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.JPanel;
@@ -47,8 +46,14 @@ import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
+import org.gdms.sql.engine.Engine;
 import org.gdms.sql.engine.ParseException;
+import org.gdms.sql.engine.SQLScript;
+import org.gdms.sql.engine.SQLStatement;
+import org.gdms.sql.engine.SemanticException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
@@ -69,7 +74,7 @@ public class CanvasSE extends JPanel {
         private GeometryFactory gf;
         private Geometry geom;
         private MapTransform mt;
-        private DataSource sample;
+        private DataSet sample;
         private boolean displayed;
 
         /**
@@ -97,14 +102,19 @@ public class CanvasSE extends JPanel {
                 if(displayed){
                         g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                         if(sample == null){
-                                setSampleDatasource(new HashMap<String, Object>());
+                                setBasicDataSource();
                         }
                         try {
-                                if(!sample.isOpen()){
-                                        sample.open();
+                                if(sample instanceof DataSource){
+                                        DataSource ds = (DataSource) sample;
+                                        if(!ds.isOpen()){
+                                                ds.open();
+                                        }
                                 }
                                 s.draw(g2, sample, 0, false, mt, geom, null);
-                                sample.close();
+                                if(sample instanceof DataSource){
+                                        ((DataSource) sample).close();
+                                }
                         } catch (DriverException de){
                         } catch (ParameterException de){
                         } catch (IOException de){
@@ -132,6 +142,28 @@ public class CanvasSE extends JPanel {
         }
 
         /**
+         * Sets the associated {@code DataSource} so that it contains only a
+         * basic geometry in a field named the_geom.
+         */
+        public void setBasicDataSource(){
+                DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
+                try {
+                        SQLScript s = Engine.loadScript(CanvasSE.class.getResourceAsStream("GeometryOnly.bsql"));
+                        s.setValueParameter("geomText", ValueFactory.createValue(getSampleGeometry().toString()));
+                        s.setDataSourceFactory(dsf);
+                        SQLStatement st = s.getStatements()[0];
+                        st.prepare();
+                        sample = st.execute();
+                        st.cleanUp();
+                } catch (SemanticException ex) {
+                        LOGGER.warn(ex.getMessage(), ex);
+                } catch (DriverException ex) {
+                        LOGGER.error(ex.getMessage(), ex);
+                } catch (IOException ex) {
+                        LOGGER.warn(ex.getMessage(), ex);
+                }
+        }
+        /**
          * Creates a sample {@link DataSource} that will be filled using :
          * <ul><li>The geometry type of the associated symbolizer.</li>
          * <li>The map given in argument.</li></ul></p>
@@ -157,7 +189,7 @@ public class CanvasSE extends JPanel {
                 DataSourceFactory dsf = dataManager.getDataSourceFactory();
                 try {
                         sample = dsf.getDataSourceFromSQL(sb.toString());
-                        dataManager.getSourceManager().remove(sample.getName());
+                        dataManager.getSourceManager().remove(((DataSource)sample).getName());
                 } catch (DataSourceCreationException ex) {
                         LOGGER.error("", ex);
                 } catch (DriverException ex) {

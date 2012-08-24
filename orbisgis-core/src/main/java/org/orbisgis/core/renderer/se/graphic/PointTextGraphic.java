@@ -164,7 +164,7 @@ public final class PointTextGraphic extends Graphic implements UomNode {
 
 
         /*@Override
-        public double getMaxWidth(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
+        public double getMaxWidth(DataSet sds, long fid, MapTransform mt) throws ParameterException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
         }*/
         @Override

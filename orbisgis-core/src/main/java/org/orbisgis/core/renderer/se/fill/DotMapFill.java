@@ -43,7 +43,6 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.thematic.DotMapFillType;
 import net.opengis.se._2_0.thematic.ObjectFactory;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;

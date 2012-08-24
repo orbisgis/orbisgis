@@ -34,8 +34,8 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.InterpolateType;
 import net.opengis.se._2_0.core.InterpolationPointType;
 import net.opengis.se._2_0.core.ModeType;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.Interpolate;
 import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
@@ -96,7 +96,7 @@ public final class Interpolate2Color extends Interpolate<ColorParameter, ColorLi
         /**
          * Retrieve the <code>Color</code> that must be associated to the datum at index
          * <code>fid</code> in <code>sds</code>. The resulting color is obtained by
-         * using the value from the <code>DataSource</code>, the 
+         * using the value from the <code>DataSet</code>, the 
          * interpolation points and the interpolation method.
          * @param ds
          * @param fid
@@ -104,7 +104,7 @@ public final class Interpolate2Color extends Interpolate<ColorParameter, ColorLi
          * The interpolated <code>Color</code>
          */
         @Override
-        public Color getColor(DataSource sds, long fid) throws ParameterException {
+        public Color getColor(DataSet sds, long fid) throws ParameterException {
                 double value = this.getLookupValue().getValue(sds, fid);
                 int numPt = getNumInterpolationPoint();
                 if (getInterpolationPoint(0).getData() >= value) {
@@ -127,7 +127,7 @@ public final class Interpolate2Color extends Interpolate<ColorParameter, ColorLi
         /**
          * Retrieve the <code>Color</code> that must be associated to the data
          * stored in {@code map}. The resulting color is obtained by
-         * using the value from the <code>DataSource</code>, the
+         * using the value from the <code>DataSet</code>, the
          * interpolation points and the interpolation method.
          * @param ds
          * @param fid

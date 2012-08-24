@@ -303,7 +303,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     }
 
     /*@Override
-    public RenderableGraphics getRenderableGraphics(DataSource sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(DataSet sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
     // TODO Implements SELECTED!
 
     RenderedImage img;
@@ -363,7 +363,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     return rg;
     }*/
 
-    /*public double getMargin(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    /*public double getMargin(DataSet sds, long fid, MapTransform mt) throws ParameterException, IOException {
     double delta = 0.0;
 
     if (this.halo != null) {
@@ -375,7 +375,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
 
     /*
     @Override
-    public double getMaxWidth(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    public double getMaxWidth(DataSet sds, long fid, MapTransform mt) throws ParameterException, IOException {
     double delta = 0.0;
     if (viewBox != null && viewBox.usable()) {
     RenderedImage img;

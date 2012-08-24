@@ -108,7 +108,7 @@ public final class CompositeSymbolizer implements UomNode {
         }
 
         /*
-        public void draw(Graphics2D g2, DataSource sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException{
+        public void draw(Graphics2D g2, DataSet sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException{
         for (Symbolizer s : this.symbolizers){
         if (s instanceof VectorSymbolizer){
         ((VectorSymbolizer)s).draw(g2, sds, fid, selected, mt, null, null);

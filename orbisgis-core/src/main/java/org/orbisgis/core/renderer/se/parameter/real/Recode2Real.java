@@ -31,8 +31,8 @@ package org.orbisgis.core.renderer.se.parameter.real;
 import java.util.Map;
 import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.RecodeType;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.Recode;
@@ -80,7 +80,7 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
         }
 
         @Override
-        public Double getValue(DataSource sds, long fid) throws ParameterException {
+        public Double getValue(DataSet sds, long fid) throws ParameterException {
                 if (sds == null) {
                         throw new ParameterException("No feature");
                 }

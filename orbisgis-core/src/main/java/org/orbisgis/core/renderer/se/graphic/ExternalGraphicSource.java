@@ -64,7 +64,7 @@ public interface ExternalGraphicSource {
     
     void draw(Graphics2D g2, AffineTransform at, MapTransform mt, double opacity, String mimeType);
 
-    //public abstract RenderedImage getPlanarImage(ViewBox viewBox, DataSource sds,
+    //public abstract RenderedImage getPlanarImage(ViewBox viewBox, DataSet sds,
     //long fid, MapTransform mt, String mimeType) throws IOException, ParameterException;
 
     void setJAXBSource(ExternalGraphicType e);
