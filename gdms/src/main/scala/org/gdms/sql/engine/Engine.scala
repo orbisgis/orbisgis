@@ -227,7 +227,7 @@ object Engine {
    * Loads a compiled sql statement from a stream.
    * 
    * @param i a stream over a compiled sql statement
-   * @throws ParseException if there is an error while accessing the resource
+   * @throws IOException if there is an error while accessing the resource
    */
   @throws(classOf[IOException])
   def load(i: InputStream): SQLStatement = load(i, DataSourceFactory.getDefaultProperties)
@@ -237,7 +237,7 @@ object Engine {
    * 
    * @param i a stream over a compiled sql statement
    * @param p some properties to control the engine
-   * @throws ParseException if there is an error while accessing the resource
+   * @throws IOException if there is an error while accessing the resource
    */
   @throws(classOf[IOException])
   def load(i: InputStream, p: Properties): SQLStatement = {
@@ -254,7 +254,7 @@ object Engine {
     } finally {
       if (o != null) o.close
       if (o2 != null) o2.close
-      i.close // just to be sure
+      if (i != null) i.close // just to be sure
     }
   }
   
@@ -335,7 +335,7 @@ object Engine {
         })
     } finally {
       objs map (_.close)
-      i.close // just to be sure
+      if (i != null) i.close // just to be sure
     }
   }
 }
