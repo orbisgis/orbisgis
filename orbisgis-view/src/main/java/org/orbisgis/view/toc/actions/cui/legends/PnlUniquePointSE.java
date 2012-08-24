@@ -45,6 +45,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.event.ChangeListener;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.WellKnownName;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
@@ -73,6 +74,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class PnlUniquePointSE extends PnlUniqueAreaSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlUniquePointSE.class);
         private int geometryType = SimpleGeometryType.ALL;
+        private Uom[] uoms;
 
         /**
          * Here we can put all the Legend instances we want... but they have to
@@ -228,7 +230,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 JPanel jp = new JPanel();
                 boolean canBeOnV = geometryType != SimpleGeometryType.POINT;
                 int onV = canBeOnV ? 1 : 0;
-                GridLayout grid = new GridLayout(4+onV,2);
+                GridLayout grid = new GridLayout(5+onV,2);
                 grid.setVgap(5);
                 jp.setLayout(grid);
                 //If geometryType != POINT, we must let the user choose if he
@@ -236,6 +238,9 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 if(geometryType != SimpleGeometryType.POINT){
                         addPointOnVertices(point, jp);
                 }
+                //Uom
+                jp.add(buildText(I18N.tr("Unit of measure :")));
+                jp.add(getPointUomCombo());
                 //Combobox
                 jp.add(buildText(I18N.tr("Symbol form :")));
                 jp.add(getWKNCombo(point));
@@ -302,7 +307,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 }
                 final JComboBox jcc = new JComboBox(values);
                 ActionListener acl = EventHandler.create(ActionListener.class, prev, "repaint");
-                ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateComboBox", "source.selectedIndex");
+                ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateWKNComboBox", "source.selectedIndex");
                 jcc.addActionListener(acl2);
                 jcc.addActionListener(acl);
                 jcc.setSelectedItem(point.getWellKnownName().toUpperCase());
@@ -341,7 +346,37 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * as its well-known name. Used when changing the combobox selection.
          * @param index
          */
-        public void updateComboBox(int index){
+        public void updateWKNComboBox(int index){
                 ((ConstantFormPoint)getLegend()).setWellKnownName(wkns[index]);
+        }
+
+
+        /**
+         * ComboBox to configure the unit of measure used to draw th stroke.
+         * @param pt
+         * @return
+         */
+        protected JComboBox getPointUomCombo(){
+                CanvasSE prev = getPreview();
+                uoms= Uom.values();
+                String[] values = new String[uoms.length];
+                for (int i = 0; i < values.length; i++) {
+                        values[i] = I18N.tr(uoms[i].toString());
+                }
+                final JComboBox jcc = new JComboBox(values);
+                ActionListener acl = EventHandler.create(ActionListener.class, prev, "repaint");
+                ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex");
+                jcc.addActionListener(acl2);
+                jcc.addActionListener(acl);
+                jcc.setSelectedItem(((ConstantFormPoint)getLegend()).getSymbolUom().toString().toUpperCase());
+                return jcc;
+        }
+        /**
+         * Sets the underlying graphic to use the ith element of the combobox
+         * as its uom. Used when changing the combobox selection.
+         * @param index
+         */
+        public void updateSUComboBox(int index){
+                ((ConstantFormPoint)getLegend()).setSymbolUom(uoms[index]);
         }
 }
