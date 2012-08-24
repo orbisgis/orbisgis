@@ -196,7 +196,7 @@ object Engine {
    * 
    * @param sql a SQL statement as a String
    * @param dsf the current DataSourceFactory
-   * @throws ParseException if there is an error while parsing
+   * @throws IOException if there is an error while parsing
    */
   @throws(classOf[ParseException])
   def executeScript(sql: String, dsf: DataSourceFactory) {
@@ -254,7 +254,7 @@ object Engine {
     } finally {
       if (o != null) o.close
       if (o2 != null) o2.close
-      i.close // just to be sure
+      if (i != null) i.close // just to be sure
     }
   }
   
@@ -335,7 +335,7 @@ object Engine {
         })
     } finally {
       objs map (_.close)
-      i.close // just to be sure
+      if (i != null) i.close // just to be sure
     }
   }
 }
