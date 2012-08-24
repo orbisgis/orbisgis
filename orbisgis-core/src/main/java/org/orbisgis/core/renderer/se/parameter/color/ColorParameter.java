@@ -30,8 +30,8 @@ package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
 import java.util.Map;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 
@@ -52,7 +52,7 @@ public interface ColorParameter extends SeParameter {
      * @return
      * @throws ParameterException 
      */
-    Color getColor(DataSource sds, long fid) throws ParameterException;
+    Color getColor(DataSet sds, long fid) throws ParameterException;
 
     /**
      * Retrieve the colour associated to this parameter, from the datasource sds, at index fid.

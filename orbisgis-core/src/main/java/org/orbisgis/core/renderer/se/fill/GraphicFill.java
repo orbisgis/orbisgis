@@ -187,7 +187,7 @@ public final class GraphicFill extends Fill {
     /**
      * Create a new TexturePaint according to this GraphicFill
      * 
-     * @param ds DataSource
+     * @param ds DataSet
      * @param fid feature id
      * @return a TexturePain ready to be used
      * @throws ParameterException

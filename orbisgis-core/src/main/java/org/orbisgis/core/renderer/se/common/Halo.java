@@ -220,7 +220,7 @@ public final class Halo implements  UomNode, FillNode {
      * @param g2
      * The {@code Graphics} where we are going to draw.
      * @param sds
-     * Our DataSource
+     * Our DataSet
      * @param fid
      * The index of the current feature in sds.
      * @param selected

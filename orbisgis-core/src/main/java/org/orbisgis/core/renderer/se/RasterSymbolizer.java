@@ -34,7 +34,7 @@ import java.io.IOException;
 import java.util.HashSet;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.raster.RasterSymbolizerType;
-import org.gdms.data.DataSource;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -79,7 +79,7 @@ public class RasterSymbolizer extends Symbolizer {
      */
     private AreaSymbolizer outline;
     @Override
-    public void draw(Graphics2D g2, DataSource sds, long fid,
+    public void draw(Graphics2D g2, DataSet sds, long fid,
             boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
             throws ParameterException, IOException, DriverException {
         throw new UnsupportedOperationException("Not supported yet.");

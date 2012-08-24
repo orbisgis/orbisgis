@@ -33,8 +33,8 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ConcatenateType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -77,7 +77,7 @@ public class StringConcatenate implements StringParameter, Iterable<StringParame
         }
 
         @Override
-        public String getValue(DataSource sds, long fid) throws ParameterException {
+        public String getValue(DataSet sds, long fid) throws ParameterException {
                 List<String> inputs = new LinkedList<String>();
                 int expectedSize = 0;
                 for(StringParameter sp : inputStrings){
