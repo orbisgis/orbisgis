@@ -314,6 +314,8 @@ public class TableEditor extends JPanel implements EditorDockable {
                         String text = I18N.tr("Show column statistics");
                         if(table.getSelectedRowCount()>0) {
                                 text = I18N.tr("Show column selection statistics");
+                        } else if(tableSorter.isFiltered()) {
+                                text = I18N.tr("Show filtered column statistics");                                
                         }
                         JMenuItem showStats =                         
                                 new JMenuItem(text,
@@ -366,6 +368,9 @@ public class TableEditor extends JPanel implements EditorDockable {
                 Set<Integer> selectionModelRowId = new IntegerUnion();
                 for(int viewRowId : table.getSelectedRows()) {
                         selectionModelRowId.add(tableSorter.convertRowIndexToModel(viewRowId));
+                }
+                if(selectionModelRowId.isEmpty() && tableSorter.isFiltered()) {
+                        selectionModelRowId.addAll(tableSorter.getViewToModelIndex());
                 }
                 launchJob(new ComputeFieldStatistics(selectionModelRowId, tableModel.getDataSource(), popupCellAdress.x));
         }

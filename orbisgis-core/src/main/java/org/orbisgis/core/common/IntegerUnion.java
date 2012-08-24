@@ -313,11 +313,9 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
         @Override
         public boolean addAll(Collection<? extends Integer> clctn) {
                 boolean isAllAdded=true;
-                for(Object value : clctn) {
-                        if(!(value instanceof Integer)) {
-                                return false;
-                        }
-                        if(!add((Integer)value)) {
+                for (Iterator<? extends Integer> it = clctn.iterator(); it.hasNext();) {
+                        Integer value = it.next();
+                        if(!add(value)) {
                                 isAllAdded = false;
                         }
                 }

@@ -39,6 +39,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.schema.DefaultMetadata;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.MemoryDataSetDriver;
@@ -94,11 +95,11 @@ public class ComputeFieldStatistics implements BackgroundJob {
                         statement.setFieldParameter("fieldName", fieldName);
                         statement.setTableParameter("tableName", tableName);
                         statement.setDataSourceFactory(dsf);
-                        DataSource d = dsf.getDataSource(statement, DataSourceFactory.DEFAULT,pm);
+                        statement.prepare();
+                        DataSet dataSet = statement.execute();
                         //Read statistics
-                        d.open();
-                        Value[] row = d.getRow(0);
-                        String[] rowLabels = d.getMetadata().getFieldNames();
+                        Value[] row = dataSet.getRow(0);
+                        String[] rowLabels = dataSet.getMetadata().getFieldNames();
                         Map<String,Value> values = new HashMap<String,Value>();
                         for(int col=0;col<row.length;col++) {
                                 values.put(rowLabels[col],row[col]);
@@ -112,17 +113,13 @@ public class ComputeFieldStatistics implements BackgroundJob {
                         message.append(I18N.tr("Sum : {0}\n",values.get("sum")));
                         message.append(I18N.tr("Average : {0}\n",values.get("avg")));
                         message.append(I18N.tr("Standart deviation : {0}\n",values.get("std")));
-                        LOGGER.info(message.toString());
-                        
+                        LOGGER.info(message.toString());                        
                         //Free temporary tables
-                        d.close();
                         if(doRowFiltering) {
                                 dsf.getSourceManager().remove(tableName);
                         }
                         statement.cleanUp();
                 } catch (DriverException ex) {
-                        LOGGER.error(ex.getLocalizedMessage(),ex);
-                } catch (DataSourceCreationException ex) {
                         LOGGER.error(ex.getLocalizedMessage(),ex);
                 }  catch (IOException ex) {
                         LOGGER.error(ex.getLocalizedMessage(),ex);

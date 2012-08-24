@@ -30,6 +30,7 @@ package org.orbisgis.view.table;
 
 import java.beans.EventHandler;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -319,5 +320,11 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
                 LOGGER.debug("rowsUpdated");
                 refreshSorter();
         }
-        
+        /**
+         * The list of index correspondance between the seens rows and the model rows
+         * @return The list or null if there is no sort or filter
+         */
+        public List<Integer> getViewToModelIndex() {
+                return Collections.unmodifiableList(viewToModel);
+        }
 }
