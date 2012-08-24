@@ -222,6 +222,13 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 this.add(glob);
         }
 
+        /**
+         * Gets the block that will contain the configuration of the size of
+         * a proportional point symbol.
+         * @param prop
+         * @param title
+         * @return
+         */
         public JPanel getProportionalBlock(ProportionalPoint prop, String title){
                 JPanel glob = new JPanel();
                 glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
@@ -253,6 +260,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
         }
 
         private JPanel getSecondConf(ProportionalPoint prop){
+                CanvasSE prev = getPreview();
                 JPanel ret = new JPanel();
                 JFormattedTextField jftf = new JFormattedTextField(new DecimalFormat());
                 jftf.setColumns(8);
@@ -264,6 +272,8 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 }
                 PropertyChangeListener al = EventHandler.create(PropertyChangeListener.class, prop, "secondValue", "source.value");
                 jftf.addPropertyChangeListener("value", al);
+                PropertyChangeListener al2 = EventHandler.create(PropertyChangeListener.class, prev, "repaint");
+                jftf.addPropertyChangeListener("value", al2);
                 ret.add(jftf);
                 return ret;
         }
@@ -286,7 +296,6 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
 
         private void initFieldCombo(){
                 fieldCombo = new JComboBox();
-                CanvasSE prev = getPreview();
                 if(ds != null){
                         try {
                                 Metadata md = ds.getMetadata();
@@ -310,6 +319,10 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 }
         }
 
+        /**
+         * Used when the field against which the analysis is made changes.
+         * @param obj
+         */
         public void updateField(String obj){
                 try {
                         double[] mnm=ClassificationUtils.getMinAndMax(ds, new RealAttribute(obj));
