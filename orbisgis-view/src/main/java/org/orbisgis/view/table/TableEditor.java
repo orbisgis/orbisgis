@@ -266,8 +266,9 @@ public class TableEditor extends JPanel implements EditorDockable {
                         geoIndex = MetadataUtilities.getGeometryFieldIndex(tableModel.getDataSource().getMetadata());
                 } catch (DriverException ex) {
                         LOGGER.error(ex.getLocalizedMessage(),ex);
-                }                
-                if (geoIndex!=col) {
+                }
+                boolean isGeometryField = geoIndex==col;
+                if (!isGeometryField) {
                         pop.addSeparator();
                         //Sort Ascending
                         JMenuItem sortAscending =
@@ -297,6 +298,31 @@ public class TableEditor extends JPanel implements EditorDockable {
                         "onMenuNoSort"));
                         pop.add(noSort);
                 }
+                //Get Field informations
+                JMenuItem showFieldInformations =
+                        new JMenuItem(I18N.tr("Show column informations"),
+                        OrbisGISIcon.getIcon("information")
+                        );
+                showFieldInformations.addActionListener(
+                EventHandler.create(ActionListener.class,this,
+                "onMenuShowInformations"));
+                pop.add(showFieldInformations);                
+                if(isNumeric(col)) {
+                        //Get Statistics
+                        String text = I18N.tr("Show column statistics");
+                        if(table.getSelectedRowCount()>0) {
+                                text = I18N.tr("Show column selection statistics");
+                        }
+                        JMenuItem showStats =                         
+                                new JMenuItem(text,
+                                OrbisGISIcon.getIcon("sum")
+                                );
+                        showStats.addActionListener(
+                        EventHandler.create(ActionListener.class,this,
+                        "onMenuShowStatistics"));
+                        pop.add(showStats);                                
+                        
+                }
                 return pop;
 
         }
@@ -322,6 +348,19 @@ public class TableEditor extends JPanel implements EditorDockable {
          */
         public void onMenuSortDescending() {
                 tableSorter.setSortKey(new SortKey(popupCellAdress.x,SortOrder.DESCENDING));                
+        }
+        
+        /**
+         * Show the selected field informations
+         */
+        public void onMenuShowInformations() {
+                
+        }
+        /**
+         * Compute and show the selected field statistics
+         */
+        public void onMenuShowStatistics() {
+                
         }
         /**
          * Compute the optimal width for this column
@@ -396,6 +435,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                         dockingPanelParameters.setTitle(I18N.tr("Table Editor of {0} (Filtered)",tableEditableElement.getSourceName()));
                 }                
         }
+
         private void autoResizeColWidth(int rowsToCheck,
                 HashMap<String, Integer> widths,
                 HashMap<String, TableCellRenderer> renderers) {
@@ -407,31 +447,43 @@ public class TableEditor extends JPanel implements EditorDockable {
                         int columnType = tableModel.getColumnType(i).getTypeCode();
                         col.setHeaderValue(columnName);
                         TableCellRenderer tableCellRenderer = renderers.get(columnName);
-                        
+
                         if (tableCellRenderer != null) {
                                 col.setHeaderRenderer(tableCellRenderer);
                         }
                         Integer width = widths.get(columnName);
                         if (width == null) {
-                                width = OptimalWidthJob.getColumnOptimalWidth(table,rowsToCheck, maxWidth, i,
+                                width = OptimalWidthJob.getColumnOptimalWidth(table, rowsToCheck, maxWidth, i,
                                         new NullProgressMonitor());
                         }
                         col.setPreferredWidth(width);
                         colModel.addColumn(col);
-                        switch (columnType) {
-                                case Type.DOUBLE:
-                                case Type.INT:
-                                case Type.LONG:
-                                        col.setCellRenderer(new TableNumberColumnRenderer(table));
-                                        break;
-                                default:
-                                        break;
+                        if (isNumeric(i)) {
+                                col.setCellRenderer(new TableNumberColumnRenderer(table));
                         }
 
                 }
                 table.setColumnModel(colModel);
-        }        
-        
+        }
+
+        /**
+         * @param column Column index
+         * @return True if the field type is numeric
+         */
+        private boolean isNumeric(int column) {
+                int columnType = tableModel.getColumnType(column).getTypeCode();
+                switch (columnType) {
+                        case Type.BYTE:
+                        case Type.DOUBLE:
+                        case Type.FLOAT:
+                        case Type.INT:
+                        case Type.LONG:
+                        case Type.SHORT:
+                                return true;
+                        default:
+                                return false;
+                }
+        }
         @Override
         public EditableElement getEditableElement() {
                 return tableEditableElement;
