@@ -56,8 +56,12 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.apache.log4j.Logger;
+import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
+import org.gdms.data.types.Constraint;
+import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
@@ -87,7 +91,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class TableEditor extends JPanel implements EditorDockable {
         protected final static I18n I18N = I18nFactory.getI18n(TableEditor.class);
-        private static final Logger LOGGER = Logger.getLogger(TableEditor.class);
+        private static final Logger LOGGER = Logger.getLogger("gui."+TableEditor.class);
         
         private static final long serialVersionUID = 1L;
         private TableEditableElement tableEditableElement;
@@ -358,22 +362,43 @@ public class TableEditor extends JPanel implements EditorDockable {
          * Show the selected field informations
          */
         public void onMenuShowInformations() {
-                
+                int col = popupCellAdress.x;
+                try {
+                        Metadata metadata = tableModel.getDataSource().getMetadata();
+                        Type colType = tableModel.getColumnType(col);
+                        StringBuilder infos = new StringBuilder();
+                        infos.append(I18N.tr("\nField name :\t{0}\n",metadata.getFieldName(col)));
+                        infos.append(I18N.tr("Field type :\t{0}\n",
+                                TypeFactory.getTypeName(colType.getTypeCode())));
+                        //Constraints
+                        Constraint[] cons = colType.getConstraints();
+                        infos.append(I18N.tr("Constraints :\n"));
+			for (Constraint constraint : cons) {
+				infos.append(I18N.tr("\t{0} :\t{1}\n",
+                                        ConstraintFactory.getConstraintName(constraint.getConstraintCode()),
+                                        constraint.getConstraintHumanValue()));
+			}
+                        LOGGER.info(infos.toString());
+                } catch( DriverException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(),ex);
+                }
         }
+
         /**
          * Compute and show the selected field statistics
          */
         public void onMenuShowStatistics() {
                 //Compute row id selection
                 Set<Integer> selectionModelRowId = new IntegerUnion();
-                for(int viewRowId : table.getSelectedRows()) {
+                for (int viewRowId : table.getSelectedRows()) {
                         selectionModelRowId.add(tableSorter.convertRowIndexToModel(viewRowId));
                 }
-                if(selectionModelRowId.isEmpty() && tableSorter.isFiltered()) {
+                if (selectionModelRowId.isEmpty() && tableSorter.isFiltered()) {
                         selectionModelRowId.addAll(tableSorter.getViewToModelIndex());
                 }
                 launchJob(new ComputeFieldStatistics(selectionModelRowId, tableModel.getDataSource(), popupCellAdress.x));
         }
+
         /**
          * Compute the optimal width for this column
          */
@@ -456,7 +481,6 @@ public class TableEditor extends JPanel implements EditorDockable {
                 for (int i = 0; i < tableModel.getColumnCount(); i++) {
                         TableColumn col = new TableColumn(i);
                         String columnName = tableModel.getColumnName(i);
-                        int columnType = tableModel.getColumnType(i).getTypeCode();
                         col.setHeaderValue(columnName);
                         TableCellRenderer tableCellRenderer = renderers.get(columnName);
 
