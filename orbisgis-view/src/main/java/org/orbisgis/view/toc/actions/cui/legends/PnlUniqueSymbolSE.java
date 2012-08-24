@@ -45,9 +45,9 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeListener;
 import org.apache.log4j.Logger;
+import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
-import org.orbisgis.legend.thematic.constant.UniqueSymbol;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.ColorPicker;
@@ -74,9 +74,9 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
          * the current symbol.
          */
         public void initPreview(){
-                if(getLegend() != null){
-                        UniqueSymbol us = (UniqueSymbol) getLegend();
-                        preview= new CanvasSE(us.getSymbolizer());
+                Legend leg = getLegend();
+                if(leg != null){
+                        preview= new CanvasSE(leg.getSymbolizer());
                         preview.repaint();
                 }
         }

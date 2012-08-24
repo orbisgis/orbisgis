@@ -73,8 +73,8 @@ public final class Category implements SymbolizerNode, FillNode, StrokeNode, Gra
          */
         public Category() {
                 graphic = new GraphicCollection();
-                graphic.setParent(this);
                 name = "";
+                graphic.setParent(this);
         }
 
         /**
@@ -124,11 +124,6 @@ public final class Category implements SymbolizerNode, FillNode, StrokeNode, Gra
         public void setStroke(Stroke stroke) {
                 this.stroke = stroke;
                 stroke.setParent(this);
-        }
-
-        @Override
-        public Uom getUom() {
-                return parent.getUom();
         }
 
         @Override

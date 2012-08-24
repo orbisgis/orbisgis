@@ -34,9 +34,12 @@ import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.MarkGraphicAnalyzer;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
 import org.orbisgis.legend.structure.graphic.ProportionalWKNLegend;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
+import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
 
 /**
  * A {@code ProportionalPoint} is a {@link ConstantFormPoint} whose {@code
@@ -44,9 +47,21 @@ import org.orbisgis.legend.thematic.ConstantFormPoint;
  * MonovariateProportionalViewBox}.
  * @author Alexis Guéganno
  */
-public class ProportionalPoint extends ConstantFormPoint  {
+public class ProportionalPoint extends ConstantFormPoint implements IUniqueSymbolArea {
 
     private ProportionalWKNLegend markGraphic;
+
+    /**
+     * Builds a new {@code ProportionalPoint}. It has default {@code MarkGraphic}
+     * parameters except for the {@code ViewBox}, of course.
+     */
+    public ProportionalPoint(){
+        super();
+        markGraphic = new ProportionalWKNLegend();
+        PointSymbolizer ps = (PointSymbolizer) getSymbolizer();
+        ps.getGraphicCollection().delGraphic(0);
+        ps.getGraphicCollection().addGraphic(markGraphic.getMarkGraphic());
+    }
 
     /**
      * Tries to build an instance of {@code ProportionalPoint} using the given
@@ -89,6 +104,58 @@ public class ProportionalPoint extends ConstantFormPoint  {
     @Override
     public ConstantFormWKN getMarkGraphic() {
         return markGraphic;
+    }
+
+    /**
+     * Gets the Fill analysis embedded in this {@code IUniqueSymbolArea}.
+     * @return
+     */
+    @Override
+    public ConstantSolidFill getFillLegend() {
+        return markGraphic.getSolidFill();
+    }
+
+    /**
+     * Sets the Fill analysis embedded in this {@code IUniqueSymbolArea}.
+     * @param csf
+     */
+    @Override
+    public void setFillLegend(ConstantSolidFill csf) {
+            markGraphic.setFillLegend(csf);
+    }
+
+    /**
+     * Gets the analysis associated to the inner {@code PenStroke}.
+     * @return
+     */
+    @Override
+    public ConstantPenStroke getPenStroke(){
+        return markGraphic.getPenStroke();
+    }
+
+    /**
+     * Sets the analysis associated to the inner {@code PenStroke}.
+     * @param cpsl
+     */
+    @Override
+    public void setPenStroke(ConstantPenStroke cpsl) {
+        markGraphic.setPenStroke(cpsl);
+    }
+
+    /**
+     * Gets the name of the field where values will be retrieved.
+     * @return
+     */
+    public String getLookupFieldName(){
+            return markGraphic.getLookupFieldName();
+    }
+
+    /**
+     * Sets the name of the field where values will be retrieved.
+     * @param name
+     */
+    public void setLookupFieldName(String name){
+            markGraphic.setLookupFieldName(name);
     }
 
     /**
@@ -143,8 +210,8 @@ public class ProportionalPoint extends ConstantFormPoint  {
      * @throws ParameterException
      * If a problem is encountered while retrieving the double value.
      */
-    public void setFirstValue(double d) {
-        markGraphic.setFirstValue(d);
+    public void setFirstValue(Number d) {
+        markGraphic.setFirstValue(d.doubleValue());
     }
 
     /**
@@ -167,8 +234,8 @@ public class ProportionalPoint extends ConstantFormPoint  {
      * @throws ParameterException
      * If a problem is encountered while retrieving the double value.
      */
-    public void setSecondValue(double d) {
-        markGraphic.setSecondValue(d);
+    public void setSecondValue(Number d) {
+        markGraphic.setSecondValue(d.doubleValue());
     }
 
     @Override

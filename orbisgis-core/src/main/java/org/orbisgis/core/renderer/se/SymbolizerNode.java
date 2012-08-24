@@ -29,7 +29,6 @@
 package org.orbisgis.core.renderer.se;
 
 import java.util.HashSet;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
@@ -41,11 +40,6 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  * @author Maxence Laurent
  */
 public interface SymbolizerNode{
-    /**
-     * Get the unit of measure associated with the current node.
-     * @return 
-     */
-    Uom getUom();
 
     /**
      * get the parent of this current <code>SymbolizerNode</code>

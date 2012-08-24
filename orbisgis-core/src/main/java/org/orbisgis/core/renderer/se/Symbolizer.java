@@ -270,10 +270,10 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
     }
 
     /**
-     * Get the faetures that are needed to build this Symbolizer in a {@code
+     * Gets the features that are needed to build this Symbolizer in a {@code
      * Map<String,Value>}. This method is based on {@link
      * SymbolizerNode#dependsOnFeature()}. Using the field names retrieved with
-     * this method, we serach for {@code Values} at index {@code fid} in {@code
+     * this method, we search for {@code Values} at index {@code fid} in {@code
      * sds}.
      * @param sds
      * @param fid

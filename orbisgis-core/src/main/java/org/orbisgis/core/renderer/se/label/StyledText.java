@@ -73,7 +73,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
  * Color and opacity of the text are defined using a <code>Fill</code> instance
  * @author Maxence Laurent, Alexis Guéganno
  */
-public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, UomNode {
+public final class StyledText implements UomNode, FillNode, StrokeNode {
 
     private SymbolizerNode parent;
     private StringParameter text;
@@ -172,17 +172,19 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
      * @return
      */
     public Uom getFontUom() {
-        if (this.uom != null) {
-            return this.uom;
+        if (uom != null) {
+            return uom;
+        } else if(parent instanceof UomNode){
+            return ((UomNode)parent).getUom();
         } else {
-            return parent.getUom();
+                return Uom.PX;
         }
     }
 
     @Override
     public Uom getUom() {
         // Note: this.uom only affect font size
-        return parent.getUom();
+        return ((UomNode)parent).getUom();
     }
 
     @Override

@@ -250,7 +250,8 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
          * @throws IOException
          * @throws DriverException
          */
-        public Point2D getPointShape(DataSource sds, long fid, MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
+        public Point2D getPointShape(DataSource sds, long fid, MapTransform mt, Geometry theGeom)
+                        throws ParameterException, IOException, DriverException {
 
                 Geometry geom = getGeometry(sds, fid, theGeom);
                 AffineTransform at = mt.getAffineTransform();

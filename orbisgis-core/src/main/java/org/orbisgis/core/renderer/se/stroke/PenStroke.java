@@ -44,7 +44,6 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
@@ -74,7 +73,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * </ul>
  * @author Maxence Laurent, Alexis Guéganno
  */
-public final class PenStroke extends Stroke implements FillNode, UomNode {
+public final class PenStroke extends Stroke implements FillNode {
 
     private static final I18n I18N = I18nFactory.getI18n(PenStroke.class);
     private static final double DEFAULT_WIDTH_PX = 1.0;
@@ -87,7 +86,6 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
     private LineCap lineCap;
     private StringParameter dashArray;
     private RealParameter dashOffset;
-    private Uom uom;
 
     /**
      * There are three ways to draw the end of a line : butt, round and square.
@@ -709,8 +707,8 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
 
         this.setJAXBProperties(s);
 
-        if (this.uom != null) {
-            s.setUom(uom.toURN());
+        if (this.getOwnUom()!= null) {
+            s.setUom(getOwnUom().toURN());
         }
 
         if (this.fill != null) {
@@ -743,24 +741,5 @@ public final class PenStroke extends Stroke implements FillNode, UomNode {
         }
 
         return s;
-    }
-
-    @Override
-    public Uom getUom() {
-        if (uom != null) {
-            return uom;
-        } else {
-            return parent.getUom();
-        }
-    }
-
-    @Override
-    public void setUom(Uom u) {
-        uom = u;
-    }
-
-    @Override
-    public Uom getOwnUom() {
-        return uom;
     }
 }

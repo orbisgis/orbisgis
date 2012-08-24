@@ -66,7 +66,6 @@ public final class CompoundStroke extends Stroke implements UomNode {
     private RealParameter postGap;
     private List<CompoundStrokeElement> elements;
     //private List<StrokeAnnotationGraphic> annotations;
-    private Uom uom;
 
     /**
      * Build a new {@code CompoundStroke}, with empty parameters. If used, it won't draw 
@@ -493,8 +492,8 @@ public final class CompoundStroke extends Stroke implements UomNode {
 
         this.setJAXBProperties(s);
 
-        if (uom != null) {
-            s.setUom(uom.toURN());
+        if (getOwnUom() != null) {
+            s.setUom(getOwnUom().toURN());
         }
 
         if (this.preGap != null) {
@@ -518,25 +517,6 @@ public final class CompoundStroke extends Stroke implements UomNode {
         //}
 
         return s;
-    }
-
-    @Override
-    public Uom getUom() {
-        if (uom != null) {
-            return uom;
-        } else {
-            return parent.getUom();
-        }
-    }
-
-    @Override
-    public void setUom(Uom u) {
-        uom = u;
-    }
-
-    @Override
-    public Uom getOwnUom() {
-        return uom;
     }
 
     /**

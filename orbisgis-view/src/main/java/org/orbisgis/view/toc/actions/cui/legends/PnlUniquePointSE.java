@@ -55,6 +55,7 @@ import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
+import org.orbisgis.legend.thematic.ConstantFormPoint;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.JNumericSpinner;
@@ -122,6 +123,15 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
         }
 
         /**
+         * Gets the {@code SimpleGeometryType} that was used to build this
+         * {@code PnlUniquePointSE}.
+         * @return
+         */
+        public int getGeometryType(){
+                return geometryType;
+        }
+
+        /**
          * Initialize the panel. This method is called just after the panel
          * creation.</p> <p>WARNING : the panel will be empty after calling this
          * method. Indeed, there won't be any {@code Legend} instance associated
@@ -161,7 +171,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
 
         @Override
         public String getTitle() {
-                return "Unique symbol for lines.";
+                return "Unique symbol for points.";
         }
         
 
@@ -224,19 +234,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 //If geometryType != POINT, we must let the user choose if he
                 //wants to draw symbols on centroid or on vertices.
                 if(geometryType != SimpleGeometryType.POINT){
-                        JRadioButton bVertex = new JRadioButton(I18N.tr("On vertex"));
-                        JRadioButton bCentroid = new JRadioButton(I18N.tr("On centroid"));
-                        ButtonGroup bg = new ButtonGroup();
-                        bg.add(bVertex);
-                        bg.add(bCentroid);
-                        ActionListener actionV = EventHandler.create(ActionListener.class, point, "setOnVertex");
-                        ActionListener actionC = EventHandler.create(ActionListener.class, point, "setOnCentroid");
-                        bVertex.addActionListener(actionV);
-                        bCentroid.addActionListener(actionC);
-                        bVertex.setSelected(((PointSymbolizer)point.getSymbolizer()).isOnVertex());
-                        bCentroid.setSelected(!((PointSymbolizer)point.getSymbolizer()).isOnVertex());
-                        jp.add(bVertex);
-                        jp.add(bCentroid);
+                        addPointOnVertices(point, jp);
                 }
                 //Combobox
                 jp.add(buildText(I18N.tr("Symbol form :")));
@@ -295,7 +293,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * @param point
          * @return
          */
-        private JComboBox getWKNCombo(UniqueSymbolPoint point){
+        public JComboBox getWKNCombo(ConstantFormPoint point){
                 CanvasSE prev = getPreview();
                 wkns = WellKnownName.getValues();
                 String[] values = new String[wkns.length];
@@ -312,11 +310,38 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
         }
 
         /**
+         * If called, this method will add a {@code ButtonGroup} made of two
+         * {@code JRadioButton}s that will be used to choose if the symbols
+         * must be drawn on vertices or on the centroid of the input geometry.
+         * @param point
+         * @param jp
+         */
+        public void addPointOnVertices(ConstantFormPoint point, JPanel jp){
+                CanvasSE prev = getPreview();
+                JRadioButton bVertex = new JRadioButton(I18N.tr("On vertex"));
+                JRadioButton bCentroid = new JRadioButton(I18N.tr("On centroid"));
+                ButtonGroup bg = new ButtonGroup();
+                bg.add(bVertex);
+                bg.add(bCentroid);
+                ActionListener actionV = EventHandler.create(ActionListener.class, point, "setOnVertex");
+                ActionListener actionC = EventHandler.create(ActionListener.class, point, "setOnCentroid");
+                ActionListener actionRef = EventHandler.create(ActionListener.class, prev, "repaint");
+                bVertex.addActionListener(actionV);
+                bVertex.addActionListener(actionRef);
+                bCentroid.addActionListener(actionC);
+                bCentroid.addActionListener(actionRef);
+                bVertex.setSelected(((PointSymbolizer)point.getSymbolizer()).isOnVertex());
+                bCentroid.setSelected(!((PointSymbolizer)point.getSymbolizer()).isOnVertex());
+                jp.add(bVertex);
+                jp.add(bCentroid);
+        }
+
+        /**
          * Sets the underlying graphic to use the ith element of the combobox
          * as its well-known name. Used when changing the combobox selection.
          * @param index
          */
         public void updateComboBox(int index){
-                uniquePoint.setWellKnownName(wkns[index]);
+                ((ConstantFormPoint)getLegend()).setWellKnownName(wkns[index]);
         }
 }

@@ -29,14 +29,29 @@
 package org.orbisgis.core.renderer.classification;
 
 import java.util.Arrays;
-
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
+/**
+ * Some methods used for classification...
+ * @author Maxence Laurent
+ * @author Alexis Guéganno
+ */
 public class ClassificationUtils {
 
+        private ClassificationUtils(){};
+
+        /**
+         * Retrieves the double values in {@code sds} from {@code value} in
+         * ascending order.
+         * @param sds
+         * @param value
+         * @return
+         * @throws DriverException
+         * @throws ParameterException
+         */
 	public static double[] getSortedValues(DataSource sds, RealParameter value)
 			throws DriverException, ParameterException {
 
@@ -48,4 +63,24 @@ public class ClassificationUtils {
 		return values;
 	}
 
+        /**
+         * Gets the minimum and maximum values of {@code sds} from {@code value}.
+         * @param sds
+         * @param value
+         * @return
+         * A double array of length two that contains[min, max].
+         * @throws DriverException
+         * @throws ParameterException
+         */
+        public static double[] getMinAndMax(DataSource sds, RealParameter value)
+                throws DriverException, ParameterException{
+                double[] minAndMax = new double[]{Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
+                long rows =  sds.getRowCount();
+                for(long i = 0; i<rows; i++){
+                        double tmp = value.getValue(sds, i);
+                        minAndMax[0] = Math.min(tmp,minAndMax[0]);
+                        minAndMax[1] = Math.max(tmp,minAndMax[1]);
+                }
+                return minAndMax;
+        }
 }
