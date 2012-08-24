@@ -94,7 +94,7 @@ public final class Rule implements SymbolizerNode {
 
     /**
      * Build a Rule using a ILayer. This contains a CompositeSymbolizer, populated 
-     * according to the first found geometry in the DataSource  embedded in the ILayer.
+     * according to the first found geometry in the DataSet  embedded in the ILayer.
      * That means we'll obtain a <code>LineSymbolizer</code> if this first geometry is of 
      * dimension 1, a <code>PolygonSymbolizer</code> if it is of dimension 2,
      * and a <code>PointSymbolizer</code> otherwise.
@@ -314,12 +314,12 @@ public final class Rule implements SymbolizerNode {
      *
      * @return
      * @throws DriverLoadException
-     * @throws DataSourceCreationException
+     * @throws DataSetCreationException
      * @throws DriverException
      * @throws ParseException
      * @throws SemanticException
      */
-    public FilterDataSourceDecorator getFilteredDataSource(FilterDataSourceDecorator fds)
+    public FilterDataSourceDecorator getFilteredDataSet(FilterDataSourceDecorator fds)
             throws DataSourceCreationException, DriverException {
         if (where != null && !where.isEmpty()) {
             return new FilterDataSourceDecorator(fds, where + getOrderBy());

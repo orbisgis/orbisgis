@@ -28,17 +28,15 @@
  */
 package org.orbisgis.core.renderer.se.parameter;
 
-import java.awt.Color;
 import java.util.*;
 import javax.xml.bind.JAXBElement;
-import net.opengis.fes._2.LiteralType;
 import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
 import net.opengis.se._2_0.core.RecodeType;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -221,7 +219,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
          * <p>If an error of any kind is catched, the {@code fallBackValue} is
          * returned, and a message is print using the {@code Logger}.
          */
-    public ToType getParameter(DataSource sds, long fid) {
+    public ToType getParameter(DataSet sds, long fid) {
         String key = "";
         try {
             key = lookupValue.getValue(sds, fid);

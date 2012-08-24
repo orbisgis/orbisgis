@@ -28,14 +28,13 @@
  */
 package org.orbisgis.core.renderer.se.parameter.string;
 
-import java.awt.Color;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.RecodeType;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.Recode;
@@ -85,7 +84,7 @@ public final class Recode2String extends Recode<StringParameter, StringLiteral> 
         }
 
         @Override
-        public String getValue(DataSource sds, long fid) {
+        public String getValue(DataSet sds, long fid) {
                 try {
                         return getParameter(sds, fid).getValue(sds, fid);
                 } catch (ParameterException ex) {

@@ -337,7 +337,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
 
     /**
      * Tries to retrieve the source that defines this {@code MarkGraphic} in the 
-     * DataSource, at the diven index.
+     * DataSet, at the diven index.
      * @param map
      * @return
      * @throws ParameterException 
@@ -469,7 +469,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
      * @throws ParameterException
      * @throws IOException
      */
-    /*private double getMargin(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    /*private double getMargin(DataSet sds, long fid, MapTransform mt) throws ParameterException, IOException {
     double sWidth = 0.0;
     double haloR = 0.0;
     double offset = 0.0;
@@ -492,7 +492,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
 
     /*
     @Override
-    public double getMaxWidth(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    public double getMaxWidth(DataSet sds, long fid, MapTransform mt) throws ParameterException, IOException {
     double delta = 0.0;
 
     if (viewBox != null && viewBox.usable()) {

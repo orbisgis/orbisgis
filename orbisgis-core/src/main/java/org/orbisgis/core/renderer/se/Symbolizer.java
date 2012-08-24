@@ -37,8 +37,8 @@ import java.util.Set;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
 import net.opengis.se._2_0.raster.RasterSymbolizerType;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -280,7 +280,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
      * @return
      * @throws DriverException
      */
-    public Map<String,Value> getFeaturesMap(DataSource sds, long fid) throws DriverException{
+    public Map<String,Value> getFeaturesMap(DataSet sds, long fid) throws DriverException{
         if(features==null){
             features = dependsOnFeature();
         }
@@ -288,7 +288,8 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
             featuresMap = new HashMap<String,Value>();
         }
         for(String s : features){
-            featuresMap.put(s, sds.getFieldValue(fid, sds.getFieldIndexByName(s)));
+            int index  = sds.getMetadata().getFieldIndex(s);
+            featuresMap.put(s, sds.getFieldValue(fid, index));
         }
         return featuresMap;
     }
@@ -306,7 +307,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
      * @throws IOException
      * @throws DriverException 
      */
-    public abstract void draw(Graphics2D g2, DataSource sds, long fid,
+    public abstract void draw(Graphics2D g2, DataSet sds, long fid,
             boolean selected, MapTransform mt, Geometry theGeom, RenderContext perm)
             throws ParameterException, IOException, DriverException;
 

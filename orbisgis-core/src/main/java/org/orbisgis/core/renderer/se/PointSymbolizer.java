@@ -42,8 +42,8 @@ import net.opengis.se._2_0.core.ExtensionType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.PointSymbolizerType;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -146,7 +146,7 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
     }
 
     @Override
-    public void draw(Graphics2D g2, DataSource sds, long fid,
+    public void draw(Graphics2D g2, DataSet sds, long fid,
             boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
             throws IOException, DriverException, ParameterException {
 

@@ -33,8 +33,8 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.FunctionType;
 import net.opengis.fes._2.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -166,7 +166,7 @@ public class RealFunction implements RealParameter {
     }
 
     @Override
-    public Double getValue(DataSource sds, long fid) throws ParameterException {
+    public Double getValue(DataSet sds, long fid) throws ParameterException {
         List<Double>  vals = new LinkedList<Double>();
         for(RealParameter p : operands){
             vals.add(p.getValue(sds, fid));

@@ -36,9 +36,9 @@ import java.awt.geom.*;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.types.Type;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.xnap.commons.i18n.I18n;
@@ -1317,7 +1317,7 @@ public final class ShapeHelper {
      * @throws DriverException If a problem occurs with the data source
      * @throws ParameterException Is thrown if the number of geometry attribute isn't one
      */
-    public static int getGeometryFieldId(DataSource sds) throws DriverException, ParameterException {
+    public static int getGeometryFieldId(DataSet sds) throws DriverException, ParameterException {
         Metadata metadata = sds.getMetadata();
 
         int fieldId = -1;

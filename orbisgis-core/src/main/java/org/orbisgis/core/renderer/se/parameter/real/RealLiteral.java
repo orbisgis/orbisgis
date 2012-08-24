@@ -31,8 +31,8 @@ package org.orbisgis.core.renderer.se.parameter.real;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.parameter.Literal;
 
 /**
@@ -90,7 +90,7 @@ public class RealLiteral extends Literal implements RealParameter {
         }
 
         @Override
-        public Double getValue(DataSource sds, long fid) {
+        public Double getValue(DataSet sds, long fid) {
                 return v;
         }
 

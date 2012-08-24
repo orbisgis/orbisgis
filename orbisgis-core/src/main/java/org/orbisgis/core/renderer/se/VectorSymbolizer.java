@@ -38,7 +38,7 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.SymbolizerType;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
@@ -104,7 +104,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
          * @throws ParameterException
          * @throws DriverException 
          */
-        public Geometry getGeometry(DataSource sds, Long fid) throws ParameterException, DriverException {
+        public Geometry getGeometry(DataSet sds, Long fid) throws ParameterException, DriverException {
                 if (theGeom != null) {
                         return theGeom.getTheGeom(sds, fid);
                 } else {
@@ -122,7 +122,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
          * @throws ParameterException
          * @throws DriverException 
          */
-        public Geometry getGeometry(DataSource sds, Long fid, Geometry theGeom) throws ParameterException, DriverException {
+        public Geometry getGeometry(DataSet sds, Long fid, Geometry theGeom) throws ParameterException, DriverException {
                 if (theGeom == null) {
                         return this.getGeometry(sds, fid);
                 } else {
@@ -140,7 +140,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
          * @throws IOException
          * @throws DriverException
          */
-        public Shape getShape(DataSource sds, long fid,
+        public Shape getShape(DataSet sds, long fid,
                 MapTransform mt, Geometry theGeom, boolean generalize) throws ParameterException, IOException, DriverException {
 
                 Geometry geom = getGeometry(sds, fid, theGeom);
@@ -180,7 +180,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
          * @throws IOException
          * @throws DriverException
          */
-        public List<Shape> getLines(DataSource sds, long fid,
+        public List<Shape> getLines(DataSet sds, long fid,
                 MapTransform mt, Geometry the_geom) throws ParameterException, IOException, DriverException {
                 Geometry geom = getGeometry(sds, fid, the_geom);
                 LinkedList<Shape> shapes = new LinkedList<Shape>();
@@ -250,7 +250,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
          * @throws IOException
          * @throws DriverException
          */
-        public Point2D getPointShape(DataSource sds, long fid, MapTransform mt, Geometry theGeom)
+        public Point2D getPointShape(DataSet sds, long fid, MapTransform mt, Geometry theGeom)
                         throws ParameterException, IOException, DriverException {
 
                 Geometry geom = getGeometry(sds, fid, theGeom);
@@ -276,7 +276,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
          * @throws IOException
          * @throws DriverException
          */
-        public Point2D getFirstPointShape(DataSource sds, long fid, MapTransform mt,
+        public Point2D getFirstPointShape(DataSet sds, long fid, MapTransform mt,
                 Geometry theGeom) throws ParameterException, IOException, DriverException {
 
                 Geometry geom = getGeometry(sds, fid, theGeom);
@@ -299,7 +299,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
          * @throws IOException
          * @throws DriverException
          */
-        public List<Point2D> getPoints(DataSource sds, long fid,
+        public List<Point2D> getPoints(DataSet sds, long fid,
                 MapTransform mt, Geometry theGeom) throws ParameterException, IOException, DriverException {
 
                 Geometry geom = getGeometry(sds, fid, theGeom);

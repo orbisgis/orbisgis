@@ -33,8 +33,8 @@ import java.util.Map;
 import java.util.Random;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.parameter.Literal;
 
 /**
@@ -86,7 +86,7 @@ public class ColorLiteral extends Literal implements ColorParameter{
     }
 
     @Override
-    public Color getColor(DataSource sds, long fid){
+    public Color getColor(DataSet sds, long fid){
         return color;
     }
 
