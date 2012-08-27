@@ -28,6 +28,7 @@
  */
 package org.orbisgis.legend.thematic.constant;
 
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 
 /**
@@ -48,5 +49,17 @@ public interface IUniqueSymbolLine extends UniqueSymbol {
      * @param cpsl
      */
     void setPenStroke(ConstantPenStroke cpsl);
+
+    /**
+     * Gets the unit of measure used to compute the form of the stroke.
+     * @return
+     */
+    Uom getStrokeUom();
+
+    /**
+     * Sets the unit of measure used to compute the form of the stroke.
+     * @param u
+     */
+    void setStrokeUom(Uom u);
 
 }

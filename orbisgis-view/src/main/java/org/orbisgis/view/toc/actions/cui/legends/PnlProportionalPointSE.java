@@ -235,7 +235,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 JPanel jp = new JPanel();
                 boolean canBeOnV = getGeometryType() != SimpleGeometryType.POINT;
                 int onV = canBeOnV ? 1 : 0;
-                GridLayout grid = new GridLayout(3+onV,2);
+                GridLayout grid = new GridLayout(4+onV,2);
                 grid.setVgap(5);
                 jp.setLayout(grid);
                 //If geometryType != POINT, we must let the user choose if he
@@ -243,6 +243,9 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 if(getGeometryType() != SimpleGeometryType.POINT){
                         addPointOnVertices(prop, jp);
                 }
+                //Uom
+                jp.add(buildText(I18N.tr("Unit of measure :")));
+                jp.add(getPointUomCombo());
                 //Combobox
                 jp.add(buildText(I18N.tr("Symbol form :")));
                 jp.add(getWKNCombo(prop));
