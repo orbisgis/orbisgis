@@ -315,10 +315,7 @@ public class TableEditor extends JPanel implements EditorDockable {
          * Show only selected rows
          */
         public void onMenuFilterRows() {
-                IntegerUnion selectedModelIndex = new IntegerUnion();
-                for(int viewRowId : table.getSelectedRows()) {
-                        selectedModelIndex.add(tableSorter.convertRowIndexToModel(viewRowId));
-                }
+                IntegerUnion selectedModelIndex = getTableModelSelection();
                 tableSorter.setRowsFilter(selectedModelIndex);
         }
         
@@ -456,16 +453,21 @@ public class TableEditor extends JPanel implements EditorDockable {
                         LOGGER.error(ex.getLocalizedMessage(),ex);
                 }
         }
+        
+        private IntegerUnion getTableModelSelection() {
+                IntegerUnion selectionModelRowId = new IntegerUnion();
+                for (int viewRowId : table.getSelectedRows()) {
+                        selectionModelRowId.add(tableSorter.convertRowIndexToModel(viewRowId));
+                }
+                return selectionModelRowId;
+        }
 
         /**
          * Compute and show the selected field statistics
          */
         public void onMenuShowStatistics() {
                 //Compute row id selection
-                Set<Integer> selectionModelRowId = new IntegerUnion();
-                for (int viewRowId : table.getSelectedRows()) {
-                        selectionModelRowId.add(tableSorter.convertRowIndexToModel(viewRowId));
-                }
+                Set<Integer> selectionModelRowId = getTableModelSelection();
                 if (selectionModelRowId.isEmpty() && tableSorter.isFiltered()) {
                         selectionModelRowId.addAll(tableSorter.getViewToModelIndex());
                 }
@@ -590,7 +592,7 @@ public class TableEditor extends JPanel implements EditorDockable {
 
         private void updateEditableSelection() {
                 try {
-                        tableEditableElement.setSelection(new IntegerUnion(table.getSelectedRows()));
+                        tableEditableElement.setSelection(getTableModelSelection());
                 } finally {
                         onUpdateEditableSelection.set(false);
                 }

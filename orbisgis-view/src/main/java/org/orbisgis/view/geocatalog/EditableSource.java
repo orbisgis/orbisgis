@@ -74,6 +74,7 @@ public class EditableSource extends EditableElement {
 		try {
 			ds.close();
 			ds = null;
+                        setOpen(false);
 		} catch (AlreadyClosedException e) {
 			throw new EditableElementException("Cannot close the table", e);
 		} catch (DriverException e) {
@@ -98,8 +99,8 @@ public class EditableSource extends EditableElement {
 				ds = dsf.getDataSource(sourceName);
 			}
 			ds.open();
-
 			dataManager.getSourceManager().addSourceListener(listener);
+                        setOpen(true);
 		} catch (DriverException e) {
 			throw new EditableElementException("Cannot open the source", e);
 		} catch (DriverLoadException e) {

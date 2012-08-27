@@ -59,7 +59,7 @@ public class TableEditableElement extends EditableSource {
 	 * Get the selected geometries in the table
 	 * @return
 	 */
-	Set<Integer> getSelection() {
+	public Set<Integer> getSelection() {
                 return selectedGeometries;
         }
 

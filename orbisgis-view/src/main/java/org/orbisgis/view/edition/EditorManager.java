@@ -29,7 +29,10 @@
 package org.orbisgis.view.edition;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelLayout;
@@ -67,19 +70,32 @@ public class EditorManager {
                         }
                 }
         }
+        /**
+         * Return all editor's editable
+         * @return Collection of EditableElement returned by editor.getEditableElement()
+         */
+        public Collection<EditableElement> getEditableElements() {
+                Set<EditableElement> editables = new HashSet<EditableElement>();
+                for(EditorDockable editor : getEditors()) {
+                        if(editor.getEditableElement()!=null) {
+                                editables.add(editor.getEditableElement());
+                        }
+                }
+                return editables;
+        }
         
         /**
          * 
          * @return All shown editors
          */
-        public EditorDockable[] getEditors() {
+        public Collection<EditorDockable> getEditors() {
                 List<EditorDockable> editors = new ArrayList<EditorDockable>();
                 for( DockingPanel panel : dockingManager.getPanels()) {
                         if(panel instanceof EditorDockable) {
                                 editors.add((EditorDockable)panel);
                         }
                 }
-                return editors.toArray(new EditorDockable[editors.size()]);
+                return editors;
         }
 
         /**

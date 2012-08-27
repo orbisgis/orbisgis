@@ -85,6 +85,23 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
                 }
         }
         
+
+        @Override
+        public boolean equals(Object obj) {
+                if (!(obj instanceof IntegerUnion)) {
+                        return false;
+                }
+                final IntegerUnion other = (IntegerUnion) obj;
+                // Intervals is never Null
+                return this.intervals.equals(other.intervals);
+        }
+
+        @Override
+        public int hashCode() {
+                int hash = 5;
+                hash = 19 * hash + (this.intervals != null ? this.intervals.hashCode() : 0);
+                return hash;
+        }
         private void copyExternalIntegerUnion(IntegerUnion externalSet) {
                 intervals.addAll(externalSet.intervals);
         }
