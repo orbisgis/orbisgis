@@ -2,8 +2,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-27 14:12+0100\n"
-"PO-Revision-Date: 2012-08-27 14:12+0100\n"
+"POT-Creation-Date: 2012-08-27 17:46+0100\n"
+"PO-Revision-Date: 2012-08-27 17:47+0100\n"
 "Last-Translator: Nicolas Fortin <nicolas.fortin _at_ ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: en\n"
@@ -1382,7 +1382,7 @@ msgstr "Cannot add the layer to the destination"
 msgid "Load the data source droped into the toc."
 msgstr "Load the data source droped into the toc."
 
-#: java/org/orbisgis/view/toc/TocTreeNodeLayer.java:153
+#: java/org/orbisgis/view/toc/TocTreeNodeLayer.java:158
 #, fuzzy
 msgid "Cannot change the layer name"
 msgstr "Cannot delete layer"
@@ -1559,106 +1559,106 @@ msgstr ""
 msgid "Selection serialisation failed"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:218
+#: java/org/orbisgis/view/table/TableEditor.java:236
 msgid "Filter selected rows"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:219
+#: java/org/orbisgis/view/table/TableEditor.java:237
 msgid "Show only the selected rows"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:227
+#: java/org/orbisgis/view/table/TableEditor.java:245
 #, fuzzy
 msgid "Clear row filter"
 msgstr "Add a new filter"
 
-#: java/org/orbisgis/view/table/TableEditor.java:228
+#: java/org/orbisgis/view/table/TableEditor.java:246
 msgid "Show all rows"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:236
+#: java/org/orbisgis/view/table/TableEditor.java:257
 msgid "Clear selection"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:244
+#: java/org/orbisgis/view/table/TableEditor.java:265
 #, fuzzy
 msgid "Select same cell"
 msgstr "Select a feature"
 
-#: java/org/orbisgis/view/table/TableEditor.java:245
+#: java/org/orbisgis/view/table/TableEditor.java:266
 msgid "Select all rows that match this cell value"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:329
+#: java/org/orbisgis/view/table/TableEditor.java:352
 msgid "Optimal width"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:348
+#: java/org/orbisgis/view/table/TableEditor.java:371
 msgid "Sort ascending"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:357
+#: java/org/orbisgis/view/table/TableEditor.java:380
 msgid "Sort descending"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:366
+#: java/org/orbisgis/view/table/TableEditor.java:389
 msgid "No sort"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:377
+#: java/org/orbisgis/view/table/TableEditor.java:400
 msgid "Show column informations"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:386
+#: java/org/orbisgis/view/table/TableEditor.java:409
 msgid "Show column statistics"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:388
+#: java/org/orbisgis/view/table/TableEditor.java:411
 msgid "Show column selection statistics"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:390
+#: java/org/orbisgis/view/table/TableEditor.java:413
 msgid "Show filtered column statistics"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:438
+#: java/org/orbisgis/view/table/TableEditor.java:461
 #, java-format
 msgid ""
 "\n"
 "Field name :\t{0}\n"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:439
+#: java/org/orbisgis/view/table/TableEditor.java:462
 #, java-format
 msgid "Field type :\t{0}\n"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:443
+#: java/org/orbisgis/view/table/TableEditor.java:466
 msgid "Constraints :\n"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:445
+#: java/org/orbisgis/view/table/TableEditor.java:468
 #, java-format
 msgid "\t{0} :\t{1}\n"
 msgstr ""
 
-#: java/org/orbisgis/view/table/TableEditor.java:605
+#: java/org/orbisgis/view/table/TableEditor.java:629
 #, java-format
-msgid "Table Editor of {0}"
-msgstr ""
+msgid "Table Editor of {0} {1}/{2}"
+msgstr "{0} {1}/{2}"
 
-#: java/org/orbisgis/view/table/TableEditor.java:607
+#: java/org/orbisgis/view/table/TableEditor.java:631
 #, java-format
-msgid "Table Editor of {0} (Filtered)"
-msgstr ""
+msgid "Table Editor of {0} (Filtered) {1}/{2}"
+msgstr "{0} (Filtered) {1}/{2}"
 
-#: java/org/orbisgis/view/table/TableEditor.java:685
-#: java/org/orbisgis/view/table/TableEditor.java:687
+#: java/org/orbisgis/view/table/TableEditor.java:717
+#: java/org/orbisgis/view/table/TableEditor.java:719
 #, fuzzy
 msgid "Error while loading the table editor"
 msgstr "Error while drop Editable"
 
-#: java/org/orbisgis/view/table/TableEditor.java:694
+#: java/org/orbisgis/view/table/TableEditor.java:726
 #, fuzzy, java-format
 msgid "Open the data source {0}"
 msgstr "Cannot remove the source {0}"
@@ -1749,7 +1749,6 @@ msgid "Whole words"
 msgstr ""
 
 #: java/org/orbisgis/view/table/filters/FieldsContainsFilterFactory.java:120
-#: java/org/orbisgis/view/table/filters/WhereSQLFilterFactory.java:89
 msgid "Search"
 msgstr ""
 

@@ -43,6 +43,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.FilterDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.view.components.button.CustomButton;
 import org.orbisgis.view.components.filter.ActiveFilter;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
@@ -85,7 +86,7 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
                 textAndButton.setLayout(new BoxLayout(textAndButton,BoxLayout.X_AXIS));
                 JTextField whereText = new JTextField(((DefaultActiveFilter)filterValue).getCurrentFilterValue());
                 whereText.setPreferredSize(new Dimension(Short.MAX_VALUE,Short.MIN_VALUE));
-                JButton runButton =  new JButton(OrbisGISIcon.getIcon("execute"));
+                JButton runButton =  new CustomButton(OrbisGISIcon.getIcon("execute"));
                 runButton.setToolTipText(I18N.tr("Search"));
                 textAndButton.add(whereText);
                 textAndButton.add(runButton);

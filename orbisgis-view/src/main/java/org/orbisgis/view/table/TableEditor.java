@@ -120,10 +120,10 @@ public class TableEditor extends JPanel implements EditorDockable {
                 LOGGER.debug("Create the GRID");
                 this.tableEditableElement = element;
                 dockingPanelParameters = new DockingPanelParameters();
-                updateTitle(false);
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("openattributes"));
                 tableScrollPane = new JScrollPane(makeTable());
                 add(tableScrollPane,BorderLayout.CENTER);
+                updateTitle(false);
         }
         /**
          * The popup is destroyed, the cell border need to be removed
@@ -600,6 +600,7 @@ public class TableEditor extends JPanel implements EditorDockable {
          * Table selection change
          */
         public void onTableSelectionChange() {
+                updateTitle(tableSorter.isFiltered());
                 if(!onUpdateEditableSelection.getAndSet(true)) {
                         SwingUtilities.invokeLater(new Runnable() {
 
@@ -625,9 +626,9 @@ public class TableEditor extends JPanel implements EditorDockable {
          */
         private void updateTitle(boolean filtered) {
                 if(!filtered) {
-                        dockingPanelParameters.setTitle(I18N.tr("Table Editor of {0}",tableEditableElement.getSourceName()));
+                        dockingPanelParameters.setTitle(I18N.tr("Table Editor of {0} {1}/{2}",tableEditableElement.getSourceName(),table.getSelectedRowCount(),table.getRowCount()));
                 }else{
-                        dockingPanelParameters.setTitle(I18N.tr("Table Editor of {0} (Filtered)",tableEditableElement.getSourceName()));
+                        dockingPanelParameters.setTitle(I18N.tr("Table Editor of {0} (Filtered) {1}/{2}",tableEditableElement.getSourceName(),table.getSelectedRowCount(),table.getRowCount()));
                 }                
         }
         
