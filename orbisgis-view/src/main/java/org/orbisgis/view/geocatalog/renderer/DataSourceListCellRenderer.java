@@ -36,7 +36,7 @@ import org.orbisgis.view.geocatalog.CatalogSourceItem;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
- * @brief Item renderer factory of GeoCatalog This is the cell renderer factory
+ * Item renderer factory of GeoCatalog This is the cell renderer factory
  * for the DataSource List in the GeoCatalog panel.
  *
  */

@@ -30,7 +30,7 @@ package org.orbisgis.core.events;
 
 import org.orbisgis.core.events.internals.ListenerContainers;
 /**
- * @brief Release all listeners attached to a specific target in one call.
+ * Release all listeners attached to a specific target in one call.
  */
 public class ListenerRelease {
 

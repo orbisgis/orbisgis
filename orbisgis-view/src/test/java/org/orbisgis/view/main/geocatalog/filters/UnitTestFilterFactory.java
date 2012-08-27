@@ -38,7 +38,7 @@ import org.orbisgis.view.components.filter.TextFieldDocumentListener;
 
 /**
  * This is the data source name contains x filter.
- * @brief Name contains DataSourceFilterFactory
+ * Name contains DataSourceFilterFactory
  */
 
 public class UnitTestFilterFactory implements FilterFactory<IFilter> {
