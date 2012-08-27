@@ -54,6 +54,7 @@ import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.PopupMenuListener;
 import javax.swing.event.RowSorterListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -112,6 +113,7 @@ public class TableEditor extends JPanel implements EditorDockable {
         private FilterFactoryManager<TableSelectionFilter> filterManager = new FilterFactoryManager<TableSelectionFilter>();
         private TableRowHeader tableRowHeader;
         private Point popupCellAdress = new Point(); //Col(x) and row(y) that trigger a popup
+        private Point cellHighlight = new Point();
 
         public TableEditor(TableEditableElement element) {
                 super(new BorderLayout());
@@ -123,7 +125,15 @@ public class TableEditor extends JPanel implements EditorDockable {
                 tableScrollPane = new JScrollPane(makeTable());
                 add(tableScrollPane,BorderLayout.CENTER);
         }
-
+        
+        public void onPopupBecomeInvisible() {
+                cellHighlight.setLocation(-1, -1);
+                tableModel.fireTableCellUpdated(popupCellAdress.y, popupCellAdress.x);
+        }
+        public void onPopupBecomeVisible() {
+                cellHighlight.setLocation(popupCellAdress);
+                tableModel.fireTableCellUpdated(popupCellAdress.y, popupCellAdress.x);
+        }
         private JComponent makeFilterManager() {
                 JPanel filterComp = filterManager.makeFilterPanel(false);
                 filterManager.setUserCanRemoveFilter(false);
@@ -207,6 +217,8 @@ public class TableEditor extends JPanel implements EditorDockable {
                         int col = table.columnAtPoint(e.getPoint());
                         popupCellAdress.setLocation(col,row);
                         JPopupMenu menu = makeTableCellPopup(row,col);
+                        menu.addPopupMenuListener(EventHandler.create(PopupMenuListener.class, this, "onPopupBecomeInvisible",null,"popupMenuWillBecomeInvisible"));
+                        menu.addPopupMenuListener(EventHandler.create(PopupMenuListener.class, this, "onPopupBecomeVisible",null,"popupMenuWillBecomeVisible"));
                         menu.show(e.getComponent(), e.getX(), e.getY());
                 }
         }
@@ -632,7 +644,9 @@ public class TableEditor extends JPanel implements EditorDockable {
                         col.setPreferredWidth(width);
                         colModel.addColumn(col);
                         if (isNumeric(i)) {
-                                col.setCellRenderer(new TableNumberColumnRenderer(table));
+                                col.setCellRenderer(new TableNumberColumnRenderer(table,cellHighlight));
+                        } else {
+                                col.setCellRenderer(new TableDefaultColumnRenderer(table,tableModel.getColumnClass(i),cellHighlight));
                         }
 
                 }

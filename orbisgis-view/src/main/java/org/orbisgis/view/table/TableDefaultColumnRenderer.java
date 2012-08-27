@@ -30,37 +30,30 @@ package org.orbisgis.view.table;
 
 import java.awt.Component;
 import java.awt.Point;
-import java.text.NumberFormat;
-import java.util.Locale;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JTable;
-import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.NumberFormatter;
+import javax.swing.UIManager;
 import org.orbisgis.view.components.renderers.TableLaFCellRenderer;
 
 /**
- * Custom rendering for number columns in the table editor
+ *
  * @author Nicolas Fortin
  */
-public class TableNumberColumnRenderer extends TableDefaultColumnRenderer {
-        private JFormattedTextField formatedField = new JFormattedTextField();
-        
-        public TableNumberColumnRenderer(JTable table,Point popupCellAdress) {
-                super(table, Number.class,popupCellAdress);
-                NumberFormat decimalFormat = NumberFormat.getInstance(Locale.getDefault());
-                decimalFormat.setGroupingUsed(false);
-                DefaultFormatterFactory decimalFormatFactory = new DefaultFormatterFactory(new NumberFormatter(decimalFormat));
-                formatedField.setFormatterFactory(decimalFormatFactory);
+public class TableDefaultColumnRenderer extends TableLaFCellRenderer {
+        private Point popupCellAdress;
+        public TableDefaultColumnRenderer(JTable table,Class<?> type, Point popupCellAdress) {
+                super(table, type);
+                this.popupCellAdress = popupCellAdress;
         }
         
         @Override
-        public Component getTableCellRendererComponent(JTable jtable, Object o, boolean bln, boolean bln1, int i, int i1) {
-                Component lafComp = super.getTableCellRendererComponent(jtable, o, bln, bln1, i, i1);
-                if(lafComp instanceof JLabel) {
-                        JLabel lafTF = (JLabel)lafComp;
-                        formatedField.setValue(o);
-                        lafTF.setText(formatedField.getText());
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                Component lafComp = lookAndFeelRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+                if(popupCellAdress.x == column && popupCellAdress.y == row) {
+                        if(lafComp instanceof JLabel) {
+                                JLabel lafTF = (JLabel)lafComp;                        
+                                lafTF.setBorder(UIManager.getBorder("Table.focusCellHighlightBorder"));
+                        }
                 }                
                 return lafComp;
         }
