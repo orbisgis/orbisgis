@@ -29,13 +29,14 @@
 package org.orbisgis.view.toc;
 
 import java.util.Enumeration;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import org.orbisgis.core.renderer.se.Style;
 
 /**
  * The decorator for a tree node style
  */
-public class TocTreeNodeStyle implements TreeNode  {
+public class TocTreeNodeStyle implements MutableTreeNode  {
         private Style style;
 
         public TocTreeNodeStyle(Style style) {
@@ -98,6 +99,32 @@ public class TocTreeNodeStyle implements TreeNode  {
         @Override
         public Enumeration<TreeNode> children() {
                 return null;
+        }
+
+        @Override
+        public void insert(MutableTreeNode mtn, int i) {
+        }
+
+        @Override
+        public void remove(int i) {
+        }
+
+        @Override
+        public void remove(MutableTreeNode mtn) {
+        }
+
+        @Override
+        public void setUserObject(Object o) {
+                //User edit the style name
+                style.setName(o.toString());
+        }
+
+        @Override
+        public void removeFromParent() {
+        }
+
+        @Override
+        public void setParent(MutableTreeNode mtn) {
         }
         
 }
