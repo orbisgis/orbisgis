@@ -37,6 +37,7 @@ import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
 
 /**
  * A {@code ProportionalLine} represents a {@code LineSymbolizer} containing a
@@ -45,7 +46,7 @@ import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
  * raw value (i.e. we don't apply any mathematical function to the input values).
  * @author Alexis Guéganno
  */
-public class ProportionalLine extends ConstantColorAndDashesLine implements Legend {
+public class ProportionalLine extends ConstantColorAndDashesLine implements Legend, StrokeUom {
 
     private ProportionalStrokeLegend strokeLegend;
 
