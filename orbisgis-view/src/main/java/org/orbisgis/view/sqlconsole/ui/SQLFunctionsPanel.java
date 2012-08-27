@@ -65,11 +65,8 @@ public class SQLFunctionsPanel extends JPanel {
         private final FunctionListModel functionListModel;
         private final FilterFactoryManager<FunctionFilter> functionFilters = new FilterFactoryManager<FunctionFilter>();
         private final JLabel functionLabelCount;
-        private final JComponent btnExpand;
 
         private final FunctionManager functionManager;
-        private final ActionListener collapseListener = EventHandler.create(ActionListener.class,this,"collapse");
-        private final ActionListener expandListener = EventHandler.create(ActionListener.class,this,"expand");
         private final Listener filterEvent = EventHandler.create(Listener.class,this,"doFilter");
         private AtomicBoolean initialised = new AtomicBoolean(false);
         
@@ -86,12 +83,6 @@ public class SQLFunctionsPanel extends JPanel {
                 list.setModel(functionListModel);
                 list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-                JButton btnCollapse = new JButton();
-                btnCollapse.setIcon(OrbisGISIcon.getIcon("go-next"));
-                btnCollapse.setToolTipText(I18N.tr("Collapse"));
-                btnCollapse.addActionListener(collapseListener);
-
-                expandedPanel.add(btnCollapse, BorderLayout.WEST);
                 expandedPanel.add(new JScrollPane(list), BorderLayout.CENTER);
                 functionFilters.setUserCanRemoveFilter(false);
                 expandedPanel.add(functionFilters.makeFilterPanel(false), BorderLayout.NORTH);
@@ -101,15 +92,7 @@ public class SQLFunctionsPanel extends JPanel {
                 list.setDragEnabled(true);
                 functionLabelCount = new JLabel(I18N.tr("Functions count = {0}",functionListModel.getSize()));
                 expandedPanel.add(functionLabelCount, BorderLayout.SOUTH);
-
-                JButton expandButton = new JButton(OrbisGISIcon.getIcon("go-previous"));
-                expandButton.setSize(new Dimension(20,0));
-                expandButton.setToolTipText(I18N.tr("Show SQL function list"));
-                add(expandButton, BorderLayout.WEST);
                 add(expandedPanel, BorderLayout.CENTER);
-                expandButton.addActionListener(expandListener);
-                btnExpand = expandButton;
-
                 expandedPanel.setBorder(BorderFactory.createBevelBorder(BevelBorder.RAISED));
                 collapse();
 
@@ -146,6 +129,19 @@ public class SQLFunctionsPanel extends JPanel {
         public void doFilter() {
                 functionListModel.setFilters(functionFilters.getFilters());
         }
+        
+        /**
+         * Switch the visibility state of the panel
+         * @see collapse
+         * @see expand
+         */
+        public void switchPanelVisibilityState() {
+                if (expandedPanel.isVisible()) {
+                        collapse();
+                } else {
+                        expand();
+                }
+        }
 
         /**
          * Hide the SQL list and show the expand button
@@ -153,7 +149,6 @@ public class SQLFunctionsPanel extends JPanel {
         public final void collapse() {
                 if (expandedPanel.isVisible()) {
                         expandedPanel.setVisible(false);
-                        btnExpand.setVisible(true);
                 }
         }
 
@@ -164,7 +159,6 @@ public class SQLFunctionsPanel extends JPanel {
                 if (!expandedPanel.isVisible()) {
                         setPreferredSize(null);
                         expandedPanel.setVisible(true);
-                        btnExpand.setVisible(false);
                 }
         }
 }
