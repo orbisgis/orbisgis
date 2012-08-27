@@ -112,8 +112,8 @@ public class TableEditor extends JPanel implements EditorDockable {
         private AtomicBoolean onUpdateEditableSelection = new AtomicBoolean(false);
         private FilterFactoryManager<TableSelectionFilter> filterManager = new FilterFactoryManager<TableSelectionFilter>();
         private TableRowHeader tableRowHeader;
-        private Point popupCellAdress = new Point(); //Col(x) and row(y) that trigger a popup
-        private Point cellHighlight = new Point();
+        private Point popupCellAdress = new Point();    // Col(x) and row(y) that trigger a popup
+        private Point cellHighlight = new Point(-1,-1); // cell under cursor on right click
 
         public TableEditor(TableEditableElement element) {
                 super(new BorderLayout());
@@ -125,11 +125,16 @@ public class TableEditor extends JPanel implements EditorDockable {
                 tableScrollPane = new JScrollPane(makeTable());
                 add(tableScrollPane,BorderLayout.CENTER);
         }
-        
+        /**
+         * The popup is destroyed, the cell border need to be removed
+         */
         public void onPopupBecomeInvisible() {
                 cellHighlight.setLocation(-1, -1);
                 tableModel.fireTableCellUpdated(popupCellAdress.y, popupCellAdress.x);
         }
+        /**
+         * The popup is shown, the cell border need to be set
+         */
         public void onPopupBecomeVisible() {
                 cellHighlight.setLocation(popupCellAdress);
                 tableModel.fireTableCellUpdated(popupCellAdress.y, popupCellAdress.x);
@@ -163,6 +168,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                                 @Override
                                 public void run() {
                                         reloadFilters();
+                                        resetRenderers();
                                 }
                         });
                 }
@@ -242,6 +248,9 @@ public class TableEditor extends JPanel implements EditorDockable {
                                 EventHandler.create(ActionListener.class,
                                 this,"onMenuClearFilter"));
                         pop.add(removeRowFilter);
+                }
+                if(hasSelectedRows || tableSorter.isFiltered()) {
+                        pop.addSeparator();
                 }
                 if(hasSelectedRows) {
                         JMenuItem deselectAll = new JMenuItem(
@@ -621,6 +630,17 @@ public class TableEditor extends JPanel implements EditorDockable {
                         dockingPanelParameters.setTitle(I18N.tr("Table Editor of {0} (Filtered)",tableEditableElement.getSourceName()));
                 }                
         }
+        
+        private void resetRenderers() {
+                for (int i = 0; i < tableModel.getColumnCount(); i++) {
+                        TableColumn col = table.getColumnModel().getColumn(i);
+                        if (isNumeric(i)) {
+                                col.setCellRenderer(new TableNumberColumnRenderer(table,cellHighlight));
+                        } else {
+                                col.setCellRenderer(new TableDefaultColumnRenderer(table,tableModel.getColumnClass(i),cellHighlight));
+                        } 
+                }                
+        }
 
         private void autoResizeColWidth(int rowsToCheck,
                 HashMap<String, Integer> widths,
@@ -632,7 +652,6 @@ public class TableEditor extends JPanel implements EditorDockable {
                         String columnName = tableModel.getColumnName(i);
                         col.setHeaderValue(columnName);
                         TableCellRenderer tableCellRenderer = renderers.get(columnName);
-
                         if (tableCellRenderer != null) {
                                 col.setHeaderRenderer(tableCellRenderer);
                         }
@@ -643,14 +662,10 @@ public class TableEditor extends JPanel implements EditorDockable {
                         }
                         col.setPreferredWidth(width);
                         colModel.addColumn(col);
-                        if (isNumeric(i)) {
-                                col.setCellRenderer(new TableNumberColumnRenderer(table,cellHighlight));
-                        } else {
-                                col.setCellRenderer(new TableDefaultColumnRenderer(table,tableModel.getColumnClass(i),cellHighlight));
-                        }
 
                 }
                 table.setColumnModel(colModel);
+                resetRenderers();
         }
 
         /**
