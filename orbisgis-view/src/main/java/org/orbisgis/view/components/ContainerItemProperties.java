@@ -33,7 +33,7 @@ import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 
 /**
- * @brief Generic list item that store a key with the value shown
+ * Generic list item that store a key with the value shown
  * 
  * This class is created thanks to the NetBeans user interface.
  * Use the "Add property" NetBeans function to add properties easily.

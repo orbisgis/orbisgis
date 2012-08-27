@@ -29,6 +29,7 @@
 package org.orbisgis.legend.structure.stroke.constant;
 
 import java.awt.Color;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.stroke.StrokeLegend;
@@ -37,6 +38,18 @@ import org.orbisgis.legend.structure.stroke.StrokeLegend;
  * @author Alexis Guéganno
  */
 public interface ConstantPenStroke extends StrokeLegend {
+
+        /**
+         * Gets the unit of measure used to drawn the underlying {@link PenStroke}.
+         * @return
+         */
+        Uom getUom();
+        
+        /**
+         * Sets the unit of measure used to drawn the underlying {@link PenStroke}.
+         * @param u 
+         */
+        void setUom(Uom u);
 
         /**
          * Gets the analysis obtained from the inner solid fill.

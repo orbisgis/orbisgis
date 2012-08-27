@@ -28,6 +28,7 @@
  */
 package org.orbisgis.legend.structure.stroke;
 
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.LegendStructure;
@@ -66,6 +67,22 @@ public class PenStrokeLegend implements StrokeLegend {
         @Override
         public Stroke getStroke() {
                 return penStroke;
+        }
+
+        /**
+         * Gets the unit of measure of the associated {@code Stroke}.
+         * @return
+         */
+        public Uom getUom() {
+                return getStroke().getUom();
+        }
+
+        /**
+         * Sets the unit of measure of the associated {@code Stroke}.
+         * @param u
+         */
+        public void setUom(Uom u){
+                getStroke().setUom(u);
         }
 
         /**

@@ -321,7 +321,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
 
         @Override
         public final Uom getUom() {
-                return uom;
+                return uom == null ? Uom.PX : uom;
         }
 
         @Override
@@ -334,7 +334,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
                 if (uom != null) {
                         this.uom = uom;
                 } else {
-                        this.uom = Uom.MM;
+                        this.uom = Uom.PX;
                 }
         }
 }
