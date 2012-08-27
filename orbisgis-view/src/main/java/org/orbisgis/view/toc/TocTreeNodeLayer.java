@@ -147,8 +147,13 @@ public class TocTreeNodeLayer implements MutableTreeNode {
         @Override
         public void setUserObject(Object o) {
                 try {
+                        String label = o.toString();
                         //User change the layer label
-                        layer.setName(o.toString());
+                        if(label.isEmpty()) {
+                                layer.setName(layer.getDataSource().getName());
+                        } else {
+                                layer.setName(label);
+                        }
                 } catch (LayerException ex) {
                         LOGGER.error(I18N.tr("Cannot change the layer name"), ex);
                 }

@@ -279,8 +279,10 @@ public class TableEditor extends JPanel implements EditorDockable {
          * Select all rows that have the same value of the selected cell
          */
         public void onMenuSelectSameCellValue() {
-                int colId = popupCellAdress.x;
-                int rowId = popupCellAdress.y;
+                int viewColId = popupCellAdress.x;
+                int viewRowId = popupCellAdress.y;
+                int colId = table.convertColumnIndexToModel(viewColId);
+                int rowId = table.convertRowIndexToModel(viewRowId);
                 //
                 //Build the appropriate search filter
                 String cellValue;
