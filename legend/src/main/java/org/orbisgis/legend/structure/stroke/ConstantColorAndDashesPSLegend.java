@@ -32,6 +32,7 @@ import java.awt.Color;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
+import org.orbisgis.legend.structure.parameter.NumericLegend;
 
 
 /**
@@ -49,7 +50,7 @@ public abstract class ConstantColorAndDashesPSLegend extends PenStrokeLegend {
      * @param fill
      * @param dash 
      */
-    public ConstantColorAndDashesPSLegend(PenStroke ps, LegendStructure width,
+    public ConstantColorAndDashesPSLegend(PenStroke ps, NumericLegend width,
             LegendStructure fill, LegendStructure dash) {
         super(ps, width, fill, dash);
     }
