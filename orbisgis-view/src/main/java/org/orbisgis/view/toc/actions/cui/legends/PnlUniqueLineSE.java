@@ -51,6 +51,7 @@ import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolLine;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.view.components.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -73,7 +74,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private JPanel lineColor;
         private JPanel lineOpacity;
         private JPanel lineDash;
-        private Uom[] uoms;
+        private ContainerItemProperties[] uoms;
         /**
          * Here we can put all the Legend instances we want... but they have to
          * be unique symbol (ie constant) Legends.
@@ -264,6 +265,16 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 }
         }
 
+        protected ContainerItemProperties[] getUomProperties(){
+                Uom[] us = Uom.values();
+                ContainerItemProperties[] cips = new ContainerItemProperties[us.length];
+                for(int i = 0; i<us.length; i++){
+                        Uom u = us[i];
+                        ContainerItemProperties cip = new ContainerItemProperties(u.name(), u.toLocalizedString());
+                        cips[i] = cip;
+                }
+                return cips;
+        }
 
         /**
          * ComboBox to configure the unit of measure used to draw th stroke.
@@ -272,10 +283,10 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          */
         protected JComboBox getLineUomCombo(){
                 CanvasSE prev = getPreview();
-                uoms= Uom.values();
+                uoms= getUomProperties();
                 String[] values = new String[uoms.length];
                 for (int i = 0; i < values.length; i++) {
-                        values[i] = I18N.tr(uoms[i].toString());
+                        values[i] = I18N.tr(uoms[i].getLabel());
                 }
                 final JComboBox jcc = new JComboBox(values);
                 ActionListener acl = EventHandler.create(ActionListener.class, prev, "repaint");
@@ -291,7 +302,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          * @param index
          */
         public void updateLUComboBox(int index){
-                ((IUniqueSymbolLine)getLegend()).setStrokeUom(uoms[index]);
+                ((IUniqueSymbolLine)getLegend()).setStrokeUom(Uom.fromString(uoms[index].getKey()));
         }
         /**
          * In order to improve the user experience, it may be interesting to

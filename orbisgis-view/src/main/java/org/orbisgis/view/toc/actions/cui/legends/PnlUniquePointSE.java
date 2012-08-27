@@ -60,6 +60,7 @@ import org.orbisgis.legend.thematic.ConstantFormPoint;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.JNumericSpinner;
+import org.orbisgis.view.components.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -74,14 +75,14 @@ import org.xnap.commons.i18n.I18nFactory;
 public class PnlUniquePointSE extends PnlUniqueAreaSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlUniquePointSE.class);
         private int geometryType = SimpleGeometryType.ALL;
-        private Uom[] uoms;
+        private ContainerItemProperties[] uoms;
 
         /**
          * Here we can put all the Legend instances we want... but they have to
          * be unique symbol (ie constant) Legends.
          */
         private UniqueSymbolPoint uniquePoint;
-        private String[] wkns;
+        private ContainerItemProperties[] wkns;
 
         @Override
         public Component getComponent() {
@@ -300,10 +301,10 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          */
         public JComboBox getWKNCombo(ConstantFormPoint point){
                 CanvasSE prev = getPreview();
-                wkns = WellKnownName.getValues();
+                wkns = getWknProperties();
                 String[] values = new String[wkns.length];
                 for (int i = 0; i < values.length; i++) {
-                        values[i] = I18N.tr(wkns[i]);
+                        values[i] = wkns[i].getLabel();
                 }
                 final JComboBox jcc = new JComboBox(values);
                 ActionListener acl = EventHandler.create(ActionListener.class, prev, "repaint");
@@ -314,6 +315,17 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 return jcc;
         }
 
+
+        protected ContainerItemProperties[] getWknProperties(){
+                WellKnownName[] us = WellKnownName.values();
+                ContainerItemProperties[] cips = new ContainerItemProperties[us.length];
+                for(int i = 0; i<us.length; i++){
+                        WellKnownName u = us[i];
+                        ContainerItemProperties cip = new ContainerItemProperties(u.name(), u.toLocalizedString());
+                        cips[i] = cip;
+                }
+                return cips;
+        }
         /**
          * If called, this method will add a {@code ButtonGroup} made of two
          * {@code JRadioButton}s that will be used to choose if the symbols
@@ -347,7 +359,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * @param index
          */
         public void updateWKNComboBox(int index){
-                ((ConstantFormPoint)getLegend()).setWellKnownName(wkns[index]);
+                ((ConstantFormPoint)getLegend()).setWellKnownName((wkns[index].getKey()));
         }
 
 
@@ -358,7 +370,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          */
         protected JComboBox getPointUomCombo(){
                 CanvasSE prev = getPreview();
-                uoms= Uom.values();
+                uoms= getUomProperties();
                 String[] values = new String[uoms.length];
                 for (int i = 0; i < values.length; i++) {
                         values[i] = I18N.tr(uoms[i].toString());
@@ -377,6 +389,6 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * @param index
          */
         public void updateSUComboBox(int index){
-                ((ConstantFormPoint)getLegend()).setSymbolUom(uoms[index]);
+                ((ConstantFormPoint)getLegend()).setSymbolUom(Uom.fromString(uoms[index].getKey()));
         }
 }
