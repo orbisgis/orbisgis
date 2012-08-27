@@ -123,7 +123,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("openattributes"));
                 tableScrollPane = new JScrollPane(makeTable());
                 add(tableScrollPane,BorderLayout.CENTER);
-                updateTitle(false);
+                updateTitle();
         }
         /**
          * The popup is destroyed, the cell border need to be removed
@@ -558,6 +558,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                         DockingPanelParameters.PROP_VISIBLE,
                         EventHandler.create(PropertyChangeListener.class,
                         this,"onChangeVisibility","newValue"));
+                updateTitle();
         }
         
         /**
@@ -592,7 +593,7 @@ public class TableEditor extends JPanel implements EditorDockable {
          * The model or the sorted have updated the table
          */
         public void onShownRowsChanged() {
-                updateTitle(tableSorter.isFiltered());
+                updateTitle();
                 tableRowHeader.tableChanged();
         }
         
@@ -600,7 +601,7 @@ public class TableEditor extends JPanel implements EditorDockable {
          * Table selection change
          */
         public void onTableSelectionChange() {
-                updateTitle(tableSorter.isFiltered());
+                updateTitle();
                 if(!onUpdateEditableSelection.getAndSet(true)) {
                         SwingUtilities.invokeLater(new Runnable() {
 
@@ -624,8 +625,8 @@ public class TableEditor extends JPanel implements EditorDockable {
          * 
          * @param filtered If the shown rows do not reflect the model
          */
-        private void updateTitle(boolean filtered) {
-                if(!filtered) {
+        private void updateTitle() {
+                if(tableSorter==null || !tableSorter.isFiltered()) {
                         dockingPanelParameters.setTitle(I18N.tr("Table Editor of {0} {1}/{2}",tableEditableElement.getSourceName(),table.getSelectedRowCount(),table.getRowCount()));
                 }else{
                         dockingPanelParameters.setTitle(I18N.tr("Table Editor of {0} (Filtered) {1}/{2}",tableEditableElement.getSourceName(),table.getSelectedRowCount(),table.getRowCount()));
