@@ -62,6 +62,12 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
                 intervals = new ArrayList<Integer>();
         }
 
+        public IntegerUnion(int[] externalArray) {
+                this();
+                for(Integer val : externalArray) {
+                        internalAdd(val);
+                }
+        }
         
         public IntegerUnion(IntegerUnion externalSet) {
                 this.intervals = new ArrayList<Integer>(externalSet.intervals.size());

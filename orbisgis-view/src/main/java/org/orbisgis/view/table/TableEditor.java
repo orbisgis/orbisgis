@@ -35,10 +35,14 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Level;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
@@ -51,6 +55,7 @@ import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.event.RowSorterListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -103,6 +108,9 @@ public class TableEditor extends JPanel implements EditorDockable {
         private DataSourceRowSorter tableSorter;
         private DataSourceTableModel tableModel;
         private AtomicBoolean initialised = new AtomicBoolean(false);
+        // Property selection change Event trigered by TableEditableElement
+        // is ignored if onUpdateEditableSelection is true
+        private AtomicBoolean onUpdateEditableSelection = new AtomicBoolean(false);
         private FilterFactoryManager<TableSelectionFilter> filterManager = new FilterFactoryManager<TableSelectionFilter>();
         private TableRowHeader tableRowHeader;
         private Point popupCellAdress = new Point(); //Col(x) and row(y) that trigger a popup
@@ -118,14 +126,6 @@ public class TableEditor extends JPanel implements EditorDockable {
                 add(tableScrollPane,BorderLayout.CENTER);
         }
 
-        @Override
-        public void removeNotify() {
-                super.removeNotify();
-                tableModel.dispose();
-        }
-        
-        
-        
         private JComponent makeFilterManager() {
                 JPanel filterComp = filterManager.makeFilterPanel(false);
                 filterManager.setUserCanRemoveFilter(false);
@@ -260,7 +260,7 @@ public class TableEditor extends JPanel implements EditorDockable {
         }
         
         /**
-         * Return the formated version of the cell
+         * Return the formated version of the cell value
          * @param row View row Id
          * @param col Col id
          * @return 
@@ -524,7 +524,45 @@ public class TableEditor extends JPanel implements EditorDockable {
                 //Set the row count at left
                 tableRowHeader = new TableRowHeader(table);
                 tableScrollPane.setRowHeaderView(tableRowHeader);
+                //Apply the selection
+                setRowSelection((IntegerUnion)tableEditableElement.getSelection());              
+                table.getSelectionModel().addListSelectionListener(
+                        EventHandler.create(ListSelectionListener.class,this,
+                        "onTableSelectionChange"));
                 add(makeFilterManager(),BorderLayout.SOUTH);
+                //Close the editable element on window close
+                dockingPanelParameters.addPropertyChangeListener(
+                        DockingPanelParameters.PROP_VISIBLE,
+                        EventHandler.create(PropertyChangeListener.class,
+                        this,"onChangeVisibility","newValue"));
+        }
+        
+        /**
+         * Frame visibility state change
+         * @param visible 
+         */
+        public void onChangeVisibility(boolean visible) {
+                if(!visible) {                        
+                        tableModel.dispose();
+                        try {
+                                LOGGER.debug("Close table "+dockingPanelParameters.getTitle());
+                                tableEditableElement.close(new NullProgressMonitor());
+                        } catch (UnsupportedOperationException ex) {
+                                LOGGER.error(ex.getLocalizedMessage(),ex);
+                        } catch (EditableElementException ex) {
+                                LOGGER.error(ex.getLocalizedMessage(),ex);
+                        }
+                }
+        }
+        
+        private void setRowSelection(IntegerUnion selection) {
+                Iterator<Integer> intervals = selection.getValueRanges().iterator();
+                table.clearSelection();
+                while(intervals.hasNext()) {
+                        int begin = intervals.next();
+                        int end = intervals.next();
+                        table.addRowSelectionInterval(begin, end);
+                }
         }
         
         /**
@@ -534,6 +572,30 @@ public class TableEditor extends JPanel implements EditorDockable {
                 updateTitle(tableSorter.isFiltered());
                 tableRowHeader.tableChanged();
         }
+        
+        /**
+         * Table selection change
+         */
+        public void onTableSelectionChange() {
+                if(!onUpdateEditableSelection.getAndSet(true)) {
+                        SwingUtilities.invokeLater(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                        updateEditableSelection();
+                                }
+                        });
+                }
+        }
+
+        private void updateEditableSelection() {
+                try {
+                        tableEditableElement.setSelection(new IntegerUnion(table.getSelectedRows()));
+                } finally {
+                        onUpdateEditableSelection.set(false);
+                }
+        }
+        
         /**
          * 
          * @param filtered If the shown rows do not reflect the model

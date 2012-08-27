@@ -43,10 +43,12 @@ public abstract class EditableElement extends BeanPropertyChangeSupport {
         // Properties names
         public static final String PROP_ID = "id";
         public static final String PROP_MODIFIED = "modified";
+        public static final String PROP_OPEN= "open";
         
         // Properties
         protected String id = "none";
         protected boolean modified = false;
+        protected boolean open = false;
 
         /**
          * Return the Id of this element (instance).
@@ -90,6 +92,25 @@ public abstract class EditableElement extends BeanPropertyChangeSupport {
                 propertyChangeSupport.firePropertyChange(PROP_MODIFIED, oldModified, modified);
         }
 
+        /**
+        * True, if this editable is open by the editor
+        * @return the value of open
+        */
+        public boolean isOpen() {
+                return open;
+        }
+
+        /**
+         * Set the value of the state of the editable element
+         *
+         * @param open new value of open
+         */
+        protected void setOpen(boolean open) {
+                boolean oldOpen = this.open;
+                this.open = open;
+                propertyChangeSupport.firePropertyChange(PROP_OPEN, oldOpen, open);
+        }
+        
         /**
          * Return an unique String that identifies the element type
          *         

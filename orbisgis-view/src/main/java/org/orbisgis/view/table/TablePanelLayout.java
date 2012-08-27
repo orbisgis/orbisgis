@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
+import java.util.Set;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.view.docking.DockingPanelLayout;
@@ -84,10 +85,17 @@ public class TablePanelLayout implements DockingPanelLayout {
         private void writeSelection(OutputStream out) throws IOException {
                 ObjectOutputStream selectionOut = new ObjectOutputStream(out);
                 //Do not save byte consuming selection
-                if(((IntegerUnion)tableEditableElement.getSelection()).getValueRanges().size()>MAX_SELECTION_SERIALISATION_SIZE) {
+                IntegerUnion mergedSelection;
+                Set<Integer> selection = tableEditableElement.getSelection();
+                if(selection instanceof IntegerUnion) {
+                        mergedSelection = (IntegerUnion) selection;
+                } else {
+                        mergedSelection = new IntegerUnion(selection);
+                }
+                if(mergedSelection.getValueRanges().size()>MAX_SELECTION_SERIALISATION_SIZE) {
                         selectionOut.writeObject(new IntegerUnion());
                 } else {
-                        selectionOut.writeObject(tableEditableElement.getSelection());
+                        selectionOut.writeObject(mergedSelection);
                 }
                 selectionOut.flush();
                 selectionOut.close();                

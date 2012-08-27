@@ -172,7 +172,7 @@ public class DataSourceTableModel extends AbstractTableModel {
         
         @Override
         public int getRowCount() {
-                if(dataSource==null) {
+                if(dataSource==null || !dataSource.isOpen()) {
                         return 0;
                 }
                 try {

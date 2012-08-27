@@ -45,6 +45,11 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditableElementException;
 
+/**
+ * EditableElement that hold a DataSource.
+ * 
+ * Open/Close , open and close the DataSource
+ */
 public class EditableSource extends EditableElement {
 
 	public static final String EDITABLE_RESOURCE_TYPE = "EditableSource";

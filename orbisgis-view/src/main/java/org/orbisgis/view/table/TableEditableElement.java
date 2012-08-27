@@ -43,7 +43,7 @@ public class TableEditableElement extends EditableSource {
         public static final String PROP_SELECTION = "selection";
         
         // Properties
-        protected Set<Integer> selectedGeometries;
+        protected IntegerUnion selectedGeometries;
 
         public TableEditableElement(Set<Integer> selection, String sourceName) {
                 super(sourceName);

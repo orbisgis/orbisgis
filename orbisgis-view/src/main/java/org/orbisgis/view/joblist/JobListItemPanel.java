@@ -43,6 +43,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 
 
 public class JobListItemPanel extends JPanel {
+        private static final long serialVersionUID = 1L;
         private Job job;
         private JLabel jobCancelLabel;
         private JLabel jobLabel;
