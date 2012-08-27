@@ -46,7 +46,7 @@ import org.orbisgis.legend.structure.parameter.NumericLegend;
  * some numeric attribute. This way, we obtain a "proportional line" analysis.
  * @author Alexis Guéganno
  */
-public class ProportionalStrokeLegend extends PenStrokeLegend {
+public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
 
         /**
          * Builds an empty {@code ProportionalStrokeLegend}. It will change 0 to
