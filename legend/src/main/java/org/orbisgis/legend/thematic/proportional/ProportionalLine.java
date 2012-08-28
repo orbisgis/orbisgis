@@ -142,8 +142,8 @@ public class ProportionalLine extends ConstantColorAndDashesLine implements Lege
      * Set the value of the first interpolation point, as a {@code double}.
      * @param d
      */
-    public void setFirstValue(double d) {
-        strokeLegend.setFirstValue(d);
+    public void setFirstValue(Number d) {
+        strokeLegend.setFirstValue(d.doubleValue());
     }
 
     /**
@@ -160,8 +160,8 @@ public class ProportionalLine extends ConstantColorAndDashesLine implements Lege
      * Set the value of the second interpolation point, as a {@code double}.
      * @param d
      */
-    public void setSecondValue(double d) {
-        strokeLegend.setSecondValue(d);
+    public void setSecondValue(Number d) {
+        strokeLegend.setSecondValue(d.doubleValue());
     }
 
     @Override
