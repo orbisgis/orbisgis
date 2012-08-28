@@ -294,6 +294,10 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         return featuresMap;
     }
 
+    public void refreshFeatures(){
+            features = dependsOnFeature();
+    }
+
     /**
      * Draw the symbols in g2, using infos that are found in sds at index fid.
      * @param g2
