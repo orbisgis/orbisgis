@@ -127,6 +127,7 @@ public final class DotMapFill extends Fill implements GraphicNode {
         if (quantityPerMark != null) {
             this.quantityPerMark = quantityPerMark;
             this.quantityPerMark.setContext(RealParameterContext.REAL_CONTEXT);
+            this.quantityPerMark.setParent(this);
         }
     }
 
@@ -146,6 +147,7 @@ public final class DotMapFill extends Fill implements GraphicNode {
         if (totalQuantity != null) {
             this.totalQuantity = totalQuantity;
             this.totalQuantity.setContext(RealParameterContext.REAL_CONTEXT);
+            this.totalQuantity.setParent(this);
         }
     }
 
@@ -252,8 +254,8 @@ public final class DotMapFill extends Fill implements GraphicNode {
         if(mark != null){
             ua.merge(mark.getUsedAnalysis());
         }
-        ua.include(totalQuantity);
-        ua.include(quantityPerMark);
+        ua.merge(totalQuantity.getUsedAnalysis());
+        ua.merge(quantityPerMark.getUsedAnalysis());
         return ua;
     }
 

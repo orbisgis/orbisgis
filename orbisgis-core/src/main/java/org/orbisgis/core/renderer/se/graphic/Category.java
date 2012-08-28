@@ -184,6 +184,7 @@ public final class Category implements SymbolizerNode, FillNode, StrokeNode, Gra
          */
         public void setMeasure(RealParameter measure) {
                 this.measure = measure;
+                this.measure.setParent(this);
         }
 
         /**
@@ -255,7 +256,7 @@ public final class Category implements SymbolizerNode, FillNode, StrokeNode, Gra
             }
 
             if (this.getMeasure() != null) {
-                ret.include(getMeasure());
+                ret.merge(getMeasure().getUsedAnalysis());
             }
             return ret;
         }

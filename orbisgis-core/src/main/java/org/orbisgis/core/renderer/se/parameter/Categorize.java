@@ -140,6 +140,9 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      */
     public void setFallbackValue(FallbackType fallbackValue) {
         this.fallbackValue = fallbackValue;
+        if(this.fallbackValue != null){
+                fallbackValue.setParent(this);
+        }
     }
 
     /**
@@ -159,6 +162,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         this.lookupValue = lookupValue;
         if (lookupValue != null) {
             lookupValue.setContext(RealParameterContext.REAL_CONTEXT);
+            lookupValue.setParent(this);
         }
     }
 
@@ -246,6 +250,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
             classValues.remove(n);
             classValues.add(n, val);
         }
+        val.setParent(this);
     }
 
     /**
@@ -262,6 +267,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
             if (! remove.equals(threshold)) {
                 sortClasses();
             }
+            threshold.setParent(this);
         }
         this.method = CategorizeMethod.MANUAL;
     }
@@ -544,8 +550,11 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     @Override
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis ua = new UsedAnalysis();
+        ua.include(this);
         ua.merge(lookupValue.getUsedAnalysis());
-        ua.merge(firstClass.getUsedAnalysis());
+        if(firstClass != null){
+            ua.merge(firstClass.getUsedAnalysis());
+        }
         for(ToType t : classValues){
                 ua.merge(t.getUsedAnalysis());
         }

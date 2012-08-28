@@ -260,6 +260,7 @@ public final class StyledText implements UomNode, FillNode, StrokeNode {
     public void setText(StringParameter text) {
         if (text != null) {
             this.text = text;
+            this.text.setParent(this);
         }
     }
 
@@ -292,6 +293,7 @@ public final class StyledText implements UomNode, FillNode, StrokeNode {
     public void setFontFamily(StringParameter fontFamily) {
         if (fontFamily != null) {
             this.fontFamily = fontFamily;
+            this.fontFamily.setParent(this);
         }
     }
 
@@ -312,6 +314,7 @@ public final class StyledText implements UomNode, FillNode, StrokeNode {
         this.fontSize = fontSize;
         if (this.fontSize != null) {
             this.fontSize.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+            this.fontSize.setParent(this);
         }
     }
 
@@ -332,6 +335,7 @@ public final class StyledText implements UomNode, FillNode, StrokeNode {
         if (fontStyle != null) {
             this.fontStyle = fontStyle;
             this.fontStyle.setRestrictionTo(styles);
+            this.fontStyle.setParent(this);
         }
     }
 
@@ -352,6 +356,7 @@ public final class StyledText implements UomNode, FillNode, StrokeNode {
         if (fontWeight != null) {
             this.fontWeight = fontWeight;
             this.fontWeight.setRestrictionTo(weights);
+            this.fontWeight.setParent(this);
         }
     }
 
@@ -678,19 +683,19 @@ public final class StyledText implements UomNode, FillNode, StrokeNode {
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis result = new UsedAnalysis();
         if (text != null) {
-            result.include(text);
+            result.merge(text.getUsedAnalysis());
         }
         if (fontFamily != null) {
-            result.include(fontFamily);
+            result.merge(fontFamily.getUsedAnalysis());
         }
         if (fontWeight != null) {
-            result.include(fontWeight);
+            result.merge(fontWeight.getUsedAnalysis());
         }
         if (fontStyle != null) {
-            result.include(fontStyle);
+            result.merge(fontStyle.getUsedAnalysis());
         }
         if (fontSize != null) {
-            result.include(fontSize);
+            result.merge(fontSize.getUsedAnalysis());
         }
         return result;
     }

@@ -258,13 +258,13 @@ public final class PenStroke extends Stroke implements FillNode {
             result.merge(fill.getUsedAnalysis());
         }
         if (dashOffset != null) {
-            result.include(dashOffset);
+            result.merge(dashOffset.getUsedAnalysis());
         }
         if (dashArray != null) {
-            result.include(dashArray);
+            result.merge(dashArray.getUsedAnalysis());
         }
         if (width != null) {
-            result.include(width);
+            result.merge(width.getUsedAnalysis());
         }
         return result;
     }
@@ -334,6 +334,7 @@ public final class PenStroke extends Stroke implements FillNode {
 
         if (width != null) {
             width.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+            width.setParent(this);
         }
         //updateBasicStroke();
     }
@@ -358,6 +359,7 @@ public final class PenStroke extends Stroke implements FillNode {
         this.dashOffset = dashOffset;
         if (dashOffset != null) {
             dashOffset.setContext(RealParameterContext.REAL_CONTEXT);
+            dashOffset.setParent(this);
         }
         //updateBasicStroke();
     }
@@ -382,6 +384,9 @@ public final class PenStroke extends Stroke implements FillNode {
      */
     public void setDashArray(StringParameter dashArray) {
         this.dashArray = dashArray;
+        if(this.dashArray != null){
+                this.dashArray.setParent(this);
+        }
     }
 
     private BasicStroke createBasicStroke(Map<String,Value> map,

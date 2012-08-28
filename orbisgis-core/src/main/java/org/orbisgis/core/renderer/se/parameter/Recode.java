@@ -92,6 +92,9 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
      */
     public void setFallbackValue(FallbackType fallbackValue) {
         this.fallbackValue = fallbackValue;
+        if(this.fallbackValue != null){
+                this.fallbackValue.setParent(this);
+        }
     }
 
     /**
@@ -109,6 +112,9 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
     // TODO  On doit pouvoir récuperer des string ou des couleurs
     public void setLookupValue(StringParameter lookupValue) {
         this.lookupValue = lookupValue;
+        if(this.lookupValue != null){
+                this.lookupValue.setParent(this);
+        }
     }
 
     /**
@@ -134,14 +140,13 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
      * @return index of new map item or -1 when key already exists
      */
     public int addMapItem(String key, ToType value) {
-
         if (mapItems.containsKey(key)) {
-			return -1;
+            return -1;
         } else {
             mapItems.put(key, value);
+            value.setParent(this);
         }
-
-		return mapItems.size() - 1;
+        return mapItems.size() - 1;
     }
 
     /**

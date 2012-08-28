@@ -111,6 +111,7 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
 
                 if (preGap != null) {
                         this.preGap.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+                        this.preGap.setParent(this);
                 }
         }
 
@@ -126,6 +127,7 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
 
                 if (postGap != null) {
                         this.postGap.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+                        this.postGap.setParent(this);
                 }
         }
 
@@ -173,6 +175,7 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
                 this.length = length;
                 if (length != null) {
                         length.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+                        length.setParent(this);
                 }
         }
 
@@ -237,13 +240,13 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
         public UsedAnalysis getUsedAnalysis() {
                 UsedAnalysis result = new UsedAnalysis();
                 if (length != null) {
-                        result.include(length);
+                        result.merge(length.getUsedAnalysis());
                 }
                 if (preGap != null) {
-                        result.include(preGap);
+                        result.merge(preGap.getUsedAnalysis());
                 }
                 if (postGap != null) {
-                        result.include(postGap);
+                        result.merge(postGap.getUsedAnalysis());
                 }
                 if (stroke != null) {
                         result.merge(stroke.getUsedAnalysis());

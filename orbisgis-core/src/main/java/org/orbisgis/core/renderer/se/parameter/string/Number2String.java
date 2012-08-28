@@ -106,6 +106,7 @@ public class Number2String extends AbstractParameter implements StringParameter 
                         dfs.setGroupingSeparator(groupingSeparator.charAt(0));
                 }
                 formatter.setDecimalFormatSymbols(dfs);
+                numericValue.setParent(this);
         }
 
         /**
@@ -283,6 +284,9 @@ public class Number2String extends AbstractParameter implements StringParameter 
          */
         public void setNumericValue(RealParameter numericValue) {
                 this.numericValue = numericValue;
+                if(this.numericValue != null){
+                        this.numericValue.setParent(this);
+                }
         }
 
         @Override

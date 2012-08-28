@@ -81,7 +81,6 @@ public class RealFunction extends AbstractParameter implements RealParameter {
     public RealFunction(String name) {
         ctx = RealParameterContext.REAL_CONTEXT;
         this.op = Operators.valueOf(name.toUpperCase());
-
         operands = new ArrayList<RealParameter>();
     }
 
@@ -96,7 +95,9 @@ public class RealFunction extends AbstractParameter implements RealParameter {
     public RealFunction(FunctionType fcn) throws InvalidStyle {
         this(fcn.getName());
         for (JAXBElement<? extends Object> expr : fcn.getExpression()) {
-            operands.add(SeParameterFactory.createRealParameter(expr));
+            RealParameter rp =SeParameterFactory.createRealParameter(expr);
+            operands.add(rp);
+            rp.setParent(this);
         }
     }
 
@@ -146,11 +147,13 @@ public class RealFunction extends AbstractParameter implements RealParameter {
             case ADD:
             case MUL:
                 this.operands.add(operand);
+                operand.setParent(this);
                 return;
             case DIV:
             case SUB:
                 if (operands.size() < 2) {
                     this.operands.add(operand);
+                    operand.setParent(this);
                 } else {
                     throw new ParameterException(op + " requires exactly two operands");
                 }
@@ -160,6 +163,7 @@ public class RealFunction extends AbstractParameter implements RealParameter {
             case LOG:
                 if (operands.size() < 1) {
                     this.operands.add(operand);
+                    operand.setParent(this);
                 } else {
                     throw new ParameterException(op + " requires exactly one operand");
                 }

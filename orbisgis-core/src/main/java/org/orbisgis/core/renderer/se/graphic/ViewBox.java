@@ -111,6 +111,7 @@ public final class ViewBox implements SymbolizerNode {
                 x = width;
                 if (x != null) {
                         x.setContext(RealParameterContext.REAL_CONTEXT);
+                        x.setParent(this);
                 }
         }
         /**
@@ -130,6 +131,7 @@ public final class ViewBox implements SymbolizerNode {
                 y = height;
                 if (y != null) {
                         y.setContext(RealParameterContext.REAL_CONTEXT);
+                        y.setParent(this);
                 }
         }
 
@@ -177,8 +179,12 @@ public final class ViewBox implements SymbolizerNode {
         @Override
         public UsedAnalysis getUsedAnalysis() {
             UsedAnalysis ua = new UsedAnalysis();
-            ua.include(x);
-            ua.include(y);
+            if(x!=null){
+                ua.merge(x.getUsedAnalysis());
+            }
+            if(y!=null){
+                ua.merge(y.getUsedAnalysis());
+            }
             return ua;
         }
 

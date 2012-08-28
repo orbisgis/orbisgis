@@ -215,8 +215,8 @@ public final class PointTextGraphic extends Graphic implements UomNode {
             if(pointLabel != null){
                 ua.merge(pointLabel.getUsedAnalysis());
             }
-            ua.include(x);
-            ua.include(y);
+            ua.merge(x.getUsedAnalysis());
+            ua.merge(y.getUsedAnalysis());
             return ua;
         }
 
@@ -236,6 +236,7 @@ public final class PointTextGraphic extends Graphic implements UomNode {
                 this.x = x;
                 if (this.x != null) {
                         this.x.setContext(RealParameterContext.REAL_CONTEXT);
+                        this.x.setParent(this);
                 }
         }
 
@@ -255,6 +256,7 @@ public final class PointTextGraphic extends Graphic implements UomNode {
                 this.y = y;
                 if (this.y != null) {
                         this.y.setContext(RealParameterContext.REAL_CONTEXT);
+                        this.y.setParent(this);
                 }
         }
 

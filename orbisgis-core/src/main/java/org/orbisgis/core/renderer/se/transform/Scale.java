@@ -52,7 +52,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  *
  * @author Maxence Laurent, Alexis Guéganno
  */
-public final class Scale implements Transformation {
+public final class Scale extends AbstractTransformation {
 
     private RealParameter x;
     private RealParameter y;
@@ -115,6 +115,7 @@ public final class Scale implements Transformation {
         this.x = x;
         if (this.x != null) {
             this.x.setContext(RealParameterContext.REAL_CONTEXT);
+            this.x.setParent(this);
         }
     }
 
@@ -137,6 +138,7 @@ public final class Scale implements Transformation {
         this.y = y;
         if (this.y != null) {
             this.y.setContext(RealParameterContext.REAL_CONTEXT);
+            this.y.setParent(this);
         }
     }
 
@@ -167,8 +169,8 @@ public final class Scale implements Transformation {
     @Override
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis result = new UsedAnalysis();
-        result.include(x);
-        result.include(y);
+        result.merge(x.getUsedAnalysis());
+        result.merge(y.getUsedAnalysis());
         return result;
       }
 

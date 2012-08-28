@@ -97,16 +97,26 @@ public class Transform implements UomNode {
                 }
 
                 for (Object o : t.getTranslateOrRotateOrScale()) {
-                        if (o instanceof TranslateType) {
-                                this.transformations.add(new Translate((TranslateType) o));
-                        } else if (o instanceof RotateType) {
-                                this.transformations.add(new Rotate((RotateType) o));
-                        } else if (o instanceof ScaleType) {
-                                this.transformations.add(new Scale((ScaleType) o));
-                        } else if (o instanceof MatrixType) {
-                                this.transformations.add(new Matrix((MatrixType) o));
+                        Transformation trans = getTransformationFromJAXB(o);
+                        if(trans != null){
+                                this.transformations.add(trans);
+                                trans.setParent(this);
                         }
                 }
+        }
+
+        private Transformation getTransformationFromJAXB(Object o) throws InvalidStyle {
+                if (o instanceof TranslateType) {
+                        return new Translate((TranslateType) o);
+                } else if (o instanceof RotateType) {
+                        return new Rotate((RotateType) o);
+                } else if (o instanceof ScaleType) {
+                        return new Scale((ScaleType) o);
+                } else if (o instanceof MatrixType) {
+                        return new Matrix((MatrixType) o);
+                }
+                return null;
+
         }
 
         /**

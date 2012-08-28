@@ -93,9 +93,10 @@ public final class ExclusionRectangle extends ExclusionZone {
      */
     public void setX(RealParameter x) {
         this.x = x;
-		if (x != null){
-			x.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
-		}
+        if (x != null){
+            x.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+            x.setParent(this);
+        }
     }
 
     /**
@@ -113,9 +114,10 @@ public final class ExclusionRectangle extends ExclusionZone {
      */
     public void setY(RealParameter y) {
         this.y = y;
-		if (this.y != null){
-			y.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
-		}
+        if (this.y != null){
+            y.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+            y.setParent(this);
+        }
     }
 
     @Override
@@ -158,8 +160,8 @@ public final class ExclusionRectangle extends ExclusionZone {
     @Override
     public UsedAnalysis getUsedAnalysis(){
         UsedAnalysis ua = new UsedAnalysis();
-        ua.include(x);
-        ua.include(y);
+        ua.merge(x.getUsedAnalysis());
+        ua.merge(y.getUsedAnalysis());
         return ua;
     }
 

@@ -85,6 +85,7 @@ public class Slice implements SymbolizerNode, FillNode {
                 this.gap = gap;
                 if (gap != null) {
                         gap.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+                        gap.setParent(this);
                 }
         }
 
@@ -123,6 +124,7 @@ public class Slice implements SymbolizerNode, FillNode {
                 this.value = value;
                 if (value != null) {
                         value.setContext(RealParameterContext.REAL_CONTEXT);
+                        value.setParent(this);
                 }
         }
 
@@ -187,10 +189,10 @@ public class Slice implements SymbolizerNode, FillNode {
                         result.merge(fill.getUsedAnalysis());
                 }
                 if (value != null) {
-                        result.include(value);
+                        result.merge(value.getUsedAnalysis());
                 }
                 if (gap != null) {
-                        result.include(gap);
+                        result.merge(gap.getUsedAnalysis());
                 }
 
                 return result;

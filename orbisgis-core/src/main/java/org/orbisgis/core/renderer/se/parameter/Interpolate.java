@@ -128,6 +128,9 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
          */
         public void setFallbackValue(FallbackType fallbackValue) {
                 this.fallbackValue = fallbackValue;
+                if(this.fallbackValue != null){
+                        this.fallbackValue.setParent(this);
+                }
         }
 
         /**
@@ -146,6 +149,7 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
                 this.lookupValue = lookupValue;
                 if (this.lookupValue != null) {
                         this.lookupValue.setContext(RealParameterContext.REAL_CONTEXT);
+                        this.lookupValue.setParent(this);
                 }
         }
 
@@ -175,6 +179,7 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
         public void addInterpolationPoint(InterpolationPoint<ToType> point) {
                 iPoints.add(point);
                 sortInterpolationPoint();
+                point.getValue().setParent(this);
         }
 
         /**

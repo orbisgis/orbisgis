@@ -174,6 +174,7 @@ public final class Halo implements  UomNode, FillNode {
         this.radius = radius;
         if (this.radius != null) {
             this.radius.setContext(RealParameterContext.REAL_CONTEXT);
+            this.radius.setParent(this);
         }
     }
 
@@ -285,7 +286,7 @@ public final class Halo implements  UomNode, FillNode {
     @Override
     public UsedAnalysis getUsedAnalysis() {
             UsedAnalysis ua = new UsedAnalysis();
-            ua.include(radius);
+            ua.merge(radius.getUsedAnalysis());
             ua.merge(fill.getUsedAnalysis());
             return ua;
     }

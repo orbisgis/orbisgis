@@ -31,18 +31,20 @@ package org.orbisgis.core.renderer.se.graphic;
 import java.util.HashSet;
 import net.opengis.se._2_0.thematic.AxisScaleType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
-public final class AxisScale {
+public final class AxisScale implements SymbolizerNode{
 
     public static final double DEFAULT_LENGTH = 40;
     public static final double DEFAULT_MEASURE = 40;
     private RealParameter axisLength;
     private RealParameter measure;
+    private SymbolizerNode parent;
 
     public AxisScale(){
         this.setAxisLength(new RealLiteral(DEFAULT_LENGTH));
@@ -70,10 +72,11 @@ public final class AxisScale {
      * @param value not null
      */
     public void setMeasure(RealParameter value) {
-		if (value != null){
+        if (value != null){
             this.measure = value;
-			measure.setContext(RealParameterContext.REAL_CONTEXT);
-		}
+            measure.setContext(RealParameterContext.REAL_CONTEXT);
+            measure.setParent(this);
+        }
     }
 
     public RealParameter getAxisLength() {
@@ -85,10 +88,11 @@ public final class AxisScale {
      * @param data
      */
     public void setAxisLength(RealParameter data) {
-		if (data != null){
+        if (data != null){
             this.axisLength = data;
-			axisLength.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
-		}
+            axisLength.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+            axisLength.setParent(this);
+        }
     }
 
     public AxisScaleType getJAXBType() {
@@ -109,6 +113,7 @@ public final class AxisScale {
      * Gets the feature this {@code AxisScale} depends on.
      * @return
      */
+    @Override
     public HashSet<String> dependsOnFeature() {
         HashSet<String> ret = new HashSet<String>();
         if(axisLength != null){
@@ -124,10 +129,26 @@ public final class AxisScale {
      * Gets the analysis that are used to build this {@code AxisScale}.
      * @return
      */
+    @Override
     public UsedAnalysis getUsedAnalysis(){
         UsedAnalysis ua = new UsedAnalysis();
-        ua.include(axisLength);
-        ua.include(measure);
+        ua.merge(axisLength.getUsedAnalysis());
+        ua.merge(measure.getUsedAnalysis());
         return ua;
+    }
+
+    @Override
+    public SymbolizerNode getParent() {
+        return parent;
+    }
+
+    @Override
+    public void setParent(SymbolizerNode node) {
+        parent = node;
+    }
+
+    @Override
+    public void update() {
+        parent.update();
     }
 }

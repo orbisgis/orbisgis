@@ -147,6 +147,7 @@ public final class TextSymbolizer extends VectorSymbolizer {
                 this.perpendicularOffset = perpendicularOffset;
                 if (this.perpendicularOffset != null) {
                         this.perpendicularOffset.setContext(RealParameterContext.REAL_CONTEXT);
+                        this.perpendicularOffset.setParent(this);
                 }
         }
 
@@ -216,7 +217,7 @@ public final class TextSymbolizer extends VectorSymbolizer {
         public UsedAnalysis getUsedAnalysis() {
                 UsedAnalysis ret = new UsedAnalysis();
                 if (perpendicularOffset != null) {
-                        ret.include(perpendicularOffset);
+                        ret.merge(perpendicularOffset.getUsedAnalysis());
                 }
                 if (label != null) {
                         ret.merge(label.getUsedAnalysis());

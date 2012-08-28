@@ -192,6 +192,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
                 this.perpendicularOffset = perpendicularOffset;
                 if (this.perpendicularOffset != null) {
                         this.perpendicularOffset.setContext(RealParameterContext.REAL_CONTEXT);
+                        this.perpendicularOffset.setParent(this);
                 }
         }
 
@@ -298,7 +299,7 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
                         ret.merge(fill.getUsedAnalysis());
                 }
                 if (perpendicularOffset != null) {
-                        ret.include(perpendicularOffset);
+                        ret.merge(perpendicularOffset.getUsedAnalysis());
                 }
                 if (stroke != null) {
                         ret.merge(stroke.getUsedAnalysis());

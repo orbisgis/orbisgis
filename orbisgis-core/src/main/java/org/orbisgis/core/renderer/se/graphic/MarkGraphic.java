@@ -307,6 +307,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         this.pOffset = pOffset;
         if (this.pOffset != null) {
             this.pOffset.setContext(RealParameterContext.REAL_CONTEXT);
+            this.pOffset.setParent(this);
         }
     }
 
@@ -318,6 +319,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
     private void setMarkIndex(RealParameter mIndex) {
         this.markIndex = mIndex;
         this.markIndex.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+        this.markIndex.setParent(this);
     }
 
     /*
@@ -547,6 +549,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         if (this.wkn != null) {
             this.wkn.setRestrictionTo(WellKnownName.getValues());
             this.onlineResource = null;
+            this.wkn.setParent(this);
         }
     }
 
@@ -639,13 +642,13 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         UsedAnalysis result = new UsedAnalysis();
 
         if (wkn != null) {
-            result.include(wkn);
+            result.merge(wkn.getUsedAnalysis());
         }
         if (viewBox != null) {
             result.merge(viewBox.getUsedAnalysis());
         }
         if (pOffset != null) {
-            result.include(pOffset);
+            result.merge(pOffset.getUsedAnalysis());
         }
         if (halo != null) {
             result.merge(halo.getUsedAnalysis());
@@ -660,7 +663,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
             result.merge(transform.getUsedAnalysis());
         }
         if (markIndex != null) {
-            result.include(markIndex);
+            result.merge(markIndex.getUsedAnalysis());
         }
 
         return result;

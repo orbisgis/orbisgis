@@ -64,7 +64,9 @@ public class StringConcatenate extends AbstractParameter implements StringParame
                 List<ParameterValueType> jaxbList = concatenate.getStringValue();
                 inputStrings = new ArrayList<StringParameter>(jaxbList.size());
                 for(ParameterValueType pvt : jaxbList){
-                        inputStrings.add(SeParameterFactory.createStringParameter(pvt));
+                        StringParameter sp = SeParameterFactory.createStringParameter(pvt);
+                        sp.setParent(this);
+                        inputStrings.add(sp);
                 }
         }
         /**
@@ -156,6 +158,7 @@ public class StringConcatenate extends AbstractParameter implements StringParame
          * @return
          */
         public boolean add(StringParameter e) {
+                e.setParent(this);
                 return inputStrings.add(e);
         }
 
@@ -200,6 +203,7 @@ public class StringConcatenate extends AbstractParameter implements StringParame
          *      {@code (index < 0 || index >= size()}).
          */
         public StringParameter set(int index, StringParameter element) {
+                element.setParent(this);
                 return inputStrings.set(index, element);
         }
 
@@ -212,6 +216,7 @@ public class StringConcatenate extends AbstractParameter implements StringParame
          *      {@code (index < 0 || index > size()}).
          */
         public void add(int index, StringParameter element) {
+                element.setParent(this);
                 inputStrings.add(index, element);
         }
 
