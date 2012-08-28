@@ -244,4 +244,9 @@ public class ProportionalPoint extends ConstantFormPoint implements IUniqueSymbo
         return "Proportional Point";
     }
 
+    @Override
+    public String getLegendTypeId(){
+        return "org.orbisgis.legend.thematic.proportional.ProportionalPoint";
+    }
+
 }

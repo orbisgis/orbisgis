@@ -169,4 +169,9 @@ public class ProportionalLine extends ConstantColorAndDashesLine implements Lege
         return "Proportional Line";
     }
 
+    @Override
+    public String getLegendTypeId(){
+        return "org.orbisgis.legend.thematic.proportional.ProportionalLine";
+    }
+
 }
