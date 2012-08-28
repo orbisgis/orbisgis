@@ -43,6 +43,7 @@ public abstract class AbstractSymbolizerNode implements SymbolizerNode {
         @Override
         public void setParent(SymbolizerNode parent) {
                 this.parent = parent;
+                update();
         }
 
         @Override

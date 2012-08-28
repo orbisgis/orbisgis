@@ -284,13 +284,15 @@ public abstract class Symbolizer extends AbstractSymbolizerNode implements Symbo
     }
 
     public void refreshFeatures(){
-            features = dependsOnFeature();
+            features = null;
     }
 
     @Override
     public void update(){
             refreshFeatures();
-            getParent().update();
+            if(getParent() != null){
+                getParent().update();
+            }
     }
     /**
      * Draw the symbols in g2, using infos that are found in sds at index fid.
