@@ -251,7 +251,8 @@ public class Core {
         //Load Built-ins Editors
         loadEditorFactories();
         
-        //Debug create serialisation of panels
+        // Some editors need DataSources loaded by the MapContext
+        backgroundManager.nonBlockingBackgroundOperation(new ReadMapContextProcess());
         
         //Load the docking layout and editors opened in last OrbisGis instance
         dockManager.setDockingLayoutPersistanceFilePath(viewWorkspace.getDockingLayoutPath());
@@ -267,8 +268,7 @@ public class Core {
         @Override
         public void run(){
                 initialize();
-                mainFrame.setVisible( true );                
-                backgroundManager.backgroundOperation(new ReadMapContextProcess());
+                mainFrame.setVisible( true );
         }
     }
     /**

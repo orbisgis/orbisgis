@@ -28,7 +28,12 @@
  */
 package org.orbisgis.view.table;
 
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.driver.DriverException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.view.docking.DockingPanelLayout;
@@ -55,9 +60,7 @@ public class TableEditorFactory implements MultipleEditorFactory {
                                 LOGGER.info(I18N.tr("This data source ({0}) is already shown in an editor.",editableTable.getSourceName()));
                                 return null;
                         }
-                        //Return null if the DataSource does not exist
-                        DataManager dataManager = Services.getService(DataManager.class);
-			if(dataManager.getSourceManager().exists(editableTable.getSourceName())) {
+			if(dataSourceCheck(editableTable.getSourceName())) {
                                 return new TablePanelLayout(editableTable);
                         }else {
                                 LOGGER.info(I18N.tr("In a consequence of an unreachable data source {0},the associated data editor could not be recovered."));
@@ -66,6 +69,27 @@ public class TableEditorFactory implements MultipleEditorFactory {
                 } else {
                         return null;
                 }
+        }
+        
+        private boolean dataSourceCheck(String sourceName) {
+                DataManager dataManager = Services.getService(DataManager.class);
+                if(!dataManager.getSourceManager().exists(sourceName)) {
+                        return false;
+                }
+                try {
+                        DataSource source = dataManager.getDataSourceFactory().getDataSource(sourceName);
+                        if(!source.isOpen()) {
+                                source.open();
+                                source.close();
+                        }
+                } catch (NoSuchTableException ex) {
+                        return false;
+                } catch (DataSourceCreationException ex) {
+                        return false;
+                } catch (DriverException ex) {
+                        return false;
+                }
+                return true;
         }
         
         private boolean isEditableAlreadyOpened(EditableElement editable) {
@@ -90,7 +114,14 @@ public class TableEditorFactory implements MultipleEditorFactory {
 
         @Override
         public EditorDockable create(DockingPanelLayout layout) {
-                return new TableEditor(((TablePanelLayout)layout).getTableEditableElement());
+                TableEditableElement editableTable = ((TablePanelLayout)layout).getTableEditableElement();
+                //Check the DataSource state                
+                if(!dataSourceCheck(editableTable.getSourceName())) {
+                        LOGGER.info(I18N.tr("In a consequence of an unreachable data source {0},the associated data editor could not be recovered.",editableTable.getSourceName()));
+                        return null;
+                } else {
+                        return new TableEditor(editableTable);
+                }
         }
 
         @Override

@@ -64,7 +64,6 @@ import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.layerModel.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.classification.ClassificationMethodException;
@@ -113,6 +112,8 @@ public class Toc extends JPanel implements EditorDockable {
         private transient TocRenderer treeRenderer;
         //When this boolean is false, the selection event is not fired
         private AtomicBoolean fireSelectionEvent = new AtomicBoolean(true);
+        //When this boolean is false, the selection is not propagated to tables
+        private AtomicBoolean fireRowSelectionEvent = new AtomicBoolean(true);
         //Listen for map context changes
         private transient TocMapContextListener tocMapContextListener = new TocMapContextListener();
         //Listen for all layers changes
@@ -167,6 +168,7 @@ public class Toc extends JPanel implements EditorDockable {
          */
         private void unlinkTableSelectionListening(TableEditableElement tableElement) {
                 tableElement.removePropertyChangeListener(tableSelectionChangeListener);
+                tableElement.removePropertyChangeListener(tableEditableClose);
                 linkedEditableElements.remove(tableElement.getSourceName());
         }
 
@@ -820,6 +822,8 @@ public class Toc extends JPanel implements EditorDockable {
                                 linkedEditableElements.put(tableElement.getSourceName(), tableElement);
                                 // Table selection change -> Layer selection
                                 tableElement.addPropertyChangeListener(TableEditableElement.PROP_SELECTION, tableSelectionChangeListener);
+                                //Unlink the table element when it is closed
+                                tableElement.addPropertyChangeListener(TableEditableElement.PROP_OPEN,tableEditableClose);
                                 //If the table has already an active selection, load it
                                 if(!tableElement.getSelection().isEmpty()) {
                                         onTableSelectionChange(tableElement);
@@ -906,12 +910,14 @@ public class Toc extends JPanel implements EditorDockable {
                 private void onLayerChanged(ILayer layer) {
                         treeModel.nodeChanged(new TocTreeNodeLayer(layer));
                 }
+                
                 @Override
                 public void styleChanged(LayerListenerEvent e) {
                         //Deprecated listener
                 }
 
                 @Override
+                @SuppressWarnings("deprecation")
                 public void visibilityChanged(LayerListenerEvent e) {
                         onLayerChanged(e.getAffectedLayer());
                 }
@@ -919,6 +925,21 @@ public class Toc extends JPanel implements EditorDockable {
                 @Override
                 public void selectionChanged(SelectionEvent e) {
                         //Layer data rows selection change
+                                ILayer layer = ((ILayer)e.getSource());
+                                DataSource src = layer.getDataSource();
+                                if (src!=null && 
+                                    linkedEditableElements.containsKey(src.getName()))
+                                {
+                                        if(fireRowSelectionEvent.getAndSet(false)) {
+                                                try {
+                                                        //Update table element selection
+                                                        TableEditableElement tableElement = linkedEditableElements.get(src.getName());
+                                                        tableElement.setSelection(layer.getSelection());
+                                                } finally {
+                                                        fireRowSelectionEvent.set(true);
+                                                }
+                                        }
+                                }
                 }
         }
 

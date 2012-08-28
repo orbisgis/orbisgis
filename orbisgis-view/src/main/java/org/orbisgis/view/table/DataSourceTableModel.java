@@ -30,7 +30,6 @@ package org.orbisgis.view.table;
 
 import java.text.ParseException;
 import java.util.Iterator;
-import java.util.Set;
 import javax.swing.table.AbstractTableModel;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
@@ -61,11 +60,12 @@ public class DataSourceTableModel extends AbstractTableModel {
         private transient Metadata metadata;
         private DataSource dataSource;
         private TableEditableElement element;
-        private ModificationListener dataSourceListener = new ModificationListener();
+        private ModificationListener dataSourceListener;
         
         public DataSourceTableModel(TableEditableElement element) {
                 this.element = element;
                 dataSource = element.getDataSource();
+                dataSourceListener = new ModificationListener();
                 dataSource.addEditionListener(dataSourceListener);
                 dataSource.addMetadataEditionListener(dataSourceListener);
         }

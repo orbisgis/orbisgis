@@ -542,7 +542,8 @@ public final class OwsMapContext extends BeanMapContext {
                                 parseJaxbLayer(ltc, layerCollection);
                         } catch (LayerException ex) {
                                 //The layer is not created if a layer exception is thrown
-                                LOGGER.error(I18N.tr("The layer has not been imported"), ex);
+                                //Create a warning, because the MapContext is loaded
+                                LOGGER.warn(I18N.tr("The layer has not been imported"), ex);
                         }
                 }
                 parentLayer.addLayer(layerCollection);

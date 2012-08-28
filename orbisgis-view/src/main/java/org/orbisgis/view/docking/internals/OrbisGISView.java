@@ -68,8 +68,12 @@ public class OrbisGISView {
         return dockItem;
     }
     public static CustomMultipleCDockable createMultiple(DockingPanel dockingPanel,InternalCommonFactory factory, CControl ccontrol) {
-        CustomMultipleCDockable dockItem = new CustomMultipleCDockable(dockingPanel,factory);
-        return dockItem;        
+        if(dockingPanel!=null) {
+                CustomMultipleCDockable dockItem = new CustomMultipleCDockable(dockingPanel,factory);
+                return dockItem;
+        } else {
+                return null;
+        }
     }
     
     public static void setListeners(DockingPanel dockingPanel,DefaultCDockable dockItem) {

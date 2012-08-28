@@ -62,6 +62,7 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSourceListener;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.Constraint;
@@ -69,6 +70,10 @@ import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
+import org.gdms.source.SourceListener;
+import org.gdms.source.SourceManager;
+import org.gdms.source.SourceRemovalEvent;
+import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.progress.NullProgressMonitor;
@@ -114,9 +119,14 @@ public class TableEditor extends JPanel implements EditorDockable {
         private TableRowHeader tableRowHeader;
         private Point popupCellAdress = new Point();    // Col(x) and row(y) that trigger a popup
         private Point cellHighlight = new Point(-1,-1); // cell under cursor on right click
-
+        private PropertyChangeListener editableSelectionListener = EventHandler.create(PropertyChangeListener.class,this,"onEditableSelectionChange","newValue","sourceRemoved");
+        private SourceListener sourceListener = EventHandler.create(SourceListener.class, this,"onSourceRemoved", "");
+                
         public TableEditor(TableEditableElement element) {
                 super(new BorderLayout());
+                //Add a listener to the source manager to close the table when
+                //the source is removed
+                Services.getService(DataManager.class).getSourceManager().addSourceListener(sourceListener);
                 LOGGER.debug("Create the GRID");
                 this.tableEditableElement = element;
                 dockingPanelParameters = new DockingPanelParameters();
@@ -124,7 +134,41 @@ public class TableEditor extends JPanel implements EditorDockable {
                 tableScrollPane = new JScrollPane(makeTable());
                 add(tableScrollPane,BorderLayout.CENTER);
                 updateTitle();
+        }       
+        /**
+         * A source has been removed, check that it is not the table source,
+         * if it is close the editor
+         * @param e 
+         */
+        public void onSourceRemoved(SourceRemovalEvent e) {
+                LOGGER.debug("TableEditor:onSourceRemoved");
+                String tableSourceName = tableEditableElement.getSourceName();
+                for(String sourceName : e.getNames()) {
+                        LOGGER.debug("TableEditor:onSourceRemoved : "+sourceName+"=="+tableSourceName);
+                        if(sourceName.equals(tableSourceName)) {
+                                SwingUtilities.invokeLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                                //Close the editor
+                                                LOGGER.debug("TableEditor:.setVisible(false)");
+                                                dockingPanelParameters.setVisible(false);
+                                        }
+                                });
+                                break;
+                        }
+                }
         }
+        /**
+         * The editable selection has been updated,
+         * propagate in the table if necessary
+         * @param newValue 
+         */
+        public void onEditableSelectionChange(IntegerUnion newValue) {
+                if(!onUpdateEditableSelection.get()) {
+                        setRowSelection(newValue);
+                }
+        }
+        
         /**
          * The popup is destroyed, the cell border need to be removed
          */
@@ -523,8 +567,7 @@ public class TableEditor extends JPanel implements EditorDockable {
         public void addNotify() {
                 super.addNotify();
                 if(!initialised.getAndSet(true)) {
-                        BackgroundManager bm = Services.getService(BackgroundManager.class);
-                        bm.backgroundOperation(new OpenEditableElement());                        
+                        launchJob(new OpenEditableElement());
                 }
         }
         
@@ -532,7 +575,7 @@ public class TableEditor extends JPanel implements EditorDockable {
          * When the editable element is open, 
          * the data model of the table can be set
          */
-        private void readDataSource() {                        
+        private void readDataSource() {     
                 tableModel = new DataSourceTableModel(tableEditableElement);
                 table.setModel(tableModel);
                 table.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);                
@@ -559,6 +602,9 @@ public class TableEditor extends JPanel implements EditorDockable {
                         EventHandler.create(PropertyChangeListener.class,
                         this,"onChangeVisibility","newValue"));
                 updateTitle();
+                // Add a selection listener on the editable element
+                tableEditableElement.addPropertyChangeListener(TableEditableElement.PROP_SELECTION,
+                        editableSelectionListener);
         }
         
         /**
@@ -570,7 +616,9 @@ public class TableEditor extends JPanel implements EditorDockable {
                         tableModel.dispose();
                         try {
                                 LOGGER.debug("Close table "+dockingPanelParameters.getTitle());
-                                tableEditableElement.close(new NullProgressMonitor());
+                                tableEditableElement.close(new NullProgressMonitor());                                
+                                tableEditableElement.removePropertyChangeListener(editableSelectionListener);
+                                Services.getService(DataManager.class).getSourceManager().removeSourceListener(sourceListener);
                         } catch (UnsupportedOperationException ex) {
                                 LOGGER.error(ex.getLocalizedMessage(),ex);
                         } catch (EditableElementException ex) {
