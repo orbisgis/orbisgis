@@ -28,7 +28,6 @@
  */
 package org.orbisgis.legend.structure.stroke.constant;
 
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.structure.fill.constant.ConstantFillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
@@ -42,6 +41,10 @@ import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
  * @author Alexis Guéganno
  */
 public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend implements ConstantPenStroke{
+
+        public ConstantPenStrokeLegend(){
+                super();
+        }
 
         /**
          * Build a new instance of {@code ConstantPenStrokeLegend}.
@@ -71,67 +74,6 @@ public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend impl
         @Override
         public void setLineWidth(double width) {
             ((RealLiteralLegend) getWidthAnalysis()).setDouble(width);
-        }
-
-        /**
-         * Get the {@code String} that represent the dash pattern for the
-         * associated {@code PenStroke}.
-         * @return
-         * The dash array in a string. Can't be null. Even if the underlying
-         * {@code Symbolizer} does not have such an array, an empty {@code
-         * String} is returned.
-         */
-        @Override
-        public String getDashArray() {
-            String ret = "";
-            StringLiteralLegend sll = (StringLiteralLegend) getDashAnalysis();
-            if(sll == null){
-                return ret;
-            }
-            StringLiteral lit = sll.getLiteral();
-            if(lit != null){
-                ret = lit.getValue(null, 0);
-            }
-            return ret == null ? "" : ret;
-        }
-
-        /**
-        * Set the {@code String} that represent the dash pattern for the
-         * associated {@code PenStroke}.
-        * @param dashes
-        */
-        @Override
-        public void setDashArray(String str) {
-            PenStroke ps = (PenStroke) getStroke();
-            StringLiteral rl = (StringLiteral) ps.getDashArray();
-            String da = validateDashArray(str) ? str : "";
-            if(!da.isEmpty()){
-                if(rl == null){
-                    rl = new StringLiteral(da);
-                    ps.setDashArray(rl);
-                    setDashAnalysis(new StringLiteralLegend(rl));
-                } else {
-                    rl.setValue(da);
-                }
-            } else {
-                ps.setDashArray(null);
-                setDashAnalysis(null);
-            }
-        }
-
-        private boolean validateDashArray(String str) {
-            String[] splits = str.split(" ");
-            for(String s : splits){
-                try{
-                    double d = Double.valueOf(s);
-                    if(d<0){
-                            return false;
-                    }
-                } catch(NumberFormatException nfe){
-                    return false;
-                }
-            }
-            return true;
         }
 
         @Override

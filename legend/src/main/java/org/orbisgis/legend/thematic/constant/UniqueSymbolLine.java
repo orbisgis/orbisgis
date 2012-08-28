@@ -36,6 +36,7 @@ import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -51,7 +52,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * </ul>
  * @author Alexis Guéganno
  */
-public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUniqueSymbolLine {
+public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUniqueSymbolLine, StrokeUom {
 
     private static final I18n I18N = I18nFactory.getI18n(UniqueSymbolLine.class);
     private ConstantPenStroke strokeLegend;

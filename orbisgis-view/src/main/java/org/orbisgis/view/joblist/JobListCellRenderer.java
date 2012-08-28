@@ -35,7 +35,7 @@ import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 
 /**
- * @brief Renderer of the JobList
+ * Renderer of the JobList
  * 
  * A Job row contain a Label,an image (progression) and a button(cancel)
  */

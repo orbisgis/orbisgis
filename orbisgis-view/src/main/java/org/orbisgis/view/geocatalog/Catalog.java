@@ -81,7 +81,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * @brief This is the GeoCatalog panel. That Panel show the list of available
+ * This is the GeoCatalog panel. That Panel show the list of available
  * DataSource
  *
  * This is connected with the SourceManager model. @note If you want to add new

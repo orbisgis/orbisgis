@@ -29,7 +29,7 @@
 package org.orbisgis.core.events;
 
 /**
- * @brief Exception raised by the OnEvent method of listeners
+ * Exception raised by the OnEvent method of listeners
  * This exception let other listener to manage the event if continueProcessing is True
  */
 public class ListenerException extends Exception {

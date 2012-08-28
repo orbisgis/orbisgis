@@ -50,7 +50,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * @brief Area at the bottom of the MapEditor
+ * Area at the bottom of the MapEditor
  * This is an area in the bottom of the map that contain :
  * - A scale information label
  * - A projection information label

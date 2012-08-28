@@ -43,6 +43,7 @@ import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
+import org.orbisgis.legend.structure.parameter.NumericLegend;
 import org.orbisgis.legend.structure.recode.Recode2StringLegend;
 import org.orbisgis.legend.structure.stroke.*;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
@@ -88,7 +89,7 @@ public class PenStrokeAnalyzer extends AbstractAnalyzer {
                 //We first make the analysis of the width attribute.
                 RealParameter width= penStroke.getWidth();
                 RealParameterAnalyzer rpaWidth = new RealParameterAnalyzer(width);
-                LegendStructure legdWidth = rpaWidth.getLegend();
+                NumericLegend legdWidth = (NumericLegend) rpaWidth.getLegend();
                 StringParameter dashes = penStroke.getDashArray();
                 LegendStructure legdDash;
                 Fill fill = penStroke.getFill();
@@ -117,7 +118,7 @@ public class PenStrokeAnalyzer extends AbstractAnalyzer {
          * @param fill
          * @return
          */
-        private LegendStructure analyzeWithDashes(LegendStructure dashes, LegendStructure width, LegendStructure fill) {
+        private LegendStructure analyzeWithDashes(LegendStructure dashes, NumericLegend width, LegendStructure fill) {
                 LegendStructure ret;
                 boolean constantFill = fill == null || fill instanceof ConstantSolidFillLegend;
                 boolean constantWidth = width == null || width instanceof RealLiteralLegend;
@@ -143,7 +144,7 @@ public class PenStrokeAnalyzer extends AbstractAnalyzer {
          * @param width
          * @param fill
          */
-        private LegendStructure analyzeConstantDashes(LegendStructure width, LegendStructure fill, LegendStructure dash){
+        private LegendStructure analyzeConstantDashes(NumericLegend width, LegendStructure fill, LegendStructure dash){
                 LegendStructure ret = null;
                 boolean constantFill = fill == null || fill instanceof ConstantSolidFillLegend;
                 boolean constantWidth = width == null || width instanceof RealLiteralLegend;

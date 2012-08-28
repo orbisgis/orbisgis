@@ -63,7 +63,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * @brief The Map Editor Panel
+ * The Map Editor Panel
  */
 public class MapEditor extends JPanel implements EditorDockable, TransformListener   {
     private static final I18n I18N = I18nFactory.getI18n(MapEditor.class);

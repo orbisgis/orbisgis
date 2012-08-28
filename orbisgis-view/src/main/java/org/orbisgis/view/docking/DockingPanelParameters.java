@@ -36,7 +36,7 @@ import javax.swing.JToolBar;
 
 
 /**
- * @brief Parameters of a panel in a docking environment
+ * Parameters of a panel in a docking environment
  * Theses parameters indicate the behaviour related to a panel
  * in a docking environment.
  * 
