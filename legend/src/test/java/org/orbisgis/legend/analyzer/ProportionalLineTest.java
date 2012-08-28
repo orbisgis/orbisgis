@@ -29,12 +29,15 @@
 package org.orbisgis.legend.analyzer;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
+import org.orbisgis.legend.analyzer.symbolizers.LineSymbolizerAnalyzer;
 import org.orbisgis.legend.structure.stroke.PenStrokeLegend;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
@@ -44,6 +47,7 @@ import org.orbisgis.legend.thematic.proportional.ProportionalLine;
  * @author Alexis Guéganno
  */
 public class ProportionalLineTest extends AnalyzerTest {
+
 
         @Test
         public void testDefaultInstanciation() throws Exception {
@@ -72,4 +76,109 @@ public class ProportionalLineTest extends AnalyzerTest {
                 assertTrue(pl.getStrokeUom() == Uom.IN);
 
         }
+
+    /**************************************************************************/
+    /* Let's test the interpolated lines. We won't test color and dashes, as  */
+    /* they are already tested in UniqueSymbol instances                      */
+    /*                                                                        */
+    /**************************************************************************/
+
+    @Test
+    public void testInitializationProportional() throws Exception {
+        Style st = getStyle(PROP_LINE);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        ProportionalLine usl = new ProportionalLine(ls);
+        assertTrue(true);
+
+    }
+
+    @Test
+    public void testAnalyzerProportional() throws Exception {
+        Style st = getStyle(PROP_LINE);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        LineSymbolizerAnalyzer lsa = new LineSymbolizerAnalyzer(ls);
+        assertTrue(lsa.getLegend() instanceof ProportionalLine);
+    }
+
+    @Test
+    public void testInitializationProportionalFail() throws Exception {
+        Style st = getStyle(CONSTANT_LINE);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        try{
+            ProportionalLine usl = new ProportionalLine(ls);
+            fail();
+        } catch (IllegalArgumentException iae){
+            assertTrue(true);
+        }
+
+    }
+
+    @Test
+    public void testGetFirstInterpolationData() throws Exception {
+        Style st = getStyle(PROP_LINE);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        ProportionalLine usl = new ProportionalLine(ls);
+        assertTrue(usl.getFirstData() == 0.0);
+    }
+
+    @Test
+    public void testGetSecondInterpolationData() throws Exception {
+        Style st = getStyle(PROP_LINE);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        ProportionalLine usl = new ProportionalLine(ls);
+        assertTrue(usl.getSecondData() == 10.0);
+    }
+
+    @Test
+    public void testSetFirstInterpolationData() throws Exception {
+        Style st = getStyle(PROP_LINE);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        ProportionalLine usl = new ProportionalLine(ls);
+        usl.setFirstData(22.2);
+        assertTrue(usl.getFirstData() == 22.2);
+    }
+
+    @Test
+    public void testSetSecondInterpolationData() throws Exception {
+        Style st = getStyle(PROP_LINE);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        ProportionalLine usl = new ProportionalLine(ls);
+        usl.setSecondData(56.3);
+        assertTrue(usl.getSecondData() == 56.3);
+    }
+
+    @Test
+    public void testGetFirstInterpolationValue() throws Exception{
+        Style st = getStyle(PROP_LINE);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        ProportionalLine usl = new ProportionalLine(ls);
+        assertTrue(usl.getFirstValue() == 0.0);
+    }
+
+    @Test
+    public void testGetSecondInterpolationValue() throws Exception{
+        Style st = getStyle(PROP_LINE);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        ProportionalLine usl = new ProportionalLine(ls);
+        assertTrue(usl.getSecondValue() == 2.0);
+    }
+
+    @Test
+    public void testSetFirstInterpolationValue() throws Exception{
+        Style st = getStyle(PROP_LINE);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        ProportionalLine usl = new ProportionalLine(ls);
+        usl.setFirstValue(68.9);
+        assertTrue(usl.getFirstValue() == 68.9);
+    }
+
+    @Test
+    public void testSetSecondInterpolationValue() throws Exception{
+        Style st = getStyle(PROP_LINE);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        ProportionalLine usl = new ProportionalLine(ls);
+        usl.setSecondValue(24.3);
+        assertTrue(usl.getSecondValue() == 24.3);
+    }
+
 }
