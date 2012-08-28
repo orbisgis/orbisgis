@@ -30,11 +30,11 @@ package org.orbisgis.core.renderer.se.graphic;
 
 import java.util.HashSet;
 import net.opengis.se._2_0.thematic.CategoryType;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
@@ -54,7 +54,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
  * @author Maxence Laurent
  * @todo add support for stacked bar (means category fill / stroke are mandatory) and others are forbiden
  */
-public final class Category implements SymbolizerNode, FillNode, StrokeNode, GraphicNode {
+public final class Category  extends AbstractSymbolizerNode implements FillNode, StrokeNode, GraphicNode {
 
         private RealParameter measure;
 
@@ -64,7 +64,6 @@ public final class Category implements SymbolizerNode, FillNode, StrokeNode, Gra
 
         /* In order to draw points, optionnal */
         private GraphicCollection graphic;
-        private SymbolizerNode parent;
         private String name;
 
         /**
@@ -123,21 +122,6 @@ public final class Category implements SymbolizerNode, FillNode, StrokeNode, Gra
         public void setStroke(Stroke stroke) {
                 this.stroke = stroke;
                 stroke.setParent(this);
-        }
-
-        @Override
-        public SymbolizerNode getParent() {
-                return parent;
-        }
-
-        @Override
-        public void setParent(SymbolizerNode node) {
-                parent = node;
-        }
-
-        @Override
-        public void update() {
-                parent.update();
         }
 
         @Override

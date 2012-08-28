@@ -30,21 +30,20 @@ package org.orbisgis.core.renderer.se.graphic;
 
 import java.util.HashSet;
 import net.opengis.se._2_0.thematic.AxisScaleType;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
-public final class AxisScale implements SymbolizerNode{
+public final class AxisScale extends AbstractSymbolizerNode {
 
     public static final double DEFAULT_LENGTH = 40;
     public static final double DEFAULT_MEASURE = 40;
     private RealParameter axisLength;
     private RealParameter measure;
-    private SymbolizerNode parent;
 
     public AxisScale(){
         this.setAxisLength(new RealLiteral(DEFAULT_LENGTH));
@@ -136,19 +135,5 @@ public final class AxisScale implements SymbolizerNode{
         ua.merge(measure.getUsedAnalysis());
         return ua;
     }
-
-    @Override
-    public SymbolizerNode getParent() {
-        return parent;
-    }
-
-    @Override
-    public void setParent(SymbolizerNode node) {
-        parent = node;
-    }
-
-    @Override
-    public void update() {
-        parent.update();
-    }
+    
 }

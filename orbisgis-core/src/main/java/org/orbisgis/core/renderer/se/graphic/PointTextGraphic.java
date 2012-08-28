@@ -100,8 +100,8 @@ public final class PointTextGraphic extends Graphic implements UomNode {
         public Uom getUom() {
                 if (uom != null) {
                           return uom;
-                } else if(parent instanceof UomNode){
-                          return ((UomNode)parent).getUom();
+                } else if(getParent() instanceof UomNode){
+                          return ((UomNode)getParent()).getUom();
                 } else {
                         return Uom.PX;
                 }

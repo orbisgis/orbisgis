@@ -26,15 +26,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.transform;
-
-import org.orbisgis.core.renderer.se.SymbolizerNode;
+package org.orbisgis.core.renderer.se;
 
 /**
  *
  * @author Alexis Guéganno
  */
-public abstract class AbstractTransformation implements Transformation {
+public abstract class AbstractSymbolizerNode implements SymbolizerNode {
         private SymbolizerNode parent;
 
         @Override
@@ -49,7 +47,9 @@ public abstract class AbstractTransformation implements Transformation {
 
         @Override
         public void update() {
-                parent.update();
+                if(parent != null){
+                        parent.update();
+                }
         }
 
 }

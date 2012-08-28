@@ -40,6 +40,7 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import org.apache.log4j.Logger;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
@@ -54,13 +55,12 @@ import org.xnap.commons.i18n.I18nFactory;
  * It is a set of graphic symbols, as defined in SE.
  * @author Maxence Laurent
  */
-public final class GraphicCollection implements UomNode {
+public final class GraphicCollection extends AbstractSymbolizerNode implements UomNode {
 
     private static final Logger LOGGER = Logger.getLogger(GraphicCollection.class);
     private static final I18n I18N = I18nFactory.getI18n(GraphicCollection.class);
     
     private ArrayList<Graphic> graphics;
-    private SymbolizerNode parent;
     
     /**
      * Create a new, orphan and empty GraphicCollection.
@@ -208,21 +208,6 @@ public final class GraphicCollection implements UomNode {
         return (graphics.remove(graphic));
     }
 
-    @Override
-    public SymbolizerNode getParent() {
-        return parent;
-    }
-
-    @Override
-    public void setParent(SymbolizerNode node) {
-        parent = node;
-    }
-
-    @Override
-    public void update() {
-            parent.update();
-    }
-
     /**
      * Get the minimum horizontal rectangle that contains this GraphicCollection.
      * @param map
@@ -367,8 +352,8 @@ public final class GraphicCollection implements UomNode {
 
     @Override
     public Uom getUom() {
-            if(parent instanceof UomNode){
-                    return ((UomNode)parent).getUom();
+            if(getParent() instanceof UomNode){
+                    return ((UomNode)getParent()).getUom();
             } else {
                     return Uom.PX;
             }

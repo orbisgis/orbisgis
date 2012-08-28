@@ -35,6 +35,7 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
 import net.opengis.fes._2.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 
 /**
  * <code>Literal</code>s are the concrete realizations of <code>SeParameter</code>.
@@ -44,7 +45,7 @@ import net.opengis.se._2_0.core.ParameterValueType;
  * simplify the propagation of changes that could occur in it.
  * @author Maxence Laurent
  */
-public abstract class Literal extends AbstractParameter implements Comparable {
+public abstract class Literal extends AbstractSymbolizerNode implements Comparable, SeParameter {
 
         private List<LiteralListener> listeners;
 

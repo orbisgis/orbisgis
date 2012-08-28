@@ -35,9 +35,10 @@ import net.opengis.fes._2.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.parameter.AbstractParameter;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
@@ -53,7 +54,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  *   * Neperian logarithm - <code>LN</code>
  * @author Maxence Laurent, Alexis Guéganno
  */
-public class RealFunction extends AbstractParameter implements RealParameter {
+public class RealFunction extends AbstractSymbolizerNode implements SeParameter, RealParameter {
 
     public enum Operators {
         ADD, MUL, DIV, SUB, SQRT, LOG, LN

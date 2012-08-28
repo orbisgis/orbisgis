@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -52,7 +53,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * @todo find a nice way to compute interpolation for RealParameter and ColorParameter
  *
  */
-public abstract class Interpolate<ToType extends SeParameter, FallbackType extends ToType>  extends AbstractParameter {
+public abstract class Interpolate<ToType extends SeParameter, FallbackType extends ToType>  
+                extends AbstractSymbolizerNode implements SeParameter {
 
         private InterpolationMode mode;
         private RealParameter lookupValue;

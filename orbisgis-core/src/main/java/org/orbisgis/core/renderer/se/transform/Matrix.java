@@ -36,6 +36,7 @@ import net.opengis.se._2_0.core.MatrixType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -57,7 +58,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * 
  * @author Maxence Laurent, Alexis Guéganno
  */
-public final class Matrix extends AbstractTransformation {
+public final class Matrix extends AbstractSymbolizerNode implements Transformation {
 
         private static final double DEF_A = 1.0;
         private static final double DEF_B = 0.0;

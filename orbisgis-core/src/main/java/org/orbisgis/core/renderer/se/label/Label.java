@@ -40,8 +40,8 @@ import net.opengis.se._2_0.core.PointLabelType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -54,9 +54,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  * about its alignment, vertical or horizontal.
  * @author Maxence Laurent, Alexis Guéganno
  */
-public abstract class Label implements UomNode {
-
-    private SymbolizerNode parent;
+public abstract class Label extends AbstractSymbolizerNode implements UomNode {
     private Uom uom;
     private StyledText label;
     private HorizontalAlignment hAlign;
@@ -232,8 +230,8 @@ public abstract class Label implements UomNode {
     public Uom getUom() {
         if (uom != null) {
             return uom;
-        } else if(parent instanceof UomNode){
-            return ((UomNode)parent).getUom();
+        } else if(getParent() instanceof UomNode){
+            return ((UomNode)getParent()).getUom();
         } else {
                 return Uom.PX;
         }
@@ -242,21 +240,6 @@ public abstract class Label implements UomNode {
     @Override
     public void setUom(Uom uom) {
         this.uom = uom;
-    }
-
-    @Override
-    public SymbolizerNode getParent() {
-        return parent;
-    }
-
-    @Override
-    public void setParent(SymbolizerNode node) {
-        parent = node;
-    }
-
-    @Override
-    public void update() {
-            parent.update();
     }
 
     /**

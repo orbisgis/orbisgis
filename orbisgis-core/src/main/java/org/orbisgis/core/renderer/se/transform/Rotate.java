@@ -36,6 +36,7 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.RotateType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -54,7 +55,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * <li>The rotation angle, in clockwise degrees.</li></ul>
  * @author Maxence Laurent
  */
-public final class Rotate extends AbstractTransformation {
+public final class Rotate extends AbstractSymbolizerNode implements Transformation {
 
         private RealParameter x;
         private RealParameter y;

@@ -52,7 +52,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  * @todo Add a general draw method that fit well for vectors and raster; implement fetch default geometry
  * @author Maxence Laurent, Alexis Guéganno
  */
-public abstract class Symbolizer implements SymbolizerNode, Comparable {
+public abstract class Symbolizer extends AbstractSymbolizerNode implements SymbolizerNode, Comparable {
 
     /**
      * The default name affected to a new Symbolizer instance.
@@ -65,7 +65,6 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
     protected String name;
     protected String desc;
     //protected GeometryAttribute the_geom;
-    private SymbolizerNode parent;
     protected int level;
     private Set<String> features;
     private Map<String,Value> featuresMap;
@@ -176,16 +175,6 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         this.level = level;
     }
 
-    @Override
-    public SymbolizerNode getParent() {
-        return parent;
-    }
-
-    @Override
-    public void setParent(SymbolizerNode node) {
-        this.parent = node;
-    }
-
     /**
      * Fill the {@code SymbolizerType s} with the properties contained in this
      * {@code Symbolizer}.
@@ -261,7 +250,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
      * Go through parents and return the rule
      */
     public Rule getRule() {
-        SymbolizerNode pIt = this.parent;
+        SymbolizerNode pIt = getParent();
         while (!(pIt instanceof Rule)) {
             pIt = pIt.getParent();
         }
@@ -298,10 +287,10 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
             features = dependsOnFeature();
     }
 
-        @Override
+    @Override
     public void update(){
             refreshFeatures();
-            parent.update();
+            getParent().update();
     }
     /**
      * Draw the symbols in g2, using infos that are found in sds at index fid.

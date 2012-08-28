@@ -30,7 +30,6 @@ package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.values.Value;
@@ -38,7 +37,6 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * Each implementation represent an affine transformation base on RealParameter.

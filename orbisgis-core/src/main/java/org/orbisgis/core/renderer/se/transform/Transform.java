@@ -37,8 +37,8 @@ import java.util.Map;
 import net.opengis.se._2_0.core.*;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -50,10 +50,9 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  *
  * @author Maxence Laurent, Alexis Guéganno
  */
-public class Transform implements UomNode {
+public class Transform extends AbstractSymbolizerNode implements UomNode {
 
         private Uom uom;
-        private SymbolizerNode parent;
         private AffineTransform consolidated;
         private ArrayList<Transformation> transformations;
 
@@ -242,21 +241,6 @@ public class Transform implements UomNode {
                 return transformations.get(i);
         }
 
-        @Override
-        public SymbolizerNode getParent() {
-                return parent;
-        }
-
-        @Override
-        public void setParent(SymbolizerNode node) {
-                parent = node;
-        }
-
-        @Override
-        public void update() {
-                parent.update();
-        }
-
         /**
          * Get a new representation of this {@code Transform} as a JAXB
          * {@code TransformType}
@@ -300,8 +284,8 @@ public class Transform implements UomNode {
         public Uom getUom() {
                 if (uom != null) {
                         return uom;
-                } else if(parent instanceof UomNode){
-                        return ((UomNode)parent).getUom();
+                } else if(getParent() instanceof UomNode){
+                        return ((UomNode)getParent()).getUom();
                 } else {
                         return Uom.PX;
                 }

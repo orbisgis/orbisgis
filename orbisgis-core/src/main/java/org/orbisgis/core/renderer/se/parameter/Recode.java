@@ -38,6 +38,7 @@ import net.opengis.se._2_0.core.RecodeType;
 import org.apache.log4j.Logger;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -51,7 +52,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * @param <FallbackType> The literal type associated to ToType. it is used to define the default value,
  * when an input value can't be processed for whatever reason.
  */
-public abstract class Recode<ToType extends SeParameter, FallbackType extends ToType> extends AbstractParameter {
+public abstract class Recode<ToType extends SeParameter, FallbackType extends ToType> extends AbstractSymbolizerNode
+                implements SeParameter {
     private static final I18n I18N = I18nFactory.getI18n(Recode.class);
     private static final Logger LOGGER = Logger.getLogger(Recode.class);
     

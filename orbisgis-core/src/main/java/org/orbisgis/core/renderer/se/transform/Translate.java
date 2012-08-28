@@ -36,6 +36,7 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TranslateType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -49,7 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * a 2D vector, it is defined by two <code>RealParameter</code>s.
  * @author Maxence Laurent
  */
-public class Translate extends AbstractTransformation {
+public class Translate extends AbstractSymbolizerNode implements Transformation {
 
         private RealParameter x;
         private RealParameter y;

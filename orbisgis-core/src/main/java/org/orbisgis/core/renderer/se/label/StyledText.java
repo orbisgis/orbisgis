@@ -41,10 +41,10 @@ import net.opengis.se._2_0.core.StyledTextType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -73,9 +73,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
  * Color and opacity of the text are defined using a <code>Fill</code> instance
  * @author Maxence Laurent, Alexis Guéganno
  */
-public final class StyledText implements UomNode, FillNode, StrokeNode {
-
-    private SymbolizerNode parent;
+public final class StyledText extends AbstractSymbolizerNode implements UomNode, FillNode, StrokeNode {
     private StringParameter text;
     private StringParameter fontFamily;
     private StringParameter fontWeight;
@@ -174,8 +172,8 @@ public final class StyledText implements UomNode, FillNode, StrokeNode {
     public Uom getFontUom() {
         if (uom != null) {
             return uom;
-        } else if(parent instanceof UomNode){
-            return ((UomNode)parent).getUom();
+        } else if(getParent() instanceof UomNode){
+            return ((UomNode)getParent()).getUom();
         } else {
                 return Uom.PX;
         }
@@ -184,7 +182,7 @@ public final class StyledText implements UomNode, FillNode, StrokeNode {
     @Override
     public Uom getUom() {
         // Note: this.uom only affect font size
-        return ((UomNode)parent).getUom();
+        return ((UomNode)getParent()).getUom();
     }
 
     @Override
@@ -195,21 +193,6 @@ public final class StyledText implements UomNode, FillNode, StrokeNode {
     @Override
     public Uom getOwnUom() {
         return this.uom;
-    }
-
-    @Override
-    public SymbolizerNode getParent() {
-        return parent;
-    }
-
-    @Override
-    public void setParent(SymbolizerNode node) {
-        parent = node;
-    }
-
-    @Override
-    public void update() {
-            parent.update();
     }
 
     @Override

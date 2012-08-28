@@ -33,8 +33,8 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ExclusionRadiusType;
 import net.opengis.se._2_0.core.ExclusionRectangleType;
 import net.opengis.se._2_0.core.ExclusionZoneType;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 
@@ -43,8 +43,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
  * labels' displaying will be forbidden.
  * @author Alexis Guéganno, Maxence Laurent
  */
-public abstract class ExclusionZone implements UomNode {
-        private SymbolizerNode parent;
+public abstract class ExclusionZone extends AbstractSymbolizerNode implements UomNode {
         private Uom uom;
 
         /**
@@ -74,8 +73,8 @@ public abstract class ExclusionZone implements UomNode {
         public Uom getUom() {
                 if (uom != null) {
                         return uom;
-                } else if(parent instanceof UomNode){
-                        return ((UomNode)parent).getUom();
+                } else if(getParent() instanceof UomNode){
+                        return ((UomNode)getParent()).getUom();
                 } else {
                         return Uom.PX;
                 }
@@ -89,21 +88,6 @@ public abstract class ExclusionZone implements UomNode {
         @Override
         public void setUom(Uom uom) {
                 this.uom = uom;
-        }
-
-        @Override
-        public SymbolizerNode getParent() {
-                return parent;
-        }
-
-        @Override
-        public void setParent(SymbolizerNode node) {
-                parent = node;
-        }
-
-        @Override
-        public void update() {
-                parent.update();
         }
 
         @Override

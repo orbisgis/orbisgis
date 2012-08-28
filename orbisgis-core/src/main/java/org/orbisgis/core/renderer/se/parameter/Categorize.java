@@ -34,6 +34,7 @@ import net.opengis.se._2_0.core.*;
 import org.apache.log4j.Logger;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -63,7 +64,7 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  */
 public abstract class Categorize<ToType extends SeParameter, FallbackType extends ToType>
-                extends AbstractParameter implements LiteralListener {
+                extends AbstractSymbolizerNode implements SeParameter, LiteralListener {
 
     private static final String SD_FACTOR_KEY = "SdFactor";
     private static final String METHOD_KEY = "method";

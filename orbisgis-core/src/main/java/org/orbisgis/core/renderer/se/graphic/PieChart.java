@@ -205,8 +205,8 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
     public Uom getUom() {
         if (uom != null) {
             return uom;
-        } else if(parent instanceof UomNode){
-            return ((UomNode)parent).getUom();
+        } else if(getParent() instanceof UomNode){
+            return ((UomNode)getParent()).getUom();
         } else {
             return Uom.PX;
         }

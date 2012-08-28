@@ -43,8 +43,8 @@ import net.opengis.se._2_0.thematic.AxisChartType;
 import net.opengis.se._2_0.thematic.PieChartType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
@@ -52,9 +52,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  * @todo create subclasses: AlternativeGraphic, GraphicReference
  * @author Maxence Laurent
  */
-public abstract class Graphic implements SymbolizerNode {
-
-    protected SymbolizerNode parent;
+public abstract class Graphic extends AbstractSymbolizerNode {
 
     /**
      * This static method is a convenience to create a new {@code Graphic}
@@ -100,21 +98,6 @@ public abstract class Graphic implements SymbolizerNode {
 	public String toString(){
 		return this.getClass().getSimpleName();
 	}
-
-    @Override
-    public SymbolizerNode getParent() {
-        return parent;
-    }
-
-    @Override
-    public void setParent(SymbolizerNode node) {
-        this.parent = node;
-    }
-
-    @Override
-    public void update() {
-            parent.update();
-    }
 
     /**
      * Return graphic bounds. Bounds center point shall match CRS origin !

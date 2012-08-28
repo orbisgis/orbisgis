@@ -35,9 +35,10 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.parameter.AbstractParameter;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
@@ -50,7 +51,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  * processing of its content.
  * @author Alexis Guéganno
  */
-public class StringConcatenate extends AbstractParameter implements StringParameter, Iterable<StringParameter> {
+public class StringConcatenate extends AbstractSymbolizerNode implements SeParameter,StringParameter, Iterable<StringParameter> {
 
         private List<StringParameter> inputStrings;
 
