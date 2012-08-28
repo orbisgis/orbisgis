@@ -39,8 +39,10 @@ import net.opengis.se._2_0.core.ParameterValueType;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.parameter.AbstractParameter;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
@@ -52,7 +54,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
  * format the numbers retrieved by its inner {@code RealParameter}.
  * @author Alexis Guéganno
  */
-public class Number2String implements StringParameter {
+public class Number2String extends AbstractParameter implements StringParameter {
 
         //We're currently forced to keep some duplicated informations about the
         //content of the formatting pattern. Indeed, it's not possible to
@@ -283,4 +285,11 @@ public class Number2String implements StringParameter {
                 this.numericValue = numericValue;
         }
 
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis ua = new UsedAnalysis();
+                ua.include(this);
+                ua.merge(numericValue.getUsedAnalysis());
+                return ua;
+        }
 }

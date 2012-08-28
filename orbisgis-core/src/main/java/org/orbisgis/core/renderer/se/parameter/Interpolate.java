@@ -52,7 +52,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * @todo find a nice way to compute interpolation for RealParameter and ColorParameter
  *
  */
-public abstract class Interpolate<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
+public abstract class Interpolate<ToType extends SeParameter, FallbackType extends ToType>  extends AbstractParameter {
 
         private InterpolationMode mode;
         private RealParameter lookupValue;
@@ -248,6 +248,18 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
                 ObjectFactory of = new ObjectFactory();
                 return of.createInterpolate(i);
         }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis ua = new UsedAnalysis();
+                ua.include(this);
+                ua.merge(lookupValue.getUsedAnalysis());
+                for(InterpolationPoint i : iPoints){
+                        ua.merge(i.getValue().getUsedAnalysis());
+                }
+                return ua;
+        }
+
 
         protected int getFirstIP(double data) {
                 int i = -1;

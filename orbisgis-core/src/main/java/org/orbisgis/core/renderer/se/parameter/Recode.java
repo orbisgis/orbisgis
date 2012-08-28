@@ -29,6 +29,7 @@
 package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.*;
+import java.util.Map.Entry;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MapItemType;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -50,7 +51,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @param <FallbackType> The literal type associated to ToType. it is used to define the default value,
  * when an input value can't be processed for whatever reason.
  */
-public abstract class Recode<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
+public abstract class Recode<ToType extends SeParameter, FallbackType extends ToType> extends AbstractParameter {
     private static final I18n I18N = I18nFactory.getI18n(Recode.class);
     private static final Logger LOGGER = Logger.getLogger(Recode.class);
     
@@ -314,4 +315,17 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         ObjectFactory of = new ObjectFactory();
         return of.createRecode(r);
     }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis ua = new UsedAnalysis();
+        ua.include(this);
+        ua.merge(lookupValue.getUsedAnalysis());
+        for(Entry<String,ToType> e : mapItems.entrySet()){
+                ua.merge(e.getValue().getUsedAnalysis());
+        }
+        return ua;
+    }
+
+
 }

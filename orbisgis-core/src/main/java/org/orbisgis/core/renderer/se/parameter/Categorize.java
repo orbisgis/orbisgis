@@ -62,7 +62,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Maxence Laurent, Alexis Guéganno
  *
  */
-public abstract class Categorize<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter, LiteralListener {
+public abstract class Categorize<ToType extends SeParameter, FallbackType extends ToType>
+                extends AbstractParameter implements LiteralListener {
 
     private static final String SD_FACTOR_KEY = "SdFactor";
     private static final String METHOD_KEY = "method";
@@ -538,6 +539,17 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         c.setExtension(exts);
 
         return of.createCategorize(c);
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis ua = new UsedAnalysis();
+        ua.merge(lookupValue.getUsedAnalysis());
+        ua.merge(firstClass.getUsedAnalysis());
+        for(ToType t : classValues){
+                ua.merge(t.getUsedAnalysis());
+        }
+        return ua;
     }
 
     //**********************************************************************************

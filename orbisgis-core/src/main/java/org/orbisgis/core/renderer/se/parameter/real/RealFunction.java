@@ -36,8 +36,10 @@ import net.opengis.se._2_0.core.ParameterValueType;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.parameter.AbstractParameter;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * Defines a function on real numbers. A function is defined with a operation and
@@ -51,7 +53,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  *   * Neperian logarithm - <code>LN</code>
  * @author Maxence Laurent, Alexis Guéganno
  */
-public class RealFunction implements RealParameter {
+public class RealFunction extends AbstractParameter implements RealParameter {
 
     public enum Operators {
         ADD, MUL, DIV, SUB, SQRT, LOG, LN
@@ -286,6 +288,16 @@ public class RealFunction implements RealParameter {
 
         ObjectFactory of = new ObjectFactory();
         return of.createFunction(fcn);
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis ua  = new UsedAnalysis();
+        ua.include(this);
+        for(RealParameter r : operands){
+                ua.merge(r.getUsedAnalysis());
+        }
+        return ua;
     }
 
 

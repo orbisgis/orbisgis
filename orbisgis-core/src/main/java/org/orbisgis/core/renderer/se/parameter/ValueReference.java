@@ -44,7 +44,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
  * An (abstract) representation of a Value in a GDMS table. 
  * @author Alexis Guéganno, Maxence Laurent
  */
-public abstract class ValueReference implements SeParameter {
+public abstract class ValueReference extends AbstractParameter implements SeParameter {
 
 	private String fieldName;
 	private int fieldId;
@@ -187,4 +187,10 @@ public abstract class ValueReference implements SeParameter {
 		ObjectFactory of = new ObjectFactory();
 		return of.createValueReference(fieldName);
 	}
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                return new UsedAnalysis();
+        }
+
 }

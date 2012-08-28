@@ -44,7 +44,7 @@ import net.opengis.se._2_0.core.ParameterValueType;
  * simplify the propagation of changes that could occur in it.
  * @author Maxence Laurent
  */
-public abstract class Literal implements SeParameter, Comparable {
+public abstract class Literal extends AbstractParameter implements Comparable {
 
         private List<LiteralListener> listeners;
 
@@ -103,5 +103,12 @@ public abstract class Literal implements SeParameter, Comparable {
                 l.getContent().add(this.toString());
                 ObjectFactory of = new ObjectFactory();
                 return of.createLiteral(l);
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis ret = new UsedAnalysis();
+                ret.include(this);
+                return ret;
         }
 }

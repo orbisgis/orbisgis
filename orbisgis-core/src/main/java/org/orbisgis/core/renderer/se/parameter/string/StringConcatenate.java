@@ -36,8 +36,10 @@ import net.opengis.se._2_0.core.ParameterValueType;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.parameter.AbstractParameter;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * Implementation of the {@code Concatenate} SE function. This function takes at
@@ -48,7 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  * processing of its content.
  * @author Alexis Guéganno
  */
-public class StringConcatenate implements StringParameter, Iterable<StringParameter> {
+public class StringConcatenate extends AbstractParameter implements StringParameter, Iterable<StringParameter> {
 
         private List<StringParameter> inputStrings;
 
@@ -239,6 +241,16 @@ public class StringConcatenate implements StringParameter, Iterable<StringParame
         @Override
         public Iterator<StringParameter> iterator() {
                 return inputStrings.listIterator();
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis ua = new UsedAnalysis();
+                ua.include(this);
+                for(StringParameter sp : inputStrings){
+                        ua.merge(sp.getUsedAnalysis());
+                }
+                return ua;
         }
 
 }
