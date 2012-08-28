@@ -35,6 +35,7 @@ import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
+import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.analyzer.symbolizers.LineSymbolizerAnalyzer;
@@ -179,6 +180,34 @@ public class ProportionalLineTest extends AnalyzerTest {
         ProportionalLine usl = new ProportionalLine(ls);
         usl.setSecondValue(24.3);
         assertTrue(usl.getSecondValue() == 24.3);
+    }
+
+    @Test
+    public void testGetLookupFieldName() throws Exception{
+        Style st = getStyle(PROP_LINE);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        ProportionalLine usl = new ProportionalLine(ls);
+        assertTrue(usl.getLookupFieldName().equals("LARGEUR"));
+        //We check we have the same value in the raw symbolizer
+        PenStroke ps = (PenStroke) ls.getStroke();
+        Interpolate2Real ir = (Interpolate2Real) ps.getWidth();
+        RealAttribute ra = (RealAttribute) ir.getLookupValue();
+        assertTrue(ra.getColumnName().equals("LARGEUR"));
+        assertTrue(ls.dependsOnFeature().contains("LARGEUR"));
+    }
+
+    @Test
+    public void testSetLookupFieldName() throws Exception{
+        Style st = getStyle(PROP_LINE);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        ProportionalLine usl = new ProportionalLine(ls);
+        usl.setLookupFieldName("longueur");
+        assertTrue(usl.getLookupFieldName().equals("longueur"));
+        PenStroke ps = (PenStroke) ls.getStroke();
+        Interpolate2Real ir = (Interpolate2Real) ps.getWidth();
+        RealAttribute ra = (RealAttribute) ir.getLookupValue();
+        assertTrue(ra.getColumnName().equals("longueur"));
+        assertTrue(ls.dependsOnFeature().contains("longueur"));
     }
 
 }

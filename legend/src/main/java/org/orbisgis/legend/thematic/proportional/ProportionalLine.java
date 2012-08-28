@@ -91,6 +91,22 @@ public class ProportionalLine extends ConstantColorAndDashesLine implements Lege
         strokeLegend = legend;
     }
 
+    /**
+     * Gets the name of the field where values will be retrieved.
+     * @return
+     */
+    public String getLookupFieldName(){
+            return strokeLegend.getLookupFieldName();
+    }
+
+    /**
+     * Sets the name of the field where values will be retrieved.
+     * @param name
+     */
+    public void setLookupFieldName(String name){
+            strokeLegend.setLookupFieldName(name);
+    }
+
     @Override
     public LegendStructure getStrokeLegend() {
         return strokeLegend;

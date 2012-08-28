@@ -29,6 +29,7 @@
 package org.orbisgis.legend.structure.interpolation;
 
 import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
+import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 
 /**
  * Analysis associated to a linear interpolation. This structure can be defined
@@ -45,5 +46,21 @@ public class LinearInterpolationLegend extends InterpolationLegend {
          */
         public LinearInterpolationLegend(Interpolate2Real inter){
                 super(inter);
+        }
+
+        /**
+         * Gets the name of the field where values will be retrieved.
+         * @return
+         */
+        public String getLookupFieldName(){
+                return ((RealAttribute)getInterpolation().getLookupValue()).getColumnName();
+        }
+
+        /**
+         * Sets the name of the field where values will be retrieved.
+         * @param name
+         */
+        public void setLookupFieldName(String name){
+                ((RealAttribute)getInterpolation().getLookupValue()).setColumnName(name);
         }
 }

@@ -147,5 +147,21 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
         public void setSecondValue(double d) {
             ((LinearInterpolationLegend)getWidthAnalysis()).setSecondValue(d);
         }
+
+        /**
+         * Sets the name of the field where values will be retrieved.
+         * @param name
+         */
+        public void setLookupFieldName(String name) {
+                ((LinearInterpolationLegend)getWidthAnalysis()).setLookupFieldName(name);
+        }
+
+        /**
+         * Gets the name of the field where values will be retrieved.
+         * @return
+         */
+        public String getLookupFieldName() {
+                return ((LinearInterpolationLegend)getWidthAnalysis()).getLookupFieldName();
+        }
         
 }
