@@ -820,6 +820,10 @@ public class Toc extends JPanel implements EditorDockable {
                                 linkedEditableElements.put(tableElement.getSourceName(), tableElement);
                                 // Table selection change -> Layer selection
                                 tableElement.addPropertyChangeListener(TableEditableElement.PROP_SELECTION, tableSelectionChangeListener);
+                                //If the table has already an active selection, load it
+                                if(!tableElement.getSelection().isEmpty()) {
+                                        onTableSelectionChange(tableElement);
+                                }
                         }
                 }
         }
