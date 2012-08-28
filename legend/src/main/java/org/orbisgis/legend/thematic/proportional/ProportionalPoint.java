@@ -40,6 +40,7 @@ import org.orbisgis.legend.structure.graphic.ProportionalWKNLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
 
 /**
  * A {@code ProportionalPoint} is a {@link ConstantFormPoint} whose {@code
@@ -47,7 +48,7 @@ import org.orbisgis.legend.thematic.constant.IUniqueSymbolArea;
  * MonovariateProportionalViewBox}.
  * @author Alexis Guéganno
  */
-public class ProportionalPoint extends ConstantFormPoint implements IUniqueSymbolArea {
+public class ProportionalPoint extends ConstantFormPoint implements IUniqueSymbolArea, StrokeUom {
 
     private ProportionalWKNLegend markGraphic;
 
