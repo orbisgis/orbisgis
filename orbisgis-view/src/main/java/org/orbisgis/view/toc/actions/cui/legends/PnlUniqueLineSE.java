@@ -41,20 +41,20 @@ import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
+import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolLine;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.components.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
-import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -193,11 +193,11 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 GridLayout grid = new GridLayout(5+ilo,2);
                 grid.setVgap(5);
                 jp.setLayout(grid);
-                lineUom = getLineUomCombo();
+                lineUom = getLineUomCombo((StrokeUom)getLegend());
                 lineWidth = getLineWidthSpinner(legend);
                 lineColor = getColorField(legend.getFillLegend());
                 lineOpacity = getLineOpacitySpinner(legend.getFillLegend());
-                lineDash = getDashArrayField(legend);
+                lineDash = getDashArrayField((ConstantColorAndDashesPSLegend)legend);
                 if(isLineOptional()){
                         jp.add(buildText(I18N.tr("Enable line : ")));
                         lineCheckBox = new JCheckBox("");
@@ -265,45 +265,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 }
         }
 
-        protected ContainerItemProperties[] getUomProperties(){
-                Uom[] us = Uom.values();
-                ContainerItemProperties[] cips = new ContainerItemProperties[us.length];
-                for(int i = 0; i<us.length; i++){
-                        Uom u = us[i];
-                        ContainerItemProperties cip = new ContainerItemProperties(u.name(), u.toLocalizedString());
-                        cips[i] = cip;
-                }
-                return cips;
-        }
-
-        /**
-         * ComboBox to configure the unit of measure used to draw th stroke.
-         * @param line
-         * @return
-         */
-        protected JComboBox getLineUomCombo(){
-                CanvasSE prev = getPreview();
-                uoms= getUomProperties();
-                String[] values = new String[uoms.length];
-                for (int i = 0; i < values.length; i++) {
-                        values[i] = I18N.tr(uoms[i].getLabel());
-                }
-                final JComboBox jcc = new JComboBox(values);
-                ActionListener acl = EventHandler.create(ActionListener.class, prev, "repaint");
-                ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateLUComboBox", "source.selectedIndex");
-                jcc.addActionListener(acl2);
-                jcc.addActionListener(acl);
-                jcc.setSelectedItem(((IUniqueSymbolLine)getLegend()).getStrokeUom().toString().toUpperCase());
-                return jcc;
-        }
-        /**
-         * Sets the underlying graphic to use the ith element of the combobox
-         * as its well-known name. Used when changing the combobox selection.
-         * @param index
-         */
-        public void updateLUComboBox(int index){
-                ((IUniqueSymbolLine)getLegend()).setStrokeUom(Uom.fromString(uoms[index].getKey()));
-        }
         /**
          * In order to improve the user experience, it may be interesting to
          * store the {@code ConstantPenStrokeLegend} as a field before removing

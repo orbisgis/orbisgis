@@ -58,6 +58,10 @@ public class EPLegendHelper {
                 ILegendPanel proportionalPoint = new PnlProportionalPointSE();
                 proportionalPoint.initialize(legendContext);
                 legends.add(proportionalPoint);
+                //ProportionalLine
+                ILegendPanel proportionalLine = new PnlProportionalLine();
+                proportionalLine.initialize(legendContext);
+                legends.add(proportionalLine);
 		return legends.toArray(new ILegendPanel[legends.size()]);
 	}
 

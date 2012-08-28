@@ -40,18 +40,27 @@ import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import javax.swing.BorderFactory;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.event.ChangeListener;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
+import org.gdms.data.schema.Metadata;
+import org.gdms.data.types.TypeFactory;
+import org.gdms.driver.DriverException;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
+import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.ColorPicker;
 import org.orbisgis.sif.components.JNumericSpinner;
+import org.orbisgis.view.components.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
@@ -68,6 +77,7 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueSymbolSE.class);
         private String id;
         private CanvasSE preview;
+        private ContainerItemProperties[] strokeUoms;
 
         /**
          * Rebuild the {@code CanvasSe} instance used to display a preview of
@@ -151,7 +161,7 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
          * @return
          *      A {@code JTextField} embedded in a {@code JPanel}.
          */
-        public JPanel getDashArrayField(final ConstantPenStroke cps){
+        public JPanel getDashArrayField(final ConstantColorAndDashesPSLegend cps){
                 JPanel cont = new JPanel();
                 final JTextField jrf = new JTextField(8);
                 ActionListener al = new ActionListener() {
@@ -230,5 +240,76 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
         @Override
         public void setId(String id){
                 this.id = id;
+        }
+
+        /**
+         * Gets the value contained in the {@code Uom} enum with their
+         * internationalized representation in a {@code
+         * ContainerItemProperties} array.
+         * @return
+         */
+        public ContainerItemProperties[] getUomProperties(){
+                Uom[] us = Uom.values();
+                ContainerItemProperties[] cips = new ContainerItemProperties[us.length];
+                for(int i = 0; i<us.length; i++){
+                        Uom u = us[i];
+                        ContainerItemProperties cip = new ContainerItemProperties(u.name(), u.toLocalizedString());
+                        cips[i] = cip;
+                }
+                return cips;
+        }
+
+        /**
+         * ComboBox to configure the unit of measure used to draw th stroke.
+         * @param line
+         * @return
+         */
+        public JComboBox getLineUomCombo(StrokeUom input){
+                CanvasSE prev = getPreview();
+                strokeUoms= getUomProperties();
+                String[] values = new String[strokeUoms.length];
+                for (int i = 0; i < values.length; i++) {
+                        values[i] = I18N.tr(strokeUoms[i].getLabel());
+                }
+                final JComboBox jcc = new JComboBox(values);
+                ActionListener acl = EventHandler.create(ActionListener.class, prev, "repaint");
+                ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateLUComboBox", "source.selectedIndex");
+                jcc.addActionListener(acl2);
+                jcc.addActionListener(acl);
+                jcc.setSelectedItem(input.getStrokeUom().toString().toUpperCase());
+                return jcc;
+        }
+
+        /**
+         * Sets the underlying graphic to use the ith element of the combobox
+         * as its well-known name. Used when changing the combobox selection.
+         * @param index
+         */
+        public void updateLUComboBox(int index){
+                ((StrokeUom)getLegend()).setStrokeUom(Uom.fromString(strokeUoms[index].getKey()));
+        }
+
+        /**
+         * Initialiaze a {@code JComboBo} whose values are set according to the
+         * numeric fields of {@code ds}.
+         * @param ds
+         * @return
+         */
+        public JComboBox getNumericFieldCombo(DataSource ds){
+                JComboBox combo = new JComboBox();
+                if(ds != null){
+                        try {
+                                Metadata md = ds.getMetadata();
+                                int fc = md.getFieldCount();
+                                for (int i = 0; i < fc; i++) {
+                                        if(TypeFactory.isNumerical(md.getFieldType(i).getTypeCode())){
+                                                combo.addItem(md.getFieldName(i));
+                                        }
+                                }
+                        } catch (DriverException ex) {
+                                LOGGER.error(ex);
+                        }
+                }
+                return combo;
         }
 }
