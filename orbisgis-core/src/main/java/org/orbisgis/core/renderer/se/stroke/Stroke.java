@@ -123,6 +123,11 @@ public abstract class Stroke implements UomNode {
         parent = node;
     }
 
+    @Override
+    public void update() {
+            parent.update();
+    }
+
     /**
      * When delineating closed shapes (i.e. a ring), indicate, whether or not,
      * the length of stroke elements shall be scaled in order to make the pattern

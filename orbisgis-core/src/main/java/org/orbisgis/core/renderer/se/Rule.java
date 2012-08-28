@@ -289,6 +289,11 @@ public final class Rule implements SymbolizerNode {
         this.fts = fts;
     }
 
+    @Override
+    public void update() {
+            fts.update();
+    }
+
     /**
      * Get the <code>where</code> clause associated to this rule.
      * @return 

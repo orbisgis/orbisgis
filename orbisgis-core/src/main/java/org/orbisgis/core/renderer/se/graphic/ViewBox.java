@@ -153,6 +153,11 @@ public final class ViewBox implements SymbolizerNode {
         }
 
         @Override
+        public void update() {
+                parent.update();
+        }
+
+        @Override
         public HashSet<String> dependsOnFeature() {
             HashSet<String> hs = null;
             if (x != null) {

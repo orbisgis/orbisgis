@@ -77,4 +77,9 @@ public abstract class CompoundStrokeElement implements SymbolizerNode {
 		this.parent = node;
 	}
 
+        @Override
+        public void update() {
+                parent.update();
+        }
+
 }

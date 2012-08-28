@@ -60,4 +60,9 @@ public interface SeParameter{
      * @return 
      */
     JAXBElement<?> getJAXBExpressionType();
+
+    /**
+     * Notify the owner of this parameter that something has changed.
+     */
+//    public void update();
 }

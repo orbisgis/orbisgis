@@ -111,6 +111,11 @@ public abstract class Graphic implements SymbolizerNode {
         this.parent = node;
     }
 
+    @Override
+    public void update() {
+            parent.update();
+    }
+
     /**
      * Return graphic bounds. Bounds center point shall match CRS origin !
      * @param map

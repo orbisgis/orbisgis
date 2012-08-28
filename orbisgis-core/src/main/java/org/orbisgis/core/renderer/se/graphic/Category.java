@@ -35,7 +35,6 @@ import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
@@ -134,6 +133,11 @@ public final class Category implements SymbolizerNode, FillNode, StrokeNode, Gra
         @Override
         public void setParent(SymbolizerNode node) {
                 parent = node;
+        }
+
+        @Override
+        public void update() {
+                parent.update();
         }
 
         @Override

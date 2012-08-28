@@ -208,6 +208,11 @@ public final class StyledText implements UomNode, FillNode, StrokeNode {
     }
 
     @Override
+    public void update() {
+            parent.update();
+    }
+
+    @Override
     public Fill getFill() {
         return fill;
     }

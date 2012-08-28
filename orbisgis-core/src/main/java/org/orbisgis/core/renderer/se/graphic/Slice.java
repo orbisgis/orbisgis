@@ -136,6 +136,11 @@ public class Slice implements SymbolizerNode, FillNode {
                 parent = node;
         }
 
+        @Override
+        public void update() {
+                parent.update();
+        }
+
         /**
          * Get a {@code SliceType} that represents this {@code Slice}.
          * @return

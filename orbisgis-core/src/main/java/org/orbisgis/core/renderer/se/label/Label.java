@@ -254,6 +254,11 @@ public abstract class Label implements UomNode {
         parent = node;
     }
 
+    @Override
+    public void update() {
+            parent.update();
+    }
+
     /**
      * Get the text that need to be represented by this <code>Label</code>
      * @return 

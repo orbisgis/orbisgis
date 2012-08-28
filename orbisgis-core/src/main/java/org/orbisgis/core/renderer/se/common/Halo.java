@@ -152,6 +152,11 @@ public final class Halo implements  UomNode, FillNode {
         parent = node;
     }
 
+    @Override
+    public void update() {
+            parent.update();
+    }
+
     /**
      * Get the radius of this {@code Halo}.
      * @return 

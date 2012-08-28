@@ -102,5 +102,10 @@ public abstract class ExclusionZone implements UomNode {
         }
 
         @Override
+        public void update() {
+                parent.update();
+        }
+
+        @Override
         public abstract HashSet<String> dependsOnFeature();
 }

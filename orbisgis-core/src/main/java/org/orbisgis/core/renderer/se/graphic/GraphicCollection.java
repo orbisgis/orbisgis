@@ -218,6 +218,11 @@ public final class GraphicCollection implements UomNode {
         parent = node;
     }
 
+    @Override
+    public void update() {
+            parent.update();
+    }
+
     /**
      * Get the minimum horizontal rectangle that contains this GraphicCollection.
      * @param map

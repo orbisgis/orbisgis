@@ -351,6 +351,10 @@ public final class Style implements SymbolizerNode {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    @Override
+    public void update() {
+    }
+
     /**
      * Gets the name of this Style.
      * @return

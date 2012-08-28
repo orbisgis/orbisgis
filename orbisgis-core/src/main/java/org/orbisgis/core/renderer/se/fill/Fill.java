@@ -92,6 +92,11 @@ public abstract class Fill implements UomNode {
     public void setParent(SymbolizerNode node){
         parent = (UomNode)node;
     }
+
+    @Override
+    public void update() {
+            parent.update();
+    }
     
     @Override
     public void setUom(Uom u){

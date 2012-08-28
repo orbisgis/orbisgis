@@ -298,6 +298,11 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
             features = dependsOnFeature();
     }
 
+        @Override
+    public void update(){
+            refreshFeatures();
+            parent.update();
+    }
     /**
      * Draw the symbols in g2, using infos that are found in sds at index fid.
      * @param g2

@@ -242,6 +242,11 @@ public class Transform implements UomNode {
                 parent = node;
         }
 
+        @Override
+        public void update() {
+                parent.update();
+        }
+
         /**
          * Get a new representation of this {@code Transform} as a JAXB
          * {@code TransformType}
