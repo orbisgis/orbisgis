@@ -59,10 +59,10 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
         public static final String FACTORY_ID  ="WhereSQLFilterFactory";
         private final static I18n I18N = I18nFactory.getI18n(WhereSQLFilterFactory.class);
         private static final Logger LOGGER = Logger.getLogger(WhereSQLFilterFactory.class);
-        
+
         @Override
         public ActiveFilter getDefaultFilterValue() {
-                return new DefaultActiveFilter(FACTORY_ID, "field LIKE '%value%'");
+                return new DefaultActiveFilter(FACTORY_ID, "field > value2 AND field < value1");
         }
 
         @Override

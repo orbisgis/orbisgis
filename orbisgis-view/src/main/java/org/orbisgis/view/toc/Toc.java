@@ -563,6 +563,12 @@ public class Toc extends JPanel implements EditorDockable {
                                 importStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onImportStyle"));
                                 popup.add(importStyle);
                         }
+                        //Popup:Open attributes
+                        JMenuItem openTableMenu = new JMenuItem(I18N.tr("Open the attributes"),
+                                OrbisGISIcon.getIcon("openattributes"));
+                        openTableMenu.addActionListener(EventHandler.create(ActionListener.class,
+                                this, "onMenuShowTable"));
+                        popup.add(openTableMenu);
                 } else if (selected instanceof TocTreeNodeStyle) {
                         makePopupStyle(popup);
                 }
@@ -634,7 +640,22 @@ public class Toc extends JPanel implements EditorDockable {
                         l.removeStyle(s);
                 }
         }
-
+        /**
+        *  The user want to see one or more source content of the selected layers
+        */
+        public void onMenuShowTable() {
+                ILayer[] layers = mapContext.getSelectedLayers();
+                EditorManager editorManager = Services.getService(EditorManager.class);
+                for (ILayer layer : layers) {
+                        DataSource source = layer.getDataSource();
+                        if(source!=null) {
+                                TableEditableElement tableDocument = new TableEditableElement(source.getName());
+                                editorManager.openEditable(tableDocument);
+                        }
+                }
+        }
+        
+        
         /**
          * The user choose to export a style through the dedicated menu.
          */
