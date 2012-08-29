@@ -341,6 +341,8 @@ public abstract class BeanLayer extends AbstractLayer {
 
         @Override
         public void setSelection(Set<Integer> newSelection) {
+                IntegerUnion oldSelection = selection;
                 selection = new IntegerUnion(newSelection);
+                propertyChangeSupport.firePropertyChange(PROP_SELECTION, oldSelection, selection);
         }
 }
