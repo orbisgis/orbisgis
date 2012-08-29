@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.table;
 
+import com.vividsolutions.jts.geom.Envelope;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Point;
@@ -63,6 +64,7 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.Constraint;
@@ -75,6 +77,8 @@ import org.gdms.source.SourceRemovalEvent;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
@@ -85,13 +89,16 @@ import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditableElementException;
 import org.orbisgis.view.edition.EditorDockable;
+import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.table.filters.FieldsContainsFilterFactory;
 import org.orbisgis.view.table.filters.TableSelectionFilter;
 import org.orbisgis.view.table.filters.WhereSQLFilterFactory;
 import org.orbisgis.view.table.jobs.ComputeFieldStatistics;
 import org.orbisgis.view.table.jobs.OptimalWidthJob;
 import org.orbisgis.view.table.jobs.SearchJob;
+import org.orbisgis.view.table.jobs.ZoomToSelectionJob;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -132,28 +139,36 @@ public class TableEditor extends JPanel implements EditorDockable {
                 tableScrollPane = new JScrollPane(makeTable());
                 add(tableScrollPane,BorderLayout.CENTER);
                 updateTitle();
-        }       
+        }    
+
         /**
-         * A source has been removed, check that it is not the table source,
-         * if it is close the editor
-         * @param e 
+         * A source has been removed, check that it is not the table source, if
+         * it is close the editor
+         *
+         * @param e
          */
         public void onSourceRemoved(SourceRemovalEvent e) {
-                LOGGER.debug("TableEditor:onSourceRemoved");
                 String tableSourceName = tableEditableElement.getSourceName();
-                for(String sourceName : e.getNames()) {
-                        LOGGER.debug("TableEditor:onSourceRemoved : "+sourceName+"=="+tableSourceName);
-                        if(sourceName.equals(tableSourceName)) {
-                                SwingUtilities.invokeLater(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                                //Close the editor
-                                                LOGGER.debug("TableEditor:.setVisible(false)");
-                                                dockingPanelParameters.setVisible(false);
-                                        }
-                                });
-                                break;
+                boolean removeThisDataSource=false;
+                if(e.getName().equals(tableSourceName)) {
+                        removeThisDataSource = true;
+                } else {
+                        for (String sourceName : e.getNames()) {
+                                if (sourceName.equals(tableSourceName)) {
+                                        removeThisDataSource = true;
+                                        break;
+                                }
                         }
+                }
+                if (removeThisDataSource) {
+                        SwingUtilities.invokeLater(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                        //Close the editor
+                                        dockingPanelParameters.setVisible(false);
+                                }
+                        });
                 }
         }
         /**
@@ -313,6 +328,16 @@ public class TableEditor extends JPanel implements EditorDockable {
                                 EventHandler.create(ActionListener.class,
                                 this,"onMenuReverseSelection"));
                         pop.add(inverseSelection);
+                        if(isDataOnShownMapContext()) {
+                                JMenuItem zoomToSelection = new JMenuItem(
+                                        I18N.tr("Zoom to selection"),
+                                OrbisGISIcon.getIcon("zoom_selected"));
+                                zoomToSelection.setToolTipText(I18N.tr("In the map editor, zoom to the selected rows"));
+                                zoomToSelection.addActionListener(
+                                        EventHandler.create(ActionListener.class,
+                                        this,"onMenuZoomToSelection"));
+                                pop.add(zoomToSelection);
+                        }
                         
                 }
                 JMenuItem findSameCells = new JMenuItem(
@@ -323,6 +348,57 @@ public class TableEditor extends JPanel implements EditorDockable {
                         this,"onMenuSelectSameCellValue"));
                 pop.add(findSameCells);                
                 return pop;
+        }
+        
+        /**
+         * Used by the function "Zoom to selection"
+         * This menu is shown only if the current data is loaded and shown in the toc
+         */
+        private boolean isDataOnShownMapContext() {
+                EditorManager editorManager = Services.getService(EditorManager.class);
+                for(EditableElement editable : editorManager.getEditableElements()) {
+                        if(editable instanceof MapElement) {
+                                MapElement mapEditable = (MapElement)editable;
+                                MapContext mapContext = mapEditable.getMapContext();
+                                for(ILayer layer : mapContext.getLayers()) {
+                                        if(layer.isVisible()) {
+                                                DataSource source = layer.getDataSource();
+                                                if(source.getName().equals(tableEditableElement.getSourceName())) {
+                                                        return true;
+                                                }
+                                        }
+                                }
+                        }
+                }
+                return false;
+        }
+        public void onMenuZoomToSelection() {
+                int[] viewSelection = table.getSelectedRows();
+                if(viewSelection.length==0) {
+                        return;
+                }
+                DataSource source = tableModel.getDataSource();
+                int[] modelSelection = new int[viewSelection.length];
+                for(int i=0;i<viewSelection.length;i++) {
+                        modelSelection[i] = table.convertRowIndexToModel(viewSelection[i]);
+                }
+                //Retrieve the MapContext
+                MapContext mapContext=null;
+                EditorManager editorManager = Services.getService(EditorManager.class);
+                for(EditableElement editable : editorManager.getEditableElements()) {
+                        if(editable instanceof MapElement) {
+                                MapElement mapEditable = (MapElement)editable;
+                                mapContext = mapEditable.getMapContext();
+                                break;
+                        }
+                }
+                if(mapContext==null) {
+                        //Programmation error, useless to translate
+                        LOGGER.error("MapContext lost between popup creation and click");
+                        return;
+                }                
+                ZoomToSelectionJob zoomJob = new ZoomToSelectionJob(source, modelSelection, mapContext);
+                launchJob(zoomJob);                
         }
         
         /**

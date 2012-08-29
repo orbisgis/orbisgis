@@ -117,6 +117,13 @@ public final class MapElement extends EditableElement {
         public String getId() {
             return mapId;
         }
+        /**
+         * Return the edited map context
+         * @return 
+         */
+        public MapContext getMapContext()  {
+                return mapContext;
+        }
 
 	@Override
 	public Object getObject() throws UnsupportedOperationException {
