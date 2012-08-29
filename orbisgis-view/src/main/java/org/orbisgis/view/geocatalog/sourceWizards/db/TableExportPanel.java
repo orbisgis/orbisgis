@@ -3,8 +3,8 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
  *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
@@ -22,9 +22,8 @@
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * For more information, please consult: <http://www.orbisgis.org/> or contact
+ * directly: info_at_ orbisgis.org
  */
 package org.orbisgis.view.geocatalog.sourceWizards.db;
 
@@ -32,25 +31,29 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
+import org.gdms.sql.engine.Engine;
+import org.gdms.sql.engine.SQLScript;
+import org.gdms.sql.engine.SemanticException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.workspace.CoreWorkspace;
+import org.orbisgis.core.events.Listener;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.multiInputPanel.MIPValidation;
@@ -59,19 +62,13 @@ import org.orbisgis.sif.multiInputPanel.PasswordType;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.geocatalog.Catalog;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.engine.Engine;
-import org.gdms.sql.engine.SQLScript;
-import org.gdms.sql.engine.SemanticException;
 
 /**
  * This {@code JDialog} is used to export the content of one or more {@code
  * DataSource} into an external DB.
+ *
  * @author Erwan Bocher
  * @author Alexis Guéganno
  */
@@ -83,19 +80,10 @@ public class TableExportPanel extends JDialog {
         private final String[] sourceNames;
         private JScrollPane jScrollPane;
         private JTable jtableExporter;
-        private JToolBar connectionToolBar;
-        private JComboBox cmbDataBaseUri;
-        private static final String dbPropertiesFile = "db_connexions.properties";
-        Properties dbProperties = new Properties();
+        private ConnectionToolBar connectionToolBar;
         private final SourceManager sourceManager;
-        private JButton btnDisconnect;
-        private JButton btnConnect;
-        private JButton btnAddConnection;
-        private JButton btnEditConnection;
-        private JButton btnRemoveConnection;
         private JComboBox comboBoxSchemas;
         private String[] schemas = new String[]{"public"};
-        boolean isConnected = false;
         private String[] dbParameters = null;
         private String dbpassWord;
 
@@ -109,7 +97,7 @@ public class TableExportPanel extends JDialog {
 
         @Override
         public String getTitle() {
-                return I18N.tr("Export sources in a database");
+                return I18N.tr("Save sources in a database");
         }
 
         /**
@@ -117,52 +105,11 @@ public class TableExportPanel extends JDialog {
          *
          * @return
          */
-        private JToolBar connectionToolBar() {
+        private ConnectionToolBar connectionToolBar() {
                 if (connectionToolBar == null) {
-                        connectionToolBar = new JToolBar();
-                        connectionToolBar.setFloatable(false);
-                        connectionToolBar.setOpaque(false);
-                        loadDBProperties();
-                        Object[] dbKeys = dbProperties.keySet().toArray();
-                        boolean btnStatus = dbKeys.length > 0;
-                        cmbDataBaseUri = new JComboBox(dbKeys);
-                        cmbDataBaseUri.setEditable(false);
-                        //Connection button
-                        btnConnect = new JButton(OrbisGISIcon.getIcon("database_connect"));
-                        btnConnect.setToolTipText(I18N.tr("Connect to the database"));
-                        btnConnect.setEnabled(btnStatus);
-                        btnConnect.addActionListener(EventHandler.create(ActionListener.class, this, "onConnect"));
-                        btnConnect.setBorderPainted(false);
-                        //Button for disconnecting.
-                        btnDisconnect = new JButton(OrbisGISIcon.getIcon("disconnect"));
-                        btnDisconnect.setToolTipText(I18N.tr("Disconnect"));
-                        btnDisconnect.setEnabled(false);
-                        btnDisconnect.addActionListener(EventHandler.create(ActionListener.class, this, "onDisconnect"));
-                        btnDisconnect.setBorderPainted(false);
-                        //Button to add a conection.
-                        btnAddConnection = new JButton(OrbisGISIcon.getIcon("database_add"));
-                        btnAddConnection.setToolTipText(I18N.tr("Add a new connection"));
-                        btnAddConnection.addActionListener(EventHandler.create(ActionListener.class, this, "onAddConnection"));
-                        btnAddConnection.setBorderPainted(false);
-                        //button to edit a connection
-                        btnEditConnection = new JButton(OrbisGISIcon.getIcon("database_edit"));
-                        btnEditConnection.setToolTipText(I18N.tr("Edit the connection"));
-                        btnEditConnection.setEnabled(btnStatus);
-                        btnEditConnection.addActionListener(EventHandler.create(ActionListener.class, this, "onEditConnection"));
-                        btnEditConnection.setBorderPainted(false);
-                        //button to remove a connection
-                        btnRemoveConnection = new JButton(OrbisGISIcon.getIcon("database_delete"));
-                        btnRemoveConnection.setToolTipText(I18N.tr("Remove the connection"));
-                        btnRemoveConnection.setEnabled(btnStatus);
-                        btnRemoveConnection.addActionListener(EventHandler.create(ActionListener.class, this, "onRemoveConnection"));
-                        btnRemoveConnection.setBorderPainted(false);
-                        //The toolbar that contains these buttons.
-                        connectionToolBar.add(cmbDataBaseUri);
-                        connectionToolBar.add(btnConnect);
-                        connectionToolBar.add(btnDisconnect);
-                        connectionToolBar.add(btnAddConnection);
-                        connectionToolBar.add(btnEditConnection);
-                        connectionToolBar.add(btnRemoveConnection);
+                        connectionToolBar = new ConnectionToolBar();
+                        connectionToolBar.addVetoableChangeListener(ConnectionToolBar.PROP_CONNECTED, EventHandler.create(VetoableChangeListener.class, this, "onUserConnect", ""));
+                        connectionToolBar.getMessagesEvents().addListener(this, EventHandler.create(Listener.class, this, "onMessagePanel", "message"));
                 }
                 return connectionToolBar;
         }
@@ -181,6 +128,7 @@ public class TableExportPanel extends JDialog {
                         TableColumn schemaColumn = jtableExporter.getColumnModel().getColumn(2);
                         comboBoxSchemas = new JComboBox(getSchemas());
                         schemaColumn.setCellEditor(new DefaultCellEditor(comboBoxSchemas) {
+
                                 @Override
                                 public Component getTableCellEditorComponent(JTable pTable, Object pValue, boolean pIsSelected, int pRow,
                                         int pColumn) {
@@ -199,12 +147,12 @@ public class TableExportPanel extends JDialog {
                         jScrollPane = new JScrollPane();
                         jScrollPane.setViewportView(jtableExporter);
                         JPanel buttonPanels = new JPanel();
-                        JButton okButtons = new JButton(I18N.tr("Export"));
-                        okButtons.addActionListener(EventHandler.create(ActionListener.class, this, "onExport"));     
+                        JButton okButtons = new JButton(I18N.tr("Save"));
+                        okButtons.addActionListener(EventHandler.create(ActionListener.class, this, "onExport"));
                         okButtons.setBorderPainted(false);
 
                         JButton cancelButtons = new JButton(I18N.tr("Cancel"));
-                        cancelButtons.addActionListener(EventHandler.create(ActionListener.class, this, "onCancel")); 
+                        cancelButtons.addActionListener(EventHandler.create(ActionListener.class, this, "onCancel"));
                         cancelButtons.setBorderPainted(false);
 
 
@@ -224,7 +172,7 @@ public class TableExportPanel extends JDialog {
         public void onExport() {
 
                 DataBaseTableModel model = (DataBaseTableModel) jtableExporter.getModel();
-                if (!isConnected) {
+                if (!connectionToolBar.isConnected()) {
                         JOptionPane.showMessageDialog(this, I18N.tr("Please connect to a database"));
 
                 } else if (!model.isOneRowSelected()) {
@@ -248,43 +196,11 @@ public class TableExportPanel extends JDialog {
                 }
         }
 
-        /**
-         * Load connection properties
-         */
-        private void loadDBProperties() {
-                CoreWorkspace ws = Services.getService(CoreWorkspace.class);
-                try {
-                        File propertiesFile = new File(ws.getWorkspaceFolder() + File.separator + dbPropertiesFile);
-
-                        if (propertiesFile.exists()) {
-                                dbProperties.load(new FileInputStream(propertiesFile));
-                        }
-                } catch (IOException e) {
-                        LOGGER.error(e);
-                }
-        }
-
-        /**
-         * Save connection properties
-         */
-        private void saveProperties() {
-                try {
-                        CoreWorkspace ws = Services.getService(CoreWorkspace.class);
-                        dbProperties.store(new FileOutputStream(ws.getWorkspaceFolder() + File.separator + dbPropertiesFile),
-                                I18N.tr("Saved with the OrbisGIS database exporter panel"));
-                } catch (IOException ex) {
-                        LOGGER.error(ex);
-                }
-
-        }
-
-        /**
-         * Close the connection to the database
-         */
+       /**
+        * Refresh the table model 
+        */
         public void onDisconnect() {
-                setConnected(false);
                 onUserSelectionChange();
-
         }
 
         /**
@@ -309,7 +225,6 @@ public class TableExportPanel extends JDialog {
                         Connection connection = dbDriver.getConnection(cs);
                         schemas = dbDriver.getSchemas(connection);
                         connection.close();
-                        setConnected(true);
                         onUserSelectionChange();
                 } catch (DriverException ex) {
                         LOGGER.error(ex);
@@ -325,24 +240,6 @@ public class TableExportPanel extends JDialog {
          */
         public String[] getSchemas() {
                 return schemas;
-        }
-
-        /**
-         * Return true if the panel is connected to a database.
-         *
-         * @return
-         */
-        public boolean isConnected() {
-                return isConnected;
-        }
-
-        /**
-         * Set if the panel is connected to a database
-         *
-         * @param isConnected
-         */
-        public void setConnected(boolean isConnected) {
-                this.isConnected = isConnected;
         }
 
         /**
@@ -392,19 +289,30 @@ public class TableExportPanel extends JDialog {
 
                 @Override
                 public String getTaskName() {
-                        return I18N.tr("Exporting the source in a database.");
+                        return I18N.tr("Saving the source in a database.");
                 }
         }
 
         /**
          * Connect to the database
          */
-        public void onConnect() {
-                String dataBaseUri = cmbDataBaseUri.getSelectedItem().toString();
+        public void onUserConnect(PropertyChangeEvent evt) throws PropertyVetoException {
+                if ((Boolean) evt.getNewValue() == true) {
+                        if (!onConnect()) {
+                                throw new PropertyVetoException(I18N.tr("Cannot connect to the database."), evt);
+                        }
+                } else {
+                        onDisconnect();
+                }
+        }
+
+        public boolean onConnect() {
+                String dataBaseUri = connectionToolBar.getCmbDataBaseUri().getSelectedItem().toString();
                 if (!dataBaseUri.isEmpty()) {
                         MultiInputPanel passwordDialog = new MultiInputPanel(I18N.tr("Please set a password"));
                         passwordDialog.addInput("password", I18N.tr("Password"), "", new PasswordType(10));
                         passwordDialog.addValidation(new MIPValidation() {
+
                                 @Override
                                 public String validate(MultiInputPanel mid) {
                                         if (mid.getInput("password").isEmpty()) {
@@ -418,100 +326,26 @@ public class TableExportPanel extends JDialog {
                         if (UIFactory.showDialog(passwordDialog)) {
                                 try {
                                         String passWord = passwordDialog.getInput("password");
-                                        String properties = dbProperties.getProperty(dataBaseUri);
+                                        String properties = connectionToolBar.getDbProperties().getProperty(dataBaseUri);
                                         populateSchemas(properties.split(","), passWord);
+                                        return true;
 
                                 } catch (SQLException ex) {
                                         JOptionPane.showMessageDialog(jScrollPane, I18N.tr("Cannot connect the database"));
                                         LOGGER.error(ex);
+                                        return false;
                                 }
 
 
                         }
                 }
+                return false;
         }
 
-        /**
-         * Add a new connection
-         */
-        public void onAddConnection() {
-                MultiInputPanel mip = DBUIFactory.getConnectionPanel();
-                if (UIFactory.showDialog(mip)) {
-                        String connectionName = mip.getInput(DBUIFactory.CONNAME);
-                        if (!dbProperties.containsKey(connectionName)) {
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(mip.getInput(DBUIFactory.DBTYPE));
-                                sb.append(",");
-                                sb.append(mip.getInput(DBUIFactory.HOST));
-                                sb.append(",");
-                                sb.append(mip.getInput(DBUIFactory.PORT));
-                                sb.append(",");
-                                sb.append(mip.getInput(DBUIFactory.SSL));
-                                sb.append(",");
-                                sb.append(mip.getInput(DBUIFactory.DBNAME));
-                                sb.append(",");
-                                sb.append(mip.getInput(DBUIFactory.USER));
-                                dbProperties.setProperty(connectionName, sb.toString());
-                                cmbDataBaseUri.addItem(connectionName);
-                                cmbDataBaseUri.setSelectedItem(connectionName);
-                                onUserSelectionChange();
-                                saveProperties();
-
-                        } else {
-                                JOptionPane.showMessageDialog(jScrollPane, I18N.tr("There is already a connection with this name."));
-                        }
-
-                }
-
-        }
-
-        /**
-         * Edit a connection to change its parameters
-         */
-        public void onEditConnection() {
-                String dataBaseUri = cmbDataBaseUri.getSelectedItem().toString();
-                if (!dataBaseUri.isEmpty()) {
-                        String property = dbProperties.getProperty(dataBaseUri);
-                        MultiInputPanel mip = DBUIFactory.getEditConnectionPanel(dataBaseUri, property);
-                        if (UIFactory.showDialog(mip)) {
-                                String connectionName = mip.getInput(DBUIFactory.CONNAME);
-                                StringBuilder sb = new StringBuilder();
-                                sb.append(mip.getInput(DBUIFactory.DBTYPE));
-                                sb.append(",");
-                                sb.append(mip.getInput(DBUIFactory.HOST));
-                                sb.append(",");
-                                sb.append(mip.getInput(DBUIFactory.PORT));
-                                sb.append(",");
-                                sb.append(mip.getInput(DBUIFactory.SSL));
-                                sb.append(",");
-                                sb.append(mip.getInput(DBUIFactory.DBNAME));
-                                sb.append(",");
-                                sb.append(mip.getInput(DBUIFactory.USER));
-                                dbProperties.setProperty(connectionName, sb.toString());
-                                cmbDataBaseUri.addItem(connectionName);
-                                cmbDataBaseUri.setSelectedItem(connectionName);
-                                saveProperties();
-                        }
-                }
-        }
-
-        /**
-         * Remove a connection
-         */
-        public void onRemoveConnection() {
-                String dataBaseUri = cmbDataBaseUri.getSelectedItem().toString();
-                if (!dataBaseUri.isEmpty()) {
-                        cmbDataBaseUri.removeItem(dataBaseUri);
-                        dbProperties.remove(dataBaseUri);
-                        saveProperties();
-                }
-                onUserSelectionChange();
-        }
-        
         /**
          * Close the connection panel
          */
-        public void onCancel(){
+        public void onCancel() {
                 dispose();
         }
 
@@ -520,40 +354,23 @@ public class TableExportPanel extends JDialog {
          */
         private void onUserSelectionChange() {
 
-                boolean isCmbEmpty = cmbDataBaseUri.getItemCount() == 0;
+                boolean isCmbEmpty = connectionToolBar.getCmbDataBaseUri().getItemCount() == 0;
 
                 if (isCmbEmpty) {
-                        btnConnect.setEnabled(false);
-                        btnDisconnect.setEnabled(false);
-                        btnAddConnection.setEnabled(true);
-                        btnEditConnection.setEnabled(false);
-                        btnRemoveConnection.setEnabled(false);
-                        cmbDataBaseUri.setEnabled(true);
                         DataBaseTableModel model = (DataBaseTableModel) jtableExporter.getModel();
                         model.setEditable(false);
                 } else {
-                        if (isConnected) {
-                                btnConnect.setEnabled(false);
-                                btnDisconnect.setEnabled(true);
-                                btnAddConnection.setEnabled(false);
-                                btnEditConnection.setEnabled(false);
-                                btnRemoveConnection.setEnabled(false);
-                                cmbDataBaseUri.setEnabled(false);
+                        if (connectionToolBar.isConnected()) {
                                 DataBaseTableModel model = (DataBaseTableModel) jtableExporter.getModel();
                                 model.setEditable(true);
                         } else {
-                                btnConnect.setEnabled(true);
-                                btnDisconnect.setEnabled(false);
-                                btnAddConnection.setEnabled(true);
-                                btnEditConnection.setEnabled(true);
-                                btnRemoveConnection.setEnabled(true);
-                                cmbDataBaseUri.setEnabled(true);
                                 DataBaseTableModel model = (DataBaseTableModel) jtableExporter.getModel();
                                 model.setEditable(false);
                         }
                 }
+        }
 
-
-
+        public void onMessagePanel(String message) {
+                JOptionPane.showMessageDialog(jScrollPane, message);
         }
 }

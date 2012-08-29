@@ -43,6 +43,7 @@ import javax.swing.*;
 import org.apache.log4j.Logger;
 import org.jproj.CRSFactory;
 import org.jproj.CoordinateReferenceSystem;
+import org.orbisgis.core.events.OG_VetoableChangeSupport;
 import org.orbisgis.view.components.button.CustomButton;
 import org.orbisgis.view.components.statusbar.StatusBar;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -64,7 +65,7 @@ public class MapStatusBar extends StatusBar {
         private static final int STATUS_BAR_HEIGHT = 30;
         private ActionListener scaleInputActionListener = EventHandler.create(ActionListener.class,this,"validateInputScale");
         
-        protected VetoableChangeSupport vetoableChangeSupport = new VetoableChangeSupport(this);
+        protected VetoableChangeSupport vetoableChangeSupport = new OG_VetoableChangeSupport(this);
 
         //Scale
         private JLabel scaleLabel;
@@ -127,16 +128,13 @@ public class MapStatusBar extends StatusBar {
          */
         public void setUserDefinedScaleDenominator(long userDefinedScaleDenominator) throws PropertyVetoException {
                 long oldUserDefinedScaleDenominator = this.userDefinedScaleDenominator;
-                try {
-                        vetoableChangeSupport.fireVetoableChange(PROP_USER_DEFINED_SCALE_DENOMINATOR, oldUserDefinedScaleDenominator, userDefinedScaleDenominator);
-                        fireVetoableChange(PROP_USER_DEFINED_SCALE_DENOMINATOR, oldUserDefinedScaleDenominator, userDefinedScaleDenominator);
-                } catch( RuntimeException ex) {
-                        //Something has converted the PropertyVetoException into a runtime exception
-                        throw (PropertyVetoException)ex.getCause();
-                }
+
+                vetoableChangeSupport.fireVetoableChange(PROP_USER_DEFINED_SCALE_DENOMINATOR, oldUserDefinedScaleDenominator, userDefinedScaleDenominator);
+                fireVetoableChange(PROP_USER_DEFINED_SCALE_DENOMINATOR, oldUserDefinedScaleDenominator, userDefinedScaleDenominator);
+
                 this.userDefinedScaleDenominator = userDefinedScaleDenominator;
                 firePropertyChange(PROP_USER_DEFINED_SCALE_DENOMINATOR, oldUserDefinedScaleDenominator, userDefinedScaleDenominator);
-        }           
+        }          
         /**
          * Set the new Projection of the Map
          * @param projection 
