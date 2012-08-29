@@ -28,7 +28,11 @@
  */
 package org.orbisgis.legend.analyzer;
 
+import java.util.List;
+import java.util.Set;
 import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
@@ -64,6 +68,9 @@ import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 public class PenStrokeAnalyzer extends AbstractAnalyzer {
 
         private PenStroke penStroke;
+        private NumericLegend legdWidth;
+        private LegendStructure legdDash;
+        private LegendStructure legdFill;
 
         /**
          * Build  a new PenStrokeAnalyzer. The analysis will be made directly
@@ -85,29 +92,89 @@ public class PenStrokeAnalyzer extends AbstractAnalyzer {
                 if(penStroke == null){
                         return new NullPenStrokeLegend();
                 }
-                LegendStructure ret;
-                //We first make the analysis of the width attribute.
-                RealParameter width= penStroke.getWidth();
-                RealParameterAnalyzer rpaWidth = new RealParameterAnalyzer(width);
-                NumericLegend legdWidth = (NumericLegend) rpaWidth.getLegend();
-                StringParameter dashes = penStroke.getDashArray();
-                LegendStructure legdDash;
-                Fill fill = penStroke.getFill();
-                LegendStructure legdFill = null;
-                if(fill != null){
-                        FillAnalyzer fa = new FillAnalyzer(fill);
-                        legdFill = fa.getLegend();
+                Set<String> features = penStroke.dependsOnFeature();
+                instanciateLegends();
+                if(features.size() < 2){
+                        //The distinction is made here :
+                        if(features.isEmpty()){
+                                return analyzeConstantPenStroke();
+                        } else {
+                                //We have one feature.
+                                //We validate the analysis we've found.
+                                UsedAnalysis an = penStroke.getUsedAnalysis();
+                                List<SeParameter> l = an.getAnalysis();
+                                boolean interp = an.isInterpolateUsed();
+                                boolean cat = an.isCategorizeUsed();
+                                boolean rec = an.isRecodeUsed();
+                                if(interp && !cat && ! rec && l.size()==1){
+                                        return analyzePSWithInterpolate();
+                                }
+                        }
                 }
-                //The distinction is made here :
-                if(dashes != null){
-                        StringParameterAnalyzer spaDash = new StringParameterAnalyzer(dashes);
-                        legdDash = spaDash.getLegend();
-                        ret = analyzeWithDashes(legdDash, legdWidth, legdFill);
-
+                if(legdDash == null){
+                        return analyzeConstantDashes(legdWidth, legdFill, legdDash);
                 } else {
-                        ret = analyzeConstantDashes(legdWidth, legdFill, null);
+                        return analyzeWithDashes(legdDash, legdWidth, legdFill);
                 }
-                return ret;
+
+        }
+
+        /**
+         * We know that we have a constant PenStroke, let's check its configuration
+         * is valid.
+         * @return 
+         */
+        private LegendStructure analyzeConstantPenStroke(){
+                boolean constantFill = legdFill == null || legdFill instanceof ConstantSolidFillLegend;
+                boolean constantWidth = legdWidth == null || legdWidth instanceof RealLiteralLegend;
+                boolean constantDash = legdDash == null || legdDash instanceof StringLiteralLegend;
+                boolean known = constantDash && constantWidth && constantFill;
+                if(known){
+                        return new ConstantPenStrokeLegend(penStroke, (RealLiteralLegend) legdWidth,
+                                        (ConstantFillLegend) legdFill, (StringLiteralLegend) legdDash);
+                } else {
+                        return new PenStrokeLegend(penStroke, legdWidth, legdFill, legdDash);
+                }
+        }
+
+        /**
+         * We know we have a PenStroke taht contains an Interpolate instance somewhere.
+         * Let's try to get it as a ProportionalStrokeLegend.
+         * @return
+         */
+        private LegendStructure analyzePSWithInterpolate(){
+                boolean constantFill = legdFill == null || legdFill instanceof ConstantSolidFillLegend;
+                boolean constantWidth = legdWidth == null || legdWidth instanceof LinearInterpolationLegend;
+                boolean constantDash = legdDash == null || legdDash instanceof StringLiteralLegend;
+                boolean known = constantDash && constantWidth && constantFill;
+                if(known){
+                        return new ProportionalStrokeLegend(penStroke, (LinearInterpolationLegend) legdWidth,
+                                        (ConstantFillLegend) legdFill, (StringLiteralLegend) legdDash);
+                } else {
+                        return new PenStrokeLegend(penStroke, legdWidth, legdFill, legdDash);
+                }
+                
+        }
+
+        /**
+         * We have inner legends, let's recognize them before going further.
+         */
+        private void instanciateLegends(){
+                        RealParameter width= penStroke.getWidth();
+                        RealParameterAnalyzer rpaWidth = new RealParameterAnalyzer(width);
+                        legdWidth = (NumericLegend) rpaWidth.getLegend();
+                        StringParameter dashes = penStroke.getDashArray();
+                        legdDash = null;
+                        Fill fill = penStroke.getFill();
+                        legdFill = null;
+                        if(fill != null){
+                                FillAnalyzer fa = new FillAnalyzer(fill);
+                                legdFill = fa.getLegend();
+                        }
+                        if(dashes != null){
+                                StringParameterAnalyzer spaDash = new StringParameterAnalyzer(dashes);
+                                legdDash = spaDash.getLegend();
+                        }
         }
 
         /**
