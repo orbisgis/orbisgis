@@ -43,7 +43,7 @@ import javax.swing.*;
 import org.apache.log4j.Logger;
 import org.jproj.CRSFactory;
 import org.jproj.CoordinateReferenceSystem;
-import org.orbisgis.core.events.OG_VetoableChangeSupport;
+import org.orbisgis.core.events.OGVetoableChangeSupport;
 import org.orbisgis.view.components.button.CustomButton;
 import org.orbisgis.view.components.statusbar.StatusBar;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -65,7 +65,7 @@ public class MapStatusBar extends StatusBar {
         private static final int STATUS_BAR_HEIGHT = 30;
         private ActionListener scaleInputActionListener = EventHandler.create(ActionListener.class,this,"validateInputScale");
         
-        protected VetoableChangeSupport vetoableChangeSupport = new OG_VetoableChangeSupport(this);
+        protected VetoableChangeSupport vetoableChangeSupport = new OGVetoableChangeSupport(this);
 
         //Scale
         private JLabel scaleLabel;

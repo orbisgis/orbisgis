@@ -33,12 +33,12 @@ import java.beans.VetoableChangeSupport;
 
 /**
  * This class fixes a problem with the vetoablechangesupport when it returns a RuntimeException
- * @author nfortin
+ * @author Nicolas Fortin
  */
-public class OG_VetoableChangeSupport extends VetoableChangeSupport {
+public class OGVetoableChangeSupport extends VetoableChangeSupport {
 
         
-        public OG_VetoableChangeSupport(Object sourceBean) {
+        public OGVetoableChangeSupport(Object sourceBean) {
                 super(sourceBean);
         }
 

@@ -316,7 +316,7 @@ public class TableExportPanel extends JDialog {
                                 @Override
                                 public String validate(MultiInputPanel mid) {
                                         if (mid.getInput("password").isEmpty()) {
-                                                return I18N.tr("The password cannot be null");
+                                                return I18N.tr("The password cannot be empty.");
                                         }
                                         return null;
 

@@ -44,7 +44,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.ListenerContainer;
-import org.orbisgis.core.events.OG_VetoableChangeSupport;
+import org.orbisgis.core.events.OGVetoableChangeSupport;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
@@ -222,7 +222,7 @@ public class ConnectionToolBar extends JToolBar {
         }
 
         
-        private transient final VetoableChangeSupport vetoableChangeSupport = new OG_VetoableChangeSupport(this);
+        private transient final VetoableChangeSupport vetoableChangeSupport = new OGVetoableChangeSupport(this);
 
         
 
