@@ -56,6 +56,7 @@ import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.map.jobs.ZoomToSelection;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.tools.*;
@@ -221,6 +222,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         ButtonGroup autoSelection = new ButtonGroup();
         //Selection button
         autoSelection.add(addButton(toolBar, new SelectionTool(), useButtonText));
+        //Zoom to visible selected geometries
+        toolBar.add(addButton(OrbisGISIcon.getIcon("zoom_selected"),
+                I18N.tr("Zoom to selection"),
+                I18N.tr("Zoom to visible selected geometries"),
+                useButtonText,"onZoomToSelection"));
         //Navigation Tools
         autoSelection.add(addButton(toolBar,new ZoomInTool(),useButtonText));
         autoSelection.add(addButton(toolBar,new ZoomOutTool(),useButtonText));
@@ -312,6 +318,14 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
      */
     public void onFullExtent() {
         mapControl.getMapTransform().setExtent(mapContext.getLayerModel().getEnvelope());
+    }
+    
+    /**
+     * The user click on the button Zoom to selection
+     */
+    public void onZoomToSelection() {
+            BackgroundManager bm = Services.getService(BackgroundManager.class);
+            bm.backgroundOperation(new ZoomToSelection(mapContext, mapContext.getLayers()));
     }
     /**
      * Give information on the behaviour of this panel related to the current
