@@ -305,6 +305,14 @@ public class TableEditor extends JPanel implements EditorDockable {
                                 EventHandler.create(ActionListener.class,
                                 this,"onMenuClearSelection"));
                         pop.add(deselectAll);
+                        JMenuItem inverseSelection = new JMenuItem(
+                                I18N.tr("Reverse selection"),
+                                OrbisGISIcon.getIcon("arrow_refresh"));
+                        inverseSelection.setToolTipText(I18N.tr("Reverse the current selection"));
+                        inverseSelection.addActionListener(
+                                EventHandler.create(ActionListener.class,
+                                this,"onMenuReverseSelection"));
+                        pop.add(inverseSelection);
                         
                 }
                 JMenuItem findSameCells = new JMenuItem(
@@ -323,7 +331,18 @@ public class TableEditor extends JPanel implements EditorDockable {
         public void onMenuClearFilter() {
                 tableSorter.setRowsFilter(null);
         }
-        
+        /**
+         * Invert the current table selection
+         */
+        public void onMenuReverseSelection() {
+                IntegerUnion invertedSelection = new IntegerUnion();
+                for(int viewId = 0; viewId<table.getRowCount();viewId++) {
+                        if(!table.isRowSelected(viewId)) {
+                                invertedSelection.add(viewId);
+                        }
+                }                
+                setViewRowSelection(invertedSelection);
+        }
         /**
          * Return the formated version of the cell value
          * @param row View row Id
@@ -645,8 +664,16 @@ public class TableEditor extends JPanel implements EditorDockable {
                         newSelection = viewSelection;
                 } else {
                         newSelection = modelSelection;
-                }             
-                Iterator<Integer> intervals = newSelection.getValueRanges().iterator();
+                }
+                setViewRowSelection(newSelection);
+        }
+        
+        /**
+         * Update the table selection
+         * @param selection View index selection
+         */
+        private void setViewRowSelection(IntegerUnion viewSelection) {             
+                Iterator<Integer> intervals = viewSelection.getValueRanges().iterator();
                 try {
                         table.getSelectionModel().setValueIsAdjusting(true);
                         table.clearSelection();
@@ -658,6 +685,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                 }finally {
                         table.getSelectionModel().setValueIsAdjusting(false);
                 }
+                
         }
         
         /**
