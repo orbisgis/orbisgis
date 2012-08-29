@@ -222,6 +222,12 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         ButtonGroup autoSelection = new ButtonGroup();
         //Selection button
         autoSelection.add(addButton(toolBar, new SelectionTool(), useButtonText));
+        //Clear selection
+        toolBar.add(addButton(OrbisGISIcon.getIcon("edit-clear"),
+                I18N.tr("Clear selection"),
+                I18N.tr("Clear all selected geometries of all layers"),
+                useButtonText,"onClearSelection"));
+        
         //Zoom to visible selected geometries
         toolBar.add(addButton(OrbisGISIcon.getIcon("zoom_selected"),
                 I18N.tr("Zoom to selection"),
@@ -318,6 +324,17 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
      */
     public void onFullExtent() {
         mapControl.getMapTransform().setExtent(mapContext.getLayerModel().getEnvelope());
+    }
+    
+    /**
+     * The user click on the button clear selection
+     */
+    public void onClearSelection() {
+            for(ILayer layer : mapContext.getLayers()) {
+                    if(!layer.acceptsChilds()) {
+                        layer.setSelection(new int[]{});
+                    }
+            }
     }
     
     /**
