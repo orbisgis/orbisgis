@@ -321,7 +321,6 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                         proportionalPoint.setFirstData(mnm[0]);
                         proportionalPoint.setSecondData(mnm[1]);
                         proportionalPoint.setLookupFieldName(obj);
-                        proportionalPoint.getSymbolizer().refreshFeatures();
                         Map<String, Object> sample = new HashMap<String, Object>();
                         sample.put(obj, mnm[1]);
                         getPreview().setSampleDatasource(sample);
