@@ -32,11 +32,11 @@ import java.util.ArrayList;
 import org.orbisgis.core.events.ListenerContainer;
 /**
  * @package org.orbisgis.base.events.internals
- * @brief Internal class of event/listener system
+ * Internal class of event/listener system
  */
 
 /**
- * @brief Declaration of an ArrayList<ListenerContainer>
+ * Declaration of an ArrayList<ListenerContainer>
  */
 public class ListenerContainers extends ArrayList<ListenerContainer> {
     private static final long serialVersionUID = 1L;

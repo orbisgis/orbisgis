@@ -39,7 +39,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * @brief Name contains DataSourceFilterFactory
+ * Name contains DataSourceFilterFactory
  * This is the data source name contains x filter
  */
 

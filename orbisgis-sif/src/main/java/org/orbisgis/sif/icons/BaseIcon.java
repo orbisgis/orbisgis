@@ -40,12 +40,12 @@ import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * @package org.orbisgis.sif.icons
- * @brief Manage Icons loading
+ * Manage Icons loading
  */
 
 /**
  * @class BaseIcon
- * @brief Use this class to retrieve the data of an icon
+ * Use this class to retrieve the data of an icon
  * This final class load icons only on request. This feature help to reduce
  * the loading time of OrbisGis. Moreover this class does not have to be updated
  * when new icons are added.

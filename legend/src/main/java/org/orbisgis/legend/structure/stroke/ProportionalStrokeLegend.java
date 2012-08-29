@@ -28,10 +28,17 @@
  */
 package org.orbisgis.legend.structure.stroke;
 
+import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
+import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
 import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
+import org.orbisgis.legend.structure.parameter.NumericLegend;
 
 /**
  * {@code PenStroke} is defined using a {@code Width} attribute, which is a
@@ -39,8 +46,29 @@ import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
  * some numeric attribute. This way, we obtain a "proportional line" analysis.
  * @author Alexis Guéganno
  */
-public class ProportionalStrokeLegend extends PenStrokeLegend {
+public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
 
+        /**
+         * Builds an empty {@code ProportionalStrokeLegend}. It will change 0 to
+         * 0 and 1 to 1. The lookup field can't be properly set from this
+         * method, it's up to the caller to do it.
+         */
+        public ProportionalStrokeLegend(){
+                PenStroke ps = (PenStroke) getStroke();
+                Interpolate2Real ir = new Interpolate2Real(new RealLiteral(0));
+                InterpolationPoint<RealParameter> ip =new InterpolationPoint<RealParameter>();
+                ip.setData(0);
+                ip.setValue(new RealLiteral(0));
+                ir.addInterpolationPoint(ip);
+                InterpolationPoint<RealParameter> ip2 =new InterpolationPoint<RealParameter>();
+                ip2.setData(1);
+                ip2.setValue(new RealLiteral(1));
+                ir.addInterpolationPoint(ip2);
+                ir.setLookupValue(new RealAttribute());
+                ps.setWidth(ir);
+                NumericLegend wa = (NumericLegend) new RealParameterAnalyzer(ir).getLegend();
+                setWidthAnalysis(wa);
+        }
 
         /**
          * Build a new {@code ProportionalStrokeLegend}, using the given {@code
@@ -118,6 +146,22 @@ public class ProportionalStrokeLegend extends PenStrokeLegend {
          */
         public void setSecondValue(double d) {
             ((LinearInterpolationLegend)getWidthAnalysis()).setSecondValue(d);
+        }
+
+        /**
+         * Sets the name of the field where values will be retrieved.
+         * @param name
+         */
+        public void setLookupFieldName(String name) {
+                ((LinearInterpolationLegend)getWidthAnalysis()).setLookupFieldName(name);
+        }
+
+        /**
+         * Gets the name of the field where values will be retrieved.
+         * @return
+         */
+        public String getLookupFieldName() {
+                return ((LinearInterpolationLegend)getWidthAnalysis()).getLookupFieldName();
         }
         
 }

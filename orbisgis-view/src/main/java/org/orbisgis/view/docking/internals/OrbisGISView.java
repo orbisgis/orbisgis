@@ -43,7 +43,7 @@ import javax.swing.JToolBar;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 /**
- * @brief This is the link between the DockingPanel and DockingFrames
+ * This is the link between the DockingPanel and DockingFrames
  * 
  * Listen to DockingPanelParameters to change the behaviour of this dockable.
  * 

@@ -32,10 +32,12 @@ import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
+import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
 
 /**
  * A {@code ProportionalLine} represents a {@code LineSymbolizer} containing a
@@ -44,9 +46,17 @@ import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
  * raw value (i.e. we don't apply any mathematical function to the input values).
  * @author Alexis Guéganno
  */
-public class ProportionalLine extends ConstantColorAndDashesLine {
+public class ProportionalLine extends ConstantColorAndDashesLine implements Legend, StrokeUom {
 
     private ProportionalStrokeLegend strokeLegend;
+
+    public ProportionalLine(){
+            super(new LineSymbolizer());
+            LineSymbolizer ls = (LineSymbolizer) getSymbolizer();
+            strokeLegend = new ProportionalStrokeLegend();
+            ls.setStroke(strokeLegend.getStroke());
+
+    }
 
     /**
      * Tries to build a new {@code ProportionalLine} from the given {@code
@@ -79,6 +89,22 @@ public class ProportionalLine extends ConstantColorAndDashesLine {
     public ProportionalLine(LineSymbolizer symbolizer, ProportionalStrokeLegend legend) {
         super(symbolizer);
         strokeLegend = legend;
+    }
+
+    /**
+     * Gets the name of the field where values will be retrieved.
+     * @return
+     */
+    public String getLookupFieldName(){
+            return strokeLegend.getLookupFieldName();
+    }
+
+    /**
+     * Sets the name of the field where values will be retrieved.
+     * @param name
+     */
+    public void setLookupFieldName(String name){
+            strokeLegend.setLookupFieldName(name);
     }
 
     @Override
@@ -132,8 +158,8 @@ public class ProportionalLine extends ConstantColorAndDashesLine {
      * Set the value of the first interpolation point, as a {@code double}.
      * @param d
      */
-    public void setFirstValue(double d) {
-        strokeLegend.setFirstValue(d);
+    public void setFirstValue(Number d) {
+        strokeLegend.setFirstValue(d.doubleValue());
     }
 
     /**
@@ -150,13 +176,18 @@ public class ProportionalLine extends ConstantColorAndDashesLine {
      * Set the value of the second interpolation point, as a {@code double}.
      * @param d
      */
-    public void setSecondValue(double d) {
-        strokeLegend.setSecondValue(d);
+    public void setSecondValue(Number d) {
+        strokeLegend.setSecondValue(d.doubleValue());
     }
 
     @Override
     public String getLegendTypeName() {
         return "Proportional Line";
+    }
+
+    @Override
+    public String getLegendTypeId(){
+        return "org.orbisgis.legend.thematic.proportional.ProportionalLine";
     }
 
 }

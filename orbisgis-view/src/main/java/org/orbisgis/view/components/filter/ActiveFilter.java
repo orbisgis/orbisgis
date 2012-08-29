@@ -32,7 +32,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
 /**
- * @brief Manage the content of a single filter component instance
+ * Manage the content of a single filter component instance
  * 
  * This class is created thanks to the NetBeans user interface.
  * Use the "Add property" NetBeans function to add properties easily.

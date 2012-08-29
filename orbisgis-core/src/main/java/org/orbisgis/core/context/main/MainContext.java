@@ -42,7 +42,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 /**
  * @class MainContext
- * @brief The larger surrounding part of OrbisGis base 
+ * The larger surrounding part of OrbisGis base 
  * This is the entry class for the OrbisGis context,
  * It contains instance needed to manage an OrbisGis project.
  */

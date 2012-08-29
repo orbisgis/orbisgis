@@ -30,6 +30,7 @@ package org.orbisgis.legend.structure.stroke;
 
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.structure.parameter.NumericLegend;
 
 /**
  * This class is associated to instances of {@code PenStroke} where an interval
@@ -47,7 +48,7 @@ public class CategorizedDashesPSLegend extends PenStrokeLegend {
          * @param fill
          * @param dash
          */
-        public CategorizedDashesPSLegend(PenStroke ps, LegendStructure width, LegendStructure fill, LegendStructure dash) {
+        public CategorizedDashesPSLegend(PenStroke ps, NumericLegend width, LegendStructure fill, LegendStructure dash) {
                 super(ps, width, fill, dash);
         }
         

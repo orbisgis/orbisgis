@@ -68,7 +68,7 @@ public abstract class VectorSymbolizer extends Symbolizer implements UomNode {
          * measure to {@code Uom.MM}.
          */
         protected VectorSymbolizer() {
-                setUom(Uom.MM);
+                setUom(Uom.PX);
         }
 
         /**

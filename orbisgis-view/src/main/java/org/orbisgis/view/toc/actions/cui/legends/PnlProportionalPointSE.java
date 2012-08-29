@@ -47,8 +47,6 @@ import javax.swing.JFormattedTextField;
 import javax.swing.JPanel;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.classification.ClassificationUtils;
@@ -298,27 +296,18 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
         }
 
         private void initFieldCombo(){
-                fieldCombo = new JComboBox();
                 if(ds != null){
-                        try {
-                                Metadata md = ds.getMetadata();
-                                int fc = md.getFieldCount();
-                                for (int i = 0; i < fc; i++) {
-                                        if(TypeFactory.isNumerical(md.getFieldType(i).getTypeCode())){
-                                                fieldCombo.addItem(md.getFieldName(i));
-                                        }
-                                }
-                                ActionListener acl2 = EventHandler.create(ActionListener.class,
-                                        this, "updateField", "source.selectedItem");
-                                String field = proportionalPoint.getLookupFieldName();
-                                if(field != null && !field.isEmpty()){
-                                        fieldCombo.setSelectedItem(field);
-                                }
-                                fieldCombo.addActionListener(acl2);
-                                updateField((String)fieldCombo.getSelectedItem());
-                        } catch (DriverException ex) {
-                                LOGGER.error(ex);
+                        fieldCombo = getNumericFieldCombo(ds);
+                        ActionListener acl2 = EventHandler.create(ActionListener.class,
+                                this, "updateField", "source.selectedItem");
+                        String field = proportionalPoint.getLookupFieldName();
+                        if(field != null && !field.isEmpty()){
+                                fieldCombo.setSelectedItem(field);
                         }
+                        fieldCombo.addActionListener(acl2);
+                        updateField((String)fieldCombo.getSelectedItem());
+                } else {
+                        fieldCombo = new JComboBox();
                 }
         }
 
@@ -332,6 +321,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                         proportionalPoint.setFirstData(mnm[0]);
                         proportionalPoint.setSecondData(mnm[1]);
                         proportionalPoint.setLookupFieldName(obj);
+                        proportionalPoint.getSymbolizer().refreshFeatures();
                         Map<String, Object> sample = new HashMap<String, Object>();
                         sample.put(obj, mnm[1]);
                         getPreview().setSampleDatasource(sample);

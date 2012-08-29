@@ -31,12 +31,12 @@ package org.orbisgis.core.events;
 import java.util.EventListener;
 import java.util.EventObject;
 /**
- * @brief Interface of all listeners
+ * Interface of all listeners
  * All class that implements this interface can be listened for events through EventDispatcher
  */
 public interface Listener extends EventListener {
     /**
-     * @brief The event has been fired
+     * The event has been fired
      * Use java.beans.EventHandler.create to make a listener that will directly
      * link from the source to the target method.
      * You can also overload this method to call your related class method,

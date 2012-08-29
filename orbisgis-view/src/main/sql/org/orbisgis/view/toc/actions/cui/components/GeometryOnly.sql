@@ -1,1 +1,1 @@
-SELECT ST_GEOMFROMTEXT(@{geomText}) as the_geom;
+SELECT @{geomText} as the_geom;
