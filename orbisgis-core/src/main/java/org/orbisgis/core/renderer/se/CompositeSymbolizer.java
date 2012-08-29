@@ -45,10 +45,9 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  * and that is not directly associated to any rendering or representation hint.
  * @author Maxence Laurent
  */
-public final class CompositeSymbolizer implements UomNode {
+public final class CompositeSymbolizer extends AbstractSymbolizerNode implements UomNode {
 
         private ArrayList<Symbolizer> symbolizers;
-        private SymbolizerNode parent;
         
         /**
          * Build a new, empty, CompositeSymbolizer.
@@ -106,15 +105,6 @@ public final class CompositeSymbolizer implements UomNode {
                         return null;
                 }
         }
-
-        /*
-        public void draw(Graphics2D g2, DataSet sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException, DriverException{
-        for (Symbolizer s : this.symbolizers){
-        if (s instanceof VectorSymbolizer){
-        ((VectorSymbolizer)s).draw(g2, sds, fid, selected, mt, null, null);
-        }
-        }
-        }*/
 
         /**
          * Get the list of <code>Symbolizer</code>s contained in this <code>CompositeSymbolizer</code>
@@ -206,16 +196,6 @@ public final class CompositeSymbolizer implements UomNode {
 
         @Override
         public void setUom(Uom unit){}
-
-        @Override
-        public SymbolizerNode getParent() {
-                return parent;
-        }
-
-        @Override
-        public void setParent(SymbolizerNode rule) {
-                this.parent = rule;
-        }
 
     @Override
     public HashSet<String> dependsOnFeature() {

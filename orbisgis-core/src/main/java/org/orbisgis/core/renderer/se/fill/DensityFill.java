@@ -143,6 +143,7 @@ public final class DensityFill extends Fill implements GraphicNode {
         this.orientation = orientation;
         if (this.orientation != null) {
             this.orientation.setContext(RealParameterContext.REAL_CONTEXT);
+            this.orientation.setParent(this);
         }
     }
 
@@ -194,6 +195,7 @@ public final class DensityFill extends Fill implements GraphicNode {
         this.percentageCovered = percent;
         if (this.percentageCovered != null) {
             this.percentageCovered.setContext(RealParameterContext.PERCENTAGE_CONTEXT);
+            this.percentageCovered.setParent(this);
         }
     }
 
@@ -311,9 +313,9 @@ public final class DensityFill extends Fill implements GraphicNode {
     @Override
     public UsedAnalysis getUsedAnalysis() {
             UsedAnalysis ua = new UsedAnalysis();
-            ua.include(percentageCovered);
+            ua.merge(percentageCovered.getUsedAnalysis());
             if(useHatches()){
-                    ua.include(orientation);
+                    ua.merge(orientation.getUsedAnalysis());
                     ua.merge(hatches.getUsedAnalysis());
             } else {
                     ua.merge(mark.getUsedAnalysis());

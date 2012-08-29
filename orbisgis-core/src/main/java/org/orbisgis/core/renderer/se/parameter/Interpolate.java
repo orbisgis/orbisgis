@@ -34,6 +34,7 @@ import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -52,7 +53,8 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * @todo find a nice way to compute interpolation for RealParameter and ColorParameter
  *
  */
-public abstract class Interpolate<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter {
+public abstract class Interpolate<ToType extends SeParameter, FallbackType extends ToType>  
+                extends AbstractSymbolizerNode implements SeParameter {
 
         private InterpolationMode mode;
         private RealParameter lookupValue;
@@ -128,6 +130,9 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
          */
         public void setFallbackValue(FallbackType fallbackValue) {
                 this.fallbackValue = fallbackValue;
+                if(this.fallbackValue != null){
+                        this.fallbackValue.setParent(this);
+                }
         }
 
         /**
@@ -146,6 +151,7 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
                 this.lookupValue = lookupValue;
                 if (this.lookupValue != null) {
                         this.lookupValue.setContext(RealParameterContext.REAL_CONTEXT);
+                        this.lookupValue.setParent(this);
                 }
         }
 
@@ -175,6 +181,7 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
         public void addInterpolationPoint(InterpolationPoint<ToType> point) {
                 iPoints.add(point);
                 sortInterpolationPoint();
+                point.getValue().setParent(this);
         }
 
         /**
@@ -248,6 +255,18 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
                 ObjectFactory of = new ObjectFactory();
                 return of.createInterpolate(i);
         }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis ua = new UsedAnalysis();
+                ua.include(this);
+                ua.merge(lookupValue.getUsedAnalysis());
+                for(InterpolationPoint i : iPoints){
+                        ua.merge(i.getValue().getUsedAnalysis());
+                }
+                return ua;
+        }
+
 
         protected int getFirstIP(double data) {
                 int i = -1;

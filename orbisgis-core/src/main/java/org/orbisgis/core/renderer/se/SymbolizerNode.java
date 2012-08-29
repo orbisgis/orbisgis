@@ -33,9 +33,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * SymbolizerNode allow to browse the styling tree
- * It's mainly used to fetch the nearest Uom definition of any element
- *
- * @todo extract getUom() and add void update(), then every element should implement this (even parameters)
+ * It's mainly used to fetch the nearest Uom definition of any element.
  *
  * @author Maxence Laurent
  */
@@ -68,4 +66,9 @@ public interface SymbolizerNode{
      * @return
      */
     UsedAnalysis getUsedAnalysis();
+
+    /**
+     * Notify the parent of the node that cached values must be unset.
+     */
+    void update();
 }

@@ -30,8 +30,8 @@ package org.orbisgis.core.renderer.se.graphic;
 
 import java.util.HashSet;
 import net.opengis.se._2_0.thematic.SliceType;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.FillNode;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -48,13 +48,12 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * </ul>
  * @author Alexis Guéganno
  */
-public class Slice implements SymbolizerNode, FillNode {
+public class Slice extends AbstractSymbolizerNode implements FillNode {
 
         private String name;
         private RealParameter value;
         private Fill fill;
         private RealParameter gap;
-        private SymbolizerNode parent;
 
         @Override
         public Fill getFill() {
@@ -85,6 +84,7 @@ public class Slice implements SymbolizerNode, FillNode {
                 this.gap = gap;
                 if (gap != null) {
                         gap.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+                        gap.setParent(this);
                 }
         }
 
@@ -123,17 +123,8 @@ public class Slice implements SymbolizerNode, FillNode {
                 this.value = value;
                 if (value != null) {
                         value.setContext(RealParameterContext.REAL_CONTEXT);
+                        value.setParent(this);
                 }
-        }
-
-        @Override
-        public SymbolizerNode getParent() {
-                return parent;
-        }
-
-        @Override
-        public void setParent(SymbolizerNode node) {
-                parent = node;
         }
 
         /**
@@ -182,10 +173,10 @@ public class Slice implements SymbolizerNode, FillNode {
                         result.merge(fill.getUsedAnalysis());
                 }
                 if (value != null) {
-                        result.include(value);
+                        result.merge(value.getUsedAnalysis());
                 }
                 if (gap != null) {
-                        result.include(gap);
+                        result.merge(gap.getUsedAnalysis());
                 }
 
                 return result;

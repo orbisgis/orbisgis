@@ -36,8 +36,8 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -47,13 +47,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  *
  * @author Maxence Laurent, Alexis Guéganno.
  */
-public abstract class Stroke implements UomNode {
-
-
-    /**
-     * The parent of this node.
-     */
-    protected SymbolizerNode parent;
+public abstract class Stroke extends AbstractSymbolizerNode implements UomNode {
 
     private Uom uom;
     private boolean linearRapport;
@@ -111,16 +105,6 @@ public abstract class Stroke implements UomNode {
 		}
         //As s.getDeclaredType() os a StrokeType, we are supposed to never throw this Exception...
         throw new InvalidStyle("Trying to create a Stroke from an invalid input");
-    }
-
-    @Override
-    public SymbolizerNode getParent() {
-        return parent;
-    }
-
-    @Override
-    public void setParent(SymbolizerNode node) {
-        parent = node;
     }
 
     /**
@@ -256,8 +240,8 @@ public abstract class Stroke implements UomNode {
     public Uom getUom() {
         if (uom != null) {
             return uom;
-        } else if(parent instanceof UomNode){
-            return ((UomNode)parent).getUom();
+        } else if(getParent() instanceof UomNode){
+            return ((UomNode)getParent()).getUom();
         } else {
                 return Uom.PX;
         }

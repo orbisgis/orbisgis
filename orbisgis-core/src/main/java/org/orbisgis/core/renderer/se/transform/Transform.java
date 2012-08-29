@@ -37,8 +37,8 @@ import java.util.Map;
 import net.opengis.se._2_0.core.*;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -50,10 +50,9 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  *
  * @author Maxence Laurent, Alexis Guéganno
  */
-public class Transform implements UomNode {
+public class Transform extends AbstractSymbolizerNode implements UomNode {
 
         private Uom uom;
-        private SymbolizerNode parent;
         private AffineTransform consolidated;
         private ArrayList<Transformation> transformations;
 
@@ -97,16 +96,26 @@ public class Transform implements UomNode {
                 }
 
                 for (Object o : t.getTranslateOrRotateOrScale()) {
-                        if (o instanceof TranslateType) {
-                                this.transformations.add(new Translate((TranslateType) o));
-                        } else if (o instanceof RotateType) {
-                                this.transformations.add(new Rotate((RotateType) o));
-                        } else if (o instanceof ScaleType) {
-                                this.transformations.add(new Scale((ScaleType) o));
-                        } else if (o instanceof MatrixType) {
-                                this.transformations.add(new Matrix((MatrixType) o));
+                        Transformation trans = getTransformationFromJAXB(o);
+                        if(trans != null){
+                                this.transformations.add(trans);
+                                trans.setParent(this);
                         }
                 }
+        }
+
+        private Transformation getTransformationFromJAXB(Object o) throws InvalidStyle {
+                if (o instanceof TranslateType) {
+                        return new Translate((TranslateType) o);
+                } else if (o instanceof RotateType) {
+                        return new Rotate((RotateType) o);
+                } else if (o instanceof ScaleType) {
+                        return new Scale((ScaleType) o);
+                } else if (o instanceof MatrixType) {
+                        return new Matrix((MatrixType) o);
+                }
+                return null;
+
         }
 
         /**
@@ -232,16 +241,6 @@ public class Transform implements UomNode {
                 return transformations.get(i);
         }
 
-        @Override
-        public SymbolizerNode getParent() {
-                return parent;
-        }
-
-        @Override
-        public void setParent(SymbolizerNode node) {
-                parent = node;
-        }
-
         /**
          * Get a new representation of this {@code Transform} as a JAXB
          * {@code TransformType}
@@ -285,8 +284,8 @@ public class Transform implements UomNode {
         public Uom getUom() {
                 if (uom != null) {
                         return uom;
-                } else if(parent instanceof UomNode){
-                        return ((UomNode)parent).getUom();
+                } else if(getParent() instanceof UomNode){
+                        return ((UomNode)getParent()).getUom();
                 } else {
                         return Uom.PX;
                 }

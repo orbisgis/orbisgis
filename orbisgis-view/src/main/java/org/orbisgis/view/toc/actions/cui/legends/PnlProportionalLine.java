@@ -288,7 +288,6 @@ public class PnlProportionalLine extends PnlUniqueSymbolSE {
                         legend.setFirstData(mnm[0]);
                         legend.setSecondData(mnm[1]);
                         legend.setLookupFieldName(obj);
-                        legend.getSymbolizer().refreshFeatures();
                         Map<String, Object> sample = new HashMap<String, Object>();
                         sample.put(obj, mnm[1]);
                         getPreview().setSampleDatasource(sample);

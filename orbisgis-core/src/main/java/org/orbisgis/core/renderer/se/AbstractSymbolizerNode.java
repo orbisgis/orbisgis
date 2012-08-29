@@ -1,59 +1,56 @@
-/**
+/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information.
- *
+ * manipulate and create vector and raster spatial information. 
+ * 
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
- *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
- *
+ * 
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ * 
  * This file is part of OrbisGIS.
- *
+ * 
  * OrbisGIS is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- *
+ * 
  * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- *
+ * 
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se.parameter;
-
-import javax.xml.bind.JAXBElement;
-import net.opengis.se._2_0.core.ParameterValueType;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
-
+package org.orbisgis.core.renderer.se;
 
 /**
  *
- * @author Maxence Laurent
+ * @author Alexis Guéganno
  */
-public interface SeParameter extends SymbolizerNode{
+public abstract class AbstractSymbolizerNode implements SymbolizerNode {
+        private SymbolizerNode parent;
 
-    /**
-     * Get the JAXB type that would represent this {@code SeParameter}
-     * @return 
-     */
-    ParameterValueType getJAXBParameterValueType();
-   
-    
-    /**
-     * Get the JAXBElement that would represent this {@code SeParameter}
-     * @return 
-     */
-    JAXBElement<?> getJAXBExpressionType();
+        @Override
+        public SymbolizerNode getParent() {
+                return parent;
+        }
 
-    /**
-     * Notify the owner of this parameter that something has changed.
-     */
-//    public void update();
+        @Override
+        public void setParent(SymbolizerNode parent) {
+                this.parent = parent;
+                update();
+        }
+
+        @Override
+        public void update() {
+                if(parent != null){
+                        parent.update();
+                }
+        }
+
 }

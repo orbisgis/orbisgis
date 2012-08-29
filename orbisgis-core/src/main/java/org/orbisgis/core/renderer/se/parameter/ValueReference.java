@@ -38,13 +38,14 @@ import net.opengis.se._2_0.core.ParameterValueType;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 /**
  * An (abstract) representation of a Value in a GDMS table. 
  * @author Alexis Guéganno, Maxence Laurent
  */
-public abstract class ValueReference implements SeParameter {
+public abstract class ValueReference extends AbstractSymbolizerNode implements SeParameter{
 
 	private String fieldName;
 	private int fieldId;
@@ -131,6 +132,7 @@ public abstract class ValueReference implements SeParameter {
 		this.fieldId = -1;
 		this.fieldName = fieldName;
 		firePropertyNameChange();
+                update();
 	}
 
         /**
@@ -187,4 +189,10 @@ public abstract class ValueReference implements SeParameter {
 		ObjectFactory of = new ObjectFactory();
 		return of.createValueReference(fieldName);
 	}
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                return new UsedAnalysis();
+        }
+
 }

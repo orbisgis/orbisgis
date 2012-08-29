@@ -97,6 +97,7 @@ public final class ExclusionRadius extends ExclusionZone {
                 this.radius = radius;
                 if (this.radius != null) {
                         this.radius.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+                        this.radius.setParent(this);
                 }
         }
 
@@ -126,7 +127,7 @@ public final class ExclusionRadius extends ExclusionZone {
         @Override
         public UsedAnalysis getUsedAnalysis(){
                 UsedAnalysis ua = new UsedAnalysis();
-                ua.include(radius);
+                ua.merge(radius.getUsedAnalysis());
                 return ua;
         }
 }

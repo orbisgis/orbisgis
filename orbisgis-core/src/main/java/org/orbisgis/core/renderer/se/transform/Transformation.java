@@ -30,14 +30,13 @@ package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * Each implementation represent an affine transformation base on RealParameter.
@@ -45,7 +44,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  *
  * @author Maxence Laurent
  */
-public interface Transformation {
+public interface Transformation extends SymbolizerNode{
 
     /**
          * This method whall return {@code true} if the transformation can be
@@ -84,19 +83,4 @@ public interface Transformation {
      * A {@code JAXBType} that represents a {@code LabelType} specialization.
      */
     Object getJAXBType();
-
-    /**
-     * Get a String representation of the list of features this {@code Transformation}
-     * depends on.
-     * @return
-     * The features this {@code Transformation} depends on, in a {@code String}.
-     */
-    HashSet<String> dependsOnFeature();
-
-    /**
-     * Retrieve an object describing the type of analysis made in the
-     * symbolizer.
-     * @return
-     */
-    UsedAnalysis getUsedAnalysis();
 }

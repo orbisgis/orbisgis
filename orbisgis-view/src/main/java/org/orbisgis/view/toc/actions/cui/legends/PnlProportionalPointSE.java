@@ -318,10 +318,9 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
         public void updateField(String obj){
                 try {
                         double[] mnm=ClassificationUtils.getMinAndMax(ds, new RealAttribute(obj));
-                        proportionalPoint.setFirstData(mnm[0]);
-                        proportionalPoint.setSecondData(mnm[1]);
+                        proportionalPoint.setFirstData(Math.sqrt(mnm[0]));
+                        proportionalPoint.setSecondData(Math.sqrt(mnm[1]));
                         proportionalPoint.setLookupFieldName(obj);
-                        proportionalPoint.getSymbolizer().refreshFeatures();
                         Map<String, Object> sample = new HashMap<String, Object>();
                         sample.put(obj, mnm[1]);
                         getPreview().setSampleDatasource(sample);

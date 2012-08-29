@@ -35,9 +35,12 @@ import net.opengis.fes._2.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * Defines a function on real numbers. A function is defined with a operation and
@@ -51,7 +54,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  *   * Neperian logarithm - <code>LN</code>
  * @author Maxence Laurent, Alexis Guéganno
  */
-public class RealFunction implements RealParameter {
+public class RealFunction extends AbstractSymbolizerNode implements SeParameter, RealParameter {
 
     public enum Operators {
         ADD, MUL, DIV, SUB, SQRT, LOG, LN
@@ -79,7 +82,6 @@ public class RealFunction implements RealParameter {
     public RealFunction(String name) {
         ctx = RealParameterContext.REAL_CONTEXT;
         this.op = Operators.valueOf(name.toUpperCase());
-
         operands = new ArrayList<RealParameter>();
     }
 
@@ -94,7 +96,9 @@ public class RealFunction implements RealParameter {
     public RealFunction(FunctionType fcn) throws InvalidStyle {
         this(fcn.getName());
         for (JAXBElement<? extends Object> expr : fcn.getExpression()) {
-            operands.add(SeParameterFactory.createRealParameter(expr));
+            RealParameter rp =SeParameterFactory.createRealParameter(expr);
+            operands.add(rp);
+            rp.setParent(this);
         }
     }
 
@@ -144,11 +148,13 @@ public class RealFunction implements RealParameter {
             case ADD:
             case MUL:
                 this.operands.add(operand);
+                operand.setParent(this);
                 return;
             case DIV:
             case SUB:
                 if (operands.size() < 2) {
                     this.operands.add(operand);
+                    operand.setParent(this);
                 } else {
                     throw new ParameterException(op + " requires exactly two operands");
                 }
@@ -158,6 +164,7 @@ public class RealFunction implements RealParameter {
             case LOG:
                 if (operands.size() < 1) {
                     this.operands.add(operand);
+                    operand.setParent(this);
                 } else {
                     throw new ParameterException(op + " requires exactly one operand");
                 }
@@ -286,6 +293,16 @@ public class RealFunction implements RealParameter {
 
         ObjectFactory of = new ObjectFactory();
         return of.createFunction(fcn);
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis ua  = new UsedAnalysis();
+        ua.include(this);
+        for(RealParameter r : operands){
+                ua.merge(r.getUsedAnalysis());
+        }
+        return ua;
     }
 
 

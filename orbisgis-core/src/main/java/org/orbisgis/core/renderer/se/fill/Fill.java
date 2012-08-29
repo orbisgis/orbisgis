@@ -42,8 +42,8 @@ import net.opengis.se._2_0.thematic.DensityFillType;
 import net.opengis.se._2_0.thematic.DotMapFillType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -56,9 +56,8 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  *
  * @author Maxence Laurent
  */
-public abstract class Fill implements UomNode {
+public abstract class Fill extends AbstractSymbolizerNode implements UomNode {
 
-    protected UomNode parent;
     private Uom uom;
     /**
      * Create a new fill based on the jaxbelement
@@ -87,11 +86,6 @@ public abstract class Fill implements UomNode {
         }
 
     }
-
-    @Override
-    public void setParent(SymbolizerNode node){
-        parent = (UomNode)node;
-    }
     
     @Override
     public void setUom(Uom u){
@@ -105,12 +99,7 @@ public abstract class Fill implements UomNode {
 
     @Override
     public Uom getUom(){
-        return uom == null ? parent.getUom() : uom;
-    }
-
-    @Override
-    public SymbolizerNode getParent(){
-        return parent;
+        return uom == null ? ((UomNode)getParent()).getUom() : uom;
     }
 
     /**

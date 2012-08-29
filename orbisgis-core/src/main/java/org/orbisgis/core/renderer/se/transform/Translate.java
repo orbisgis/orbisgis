@@ -36,6 +36,7 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TranslateType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -49,7 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * a 2D vector, it is defined by two <code>RealParameter</code>s.
  * @author Maxence Laurent
  */
-public class Translate implements Transformation {
+public class Translate extends AbstractSymbolizerNode implements Transformation {
 
         private RealParameter x;
         private RealParameter y;
@@ -125,8 +126,8 @@ public class Translate implements Transformation {
         @Override
         public UsedAnalysis getUsedAnalysis() {
             UsedAnalysis result = new UsedAnalysis();
-            result.include(x);
-            result.include(y);
+            result.merge(x.getUsedAnalysis());
+            result.merge(y.getUsedAnalysis());
             return result;
         }
 
@@ -176,6 +177,7 @@ public class Translate implements Transformation {
                 this.y = y;
                 if (y != null) {
                         y.setContext(RealParameterContext.REAL_CONTEXT);
+                        this.y.setParent(this);
                 }
         }
 
@@ -187,6 +189,7 @@ public class Translate implements Transformation {
                 this.x = x;
                 if (x != null) {
                         x.setContext(RealParameterContext.REAL_CONTEXT);
+                        this.x.setParent(this);
                 }
         }
 

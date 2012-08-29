@@ -60,7 +60,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  * representation.
  * @author Maxence Laurent
  */
-public final class Rule implements SymbolizerNode {
+public final class Rule extends AbstractSymbolizerNode {
 
     /**
      * The name set to every rule, if not set externally.
@@ -68,7 +68,6 @@ public final class Rule implements SymbolizerNode {
     public static final String DEFAULT_NAME = "Default Rule";
     private String name = "";
     private Description description;
-    private SymbolizerNode fts;
     private String where;
     private boolean fallbackRule = false;
     private Double minScaleDenom = null;
@@ -278,17 +277,6 @@ public final class Rule implements SymbolizerNode {
 
         return rt;
     }
-
-    @Override
-    public SymbolizerNode getParent() {
-        return fts;
-    }
-
-    @Override
-    public void setParent(SymbolizerNode fts) {
-        this.fts = fts;
-    }
-
     /**
      * Get the <code>where</code> clause associated to this rule.
      * @return 

@@ -129,6 +129,9 @@ public final class SolidFill extends Fill {
          */
 	public void setColor(ColorParameter color) {
 		this.color = color;
+                if(this.color != null){
+                        this.color.setParent(this);
+                }
 	}
 
         /**
@@ -143,8 +146,9 @@ public final class SolidFill extends Fill {
          * @param opacity 
          */
 	public void setOpacity(RealParameter opacity) {
-                    this.opacity = opacity == null ? new RealLiteral(DEFAULT_OPACITY) : opacity;
-                    this.opacity.setContext(RealParameterContext.PERCENTAGE_CONTEXT);
+                this.opacity = opacity == null ? new RealLiteral(DEFAULT_OPACITY) : opacity;
+                this.opacity.setContext(RealParameterContext.PERCENTAGE_CONTEXT);
+                this.opacity.setParent(this);
 	}
 
         /**
@@ -225,8 +229,8 @@ public final class SolidFill extends Fill {
     @Override
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis ua = new UsedAnalysis();
-        ua.include(color);
-        ua.include(opacity);
+        ua.merge(color.getUsedAnalysis());
+        ua.merge(opacity.getUsedAnalysis());
         return ua;
     }
 
