@@ -136,6 +136,7 @@ public class LegendTree extends JPanel {
                         tm.removeElement(tm.getRoot(), select);
                         legendsPanel.refreshLegendContainer();
                 }
+                refreshIcons();
         }
 
         /**
@@ -154,6 +155,7 @@ public class LegendTree extends JPanel {
                                 addLegend();
                         }
                 }
+                refreshIcons();
         }
 
         /**
