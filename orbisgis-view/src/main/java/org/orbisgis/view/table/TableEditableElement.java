@@ -29,6 +29,7 @@
 package org.orbisgis.view.table;
 
 import java.util.Set;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.view.geocatalog.EditableSource;
 
@@ -41,7 +42,7 @@ public class TableEditableElement extends EditableSource {
         public static final String TYPE_ID = "TableEditableElement";
         // Properties names
         public static final String PROP_SELECTION = "selection";
-        
+        private static final Logger LOGGER = Logger.getLogger(TableEditableElement.class);
         // Properties
         protected IntegerUnion selectedGeometries;
 
@@ -68,6 +69,7 @@ public class TableEditableElement extends EditableSource {
          * @param selection 
          */
         public void setSelection(Set<Integer> selection) {
+                LOGGER.debug("Editable selection change");
                 Set<Integer> oldSelection = this.selectedGeometries;
                 this.selectedGeometries = new IntegerUnion(selection);
                 propertyChangeSupport.firePropertyChange(PROP_SELECTION, oldSelection, this.selectedGeometries);

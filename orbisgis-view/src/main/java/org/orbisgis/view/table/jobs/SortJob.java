@@ -34,6 +34,7 @@ import java.util.Comparator;
 import java.util.TreeSet;
 import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
+import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.Type;
@@ -150,15 +151,24 @@ public class SortJob implements BackgroundJob {
                         if (sortRequest.getSortOrder().equals(SortOrder.DESCENDING)) {
                                 comparator = Collections.reverseOrder(comparator);
                         }
-                        Collection<Integer> columnValues = sortArray(modelIndex, comparator, pm);
-                        //Update the table model
-                        eventSortedListeners.callListeners(new SortJobEventSorted(sortRequest,columnValues , this));
+                        final Collection<Integer> columnValues = sortArray(modelIndex, comparator, pm);
+                        SwingUtilities.invokeLater(new Runnable() {
+
+                                @Override
+                                public void run() {
+                                        try {
+                                                //Update the table model on the swing thread
+                                                eventSortedListeners.callListeners(new SortJobEventSorted(sortRequest,columnValues , this));
+                                        } catch (EventException ex) {
+                                                //Ignore
+                                        }
+                                }
+                        });
+
                 } catch (IllegalStateException ex) {
                         LOGGER.error(I18N.tr("Driver error"), ex);
                 } catch (DriverException ex) {
                         LOGGER.error(I18N.tr("Driver error"), ex);
-                } catch (EventException ex) {
-                        //Ignore
                 }
         }
 

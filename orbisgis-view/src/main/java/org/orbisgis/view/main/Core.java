@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
@@ -252,7 +251,7 @@ public class Core {
         loadEditorFactories();
         
         // Some editors need DataSources loaded by the MapContext
-        backgroundManager.nonBlockingBackgroundOperation(new ReadMapContextProcess());
+        backgroundManager.backgroundOperation(new ReadMapContextProcess());
         
         //Load the docking layout and editors opened in last OrbisGis instance
         dockManager.setDockingLayoutPersistanceFilePath(viewWorkspace.getDockingLayoutPath());

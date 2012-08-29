@@ -73,14 +73,19 @@ public class SearchJob implements BackgroundJob {
                 }
                 pm.endTask();
                 Iterator<Integer> intervals = nextViewSelection.getValueRanges().iterator();
-                table.clearSelection();
-                while(intervals.hasNext()) {
-                        int begin = intervals.next();
-                        int end = intervals.next();
-                        table.addRowSelectionInterval(begin, end);
-                        if(pm.isCancelled()) {
-                                return;
+                try {
+                        table.getSelectionModel().setValueIsAdjusting(true);
+                        table.clearSelection();
+                        while(intervals.hasNext()) {
+                                int begin = intervals.next();
+                                int end = intervals.next();
+                                table.addRowSelectionInterval(begin, end);
+                                if(pm.isCancelled()) {
+                                        return;
+                                }
                         }
+                }finally {
+                        table.getSelectionModel().setValueIsAdjusting(false);                        
                 }
         }
 

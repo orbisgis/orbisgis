@@ -340,7 +340,7 @@ public class Toc extends JPanel implements EditorDockable {
 
                 if (!sourceToDrop.isEmpty()) {
                         BackgroundManager bm = Services.getService(BackgroundManager.class);//Cancel the drawing process
-                        bm.nonBlockingBackgroundOperation(new DropDataSourceListProcess(dropNode, index, sourceToDrop));
+                        bm.backgroundOperation(new DropDataSourceListProcess(dropNode, index, sourceToDrop));
                         for(Job job : bm.getActiveJobs()) {
                                 if(job.getId().toString().startsWith(MapControl.JOB_DRAWING_PREFIX_ID)) {
                                         job.cancel();

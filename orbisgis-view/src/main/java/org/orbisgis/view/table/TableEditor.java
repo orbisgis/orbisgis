@@ -53,6 +53,7 @@ import javax.swing.RowSorter.SortKey;
 import javax.swing.SortOrder;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.PopupMenuListener;
 import javax.swing.event.RowSorterListener;
@@ -62,7 +63,6 @@ import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSourceListener;
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.data.types.Constraint;
@@ -71,7 +71,6 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceListener;
-import org.gdms.source.SourceManager;
 import org.gdms.source.SourceRemovalEvent;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
@@ -119,15 +118,14 @@ public class TableEditor extends JPanel implements EditorDockable {
         private TableRowHeader tableRowHeader;
         private Point popupCellAdress = new Point();    // Col(x) and row(y) that trigger a popup
         private Point cellHighlight = new Point(-1,-1); // cell under cursor on right click
-        private PropertyChangeListener editableSelectionListener = EventHandler.create(PropertyChangeListener.class,this,"onEditableSelectionChange","newValue","sourceRemoved");
-        private SourceListener sourceListener = EventHandler.create(SourceListener.class, this,"onSourceRemoved", "");
+        private PropertyChangeListener editableSelectionListener = EventHandler.create(PropertyChangeListener.class,this,"onEditableSelectionChange","newValue");
+        private SourceListener sourceListener = EventHandler.create(SourceListener.class, this,"onSourceRemoved", "","sourceRemoved");
                 
         public TableEditor(TableEditableElement element) {
                 super(new BorderLayout());
                 //Add a listener to the source manager to close the table when
                 //the source is removed
                 Services.getService(DataManager.class).getSourceManager().addSourceListener(sourceListener);
-                LOGGER.debug("Create the GRID");
                 this.tableEditableElement = element;
                 dockingPanelParameters = new DockingPanelParameters();
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("openattributes"));
@@ -164,9 +162,13 @@ public class TableEditor extends JPanel implements EditorDockable {
          * @param newValue 
          */
         public void onEditableSelectionChange(IntegerUnion newValue) {
-                if(!onUpdateEditableSelection.get()) {
-                        setRowSelection(newValue);
-                }
+                        if(!onUpdateEditableSelection.getAndSet(true)) {
+                                try {
+                                                setRowSelection(newValue);
+                                }finally {
+                                        onUpdateEditableSelection.set(false);
+                                }
+                        }
         }
         
         /**
@@ -471,7 +473,7 @@ public class TableEditor extends JPanel implements EditorDockable {
         }
         
         private void launchJob(BackgroundJob job) {
-                Services.getService(BackgroundManager.class).nonBlockingBackgroundOperation(job);
+                Services.getService(BackgroundManager.class).backgroundOperation(job);
         }
         
         /**
@@ -594,7 +596,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                 setRowSelection((IntegerUnion)tableEditableElement.getSelection());              
                 table.getSelectionModel().addListSelectionListener(
                         EventHandler.create(ListSelectionListener.class,this,
-                        "onTableSelectionChange"));
+                        "onTableSelectionChange",""));
                 add(makeFilterManager(),BorderLayout.SOUTH);
                 //Close the editable element on window close
                 dockingPanelParameters.addPropertyChangeListener(
@@ -626,14 +628,35 @@ public class TableEditor extends JPanel implements EditorDockable {
                         }
                 }
         }
-        
-        private void setRowSelection(IntegerUnion selection) {
-                Iterator<Integer> intervals = selection.getValueRanges().iterator();
-                table.clearSelection();
-                while(intervals.hasNext()) {
-                        int begin = intervals.next();
-                        int end = intervals.next();
-                        table.addRowSelectionInterval(begin, end);
+        /**
+         * Convert index from model to view then update the table selection
+         * @param selection ModelIndex selection
+         */
+        private void setRowSelection(IntegerUnion modelSelection) {
+                IntegerUnion newSelection;
+                if(tableSorter.isFiltered() || !tableSorter.getSortKeys().isEmpty()) {
+                        IntegerUnion viewSelection = new IntegerUnion();
+                        for(Integer modelId : modelSelection) {
+                                int viewRowId = table.convertRowIndexToView(modelId);
+                                if(viewRowId!=-1) {
+                                        viewSelection.add(viewRowId);
+                                }
+                        }
+                        newSelection = viewSelection;
+                } else {
+                        newSelection = modelSelection;
+                }             
+                Iterator<Integer> intervals = newSelection.getValueRanges().iterator();
+                try {
+                        table.getSelectionModel().setValueIsAdjusting(true);
+                        table.clearSelection();
+                        while(intervals.hasNext()) {
+                                int begin = intervals.next();
+                                int end = intervals.next();
+                                table.addRowSelectionInterval(begin, end);
+                        }
+                }finally {
+                        table.getSelectionModel().setValueIsAdjusting(false);
                 }
         }
         
@@ -647,17 +670,24 @@ public class TableEditor extends JPanel implements EditorDockable {
         
         /**
          * Table selection change
+         * @param evt Selection event, used to test if the selection is final
          */
-        public void onTableSelectionChange() {
+        public void onTableSelectionChange(ListSelectionEvent evt) {
                 updateTitle();
-                if(!onUpdateEditableSelection.getAndSet(true)) {
-                        SwingUtilities.invokeLater(new Runnable() {
+                if(!evt.getValueIsAdjusting()) {
+                        try {
+                                if(!onUpdateEditableSelection.getAndSet(true)) {
+                                        SwingUtilities.invokeLater(new Runnable() {
 
-                                @Override
-                                public void run() {
-                                        updateEditableSelection();
+                                                @Override
+                                                public void run() {
+                                                        updateEditableSelection();
+                                                }
+                                        });
                                 }
-                        });
+                        } finally {
+                                onUpdateEditableSelection.set(false);
+                        }
                 }
         }
 
