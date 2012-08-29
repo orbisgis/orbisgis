@@ -139,6 +139,7 @@ public final class GraphicFill extends Fill {
         gapX = gap;
         if (gap != null) {
             gap.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+            gap.setParent(this);
         }
     }
 
@@ -150,6 +151,7 @@ public final class GraphicFill extends Fill {
         gapY = gap;
         if (gap != null) {
             gap.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+            gap.setParent(this);
         }
     }
 
@@ -277,8 +279,8 @@ public final class GraphicFill extends Fill {
         @Override
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis ua = new UsedAnalysis();
-        ua.include(gapX);
-        ua.include(gapY);
+        ua.merge(gapX.getUsedAnalysis());
+        ua.merge(gapY.getUsedAnalysis());
         if(graphic != null){
             ua.merge(graphic.getUsedAnalysis());
         }

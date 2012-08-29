@@ -194,8 +194,8 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
         public Uom getUom() {
                 if (uom != null) {
                         return uom;
-                } else if(parent instanceof UomNode){
-                        return ((UomNode)parent).getUom();
+                } else if(getParent() instanceof UomNode){
+                        return ((UomNode)getParent()).getUom();
                 } else {
                         return Uom.PX;
                 }
@@ -276,6 +276,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
          */
         public void setAxisScale(AxisScale axisScale) {
                 this.axisScale = axisScale;
+                axisScale.setParent(this);
         }
 
         /**
@@ -298,6 +299,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                 this.categoryGap = categoryGap;
                 if (this.categoryGap != null) {
                         this.categoryGap.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+                        this.categoryGap.setParent(this);
                 }
         }
 
@@ -323,6 +325,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                 this.categoryWidth = categoryWidth;
                 if (categoryWidth != null) {
                         categoryWidth.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+                        this.categoryWidth.setParent(this);
                 }
         }
 
@@ -345,6 +348,7 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                 this.normalizeTo = normalizeTo;
                 if (normalizeTo != null) {
                         normalizeTo.setContext(RealParameterContext.REAL_CONTEXT);
+                        this.normalizeTo.setParent(this);
                 }
         }
 
@@ -930,6 +934,9 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                 if (categoryWidth != null) {
                         ret.addAll(categoryWidth.dependsOnFeature());
                 }
+                if (normalizeTo != null) {
+                        ret.addAll(normalizeTo.dependsOnFeature());
+                }
                 if (axisScale != null) {
                         ret.addAll(axisScale.dependsOnFeature());
                 }
@@ -949,10 +956,10 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                         ret.merge(lineStroke.getUsedAnalysis());
                 }
                 if (this.categoryGap != null) {
-                        ret.include(categoryGap);
+                        ret.merge(categoryGap.getUsedAnalysis());
                 }
                 if (categoryWidth != null) {
-                        ret.include(categoryWidth);
+                        ret.merge(categoryWidth.getUsedAnalysis());
                 }
                 if (axisScale != null) {
                         ret.merge(axisScale.getUsedAnalysis());

@@ -53,7 +53,6 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
@@ -63,7 +62,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  * @author Maxence Laurent
  * @author Alexis Guéganno
  */
-public final class Style implements SymbolizerNode {
+public final class Style extends AbstractSymbolizerNode {
 
     public static final String PROP_VISIBLE = "visible";
     private static final String DEFAULT_NAME = "Unnamed Style";
@@ -349,6 +348,10 @@ public final class Style implements SymbolizerNode {
     @Override
     public void setParent(SymbolizerNode node) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void update() {
     }
 
     /**

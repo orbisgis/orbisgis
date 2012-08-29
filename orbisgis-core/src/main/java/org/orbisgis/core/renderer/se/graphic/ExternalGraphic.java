@@ -134,8 +134,8 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     public Uom getUom() {
         if (uom != null) {
             return uom;
-        } else if(parent instanceof UomNode){
-            return ((UomNode)parent).getUom();
+        } else if(getParent() instanceof UomNode){
+            return ((UomNode)getParent()).getUom();
         } else {
             return Uom.PX;
         }
@@ -204,6 +204,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
         this.opacity = opacity;
         if (this.opacity != null) {
             this.opacity.setContext(RealParameterContext.PERCENTAGE_CONTEXT);
+            this.opacity.setParent(this);
         }
     }
 
@@ -425,7 +426,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
             ret.merge(halo.getUsedAnalysis());
         }
         if (opacity != null) {
-            ret.include(opacity);
+            ret.merge(opacity.getUsedAnalysis());
         }
         if (transform != null) {
             ret.merge(transform.getUsedAnalysis());

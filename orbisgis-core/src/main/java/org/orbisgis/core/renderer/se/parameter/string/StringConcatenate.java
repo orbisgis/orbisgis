@@ -35,9 +35,12 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * Implementation of the {@code Concatenate} SE function. This function takes at
@@ -48,7 +51,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  * processing of its content.
  * @author Alexis Guéganno
  */
-public class StringConcatenate implements StringParameter, Iterable<StringParameter> {
+public class StringConcatenate extends AbstractSymbolizerNode implements SeParameter,StringParameter, Iterable<StringParameter> {
 
         private List<StringParameter> inputStrings;
 
@@ -62,7 +65,9 @@ public class StringConcatenate implements StringParameter, Iterable<StringParame
                 List<ParameterValueType> jaxbList = concatenate.getStringValue();
                 inputStrings = new ArrayList<StringParameter>(jaxbList.size());
                 for(ParameterValueType pvt : jaxbList){
-                        inputStrings.add(SeParameterFactory.createStringParameter(pvt));
+                        StringParameter sp = SeParameterFactory.createStringParameter(pvt);
+                        sp.setParent(this);
+                        inputStrings.add(sp);
                 }
         }
         /**
@@ -154,6 +159,7 @@ public class StringConcatenate implements StringParameter, Iterable<StringParame
          * @return
          */
         public boolean add(StringParameter e) {
+                e.setParent(this);
                 return inputStrings.add(e);
         }
 
@@ -198,6 +204,7 @@ public class StringConcatenate implements StringParameter, Iterable<StringParame
          *      {@code (index < 0 || index >= size()}).
          */
         public StringParameter set(int index, StringParameter element) {
+                element.setParent(this);
                 return inputStrings.set(index, element);
         }
 
@@ -210,6 +217,7 @@ public class StringConcatenate implements StringParameter, Iterable<StringParame
          *      {@code (index < 0 || index > size()}).
          */
         public void add(int index, StringParameter element) {
+                element.setParent(this);
                 inputStrings.add(index, element);
         }
 
@@ -239,6 +247,16 @@ public class StringConcatenate implements StringParameter, Iterable<StringParame
         @Override
         public Iterator<StringParameter> iterator() {
                 return inputStrings.listIterator();
+        }
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                UsedAnalysis ua = new UsedAnalysis();
+                ua.include(this);
+                for(StringParameter sp : inputStrings){
+                        ua.merge(sp.getUsedAnalysis());
+                }
+                return ua;
         }
 
 }

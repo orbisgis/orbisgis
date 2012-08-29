@@ -34,7 +34,7 @@ package org.orbisgis.core.renderer.se.parameter;
  * @author Alexis Guéganno
  * @param <Type> 
  */
-public class InterpolationPoint<Type> implements Comparable {
+public class InterpolationPoint<Type extends SeParameter> implements Comparable {
 
     private double d;
     private Type v = null;

@@ -145,6 +145,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
         this.length = length;
         if (this.length != null) {
             this.length.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+            this.length.setParent(this);
         }
     }
 
@@ -187,6 +188,7 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
         this.relativePosition = relativePosition;
         if (this.relativePosition != null){
             this.relativePosition.setContext(RealParameterContext.PERCENTAGE_CONTEXT);
+            this.relativePosition.setParent(this);
         }
     }
 
@@ -375,7 +377,10 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
             result.merge(graphic.getUsedAnalysis());
         }
         if (length != null) {
-                result.include(length);
+                result.merge(length.getUsedAnalysis());
+        }
+        if (relativePosition != null) {
+                result.merge(relativePosition.getUsedAnalysis());
         }
         return result;
     }

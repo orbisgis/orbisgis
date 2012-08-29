@@ -61,8 +61,6 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 public final class PointLabel extends Label {
 
     private RealParameter rotation;
-
-
     private ExclusionZone exclusionZone;
 
 
@@ -147,6 +145,7 @@ public final class PointLabel extends Label {
         this.rotation = rotation;
         if (this.rotation != null) {
             this.rotation.setContext(RealParameterContext.REAL_CONTEXT);
+            this.rotation.setParent(this);
         }
     }
 
@@ -239,7 +238,7 @@ public final class PointLabel extends Label {
             result.merge(exclusionZone.getUsedAnalysis());
         }
         if (rotation != null) {
-            result.include(rotation);
+            result.merge(rotation.getUsedAnalysis());
         }
         return result;
     }

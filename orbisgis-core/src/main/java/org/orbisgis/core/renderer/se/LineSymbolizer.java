@@ -143,6 +143,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
                 this.perpendicularOffset = perpendicularOffset;
                 if (this.perpendicularOffset != null) {
                         this.perpendicularOffset.setContext(RealParameterContext.REAL_CONTEXT);
+                        this.perpendicularOffset.setParent(this);
                 }
         }
 
@@ -223,7 +224,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
         public UsedAnalysis getUsedAnalysis() {
                 UsedAnalysis ret = new UsedAnalysis();
                 if (perpendicularOffset != null) {
-                        ret.include(perpendicularOffset);
+                        ret.merge(perpendicularOffset.getUsedAnalysis());
                 }
                 if (stroke != null) {
                         ret.merge(stroke.getUsedAnalysis());
