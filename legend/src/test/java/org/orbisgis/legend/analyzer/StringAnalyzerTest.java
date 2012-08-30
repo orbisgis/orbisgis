@@ -28,31 +28,29 @@
  */
 package org.orbisgis.legend.analyzer;
 
-import org.orbisgis.legend.analyzer.parameter.StringParameterAnalyzer;
-import org.orbisgis.legend.structure.recode.Recode2StringLegend;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.util.ValidationEventCollector;
-import org.orbisgis.legend.structure.categorize.Categorize2StringLegend;
-import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
-import org.orbisgis.core.renderer.se.graphic.PointTextGraphic;
-import org.orbisgis.core.renderer.se.PointSymbolizer;
+import java.io.File;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
-import java.io.File;
-import javax.xml.bind.JAXBException;
 import net.opengis.se._2_0.core.StyleType;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.graphic.PointTextGraphic;
+import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.legend.AnalyzerTest;
+import org.orbisgis.legend.analyzer.parameter.StringParameterAnalyzer;
+import org.orbisgis.legend.structure.categorize.Categorize2StringLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
-import static org.junit.Assert.*;
+import org.orbisgis.legend.structure.recode.Recode2StringLegend;
 
 /**
  *
  * @author Alexis Guéganno
  */
-public class StringAnalyzerTest {
+public class StringAnalyzerTest extends AnalyzerTest {
 
         @Test
         public void testLiteralString() throws Exception {
@@ -84,8 +82,7 @@ public class StringAnalyzerTest {
 
         @Test
         public void testRecode() throws Exception {
-                String location = "src/test/resources/org/orbisgis/legend/stringRecode.se";
-                File xml = new File(location);
+                File xml = new File(STRING_RECODE);
                 Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(xml);
                 Style style = new Style(st, null);
@@ -94,5 +91,71 @@ public class StringAnalyzerTest {
                 StringParameter sp = (StringParameter) ptg.getPointLabel().getLabel().getText();
                 StringParameterAnalyzer spa = new StringParameterAnalyzer(sp);
                 assertTrue(spa.getLegend() instanceof Recode2StringLegend);
+        }
+        
+        @Test
+        public void testStringRecodeGetters() throws Exception {
+                Recode2StringLegend r2d2 = getRecode2StringLegend(getRecode2String());
+                assertTrue(r2d2.getKey(0).equals("2"));
+                assertTrue(r2d2.getKey(1).equals("4"));
+                assertTrue(r2d2.getItemValue(0).equals("Étroite"));
+                assertTrue(r2d2.getItemValue(1).equals("Moyenne"));
+                assertTrue(r2d2.getItemValue(2).equals("Large"));
+                assertTrue(r2d2.getItemValue("2").equals("Étroite"));
+                assertTrue(r2d2.getItemValue("4").equals("Moyenne"));
+                assertTrue(r2d2.getItemValue("6").equals("Large"));
+                assertTrue(r2d2.getLookupFieldName().equals("Largeur"));
+        }
+
+        @Test
+        public void testStringRecodeKeySetters() throws Exception {
+                Recode2String r2 = getRecode2String();
+                Recode2StringLegend r2d2 = getRecode2StringLegend(r2);
+                r2d2.setKey(0, "youhou ?");
+                r2d2.setKey(1, ":-)");
+                assertTrue(r2d2.getKey(0).equals("youhou ?"));
+                assertTrue(r2d2.getKey(1).equals(":-)"));
+                assertTrue(r2d2.getItemValue(0).equals("Étroite"));
+                assertTrue(r2d2.getItemValue(1).equals("Moyenne"));
+                assertTrue(r2d2.getItemValue(2).equals("Large"));
+                assertTrue(r2d2.getItemValue("youhou ?").equals("Étroite"));
+                assertTrue(r2d2.getItemValue(":-)").equals("Moyenne"));
+                assertNull(r2d2.getItemValue("0"));
+                assertNull(r2d2.getItemValue("50.0"));
+        }
+
+        @Test
+        public void testStringRecodeAddValue() throws Exception {
+                Recode2String r2 = getRecode2String();
+                Recode2StringLegend r2d2 = getRecode2StringLegend(r2);
+                r2d2.addItem("2", "Pas large");
+                assertTrue(r2d2.getItemValue(0).equals("Pas large"));
+                assertTrue(r2d2.getItemValue("2").equals("Pas large"));
+                assertTrue(r2.getMapItemValue(0).getValue(null).equals("Pas large"));
+                assertTrue(r2.getMapItemValue("2").getValue(null).equals("Pas large"));
+                r2d2.addItem("50.0", "75.0");
+                assertTrue(r2d2.getNumItems() == 4);
+                assertTrue(r2.getNumMapItem() == 4);
+                assertTrue(r2d2.getItemValue(3).equals("75.0"));
+                assertTrue(r2d2.getItemValue("50.0").equals("75.0"));
+                assertTrue(r2.getMapItemValue(3).getValue(null).equals("75.0"));
+                assertTrue(r2.getMapItemValue("50.0").getValue(null).equals("75.0"));
+
+        }
+
+        private Recode2String getRecode2String() throws Exception {
+                File xml = new File(STRING_RECODE);
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
+                JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(xml);
+                Style style = new Style(st, null);
+                PointSymbolizer ps = (PointSymbolizer) style.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+                PointTextGraphic ptg = (PointTextGraphic) ps.getGraphicCollection().getGraphic(0);
+                return (Recode2String)  ptg.getPointLabel().getLabel().getText();
+
+        }
+
+        private Recode2StringLegend getRecode2StringLegend(StringParameter rp) throws Exception {
+                StringParameterAnalyzer rpa = new StringParameterAnalyzer(rp);
+                return (Recode2StringLegend) rpa.getLegend();
         }
 }

@@ -49,7 +49,10 @@ public abstract class AnalyzerTest {
         public static final String PROP_LINE = "src/test/resources/org/orbisgis/legend/linearProportional.se";
         public static final String CONSTANT_LINE = "src/test/resources/org/orbisgis/legend/uniqueLineSymbol.se";
         public static final String CONSTANT_DASHED_LINE = "src/test/resources/org/orbisgis/legend/uniqueLineSymbolDash.se";
-        
+        public static final String REAL_RECODE = "src/test/resources/org/orbisgis/legend/density_hatch_recode.se";
+        public static final String STRING_RECODE = "src/test/resources/org/orbisgis/legend/stringRecode.se";
+        public static final String COLOR_RECODE = "src/test/resources/org/orbisgis/legend/colorRecode.se";
+
         public Style getStyle(String path) throws Exception {
             Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
             JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(new File(path));

@@ -28,8 +28,14 @@
  */
 package org.orbisgis.legend.structure.recode;
 
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
+import org.orbisgis.core.renderer.se.parameter.ValueReference;
 import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
+import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+import org.orbisgis.legend.structure.parameter.AbstractAttributedRPLegend;
 import org.orbisgis.legend.structure.parameter.ParameterLegend;
 
 /**
@@ -37,7 +43,7 @@ import org.orbisgis.legend.structure.parameter.ParameterLegend;
  * classifications that are used as {@code StringParameter} instances.
  * @author Alexis Guéganno
  */
-public class Recode2StringLegend implements ParameterLegend {
+public class Recode2StringLegend extends AbstractAttributedRPLegend implements ParameterLegend {
 
         private Recode2String recode;
 
@@ -48,6 +54,11 @@ public class Recode2StringLegend implements ParameterLegend {
          */
         public Recode2StringLegend(Recode2String recode) {
                 this.recode = recode;
+        }
+
+        @Override
+        public ValueReference getValueReference() {
+                return (StringAttribute)recode.getLookupValue();
         }
 
         /**
@@ -61,6 +72,89 @@ public class Recode2StringLegend implements ParameterLegend {
         @Override
         public SeParameter getParameter() {
                 return getRecode();
+        }
+
+        /**
+         * Gets the number of items contained in the inner {@code Recode}
+         * instance.
+         * @return
+         */
+        public int getNumItems(){
+                return recode.getNumMapItem();
+        }
+
+        /**
+         * Gets the String value, if any, associated to {@code key} in the inner {@code
+         * Recode}.
+         * @param key
+         * @return
+         */
+        public String getItemValue(String key){
+                try {
+                        StringParameter sp = recode.getMapItemValue(key);
+                        return sp != null ? sp.getValue(null) : null;
+                } catch (ParameterException ex) {
+                        throw new IllegalStateException("Are you sure the values"
+                                + "of your recode are literal values ?");
+                }
+        }
+
+        /**
+         * Gets the String value, if any, associated to {@code key} in the inner {@code
+         * Recode}.
+         * @param i
+         * @return
+         */
+        public String getItemValue(int i){
+                try {
+                        return recode.getMapItemValue(i).getValue(null);
+                } catch (ParameterException ex) {
+                        throw new IllegalStateException("Are you sure the values"
+                                + "of your recode are literal values ?");
+                }
+        }
+
+        /**
+         * Gets the ith key of the inner {@code Recode}.
+         * @param i
+         * @return
+         */
+        public String getKey(int i){
+                return recode.getMapItemKey(i);
+        }
+
+        /**
+         * Sets the ith key of the inner {@code Recode}.
+         * @param i
+         * @param newKey
+         */
+        public void setKey(int i, String newKey){
+                recode.setKey(i, newKey);
+        }
+
+        /**
+         * Adds an item in the inner {@code Recode}.
+         * @param key
+         * @param value
+         */
+        public void addItem(String key, String value){
+                recode.addMapItem(key, new StringLiteral(value));
+        }
+
+        /**
+         * Removes an item from the inner {@code Recode}.
+         * @param i
+         */
+        public void removeItem(int i){
+                recode.removeMapItem(i);
+        }
+
+        /**
+         * Removes an item from the inner {@code Recode}.
+         * @param key
+         */
+        public void removeItem(String key){
+                recode.removeMapItem(key);
         }
 
 }

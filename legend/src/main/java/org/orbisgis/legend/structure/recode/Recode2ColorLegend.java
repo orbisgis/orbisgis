@@ -28,8 +28,15 @@
  */
 package org.orbisgis.legend.structure.recode;
 
+import java.awt.Color;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
+import org.orbisgis.core.renderer.se.parameter.ValueReference;
+import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
+import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
+import org.orbisgis.legend.structure.parameter.AbstractAttributedRPLegend;
 import org.orbisgis.legend.structure.parameter.ParameterLegend;
 
 /**
@@ -37,9 +44,9 @@ import org.orbisgis.legend.structure.parameter.ParameterLegend;
  * Recode2Color} instance.
  * @author Alexis Guéganno
  */
-public class Recode2ColorLegend implements ParameterLegend {
+public class Recode2ColorLegend extends AbstractAttributedRPLegend implements ParameterLegend {
 
-        private Recode2Color rc;
+        private Recode2Color recode;
 
         /**
          * Build this {@code Recode2ColorLegend}, using the {@code Recode2Color}
@@ -47,21 +54,109 @@ public class Recode2ColorLegend implements ParameterLegend {
          * @param rc
          */
         public Recode2ColorLegend(Recode2Color rc) {
-                this.rc = rc;
+                this.recode = rc;
         }
 
+        @Override
+        public ValueReference getValueReference() {
+                return (StringAttribute)recode.getLookupValue();
+        }
         /**
          * Get the {@code Recode2Color} instance associated to this {@code
          * Recode2ColorLegend}.
          * @return
          */
         public Recode2Color getRecode() {
-                return rc;
+                return recode;
         }
 
         @Override
         public SeParameter getParameter() {
                 return getRecode();
+        }
+
+
+        /**
+         * Gets the number of items contained in the inner {@code Recode}
+         * instance.
+         * @return
+         */
+        public int getNumItems(){
+                return recode.getNumMapItem();
+        }
+
+        /**
+         * Gets the Color value, if any, associated to {@code key} in the inner {@code
+         * Recode}.
+         * @param key
+         * @return
+         */
+        public Color getItemValue(String key){
+                try {
+                        ColorParameter cp = recode.getMapItemValue(key);
+                        return cp != null ? cp.getColor(null) : null;
+                } catch (ParameterException ex) {
+                        throw new IllegalStateException("Are you sure the values"
+                                + "of your recode are literal values ?");
+                }
+        }
+
+        /**
+         * Gets the Color value, if any, associated to {@code key} in the inner {@code
+         * Recode}.
+         * @param i
+         * @return
+         */
+        public Color getItemValue(int i){
+                try {
+                        return recode.getMapItemValue(i).getColor(null);
+                } catch (ParameterException ex) {
+                        throw new IllegalStateException("Are you sure the values"
+                                + "of your recode are literal values ?");
+                }
+        }
+
+        /**
+         * Gets the ith key of the inner {@code Recode}.
+         * @param i
+         * @return
+         */
+        public String getKey(int i){
+                return recode.getMapItemKey(i);
+        }
+
+        /**
+         * Sets the ith key of the inner {@code Recode}.
+         * @param i
+         * @param newKey
+         */
+        public void setKey(int i, String newKey){
+                recode.setKey(i, newKey);
+        }
+
+        /**
+         * Adds an item in the inner {@code Recode}.
+         * @param key
+         * @param value
+         */
+        public void addItem(String key, Color value){
+                recode.addMapItem(key, new ColorLiteral(value));
+        }
+
+        /**
+         * Removes an item from the inner {@code Recode}.
+         * @param i
+         */
+        public void removeItem(int i){
+                recode.removeMapItem(i);
+        }
+
+        /**
+         * Removes an item from the inner {@code Recode}.
+         * @param key
+         */
+        public void removeItem(String key){
+                recode.removeMapItem(key);
         }
 
 }

@@ -28,15 +28,21 @@
  */
 package org.orbisgis.legend.structure.recode;
 
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
+import org.orbisgis.core.renderer.se.parameter.ValueReference;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
+import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
+import org.orbisgis.legend.structure.parameter.AbstractAttributedRPLegend;
 import org.orbisgis.legend.structure.parameter.ParameterLegend;
 
 /**
  * {@code LegendStructure} specialization associated to {@code Recode2Real} instances.
  * @author Alexis Guéganno
  */
-public class Recode2RealLegend implements ParameterLegend {
+public class Recode2RealLegend extends AbstractAttributedRPLegend implements ParameterLegend {
 
         private Recode2Real recode;
 
@@ -47,6 +53,11 @@ public class Recode2RealLegend implements ParameterLegend {
          */
         public Recode2RealLegend(Recode2Real recode) {
                 this.recode = recode;
+        }
+
+        @Override
+        public ValueReference getValueReference() {
+                return (StringAttribute)recode.getLookupValue();
         }
 
         /**
@@ -60,6 +71,96 @@ public class Recode2RealLegend implements ParameterLegend {
         @Override
         public SeParameter getParameter() {
                 return getRecode();
+        }
+
+        /**
+         * Gets the number of items contained in the inner {@code Recode}
+         * instance.
+         * @return
+         */
+        public int getNumItems(){
+                return recode.getNumMapItem();
+        }
+
+        /**
+         * Gets the Double value, if any, associated to {@code key} in the inner {@code
+         * Recode}.
+         * @param key
+         * @return
+         */
+        public Double getItemValue(String key){
+                try {
+                        //I consider here that we can face only two configurations
+                        //here :
+                        // - key is known and the returned value is a literal,
+                        //   so we can retrieve the double value with a null
+                        //   input map of features -> exception.
+                        // - key is not known, so we get and return null without
+                        //   any error.
+                        RealParameter rp = recode.getMapItemValue(key);
+                        return rp != null ? rp.getValue(null) : null;
+                } catch (ParameterException ex) {
+                        throw new IllegalStateException("Are you sure the values"
+                                + "of your recode are literal values ?");
+                }
+        }
+
+        /**
+         * Gets the Double value, if any, associated to {@code key} in the inner {@code
+         * Recode}.
+         * @param i
+         * @return
+         */
+        public Double getItemValue(int i){
+                try {
+                        return recode.getMapItemValue(i).getValue(null);
+                } catch (ParameterException ex) {
+                        throw new IllegalStateException("Are you sure the values"
+                                + "of your recode are literal values ?");
+                }
+        }
+
+        /**
+         * Gets the ith key of the inner {@code Recode}.
+         * @param i
+         * @return
+         */
+        public String getKey(int i){
+                return recode.getMapItemKey(i);
+        }
+
+        /**
+         * Sets the ith key of the inner {@code Recode}.
+         * @param i
+         * @param newKey
+         */
+        public void setKey(int i, String newKey){
+                recode.setKey(i, newKey);
+        }
+
+        /**
+         * Adds an item in the inner {@code Recode}.
+         * @param key
+         * @param value
+         */
+        public void addItem(String key, Double value){
+                recode.addMapItem(key, new RealLiteral(value));
+        }
+
+        /**
+         * Removes an item from the inner {@code Recode}.
+         * @param i
+         */
+        public void removeItem(int i){
+                recode.removeMapItem(i);
+        }
+
+        /**
+         * Removes an item from the inner {@code Recode}.
+         * @param key
+         */
+        public void removeItem(String key){
+                recode.removeMapItem(key);
         }
 
 }
