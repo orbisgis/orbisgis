@@ -478,10 +478,8 @@ public class MapControl extends JComponent implements ContainerListener {
 
                 @Override
 		public void selectionChanged(SelectionEvent e) {
-                        if (mapContext.isSelectionInducedRefresh()) {
-                                invalidateImage();
-                                mapContext.setSelectionInducedRefresh(false);
-                        }
+                        //TODO use the bean property selection event (when feature/table-editor will be merged) to find if the redraw has to be done
+                        invalidateImage();
 		}
 
                 @Override
