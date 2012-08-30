@@ -106,8 +106,14 @@ public class PenStrokeAnalyzer extends AbstractAnalyzer {
                                 boolean interp = an.isInterpolateUsed();
                                 boolean cat = an.isCategorizeUsed();
                                 boolean rec = an.isRecodeUsed();
-                                if(interp && !cat && ! rec && l.size()==1){
+                                if(interp && !cat && !rec && l.size()==1){
                                         return analyzePSWithInterpolate();
+                                } else if(!interp && !cat && rec){
+                                        //If here, we know we don't have mixed
+                                        //analysis : we deal with only one feature,
+                                        //one type of analysis, and SeParameter instances
+                                        //are validated by analyzers during instanciateLegend().
+                                        
                                 }
                         }
                 }
@@ -115,123 +121,3 @@ public class PenStrokeAnalyzer extends AbstractAnalyzer {
                         return analyzeConstantDashes(legdWidth, legdFill, legdDash);
                 } else {
                         return analyzeWithDashes(legdDash, legdWidth, legdFill);
-                }
-
-        }
-
-        /**
-         * We know that we have a constant PenStroke, let's check its configuration
-         * is valid.
-         * @return 
-         */
-        private LegendStructure analyzeConstantPenStroke(){
-                boolean constantFill = legdFill == null || legdFill instanceof ConstantSolidFillLegend;
-                boolean constantWidth = legdWidth == null || legdWidth instanceof RealLiteralLegend;
-                boolean constantDash = legdDash == null || legdDash instanceof StringLiteralLegend;
-                boolean known = constantDash && constantWidth && constantFill;
-                if(known){
-                        return new ConstantPenStrokeLegend(penStroke, (RealLiteralLegend) legdWidth,
-                                        (ConstantFillLegend) legdFill, (StringLiteralLegend) legdDash);
-                } else {
-                        return new PenStrokeLegend(penStroke, legdWidth, legdFill, legdDash);
-                }
-        }
-
-        /**
-         * We know we have a PenStroke taht contains an Interpolate instance somewhere.
-         * Let's try to get it as a ProportionalStrokeLegend.
-         * @return
-         */
-        private LegendStructure analyzePSWithInterpolate(){
-                boolean constantFill = legdFill == null || legdFill instanceof ConstantSolidFillLegend;
-                boolean constantWidth = legdWidth == null || legdWidth instanceof LinearInterpolationLegend;
-                boolean constantDash = legdDash == null || legdDash instanceof StringLiteralLegend;
-                boolean known = constantDash && constantWidth && constantFill;
-                if(known){
-                        return new ProportionalStrokeLegend(penStroke, (LinearInterpolationLegend) legdWidth,
-                                        (ConstantFillLegend) legdFill, (StringLiteralLegend) legdDash);
-                } else {
-                        return new PenStrokeLegend(penStroke, legdWidth, legdFill, legdDash);
-                }
-                
-        }
-
-        /**
-         * We have inner legends, let's recognize them before going further.
-         */
-        private void instanciateLegends(){
-                        RealParameter width= penStroke.getWidth();
-                        RealParameterAnalyzer rpaWidth = new RealParameterAnalyzer(width);
-                        legdWidth = (NumericLegend) rpaWidth.getLegend();
-                        StringParameter dashes = penStroke.getDashArray();
-                        legdDash = null;
-                        Fill fill = penStroke.getFill();
-                        legdFill = null;
-                        if(fill != null){
-                                FillAnalyzer fa = new FillAnalyzer(fill);
-                                legdFill = fa.getLegend();
-                        }
-                        if(dashes != null){
-                                StringParameterAnalyzer spaDash = new StringParameterAnalyzer(dashes);
-                                legdDash = spaDash.getLegend();
-                        }
-        }
-
-        /**
-         * We know we have dashes in our PenStroke. We first check if an analysis
-         * is made on the dashes array. If not, we search it somewhere else.
-         * @param dashes
-         * @param width
-         * @param fill
-         * @return
-         */
-        private LegendStructure analyzeWithDashes(LegendStructure dashes, NumericLegend width, LegendStructure fill) {
-                LegendStructure ret;
-                boolean constantFill = fill == null || fill instanceof ConstantSolidFillLegend;
-                boolean constantWidth = width == null || width instanceof RealLiteralLegend;
-                if(dashes instanceof Categorize2StringLegend){
-                        if(constantWidth && constantFill){
-                                ret = new CategorizedDashesPSLegend(penStroke, width, fill, dashes);
-                        } else {
-                                //Too many analysis for us.
-                                ret = new PenStrokeLegend(penStroke, width, fill, dashes);
-                        }
-                } else if (dashes instanceof Recode2StringLegend && constantFill){
-                        ret = new RecodedDashesPSLegend(penStroke, width, fill, dashes);
-                } else {
-                        //We are dealing with a literal
-                        ret = analyzeConstantDashes(width, fill, dashes);
-                }
-                return ret;
-        }
-
-        /**
-         * We know that we don't have dashes, or that the dash array is constant,
-         * in our PenStroke. Let's analyze it now, using just its fill and its width.
-         * @param width
-         * @param fill
-         */
-        private LegendStructure analyzeConstantDashes(NumericLegend width, LegendStructure fill, LegendStructure dash){
-                LegendStructure ret = null;
-                boolean constantFill = fill == null || fill instanceof ConstantSolidFillLegend;
-                boolean constantWidth = width == null || width instanceof RealLiteralLegend;
-                if (constantFill){
-                        if(constantWidth){
-                                ret = new ConstantPenStrokeLegend(penStroke, (RealLiteralLegend) width,
-                                        (ConstantFillLegend) fill, (StringLiteralLegend) dash);
-                        } else if(width instanceof LinearInterpolationLegend){
-                                ret = new ProportionalStrokeLegend(penStroke,
-                                        (LinearInterpolationLegend)width, fill, dash);
-                        } else {
-                                ret = new PenStrokeLegend(penStroke, width, fill, dash);
-                        }
-                } else if(width instanceof RealLiteralLegend){
-                        throw new UnsupportedOperationException("We are not able to "
-                                + "understand such a configuration yet");
-                } else {
-                        ret = new PenStrokeLegend(penStroke, width, fill, dash);
-                }
-                return ret;
-        }
-        
-}

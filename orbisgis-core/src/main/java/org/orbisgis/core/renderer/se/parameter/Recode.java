@@ -141,14 +141,9 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
      * @param value
      * @return index of new map item or -1 when key already exists
      */
-    public int addMapItem(String key, ToType value) {
-        if (mapItems.containsKey(key)) {
-            return -1;
-        } else {
-            mapItems.put(key, value);
-            value.setParent(this);
-        }
-        return mapItems.size() - 1;
+    public void addMapItem(String key, ToType value) {
+        mapItems.put(key, value);
+        value.setParent(this);
     }
 
     /**
