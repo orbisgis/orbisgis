@@ -233,6 +233,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 I18N.tr("Zoom to selection"),
                 I18N.tr("Zoom to visible selected geometries"),
                 useButtonText,"onZoomToSelection"));
+        toolBar.addSeparator();
         //Navigation Tools
         autoSelection.add(addButton(toolBar,new ZoomInTool(),useButtonText));
         autoSelection.add(addButton(toolBar,new ZoomOutTool(),useButtonText));
