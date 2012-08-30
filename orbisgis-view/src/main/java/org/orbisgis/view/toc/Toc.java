@@ -82,6 +82,7 @@ import org.orbisgis.view.map.EditableTransferEvent;
 import org.orbisgis.view.map.MapControl;
 import org.orbisgis.view.map.MapEditor;
 import org.orbisgis.view.map.MapElement;
+import org.orbisgis.view.map.jobs.ZoomToSelection;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.LegendsPanel;
 import org.orbisgis.view.toc.actions.cui.legend.EPLegendHelper;
@@ -478,16 +479,52 @@ public class Toc extends JPanel implements EditorDockable {
         private JPopupMenu makePopupMenu() {
                 JPopupMenu popup = new JPopupMenu();
                 Object selected = tree.getLastSelectedPathComponent();
-                //Popup:delete layer
+
                 if (tree.getSelectionCount() > 0 && selected instanceof TocTreeNodeLayer) {
+                        // Fetch selected layers for Row selection
+                        TreePath[] selectedItems = tree.getSelectionPaths();
+                        boolean hasLayerWithRowSelection = false;
+                        for (TreePath path : selectedItems) {
+                                Object treeNode = path.getLastPathComponent();
+                                if (treeNode instanceof TocTreeNodeLayer) {
+                                        if ((((TocTreeNodeLayer) treeNode).getLayer().getSelection().length > 0)) {
+                                                hasLayerWithRowSelection = true;
+                                                break;
+                                        }
+                                }
+                        }
+                        // Remove layer
                         JMenuItem deleteLayer = new JMenuItem(I18N.tr("Remove layer"), OrbisGISIcon.getIcon("remove"));
                         deleteLayer.setToolTipText(I18N.tr("Remove the layer from the map context"));
                         deleteLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onDeleteLayer"));
+                        popup.add(deleteLayer);
+
+                        // Zoom to layer envelope
                         JMenuItem zoomToLayer = new JMenuItem(I18N.tr("Zoom to"), OrbisGISIcon.getIcon("magnifier"));
                         zoomToLayer.setToolTipText(I18N.tr("Zoom to the layer bounding box"));
                         zoomToLayer.addActionListener(EventHandler.create(ActionListener.class, this, "zoomToLayer"));
                         popup.add(zoomToLayer);
-                        popup.add(deleteLayer);
+                        if (hasLayerWithRowSelection) {
+                                // Zoom to selected geometries
+                                JMenuItem zoomToLayerSelection =
+                                        new JMenuItem(I18N.tr("Zoom to selection"),
+                                        OrbisGISIcon.getIcon("zoom_selected"));
+                                zoomToLayerSelection.setToolTipText(I18N.tr("Zoom to selected "
+                                        + "geometries"));
+                                zoomToLayerSelection.addActionListener(
+                                        EventHandler.create(ActionListener.class,
+                                        this, "zoomToLayerSelection"));
+                                popup.add(zoomToLayerSelection);
+                                // Zoom to selected geometries
+                                JMenuItem clearLayerSelection =
+                                        new JMenuItem(I18N.tr("Clear selection"),
+                                        OrbisGISIcon.getIcon("edit-clear"));
+                                clearLayerSelection.setToolTipText(I18N.tr("Clear the selected geometries"));
+                                clearLayerSelection.addActionListener(
+                                        EventHandler.create(ActionListener.class,
+                                        this, "clearLayerRowSelection"));
+                                popup.add(clearLayerSelection);
+                        }
                         if (tree.getSelectionCount() == 1) {
                                 //display the menu to add a style from a file
                                 JMenuItem importStyle = new JMenuItem(I18N.tr("Import style"), OrbisGISIcon.getIcon("add"));
@@ -555,7 +592,25 @@ public class Toc extends JPanel implements EditorDockable {
                 }
                 mapContext.setBoundingBox(env);
         }
-
+        
+        /**
+         * The user click on the Zoom To Layer selection menu
+         */
+        public void zoomToLayerSelection() {
+                ILayer[] selectedLayers = mapContext.getSelectedLayers();
+                ZoomToSelection zoomJob = new ZoomToSelection(mapContext, selectedLayers);
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.backgroundOperation(zoomJob);
+        }
+        /**
+         * The user click on the clear layer selection menu
+         */
+        public void clearLayerRowSelection() {
+                ILayer[] selectedLayers = mapContext.getSelectedLayers();
+                for(ILayer layer : selectedLayers) {
+                        layer.setSelection(new int[0]);
+                }
+        }
         /**
          * The user choose to delete a style through the dedicated menu.
          */
