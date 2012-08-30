@@ -36,12 +36,11 @@ import java.awt.event.ComponentListener;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import javax.swing.BorderFactory;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-import javax.swing.ListModel;
+import javax.swing.*;
 import javax.swing.event.ListDataListener;
+import org.orbisgis.view.components.button.CustomButton;
 import org.orbisgis.view.components.statusbar.StatusBar;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.joblist.JobListCellRenderer;
 import org.orbisgis.view.joblist.JobListItem;
 import org.orbisgis.view.joblist.JobListModel;
@@ -68,6 +67,7 @@ public class MainFrameStatusBar extends StatusBar {
                 setMinimumSize(new Dimension(1,STATUS_BAR_HEIGHT));
                 //Add the JobList
                 makeJobList();
+                makeWorkspaceManager();
         }
         
         private void makeJobList() {
@@ -77,7 +77,15 @@ public class MainFrameStatusBar extends StatusBar {
                 //Set hand cursor to notify the user that a list/link can be poped-up
                 jobListBar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
                 jobListBar.addMouseListener(EventHandler.create(MouseListener.class,this,"onUserClickJobLabel",null,"mouseClicked"));
-                addComponent(jobListBar);
+                addComponent(jobListBar,SwingConstants.RIGHT);
+        }
+        
+        private void makeWorkspaceManager() {
+                JPanel workspaceBar = new JPanel(new BorderLayout());
+                JButton btnChangeWorkspace = new CustomButton(OrbisGISIcon.getIcon("application_go"));
+		btnChangeWorkspace.setToolTipText("Switch to another workspace");            
+                workspaceBar.add(btnChangeWorkspace);
+                addComponent(workspaceBar,SwingConstants.LEFT);
         }
 
         @Override
