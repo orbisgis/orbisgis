@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;

@@ -3,8 +3,8 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
  *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
@@ -22,9 +22,8 @@
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * For more information, please consult: <http://www.orbisgis.org/> or contact
+ * directly: info_at_ orbisgis.org
  */
 package org.orbisgis.view.main.frames;
 
@@ -36,8 +35,12 @@ import java.awt.event.ComponentListener;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
+import java.io.IOException;
 import javax.swing.*;
 import javax.swing.event.ListDataListener;
+import org.orbisgis.core.Services;
+import org.orbisgis.core.workspace.CoreWorkspace;
+import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.components.button.CustomButton;
 import org.orbisgis.view.components.statusbar.StatusBar;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -45,11 +48,15 @@ import org.orbisgis.view.joblist.JobListCellRenderer;
 import org.orbisgis.view.joblist.JobListItem;
 import org.orbisgis.view.joblist.JobListModel;
 import org.orbisgis.view.joblist.JobListPanel;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * The status bar of the MainFrame.
  */
 public class MainFrameStatusBar extends StatusBar {
+
+        private static final I18n I18N = I18nFactory.getI18n(MainFrameStatusBar.class);
         //Layout parameters
         private static final int OUTER_BAR_BORDER = 1;
         private static final int HORIZONTAL_EMPTY_BORDER = 4;
@@ -60,32 +67,33 @@ public class MainFrameStatusBar extends StatusBar {
         private JobListModel runningJobs;
         private JobListItem firstJob;  //Job[0] listener & simplified panel
         JFrame jobPopup;               //The floating frame
-        
+
         public MainFrameStatusBar() {
                 super(OUTER_BAR_BORDER, HORIZONTAL_EMPTY_BORDER);
-                setPreferredSize(new Dimension(-1,STATUS_BAR_HEIGHT));
-                setMinimumSize(new Dimension(1,STATUS_BAR_HEIGHT));
+                setPreferredSize(new Dimension(-1, STATUS_BAR_HEIGHT));
+                setMinimumSize(new Dimension(1, STATUS_BAR_HEIGHT));
                 //Add the JobList
                 makeJobList();
                 makeWorkspaceManager();
         }
-        
+
         private void makeJobList() {
                 runningJobs = new JobListModel().listenToBackgroundManager();
-                runningJobs.addListDataListener(EventHandler.create(ListDataListener.class,this,"onListContentChanged"));
+                runningJobs.addListDataListener(EventHandler.create(ListDataListener.class, this, "onListContentChanged"));
                 jobListBar = new JPanel(new BorderLayout());
                 //Set hand cursor to notify the user that a list/link can be poped-up
                 jobListBar.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-                jobListBar.addMouseListener(EventHandler.create(MouseListener.class,this,"onUserClickJobLabel",null,"mouseClicked"));
-                addComponent(jobListBar,SwingConstants.RIGHT);
+                jobListBar.addMouseListener(EventHandler.create(MouseListener.class, this, "onUserClickJobLabel", null, "mouseClicked"));
+                addComponent(jobListBar, SwingConstants.RIGHT);
         }
-        
+
         private void makeWorkspaceManager() {
                 JPanel workspaceBar = new JPanel(new BorderLayout());
                 JButton btnChangeWorkspace = new CustomButton(OrbisGISIcon.getIcon("application_go"));
-		btnChangeWorkspace.setToolTipText("Switch to another workspace");            
+                btnChangeWorkspace.setToolTipText(I18N.tr("Switch to another workspace"));
+
                 workspaceBar.add(btnChangeWorkspace);
-                addComponent(workspaceBar,SwingConstants.LEFT);
+                addComponent(workspaceBar, SwingConstants.LEFT);
         }
 
         @Override
@@ -95,10 +103,10 @@ public class MainFrameStatusBar extends StatusBar {
                 clearJobTitle();
                 runningJobs.dispose();
         }
-        
+       
         /**
-         * The user click on the Job label
-         * The JobList component must be shown and the focus set on it
+         * The user click on the Job label The JobList component must be shown
+         * and the focus set on it
          */
         public void onUserClickJobLabel() {
                 closeJobPopup();
@@ -113,72 +121,75 @@ public class MainFrameStatusBar extends StatusBar {
                 jobPopup.setContentPane(jobList);
                 //On lost focus this window must be closed
                 jobPopup.addFocusListener(
-                        EventHandler.create(FocusListener.class,this,
-                        "onJobPopupLostFocus",null,"focusLost"));
+                        EventHandler.create(FocusListener.class, this,
+                        "onJobPopupLostFocus", null, "focusLost"));
                 //On resize , this window must be moved
                 jobPopup.addComponentListener(
                         EventHandler.create(ComponentListener.class,
-                        this,"onJobPopupResize",null,"componentResized"));
+                        this, "onJobPopupResize", null, "componentResized"));
                 //Do size and place
                 jobPopup.setVisible(true);
                 jobPopup.pack();
                 onJobPopupResize();
-                
+
         }
-        
+
         private void closeJobPopup() {
-                if(jobPopup!=null) {
+                if (jobPopup != null) {
                         jobPopup.dispose();
                         jobPopup = null;
                 }
         }
+
         /**
-         * The user click outside the joblist
-         * This window need to be closed
+         * The user click outside the joblist This window need to be closed
          */
         public void onJobPopupLostFocus() {
                 closeJobPopup();
         }
+
         /**
          * On resize , the job list window must be moved
-         * @param ce 
+         *
+         * @param ce
          */
         public void onJobPopupResize() {
-                if(jobPopup!=null) {
+                if (jobPopup != null) {
                         Point labelLocation = jobListBar.getLocationOnScreen();
-                        jobPopup.setLocation(new Point(labelLocation.x,labelLocation.y-jobPopup.getContentPane().getHeight()));
+                        jobPopup.setLocation(new Point(labelLocation.x, labelLocation.y - jobPopup.getContentPane().getHeight()));
                 }
-                
+
         }
+
         private void clearJobTitle() {
-                if(firstJob!=null) {
+                if (firstJob != null) {
                         firstJob.dispose();
                 }
                 firstJob = null;
-                if(jobListBar!=null) {
-                        if(jobListBar.getComponentCount()>0) {
+                if (jobListBar != null) {
+                        if (jobListBar.getComponentCount() > 0) {
                                 jobListBar.remove(0);
                         }
-                        jobListBar.setVisible(false); 
+                        jobListBar.setVisible(false);
                 }
         }
-        
+
         /**
-         * The list content has been updated,
-         * the panel title label must be hide/shown
+         * The list content has been updated, the panel title label must be
+         * hide/shown
          */
         public void onListContentChanged() {
-                if(runningJobs.getSize()>0) {
-                        JobListItem firstItem = (JobListItem)runningJobs.getElementAt(0);
+                if (runningJobs.getSize() > 0) {
+                        JobListItem firstItem = (JobListItem) runningJobs.getElementAt(0);
                         //If the first job is not the one shown in the status bar
-                        if(firstJob==null || !firstItem.equals(firstJob)) {
+                        if (firstJob == null || !firstItem.equals(firstJob)) {
                                 clearJobTitle();
                                 //Create a local joblistitem (simplified)
                                 firstJob = new JobListItem(firstItem.getJob()).listenToJob(true);
                                 jobListBar.setVisible(true);
-                                jobListBar.add(firstJob.getItemPanel(),BorderLayout.CENTER);
+                                jobListBar.add(firstJob.getItemPanel(), BorderLayout.CENTER);
                         }
-                        if(jobPopup!=null) {
+                        if (jobPopup != null) {
                                 jobPopup.pack();
                         }
                 } else {

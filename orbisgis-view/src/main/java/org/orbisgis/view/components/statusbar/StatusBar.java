@@ -35,16 +35,16 @@ import javax.swing.*;
  * Root class for all status bar in OrbisGIS.
  */
 public class StatusBar extends JPanel {
-        protected JPanel rigthToolbar;
+        protected JPanel rightToolbar;
         protected JPanel leftToolbar;
         private final int horizontalEmptyBorder;
 
         public StatusBar(int outerBarBorder, int horizontalEmptyBorder) {
                 super(new BorderLayout());
                 this.horizontalEmptyBorder = horizontalEmptyBorder;
-                rigthToolbar = new JPanel();
-                rigthToolbar.setLayout(
-                        new BoxLayout(rigthToolbar, BoxLayout.X_AXIS));
+                rightToolbar = new JPanel();
+                rightToolbar.setLayout(
+                        new BoxLayout(rightToolbar, BoxLayout.X_AXIS));
                 leftToolbar = new JPanel();
                 leftToolbar.setLayout(
                         new BoxLayout(leftToolbar, BoxLayout.X_AXIS));
@@ -53,7 +53,7 @@ public class StatusBar extends JPanel {
                         BorderFactory.createEtchedBorder(),
                         BorderFactory.createEmptyBorder(outerBarBorder,
                         outerBarBorder, outerBarBorder, outerBarBorder)));
-                add(rigthToolbar, BorderLayout.EAST);
+                add(rightToolbar, BorderLayout.EAST);
                 add(leftToolbar, BorderLayout.WEST);
         }
                
@@ -75,13 +75,13 @@ public class StatusBar extends JPanel {
          * @param addSeparator Add a separator at the left of the component
          */
         public void addComponentOnTheRigthToolBar(JComponent component,boolean addSeparator) {
-                if(addSeparator && rigthToolbar.getComponentCount()!=0) {
+                if(addSeparator && rightToolbar.getComponentCount()!=0) {
                         JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
-                        rigthToolbar.add(Box.createHorizontalStrut(horizontalEmptyBorder));
-                        rigthToolbar.add(separator);
-                        rigthToolbar.add(Box.createHorizontalStrut(horizontalEmptyBorder));
+                        rightToolbar.add(Box.createHorizontalStrut(horizontalEmptyBorder));
+                        rightToolbar.add(separator);
+                        rightToolbar.add(Box.createHorizontalStrut(horizontalEmptyBorder));
                 }
-                rigthToolbar.add(component);
+                rightToolbar.add(component);
         }       
         
         
