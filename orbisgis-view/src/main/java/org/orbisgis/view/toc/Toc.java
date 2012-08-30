@@ -515,6 +515,15 @@ public class Toc extends JPanel implements EditorDockable {
                                         EventHandler.create(ActionListener.class,
                                         this, "zoomToLayerSelection"));
                                 popup.add(zoomToLayerSelection);
+                                // Zoom to selected geometries
+                                JMenuItem clearLayerSelection =
+                                        new JMenuItem(I18N.tr("Clear selection"),
+                                        OrbisGISIcon.getIcon("edit-clear"));
+                                clearLayerSelection.setToolTipText(I18N.tr("Clear the selected geometries"));
+                                clearLayerSelection.addActionListener(
+                                        EventHandler.create(ActionListener.class,
+                                        this, "clearLayerRowSelection"));
+                                popup.add(clearLayerSelection);
                         }
                         if (tree.getSelectionCount() == 1) {
                                 //display the menu to add a style from a file
@@ -593,8 +602,15 @@ public class Toc extends JPanel implements EditorDockable {
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
                 bm.backgroundOperation(zoomJob);
         }
-
-        
+        /**
+         * The user click on the clear layer selection menu
+         */
+        public void clearLayerRowSelection() {
+                ILayer[] selectedLayers = mapContext.getSelectedLayers();
+                for(ILayer layer : selectedLayers) {
+                        layer.setSelection(new int[0]);
+                }
+        }
         /**
          * The user choose to delete a style through the dedicated menu.
          */
