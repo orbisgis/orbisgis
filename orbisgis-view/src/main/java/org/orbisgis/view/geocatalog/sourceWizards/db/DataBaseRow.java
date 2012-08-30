@@ -29,7 +29,6 @@
 package org.orbisgis.view.geocatalog.sourceWizards.db;
 
 import javax.swing.JOptionPane;
-import org.apache.log4j.Logger;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
