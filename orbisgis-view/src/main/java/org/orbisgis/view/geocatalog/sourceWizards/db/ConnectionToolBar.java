@@ -54,6 +54,9 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
+ * The ConnectionToolBar class is used to manage the connection to a database
+ * and a list of connection from several database. This list are stored on the
+ * current OrbisGIS folder with the name db_connexions.properties.
  *
  * @author ebocher
  */
@@ -70,16 +73,24 @@ public class ConnectionToolBar extends JToolBar {
         private JButton btnEditConnection;
         private JButton btnRemoveConnection;
         private ListenerContainer<DBMessageEvents> messagesEvents = new ListenerContainer<DBMessageEvents>();
-        
+        private boolean connected = false;
+        public static final String PROP_CONNECTED = "connected";
 
+        /*
+         * Create the toolbar with all components : combobox, buttons
+         */
         public ConnectionToolBar() {
                 init();
         }
 
+        /**
+         * A listener to manage some event messages
+         *
+         * @return
+         */
         public ListenerContainer<DBMessageEvents> getMessagesEvents() {
                 return messagesEvents;
-        }        
-        
+        }
 
         /**
          * Create all components
@@ -131,7 +142,7 @@ public class ConnectionToolBar extends JToolBar {
         }
 
         /**
-         * Load connection properties
+         * Load the connection properties file.
          */
         private void loadDBProperties() {
                 CoreWorkspace ws = Services.getService(CoreWorkspace.class);
@@ -147,7 +158,7 @@ public class ConnectionToolBar extends JToolBar {
         }
 
         /**
-         * Save connection properties
+         * Save the connection properties file
          */
         public void saveProperties() {
                 try {
@@ -160,43 +171,25 @@ public class ConnectionToolBar extends JToolBar {
 
         }
 
-        public JButton getBtnAddConnection() {
-                return btnAddConnection;
-        }
-
-        public JButton getBtnConnect() {
-                return btnConnect;
-        }
-
-        public JButton getBtnDisconnect() {
-                return btnDisconnect;
-        }
-
-        public JButton getBtnEditConnection() {
-                return btnEditConnection;
-        }
-
-        public JButton getBtnRemoveConnection() {
-                return btnRemoveConnection;
-        }
-
         /**
-         * Return the combobox component that contains all string connection parameters
-         * @return 
+         * Return the combobox component that contains all string connection
+         * parameters
+         *
+         * @return
          */
         public JComboBox getCmbDataBaseUri() {
                 return cmbDataBaseUri;
         }
 
         /**
-         * Return all string connection parameters 
-         * @return 
+         * Return all string connection parameters stored in the properties
+         * file.
+         *
+         * @return
          */
         public Properties getDbProperties() {
                 return dbProperties;
         }
-        private boolean connected = false;
-        public static final String PROP_CONNECTED = "connected";
 
         /**
          * Get the value of connected
@@ -220,11 +213,7 @@ public class ConnectionToolBar extends JToolBar {
                 this.connected = connected;
                 firePropertyChange(PROP_CONNECTED, oldConnected, connected);
         }
-
-        
         private transient final VetoableChangeSupport vetoableChangeSupport = new OGVetoableChangeSupport(this);
-
-        
 
         /**
          * Add a VetoableChangeListener for a specific property.
@@ -247,12 +236,12 @@ public class ConnectionToolBar extends JToolBar {
                 onUserSelectionChange();
 
         }
-        
+
         /**
          * Disconnect from the database and update all buttons
          */
         public void onDisconnect() {
-                 try {
+                try {
                         setConnected(false);
                 } catch (PropertyVetoException ex) {
                         return;
@@ -268,32 +257,29 @@ public class ConnectionToolBar extends JToolBar {
                 boolean isCmbEmpty = getCmbDataBaseUri().getItemCount() == 0;
 
                 if (isCmbEmpty) {
-                        getBtnConnect().setEnabled(false);
-                        getBtnDisconnect().setEnabled(false);
-                        getBtnAddConnection().setEnabled(true);
-                        getBtnEditConnection().setEnabled(false);
-                        getBtnRemoveConnection().setEnabled(false);
-                        getCmbDataBaseUri().setEnabled(true);
+                        btnConnect.setEnabled(false);
+                        btnDisconnect.setEnabled(false);
+                        btnAddConnection.setEnabled(true);
+                        btnEditConnection.setEnabled(false);
+                        btnRemoveConnection.setEnabled(false);
+                        cmbDataBaseUri.setEnabled(true);
                 } else {
                         if (isConnected()) {
-                                getBtnConnect().setEnabled(false);
-                                getBtnDisconnect().setEnabled(true);
-                                getBtnAddConnection().setEnabled(false);
-                                getBtnEditConnection().setEnabled(false);
-                                getBtnRemoveConnection().setEnabled(false);
-                                getCmbDataBaseUri().setEnabled(false);
+                                btnConnect.setEnabled(false);
+                                btnDisconnect.setEnabled(true);
+                                btnAddConnection.setEnabled(false);
+                                btnEditConnection.setEnabled(false);
+                                btnRemoveConnection.setEnabled(false);
+                                cmbDataBaseUri.setEnabled(false);
                         } else {
-                                getBtnConnect().setEnabled(true);
-                                getBtnDisconnect().setEnabled(false);
-                                getBtnAddConnection().setEnabled(true);
-                                getBtnEditConnection().setEnabled(true);
-                                getBtnRemoveConnection().setEnabled(true);
-                                getCmbDataBaseUri().setEnabled(true);
+                                btnConnect.setEnabled(true);
+                                btnDisconnect.setEnabled(false);
+                                btnAddConnection.setEnabled(true);
+                                btnEditConnection.setEnabled(true);
+                                btnRemoveConnection.setEnabled(true);
+                                cmbDataBaseUri.setEnabled(true);
                         }
                 }
-
-
-
         }
 
         /**
@@ -324,7 +310,7 @@ public class ConnectionToolBar extends JToolBar {
 
                         } else {
                                 messagesEvents.callListeners(new DBMessageEvents(I18N.tr("There is already a connection with this name."), this));
-                               
+
                         }
 
                 }

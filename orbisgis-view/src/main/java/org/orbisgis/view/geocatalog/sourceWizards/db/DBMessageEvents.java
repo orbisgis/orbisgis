@@ -30,7 +30,7 @@ package org.orbisgis.view.geocatalog.sourceWizards.db;
 import java.util.EventObject;
 
 /**
- *
+ * A class to identify the message returned by the database panel.
  * @author ebocher
  */
 public class DBMessageEvents extends EventObject {
