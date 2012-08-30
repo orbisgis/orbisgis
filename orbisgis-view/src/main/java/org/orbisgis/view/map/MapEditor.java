@@ -57,6 +57,7 @@ import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.jobs.ZoomToSelection;
+import org.orbisgis.view.map.mapsManager.MapsManager;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.tools.*;
@@ -85,6 +86,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private Point lastCursorPosition = new Point();
     private Point lastTranslatedCursorPosition = new Point();
     private AtomicBoolean initialised = new AtomicBoolean(false);
+    private MapsManager mapsManager;
     /**
      * Constructor
      */
@@ -104,9 +106,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         //For debug purpose, also add the toolbar in the frame
         //add(createToolBar(false), BorderLayout.SOUTH);
         //Add the tools in the docking Panel title
-        dockingPanelParameters.setToolBar(createToolBar(true));
-
-       
+        dockingPanelParameters.setToolBar(createToolBar(true));      
         //Set the Drop target
         dragDropHandler = new MapTransferHandler();        
         this.setTransferHandler(dragDropHandler);
@@ -136,6 +136,9 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                                 MapStatusBar.PROP_USER_DEFINED_SCALE_DENOMINATOR,
                                 EventHandler.create(VetoableChangeListener.class, this,
                                 "onUserSetScaleDenominator", ""));
+                        // Create the MapManager
+                        mapsManager = new MapsManager((JFrame)getTopLevelAncestor());
+                        mapsManager.setParentPanel(this);
                 }
         }
 
@@ -261,10 +264,26 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         autoSelection.add(mesureButton);
         toolBar.add(mesureButton);
         mesureButton.setSelectedItem(defaultMenu);
+        
+        // Show/Hide maps manager
+        toolBar.add(addButton(OrbisGISIcon.getIcon("map"),
+                I18N.tr("Maps tree"),
+                I18N.tr("Show/Hide maps tree"),
+                useButtonText,"onShowHideMapsTree"));
         toolBar.addSeparator();
         return toolBar;
     }
 
+    /**
+     * User click on the Show/Hide maps tree
+     */
+    public void onShowHideMapsTree() {
+            if(!mapsManager.isVisible()) {
+                    mapsManager.setVisible(true);
+            } else {
+                    mapsManager.setVisible(false);
+            }
+    }
     /**
      * Add the automaton tool to a Menu
      * @param automaton
