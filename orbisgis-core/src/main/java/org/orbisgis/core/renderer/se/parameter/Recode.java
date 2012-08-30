@@ -136,14 +136,14 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
     }
 
     /**
-     * Add a new map item
+     * Add a new map item or set the value associated to {@code key} to {@code
+     * value}, if key is already stored in this recode.
      * @param key
      * @param value
-     * @return index of new map item or -1 when key already exists
      */
     public void addMapItem(String key, ToType value) {
-        mapItems.put(key, value);
-        value.setParent(this);
+            mapItems.put(key, value);
+            value.setParent(this);
     }
 
     /**
