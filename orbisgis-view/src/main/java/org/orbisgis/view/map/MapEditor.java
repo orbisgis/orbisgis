@@ -86,7 +86,9 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private Point lastCursorPosition = new Point();
     private Point lastTranslatedCursorPosition = new Point();
     private AtomicBoolean initialised = new AtomicBoolean(false);
-    private MapsManager mapsManager;
+    //private MapsManager mapsManager;
+    JLayeredPane layeredPane;
+    ComponentListener sizeListener = EventHandler.create(ComponentListener.class,this,"updateMapControlSize",null,"componentResized");
     /**
      * Constructor
      */
@@ -99,7 +101,9 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         dockingPanelParameters.setMinimizable(false);
         dockingPanelParameters.setExternalizable(false);
         dockingPanelParameters.setCloseable(false);
-        add(mapControl, BorderLayout.CENTER);
+        layeredPane = new JLayeredPane();
+        layeredPane.add(mapControl,0);
+        add(layeredPane, BorderLayout.CENTER);
         add(mapStatusBar, BorderLayout.PAGE_END);
         mapControl.setDefaultTool(new ZoomInTool());
         //Declare Tools of Map Editors
@@ -119,7 +123,6 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             }
             mapControl.getMapTransform().setScaleDenominator(newScale);
     }
-    
         /**
          * Notifies this component that it now has a parent component. When this
          * method is invoked, the chain of parent components is set up with
@@ -129,6 +132,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         public void addNotify() {
                 super.addNotify();
                 if (!initialised.getAndSet(true)) {
+                        addComponentListener(sizeListener);
                         //Register listener
                         dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(Listener.class, this, "onDropEditable", "editableList"));
                         mapControl.addMouseMotionListener(EventHandler.create(MouseMotionListener.class, this, "onMouseMove", "point", "mouseMoved"));
@@ -137,11 +141,14 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                                 EventHandler.create(VetoableChangeListener.class, this,
                                 "onUserSetScaleDenominator", ""));
                         // Create the MapManager
-                        mapsManager = new MapsManager((JFrame)getTopLevelAncestor());
-                        mapsManager.setParentPanel(this);
+                        //mapsManager = new MapsManager((JFrame)getTopLevelAncestor());
+                        //mapsManager.setParentPanel(this);
                 }
         }
-
+        
+        public void updateMapControlSize() {                        
+                mapControl.setBounds(0,0,layeredPane.getWidth(),layeredPane.getHeight());
+        }
 
     /**
      * The user Drop a list of Editable
@@ -278,11 +285,14 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
      * User click on the Show/Hide maps tree
      */
     public void onShowHideMapsTree() {
+            /*
             if(!mapsManager.isVisible()) {
                     mapsManager.setVisible(true);
             } else {
                     mapsManager.setVisible(false);
             }
+            *
+            */
     }
     /**
      * Add the automaton tool to a Menu
