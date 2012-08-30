@@ -35,43 +35,68 @@ import javax.swing.*;
  * Root class for all status bar in OrbisGIS.
  */
 public class StatusBar extends JPanel {
-        protected JPanel horizontalBar;
+        protected JPanel rigthToolbar;
+        protected JPanel leftToolbar;
         private final int horizontalEmptyBorder;
 
         public StatusBar(int outerBarBorder, int horizontalEmptyBorder) {
                 super(new BorderLayout());
                 this.horizontalEmptyBorder = horizontalEmptyBorder;
-                horizontalBar = new JPanel();
-                horizontalBar.setLayout(
-                        new BoxLayout(horizontalBar, BoxLayout.X_AXIS));
+                rigthToolbar = new JPanel();
+                rigthToolbar.setLayout(
+                        new BoxLayout(rigthToolbar, BoxLayout.X_AXIS));
+                leftToolbar = new JPanel();
+                leftToolbar.setLayout(
+                        new BoxLayout(leftToolbar, BoxLayout.X_AXIS));
                 setBorder(
                         BorderFactory.createCompoundBorder(
                         BorderFactory.createEtchedBorder(),
                         BorderFactory.createEmptyBorder(outerBarBorder,
                         outerBarBorder, outerBarBorder, outerBarBorder)));
-                add(horizontalBar,BorderLayout.EAST);    
+                add(rigthToolbar, BorderLayout.EAST);
+                add(leftToolbar, BorderLayout.WEST);
         }
                
 
         /**
-         * Append a component on the right of the status bar
+         * Append a component on the right or the left the status bar
          * @param component 
          */
-        public void addComponent(JComponent component) {
-                addComponent(component,true);
+        public void addComponent(JComponent component, int position) {
+                if (position == SwingConstants.LEFT) {
+                        addComponentOnTheLeftToolBar(component, true);
+                } else if (position == SwingConstants.RIGHT) {
+                        addComponentOnTheRigthToolBar(component, true);
+                }
         }
         /**
-         * Append a component on the right of the status bar
+         * Append a component on the right status bar
          * @param component 
          * @param addSeparator Add a separator at the left of the component
          */
-        public void addComponent(JComponent component,boolean addSeparator) {
-                if(addSeparator && horizontalBar.getComponentCount()!=0) {
+        public void addComponentOnTheRigthToolBar(JComponent component,boolean addSeparator) {
+                if(addSeparator && rigthToolbar.getComponentCount()!=0) {
                         JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
-                        horizontalBar.add(Box.createHorizontalStrut(horizontalEmptyBorder));
-                        horizontalBar.add(separator);
-                        horizontalBar.add(Box.createHorizontalStrut(horizontalEmptyBorder));
+                        rigthToolbar.add(Box.createHorizontalStrut(horizontalEmptyBorder));
+                        rigthToolbar.add(separator);
+                        rigthToolbar.add(Box.createHorizontalStrut(horizontalEmptyBorder));
                 }
-                horizontalBar.add(component);
-        }        
+                rigthToolbar.add(component);
+        }       
+        
+        
+        /**
+         * Append a component on the left status bar
+         * @param component 
+         * @param addSeparator Add a separator at the left of the component
+         */
+        public void addComponentOnTheLeftToolBar(JComponent component,boolean addSeparator) {
+                if(addSeparator && leftToolbar.getComponentCount()!=0) {
+                        JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
+                        leftToolbar.add(Box.createHorizontalStrut(horizontalEmptyBorder));
+                        leftToolbar.add(separator);
+                        leftToolbar.add(Box.createHorizontalStrut(horizontalEmptyBorder));
+                }
+                leftToolbar.add(component);
+        } 
 }

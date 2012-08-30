@@ -88,14 +88,14 @@ public class MapStatusBar extends StatusBar {
                 //Add bar components
                 //Coordinates
                 mouseCoordinatesLabel = new JLabel();
-                addComponent(mouseCoordinatesLabel);
+                addComponent(mouseCoordinatesLabel, SwingConstants.RIGHT);
                 // Projection
                 projectionLabel = new JLabel();
-                addComponent(projectionLabel);
+                addComponent(projectionLabel, SwingConstants.RIGHT);
                 JButton changeProjection = new CustomButton(OrbisGISIcon.getIcon("world"));
                 changeProjection.setToolTipText(I18N.tr("Change coordinate reference system"));
                 //changeProjection.setContentAreaFilled(false);
-                addComponent(changeProjection,false);
+                addComponentOnTheRigthToolBar(changeProjection,false);
                 // Scale
                 scaleLabel = new JLabel(I18N.tr("Scale :"));
                 scaleField = new JTextField();
@@ -103,8 +103,8 @@ public class MapStatusBar extends StatusBar {
                 scaleField.setInputVerifier(new FormattedTextFieldVerifier());
                 //scaleField.setEditable(false);
                 //scaleField.setColumns(SCALE_FIELD_COLUMNS);
-                addComponent(scaleLabel);
-                addComponent(scaleField,false);
+                addComponent(scaleLabel, SwingConstants.RIGHT);
+                addComponentOnTheRigthToolBar(scaleField,false);
                 //Set initial value
                 setScaleDenominator(1);
                 setProjection(new CRSFactory().createFromName("EPSG:4326"));
