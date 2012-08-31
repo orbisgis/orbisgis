@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.table;
 
-import com.vividsolutions.jts.geom.Envelope;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Point;
@@ -177,15 +176,15 @@ public class TableEditor extends JPanel implements EditorDockable {
          * @param newValue 
          */
         public void onEditableSelectionChange(IntegerUnion newValue) {
-                        if(!onUpdateEditableSelection.getAndSet(true)) {
-                                try {
-                                                setRowSelection(newValue);
-                                }finally {
-                                        onUpdateEditableSelection.set(false);
-                                }
+                if (!onUpdateEditableSelection.getAndSet(true)) {
+                        try {
+                                setRowSelection(newValue);
+                        } finally {
+                                onUpdateEditableSelection.set(false);
                         }
+                }
         }
-        
+
         /**
          * The popup is destroyed, the cell border need to be removed
          */
@@ -778,19 +777,20 @@ public class TableEditor extends JPanel implements EditorDockable {
          */
         public void onTableSelectionChange(ListSelectionEvent evt) {
                 updateTitle();
-                if(!evt.getValueIsAdjusting()) {
-                        try {
-                                if(!onUpdateEditableSelection.getAndSet(true)) {
-                                        SwingUtilities.invokeLater(new Runnable() {
+                if (!evt.getValueIsAdjusting()) {
+                        if (!onUpdateEditableSelection.getAndSet(true)) {
+                                SwingUtilities.invokeLater(new Runnable() {
 
-                                                @Override
-                                                public void run() {
+                                        @Override
+                                        public void run() {
+                                                try {
                                                         updateEditableSelection();
+                                                } finally {
+                                                        onUpdateEditableSelection.set(false);
+
                                                 }
-                                        });
-                                }
-                        } finally {
-                                onUpdateEditableSelection.set(false);
+                                        }
+                                });
                         }
                 }
         }
