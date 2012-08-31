@@ -55,6 +55,12 @@ public class MapsManager extends JPanel {
                 add(scrollPane,BorderLayout.EAST);
                 setBorder(BorderFactory.createEtchedBorder());
         }
+        
+        /**
+         * Compute the best height to show all the items of the JTree 
+         * plus the decoration height.
+         * @return Height in pixels
+         */
         public int getMinimalTreeHeight() {                
                 Insets borders = getInsets();
                 Insets sBorders = scrollPane.getInsets();

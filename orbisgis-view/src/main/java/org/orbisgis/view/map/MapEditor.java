@@ -239,13 +239,16 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
      * the MapStatusBar
      */
     public void onReadCursorMapCoordinate() {
-            if(!lastTranslatedCursorPosition.equals(lastCursorPosition)) {
-                lastTranslatedCursorPosition=lastCursorPosition;
-                Point2D mapCoordinate = mapControl.getMapTransform().toMapPoint(lastCursorPosition.x, lastCursorPosition.y);
-                mapStatusBar.setCursorCoordinates(mapCoordinate);
-            }
-            if(CursorCoordinateLookupTimer!=null) {
-                CursorCoordinateLookupTimer.start();
+            try {
+                if(!lastTranslatedCursorPosition.equals(lastCursorPosition)) {
+                        lastTranslatedCursorPosition=lastCursorPosition;
+                        Point2D mapCoordinate = mapControl.getMapTransform().toMapPoint(lastCursorPosition.x, lastCursorPosition.y);
+                        mapStatusBar.setCursorCoordinates(mapCoordinate);
+                }                
+            } finally {
+                if(CursorCoordinateLookupTimer!=null) {
+                        CursorCoordinateLookupTimer.start();
+                }
             }
     }
     
