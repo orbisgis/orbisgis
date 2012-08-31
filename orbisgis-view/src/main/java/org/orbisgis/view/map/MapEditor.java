@@ -313,6 +313,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     public void onShowHideMapsTree() {
             if(!mapsManager.isVisible()) {
                     mapsManager.setVisible(true);
+                    updateMapControlSize();
             } else {
                     mapsManager.setVisible(false);
             }
