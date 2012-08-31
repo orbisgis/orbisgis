@@ -44,10 +44,15 @@ import java.util.Properties;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
+import org.gdms.sql.engine.Engine;
+import org.gdms.sql.engine.SQLScript;
+import org.gdms.sql.engine.SemanticException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.workspace.CoreWorkspace;
@@ -62,12 +67,6 @@ import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.engine.Engine;
-import org.gdms.sql.engine.SQLScript;
-import org.gdms.sql.engine.SemanticException;
 
 /**
  * This {@code JDialog} is used to export the content of one or more {@code
