@@ -37,8 +37,8 @@ import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LineSymbolizerType;
 import net.opengis.se._2_0.core.ObjectFactory;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -143,6 +143,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
                 this.perpendicularOffset = perpendicularOffset;
                 if (this.perpendicularOffset != null) {
                         this.perpendicularOffset.setContext(RealParameterContext.REAL_CONTEXT);
+                        this.perpendicularOffset.setParent(this);
                 }
         }
 
@@ -156,7 +157,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
          * @todo make sure the geom is a line or an area; implement p_offset
          */
         @Override
-        public void draw(Graphics2D g2, DataSource sds, long fid,
+        public void draw(Graphics2D g2, DataSet sds, long fid,
                 boolean selected, MapTransform mt, Geometry the_geom, RenderContext perm)
                 throws ParameterException, IOException, DriverException {
                 if (stroke != null) {
@@ -223,7 +224,7 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
         public UsedAnalysis getUsedAnalysis() {
                 UsedAnalysis ret = new UsedAnalysis();
                 if (perpendicularOffset != null) {
-                        ret.include(perpendicularOffset);
+                        ret.merge(perpendicularOffset.getUsedAnalysis());
                 }
                 if (stroke != null) {
                         ret.merge(stroke.getUsedAnalysis());

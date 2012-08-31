@@ -489,6 +489,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
                 @Override
 		public void selectionChanged(SelectionEvent e) {
+                        //TODO use the bean property selection event (when feature/table-editor will be merged) to find if the redraw has to be done
                         invalidateImage();
 		}
 

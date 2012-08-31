@@ -40,9 +40,9 @@ import net.opengis.se._2_0.core.HaloType;
 import org.apache.log4j.Logger;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
@@ -61,7 +61,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * It is mainly used to improve the readability of text labels on the map.
  * @author Alexis Guéganno
  */
-public final class Halo implements SymbolizerNode, UomNode, FillNode {
+public final class Halo extends AbstractSymbolizerNode implements  UomNode, FillNode {
 
     private static final Logger LOGGER = Logger.getLogger(Halo.class);
     private static final I18n I18N = I18nFactory.getI18n(Halo.class);
@@ -73,7 +73,6 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
     private Uom uom;
     private RealParameter radius;
     private Fill fill;
-    private SymbolizerNode parent;
     
     /**
      * Build a new default {@code Halo}, with a solid fill and a radius set to {@code DEFAULT_RADIUS}
@@ -115,7 +114,7 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
     @Override
     public Uom getUom() {
         if (uom == null) {
-            return getParent().getUom();
+            return ((UomNode)getParent()).getUom();
         } else {
             return uom;
         }
@@ -142,16 +141,6 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
         return fill;
     }
 
-    @Override
-    public SymbolizerNode getParent() {
-        return parent;
-    }
-
-    @Override
-    public void setParent(SymbolizerNode node) {
-        parent = node;
-    }
-
     /**
      * Get the radius of this {@code Halo}.
      * @return 
@@ -169,6 +158,7 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
         this.radius = radius;
         if (this.radius != null) {
             this.radius.setContext(RealParameterContext.REAL_CONTEXT);
+            this.radius.setParent(this);
         }
     }
 
@@ -220,7 +210,7 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
      * @param g2
      * The {@code Graphics} where we are going to draw.
      * @param sds
-     * Our DataSource
+     * Our DataSet
      * @param fid
      * The index of the current feature in sds.
      * @param selected
@@ -280,7 +270,7 @@ public final class Halo implements SymbolizerNode, UomNode, FillNode {
     @Override
     public UsedAnalysis getUsedAnalysis() {
             UsedAnalysis ua = new UsedAnalysis();
-            ua.include(radius);
+            ua.merge(radius.getUsedAnalysis());
             ua.merge(fill.getUsedAnalysis());
             return ua;
     }

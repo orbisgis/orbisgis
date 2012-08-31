@@ -35,16 +35,17 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ObjectFactory;
 import net.opengis.fes._2.ValueReferenceType;
 import net.opengis.se._2_0.core.ParameterValueType;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 
 /**
  * An (abstract) representation of a Value in a GDMS table. 
  * @author Alexis Guéganno, Maxence Laurent
  */
-public abstract class ValueReference implements SeParameter {
+public abstract class ValueReference extends AbstractSymbolizerNode implements SeParameter{
 
 	private String fieldName;
 	private int fieldId;
@@ -131,6 +132,7 @@ public abstract class ValueReference implements SeParameter {
 		this.fieldId = -1;
 		this.fieldName = fieldName;
 		firePropertyNameChange();
+                update();
 	}
 
         /**
@@ -143,13 +145,13 @@ public abstract class ValueReference implements SeParameter {
 
         /**
          * Get the GDMS {@code Value} associated to this Reference in the given
-         * table (represented by the {@code DataSource sds}) at line fid.
+         * table (represented by the {@code DataSet sds}) at line fid.
          * @param sds
          * @param fid
          * @return
          * @throws DriverException 
          */
-    public Value getFieldValue(DataSource sds, long fid) throws DriverException {
+    public Value getFieldValue(DataSet sds, long fid) throws DriverException {
         if (this.fieldId == -1) {
             this.fieldId = sds.getMetadata().getFieldIndex(fieldName);
         }
@@ -187,4 +189,10 @@ public abstract class ValueReference implements SeParameter {
 		ObjectFactory of = new ObjectFactory();
 		return of.createValueReference(fieldName);
 	}
+
+        @Override
+        public UsedAnalysis getUsedAnalysis() {
+                return new UsedAnalysis();
+        }
+
 }

@@ -38,6 +38,8 @@ import java.util.Map;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * {@code WellKnownName} instances are used to build simple vectorial {@link MarkGraphic}.
@@ -60,6 +62,7 @@ public enum WellKnownName implements MarkGraphicSource {
      * Default size to be used to render graphics based on well-known names.
      */
     public static final double DEFAULT_SIZE = 10.0;
+    private static I18n I18N = I18nFactory.getI18n(WellKnownName.class);
 
     /**
      * Get all the {@code String} values that can be used to build a {@code WellKnownName}.
@@ -76,6 +79,45 @@ public enum WellKnownName implements MarkGraphicSource {
         return list;
     }
 
+        /**
+         * Gets an array containing the localized strings associated to the
+         * string representation of all the units of mesure contained in this
+         * enum.
+         * @return
+         */
+        public static String[] getLocalizedStrings(){
+                WellKnownName[] vals = WellKnownName.values();
+                String[] ls = new String[vals.length];
+                for(int i=0; i<vals.length; i++){
+                        ls[i] = vals[i].toLocalizedString();
+                }
+                return ls;
+        }
+
+        /**
+         * Gets the localized representation of this.
+         * @return
+         */
+        public String toLocalizedString(){
+                switch (this) {
+                        case SQUARE:
+                                return I18N.tr("SQUARE");
+                        case HALFCIRCLE:
+                                return I18N.tr("HALFCIRCLE");
+                        case TRIANGLE:
+                                return I18N.tr("TRIANGLE");
+                        case STAR:
+                                return I18N.tr("STAR");
+                        case CROSS:
+                                return I18N.tr("CROSS");
+                        case X:
+                                return I18N.tr("X");
+                        default:
+                                return I18N.tr("CIRCLE");
+
+                }
+        }
+
     /**
      * Build a new {@code WellKnownName} from a {@code String token}.
      * @param token
@@ -83,25 +125,19 @@ public enum WellKnownName implements MarkGraphicSource {
      * A {@code WellKnownName} value.
      */
     public static WellKnownName fromString(String token){
-        if (token.equalsIgnoreCase("SQUARE")){
+        if (token.equalsIgnoreCase(I18n.marktr("SQUARE"))){
             return SQUARE;
-        }
-        else if (token.equalsIgnoreCase("HALFCIRCLE")){
+        } else if (token.equalsIgnoreCase(I18n.marktr("HALFCIRCLE"))){
             return HALFCIRCLE;
-        }
-        else if (token.equalsIgnoreCase("TRIANGLE")){
+        } else if (token.equalsIgnoreCase(I18n.marktr("TRIANGLE"))){
             return TRIANGLE;
-        }
-        else if (token.equalsIgnoreCase("STAR")){
+        } else if (token.equalsIgnoreCase(I18n.marktr("STAR"))){
             return STAR;
-        }
-        else if (token.equalsIgnoreCase("CROSS")){
+        } else if (token.equalsIgnoreCase(I18n.marktr("CROSS"))){
             return CROSS;
-        }
-        else if (token.equalsIgnoreCase("X")){
+        } else if (token.equalsIgnoreCase(I18n.marktr("X"))){
             return X;
-        }
-        else{
+        } else{
             return CIRCLE;
         }
     }
@@ -126,7 +162,7 @@ public enum WellKnownName implements MarkGraphicSource {
         int y2 = (int)(y / 2.0);
 		int minxy6 = (int)Math.min(x/6, y/6);
 
-        switch (this.valueOf(this.name())) {
+        switch (this) {
             case HALFCIRCLE:
                 return new Arc2D.Double(-x2, -y2, x, y, -90, -180, Arc2D.CHORD);
             case CIRCLE:

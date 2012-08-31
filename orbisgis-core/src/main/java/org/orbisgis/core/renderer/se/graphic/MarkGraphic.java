@@ -193,9 +193,11 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
     @Override
     public Uom getUom() {
         if (uom != null) {
-            return this.uom;
+            return uom;
+        } else if(getParent() instanceof UomNode){
+            return ((UomNode)getParent()).getUom();
         } else {
-            return parent.getUom();
+            return Uom.PX;
         }
     }
 
@@ -305,6 +307,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         this.pOffset = pOffset;
         if (this.pOffset != null) {
             this.pOffset.setContext(RealParameterContext.REAL_CONTEXT);
+            this.pOffset.setParent(this);
         }
     }
 
@@ -316,6 +319,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
     private void setMarkIndex(RealParameter mIndex) {
         this.markIndex = mIndex;
         this.markIndex.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+        this.markIndex.setParent(this);
     }
 
     /*
@@ -335,7 +339,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
 
     /**
      * Tries to retrieve the source that defines this {@code MarkGraphic} in the 
-     * DataSource, at the diven index.
+     * DataSet, at the diven index.
      * @param map
      * @return
      * @throws ParameterException 
@@ -467,7 +471,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
      * @throws ParameterException
      * @throws IOException
      */
-    /*private double getMargin(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    /*private double getMargin(DataSet sds, long fid, MapTransform mt) throws ParameterException, IOException {
     double sWidth = 0.0;
     double haloR = 0.0;
     double offset = 0.0;
@@ -490,7 +494,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
 
     /*
     @Override
-    public double getMaxWidth(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    public double getMaxWidth(DataSet sds, long fid, MapTransform mt) throws ParameterException, IOException {
     double delta = 0.0;
 
     if (viewBox != null && viewBox.usable()) {
@@ -545,6 +549,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         if (this.wkn != null) {
             this.wkn.setRestrictionTo(WellKnownName.getValues());
             this.onlineResource = null;
+            this.wkn.setParent(this);
         }
     }
 
@@ -637,13 +642,13 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         UsedAnalysis result = new UsedAnalysis();
 
         if (wkn != null) {
-            result.include(wkn);
+            result.merge(wkn.getUsedAnalysis());
         }
         if (viewBox != null) {
             result.merge(viewBox.getUsedAnalysis());
         }
         if (pOffset != null) {
-            result.include(pOffset);
+            result.merge(pOffset.getUsedAnalysis());
         }
         if (halo != null) {
             result.merge(halo.getUsedAnalysis());
@@ -658,7 +663,7 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
             result.merge(transform.getUsedAnalysis());
         }
         if (markIndex != null) {
-            result.include(markIndex);
+            result.merge(markIndex.getUsedAnalysis());
         }
 
         return result;

@@ -32,8 +32,9 @@ import java.util.*;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -62,7 +63,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Maxence Laurent, Alexis Guéganno
  *
  */
-public abstract class Categorize<ToType extends SeParameter, FallbackType extends ToType> implements SeParameter, LiteralListener {
+public abstract class Categorize<ToType extends SeParameter, FallbackType extends ToType>
+                extends AbstractSymbolizerNode implements SeParameter, LiteralListener {
 
     private static final String SD_FACTOR_KEY = "SdFactor";
     private static final String METHOD_KEY = "method";
@@ -139,6 +141,9 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      */
     public void setFallbackValue(FallbackType fallbackValue) {
         this.fallbackValue = fallbackValue;
+        if(this.fallbackValue != null){
+                fallbackValue.setParent(this);
+        }
     }
 
     /**
@@ -158,6 +163,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         this.lookupValue = lookupValue;
         if (lookupValue != null) {
             lookupValue.setContext(RealParameterContext.REAL_CONTEXT);
+            lookupValue.setParent(this);
         }
     }
 
@@ -245,6 +251,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
             classValues.remove(n);
             classValues.add(n, val);
         }
+        val.setParent(this);
     }
 
     /**
@@ -261,6 +268,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
             if (! remove.equals(threshold)) {
                 sortClasses();
             }
+            threshold.setParent(this);
         }
         this.method = CategorizeMethod.MANUAL;
     }
@@ -321,7 +329,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         fireNewThresoldsOrder();
     }
 
-    protected ToType getParameter(DataSource sds, long fid) {
+    protected ToType getParameter(DataSet sds, long fid) {
         try {
             if (getNumClasses() > 1) {
                 double value = lookupValue.getValue(sds, fid);
@@ -377,7 +385,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @param ds
      * @param values the values to affect to classes. number of values give the number of classes
      */
-    public void categorizeByEqualsInterval(DataSource ds, ToType[] values) {
+    public void categorizeByEqualsInterval(DataSet ds, ToType[] values) {
         method = CategorizeMethod.EQUAL_INTERVAL;
         // int n = values.length;
         // TODO compute n-1 thresholds and assign values
@@ -388,7 +396,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @param ds
      * @param values the values to affect to classes. number of values give the numbe of classes
      */
-    public void categorizeByNaturalBreaks(DataSource ds, ToType[] values) {
+    public void categorizeByNaturalBreaks(DataSet ds, ToType[] values) {
         method = CategorizeMethod.NATURAL_BREAKS;
         //int n = values.length;
         // TODO compute n-1 thresholds and assign values
@@ -399,7 +407,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @param ds
      * @param values the values to affect to classes. number of values give the numbe of classes
      */
-    public void categorizeByQuantile(DataSource ds, ToType[] values) {
+    public void categorizeByQuantile(DataSet ds, ToType[] values) {
         method = CategorizeMethod.QUANTILE;
         //int n = values.length;
         // TODO compute n-1 thresholds and assign values
@@ -412,7 +420,7 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
      * @param values the values to affect to classes. number of values give the numbe of classes
      * @param factor class (except first and last) interval equals sd*factor
      */
-    public void categorizeByStandardDeviation(DataSource ds, ToType[] values, double factor) {
+    public void categorizeByStandardDeviation(DataSet ds, ToType[] values, double factor) {
         method = CategorizeMethod.STANDARD_DEVIATION;
         // even => mean is a threshold
         // odd => mean is the central point of the central class
@@ -538,6 +546,20 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         c.setExtension(exts);
 
         return of.createCategorize(c);
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis ua = new UsedAnalysis();
+        ua.include(this);
+        ua.merge(lookupValue.getUsedAnalysis());
+        if(firstClass != null){
+            ua.merge(firstClass.getUsedAnalysis());
+        }
+        for(ToType t : classValues){
+                ua.merge(t.getUsedAnalysis());
+        }
+        return ua;
     }
 
     //**********************************************************************************

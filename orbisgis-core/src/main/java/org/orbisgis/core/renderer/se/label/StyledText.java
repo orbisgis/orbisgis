@@ -41,10 +41,10 @@ import net.opengis.se._2_0.core.StyledTextType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -73,9 +73,7 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
  * Color and opacity of the text are defined using a <code>Fill</code> instance
  * @author Maxence Laurent, Alexis Guéganno
  */
-public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, UomNode {
-
-    private SymbolizerNode parent;
+public final class StyledText extends AbstractSymbolizerNode implements UomNode, FillNode, StrokeNode {
     private StringParameter text;
     private StringParameter fontFamily;
     private StringParameter fontWeight;
@@ -172,17 +170,19 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
      * @return
      */
     public Uom getFontUom() {
-        if (this.uom != null) {
-            return this.uom;
+        if (uom != null) {
+            return uom;
+        } else if(getParent() instanceof UomNode){
+            return ((UomNode)getParent()).getUom();
         } else {
-            return parent.getUom();
+                return Uom.PX;
         }
     }
 
     @Override
     public Uom getUom() {
         // Note: this.uom only affect font size
-        return parent.getUom();
+        return ((UomNode)getParent()).getUom();
     }
 
     @Override
@@ -193,16 +193,6 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     @Override
     public Uom getOwnUom() {
         return this.uom;
-    }
-
-    @Override
-    public SymbolizerNode getParent() {
-        return parent;
-    }
-
-    @Override
-    public void setParent(SymbolizerNode node) {
-        parent = node;
     }
 
     @Override
@@ -253,6 +243,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     public void setText(StringParameter text) {
         if (text != null) {
             this.text = text;
+            this.text.setParent(this);
         }
     }
 
@@ -285,6 +276,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     public void setFontFamily(StringParameter fontFamily) {
         if (fontFamily != null) {
             this.fontFamily = fontFamily;
+            this.fontFamily.setParent(this);
         }
     }
 
@@ -305,6 +297,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         this.fontSize = fontSize;
         if (this.fontSize != null) {
             this.fontSize.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+            this.fontSize.setParent(this);
         }
     }
 
@@ -325,6 +318,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         if (fontStyle != null) {
             this.fontStyle = fontStyle;
             this.fontStyle.setRestrictionTo(styles);
+            this.fontStyle.setParent(this);
         }
     }
 
@@ -345,6 +339,7 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
         if (fontWeight != null) {
             this.fontWeight = fontWeight;
             this.fontWeight.setRestrictionTo(weights);
+            this.fontWeight.setParent(this);
         }
     }
 
@@ -671,19 +666,19 @@ public final class StyledText implements SymbolizerNode, FillNode, StrokeNode, U
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis result = new UsedAnalysis();
         if (text != null) {
-            result.include(text);
+            result.merge(text.getUsedAnalysis());
         }
         if (fontFamily != null) {
-            result.include(fontFamily);
+            result.merge(fontFamily.getUsedAnalysis());
         }
         if (fontWeight != null) {
-            result.include(fontWeight);
+            result.merge(fontWeight.getUsedAnalysis());
         }
         if (fontStyle != null) {
-            result.include(fontStyle);
+            result.merge(fontStyle.getUsedAnalysis());
         }
         if (fontSize != null) {
-            result.include(fontSize);
+            result.merge(fontSize.getUsedAnalysis());
         }
         return result;
     }

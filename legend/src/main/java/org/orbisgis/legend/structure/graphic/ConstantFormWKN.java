@@ -28,6 +28,7 @@
  */
 package org.orbisgis.legend.structure.graphic;
 
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.legend.LegendStructure;
@@ -44,6 +45,14 @@ import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
  * @author Alexis Guéganno
  */
 public abstract class ConstantFormWKN extends MarkGraphicLegend {
+
+    /**
+     * Builds a new default {@code ConstantFormWKN} associated to a default
+     * {@link MarkGraphic}.
+     */
+    public ConstantFormWKN(){
+            super();
+    }
     /**
      * Build a default {@code LegendStructure} that describes a {@code MarkGraphic}
      * instance.
@@ -106,5 +115,37 @@ public abstract class ConstantFormWKN extends MarkGraphicLegend {
     public void setWellKnownName(String string){
             StringLiteralLegend sll = new StringLiteralLegend(new StringLiteral(string));
             setWknLegend(sll);
+    }
+
+    /**
+     * Gets the unit of measure used to draw the associated {@code Stroke}.
+     * @return
+     */
+    public Uom getStrokeUom(){
+            return getPenStroke().getUom();
+    }
+
+    /**
+     * Sets the unit of measure used to draw the associated {@code Stroke}.
+     * @param u
+     */
+    public void setStrokeUom(Uom u){
+            getPenStroke().setUom(u);
+    }
+
+    /**
+     * Gets the unit of measure used to size the associated {@code Stroke}.
+     * @return
+     */
+    public Uom getSymbolUom(){
+            return getMarkGraphic().getUom();
+    }
+
+    /**
+     * Sets the unit of measure used to size the associated {@code Stroke}.
+     * @param u
+     */
+    public void setSymbolUom(Uom u){
+            getMarkGraphic().setUom(u);
     }
 }

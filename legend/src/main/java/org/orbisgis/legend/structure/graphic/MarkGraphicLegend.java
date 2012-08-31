@@ -30,10 +30,16 @@ package org.orbisgis.legend.structure.graphic;
 
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.analyzer.FillAnalyzer;
+import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
+import org.orbisgis.legend.analyzer.ViewBoxAnalyzer;
+import org.orbisgis.legend.analyzer.parameter.StringParameterAnalyzer;
 import org.orbisgis.legend.structure.fill.FillLegend;
 import org.orbisgis.legend.structure.parameter.ParameterLegend;
 import org.orbisgis.legend.structure.stroke.StrokeLegend;
+import org.orbisgis.legend.structure.viewbox.ViewBoxLegend;
 
 /**
  * <p>
@@ -58,6 +64,19 @@ public class MarkGraphicLegend implements LegendStructure {
     private FillLegend fillLegend;
     private StrokeLegend strokeLegend;
     private ParameterLegend wknLegend;
+
+    /**
+     * Builds a new default {@code MarkGraphicLegend} associated to a default
+     * {@link MarkGraphic}.
+     */
+    public MarkGraphicLegend(){
+        markGraphic = new MarkGraphic();
+        viewBoxLegend = new ViewBoxAnalyzer(markGraphic.getViewBox()).getLegend();
+        fillLegend = (FillLegend) new FillAnalyzer(markGraphic.getFill()).getLegend();
+        strokeLegend = (StrokeLegend) new PenStrokeAnalyzer(
+            (PenStroke)markGraphic.getStroke()).getLegend();
+        wknLegend = (ParameterLegend) new StringParameterAnalyzer(markGraphic.getWkn()).getLegend();
+    }
 
     /**
      * Build a default {@code LegendStructure} that describes a {@code MarkGraphic}
@@ -142,7 +161,8 @@ public class MarkGraphicLegend implements LegendStructure {
      * inner {@code MarkGraphic} instance.
      * @param viewBoxLegend
      */
-    public void setViewBoxLegend(LegendStructure viewBoxLegend) {
+    public void setViewBoxLegend(ViewBoxLegend viewBoxLegend) {
+        markGraphic.setViewBox(viewBoxLegend.getViewBox());
         this.viewBoxLegend = viewBoxLegend;
     }
     /**

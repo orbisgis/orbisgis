@@ -64,7 +64,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 /**
- * @brief Manage left,right,down,center docking stations.
+ * Manage left,right,down,center docking stations.
  * 
  * This manager can save and load emplacement of views in XML.
  */

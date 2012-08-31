@@ -33,11 +33,14 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.FunctionType;
 import net.opengis.fes._2.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * Defines a function on real numbers. A function is defined with a operation and
@@ -51,7 +54,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
  *   * Neperian logarithm - <code>LN</code>
  * @author Maxence Laurent, Alexis Guéganno
  */
-public class RealFunction implements RealParameter {
+public class RealFunction extends AbstractSymbolizerNode implements SeParameter, RealParameter {
 
     public enum Operators {
         ADD, MUL, DIV, SUB, SQRT, LOG, LN
@@ -62,14 +65,23 @@ public class RealFunction implements RealParameter {
     private ArrayList<RealParameter> operands;
 
     /**
-     * buld an empty <code>RealFunction</code>, where only the name of the operation
+     * Builds an empty <code>RealFunction</code>, where only the operation
+     * is defined.
+     * @param operator
+     */
+    public RealFunction(Operators operator){
+            op = operator;
+            operands = new ArrayList<RealParameter>();
+    }
+
+    /**
+     * Builds an empty <code>RealFunction</code>, where only the name of the operation
      * is defined.
      * @param name 
      */
     public RealFunction(String name) {
         ctx = RealParameterContext.REAL_CONTEXT;
         this.op = Operators.valueOf(name.toUpperCase());
-
         operands = new ArrayList<RealParameter>();
     }
 
@@ -84,7 +96,9 @@ public class RealFunction implements RealParameter {
     public RealFunction(FunctionType fcn) throws InvalidStyle {
         this(fcn.getName());
         for (JAXBElement<? extends Object> expr : fcn.getExpression()) {
-            operands.add(SeParameterFactory.createRealParameter(expr));
+            RealParameter rp =SeParameterFactory.createRealParameter(expr);
+            operands.add(rp);
+            rp.setParent(this);
         }
     }
 
@@ -106,17 +120,22 @@ public class RealFunction implements RealParameter {
     }
 
     /**
+     * Gets the list of operands
+     * @return
+     */
+    public List<RealParameter> getOperands() {
+        return operands;
+    }
+
+    /**
      * Return i'th operand
      *
      * @param i
      * @return the real parameter
-     * @throws ParameterException i is out of bounds
+     * @throws IndexOutOfBoundsException if i is out of bounds
      */
-    public RealParameter getOperand(int i) throws ParameterException {
-        if (i >= 0 && i < operands.size()) {
-            return operands.get(i);
-        }
-        throw new ParameterException("Index out of bounds");
+    public RealParameter getOperand(int i){
+        return operands.get(i);
     }
 
     /**
@@ -129,13 +148,15 @@ public class RealFunction implements RealParameter {
             case ADD:
             case MUL:
                 this.operands.add(operand);
+                operand.setParent(this);
                 return;
             case DIV:
             case SUB:
                 if (operands.size() < 2) {
                     this.operands.add(operand);
+                    operand.setParent(this);
                 } else {
-                    throw new ParameterException(op + " requiere exactly two operands");
+                    throw new ParameterException(op + " requires exactly two operands");
                 }
                 return;
             case SQRT:
@@ -143,15 +164,16 @@ public class RealFunction implements RealParameter {
             case LOG:
                 if (operands.size() < 1) {
                     this.operands.add(operand);
+                    operand.setParent(this);
                 } else {
-                    throw new ParameterException(op + " requiere exactly one operand");
+                    throw new ParameterException(op + " requires exactly one operand");
                 }
                 return;
         }
     }
 
     @Override
-    public Double getValue(DataSource sds, long fid) throws ParameterException {
+    public Double getValue(DataSet sds, long fid) throws ParameterException {
         List<Double>  vals = new LinkedList<Double>();
         for(RealParameter p : operands){
             vals.add(p.getValue(sds, fid));
@@ -271,6 +293,16 @@ public class RealFunction implements RealParameter {
 
         ObjectFactory of = new ObjectFactory();
         return of.createFunction(fcn);
+    }
+
+    @Override
+    public UsedAnalysis getUsedAnalysis() {
+        UsedAnalysis ua  = new UsedAnalysis();
+        ua.include(this);
+        for(RealParameter r : operands){
+                ua.merge(r.getUsedAnalysis());
+        }
+        return ua;
     }
 
 

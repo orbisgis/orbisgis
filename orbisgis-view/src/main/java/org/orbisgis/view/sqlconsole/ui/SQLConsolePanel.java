@@ -111,16 +111,19 @@ public class SQLConsolePanel extends JPanel {
         private List<SQLConsoleAction> actions = new ArrayList<SQLConsoleAction>();
         //Keep buttons reference to enable/disable them
         private Map<SQLConsoleAction,ArrayList<AbstractButton>> actionButtons = new HashMap<SQLConsoleAction,ArrayList<AbstractButton>>();
-                        
+        private SQLFunctionsPanel sqlFunctionsPanel;
+        
+        
         /**
          * Creates a console for sql.
          */
         public SQLConsolePanel() {
                 super(new BorderLayout());
+                sqlFunctionsPanel = new SQLFunctionsPanel();
                 initActions();
                 JPanel split = new JPanel();
                 split.setLayout(new BorderLayout());
-                split.add(new SQLFunctionsPanel(), BorderLayout.EAST);
+                split.add(sqlFunctionsPanel, BorderLayout.EAST);
                 split.add(getCenterPanel(), BorderLayout.CENTER);
                 add(split, BorderLayout.CENTER);
                 add(getStatusToolBar(), BorderLayout.SOUTH);
@@ -212,6 +215,13 @@ public class SQLConsolePanel extends JPanel {
                         EventHandler.create(ActionListener.class,this,"onSaveFile"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)
                        ));
+                //ShowHide function list
+                actions.add(new SQLConsoleAction(
+                        I18N.tr("SQL list"),
+                        I18N.tr("Show/Hide SQL function list"),
+                        OrbisGISIcon.getIcon("builtinfunctionmap"),
+                        EventHandler.create(ActionListener.class,sqlFunctionsPanel,"switchPanelVisibilityState"),
+                        null));
         }
         /**
          * Return a set of button to control the sql panel features

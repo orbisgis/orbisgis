@@ -133,9 +133,11 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     @Override
     public Uom getUom() {
         if (uom != null) {
-            return this.uom;
+            return uom;
+        } else if(getParent() instanceof UomNode){
+            return ((UomNode)getParent()).getUom();
         } else {
-            return parent.getUom();
+            return Uom.PX;
         }
     }
 
@@ -202,6 +204,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
         this.opacity = opacity;
         if (this.opacity != null) {
             this.opacity.setContext(RealParameterContext.PERCENTAGE_CONTEXT);
+            this.opacity.setParent(this);
         }
     }
 
@@ -301,7 +304,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     }
 
     /*@Override
-    public RenderableGraphics getRenderableGraphics(DataSource sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
+    public RenderableGraphics getRenderableGraphics(DataSet sds, long fid, boolean selected, MapTransform mt) throws ParameterException, IOException {
     // TODO Implements SELECTED!
 
     RenderedImage img;
@@ -361,7 +364,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
     return rg;
     }*/
 
-    /*public double getMargin(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    /*public double getMargin(DataSet sds, long fid, MapTransform mt) throws ParameterException, IOException {
     double delta = 0.0;
 
     if (this.halo != null) {
@@ -373,7 +376,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
 
     /*
     @Override
-    public double getMaxWidth(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
+    public double getMaxWidth(DataSet sds, long fid, MapTransform mt) throws ParameterException, IOException {
     double delta = 0.0;
     if (viewBox != null && viewBox.usable()) {
     RenderedImage img;
@@ -423,7 +426,7 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
             ret.merge(halo.getUsedAnalysis());
         }
         if (opacity != null) {
-            ret.include(opacity);
+            ret.merge(opacity.getUsedAnalysis());
         }
         if (transform != null) {
             ret.merge(transform.getUsedAnalysis());

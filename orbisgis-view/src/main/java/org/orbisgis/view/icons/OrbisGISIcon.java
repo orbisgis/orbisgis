@@ -36,7 +36,7 @@ import org.orbisgis.sif.icons.SifIcon;
 
 /**
  * @class OrbisGISIcon
- * @brief Use this class to retrieve the data of an icon
+ * Use this class to retrieve the data of an icon
  * This final class load icons only on request. This feature help to reduce
  * the loading time of OrbisGis. Moreover this class does'nt have to be updated
  * when new icons are added.

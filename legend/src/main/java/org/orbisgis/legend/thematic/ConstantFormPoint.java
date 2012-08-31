@@ -30,6 +30,7 @@ package org.orbisgis.legend.thematic;
 
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
 
 /**
@@ -40,6 +41,14 @@ import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
 public abstract class ConstantFormPoint extends SymbolizerLegend {
 
     private PointSymbolizer pointSymbolizer;
+
+    /**
+     * Builds a new {@code ConstantFormPoint} that just have a default {@link
+     * PointSymbolizer} in it.
+     */
+    public ConstantFormPoint(){
+            pointSymbolizer = new PointSymbolizer();
+    }
 
     /**
      * Basically set the associated {@link PointSymbolizer}.
@@ -105,5 +114,37 @@ public abstract class ConstantFormPoint extends SymbolizerLegend {
      */
     public void setOnCentroid(){
             pointSymbolizer.setOnVertex(false);
+    }
+
+    /**
+     * Gets the unit of measure used to draw the associated {@code Stroke}.
+     * @return
+     */
+    public Uom getStrokeUom(){
+            return getMarkGraphic().getStrokeUom();
+    }
+
+    /**
+     * Sets the unit of measure used to draw the associated {@code Stroke}.
+     * @param u
+     */
+    public void setStrokeUom(Uom u){
+            getMarkGraphic().setStrokeUom(u);
+    }
+
+    /**
+     * Gets the unit of measure used to size the associated {@code Stroke}.
+     * @return
+     */
+    public Uom getSymbolUom(){
+            return getMarkGraphic().getSymbolUom();
+    }
+
+    /**
+     * Sets the unit of measure used to size the associated {@code Stroke}.
+     * @param u
+     */
+    public void setSymbolUom(Uom u){
+            getMarkGraphic().setSymbolUom(u);
     }
 }

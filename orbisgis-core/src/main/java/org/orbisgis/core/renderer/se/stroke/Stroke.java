@@ -36,8 +36,10 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.UomNode;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
 /**
@@ -45,14 +47,9 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  *
  * @author Maxence Laurent, Alexis Guéganno.
  */
-public abstract class Stroke implements SymbolizerNode {
+public abstract class Stroke extends AbstractSymbolizerNode implements UomNode {
 
-
-    /**
-     * The parent of this node.
-     */
-    protected SymbolizerNode parent;
-
+    private Uom uom;
     private boolean linearRapport;
     private boolean offsetRapport;
 
@@ -108,16 +105,6 @@ public abstract class Stroke implements SymbolizerNode {
 		}
         //As s.getDeclaredType() os a StrokeType, we are supposed to never throw this Exception...
         throw new InvalidStyle("Trying to create a Stroke from an invalid input");
-    }
-
-    @Override
-    public SymbolizerNode getParent() {
-        return parent;
-    }
-
-    @Override
-    public void setParent(SymbolizerNode node) {
-        parent = node;
     }
 
     /**
@@ -247,6 +234,27 @@ public abstract class Stroke implements SymbolizerNode {
     public Double getNaturalLengthForCompound(Map<String,Value> map,
             Shape shp, MapTransform mt) throws ParameterException, IOException {
         return getNaturalLength(map, shp, mt);
+    }
+
+    @Override
+    public Uom getUom() {
+        if (uom != null) {
+            return uom;
+        } else if(getParent() instanceof UomNode){
+            return ((UomNode)getParent()).getUom();
+        } else {
+                return Uom.PX;
+        }
+    }
+
+    @Override
+    public void setUom(Uom u) {
+        uom = u;
+    }
+
+    @Override
+    public Uom getOwnUom() {
+        return uom;
     }
     
 }

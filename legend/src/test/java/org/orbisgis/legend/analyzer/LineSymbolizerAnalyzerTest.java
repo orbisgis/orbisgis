@@ -29,12 +29,12 @@
 package org.orbisgis.legend.analyzer;
 
 import java.awt.Color;
-import java.util.List;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
@@ -48,9 +48,6 @@ import org.orbisgis.legend.thematic.proportional.ProportionalLine;
  * @author Alexis Guéganno
  */
 public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
-    private String constant = "src/test/resources/org/orbisgis/legend/uniqueLineSymbol.se";
-    private String constantDash = "src/test/resources/org/orbisgis/legend/uniqueLineSymbolDash.se";
-    private String proportional = "src/test/resources/org/orbisgis/legend/linearProportional.se";
 
 
     /**************************************************************************/
@@ -62,7 +59,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testInitializationUniqueSymbol() throws Exception {
-        Style st = getStyle(constant);
+        Style st = getStyle(CONSTANT_LINE);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
         assertTrue(true);
@@ -70,7 +67,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testAnalyzerUniqueSymbol() throws Exception {
-        Style st = getStyle(constant);
+        Style st = getStyle(CONSTANT_LINE);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         LineSymbolizerAnalyzer lsa = new LineSymbolizerAnalyzer(ls);
         assertTrue(lsa.getLegend() instanceof UniqueSymbolLine);
@@ -78,7 +75,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testAnalyzerUniqueSymbolDash() throws Exception {
-        Style st = getStyle(constantDash);
+        Style st = getStyle(CONSTANT_DASHED_LINE);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         LineSymbolizerAnalyzer lsa = new LineSymbolizerAnalyzer(ls);
         assertTrue(lsa.getLegend() instanceof UniqueSymbolLine);
@@ -86,7 +83,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testInitializationFailUniqueSymbol() throws Exception {
-        Style st = getStyle(proportional);
+        Style st = getStyle(PROP_LINE);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         try{
             UniqueSymbolLine usl = new UniqueSymbolLine(ls);
@@ -98,7 +95,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testGetUniqueValueColor() throws Exception{
-        Style st = getStyle(constant);
+        Style st = getStyle(CONSTANT_LINE);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
         Color col = usl.getLineColor();
@@ -108,7 +105,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testSetUniqueValueColor() throws Exception{
-        Style st = getStyle(constant);
+        Style st = getStyle(CONSTANT_LINE);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
         usl.setLineColor(Color.BLUE);
@@ -117,7 +114,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testGetUniqueValueWidth() throws Exception{
-        Style st = getStyle(constant);
+        Style st = getStyle(CONSTANT_LINE);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
         assertTrue(usl.getPenStroke().getLineWidth() == 8.0);
@@ -126,7 +123,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testSetUniqueValueWidth() throws Exception{
-        Style st = getStyle(constant);
+        Style st = getStyle(CONSTANT_LINE);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
         usl.getPenStroke().setLineWidth(15.0);
@@ -135,7 +132,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testUniqueValueGetDash() throws Exception {
-        Style st = getStyle(constantDash);
+        Style st = getStyle(CONSTANT_DASHED_LINE);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
         assertTrue(usl.getPenStroke().getDashArray().equals("1 2 1 3"));
@@ -143,7 +140,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testUniqueValueSetDash() throws Exception {
-        Style st = getStyle(constantDash);
+        Style st = getStyle(CONSTANT_DASHED_LINE);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
         usl.getPenStroke().setDashArray("1 5 3");
@@ -152,7 +149,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testUniqueValueRemoveDash() throws Exception {
-        Style st = getStyle(constantDash);
+        Style st = getStyle(CONSTANT_DASHED_LINE);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
         usl.getPenStroke().setDashArray("");
@@ -164,7 +161,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testUniqueValueAddDash() throws Exception {
-        Style st = getStyle(constant);
+        Style st = getStyle(CONSTANT_LINE);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
         PenStroke ps = (PenStroke) ls.getStroke();
@@ -178,7 +175,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testUniqueValueAddWrongDash() throws Exception {
-        Style st = getStyle(constant);
+        Style st = getStyle(CONSTANT_LINE);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
         PenStroke ps = (PenStroke) ls.getStroke();
@@ -193,7 +190,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testUniqueValueSetWrongDash() throws Exception {
-        Style st = getStyle(constantDash);
+        Style st = getStyle(CONSTANT_DASHED_LINE);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
         usl.getPenStroke().setDashArray("bonjour bonjour !");
@@ -205,7 +202,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testUniqueValueSetWrongDashBis() throws Exception {
-        Style st = getStyle(constantDash);
+        Style st = getStyle(CONSTANT_DASHED_LINE);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
         usl.getPenStroke().setDashArray("1 -5 3");
@@ -220,109 +217,24 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         assertTrue(usl.getPenStroke().getLineWidth() == 0.1);
         assertTrue(usl.getLineColor().equals(Color.BLACK));
     }
-    
-    /**************************************************************************/
-    /* Let's test the interpolated lines. We won't test color and dashes, as  */
-    /* they are already tested in UniqueSymbol instances                      */
-    /*                                                                        */
-    /**************************************************************************/
 
     @Test
-    public void testInitializationProportional() throws Exception {
-        Style st = getStyle(proportional);
+    public void testGetUom() throws Exception {
+        Style st = getStyle(PROP_LINE);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         ProportionalLine usl = new ProportionalLine(ls);
-        assertTrue(true);
-
+        assertTrue(usl.getStrokeUom() == Uom.MM);
     }
 
     @Test
-    public void testAnalyzerProportional() throws Exception {
-        Style st = getStyle(proportional);
-        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        LineSymbolizerAnalyzer lsa = new LineSymbolizerAnalyzer(ls);
-        assertTrue(lsa.getLegend() instanceof ProportionalLine);
-    }
-
-    @Test
-    public void testInitializationProportionalFail() throws Exception {
-        Style st = getStyle(constant);
-        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        try{
-            ProportionalLine usl = new ProportionalLine(ls);
-            fail();
-        } catch (IllegalArgumentException iae){
-            assertTrue(true);
-        }
-
-    }
-
-    @Test
-    public void testGetFirstInterpolationData() throws Exception {
-        Style st = getStyle(proportional);
+    public void testSetUom() throws Exception {
+        Style st = getStyle(PROP_LINE);
         LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
         ProportionalLine usl = new ProportionalLine(ls);
-        assertTrue(usl.getFirstData() == 0.0);
+        assertTrue(usl.getStrokeUom() == Uom.MM);
+        usl.setStrokeUom(Uom.IN);
+        assertTrue(usl.getStrokeUom() == Uom.IN);
+        usl.setStrokeUom(null);
+        assertTrue(usl.getStrokeUom() == Uom.MM);
     }
-
-    @Test
-    public void testGetSecondInterpolationData() throws Exception {
-        Style st = getStyle(proportional);
-        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        ProportionalLine usl = new ProportionalLine(ls);
-        assertTrue(usl.getSecondData() == 10.0);
-    }
-
-    @Test
-    public void testSetFirstInterpolationData() throws Exception {
-        Style st = getStyle(proportional);
-        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        ProportionalLine usl = new ProportionalLine(ls);
-        usl.setFirstData(22.2);
-        assertTrue(usl.getFirstData() == 22.2);
-    }
-
-    @Test
-    public void testSetSecondInterpolationData() throws Exception {
-        Style st = getStyle(proportional);
-        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        ProportionalLine usl = new ProportionalLine(ls);
-        usl.setSecondData(56.3);
-        assertTrue(usl.getSecondData() == 56.3);
-    }
-
-    @Test
-    public void testGetFirstInterpolationValue() throws Exception{
-        Style st = getStyle(proportional);
-        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        ProportionalLine usl = new ProportionalLine(ls);
-        assertTrue(usl.getFirstValue() == 0.0);
-    }
-
-    @Test
-    public void testGetSecondInterpolationValue() throws Exception{
-        Style st = getStyle(proportional);
-        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        ProportionalLine usl = new ProportionalLine(ls);
-        assertTrue(usl.getSecondValue() == 2.0);
-    }
-
-    @Test
-    public void testSetFirstInterpolationValue() throws Exception{
-        Style st = getStyle(proportional);
-        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        ProportionalLine usl = new ProportionalLine(ls);
-        usl.setFirstValue(68.9);
-        assertTrue(usl.getFirstValue() == 68.9);
-    }
-
-    @Test
-    public void testSetSecondInterpolationValue() throws Exception{
-        Style st = getStyle(proportional);
-        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        ProportionalLine usl = new ProportionalLine(ls);
-        usl.setSecondValue(24.3);
-        assertTrue(usl.getSecondValue() == 24.3);
-    }
-
 }

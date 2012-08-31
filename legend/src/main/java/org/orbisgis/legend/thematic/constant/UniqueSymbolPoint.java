@@ -38,6 +38,7 @@ import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
 import org.orbisgis.legend.structure.graphic.ConstantWKNLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
 
 /**
  * We are dealing with a simple point symbolizer. If we succeeded in recognizing
@@ -53,7 +54,7 @@ import org.orbisgis.legend.thematic.ConstantFormPoint;
  * </ul>
  * @author Alexis Guéganno
  */
-public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbolArea {
+public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbolArea, StrokeUom {
 
     private ConstantWKNLegend markGraphic;
 

@@ -29,6 +29,8 @@
 package org.orbisgis.core.renderer.se.common;
 
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * This enumeration contains all the units of measure that are allowed in 
@@ -37,16 +39,92 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  */
 public enum Uom {
 
-	PX, IN, MM, PT, PERCENT, GM, GFT;
+        PX, IN, MM, PT, PERCENT, GM, GFT;
 
+        private static final double PT_IN_INCH = 72.0;
+        private static final double MM_IN_INCH = 25.4;
+        private static final double IN_IN_FOOT = 12;
+        private static final double ONE_THOUSAND = 1000;
+        private static final double ONE_HUNDRED = 100;
+        private static final I18n I18N = I18nFactory.getI18n(Uom.class);
 
-    private static final double PT_IN_INCH = 72.0;
-    private static final double MM_IN_INCH = 25.4;
-    private static final double IN_IN_FOOT = 12;
-    private static final double ONE_THOUSAND = 1000;
-    private static final double ONE_HUNDRED = 100;
-    
-    
+        /**
+         * Gets an array containing the string representation of all the units
+         * of mesure contained in this enum.
+         * @return
+         */
+        public static String[] getStrings(){
+                Uom[] vals = Uom.values();
+                String[] ls = new String[vals.length];
+                for(int i=0; i<vals.length; i++){
+                        ls[i] = vals[i].name();
+                }
+                return ls;
+        }
+
+        /**
+         * Gets an array containing the localized strings associated to the
+         * string representation of all the units of mesure contained in this
+         * enum.
+         * @return
+         */
+        public static String[] getLocalizedStrings(){
+                Uom[] vals = Uom.values();
+                String[] ls = new String[vals.length];
+                for(int i=0; i<vals.length; i++){
+                        ls[i] = vals[i].toLocalizedString();
+                }
+                return ls;
+        }
+
+        /**
+         * Create an {@code Uom}instance is {@code s} is equal to the string
+         * representation of one instance of this enum, ignoring case. If {@code
+         * s} can't be recognized, returned value is {@code PX}.
+         * @param s
+         * @return
+         */
+        public static Uom fromString(String s){
+                if("IN".equalsIgnoreCase(s)){
+                        return IN;
+                } else if("MM".equalsIgnoreCase(s)){
+                        return MM;
+                } else if("PT".equalsIgnoreCase(s)){
+                        return PT;
+                } else if("PERCENT".equalsIgnoreCase(s)){
+                        return PERCENT;
+                } else if("GM".equalsIgnoreCase(s)){
+                        return GM;
+                } else if("GFT".equalsIgnoreCase(s)){
+                        return GFT;
+                } else {
+                        return PX;
+                }
+        }
+
+        /**
+         * Gets the localized representation of this.
+         * @return
+         */
+        public String toLocalizedString(){
+                switch (this) {
+                        case IN:
+                                return I18N.tr("IN");
+                        case MM:
+                                return I18N.tr("MM");
+                        case PT:
+                                return I18N.tr("PT");
+                        case PERCENT:
+                                return I18N.tr("PERCENT");
+                        case GM:
+                                return I18N.tr("GM");
+                        case GFT:
+                                return I18N.tr("GFT");
+                        default:
+                                return I18N.tr("PX");
+
+                }
+        }
 	/**
 	 * Convert a value to the corresponding value in pixel
 	 *

@@ -37,7 +37,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * @param <EventObjectType> EventObject created by event source
- * @brief Store listeners
+ * Store listeners
  * The listener container manager the Add,Remove and Call to listeners
  * corresponding to a single event type
  * The listener container is fully compatible with Java Beans specifications for event managments.

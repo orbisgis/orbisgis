@@ -33,30 +33,33 @@ import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
+import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.*;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.io.IOException;
-import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 import javax.swing.JPanel;
 import org.apache.log4j.Logger;
-import org.gdms.data.*;
-import org.gdms.data.edition.Commiter;
-import org.gdms.data.edition.EditionListener;
-import org.gdms.data.edition.MetadataEditionListener;
-import org.gdms.data.indexes.IndexQuery;
-import org.gdms.data.schema.DefaultMetadata;
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
-import org.gdms.data.values.Value;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DataSet;
-import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
-import org.gdms.source.Source;
+import org.gdms.sql.engine.Engine;
+import org.gdms.sql.engine.ParseException;
+import org.gdms.sql.engine.SQLScript;
+import org.gdms.sql.engine.SQLStatement;
+import org.gdms.sql.engine.SemanticException;
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
+import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 
@@ -71,6 +74,8 @@ public class CanvasSE extends JPanel {
         private GeometryFactory gf;
         private Geometry geom;
         private MapTransform mt;
+        private DataSet sample;
+        private boolean displayed;
 
         /**
          * Build this as a JPanel of size 126*70.
@@ -85,25 +90,114 @@ public class CanvasSE extends JPanel {
                 geom = getSampleGeometry();
                 mt = new MapTransform();
                 mt.setExtent(new Envelope(0, 126, 0, 70));
+                displayed = true;
 	}
 
 	@Override
 	public void paintComponent(Graphics g) {
                 Graphics2D g2 = (Graphics2D) g;
                 Object old = g2.getRenderingHint(RenderingHints.KEY_ANTIALIASING);
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setColor(Color.white);
                 g2.fillRect(0, 0, getWidth(), getHeight());
-                try {
-                        s.draw(g2, new InnerDS(), 0, false, mt, geom, null);
-                } catch (DriverException de){
-                } catch (ParameterException de){
-                } catch (IOException de){
-                } catch (IllegalArgumentException ie){
-                        LOGGER.error(ie.getMessage());
+                if(displayed){
+                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                        if(sample == null){
+                                setBasicDataSource();
+                        }
+                        try {
+                                if(sample instanceof DataSource){
+                                        DataSource ds = (DataSource) sample;
+                                        if(!ds.isOpen()){
+                                                ds.open();
+                                        }
+                                }
+                                s.draw(g2, sample, 0, false, mt, geom, null);
+                                if(sample instanceof DataSource){
+                                        ((DataSource) sample).close();
+                                }
+                        } catch (DriverException de){
+                        } catch (ParameterException de){
+                        } catch (IOException de){
+                        } catch (IllegalArgumentException ie){
+                                LOGGER.error(ie.getMessage());
+                        }
+                        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, old);
                 }
-                g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, old);
 	}
+
+        /**
+         * Sets if the canvas must be drawn or not.
+         * @param dis
+         */
+        public void setDisplayed(boolean dis){
+                displayed = dis;
+        }
+
+        /**
+         * Used to know if the canvas will be displayed or not.
+         * @return
+         */
+        public boolean isDisplayed() {
+                return displayed;
+        }
+
+        /**
+         * Sets the associated {@code DataSource} so that it contains only a
+         * basic geometry in a field named the_geom.
+         */
+        public void setBasicDataSource(){
+                DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
+                try {
+                        SQLScript s = Engine.loadScript(CanvasSE.class.getResourceAsStream("GeometryOnly.bsql"));
+                        s.setValueParameter("geomText", ValueFactory.createValue(getSampleGeometry().toString()));
+                        s.setDataSourceFactory(dsf);
+                        SQLStatement st = s.getStatements()[0];
+                        st.prepare();
+                        sample = st.execute();
+                        st.cleanUp();
+                } catch (SemanticException ex) {
+                        LOGGER.warn(ex.getMessage(), ex);
+                } catch (DriverException ex) {
+                        LOGGER.error(ex.getMessage(), ex);
+                } catch (IOException ex) {
+                        LOGGER.warn(ex.getMessage(), ex);
+                }
+        }
+        /**
+         * Creates a sample {@link DataSource} that will be filled using :
+         * <ul><li>The geometry type of the associated symbolizer.</li>
+         * <li>The map given in argument.</li></ul></p>
+         * <p>The inner sample {@code DataSource} will be created by creating a
+         * SQL instruction and executing it.
+         *
+         * @param input
+         */
+        public void setSampleDatasource(Map<String, Object> input){
+                StringBuilder sb = new StringBuilder(80+15*input.size());
+                sb.append("SELECT ST_GEOMFROMTEXT(\'");
+                sb.append(getSampleGeometry().toString());
+                sb.append("\') as the_geom");
+                Set<Map.Entry<String,Object>> es =input.entrySet();
+                for(Map.Entry<String, Object> ent : es){
+                        sb.append(",");
+                        sb.append(ent.getValue().toString());
+                        sb.append(" as ");
+                        sb.append(ent.getKey());
+                }
+                sb.append(";");
+                DataManager dataManager = Services.getService(DataManager.class);
+                DataSourceFactory dsf = dataManager.getDataSourceFactory();
+                try {
+                        sample = dsf.getDataSourceFromSQL(sb.toString());
+                        dataManager.getSourceManager().remove(((DataSource)sample).getName());
+                } catch (DataSourceCreationException ex) {
+                        LOGGER.error("", ex);
+                } catch (DriverException ex) {
+                        LOGGER.error("", ex);
+                } catch (ParseException ex) {
+                        LOGGER.error("", ex);
+                }
+        }
 
         /**
          * Set the symbolizer used to draw geometries with this canvas.
@@ -148,221 +242,14 @@ public class CanvasSE extends JPanel {
                         return getComplexLine();
                 } else if(s instanceof AreaSymbolizer){
                         return getComplexPolygon();
+                } else {
+                        PointSymbolizer ps = (PointSymbolizer)s;
+                        if(ps.isOnVertex()){
+                                return getComplexPolygon();
+                        } else {
+                                return gf.createPoint(new Coordinate(getWidth() / 2, getHeight() / 2));
+                        }
                 }
-                return gf.createPoint(new Coordinate(getWidth() / 2, getHeight() / 2));
         }
 
-        private class InnerDS extends AbstractDataSource {
-
-                @Override
-                public Value getFieldValue(long rowIndex, int fieldId) throws DriverException {
-                        return ValueFactory.createValue(geom);
-                }
-
-                @Override
-                public long getRowCount() throws DriverException {
-                        return 1;
-                }
-
-                @Override
-                public Number[] getScope(int dimension) throws DriverException {
-                        return null;
-                }
-
-                @Override
-                public Metadata getMetadata() throws DriverException {
-                        return new DefaultMetadata(new Type[]{TypeFactory.createType(Type.GEOMETRY)},
-                                new String[]{"the_geom"}
-                        );
-                }
-
-                @Override
-                public void open() throws DriverException {
-                }
-
-                @Override
-                public void close() throws DriverException {
-                }
-
-                @Override
-                public DataSourceFactory getDataSourceFactory() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void setDataSourceFactory(DataSourceFactory dsf) {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void insertFilledRow(Value[] values) throws DriverException {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void insertEmptyRow() throws DriverException {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void insertFilledRowAt(long index, Value[] values) throws DriverException {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void insertEmptyRowAt(long index) throws DriverException {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void deleteRow(long rowId) throws DriverException {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void commit() throws DriverException, NonEditableDataSourceException {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void setFieldValue(long row, int fieldId, Value value) throws DriverException {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void saveData(DataSet ds) throws DriverException {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void redo() throws DriverException {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void undo() throws DriverException {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public boolean canRedo() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public boolean canUndo() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void addMetadataEditionListener(MetadataEditionListener listener) {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void removeMetadataEditionListener(MetadataEditionListener listener) {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void addEditionListener(EditionListener listener) {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void removeEditionListener(EditionListener listener) {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void addDataSourceListener(DataSourceListener listener) {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void removeDataSourceListener(DataSourceListener listener) {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void setDispatchingMode(int dispatchingMode) {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public int getDispatchingMode() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void addField(String name, Type driverType) throws DriverException {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void removeField(int index) throws DriverException {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void setFieldName(int index, String name) throws DriverException {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public Driver getDriver() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public DataSet getDriverTable() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public String getDriverTableName() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public boolean isModified() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public boolean isOpen() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public boolean isEditable() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public Iterator<Integer> queryIndex(IndexQuery queryIndex) throws DriverException {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public Commiter getCommiter() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public String[] getReferencedSources() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public Source getSource() {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-                @Override
-                public void syncWithSource() throws DriverException {
-                        throw new UnsupportedOperationException("Not supported yet.");
-                }
-
-        }
 }

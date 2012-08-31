@@ -29,6 +29,7 @@
 package org.orbisgis.legend.structure.stroke.constant;
 
 import java.awt.Color;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
@@ -82,5 +83,13 @@ public class NullPenStrokeLegend implements ConstantPenStroke {
 
     @Override
     public void setLineOpacity(double tr) {}
+
+    @Override
+    public Uom getUom() {
+        return Uom.PX;
+    }
+
+    @Override
+    public void setUom(Uom u){}
 
 }

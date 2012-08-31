@@ -30,9 +30,8 @@ package org.orbisgis.core.renderer.se.stroke;
 
 import net.opengis.se._2_0.core.AlternativeStrokeElementsType;
 import net.opengis.se._2_0.core.StrokeElementType;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.common.Uom;
 
 /**
  * {@code CompoundStrokeElement} is an abstract class. Thanks to it, it becomes 
@@ -40,9 +39,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
  * instances equally in some places.
  * @author Maxence Laurent, Alexis Guéganno
  */
-public abstract class CompoundStrokeElement implements SymbolizerNode {
-
-    protected SymbolizerNode parent;
+public abstract class CompoundStrokeElement extends AbstractSymbolizerNode {
 
         /**
         * Get a concrete instance of {@code CompoundStrokeElement} using the object
@@ -66,20 +63,5 @@ public abstract class CompoundStrokeElement implements SymbolizerNode {
          * @return 
          */
 	public abstract Object getJAXBType();
-
-	@Override
-	public Uom getUom() {
-		return parent.getUom();
-	}
-
-	@Override
-	public SymbolizerNode getParent() {
-		return parent;
-	}
-
-	@Override
-	public void setParent(SymbolizerNode node) {
-		this.parent = node;
-	}
 
 }

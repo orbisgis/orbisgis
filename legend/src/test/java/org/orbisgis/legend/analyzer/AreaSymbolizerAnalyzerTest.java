@@ -39,6 +39,7 @@ import org.junit.Test;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.analyzer.symbolizers.AreaSymbolizerAnalyzer;
 import org.orbisgis.legend.thematic.choropleth.ChoroplethArea;
@@ -298,6 +299,24 @@ public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
         as.setStroke(null);
         UniqueSymbolArea usa = new UniqueSymbolArea(as);
         assertTrue(true);
+    }
+
+    @Test
+    public void testGetUom() throws Exception {
+        AreaSymbolizer as = getConstantSymbolizer();
+        UniqueSymbolArea usa = new UniqueSymbolArea(as);
+        assertTrue(usa.getStrokeUom() == Uom.PX);
+    }
+
+    @Test
+    public void testSetUom() throws Exception {
+        AreaSymbolizer as = getConstantSymbolizer();
+        UniqueSymbolArea usa = new UniqueSymbolArea(as);
+        assertTrue(usa.getStrokeUom() == Uom.PX);
+        usa.setStrokeUom(Uom.IN);
+        assertTrue(usa.getStrokeUom() == Uom.IN);
+        usa.setStrokeUom(null);
+        assertTrue(usa.getStrokeUom() == Uom.PX);
     }
 
     private AreaSymbolizer getChoroSymbolizer() throws Exception {

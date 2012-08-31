@@ -39,7 +39,7 @@ import org.orbisgis.view.geocatalog.filters.IFilter;
 
 /**
  * This is the data source name contains x filter.
- * @brief Name contains DataSourceFilterFactory
+ * Name contains DataSourceFilterFactory
  */
 
 public class UnitTestFilterFactory implements FilterFactory<IFilter> {

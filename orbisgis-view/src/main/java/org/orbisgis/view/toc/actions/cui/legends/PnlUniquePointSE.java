@@ -45,6 +45,7 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.event.ChangeListener;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
+import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.WellKnownName;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
@@ -55,9 +56,11 @@ import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
+import org.orbisgis.legend.thematic.ConstantFormPoint;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.JNumericSpinner;
+import org.orbisgis.view.components.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -72,13 +75,14 @@ import org.xnap.commons.i18n.I18nFactory;
 public class PnlUniquePointSE extends PnlUniqueAreaSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlUniquePointSE.class);
         private int geometryType = SimpleGeometryType.ALL;
+        private ContainerItemProperties[] uoms;
 
         /**
          * Here we can put all the Legend instances we want... but they have to
          * be unique symbol (ie constant) Legends.
          */
         private UniqueSymbolPoint uniquePoint;
-        private String[] wkns;
+        private ContainerItemProperties[] wkns;
 
         @Override
         public Component getComponent() {
@@ -122,6 +126,15 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
         }
 
         /**
+         * Gets the {@code SimpleGeometryType} that was used to build this
+         * {@code PnlUniquePointSE}.
+         * @return
+         */
+        public int getGeometryType(){
+                return geometryType;
+        }
+
+        /**
          * Initialize the panel. This method is called just after the panel
          * creation.</p> <p>WARNING : the panel will be empty after calling this
          * method. Indeed, there won't be any {@code Legend} instance associated
@@ -161,7 +174,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
 
         @Override
         public String getTitle() {
-                return "Unique symbol for lines.";
+                return "Unique symbol for points.";
         }
         
 
@@ -218,26 +231,17 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                 JPanel jp = new JPanel();
                 boolean canBeOnV = geometryType != SimpleGeometryType.POINT;
                 int onV = canBeOnV ? 1 : 0;
-                GridLayout grid = new GridLayout(4+onV,2);
+                GridLayout grid = new GridLayout(5+onV,2);
                 grid.setVgap(5);
                 jp.setLayout(grid);
                 //If geometryType != POINT, we must let the user choose if he
                 //wants to draw symbols on centroid or on vertices.
                 if(geometryType != SimpleGeometryType.POINT){
-                        JRadioButton bVertex = new JRadioButton(I18N.tr("On vertex"));
-                        JRadioButton bCentroid = new JRadioButton(I18N.tr("On centroid"));
-                        ButtonGroup bg = new ButtonGroup();
-                        bg.add(bVertex);
-                        bg.add(bCentroid);
-                        ActionListener actionV = EventHandler.create(ActionListener.class, point, "setOnVertex");
-                        ActionListener actionC = EventHandler.create(ActionListener.class, point, "setOnCentroid");
-                        bVertex.addActionListener(actionV);
-                        bCentroid.addActionListener(actionC);
-                        bVertex.setSelected(((PointSymbolizer)point.getSymbolizer()).isOnVertex());
-                        bCentroid.setSelected(!((PointSymbolizer)point.getSymbolizer()).isOnVertex());
-                        jp.add(bVertex);
-                        jp.add(bCentroid);
+                        addPointOnVertices(point, jp);
                 }
+                //Uom
+                jp.add(buildText(I18N.tr("Unit of measure :")));
+                jp.add(getPointUomCombo());
                 //Combobox
                 jp.add(buildText(I18N.tr("Symbol form :")));
                 jp.add(getWKNCombo(point));
@@ -295,20 +299,58 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * @param point
          * @return
          */
-        private JComboBox getWKNCombo(UniqueSymbolPoint point){
+        public JComboBox getWKNCombo(ConstantFormPoint point){
                 CanvasSE prev = getPreview();
-                wkns = WellKnownName.getValues();
+                wkns = getWknProperties();
                 String[] values = new String[wkns.length];
                 for (int i = 0; i < values.length; i++) {
-                        values[i] = I18N.tr(wkns[i]);
+                        values[i] = wkns[i].getLabel();
                 }
                 final JComboBox jcc = new JComboBox(values);
                 ActionListener acl = EventHandler.create(ActionListener.class, prev, "repaint");
-                ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateComboBox", "source.selectedIndex");
+                ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateWKNComboBox", "source.selectedIndex");
                 jcc.addActionListener(acl2);
                 jcc.addActionListener(acl);
                 jcc.setSelectedItem(point.getWellKnownName().toUpperCase());
                 return jcc;
+        }
+
+
+        protected ContainerItemProperties[] getWknProperties(){
+                WellKnownName[] us = WellKnownName.values();
+                ContainerItemProperties[] cips = new ContainerItemProperties[us.length];
+                for(int i = 0; i<us.length; i++){
+                        WellKnownName u = us[i];
+                        ContainerItemProperties cip = new ContainerItemProperties(u.name(), u.toLocalizedString());
+                        cips[i] = cip;
+                }
+                return cips;
+        }
+        /**
+         * If called, this method will add a {@code ButtonGroup} made of two
+         * {@code JRadioButton}s that will be used to choose if the symbols
+         * must be drawn on vertices or on the centroid of the input geometry.
+         * @param point
+         * @param jp
+         */
+        public void addPointOnVertices(ConstantFormPoint point, JPanel jp){
+                CanvasSE prev = getPreview();
+                JRadioButton bVertex = new JRadioButton(I18N.tr("On vertex"));
+                JRadioButton bCentroid = new JRadioButton(I18N.tr("On centroid"));
+                ButtonGroup bg = new ButtonGroup();
+                bg.add(bVertex);
+                bg.add(bCentroid);
+                ActionListener actionV = EventHandler.create(ActionListener.class, point, "setOnVertex");
+                ActionListener actionC = EventHandler.create(ActionListener.class, point, "setOnCentroid");
+                ActionListener actionRef = EventHandler.create(ActionListener.class, prev, "repaint");
+                bVertex.addActionListener(actionV);
+                bVertex.addActionListener(actionRef);
+                bCentroid.addActionListener(actionC);
+                bCentroid.addActionListener(actionRef);
+                bVertex.setSelected(((PointSymbolizer)point.getSymbolizer()).isOnVertex());
+                bCentroid.setSelected(!((PointSymbolizer)point.getSymbolizer()).isOnVertex());
+                jp.add(bVertex);
+                jp.add(bCentroid);
         }
 
         /**
@@ -316,7 +358,37 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
          * as its well-known name. Used when changing the combobox selection.
          * @param index
          */
-        public void updateComboBox(int index){
-                uniquePoint.setWellKnownName(wkns[index]);
+        public void updateWKNComboBox(int index){
+                ((ConstantFormPoint)getLegend()).setWellKnownName((wkns[index].getKey()));
+        }
+
+
+        /**
+         * ComboBox to configure the unit of measure used to draw th stroke.
+         * @param pt
+         * @return
+         */
+        protected JComboBox getPointUomCombo(){
+                CanvasSE prev = getPreview();
+                uoms= getUomProperties();
+                String[] values = new String[uoms.length];
+                for (int i = 0; i < values.length; i++) {
+                        values[i] = I18N.tr(uoms[i].toString());
+                }
+                final JComboBox jcc = new JComboBox(values);
+                ActionListener acl = EventHandler.create(ActionListener.class, prev, "repaint");
+                ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateSUComboBox", "source.selectedIndex");
+                jcc.addActionListener(acl2);
+                jcc.addActionListener(acl);
+                jcc.setSelectedItem(((ConstantFormPoint)getLegend()).getSymbolUom().toString().toUpperCase());
+                return jcc;
+        }
+        /**
+         * Sets the underlying graphic to use the ith element of the combobox
+         * as its uom. Used when changing the combobox selection.
+         * @param index
+         */
+        public void updateSUComboBox(int index){
+                ((ConstantFormPoint)getLegend()).setSymbolUom(Uom.fromString(uoms[index].getKey()));
         }
 }

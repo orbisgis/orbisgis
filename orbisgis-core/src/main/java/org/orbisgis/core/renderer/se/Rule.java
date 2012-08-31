@@ -45,7 +45,6 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Description;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.ExternalGraphic;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
@@ -61,7 +60,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
  * representation.
  * @author Maxence Laurent
  */
-public final class Rule implements SymbolizerNode {
+public final class Rule extends AbstractSymbolizerNode {
 
     /**
      * The name set to every rule, if not set externally.
@@ -69,7 +68,6 @@ public final class Rule implements SymbolizerNode {
     public static final String DEFAULT_NAME = "Default Rule";
     private String name = "";
     private Description description;
-    private SymbolizerNode fts;
     private String where;
     private boolean fallbackRule = false;
     private Double minScaleDenom = null;
@@ -95,7 +93,7 @@ public final class Rule implements SymbolizerNode {
 
     /**
      * Build a Rule using a ILayer. This contains a CompositeSymbolizer, populated 
-     * according to the first found geometry in the DataSource  embedded in the ILayer.
+     * according to the first found geometry in the DataSet  embedded in the ILayer.
      * That means we'll obtain a <code>LineSymbolizer</code> if this first geometry is of 
      * dimension 1, a <code>PolygonSymbolizer</code> if it is of dimension 2,
      * and a <code>PointSymbolizer</code> otherwise.
@@ -279,22 +277,6 @@ public final class Rule implements SymbolizerNode {
 
         return rt;
     }
-
-    @Override
-    public Uom getUom() {
-        return null;
-    }
-
-    @Override
-    public SymbolizerNode getParent() {
-        return fts;
-    }
-
-    @Override
-    public void setParent(SymbolizerNode fts) {
-        this.fts = fts;
-    }
-
     /**
      * Get the <code>where</code> clause associated to this rule.
      * @return 
@@ -320,12 +302,12 @@ public final class Rule implements SymbolizerNode {
      *
      * @return
      * @throws DriverLoadException
-     * @throws DataSourceCreationException
+     * @throws DataSetCreationException
      * @throws DriverException
      * @throws ParseException
      * @throws SemanticException
      */
-    public FilterDataSourceDecorator getFilteredDataSource(FilterDataSourceDecorator fds)
+    public FilterDataSourceDecorator getFilteredDataSet(FilterDataSourceDecorator fds)
             throws DataSourceCreationException, DriverException {
         if (where != null && !where.isEmpty()) {
             return new FilterDataSourceDecorator(fds, where + getOrderBy());

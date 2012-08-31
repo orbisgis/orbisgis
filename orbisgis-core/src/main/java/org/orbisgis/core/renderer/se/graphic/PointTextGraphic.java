@@ -99,9 +99,11 @@ public final class PointTextGraphic extends Graphic implements UomNode {
         @Override
         public Uom getUom() {
                 if (uom != null) {
-                        return this.uom;
+                          return uom;
+                } else if(getParent() instanceof UomNode){
+                          return ((UomNode)getParent()).getUom();
                 } else {
-                        return parent.getUom();
+                        return Uom.PX;
                 }
         }
 
@@ -162,7 +164,7 @@ public final class PointTextGraphic extends Graphic implements UomNode {
 
 
         /*@Override
-        public double getMaxWidth(DataSource sds, long fid, MapTransform mt) throws ParameterException, IOException {
+        public double getMaxWidth(DataSet sds, long fid, MapTransform mt) throws ParameterException, IOException {
         throw new UnsupportedOperationException("Not supported yet.");
         }*/
         @Override
@@ -213,8 +215,8 @@ public final class PointTextGraphic extends Graphic implements UomNode {
             if(pointLabel != null){
                 ua.merge(pointLabel.getUsedAnalysis());
             }
-            ua.include(x);
-            ua.include(y);
+            ua.merge(x.getUsedAnalysis());
+            ua.merge(y.getUsedAnalysis());
             return ua;
         }
 
@@ -234,6 +236,7 @@ public final class PointTextGraphic extends Graphic implements UomNode {
                 this.x = x;
                 if (this.x != null) {
                         this.x.setContext(RealParameterContext.REAL_CONTEXT);
+                        this.x.setParent(this);
                 }
         }
 
@@ -253,6 +256,7 @@ public final class PointTextGraphic extends Graphic implements UomNode {
                 this.y = y;
                 if (this.y != null) {
                         this.y.setContext(RealParameterContext.REAL_CONTEXT);
+                        this.y.setParent(this);
                 }
         }
 

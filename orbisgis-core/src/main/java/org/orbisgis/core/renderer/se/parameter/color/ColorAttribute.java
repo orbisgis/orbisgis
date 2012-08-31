@@ -31,9 +31,8 @@ package org.orbisgis.core.renderer.se.parameter.color;
 import java.awt.Color;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
-import net.opengis.fes._2.ValueReferenceType;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.ValueReference;
@@ -41,8 +40,8 @@ import org.orbisgis.core.renderer.se.parameter.ValueReference;
 /**
  * The {@code ValueReference} implementation of {@code ColorParameter}. That means that 
  * this class is used to retrieve color values by using a GDMS 
- * {@code DataSource} as specified in {@link ValueReference ValueReference}.</p>
- * <p>Note that the {@code DataSource} is not directly attached to the class,
+ * {@code DataSet} as specified in {@link ValueReference ValueReference}.</p>
+ * <p>Note that the {@code DataSet} is not directly attached to the class,
  * and must be specified each time you call {@code getValue}.
  * @author Alexis Guéganno, Maxence Laurent
  */
@@ -66,7 +65,7 @@ public class ColorAttribute extends ValueReference implements ColorParameter {
     }
 
     @Override
-    public Color getColor(DataSource sds, long fid) throws ParameterException {
+    public Color getColor(DataSet sds, long fid) throws ParameterException {
         try {
             return Color.getColor(getFieldValue(sds, fid).getAsString());
         } catch (Exception e) {

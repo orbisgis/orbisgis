@@ -29,23 +29,15 @@
 package org.orbisgis.core.renderer.se;
 
 import java.util.HashSet;
-import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * SymbolizerNode allow to browse the styling tree
- * It's mainly used to fetch the nearest Uom definition of any element
- *
- * @todo extract getUom() and add void update(), then every element should implement this (even parameters)
+ * It's mainly used to fetch the nearest Uom definition of any element.
  *
  * @author Maxence Laurent
  */
 public interface SymbolizerNode{
-    /**
-     * Get the unit of measure associated with the current node.
-     * @return 
-     */
-    Uom getUom();
 
     /**
      * get the parent of this current <code>SymbolizerNode</code>
@@ -74,4 +66,9 @@ public interface SymbolizerNode{
      * @return
      */
     UsedAnalysis getUsedAnalysis();
+
+    /**
+     * Notify the parent of the node that cached values must be unset.
+     */
+    void update();
 }

@@ -37,8 +37,8 @@ import java.util.Set;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
 import net.opengis.se._2_0.raster.RasterSymbolizerType;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
@@ -52,7 +52,7 @@ import org.orbisgis.core.renderer.se.parameter.ParameterException;
  * @todo Add a general draw method that fit well for vectors and raster; implement fetch default geometry
  * @author Maxence Laurent, Alexis Guéganno
  */
-public abstract class Symbolizer implements SymbolizerNode, Comparable {
+public abstract class Symbolizer extends AbstractSymbolizerNode implements SymbolizerNode, Comparable {
 
     /**
      * The default name affected to a new Symbolizer instance.
@@ -65,7 +65,6 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
     protected String name;
     protected String desc;
     //protected GeometryAttribute the_geom;
-    private SymbolizerNode parent;
     protected int level;
     private Set<String> features;
     private Map<String,Value> featuresMap;
@@ -176,16 +175,6 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
         this.level = level;
     }
 
-    @Override
-    public SymbolizerNode getParent() {
-        return parent;
-    }
-
-    @Override
-    public void setParent(SymbolizerNode node) {
-        this.parent = node;
-    }
-
     /**
      * Fill the {@code SymbolizerType s} with the properties contained in this
      * {@code Symbolizer}.
@@ -261,7 +250,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
      * Go through parents and return the rule
      */
     public Rule getRule() {
-        SymbolizerNode pIt = this.parent;
+        SymbolizerNode pIt = getParent();
         while (!(pIt instanceof Rule)) {
             pIt = pIt.getParent();
         }
@@ -270,17 +259,17 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
     }
 
     /**
-     * Get the faetures that are needed to build this Symbolizer in a {@code
+     * Gets the features that are needed to build this Symbolizer in a {@code
      * Map<String,Value>}. This method is based on {@link
      * SymbolizerNode#dependsOnFeature()}. Using the field names retrieved with
-     * this method, we serach for {@code Values} at index {@code fid} in {@code
+     * this method, we search for {@code Values} at index {@code fid} in {@code
      * sds}.
      * @param sds
      * @param fid
      * @return
      * @throws DriverException
      */
-    public Map<String,Value> getFeaturesMap(DataSource sds, long fid) throws DriverException{
+    public Map<String,Value> getFeaturesMap(DataSet sds, long fid) throws DriverException{
         if(features==null){
             features = dependsOnFeature();
         }
@@ -288,11 +277,23 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
             featuresMap = new HashMap<String,Value>();
         }
         for(String s : features){
-            featuresMap.put(s, sds.getFieldValue(fid, sds.getFieldIndexByName(s)));
+            int index  = sds.getMetadata().getFieldIndex(s);
+            featuresMap.put(s, sds.getFieldValue(fid, index));
         }
         return featuresMap;
     }
 
+    public void refreshFeatures(){
+            features = null;
+    }
+
+    @Override
+    public void update(){
+            refreshFeatures();
+            if(getParent() != null){
+                getParent().update();
+            }
+    }
     /**
      * Draw the symbols in g2, using infos that are found in sds at index fid.
      * @param g2
@@ -306,7 +307,7 @@ public abstract class Symbolizer implements SymbolizerNode, Comparable {
      * @throws IOException
      * @throws DriverException 
      */
-    public abstract void draw(Graphics2D g2, DataSource sds, long fid,
+    public abstract void draw(Graphics2D g2, DataSet sds, long fid,
             boolean selected, MapTransform mt, Geometry theGeom, RenderContext perm)
             throws ParameterException, IOException, DriverException;
 

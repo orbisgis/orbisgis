@@ -32,8 +32,8 @@ import java.util.Map;
 import net.opengis.se._2_0.core.InterpolateType;
 import net.opengis.se._2_0.core.InterpolationPointType;
 import net.opengis.se._2_0.core.ModeType;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.Interpolate;
 import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
@@ -96,7 +96,7 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
         /**
          * Retrieve the <code>Double</code> that must be associated to the datum at index
          * <code>fid</code> in <code>sds</code>. The resulting value is obtained by
-         * using the value from the <code>DataSource</code>, the 
+         * using the value from the <code>DataSet</code>, the 
          * interpolation points and the interpolation method.
          * @param ds
          * @param fid The index where to search in the original source.
@@ -104,7 +104,7 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
          * The interpolated <code>Double</code> value.
          */
         @Override
-        public Double getValue(DataSource sds, long fid) throws ParameterException {
+        public Double getValue(DataSet sds, long fid) throws ParameterException {
 
                 double value = this.getLookupValue().getValue(sds, fid);
 
@@ -143,7 +143,7 @@ public final class Interpolate2Real extends Interpolate<RealParameter, RealLiter
          * Retrieve the <code>Double</code> that must be associated to the datum 
          * stored in {@code map}.
          * The resulting value is obtained by using the value from the  {@code
-         * DataSource}, the interpolation points and the interpolation method.
+         * DataSet}, the interpolation points and the interpolation method.
          * @param ds
          * @param fid The index where to search in the original source.
          * @return

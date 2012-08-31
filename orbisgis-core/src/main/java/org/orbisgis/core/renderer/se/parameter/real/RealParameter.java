@@ -29,8 +29,8 @@
 package org.orbisgis.core.renderer.se.parameter.real;
 
 import java.util.Map;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 
@@ -67,7 +67,7 @@ public interface RealParameter extends SeParameter, Comparable {
          * @return
          * @throws ParameterException 
          */
-        Double getValue(DataSource sds, long fid) throws ParameterException;
+        Double getValue(DataSet sds, long fid) throws ParameterException;
 
         /**
          * Tries to retrieve the value associated to this RealParameter in the map.

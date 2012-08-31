@@ -37,7 +37,7 @@ import java.util.EventObject;
  */
 public interface Listener<EventObjectType extends EventObject> extends EventListener {
     /**
-     * @brief The event has been fired
+     * The event has been fired
      * Use java.beans.EventHandler.create to make a listener that will directly
      * link from the source to the target method.
      * You can also overload this method to call your related class method,

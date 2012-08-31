@@ -54,6 +54,14 @@ public class EPLegendHelper {
                 ILegendPanel pnlUniqueArea = new PnlUniqueAreaSE();
                 pnlUniqueArea.initialize(legendContext);
                 legends.add(pnlUniqueArea);
+                //ProportionalPoint
+                ILegendPanel proportionalPoint = new PnlProportionalPointSE();
+                proportionalPoint.initialize(legendContext);
+                legends.add(proportionalPoint);
+                //ProportionalLine
+                ILegendPanel proportionalLine = new PnlProportionalLine();
+                proportionalLine.initialize(legendContext);
+                legends.add(proportionalLine);
 		return legends.toArray(new ILegendPanel[legends.size()]);
 	}
 

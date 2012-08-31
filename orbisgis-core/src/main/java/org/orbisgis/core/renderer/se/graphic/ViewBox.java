@@ -33,8 +33,9 @@ import java.util.HashSet;
 import java.util.Map;
 import net.opengis.se._2_0.core.ViewBoxType;
 import org.gdms.data.values.Value;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -57,9 +58,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * happens, the coordinate of the rendered graphic will be flipped.
  * @author Alexis Guéganno, Maxence Laurent
  */
-public final class ViewBox implements SymbolizerNode {
-        
-        private SymbolizerNode parent;
+public final class ViewBox extends  AbstractSymbolizerNode {
         private RealParameter x;
         private RealParameter y;
 
@@ -110,6 +109,7 @@ public final class ViewBox implements SymbolizerNode {
                 x = width;
                 if (x != null) {
                         x.setContext(RealParameterContext.REAL_CONTEXT);
+                        x.setParent(this);
                 }
         }
         /**
@@ -129,6 +129,7 @@ public final class ViewBox implements SymbolizerNode {
                 y = height;
                 if (y != null) {
                         y.setContext(RealParameterContext.REAL_CONTEXT);
+                        y.setParent(this);
                 }
         }
 
@@ -139,21 +140,6 @@ public final class ViewBox implements SymbolizerNode {
         public RealParameter getHeight() {
             return y;
                 //return y == null ? x : y;
-        }
-
-        @Override
-        public Uom getUom() {
-                return parent.getUom();
-        }
-
-        @Override
-        public SymbolizerNode getParent() {
-                return parent;
-        }
-
-        @Override
-        public void setParent(SymbolizerNode node) {
-                parent = node;
         }
 
         @Override
@@ -176,8 +162,12 @@ public final class ViewBox implements SymbolizerNode {
         @Override
         public UsedAnalysis getUsedAnalysis() {
             UsedAnalysis ua = new UsedAnalysis();
-            ua.include(x);
-            ua.include(y);
+            if(x!=null){
+                ua.merge(x.getUsedAnalysis());
+            }
+            if(y!=null){
+                ua.merge(y.getUsedAnalysis());
+            }
             return ua;
         }
 
@@ -210,8 +200,8 @@ public final class ViewBox implements SymbolizerNode {
                 }
 
 
-                dx = Uom.toPixel(dx, this.getUom(), dpi, scale, width);
-                dy = Uom.toPixel(dy, this.getUom(), dpi, scale, height);
+                dx = Uom.toPixel(dx, ((UomNode)getParent()).getUom(), dpi, scale, width);
+                dy = Uom.toPixel(dy, ((UomNode)getParent()).getUom(), dpi, scale, height);
 
                 if (dx <= 0.00021 || dy <= 0.00021) {
                         throw new ParameterException("View-box is too small: (" + dx + ";" + dy + ")");

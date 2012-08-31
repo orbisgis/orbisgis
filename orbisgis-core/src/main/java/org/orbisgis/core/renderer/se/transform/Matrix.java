@@ -36,6 +36,7 @@ import net.opengis.se._2_0.core.MatrixType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -57,7 +58,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
  * 
  * @author Maxence Laurent, Alexis Guéganno
  */
-public final class Matrix implements Transformation {
+public final class Matrix extends AbstractSymbolizerNode implements Transformation {
 
         private static final double DEF_A = 1.0;
         private static final double DEF_B = 0.0;
@@ -189,6 +190,7 @@ public final class Matrix implements Transformation {
                         this.a = a;
                 }
                 this.a.setContext(RealParameterContext.REAL_CONTEXT);
+                a.setParent(this);
         }
 
         /**
@@ -217,6 +219,7 @@ public final class Matrix implements Transformation {
                         this.b = b;
                 }
                 this.b.setContext(RealParameterContext.REAL_CONTEXT);
+                this.b.setParent(this);
         }
 
         /**
@@ -245,6 +248,7 @@ public final class Matrix implements Transformation {
                         this.c = c;
                 }
                 this.c.setContext(RealParameterContext.REAL_CONTEXT);
+                this.c.setParent(this);
         }
 
         /**
@@ -273,6 +277,7 @@ public final class Matrix implements Transformation {
                         this.d = d;
                 }
                 this.d.setContext(RealParameterContext.REAL_CONTEXT);
+                this.d.setParent(this);
         }
 
         /**
@@ -301,6 +306,7 @@ public final class Matrix implements Transformation {
                         this.e = e;
                 }
                 this.e.setContext(RealParameterContext.REAL_CONTEXT);
+                this.e.setParent(this);
         }
 
         /**
@@ -329,6 +335,7 @@ public final class Matrix implements Transformation {
                         this.f = f;
                 }
                 this.f.setContext(RealParameterContext.REAL_CONTEXT);
+                this.f.setParent(this);
         }
 
         @Override
@@ -346,12 +353,12 @@ public final class Matrix implements Transformation {
         @Override
         public UsedAnalysis getUsedAnalysis() {
             UsedAnalysis result = new UsedAnalysis();
-            result.include(a);
-            result.include(b);
-            result.include(c);
-            result.include(d);
-            result.include(e);
-            result.include(f);
+            result.merge(a.getUsedAnalysis());
+            result.merge(b.getUsedAnalysis());
+            result.merge(c.getUsedAnalysis());
+            result.merge(d.getUsedAnalysis());
+            result.merge(e.getUsedAnalysis());
+            result.merge(f.getUsedAnalysis());
             return result;
         }
 

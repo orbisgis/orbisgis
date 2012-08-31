@@ -71,41 +71,23 @@ public final class HatchedFill extends Fill implements StrokeNode {
 
     //Useful constants.
     private static final double EPSILON = 0.01; // todo Eval, and use an external EPSILON value.
-
-
     private static final double TWO_PI_DEG = 360.0;
-
-
     private static final double PI_DEG = 180.0;
-
-
     /**
      * The default perpendicular distance between two hatches.
      */
     public static final double DEFAULT_PDIST = 10.0;
-
-
     /**
      * Default orientation value for hatches.
      */
     public static final double DEFAULT_ALPHA = 45.0;
-
-
     /**
      * 
      */
     public static final double DEFAULT_NATURAL_LENGTH = 100;
-
-
     private RealParameter angle;
-
-
     private RealParameter distance;
-
-
     private RealParameter offset;
-
-
     private Stroke stroke;
 
 
@@ -163,9 +145,9 @@ public final class HatchedFill extends Fill implements StrokeNode {
     @Override
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis ua = new UsedAnalysis();
-        ua.include(angle);
-        ua.include(distance);
-        ua.include(offset);
+        ua.merge(angle.getUsedAnalysis());
+        ua.merge(distance.getUsedAnalysis());
+        ua.merge(offset.getUsedAnalysis());
         if(stroke != null){
             ua.merge(stroke.getUsedAnalysis());
         }
@@ -491,6 +473,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
         this.angle = angle;
         if (angle != null) {
             angle.setContext(RealParameterContext.REAL_CONTEXT);
+            angle.setParent(this);
         }
     }
 
@@ -512,6 +495,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
         this.distance = distance;
         if (distance != null) {
             this.distance.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+            this.distance.setParent(this);
         }
 
     }
@@ -534,6 +518,7 @@ public final class HatchedFill extends Fill implements StrokeNode {
         this.offset = offset;
         if (offset != null) {
             offset.setContext(RealParameterContext.REAL_CONTEXT);
+            offset.setParent(this);
         }
     }
 
@@ -565,6 +550,9 @@ public final class HatchedFill extends Fill implements StrokeNode {
         ObjectFactory of = new ObjectFactory();
         HatchedFillType hf = of.createHatchedFillType();
 
+        if (getOwnUom() != null) {
+            hf.setUom(getOwnUom().toURN());
+        }
         if (angle != null) {
             hf.setAngle(angle.getJAXBParameterValueType());
         }

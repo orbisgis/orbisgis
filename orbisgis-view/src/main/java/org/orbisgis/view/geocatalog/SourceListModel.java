@@ -50,7 +50,7 @@ import org.orbisgis.view.geocatalog.filters.TableSystemFilter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 /**
- * @brief Manage entries of GeoCatalog according to a GDMS SourceManager
+ * Manage entries of GeoCatalog according to a GDMS SourceManager
  * SourceListModel is a swing component that update the content of the geocatalog
  * according to the SourceManager content and the filter loaded.
  */
@@ -280,7 +280,7 @@ public class SourceListModel extends AbstractListModel {
 	    readDataManager();
         }
         /**
-         * @brief Apply all filters with the logical connective And 
+         * Apply all filters with the logical connective And 
          */
 	private final class AndFilter implements IFilter {
             /**

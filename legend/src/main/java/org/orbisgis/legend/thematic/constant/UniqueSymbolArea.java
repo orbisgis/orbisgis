@@ -36,6 +36,7 @@ import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.thematic.ConstantStrokeArea;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -52,7 +53,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * We expect from its {@code Fill} to be a constant {@code SolidFill} instance.
  * @author Alexis Guéganno
  */
-public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbolArea {
+public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbolArea, StrokeUom {
 
     private static final I18n I18N = I18nFactory.getI18n(UniqueSymbolArea.class);
     private ConstantSolidFill fillLegend;

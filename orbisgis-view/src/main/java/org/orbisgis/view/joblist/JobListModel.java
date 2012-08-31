@@ -46,7 +46,7 @@ import org.orbisgis.view.background.Job;
 import org.orbisgis.view.components.ContainerItemProperties;
 
 /**
- * @brief JList model of the Job list
+ * JList model of the Job list
  */
 public class JobListModel extends AbstractListModel {
         private static final Logger LOGGER = Logger.getLogger(JobListModel.class);

@@ -39,16 +39,20 @@ import java.net.URL;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
+import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.IUniqueSymbolLine;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
+import org.orbisgis.legend.thematic.uom.StrokeUom;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.view.components.ContainerItemProperties;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
@@ -65,10 +69,12 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueLineSE.class);
         private ConstantPenStrokeLegend penStrokeMemory;
         private JCheckBox lineCheckBox;
+        private JComboBox lineUom;
         private JPanel lineWidth;
         private JPanel lineColor;
         private JPanel lineOpacity;
         private JPanel lineDash;
+        private ContainerItemProperties[] uoms;
         /**
          * Here we can put all the Legend instances we want... but they have to
          * be unique symbol (ie constant) Legends.
@@ -184,13 +190,14 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 JPanel glob = new JPanel();
                 glob.setLayout(new BoxLayout(glob, BoxLayout.Y_AXIS));
                 JPanel jp = new JPanel();
-                GridLayout grid = new GridLayout(4+ilo,2);
+                GridLayout grid = new GridLayout(5+ilo,2);
                 grid.setVgap(5);
                 jp.setLayout(grid);
+                lineUom = getLineUomCombo((StrokeUom)getLegend());
                 lineWidth = getLineWidthSpinner(legend);
                 lineColor = getColorField(legend.getFillLegend());
                 lineOpacity = getLineOpacitySpinner(legend.getFillLegend());
-                lineDash = getDashArrayField(legend);
+                lineDash = getDashArrayField((ConstantColorAndDashesPSLegend)legend);
                 if(isLineOptional()){
                         jp.add(buildText(I18N.tr("Enable line : ")));
                         lineCheckBox = new JCheckBox("");
@@ -202,6 +209,9 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                         //parameters.
                         lineCheckBox.setSelected(leg instanceof ConstantPenStrokeLegend);
                 }
+                //Uom
+                jp.add(buildText(I18N.tr("Unit of measure :")));
+                jp.add(lineUom);
                 //Width
                 jp.add(buildText(I18N.tr("Line width :")));
                 jp.add(lineWidth);

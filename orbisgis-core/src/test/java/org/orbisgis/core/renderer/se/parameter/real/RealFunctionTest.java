@@ -28,11 +28,9 @@
  */
 package org.orbisgis.core.renderer.se.parameter.real;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
-import static org.junit.Assert.*;
 
 /**
  *
@@ -40,22 +38,16 @@ import static org.junit.Assert.*;
  */
 public class RealFunctionTest {
 
-        @Test
-    public void testDiv(){
-        try {
+    @Test
+    public void testDiv() throws Exception {
             RealFunction op1 = new RealFunction("div");
             op1.addOperand(new RealLiteral(100));
             op1.addOperand(new RealLiteral(10));
             assertEquals(op1.getValue(null, -1), 10.0, 0.0000001);
-        } catch (ParameterException ex) {
-            assertTrue(false);
-        }
     }
 
     @Test
-    public void testSqrt(){
-        try {
-
+    public void testSqrt() throws Exception {
             RealFunction op1 = new RealFunction("sqrt");
             op1.addOperand(new RealLiteral(25.0));
 
@@ -64,15 +56,11 @@ public class RealFunctionTest {
             op2.addOperand(new RealLiteral(-25.0));
 
             assertEquals(Double.NaN, op2.getValue(null, -1), 0.0000001);
-        } catch (ParameterException ex) {
-            Logger.getLogger(RealFunctionTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
 
     }
 
     @Test
-    public void testLog(){
-        try {
+    public void testLog() throws Exception {
             RealFunction op1 = new RealFunction("log");
             op1.addOperand(new RealLiteral(100));
             assertEquals(2.0, op1.getValue(null, -1), 0.0000001);
@@ -80,15 +68,19 @@ public class RealFunctionTest {
             RealFunction op2 = new RealFunction("log");
             op2.addOperand(new RealLiteral(-100));
             assertEquals(Double.NaN, op2.getValue(null, -1), 0.0000001);
-        }
-        catch (ParameterException ex) {
-            Logger.getLogger(RealFunctionTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
     }
 
     @Test
-    public void testgetOperator() {
+    public void testgetOperator() throws Exception {
             RealFunction op1 = new RealFunction("log");
             assertTrue(op1.getOperator() == RealFunction.Operators.LOG);
+            assertTrue(op1.getOperands().isEmpty());
+    }
+
+    @Test
+    public void testgetOperatorBis() throws Exception {
+            RealFunction op1 = new RealFunction(RealFunction.Operators.ADD);
+            assertTrue(op1.getOperator() == RealFunction.Operators.ADD);
+            assertTrue(op1.getOperands().isEmpty());
     }
 }

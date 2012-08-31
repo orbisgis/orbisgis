@@ -29,8 +29,8 @@
 package org.orbisgis.core.renderer.se.parameter.string;
 
 import java.util.Map;
-import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
+import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 
@@ -45,14 +45,14 @@ import org.orbisgis.core.renderer.se.parameter.SeParameter;
 public interface StringParameter extends SeParameter {
     
     
-    //TODO Is (DataSource, featureId) the right way to access a feature ?
+    //TODO Is (DataSet, featureId) the right way to access a feature ?
     /**
          * Retrieve the {@code String} value associated to this {@code
          * StringParameter}, using informations stored in {@code sds} at index
          * {@code fid}. It can be retrieved using the given {@code datasource}
          * or not depending on the realization of this interface.
          * @param sds
-         * The {@code DataSource} where to search.
+         * The {@code DataSet} where to search.
          * @param fid
          * The entry where to get the value in the data source. Note that as we don't 
          * know the column where to search, this information must be given externally
@@ -61,7 +61,7 @@ public interface StringParameter extends SeParameter {
          * A {@code String} instance.
          * @throws ParameterException 
          */
-    String getValue(DataSource sds, long fid) throws ParameterException;
+    String getValue(DataSet sds, long fid) throws ParameterException;
 
     /**
      * Retrieve the {@code String} value associated to this {@code StringParameter}

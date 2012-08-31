@@ -204,9 +204,11 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
     @Override
     public Uom getUom() {
         if (uom != null) {
-            return this.uom;
+            return uom;
+        } else if(getParent() instanceof UomNode){
+            return ((UomNode)getParent()).getUom();
         } else {
-            return parent.getUom();
+            return Uom.PX;
         }
     }
 
@@ -336,6 +338,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
                 }
             }
             holeRadius.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+            holeRadius.setParent(this);
         }
     }
 
@@ -359,6 +362,7 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
         this.radius = radius;
         if (radius != null) {
             radius.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
+            radius.setParent(this);
         }
     }
 
@@ -595,10 +599,10 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis result = new UsedAnalysis();
         if (radius != null) {
-            result.include(radius);
+            result.merge(radius.getUsedAnalysis());
         }
         if (holeRadius != null) {
-            result.include(holeRadius);
+            result.merge(holeRadius.getUsedAnalysis());
         }
         if (stroke != null) {
             result.merge(stroke.getUsedAnalysis());

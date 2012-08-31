@@ -29,8 +29,16 @@
 package org.orbisgis.legend.structure.viewbox;
 
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
+import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
+import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.core.renderer.se.parameter.real.RealFunction;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
 import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;
+import org.orbisgis.legend.structure.parameter.NumericLegend;
 
 /**
  * The representation of a monovariate proportional symbol, that has been
@@ -44,6 +52,48 @@ import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;
 public class MonovariateProportionalViewBox extends DefaultViewBox {
         
         private boolean onH;
+
+        /**
+         * Builds a new {@code MonovariateProportionalViewBox}. It contains a
+         * {@link ViewBox} with a null width and an interpolated height.
+         * Interpolation is built such than 1 gives 1. Note that the lookup
+         * value won't be set from this constructor, this has to be made
+         * externally !
+         */
+        public MonovariateProportionalViewBox(){
+                super();
+                //We Work on height
+                onH = true;
+                ViewBox vb = getViewBox();
+                //So we set the width to null
+                vb.setWidth(null);
+                setWidthLegend(null);
+                //We build the height
+                Interpolate2Real ir = new Interpolate2Real(new RealLiteral(0));
+                InterpolationPoint<RealParameter> ip =new InterpolationPoint<RealParameter>();
+                ip.setData(0);
+                ip.setValue(new RealLiteral(0));
+                ir.addInterpolationPoint(ip);
+                InterpolationPoint<RealParameter> ip2 =new InterpolationPoint<RealParameter>();
+                ip2.setData(1);
+                ip2.setValue(new RealLiteral(1));
+                ir.addInterpolationPoint(ip2);
+                setHeightLegend((NumericLegend)new RealParameterAnalyzer(ir).getLegend());
+                //We must not forget our interpolation function...
+                //It's empty ! Don't forget to fill it later !
+                RealFunction rf = new RealFunction(RealFunction.Operators.SQRT);
+                try{
+                        rf.addOperand(new RealAttribute());
+                } catch(ParameterException pe){
+                        throw new IllegalStateException("We've just failed at giving"
+                                + "an operand to a log. Somthing must goes REALLY"
+                                + "wrong...", pe);
+                }
+                ir.setLookupValue(rf);
+                //We set the height
+                vb.setHeight(ir);
+                setHeightLegend((NumericLegend)new RealParameterAnalyzer(ir).getLegend());
+        }
 
         /**
          * Build a new {@code MonovariateProportionalViewBox} using the given
@@ -168,6 +218,22 @@ public class MonovariateProportionalViewBox extends DefaultViewBox {
          */
         public void setSecondValue(double d) {
             getInterpolation().setSecondValue(d);
+        }
+
+        /**
+         * Gets the name of the field where values will be retrieved.
+         * @return
+         */
+        public String getLookupFieldName(){
+                return getInterpolation().getLookupFieldName();
+        }
+
+        /**
+         * Sets the name of the field where values will be retrieved.
+         * @param name
+         */
+        public void setLookupFieldName(String name){
+                getInterpolation().setLookupFieldName(name);
         }
 
 }

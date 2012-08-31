@@ -56,6 +56,7 @@ import javax.swing.Timer;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
@@ -69,6 +70,7 @@ import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.map.jobs.ZoomToSelection;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.tools.CompassTool;
@@ -82,7 +84,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * @brief The Map Editor Panel
+ * The Map Editor Panel
  */
 public class MapEditor extends JPanel implements EditorDockable, TransformListener   {
     private static final I18n I18N = I18nFactory.getI18n(MapEditor.class);
@@ -240,6 +242,18 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         ButtonGroup autoSelection = new ButtonGroup();
         //Selection button
         autoSelection.add(addButton(toolBar, new SelectionTool(), useButtonText));
+        //Clear selection
+        toolBar.add(addButton(OrbisGISIcon.getIcon("edit-clear"),
+                I18N.tr("Clear selection"),
+                I18N.tr("Clear all selected geometries of all layers"),
+                useButtonText,"onClearSelection"));
+        
+        //Zoom to visible selected geometries
+        toolBar.add(addButton(OrbisGISIcon.getIcon("zoom_selected"),
+                I18N.tr("Zoom to selection"),
+                I18N.tr("Zoom to visible selected geometries"),
+                useButtonText,"onZoomToSelection"));
+        toolBar.addSeparator();
         //Navigation Tools
         autoSelection.add(addButton(toolBar,new ZoomInTool(),useButtonText));
         autoSelection.add(addButton(toolBar,new ZoomOutTool(),useButtonText));
@@ -331,6 +345,25 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
      */
     public void onFullExtent() {
         mapControl.getMapTransform().setExtent(mapContext.getLayerModel().getEnvelope());
+    }
+    
+    /**
+     * The user click on the button clear selection
+     */
+    public void onClearSelection() {
+            for(ILayer layer : mapContext.getLayers()) {
+                    if(!layer.acceptsChilds()) {
+                        layer.setSelection(new IntegerUnion());
+                    }
+            }
+    }
+    
+    /**
+     * The user click on the button Zoom to selection
+     */
+    public void onZoomToSelection() {
+            BackgroundManager bm = Services.getService(BackgroundManager.class);
+            bm.backgroundOperation(new ZoomToSelection(mapContext, mapContext.getLayers()));
     }
     /**
      * Give information on the behaviour of this panel related to the current

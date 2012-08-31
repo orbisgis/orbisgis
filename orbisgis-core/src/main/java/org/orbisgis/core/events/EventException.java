@@ -29,7 +29,7 @@
 package org.orbisgis.core.events;
 
 /**
- * @brief Throw when a listener try to stop the propagation of an event.
+ * Throw when a listener try to stop the propagation of an event.
  */
 public class EventException extends Exception {
 
