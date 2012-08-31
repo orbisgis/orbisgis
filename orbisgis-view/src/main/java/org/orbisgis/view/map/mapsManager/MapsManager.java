@@ -29,14 +29,8 @@
 package org.orbisgis.view.map.mapsManager;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.event.ComponentListener;
-import java.awt.event.WindowListener;
-import java.beans.EventHandler;
+import java.awt.Insets;
 import javax.swing.BorderFactory;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
@@ -46,77 +40,28 @@ import org.apache.log4j.Logger;
  *
  * @author Nicolas Fortin
  */
-public class MapsManager extends JDialog {
+public class MapsManager extends JPanel {
         private static final long serialVersionUID = 1L;
         private static final Logger LOGGER = Logger.getLogger(MapsManager.class);
-        private JPanel parentPanel=null;
-        private JPanel contentPane;
         private JTree tree;
-        private JFrame parentFrame;
+        private JScrollPane scrollPane;
 
-        public MapsManager(JFrame frame) {
-                super(frame);
-                parentFrame = frame;
-                contentPane = new JPanel(new BorderLayout());
-                contentPane.setOpaque(true);
+        public MapsManager() {
+                super(new BorderLayout());
                 tree = new JTree(new String[]{"Kate","Lisa","Cindy"});
-                contentPane.add(
-                        new JScrollPane(tree,
+                scrollPane = new JScrollPane(tree,
                         JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),
-                        BorderLayout.CENTER);
-                setUndecorated(true);
-                setContentPane(contentPane);      
-                contentPane.setBorder(BorderFactory.createEtchedBorder());          
-                pack();
+                        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                add(scrollPane,BorderLayout.EAST);
+                setBorder(BorderFactory.createEtchedBorder());
         }
-        
-        /**
-         * Find the correct location for this panel
-         */
-        private void resetLocation() {
-                if(parentPanel!=null) {
-                        Point parentLocation = parentPanel.getLocationOnScreen();
-                        Point mmLocation =
-                                new Point(parentLocation.x+
-                                parentPanel.getWidth()-
-                                tree.getPreferredSize().width
-                                ,
-                                parentLocation.y
-                                );
-                        setLocation(mmLocation);
-                        LOGGER.debug("resetLocation :"+tree.getPreferredSize().height+" "+parentPanel.getHeight());
-                }
-        }
-        
-        private void resetSize() {
-                Dimension newSize = new Dimension(-1, Math.min(tree.getPreferredSize().height, parentPanel.getHeight()));
-                LOGGER.debug("Setting size to "+newSize.height);
-                setSize(newSize);   
-                pack();
-        }
-
-        public void setParentPanel(JPanel parentPanel) {
-                this.parentPanel = parentPanel;
-                addWindowListener(EventHandler.create(WindowListener.class,this,"windowOpened",null,"windowOpened"));          
-                ComponentListener resizeListener = EventHandler.create(ComponentListener.class,this,"onParentResize",null,"componentResized");
-                ComponentListener moveListener =EventHandler.create(ComponentListener.class,this,"onParentMove",null,"componentMoved");                
-                parentPanel.addComponentListener(resizeListener);
-                parentPanel.addComponentListener(moveListener);
-                parentFrame.addComponentListener(resizeListener);
-                parentFrame.addComponentListener(moveListener);
-                resetSize();
-        }
-        
-        public void windowOpened() {
-                resetLocation();
-        }
-        
-        public void onParentResize() {
-                resetSize();
-        }
-        
-        public void onParentMove() {
-                resetLocation();                
+        public int getMinimalTreeHeight() {                
+                Insets borders = getInsets();
+                Insets sBorders = scrollPane.getInsets();
+                return tree.getPreferredSize().height+
+                        borders.top+
+                        borders.bottom+
+                        sBorders.top+
+                        sBorders.bottom;
         }
 }

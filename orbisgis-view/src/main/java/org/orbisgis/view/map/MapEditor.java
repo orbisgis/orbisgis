@@ -30,6 +30,7 @@ package org.orbisgis.view.map;
 
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Point;
 import java.awt.event.*;
 import java.awt.geom.Point2D;
@@ -86,8 +87,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private Point lastCursorPosition = new Point();
     private Point lastTranslatedCursorPosition = new Point();
     private AtomicBoolean initialised = new AtomicBoolean(false);
-    //private MapsManager mapsManager;
-    JLayeredPane layeredPane;
+    private MapsManager mapsManager = new MapsManager();
+    JLayeredPane layeredPane = new JLayeredPane();
     ComponentListener sizeListener = EventHandler.create(ComponentListener.class,this,"updateMapControlSize",null,"componentResized");
     /**
      * Constructor
@@ -101,8 +102,9 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         dockingPanelParameters.setMinimizable(false);
         dockingPanelParameters.setExternalizable(false);
         dockingPanelParameters.setCloseable(false);
-        layeredPane = new JLayeredPane();
-        layeredPane.add(mapControl,0);
+        layeredPane.add(mapControl,1);
+        layeredPane.add(mapsManager,0);
+        mapsManager.setVisible(false);
         add(layeredPane, BorderLayout.CENTER);
         add(mapStatusBar, BorderLayout.PAGE_END);
         mapControl.setDefaultTool(new ZoomInTool());
@@ -140,14 +142,16 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                                 MapStatusBar.PROP_USER_DEFINED_SCALE_DENOMINATOR,
                                 EventHandler.create(VetoableChangeListener.class, this,
                                 "onUserSetScaleDenominator", ""));
-                        // Create the MapManager
-                        //mapsManager = new MapsManager((JFrame)getTopLevelAncestor());
-                        //mapsManager.setParentPanel(this);
                 }
         }
         
         public void updateMapControlSize() {                        
                 mapControl.setBounds(0,0,layeredPane.getWidth(),layeredPane.getHeight());
+                if(mapsManager.isVisible()) {
+                        Dimension mapsManagerPreferredSize = mapsManager.getPreferredSize();
+                        int hPos = layeredPane.getWidth() - mapsManagerPreferredSize.width;
+                        mapsManager.setBounds(hPos,0,mapsManagerPreferredSize.width,Math.min(mapsManager.getMinimalTreeHeight(),layeredPane.getHeight()));
+                }
         }
 
     /**
@@ -285,14 +289,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
      * User click on the Show/Hide maps tree
      */
     public void onShowHideMapsTree() {
-            /*
             if(!mapsManager.isVisible()) {
                     mapsManager.setVisible(true);
             } else {
                     mapsManager.setVisible(false);
             }
-            *
-            */
     }
     /**
      * Add the automaton tool to a Menu
