@@ -30,11 +30,11 @@ package org.orbisgis.view.toc;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.Iterator;
 import java.util.List;
 import javax.swing.tree.TreeNode;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.utils.CollectionUtils;
+import org.orbisgis.view.components.resourceTree.EnumIterator;
 
 /**
  * The decorator for a tree node layer
@@ -118,34 +118,11 @@ public class TocTreeNodeLayer implements TreeNode {
         }
 
         @Override
-        public Enumeration children() {
+        public Enumeration<TreeNode> children() {
                 List<TreeNode> nodes = new ArrayList<TreeNode>();
                 for(int i=0;i<getChildCount();i++) {
                         nodes.add(getChildAt(i));
                 }
-                return new NodeEnumeration(nodes.iterator());
-        }
-        /**
-         * The interface need an enumeration,
-         * this class is provide to convert an iterator to an enumeration
-         * If such class exists already in java please replace it
-         */
-        private class NodeEnumeration implements Enumeration {
-                private Iterator it;
-
-                public NodeEnumeration(Iterator it) {
-                        this.it = it;
-                }
-                
-                @Override
-                public boolean hasMoreElements() {
-                        return it.hasNext();
-                }
-
-                @Override
-                public Object nextElement() {
-                        return it.next();
-                }
-                
+                return new EnumIterator<TreeNode>(nodes.iterator());
         }
 }

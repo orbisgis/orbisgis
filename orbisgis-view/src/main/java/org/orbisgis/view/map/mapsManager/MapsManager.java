@@ -30,11 +30,19 @@ package org.orbisgis.view.map.mapsManager;
 
 import java.awt.BorderLayout;
 import java.awt.Insets;
+import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.MutableTreeNode;
 import org.apache.log4j.Logger;
+import org.orbisgis.core.Services;
+import org.orbisgis.view.workspace.ViewWorkspace;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  *
@@ -43,17 +51,37 @@ import org.apache.log4j.Logger;
 public class MapsManager extends JPanel {
         private static final long serialVersionUID = 1L;
         private static final Logger LOGGER = Logger.getLogger(MapsManager.class);
+        private static final I18n I18N = I18nFactory.getI18n(MapsManager.class);
         private JTree tree;
+        private DefaultTreeModel treeModel;
+        private MutableTreeNode rootNode = new DefaultMutableTreeNode();
         private JScrollPane scrollPane;
 
         public MapsManager() {
                 super(new BorderLayout());
-                tree = new JTree(new String[]{"Kate","Lisa","Cindy"});
+                treeModel = new DefaultTreeModel(rootNode, true);
+                // Retrieve the default ows maps folder
+                ViewWorkspace workspace = Services.getService(ViewWorkspace.class);
+                // Add the root folder
+                TreeNodeFolder root = new TreeNodeFolder(new File(workspace.getMapContextPath()));
+                root.setLabel(I18N.tr("Local"));
+                rootNode.insert(root, 0);
+                // Add the tree in the panel                
+                tree = new JTree(treeModel);
+                tree.setRootVisible(false);
                 scrollPane = new JScrollPane(tree,
                         JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                         JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
                 add(scrollPane,BorderLayout.EAST);
                 setBorder(BorderFactory.createEtchedBorder());
+        }
+
+        /**
+         * 
+         * @return The internal tree
+         */
+        public JTree getTree() {
+                return tree;
         }
         
         /**

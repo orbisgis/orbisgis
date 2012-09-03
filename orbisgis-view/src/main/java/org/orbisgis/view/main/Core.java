@@ -35,7 +35,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
@@ -93,6 +92,9 @@ public class Core {
     public Core(boolean debugMode) {
         this.mainContext = new MainContext(debugMode);
         this.viewWorkspace = new ViewWorkspace(this.mainContext.getCoreWorkspace());
+        
+        Services.registerService(ViewWorkspace.class, I18N.tr("Contains view folders path"),
+                        viewWorkspace);
         initSwingJobs();
         initSIF();
     }
@@ -328,7 +330,7 @@ public class Core {
                         if(!mapContextFolder.exists()) {
                                 mapContextFolder.mkdir();
                         }
-                        File mapContextFile = new File(mapContextFolder, "mapcontext");
+                        File mapContextFile = new File(mapContextFolder, viewWorkspace.getMapContextDefaultFileName());
                         if(mapContextFile.exists()) {
                                 try {
                                         mapContext.read(new FileInputStream(mapContextFile));

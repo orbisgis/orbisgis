@@ -55,7 +55,31 @@ public class ViewWorkspace {
         public static final String PROP_SIFPATH = "SIFPath";
         private String mapContextPath;
         public static final String PROP_MAPCONTEXTPATH = "mapContextPath";
+        private String mapContextDefaultFileName = "mapcontext.ows";
+        public static final String PROP_MAPCONTEXTDEFAULTFILENAME = "mapContextDefaultFileName";
 
+        /**
+         * Get the value of mapContextDefaultFileName
+         *
+         * @return the value of mapContextDefaultFileName
+         */
+        public String getMapContextDefaultFileName() {
+                return mapContextDefaultFileName;
+        }
+
+        /**
+         * Set the value of mapContextDefaultFileName
+         *
+         * @param mapContextDefaultFileName new value of
+         * mapContextDefaultFileName
+         */
+        public void setMapContextDefaultFileName(String mapContextDefaultFileName) {
+                String oldMapContextDefaultFileName = this.mapContextDefaultFileName;
+                this.mapContextDefaultFileName = mapContextDefaultFileName;
+                propertySupport.firePropertyChange(PROP_MAPCONTEXTDEFAULTFILENAME, oldMapContextDefaultFileName, mapContextDefaultFileName);
+        }
+
+        
         /**
          * Get the value of mapContextPath
          * This folder contains all serialised Map Context shown in

@@ -28,10 +28,102 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
+import java.util.Enumeration;
+import javax.swing.ImageIcon;
+import javax.swing.JPopupMenu;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
+import org.orbisgis.view.icons.OrbisGISIcon;
+
 /**
  *
  * @author Nicolas Fortin
  */
-public class TreeNodeMapContextFile {
+public class TreeNodeMapContextFile implements MutableTreeNode, PopupTreeNode, TreeNodeCustomIcon  {
+
+        @Override
+        public void insert(MutableTreeNode mtn, int i) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void remove(int i) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void remove(MutableTreeNode mtn) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void setUserObject(Object o) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void removeFromParent() {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void setParent(MutableTreeNode mtn) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public TreeNode getChildAt(int i) {
+                throw new UnsupportedOperationException("Not supported.");
+        }
+
+        @Override
+        public int getChildCount() {
+                return 0;
+        }
+
+        @Override
+        public TreeNode getParent() {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public int getIndex(TreeNode tn) {
+                throw new UnsupportedOperationException("Not supported.");
+        }
+
+        @Override
+        public boolean getAllowsChildren() {
+                return false;
+        }
+
+        @Override
+        public boolean isLeaf() {
+                return true;
+        }
+
+        @Override
+        public Enumeration<TreeNode> children() {
+                throw new UnsupportedOperationException("Not supported.");
+        }
+
+        @Override
+        public void feedPopupMenu(JPopupMenu menu) {
+                
+        }
+
+        @Override
+        public ImageIcon getLeafIcon() {
+                return OrbisGISIcon.getIcon("");
+        }
+
+        @Override
+        public ImageIcon getClosedIcon() {
+                throw new UnsupportedOperationException("Not supported.");
+        }
+
+        @Override
+        public ImageIcon getOpenIcon() {
+                throw new UnsupportedOperationException("Not supported.");
+        }
         
 }

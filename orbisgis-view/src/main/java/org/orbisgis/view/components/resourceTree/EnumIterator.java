@@ -26,43 +26,30 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.renderers;
+package org.orbisgis.view.components.resourceTree;
 
-import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
-import javax.swing.JTree;
-import javax.swing.tree.TreeCellRenderer;
+import java.util.Enumeration;
+import java.util.Iterator;
 
 /**
- * Builds a {@link TreeCellRenderer} using the default one for the current
- * Look&Feel.
- * @author Alexis Guéganno
+ * @param <Item> Enumeration item class
+ * @author Nicolas Fortin
  */
-public abstract class TreeLaFRenderer implements TreeCellRenderer {
+public class EnumIterator<Item extends Object> implements Enumeration<Item> {
 
-        protected TreeCellRenderer lookAndFeelRenderer;
+        private Iterator<Item> it;
 
-        /**
-         * Update the native renderer.
-         * Warning, Used only by PropertyChangeListener on UI property
-         */
-        public void updateLFRenderer() {
-                lookAndFeelRenderer = new JTree().getCellRenderer();
+        public EnumIterator(Iterator<Item> it) {
+                this.it = it;
         }
 
-        /**
-         * Builds a new {@code TreeLaFRenderer} associated to the given {@link 
-         * Jtree}. The constructor also sets a listener to L&F events.
-         * @param tree Where the listener has to be installed
-         */
-        public TreeLaFRenderer(JTree tree) {
-                initialize(tree);
+        @Override
+        public boolean hasMoreElements() {
+                return it.hasNext();
         }
 
-        private void initialize(JTree tree) {
-                updateLFRenderer();
-                tree.addPropertyChangeListener("UI",
-                        EventHandler.create(PropertyChangeListener.class,this,"updateLFRenderer"));
+        @Override
+        public Item nextElement() {
+                return it.next();
         }
-
 }

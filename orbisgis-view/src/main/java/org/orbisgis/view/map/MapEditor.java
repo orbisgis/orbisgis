@@ -56,6 +56,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.Timer;
+import javax.swing.event.TreeExpansionListener;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
@@ -164,9 +165,15 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                                 MapStatusBar.PROP_USER_DEFINED_SCALE_DENOMINATOR,
                                 EventHandler.create(VetoableChangeListener.class, this,
                                 "onUserSetScaleDenominator", ""));
+                        // When the tree is expanded update the manager size
+                        mapsManager.getTree().addTreeExpansionListener(
+                                EventHandler.create(TreeExpansionListener.class,this,"updateMapControlSize"));
                 }
         }
-        
+        /**
+         * Compute the appropriate components bounds for MapControl
+         * and MapsManager and apply theses bounds
+         */
         public void updateMapControlSize() {                        
                 mapControl.setBounds(0,0,layeredPane.getWidth(),layeredPane.getHeight());
                 if(mapsManager.isVisible()) {
