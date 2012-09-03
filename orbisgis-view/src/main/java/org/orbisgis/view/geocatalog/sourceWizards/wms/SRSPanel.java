@@ -3,8 +3,8 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
  *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
@@ -22,9 +22,8 @@
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * For more information, please consult: <http://www.orbisgis.org/> or contact
+ * directly: info_at_ orbisgis.org
  */
 package org.orbisgis.view.geocatalog.sourceWizards.wms;
 
@@ -35,20 +34,19 @@ import java.util.Vector;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import org.gvsig.remoteClient.wms.WMSClient;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.components.button.JButtonTextField;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * 
+ *
  * @author Erwan Bocher
  */
 public class SRSPanel extends JPanel implements UIPanel {
 
         private static final I18n I18N = I18nFactory.getI18n(SRSPanel.class);
-      
-        private LayerConfigurationPanel layerConfiguration;
         private JList lstSRS;
         private JButtonTextField txtFilter;
         private SRSListModel SRSlistModel;
@@ -56,12 +54,11 @@ public class SRSPanel extends JPanel implements UIPanel {
         private Component scrollPane;
 
         /**
-         * The SRSPanel lists all available SRS. The layerConfigurationPanel is used to obtain a reference 
-         * to the current WMSClient.
-         * @param layerConfiguration 
+         * The SRSPanel lists all available SRS.
+         *
+         * @param layerConfiguration
          */
-        public SRSPanel(LayerConfigurationPanel layerConfiguration) {
-                this.layerConfiguration = layerConfiguration;
+        public SRSPanel() {
         }
 
         @Override
@@ -92,13 +89,14 @@ public class SRSPanel extends JPanel implements UIPanel {
         }
 
         /**
-         * Get the JList that store all supported SRS.
-         * @return 
+         * Create the JList that store all supported SRS.
+         *
+         * @return
          */
-        public JList getListSRS() {
+        public void createSRSList(WMSClient wMSClient) {
                 if (null == lstSRS) {
                         lstSRS = new JList();
-                        Vector allSrs = layerConfiguration.getWMSClient().getRootLayer().getAllSrs();
+                        Vector allSrs = wMSClient.getRootLayer().getAllSrs();
                         String[] srsNames = new String[allSrs.size()];
                         allSrs.toArray(srsNames);
                         SRSlistModel = new SRSListModel(srsNames);
@@ -106,12 +104,12 @@ public class SRSPanel extends JPanel implements UIPanel {
                         lstSRS.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
                         initialize();
                 }
-                return lstSRS;
         }
 
         /**
          * Create the search panel that permits to filter a SRS.
-         * @return 
+         *
+         * @return
          */
         public JPanel getSearchSRSPanel() {
                 if (null == searchPanel) {
@@ -160,7 +158,8 @@ public class SRSPanel extends JPanel implements UIPanel {
 
         /**
          * Get the selected SRS available in the list of SRS.
-         * @return 
+         *
+         * @return
          */
         public String getSRS() {
                 return lstSRS.getSelectedValue().toString();

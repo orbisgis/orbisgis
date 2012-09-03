@@ -65,12 +65,14 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
         private DefaultListModel listModel;
         private WMSClient client;
         private JButtonTextField txtFilter;
+        private final SRSPanel srsPanel;
 
         /**
          * The layerConfigurationPanel display the list of layers available in a WMSServer.
          * The user can select a set of layers to add them into the geocatalog.
          */
-        public LayerConfigurationPanel() {
+        public LayerConfigurationPanel(SRSPanel srsPanel) {
+                this.srsPanel=srsPanel;
                 actionListener = new ActionListener() {
 
                         @Override
@@ -134,9 +136,9 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
         private Component getAddRemoveButtons() {
                 JPanel ret = new JPanel();
                 ret.setLayout(new CRFlowLayout());
-                btnCurrentRight = createButton("current_right.png", CURRENT_RIGHT);
-                btnCurrentLeft = createButton("current_left.png", CURRENT_LEFT);
-                btnAllLeft = createButton("all_left.png", ALL_LEFT);
+                btnCurrentRight = createButton("current_right", CURRENT_RIGHT);
+                btnCurrentLeft = createButton("current_left", CURRENT_LEFT);
+                btnAllLeft = createButton("all_left", ALL_LEFT);
                 ret.add(btnCurrentRight);
                 ret.add(new CarriageReturn());
                 ret.add(btnCurrentLeft);
@@ -263,6 +265,7 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
                 if (getSelectedLayers().length == 0) {
                         return I18N.tr("At least a layer must be selected");
                 }
+                srsPanel.createSRSList(client);
                 return null;
         }
 

@@ -438,9 +438,9 @@ public class Catalog extends JPanel implements DockingPanel {
         public void onMenuAddWMSServer() {
                 DataManager dm = Services.getService(DataManager.class);
                 SourceManager sm = dm.getSourceManager();
-                LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel();
-                WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration);             
-                SRSPanel srsPanel = new SRSPanel(layerConfiguration);
+                SRSPanel srsPanel = new SRSPanel();
+                LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel(srsPanel);
+                WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration);      
                 if (UIFactory.showDialog(new UIPanel[]{wmsConnection,
                                 layerConfiguration, srsPanel})) {
                         WMSClient client = wmsConnection.getWMSClient();
