@@ -79,14 +79,16 @@ public class MapsManager extends JPanel {
                 // Retrieve the default ows maps folder
                 ViewWorkspace workspace = Services.getService(ViewWorkspace.class);
                 // Add the root folder
-                TreeNodeFolder root = new TreeNodeFolder(new File(workspace.getMapContextPath()),factoryManager);
-                root.setLabel(I18N.tr("Local"));
-                rootNode.insert(root, 0);
+                TreeNodeFolder rootFolder = new TreeNodeFolder(new File(workspace.getMapContextPath()),factoryManager);
+                rootFolder.setLabel(I18N.tr("Local"));
+                rootNode.insert(rootFolder, 0);
                 // Add the tree in the panel                
                 tree = new JTree(treeModel);
                 tree.setCellRenderer(new CustomTreeCellRenderer(tree));
                 tree.addMouseListener(treeMouse);
                 tree.setRootVisible(false);
+                //Expand Local folder
+                tree.expandPath(new TreePath(new Object[] {rootNode,rootFolder}));
                 scrollPane = new JScrollPane(tree,
                         JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
                         JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
