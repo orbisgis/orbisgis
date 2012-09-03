@@ -455,7 +455,7 @@ public class Catalog extends JPanel implements DockingPanel {
                                         if (sm.exists(layerName)) {
                                                 uniqueLayerName = sm.getUniqueName(layerName);
                                         }
-                                        StreamSource wmsSource = new StreamSource(client.getHost(), client.getPort(), layerName, uniqueLayerName, validImageFormat, srsPanel.getSRS());
+                                        StreamSource wmsSource = new StreamSource(client.getHost(), client.getPort(), layerName, "wms", validImageFormat, srsPanel.getSRS());
                                         StreamSourceDefinition streamSourceDefinition = new StreamSourceDefinition(wmsSource);
                                         sm.register(uniqueLayerName, streamSourceDefinition);
                                 }
