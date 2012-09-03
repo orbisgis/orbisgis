@@ -35,7 +35,6 @@ import java.util.List;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.view.components.resourceTree.EnumIterator;
 import org.xnap.commons.i18n.I18n;
@@ -52,11 +51,14 @@ public final class TreeNodeFolder implements MutableTreeNode, PopupTreeNode {
         private String label;
         private static final Logger LOGGER = Logger.getLogger(TreeNodeFolder.class);
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeFolder.class);
+        private TreeNodeMapFactoryManager factoryManager;
         /**
          * @param folderPath
+         * @param factoryManager 
          * @throws IllegalArgumentException If the provided path represent a file
          */
-        public TreeNodeFolder(File folderPath) {
+        public TreeNodeFolder(File folderPath,TreeNodeMapFactoryManager factoryManager) {
+                this.factoryManager = factoryManager;
                 this.folderPath = folderPath;
                 if(!folderPath.isDirectory()) {
                         throw new IllegalArgumentException("The file path must be a directory");
@@ -67,14 +69,24 @@ public final class TreeNodeFolder implements MutableTreeNode, PopupTreeNode {
                         for(String childPath : list) {
                                 File newChild = new File(folderPath,childPath);
                                 if(newChild.isDirectory()) {
-                                        internalInsert(new TreeNodeFolder(newChild),getChildCount());
-                                } else if(FilenameUtils.isExtension(childPath, "ows")) {
-                                     
+                                        internalInsert(new TreeNodeFolder(newChild,factoryManager),getChildCount());
+                                } else {
+                                        MutableTreeNode child = factoryManager.create(newChild);
+                                        if(child != null) {
+                                                internalInsert(child, getChildCount());
+                                        }
                                 }
                         }
                 } catch( SecurityException ex) {
                         LOGGER.error(I18N.tr("Cannot list the directory content"),ex);
                 }
+        }
+        /**
+         * Get the full path of this folder
+         * @return 
+         */
+        public File getFolderPath() {
+                return folderPath;
         }
         
         private void internalInsert(MutableTreeNode mtn, int i) {

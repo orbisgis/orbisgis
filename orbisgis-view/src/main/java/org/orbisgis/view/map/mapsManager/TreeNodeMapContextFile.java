@@ -28,19 +28,54 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Enumeration;
 import javax.swing.ImageIcon;
-import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
+import org.apache.commons.io.FilenameUtils;
+import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.layerModel.OwsMapContext;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.map.MapElement;
 
 /**
  *
  * @author Nicolas Fortin
  */
-public class TreeNodeMapContextFile implements MutableTreeNode, PopupTreeNode, TreeNodeCustomIcon  {
+public final class TreeNodeMapContextFile implements TreeNodeMapElement, MutableTreeNode, TreeNodeCustomIcon  {
 
+        String fileName;
+        String label;
+        MutableTreeNode parent;
+
+        public TreeNodeMapContextFile(File mapContextFilePath) {
+                // For fast loading, take the filename as the ows title
+                fileName = FilenameUtils.getName(mapContextFilePath.getName());
+                setLabel(FilenameUtils.getBaseName(mapContextFilePath.getName()));
+        }
+
+        public void setLabel(String label) {
+                this.label = label;
+        }
+        
+        private File getFilePath() {
+                if(parent instanceof TreeNodeFolder) {
+                        TreeNodeFolder parentFolder = (TreeNodeFolder)parent;
+                        return new File(parentFolder.getFolderPath(),fileName);
+                } else {
+                        return new File(fileName);
+                }
+        }
+
+        @Override
+        public String toString() {
+                return label;
+        }
+        
         @Override
         public void insert(MutableTreeNode mtn, int i) {
                 throw new UnsupportedOperationException("Not supported yet.");
@@ -68,7 +103,7 @@ public class TreeNodeMapContextFile implements MutableTreeNode, PopupTreeNode, T
 
         @Override
         public void setParent(MutableTreeNode mtn) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                parent = mtn;
         }
 
         @Override
@@ -83,7 +118,7 @@ public class TreeNodeMapContextFile implements MutableTreeNode, PopupTreeNode, T
 
         @Override
         public TreeNode getParent() {
-                throw new UnsupportedOperationException("Not supported yet.");
+                return parent;
         }
 
         @Override
@@ -107,13 +142,8 @@ public class TreeNodeMapContextFile implements MutableTreeNode, PopupTreeNode, T
         }
 
         @Override
-        public void feedPopupMenu(JPopupMenu menu) {
-                
-        }
-
-        @Override
         public ImageIcon getLeafIcon() {
-                return OrbisGISIcon.getIcon("");
+                return OrbisGISIcon.getIcon("map");
         }
 
         @Override
@@ -124,6 +154,18 @@ public class TreeNodeMapContextFile implements MutableTreeNode, PopupTreeNode, T
         @Override
         public ImageIcon getOpenIcon() {
                 throw new UnsupportedOperationException("Not supported.");
+        }
+
+        @Override
+        public MapElement getMapElement(ProgressMonitor pm) {
+                MapContext mapContext = new OwsMapContext();
+                try {
+                        mapContext.read(new FileInputStream(getFilePath()));
+                        MapElement mapElement = new MapElement(mapContext, getFilePath());
+                        return mapElement;
+                } catch(FileNotFoundException ex) {
+                        throw new IllegalStateException(ex);
+                }
         }
         
 }

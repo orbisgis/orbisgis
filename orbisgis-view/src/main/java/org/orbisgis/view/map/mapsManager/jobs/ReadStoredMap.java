@@ -37,8 +37,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * Update the tree node to replace the filename by the good title and description
  * @author Nicolas Fortin
  */
-public class ReadStoredMaps implements BackgroundJob {
-        private static final I18n I18N = I18nFactory.getI18n(ReadStoredMaps.class);
+public class ReadStoredMap implements BackgroundJob {
+        private static final I18n I18N = I18nFactory.getI18n(ReadStoredMap.class);
         
         @Override
         public void run(ProgressMonitor pm) {

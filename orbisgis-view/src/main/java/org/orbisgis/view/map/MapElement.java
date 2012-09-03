@@ -66,6 +66,14 @@ public final class MapElement extends AbstractEditableElement {
                 mapId = String.valueOf(mapContext.getIdTime());
 	}
 
+        public MapContext getMapContext() {
+                return mapContext;
+        }
+
+        public File getMapContextFile() {
+                return mapContextFile;
+        }       
+        
         /**
          * Update the modified state
          * @param modified 

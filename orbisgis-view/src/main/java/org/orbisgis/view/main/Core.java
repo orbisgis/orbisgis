@@ -54,6 +54,7 @@ import org.orbisgis.view.joblist.JobsPanel;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.map.MapElement;
+import org.orbisgis.view.map.jobs.ReadMapContextJob;
 import org.orbisgis.view.output.OutputManager;
 import org.orbisgis.view.sqlconsole.SQLConsoleFactory;
 import org.orbisgis.view.toc.TocEditorFactory;
@@ -227,6 +228,8 @@ public class Core {
         
         //Load the editor factories manager
         editors = new EditorManager(dockManager);
+        //TODO Delete this line when the table editor will be merged
+        Services.registerService(EditorManager.class,"Temp editor manager register", editors);
         
         //Load the GeoCatalog
         makeGeoCatalogPanel();
@@ -252,10 +255,38 @@ public class Core {
         @Override
         public void run(){
                 initialize();
-                mainFrame.setVisible( true );                
-                backgroundManager.backgroundOperation(new ReadMapContextProcess());
+                mainFrame.setVisible( true );
+                readDefaultMapContext();
         }
     }
+    /**
+     * Read the default map context, create it if the map folder is empty
+     */
+        private void readDefaultMapContext() {
+
+                //Create an empty map context
+                MapContext mapContext = new OwsMapContext();
+
+                //Load the map context
+                File mapContextFolder = new File(viewWorkspace.getMapContextPath());
+                if (!mapContextFolder.exists()) {
+                        mapContextFolder.mkdir();
+                }
+                File mapContextFile = new File(mapContextFolder, viewWorkspace.getMapContextDefaultFileName());
+                if (mapContextFile.exists()) {
+                        try {
+                                mapContext.read(new FileInputStream(mapContextFile));
+                        } catch (FileNotFoundException ex) {
+                                LOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
+                        } catch (IllegalArgumentException ex) {
+                                LOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
+                        }
+                }
+                MapElement editableMap = new MapElement(mapContext, mapContextFile);
+                backgroundManager.backgroundOperation(new ReadMapContextJob(editableMap));
+
+        }
+
     /**
      * Return the docking manager. This function is used by Unit Tests.
      * @return The Docking Manager
@@ -317,38 +348,5 @@ public class Core {
             //    }
             //} );
         }        
-    }
-    private class ReadMapContextProcess implements BackgroundJob {
-
-                @Override
-                public void run(ProgressMonitor pm) {                        
-                        //Create an empty map context
-                        MapContext mapContext = new OwsMapContext();
-
-                        //Load the map context
-                        File mapContextFolder = new File(viewWorkspace.getMapContextPath());
-                        if(!mapContextFolder.exists()) {
-                                mapContextFolder.mkdir();
-                        }
-                        File mapContextFile = new File(mapContextFolder, viewWorkspace.getMapContextDefaultFileName());
-                        if(mapContextFile.exists()) {
-                                try {
-                                        mapContext.read(new FileInputStream(mapContextFile));
-                                } catch (FileNotFoundException ex) {
-                                        LOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."),ex);
-                                } catch (IllegalArgumentException ex) {
-                                        LOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."),ex);
-                                }
-                        }
-                        MapElement editableMap = new MapElement(mapContext,mapContextFile);
-                        editableMap.open(null);
-                        editors.openEditable(editableMap); 
-                }
-
-                @Override
-                public String getTaskName() {
-                        return I18N.tr("Open the map context");
-                }
-            
     }
 }
