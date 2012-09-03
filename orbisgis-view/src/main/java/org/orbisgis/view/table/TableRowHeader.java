@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.table;
 
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.beans.EventHandler;
@@ -38,13 +37,12 @@ import javax.swing.JList;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
-import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import org.orbisgis.view.components.renderers.ListLaFRenderer;
 
 /**
- *
- * @author ebocher
+ * This list is set at the left of the table to show the row number.
+ * @author Erwan Bocher
  */
 public class TableRowHeader extends JList {
         private static final long serialVersionUID = 1L;

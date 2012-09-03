@@ -43,13 +43,12 @@ import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.JTextField;
-import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.components.button.CustomButton;
-import org.orbisgis.view.components.filter.ActiveFilter;
+import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
@@ -59,8 +58,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Filter Search [JTextField] in [JComboBox(fields)] [Button(search)].
  * @author Nicolas Fortin
  */
-public class FieldsContainsFilterFactory implements FilterFactory<TableSelectionFilter> {
-        private static final Logger LOGGER = Logger.getLogger(FieldsContainsFilterFactory.class);
+public class FieldsContainsFilterFactory implements FilterFactory<TableSelectionFilter,DefaultActiveFilter> {
         public static final String FACTORY_ID  ="FieldsContainsFilter";
         protected final static I18n I18N = I18nFactory.getI18n(FieldsContainsFilterFactory.class);
         private JTable table;
@@ -81,18 +79,18 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
         }
 
         @Override
-        public ActiveFilter getDefaultFilterValue() {
+        public DefaultActiveFilter getDefaultFilterValue() {
                 return new FilterParameters();
         }
 
         @Override
-        public TableSelectionFilter getFilter(ActiveFilter filterValue) {
+        public TableSelectionFilter getFilter(DefaultActiveFilter filterValue) {
                 return new FieldsContainsFilter((FilterParameters)filterValue);
         }
 
         @Override
-        public Component makeFilterField(ActiveFilter filterValue) {
-                FilterParameters params = (FilterParameters)filterValue;
+        public Component makeFilterField(DefaultActiveFilter filterValue) {
+                FilterParameters params = (FilterParameters) filterValue;
                 JPanel filterFields = new JPanel();
                 filterFields.setLayout(new BoxLayout(filterFields, BoxLayout.X_AXIS));
                 // Searched Text
@@ -147,13 +145,17 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
 
                 private boolean isFieldContains(Value field) {
                         String fieldValue = field.toString();
-                        if(!params.isMatchCase()) {
-                                fieldValue=fieldValue.toLowerCase();
-                        }
                         if(!params.isWholeWord()) {
+                                if(!params.isMatchCase()) {
+                                        fieldValue=fieldValue.toLowerCase();
+                                }
                                 return fieldValue.contains(searchChars);
                         } else {
-                                return fieldValue.equals(searchChars);
+                                if(!params.isMatchCase()) {
+                                        return fieldValue.equalsIgnoreCase(searchChars);
+                                } else {
+                                        return fieldValue.equals(searchChars);                                        
+                                }
                         }
                 }
 
@@ -181,14 +183,14 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 }
 
                 @Override
-                public void initialise(ProgressMonitor pm, DataSource source) {
+                public void initialize(ProgressMonitor pm, DataSource source) {
                         //Nothing to do
                 }
         }
         /**
         * Add some parameters to ActiveFilter
         */
-        public static class FilterParameters extends ActiveFilter {
+        public static class FilterParameters extends DefaultActiveFilter {
                 private static final long serialVersionUID = 2L;
                 private int columnId;
                 private String searchedChars;
@@ -196,7 +198,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 private boolean wholeWord;
                 
                 public FilterParameters() {
-                        super(FieldsContainsFilterFactory.FACTORY_ID);
+                        super(FieldsContainsFilterFactory.FACTORY_ID,"");
                         this.columnId = -1;
                         this.searchedChars = "";
                         this.matchCase = false;
@@ -204,7 +206,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                 }
 
                 public FilterParameters(int columnId, String searchedChars, boolean matchCase, boolean wholeWord) {
-                        super(FieldsContainsFilterFactory.FACTORY_ID);
+                        super(FieldsContainsFilterFactory.FACTORY_ID,searchedChars);
                         this.columnId = columnId;
                         this.searchedChars = searchedChars;
                         this.matchCase = matchCase;
@@ -249,7 +251,7 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                         this.searchedChars = searchedChars;
                         this.matchCase = matchCase;
                         this.wholeWord = wholeWord;
-                        propertySupport.firePropertyChange(PROP_CURRENTFILTERVALUE, null, this);
+                        super.setCurrentFilterValue(searchedChars);
                 }
 
                 @Override
@@ -281,7 +283,10 @@ public class FieldsContainsFilterFactory implements FilterFactory<TableSelection
                         return searchedChars;
                 }
         }
-        
+        /**
+         * This listener update the filter parameter with the values
+         * provided by the controls
+         */
         private static class FilterActionListener implements ActionListener {
                 private FilterParameters filter;
                 private JTextField searchedTextBox;

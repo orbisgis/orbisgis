@@ -44,6 +44,19 @@ import java.util.SortedSet;
  * the tradeoff is the additional CPU cycle for insertion and deletion.
  * Values are returned sorted and without duplicates.
  * 
+ * The behaviour of this class is exactly the same as a {@link SortedSet}
+ * 
+ * Sample :
+ * 
+ * {@code 
+ *      //Writing this
+ *      for(int i : new IntegerUnion(0,99)) {
+ *      }
+ *      //Is equivalent to writing
+ *      for(int i=0; i<=99; i++) {
+ *      }
+ * }
+ * 
  * This class is not thread safe
  * 
  * @TODO Add function to push a range instead of a single
@@ -56,24 +69,58 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
         protected List<Integer> intervals;
 
         /**
+         * Constructor with an initial value
+         * @param value First value
+         */
+        public IntegerUnion(int value) {
+                this();
+                intervals.add(value);
+                intervals.add(value);
+        }
+
+        /**
+         * Constructor with all values of the range [valueBegin-valueEnd].
+         *
+         * @param valueBegin Included begin of range
+         * @param valueEnd Included end of range
+         * @throws IllegalArgumentException if valueEnd < valueBegin
+         */
+        public IntegerUnion(int valueBegin, int valueEnd) {
+                this();
+                if (valueEnd < valueBegin) {
+                        throw new IllegalArgumentException("Begin value must be inferior or equal to the end value.");
+                }
+                intervals.add(valueBegin);
+                intervals.add(valueEnd);
+        }
+        /**
          * Default constructor
          */
         public IntegerUnion() {
                 intervals = new ArrayList<Integer>();
         }
 
+        /**
+         * Creator with an initial value
+         * @param externalArray Array of int
+         */
         public IntegerUnion(int[] externalArray) {
                 this();
                 for(Integer val : externalArray) {
                         internalAdd(val);
                 }
         }
-        
+        /**
+         * Copy constructor
+         * @param externalSet 
+         */
         public IntegerUnion(IntegerUnion externalSet) {
-                this.intervals = new ArrayList<Integer>(externalSet.intervals.size());
-
+                this.intervals = new ArrayList<Integer>(externalSet.intervals);
         }
-        
+        /**
+         * Copy constructor with a generic collection
+         * @param externalCollection 
+         */
         public IntegerUnion(Collection<Integer> externalCollection) {
                 this();
                 if(externalCollection instanceof IntegerUnion) {
@@ -105,31 +152,6 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
         private void copyExternalIntegerUnion(IntegerUnion externalSet) {
                 intervals.addAll(externalSet.intervals);
         }
-        /**
-         *
-         * @param value First value
-         */
-        public IntegerUnion(int value) {
-                this();
-                intervals.add(value);
-                intervals.add(value);
-        }
-
-        /**
-         * Insert all values of the range [valueBegin-valueEnd].
-         *
-         * @param valueBegin Included begin of range
-         * @param valueEnd Included end of range
-         * @throws IllegalArgumentException if valueEnd < valueBegin
-         */
-        public IntegerUnion(int valueBegin, int valueEnd) {
-                this();
-                if (valueEnd < valueBegin) {
-                        throw new IllegalArgumentException("Begin value must be inferior or equal to the end value.");
-                }
-                intervals.add(valueBegin);
-                intervals.add(valueEnd);
-        }
 
         /**
          * Does this container has intervals
@@ -157,8 +179,12 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
                 }
                 return ret.toString();
         }
-        
-        protected final boolean internalRemove(Integer value) {
+        /**
+         * Remove the provided item from the Set
+         * @param value
+         * @return 
+         */
+        protected final boolean internalRemove(int value) {
                 int index = Collections.binarySearch(intervals, value);
                 if(index>=0) {
                                 if(index > 0 && intervals.get(index - 1).equals(value)) {
@@ -176,7 +202,7 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
                                 }
                                 return true;
                 } else {
-                        index = -index - 1; //retrieve the nearest index by order
+                        index = -index - 1; //retrieve the insertion point
                         if (index % 2 == 0) {
                                 //Not in the collection
                                 return false;                                
@@ -197,15 +223,19 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
                 return internalRemove(value);
         }
 
-        
-        protected final boolean internalAdd(Integer value) {
+        /**
+         * Add the value in this Set
+         * @param value New item
+         * @return True if the value is successfully inserted
+         */
+        protected final boolean internalAdd(int value) {
                // Iterate over the value range array and find contiguous value
-                //Find the first nearest value in ranges
+                //Find the insertion point in ranges
                 int index = Collections.binarySearch(intervals, value);
                 if (index >= 0) {
                         return false;
                 }
-                index = -index - 1; //retrieve the nearest index by order
+                index = -index - 1; //retrieve the insertion point
                 // intervals[index] > value
                 if (index % 2 == 0) {
                         //If index corresponding to begin of a range
@@ -304,7 +334,7 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
                 if(index>=0) {
                         return true;
                 } else {
-                        //retrieve the nearest index by order
+                        //retrieve the insertion point
                         index = -index - 1;     
                         //value < than an end range
                         return index % 2 != 0; 
@@ -392,11 +422,14 @@ public class IntegerUnion implements SortedSet<Integer>, Serializable {
 
                 @Override
                 public void remove() {
-                        throw new UnsupportedOperationException("Not supported yet.");
+                        throw new UnsupportedOperationException("It won't be supported because it's not mandatory.");
                 }
         }
-        
-        private class IntegerComparator implements Comparator<Integer> {
+        /**
+         * This class convert an interval iterator into a serial iterator.
+         * [0,2,5,7] become [0,1,2,5,6,7]
+         */
+        private static class IntegerComparator implements Comparator<Integer> {
 
                 @Override
                 public int compare(Integer t, Integer t1) {

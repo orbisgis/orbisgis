@@ -37,7 +37,6 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.NumberFormatter;
-import org.orbisgis.view.components.renderers.TableLaFCellRenderer;
 
 /**
  * Custom rendering for number columns in the table editor

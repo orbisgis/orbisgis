@@ -45,8 +45,6 @@ import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.engine.Engine;
 import org.gdms.sql.engine.SQLScript;
 import org.gdms.sql.engine.SQLStatement;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.xnap.commons.i18n.I18n;
@@ -74,7 +72,7 @@ public class ComputeFieldStatistics implements BackgroundJob {
         @Override
         public void run(ProgressMonitor pm) {
                 try {
-                        final DataSourceFactory dsf = (Services.getService(DataManager.class)).getDataSourceFactory();
+                        final DataSourceFactory dsf = ds.getDataSourceFactory();
                         Metadata metadata = ds.getMetadata();
                         String fieldName = metadata.getFieldName(columnId);
                         String tableName = ds.getName();
@@ -111,7 +109,7 @@ public class ComputeFieldStatistics implements BackgroundJob {
                         message.append(I18N.tr("Maximum : {0}\n",values.get("max")));
                         message.append(I18N.tr("Sum : {0}\n",values.get("sum")));
                         message.append(I18N.tr("Average : {0}\n",values.get("avg")));
-                        message.append(I18N.tr("Standart deviation : {0}\n",values.get("std")));
+                        message.append(I18N.tr("Standard deviation : {0}\n",values.get("std")));
                         LOGGER.info(message.toString());                        
                         //Free temporary tables
                         if(doRowFiltering) {

@@ -44,7 +44,6 @@ import org.gdms.data.FilterDataSourceDecorator;
 import org.gdms.driver.DriverException;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.components.button.CustomButton;
-import org.orbisgis.view.components.filter.ActiveFilter;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -55,13 +54,13 @@ import org.xnap.commons.i18n.I18nFactory;
  * Table extended filter using SQL where request
  * @author Nicolas Fortin
  */
-public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter> {
+public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter,DefaultActiveFilter> {
         public static final String FACTORY_ID  ="WhereSQLFilterFactory";
         private final static I18n I18N = I18nFactory.getI18n(WhereSQLFilterFactory.class);
         private static final Logger LOGGER = Logger.getLogger(WhereSQLFilterFactory.class);
 
         @Override
-        public ActiveFilter getDefaultFilterValue() {
+        public DefaultActiveFilter getDefaultFilterValue() {
                 return new DefaultActiveFilter(FACTORY_ID, "field > value2 AND field < value1");
         }
 
@@ -76,15 +75,15 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
         }
 
         @Override
-        public TableSelectionFilter getFilter(ActiveFilter filterValue) {
-                return new SQLFilter(((DefaultActiveFilter)filterValue).getCurrentFilterValue());
+        public TableSelectionFilter getFilter(DefaultActiveFilter filterValue) {
+                return new SQLFilter(filterValue.getCurrentFilterValue());
         }
 
         @Override
-        public Component makeFilterField(ActiveFilter filterValue) {
+        public Component makeFilterField(DefaultActiveFilter filterValue) {
                 JPanel textAndButton = new JPanel();
                 textAndButton.setLayout(new BoxLayout(textAndButton,BoxLayout.X_AXIS));
-                JTextField whereText = new JTextField(((DefaultActiveFilter)filterValue).getCurrentFilterValue());
+                JTextField whereText = new JTextField(filterValue.getCurrentFilterValue());
                 whereText.setPreferredSize(new Dimension(Short.MAX_VALUE,Short.MIN_VALUE));
                 JButton runButton =  new CustomButton(OrbisGISIcon.getIcon("execute"));
                 runButton.setToolTipText(I18N.tr("Search"));
@@ -114,7 +113,7 @@ public class WhereSQLFilterFactory implements FilterFactory<TableSelectionFilter
                 }
 
                 @Override
-                public void initialise(ProgressMonitor pm, DataSource source) {
+                public void initialize(ProgressMonitor pm, DataSource source) {
                         pm.startTask(I18N.tr("Run SQL request"), 100);
                         modelRowsIdResult = new TreeSet<Integer>();
                         try {

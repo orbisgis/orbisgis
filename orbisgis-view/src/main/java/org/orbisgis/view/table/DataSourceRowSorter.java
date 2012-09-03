@@ -38,7 +38,6 @@ import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import org.apache.log4j.Logger;
 import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.common.IntegerUnion;
@@ -48,7 +47,8 @@ import org.orbisgis.view.table.jobs.SortJob;
 import org.orbisgis.view.table.jobs.SortJobEventSorted;
 
 /**
- *
+ * This class extends the swing RowSorter to launch SortJob
+ * and to filter the shown rows. Currently the columns cannot be filtered.
  * @author Nicolas Fortin
  */
 public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
@@ -108,7 +108,6 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
 
         @Override
         public void toggleSortOrder(int column) {
-                LOGGER.debug("toggleSortOrder"+column);
                 if(isSortable(column)) {
                         SortKey sortRequest=new SortKey(column, SortOrder.ASCENDING);
                         //Find if the user already set an order
@@ -285,39 +284,33 @@ public class DataSourceRowSorter extends RowSorter<DataSourceTableModel> {
 
         @Override
         public void modelStructureChanged() {
-                LOGGER.debug("modelStructureChanged");
                 refreshSorter();
         }
 
         @Override
         public void allRowsChanged() {
-                LOGGER.debug("allRowsChanged");
                 refreshSorter();
         }
 
         @Override
         public void rowsInserted(int i, int i1) {
-                LOGGER.debug("rowsInserted");
                 clearIndex();
                 refreshSorter();
         }
 
         @Override
         public void rowsDeleted(int i, int i1) {
-                LOGGER.debug("rowsDeleted");
                 clearIndex();
                 refreshSorter();
         }
 
         @Override
         public void rowsUpdated(int i, int i1) {
-                LOGGER.debug("rowsUpdated");
                 refreshSorter();
         }
 
         @Override
         public void rowsUpdated(int i, int i1, int i2) {
-                LOGGER.debug("rowsUpdated");
                 refreshSorter();
         }
         /**

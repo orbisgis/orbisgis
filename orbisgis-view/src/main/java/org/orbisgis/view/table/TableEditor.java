@@ -29,20 +29,17 @@
 package org.orbisgis.view.table;
 
 import java.awt.BorderLayout;
-import java.awt.Component;
 import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -60,7 +57,6 @@ import javax.swing.event.RowSorterListener;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableColumnModel;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
@@ -82,7 +78,7 @@ import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.components.filter.ActiveFilter;
+import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
@@ -120,18 +116,24 @@ public class TableEditor extends JPanel implements EditorDockable {
         // Property selection change Event trigered by TableEditableElement
         // is ignored if onUpdateEditableSelection is true
         private AtomicBoolean onUpdateEditableSelection = new AtomicBoolean(false);
-        private FilterFactoryManager<TableSelectionFilter> filterManager = new FilterFactoryManager<TableSelectionFilter>();
+        private FilterFactoryManager<TableSelectionFilter,DefaultActiveFilter> filterManager = 
+                new FilterFactoryManager<TableSelectionFilter,DefaultActiveFilter>();
         private TableRowHeader tableRowHeader;
         private Point popupCellAdress = new Point();    // Col(x) and row(y) that trigger a popup
         private Point cellHighlight = new Point(-1,-1); // cell under cursor on right click
-        private PropertyChangeListener editableSelectionListener = EventHandler.create(PropertyChangeListener.class,this,"onEditableSelectionChange","newValue");
-        private SourceListener sourceListener = EventHandler.create(SourceListener.class, this,"onSourceRemoved", "","sourceRemoved");
+        private PropertyChangeListener editableSelectionListener =
+                EventHandler.create(PropertyChangeListener.class,this,
+                "onEditableSelectionChange","newValue");
+        private SourceListener sourceListener = 
+                EventHandler.create(SourceListener.class, this,"onSourceRemoved",
+                "","sourceRemoved");
                 
         public TableEditor(TableEditableElement element) {
                 super(new BorderLayout());
                 //Add a listener to the source manager to close the table when
                 //the source is removed
-                Services.getService(DataManager.class).getSourceManager().addSourceListener(sourceListener);
+                Services.getService(DataManager.class).getSourceManager().
+                        addSourceListener(sourceListener);
                 this.tableEditableElement = element;
                 dockingPanelParameters = new DockingPanelParameters();
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("openattributes"));
@@ -238,7 +240,7 @@ public class TableEditor extends JPanel implements EditorDockable {
          */
         private void reloadFilters() {
                 LOGGER.debug("Reload Filter");
-                ActiveFilter currentFilter = filterManager.getFilterValues().iterator().next();
+                DefaultActiveFilter currentFilter = filterManager.getFilterValues().iterator().next();
                 filterManager.clearFilters();
                 filterManager.addFilter(currentFilter);
         }
@@ -282,14 +284,14 @@ public class TableEditor extends JPanel implements EditorDockable {
                         int row = table.rowAtPoint(e.getPoint());
                         int col = table.columnAtPoint(e.getPoint());
                         popupCellAdress.setLocation(col,row);
-                        JPopupMenu menu = makeTableCellPopup(row,col);
+                        JPopupMenu menu = makeTableCellPopup();
                         menu.addPopupMenuListener(EventHandler.create(PopupMenuListener.class, this, "onPopupBecomeInvisible",null,"popupMenuWillBecomeInvisible"));
                         menu.addPopupMenuListener(EventHandler.create(PopupMenuListener.class, this, "onPopupBecomeVisible",null,"popupMenuWillBecomeVisible"));
                         menu.show(e.getComponent(), e.getX(), e.getY());
                 }
         }
         
-        private JPopupMenu makeTableCellPopup(int row,int col) {
+        private JPopupMenu makeTableCellPopup() {
                 JPopupMenu pop = new JPopupMenu();
                 boolean hasSelectedRows = table.getSelectedRowCount()>0;
                 if(hasSelectedRows) {
@@ -315,6 +317,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                 if(hasSelectedRows) {
                         JMenuItem deselectAll = new JMenuItem(
                                 I18N.tr("Clear selection"),OrbisGISIcon.getIcon("edit-clear"));
+                        deselectAll.setToolTipText(I18N.tr("Deselect all lines"));
                         deselectAll.addActionListener(
                                 EventHandler.create(ActionListener.class,
                                 this,"onMenuClearSelection"));
@@ -418,23 +421,6 @@ public class TableEditor extends JPanel implements EditorDockable {
                 }                
                 setViewRowSelection(invertedSelection);
         }
-        /**
-         * Return the formated version of the cell value
-         * @param row View row Id
-         * @param col Col id
-         * @return 
-         */
-        private String getFormatedCellValue(int row,int col) {
-                TableCellRenderer cellRenderer = table.getCellRenderer(row, col);
-                Component ctrl = cellRenderer.getTableCellRendererComponent(table,
-                        tableModel.getValueAt(tableSorter.convertRowIndexToModel(row), col),
-                        false,false,row,col);
-                if(ctrl instanceof JLabel) {
-                        return ((JLabel)ctrl).getText();
-                } else {
-                        return tableModel.getValueAt(tableSorter.convertRowIndexToModel(row), col).toString();
-                }
-        }
         
         /**
          * Select all rows that have the same value of the selected cell
@@ -454,7 +440,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                         LOGGER.error(ex.getLocalizedMessage(),ex);
                         return;
                 }
-                ActiveFilter filter = new FieldsContainsFilterFactory.
+                DefaultActiveFilter filter = new FieldsContainsFilterFactory.
                         FilterParameters(colId, cellValue, true, true);
                 //Clear current filter
                 filterManager.clearFilters();
@@ -497,13 +483,14 @@ public class TableEditor extends JPanel implements EditorDockable {
                         "onMenuOptimalWidth"));
                 pop.add(optimalWidth);
                 // Additionnal functions for specific columns
-                int geoIndex = -1;
+                boolean isGeometryField = false;
                 try {
-                        geoIndex = MetadataUtilities.getGeometryFieldIndex(tableModel.getDataSource().getMetadata());
+                        int typeCode = tableModel.getDataSource().
+                                getMetadata().getFieldType(col).getTypeCode();
+                        isGeometryField = (typeCode & MetadataUtilities.ANYGEOMETRY) != 0;
                 } catch (DriverException ex) {
-                        LOGGER.error(ex.getLocalizedMessage(),ex);
+                        LOGGER.error(ex.getLocalizedMessage(), ex);
                 }
-                boolean isGeometryField = geoIndex==col;
                 if (!isGeometryField) {
                         pop.addSeparator();
                         //Sort Ascending
@@ -667,6 +654,11 @@ public class TableEditor extends JPanel implements EditorDockable {
                 }
         }
         
+        private void quickAutoResize() {
+                          
+                autoResizeColWidth(Math.min(5, tableModel.getRowCount()));
+        }
+        
         /**
          * When the editable element is open, 
          * the data model of the table can be set
@@ -674,10 +666,8 @@ public class TableEditor extends JPanel implements EditorDockable {
         private void readDataSource() {     
                 tableModel = new DataSourceTableModel(tableEditableElement);
                 table.setModel(tableModel);
-                table.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);                
-                autoResizeColWidth(Math.min(5, tableModel.getRowCount()),
-                new HashMap<String, Integer>(),
-                new HashMap<String, TableCellRenderer>());
+                table.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+                quickAutoResize();
                 tableSorter = new DataSourceRowSorter(tableModel);
                 tableSorter.addRowSorterListener(
                         EventHandler.create(RowSorterListener.class,this,
@@ -729,14 +719,13 @@ public class TableEditor extends JPanel implements EditorDockable {
         private void setRowSelection(IntegerUnion modelSelection) {
                 IntegerUnion newSelection;
                 if(tableSorter.isFiltered() || !tableSorter.getSortKeys().isEmpty()) {
-                        IntegerUnion viewSelection = new IntegerUnion();
+                        newSelection = new IntegerUnion();
                         for(Integer modelId : modelSelection) {
                                 int viewRowId = table.convertRowIndexToView(modelId);
                                 if(viewRowId!=-1) {
-                                        viewSelection.add(viewRowId);
+                                        newSelection.add(viewRowId);
                                 }
                         }
-                        newSelection = viewSelection;
                 } else {
                         newSelection = modelSelection;
                 }
@@ -808,10 +797,18 @@ public class TableEditor extends JPanel implements EditorDockable {
          * @param filtered If the shown rows do not reflect the model
          */
         private void updateTitle() {
+                String sourceName = tableEditableElement.getSourceName();
+                int tableSelectedRowCount = table.getSelectedRowCount();
+                int tableRowCount = table.getRowCount();
+                // Message is different if the table is filtered
                 if(tableSorter==null || !tableSorter.isFiltered()) {
-                        dockingPanelParameters.setTitle(I18N.tr("Table Editor of {0} {1}/{2}",tableEditableElement.getSourceName(),table.getSelectedRowCount(),table.getRowCount()));
+                        dockingPanelParameters.setTitle(
+                                I18N.tr("Table Editor of {0} {1}/{2}",
+                                sourceName,tableSelectedRowCount,tableRowCount));
                 }else{
-                        dockingPanelParameters.setTitle(I18N.tr("Table Editor of {0} (Filtered) {1}/{2}",tableEditableElement.getSourceName(),table.getSelectedRowCount(),table.getRowCount()));
+                        dockingPanelParameters.setTitle(
+                                I18N.tr("Table Editor of {0} (Filtered) {1}/{2}",
+                                sourceName,tableSelectedRowCount,tableRowCount));
                 }                
         }
         
@@ -826,27 +823,17 @@ public class TableEditor extends JPanel implements EditorDockable {
                 }                
         }
 
-        private void autoResizeColWidth(int rowsToCheck,
-                HashMap<String, Integer> widths,
-                HashMap<String, TableCellRenderer> renderers) {
+        private void autoResizeColWidth(int rowsToCheck) {
                 DefaultTableColumnModel colModel = new DefaultTableColumnModel();
                 int maxWidth = 200;
                 for (int i = 0; i < tableModel.getColumnCount(); i++) {
                         TableColumn col = new TableColumn(i);
                         String columnName = tableModel.getColumnName(i);
                         col.setHeaderValue(columnName);
-                        TableCellRenderer tableCellRenderer = renderers.get(columnName);
-                        if (tableCellRenderer != null) {
-                                col.setHeaderRenderer(tableCellRenderer);
-                        }
-                        Integer width = widths.get(columnName);
-                        if (width == null) {
-                                width = OptimalWidthJob.getColumnOptimalWidth(table, rowsToCheck, maxWidth, i,
+                        int colWidth = OptimalWidthJob.getColumnOptimalWidth(table, rowsToCheck, maxWidth, i,
                                         new NullProgressMonitor());
-                        }
-                        col.setPreferredWidth(width);
+                        col.setPreferredWidth(colWidth);
                         colModel.addColumn(col);
-
                 }
                 table.setColumnModel(colModel);
                 resetRenderers();

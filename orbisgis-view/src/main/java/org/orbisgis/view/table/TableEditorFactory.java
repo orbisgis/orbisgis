@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.table;
 
-import java.util.logging.Level;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;

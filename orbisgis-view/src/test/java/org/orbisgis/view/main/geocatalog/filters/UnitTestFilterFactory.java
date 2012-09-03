@@ -31,7 +31,6 @@ package org.orbisgis.view.main.geocatalog.filters;
 import java.awt.Component;
 import javax.swing.JTextField;
 import org.gdms.source.SourceManager;
-import org.orbisgis.view.components.filter.ActiveFilter;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.components.filter.TextFieldDocumentListener;
@@ -42,7 +41,7 @@ import org.orbisgis.view.geocatalog.filters.IFilter;
  * Name contains DataSourceFilterFactory
  */
 
-public class UnitTestFilterFactory implements FilterFactory<IFilter> {
+public class UnitTestFilterFactory implements FilterFactory<IFilter, DefaultActiveFilter> {
     /**
      * The factory ID
      *
@@ -70,7 +69,7 @@ public class UnitTestFilterFactory implements FilterFactory<IFilter> {
      * @return
      */
     @Override
-    public IFilter getFilter(ActiveFilter filterValue) {
+    public IFilter getFilter(DefaultActiveFilter filterValue) {
         return new UnitTestFilter();
     }
 
@@ -82,15 +81,15 @@ public class UnitTestFilterFactory implements FilterFactory<IFilter> {
      * @return The swing component.
      */
     @Override
-    public Component makeFilterField(ActiveFilter filterValue) {
-        JTextField filterField = new JTextField(((DefaultActiveFilter)filterValue).getCurrentFilterValue());
+    public Component makeFilterField(DefaultActiveFilter filterValue) {
+        JTextField filterField = new JTextField(filterValue.getCurrentFilterValue());
         //Update the field at each modification        
-        filterField.getDocument().addDocumentListener(new TextFieldDocumentListener(filterField, (DefaultActiveFilter)filterValue));
+        filterField.getDocument().addDocumentListener(new TextFieldDocumentListener(filterField, filterValue));
         return filterField;
     }
 
     @Override
-    public ActiveFilter getDefaultFilterValue() {
+    public DefaultActiveFilter getDefaultFilterValue() {
         return new DefaultActiveFilter(getFactoryId(),"");
     }
 

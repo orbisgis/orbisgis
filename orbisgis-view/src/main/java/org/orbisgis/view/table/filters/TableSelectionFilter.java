@@ -39,9 +39,10 @@ public interface TableSelectionFilter {
         
         /**
          * If necessary do the initialisation of this filter
-         * @param pm 
+         * @param pm
+         * @param source Table data source 
          */
-        void initialise(ProgressMonitor pm,DataSource source);
+        void initialize(ProgressMonitor pm,DataSource source);
         
         /***
          * @param rowId Row index (data source row)

@@ -79,7 +79,6 @@ public final class OwsMapContext extends BeanMapContext {
         private boolean open = false;
         private OWSContextType jaxbMapContext = null; //Persistent form of the MapContext
         private long idTime;
-        private boolean selectionInducedRefresh = false;
 
         /**
          * Default constructor
@@ -208,16 +207,6 @@ public final class OwsMapContext extends BeanMapContext {
                 }
         }
 
-        /*
-        @Override
-        public boolean isSelectionInducedRefresh() {
-                return selectionInducedRefresh;
-        }
-        @Override
-        public void setSelectionInducedRefresh(boolean selectionInducedRefresh) {
-                this.selectionInducedRefresh = selectionInducedRefresh;
-        }
-        */
         private final class OpenerListener extends LayerListenerAdapter {
 
                 @Override

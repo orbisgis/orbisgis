@@ -102,20 +102,6 @@ public class DataSourceTableModel extends AbstractTableModel {
                         return null;
                 }
         }
-        
-        /**
-         * Returns the field index
-         *
-         * @param fieldName
-         * @return field index
-         */
-        public int getFieldIndex(String fieldName) {
-                try {
-                        return getMetadata().getFieldIndex(fieldName);
-                } catch (DriverException e) {
-                        return -1;
-                }
-        }
 
         @Override
         public Class<?> getColumnClass(int i) {
@@ -152,12 +138,13 @@ public class DataSourceTableModel extends AbstractTableModel {
          *
          * @param col index of field
          * @return Type of field
+         * @throws IllegalStateException The model cannot read the source metadata
          */
         public Type getColumnType(int col) {
                 try {
                         return getMetadata().getFieldType(col);
                 } catch (DriverException e) {
-                        return null;
+                        throw new IllegalStateException(e);
                 }
         }
         
@@ -206,7 +193,7 @@ public class DataSourceTableModel extends AbstractTableModel {
                                         return val.toString();
                         }
                 } catch (DriverException e) {
-                        return ""; //$NON-NLS-1$
+                        return ""; //Cannot log the error, this method is called several times
                 }
         }
 
@@ -219,6 +206,7 @@ public class DataSourceTableModel extends AbstractTableModel {
                                 return (fieldType.getTypeCode() != Type.RASTER)
                                         && (c == null);
                         } catch (DriverException e) {
+                                LOGGER.warn(e.getLocalizedMessage(), e);
                                 return false;
                         }
                 } else {

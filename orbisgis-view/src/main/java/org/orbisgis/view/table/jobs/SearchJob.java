@@ -57,7 +57,7 @@ public class SearchJob implements BackgroundJob {
         @Override
         public void run(ProgressMonitor pm) {
                 //Launch filter initialisation
-                activeFilter.initialise(pm,source);
+                activeFilter.initialize(pm,source);
                 //Iterate on rows
                 IntegerUnion nextViewSelection = new IntegerUnion();
                 int rowCount = table.getRowCount();

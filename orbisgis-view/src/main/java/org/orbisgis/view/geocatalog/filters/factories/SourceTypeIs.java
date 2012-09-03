@@ -37,7 +37,6 @@ import java.util.List;
 import java.util.Map;
 import javax.swing.JComboBox;
 import org.orbisgis.view.components.ContainerItemProperties;
-import org.orbisgis.view.components.filter.ActiveFilter;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.geocatalog.filters.*;
@@ -47,7 +46,7 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * Source Type filter factory
  */
-public class SourceTypeIs implements FilterFactory<IFilter> {
+public class SourceTypeIs implements FilterFactory<IFilter,DefaultActiveFilter> {
     private static final I18n I18N = I18nFactory.getI18n(SourceTypeIs.class);
     private Map<String,IFilter> filters = new HashMap<String,IFilter>();
     private List<ContainerItemProperties> filterLabelsId = new ArrayList<ContainerItemProperties>();
@@ -65,7 +64,7 @@ public class SourceTypeIs implements FilterFactory<IFilter> {
     }
 
     @Override
-    public ActiveFilter getDefaultFilterValue() {
+    public DefaultActiveFilter getDefaultFilterValue() {
         return new DefaultActiveFilter(getFactoryId(), "");
     }
     /**
@@ -131,11 +130,11 @@ public class SourceTypeIs implements FilterFactory<IFilter> {
      * @return
      */
     @Override
-    public IFilter getFilter(ActiveFilter filterValue) {
-        if(!filters.containsKey(((DefaultActiveFilter)filterValue).getCurrentFilterValue())) {
+    public IFilter getFilter(DefaultActiveFilter filterValue) {
+        if(!filters.containsKey(filterValue.getCurrentFilterValue())) {
             return filters.get(DEFAULT_FILTER);
         } else {
-            return filters.get(((DefaultActiveFilter)filterValue).getCurrentFilterValue());            
+            return filters.get(filterValue.getCurrentFilterValue());            
         }
     }
 
@@ -147,10 +146,10 @@ public class SourceTypeIs implements FilterFactory<IFilter> {
      * @return The swing component.
      */
     @Override
-    public Component makeFilterField(ActiveFilter filterValue) {
+    public Component makeFilterField(DefaultActiveFilter filterValue) {
         JComboBox filterField = new JComboBox(filterLabelsId.toArray());
-        if(filters.containsKey(((DefaultActiveFilter)filterValue).getCurrentFilterValue())) {
-            filterField.setSelectedItem(new ContainerItemProperties(((DefaultActiveFilter)filterValue).getCurrentFilterValue(), ""));
+        if(filters.containsKey(filterValue.getCurrentFilterValue())) {
+            filterField.setSelectedItem(new ContainerItemProperties(filterValue.getCurrentFilterValue(), ""));
         } else {
             filterField.setSelectedItem(new ContainerItemProperties(DEFAULT_FILTER,""));
         }

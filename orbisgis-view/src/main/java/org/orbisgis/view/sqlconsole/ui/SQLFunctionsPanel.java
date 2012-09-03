@@ -29,13 +29,9 @@
 package org.orbisgis.view.sqlconsole.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -45,9 +41,8 @@ import javax.swing.border.BevelBorder;
 import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.events.Listener;
+import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
-import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.sqlconsole.ui.functionFilters.NameFilterFactory;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -63,7 +58,7 @@ public class SQLFunctionsPanel extends JPanel {
         private final JList list;
         private final JPanel expandedPanel;
         private final FunctionListModel functionListModel;
-        private final FilterFactoryManager<FunctionFilter> functionFilters = new FilterFactoryManager<FunctionFilter>();
+        private final FilterFactoryManager<FunctionFilter,DefaultActiveFilter> functionFilters = new FilterFactoryManager<FunctionFilter,DefaultActiveFilter>();
         private final JLabel functionLabelCount;
 
         private final FunctionManager functionManager;

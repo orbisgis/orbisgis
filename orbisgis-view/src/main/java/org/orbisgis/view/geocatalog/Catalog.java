@@ -37,7 +37,6 @@ import java.net.URI;
 import java.util.List;
 import javax.swing.*;
 import javax.swing.filechooser.FileFilter;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceFactory;
@@ -56,6 +55,7 @@ import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.utils.CollectionUtils;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
@@ -100,7 +100,7 @@ public class Catalog extends JPanel implements DockingPanel {
         private static final String DEFAULT_FILTER_FACTORY = "name_contains";
         //The popup menu event listener manager
         private ListenerContainer<MenuPopupEventData> eventSourceListPopupMenuCreating = new ListenerContainer<MenuPopupEventData>();
-        private FilterFactoryManager<IFilter> filterFactoryManager;
+        private FilterFactoryManager<IFilter,DefaultActiveFilter> filterFactoryManager;
 
         /**
          * For the Unit test purpose
@@ -135,7 +135,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 //then add the scroll pane in this panel
                 add(new JScrollPane(makeSourceList()), BorderLayout.CENTER);
                 //Init the filter factory manager
-                filterFactoryManager = new FilterFactoryManager<IFilter>();
+                filterFactoryManager = new FilterFactoryManager<IFilter,DefaultActiveFilter>();
                 //Set the factory that must be shown when the user click on add filter button
                 filterFactoryManager.setDefaultFilterFactory(DEFAULT_FILTER_FACTORY);
                 //Set listener on filter change event, this event will update the filters
@@ -193,7 +193,7 @@ public class Catalog extends JPanel implements DockingPanel {
          *
          * @return Instance of filterFactoryManager
          */
-        public FilterFactoryManager<IFilter> getFilterFactoryManager() {
+        public FilterFactoryManager<IFilter,DefaultActiveFilter> getFilterFactoryManager() {
                 return filterFactoryManager;
         }
 
@@ -251,8 +251,8 @@ public class Catalog extends JPanel implements DockingPanel {
         }
 
         /**
-         * The user select one or more data source and request to
-         * to table editor
+         * The user select one or more data source and request to open
+         * the table editor
          */
         public void onMenuShowTable() {
                 String[] res = getSelectedSources();
