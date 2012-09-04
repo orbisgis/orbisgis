@@ -60,7 +60,6 @@ public class SearchJob implements BackgroundJob {
                 this.filterRunning = filterRunning;
         }
         private void runFilter(final ProgressMonitor pm) { 
-                long debreq = System.currentTimeMillis();
                 //Launch filter initialisation
                 activeFilter.initialize(pm,source);
                 //Iterate on rows
@@ -82,7 +81,6 @@ public class SearchJob implements BackgroundJob {
                         }
                 }
                 pm.endTask();
-                LOGGER.debug("Search done in "+(System.currentTimeMillis()-debreq)+" ms");
                 SwingUtilities.invokeLater( new Runnable() {
 
                         @Override
