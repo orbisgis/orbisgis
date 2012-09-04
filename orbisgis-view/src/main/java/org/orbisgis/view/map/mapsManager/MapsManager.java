@@ -29,12 +29,14 @@
 package org.orbisgis.view.map.mapsManager;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.File;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -42,6 +44,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
@@ -61,6 +64,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Nicolas Fortin
  */
 public class MapsManager extends JPanel {
+        // Minimal tree size is incremented by this emptySpace
         private static final long serialVersionUID = 1L;
         private static final Logger LOGGER = Logger.getLogger(MapsManager.class);
         private static final I18n I18N = I18nFactory.getI18n(MapsManager.class);
@@ -71,7 +75,8 @@ public class MapsManager extends JPanel {
         // Store all the compatible map context
         private TreeNodeMapFactoryManager factoryManager = new TreeNodeMapFactoryManager();
         private MouseListener treeMouse = EventHandler.create(MouseListener.class,this,"onMouseEvent","");
-
+        private AtomicBoolean initialized = new AtomicBoolean(false);
+        
         public MapsManager() {
                 super(new BorderLayout());
                 initInternalFactories();
@@ -84,14 +89,11 @@ public class MapsManager extends JPanel {
                 rootNode.insert(rootFolder, 0);
                 // Add the tree in the panel                
                 tree = new JTree(treeModel);
-                tree.setCellRenderer(new CustomTreeCellRenderer(tree));
                 tree.addMouseListener(treeMouse);
                 tree.setRootVisible(false);
                 //Expand Local folder
                 tree.expandPath(new TreePath(new Object[] {rootNode,rootFolder}));
-                scrollPane = new JScrollPane(tree,
-                        JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
-                        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+                scrollPane = new JScrollPane(tree);
                 add(scrollPane,BorderLayout.EAST);
                 setBorder(BorderFactory.createEtchedBorder());
         }
@@ -115,6 +117,14 @@ public class MapsManager extends JPanel {
                 }
 
                 return false;
+        }
+         
+        @Override
+        public void setVisible(boolean visible) {
+                super.setVisible(visible);
+                if(visible && !initialized.getAndSet(true)) {
+                        tree.setCellRenderer(new CustomTreeCellRenderer(tree));                                               
+                }
         }
         /**
          * Event on Tree, called by listener
@@ -209,13 +219,19 @@ public class MapsManager extends JPanel {
          * plus the decoration height.
          * @return Height in pixels
          */
-        public int getMinimalTreeHeight() {                
+        public Dimension getMinimalComponentDimension() {                
                 Insets borders = getInsets();
                 Insets sBorders = scrollPane.getInsets();
-                return tree.getPreferredSize().height+
+                Dimension treeDim = tree.getPreferredSize();
+                return new Dimension(treeDim.width+
+                        borders.left+
+                        borders.right+
+                        sBorders.left+
+                        sBorders.right
+                        ,treeDim.height+
                         borders.top+
                         borders.bottom+
                         sBorders.top+
-                        sBorders.bottom;
+                        sBorders.bottom);
         }
 }

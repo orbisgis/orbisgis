@@ -177,9 +177,10 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         public void updateMapControlSize() {                        
                 mapControl.setBounds(0,0,layeredPane.getWidth(),layeredPane.getHeight());
                 if(mapsManager.isVisible()) {
-                        Dimension mapsManagerPreferredSize = mapsManager.getPreferredSize();
+                        Dimension mapsManagerPreferredSize = mapsManager.getMinimalComponentDimension();
                         int hPos = layeredPane.getWidth() - mapsManagerPreferredSize.width;
-                        mapsManager.setBounds(hPos,0,mapsManagerPreferredSize.width,Math.min(mapsManager.getMinimalTreeHeight(),layeredPane.getHeight()));
+                        mapsManager.setBounds(hPos,0,mapsManagerPreferredSize.width,Math.min(mapsManagerPreferredSize.height,layeredPane.getHeight()));
+                        mapsManager.revalidate();
                 }
         }
 
