@@ -31,6 +31,8 @@ package org.orbisgis.view.table.jobs;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JTable;
+import javax.swing.SwingUtilities;
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.progress.ProgressMonitor;
@@ -49,45 +51,60 @@ public class SearchJob implements BackgroundJob {
         private JTable table;
         private DataSource source;
         private AtomicBoolean filterRunning;
-
+        private static final Logger LOGGER = Logger.getLogger("gui."+SearchJob.class);
+        
         public SearchJob(TableSelectionFilter activeFilter, JTable table, DataSource source, AtomicBoolean filterRunning) {
                 this.activeFilter = activeFilter;
                 this.table = table;
                 this.source = source;
                 this.filterRunning = filterRunning;
         }
-        private void runFilter(ProgressMonitor pm) {                
+        private void runFilter(final ProgressMonitor pm) { 
+                long debreq = System.currentTimeMillis();
                 //Launch filter initialisation
                 activeFilter.initialize(pm,source);
                 //Iterate on rows
-                IntegerUnion nextViewSelection = new IntegerUnion();
+                final IntegerUnion nextViewSelection = new IntegerUnion();
                 int rowCount = table.getRowCount();
                 pm.startTask(getTaskName(), 100);
+                int lastprog = 0;
                 for(int viewId=0;viewId<rowCount;viewId++) {
                         if(activeFilter.isSelected(table.getRowSorter().convertRowIndexToModel(viewId), source)) {
                                 nextViewSelection.add(viewId);
-                                pm.progressTo(viewId / rowCount * 100);
+                                int newProg = viewId / rowCount * 100;
+                                if(lastprog != newProg) {
+                                        lastprog = newProg;
+                                        pm.progressTo(newProg);
+                                }
                                 if(pm.isCancelled()) {
                                         return;
                                 }
                         }
                 }
                 pm.endTask();
-                Iterator<Integer> intervals = nextViewSelection.getValueRanges().iterator();
-                try {
-                        table.getSelectionModel().setValueIsAdjusting(true);
-                        table.clearSelection();
-                        while(intervals.hasNext()) {
-                                int begin = intervals.next();
-                                int end = intervals.next();
-                                table.addRowSelectionInterval(begin, end);
-                                if(pm.isCancelled()) {
-                                        return;
+                LOGGER.debug("Search done in "+(System.currentTimeMillis()-debreq)+" ms");
+                SwingUtilities.invokeLater( new Runnable() {
+
+                        @Override
+                        public void run() {
+                                // Update the table values
+                                Iterator<Integer> intervals = nextViewSelection.getValueRanges().iterator();
+                                try {
+                                        table.getSelectionModel().setValueIsAdjusting(true);
+                                        table.clearSelection();
+                                        while (intervals.hasNext()) {
+                                                int begin = intervals.next();
+                                                int end = intervals.next();
+                                                table.addRowSelectionInterval(begin, end);
+                                                if (pm.isCancelled()) {
+                                                        return;
+                                                }
+                                        }                                        
+                                } finally {
+                                        table.getSelectionModel().setValueIsAdjusting(false);
                                 }
                         }
-                }finally {
-                        table.getSelectionModel().setValueIsAdjusting(false);                        
-                }                
+                });         
         }
         @Override
         public void run(ProgressMonitor pm) {

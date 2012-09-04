@@ -220,7 +220,8 @@ public class TableEditor extends JPanel implements EditorDockable {
         public void onApplySelectionFilter() {
                 List<TableSelectionFilter> filters = filterManager.getFilters();
                 if(!filterRunning.getAndSet(true)) {
-                        launchJob(new SearchJob(filters.get(0), table, tableModel.getDataSource(),filterRunning));
+                        BackgroundManager bm = Services.getService(BackgroundManager.class);
+                        bm.nonBlockingBackgroundOperation(new SearchJob(filters.get(0), table, tableModel.getDataSource(),filterRunning));
                 } else {
                         LOGGER.info(I18N.tr("Searching request is already launched. Please wait a moment, or cancel it."));
                 }
@@ -773,8 +774,8 @@ public class TableEditor extends JPanel implements EditorDockable {
          * @param evt Selection event, used to test if the selection is final
          */
         public void onTableSelectionChange(ListSelectionEvent evt) {
-                updateTitle();
                 if (!evt.getValueIsAdjusting()) {
+                        updateTitle();
                         if (!onUpdateEditableSelection.getAndSet(true)) {
                                 SwingUtilities.invokeLater(new Runnable() {
 
