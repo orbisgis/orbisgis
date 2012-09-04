@@ -29,6 +29,7 @@
 package org.orbisgis.view.table.jobs;
 
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JTable;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.common.IntegerUnion;
@@ -47,15 +48,15 @@ public class SearchJob implements BackgroundJob {
         private TableSelectionFilter activeFilter;
         private JTable table;
         private DataSource source;
+        private AtomicBoolean filterRunning;
 
-        public SearchJob(TableSelectionFilter activeFilter, JTable table, DataSource source) {
+        public SearchJob(TableSelectionFilter activeFilter, JTable table, DataSource source, AtomicBoolean filterRunning) {
                 this.activeFilter = activeFilter;
                 this.table = table;
                 this.source = source;
+                this.filterRunning = filterRunning;
         }
-        
-        @Override
-        public void run(ProgressMonitor pm) {
+        private void runFilter(ProgressMonitor pm) {                
                 //Launch filter initialisation
                 activeFilter.initialize(pm,source);
                 //Iterate on rows
@@ -86,6 +87,14 @@ public class SearchJob implements BackgroundJob {
                         }
                 }finally {
                         table.getSelectionModel().setValueIsAdjusting(false);                        
+                }                
+        }
+        @Override
+        public void run(ProgressMonitor pm) {
+                try {
+                        runFilter(pm);
+                } finally {
+                        filterRunning.set(false);
                 }
         }
 

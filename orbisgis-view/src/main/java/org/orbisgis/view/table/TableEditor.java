@@ -116,6 +116,7 @@ public class TableEditor extends JPanel implements EditorDockable {
         // Property selection change Event trigered by TableEditableElement
         // is ignored if onUpdateEditableSelection is true
         private AtomicBoolean onUpdateEditableSelection = new AtomicBoolean(false);
+        private AtomicBoolean filterRunning = new AtomicBoolean(false);
         private FilterFactoryManager<TableSelectionFilter,DefaultActiveFilter> filterManager = 
                 new FilterFactoryManager<TableSelectionFilter,DefaultActiveFilter>();
         private TableRowHeader tableRowHeader;
@@ -212,10 +213,17 @@ public class TableEditor extends JPanel implements EditorDockable {
                 tableModel.addTableModelListener(EventHandler.create(TableModelListener.class,this,"onFieldsUpdate",""));
                 return filterComp;
         }
-        
+                
+        /**
+         * Apply the active search filters
+         */
         public void onApplySelectionFilter() {
                 List<TableSelectionFilter> filters = filterManager.getFilters();
-                launchJob(new SearchJob(filters.get(0), table, tableModel.getDataSource()));                                
+                if(!filterRunning.getAndSet(true)) {
+                        launchJob(new SearchJob(filters.get(0), table, tableModel.getDataSource(),filterRunning));
+                } else {
+                        LOGGER.info(I18N.tr("Searching request is already launched. Please wait a moment, or cancel it."));
+                }
         }
         
         /**
