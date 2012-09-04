@@ -31,23 +31,23 @@ package org.orbisgis.view.docking.internals;
 
 import bibliothek.gui.dock.common.DefaultMultipleCDockable;
 import bibliothek.gui.dock.common.MultipleCDockableFactory;
-import bibliothek.gui.dock.common.action.CAction;
 import org.orbisgis.view.docking.DockingPanel;
 
 /**
  * A custom cdockable that contains a reference to the dockingPanel instance.
  */
-public class CustomMultipleCDockable extends DefaultMultipleCDockable {
+public class CustomMultipleCDockable extends DefaultMultipleCDockable implements CustomPanelHolder {
     private DockingPanel dockingPanel;
 
-    public CustomMultipleCDockable(DockingPanel dockingPanel, MultipleCDockableFactory<?, ?> factory, CAction... actions) {
-        super(factory, actions);
+    public CustomMultipleCDockable(DockingPanel dockingPanel, MultipleCDockableFactory<?, ?> factory) {
+        super(factory,dockingPanel.getComponent());
         this.dockingPanel = dockingPanel;
     }
     /**
      * 
      * @return a reference to the dockingPanel instance
      */
+    @Override
     public DockingPanel getDockingPanel() {
         return dockingPanel;
     }

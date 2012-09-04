@@ -30,7 +30,7 @@ package org.orbisgis.view.sqlconsole.ui.functionFilters;
 
 import java.awt.Component;
 import javax.swing.JTextField;
-import org.orbisgis.view.components.filter.ActiveFilter;
+import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.components.filter.TextFieldDocumentListener;
 import org.orbisgis.view.sqlconsole.ui.FunctionElement;
@@ -42,7 +42,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Filter functions by their names
  * @author Nicolas Fortin
  */
-public class NameFilterFactory implements FilterFactory<FunctionFilter> {
+public class NameFilterFactory implements FilterFactory<FunctionFilter,DefaultActiveFilter> {
         public static final String FACTORY_ID = "NameFilter";
         protected final static I18n I18N = I18nFactory.getI18n(NameFilterFactory.class);
         
@@ -57,12 +57,17 @@ public class NameFilterFactory implements FilterFactory<FunctionFilter> {
         }
 
         @Override
-        public FunctionFilter getFilter(String filterValue) {
-                return new TextFilter(filterValue);
+        public DefaultActiveFilter getDefaultFilterValue() {
+                return new DefaultActiveFilter(getFactoryId(), "");
         }
 
         @Override
-        public Component makeFilterField(ActiveFilter filterValue) {
+        public FunctionFilter getFilter(DefaultActiveFilter filterValue) {
+                return new TextFilter(filterValue.getCurrentFilterValue());
+        }
+
+        @Override
+        public Component makeFilterField(DefaultActiveFilter filterValue) {
                 JTextField filterField = new JTextField(filterValue.getCurrentFilterValue());
                 //Update the field at each modification   
                 //The lifetime of the listener has the same lifetime than the ActiveFilter,

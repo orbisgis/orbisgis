@@ -275,23 +275,12 @@ public interface MapContext {
 	void setActiveLayer(ILayer activeLayer) throws IllegalStateException;
 
         /**
-         * @return the selectionInducedRefresh
-         */
-        boolean isSelectionInducedRefresh();
-
-        /**
-         * @param selectionInducedRefresh the selectionInducedRefresh to set
-         */
-        void setSelectionInducedRefresh(boolean selectionInducedRefresh);
-
-        void checkSelectionRefresh(final int[] selectedRows, final int[] oldSelectedRows, final DataSource dataSource);
-
-        /**
          * Returns true if the inner layer model contains actual layers (ie not
          * only layer collections).
          * @return
          */
         boolean isLayerModelSpatial();
+        
 	/**
 	 * get the mapcontext {@link CoordinateReferenceSystem}
 	 * 

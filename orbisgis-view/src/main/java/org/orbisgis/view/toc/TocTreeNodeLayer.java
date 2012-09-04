@@ -32,16 +32,22 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.utils.CollectionUtils;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * The decorator for a tree node layer
  */
-public class TocTreeNodeLayer implements TreeNode {
+public class TocTreeNodeLayer implements MutableTreeNode {
         private ILayer layer;
-        
+        protected final static I18n I18N = I18nFactory.getI18n(TocTreeNodeLayer.class);
+        private static final Logger LOGGER = Logger.getLogger(TocTreeNodeLayer.class);
 
         public TocTreeNodeLayer(ILayer layer) {
                 this.layer = layer;
@@ -118,22 +124,58 @@ public class TocTreeNodeLayer implements TreeNode {
         }
 
         @Override
-        public Enumeration children() {
+        public Enumeration<TreeNode> children() {
                 List<TreeNode> nodes = new ArrayList<TreeNode>();
                 for(int i=0;i<getChildCount();i++) {
                         nodes.add(getChildAt(i));
                 }
                 return new NodeEnumeration(nodes.iterator());
         }
+
+        @Override
+        public void insert(MutableTreeNode mtn, int i) {
+        }
+
+        @Override
+        public void remove(int i) {
+        }
+
+        @Override
+        public void remove(MutableTreeNode mtn) {
+        }
+
+        @Override
+        public void setUserObject(Object o) {
+                try {
+                        String label = o.toString();
+                        //User change the layer label
+                        if(label.isEmpty()) {
+                                layer.setName(layer.getDataSource().getName());
+                        } else {
+                                layer.setName(label);
+                        }
+                } catch (LayerException ex) {
+                        LOGGER.error(I18N.tr("Cannot change the layer name"), ex);
+                }
+        }
+
+        @Override
+        public void removeFromParent() {
+        }
+
+        @Override
+        public void setParent(MutableTreeNode mtn) {
+        }
+        
         /**
          * The interface need an enumeration,
          * this class is provide to convert an iterator to an enumeration
          * If such class exists already in java please replace it
          */
-        private class NodeEnumeration implements Enumeration {
-                private Iterator it;
+        private class NodeEnumeration implements Enumeration<TreeNode> {
+                private Iterator<TreeNode> it;
 
-                public NodeEnumeration(Iterator it) {
+                public NodeEnumeration(Iterator<TreeNode> it) {
                         this.it = it;
                 }
                 
@@ -143,7 +185,7 @@ public class TocTreeNodeLayer implements TreeNode {
                 }
 
                 @Override
-                public Object nextElement() {
+                public TreeNode nextElement() {
                         return it.next();
                 }
                 

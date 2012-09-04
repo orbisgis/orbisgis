@@ -36,7 +36,7 @@ import org.orbisgis.view.docking.DockingPanelFactory;
 import org.orbisgis.view.docking.DockingPanelLayout;
 
 /**
- *
+ * Decorator between the DockingFrame multiple CDockable and the panel factory
  */
 public class InternalCommonFactory implements MultipleCDockableFactory<CustomMultipleCDockable, DockingPanelLayout> {
     

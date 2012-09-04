@@ -28,7 +28,12 @@
  */
 package org.orbisgis.view.geocatalog;
 
-import org.gdms.data.*;
+
+import org.gdms.data.AlreadyClosedException;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.SourceEvent;
@@ -36,39 +41,40 @@ import org.gdms.source.SourceListener;
 import org.gdms.source.SourceRemovalEvent;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditableElementException;
-import org.orbisgis.view.table.Selection;
-import org.orbisgis.view.table.TableEditableElement;
-import org.orbisgis.view.toc.AbstractTableEditableElement;
 
-public class EditableSource extends AbstractTableEditableElement implements
-		TableEditableElement {
+/**
+ * EditableElement that hold a DataSource.
+ * 
+ * Open/Close , open and close the DataSource
+ */
+public class EditableSource extends EditableElement {
 
 	public static final String EDITABLE_RESOURCE_TYPE = "EditableSource";
 
 	private String sourceName;
         private boolean editing = false;
 	private DataSource ds;
-	private SourceSelection resourceSelection = new SourceSelection();
-
 	private NameChangeSourceListener listener = new NameChangeSourceListener();
 
 	public EditableSource(String sourceName) {
-		this.sourceName = sourceName;
+                if(sourceName==null) {
+                        throw new IllegalArgumentException("Source name must "
+                                + "not be null");
+                }
+                this.sourceName = sourceName;
+                setId(sourceName);
 	}
 
-	public String getId() {
-		return sourceName;
-	}
-
+        @Override
 	public void close(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
-		super.close(progressMonitor);
 		try {
 			ds.close();
 			ds = null;
+                        setOpen(false);
 		} catch (AlreadyClosedException e) {
 			throw new EditableElementException("Cannot close the table", e);
 		} catch (DriverException e) {
@@ -78,10 +84,12 @@ public class EditableSource extends AbstractTableEditableElement implements
 				.removeSourceListener(listener);
 	}
 
+        @Override
 	public String getTypeId() {
 		return EDITABLE_RESOURCE_TYPE;
 	}
 
+        @Override
 	public void open(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
 		try {
@@ -91,9 +99,8 @@ public class EditableSource extends AbstractTableEditableElement implements
 				ds = dsf.getDataSource(sourceName);
 			}
 			ds.open();
-			super.open(progressMonitor);
-
 			dataManager.getSourceManager().addSourceListener(listener);
+                        setOpen(true);
 		} catch (DriverException e) {
 			throw new EditableElementException("Cannot open the source", e);
 		} catch (DriverLoadException e) {
@@ -105,6 +112,7 @@ public class EditableSource extends AbstractTableEditableElement implements
 		}
 	}
 
+        @Override
 	public boolean equals(Object obj) {
 		if (obj instanceof EditableSource) {
 			EditableSource er = (EditableSource) obj;
@@ -114,16 +122,13 @@ public class EditableSource extends AbstractTableEditableElement implements
 		}
 	}
 
+        @Override
 	public int hashCode() {
 		return sourceName.hashCode();
 	}
 
 	public DataSource getDataSource() {
 		return ds;
-	}
-
-	public Selection getSelection() {
-		return resourceSelection;
 	}
 
 	public boolean isEditable() {
@@ -133,9 +138,15 @@ public class EditableSource extends AbstractTableEditableElement implements
 		return editing && ds.isEditable();
 	}
 
-	public MapContext getMapContext() {
-		return null;
-	}
+        /**
+         * Get the data source name
+         * @return 
+         */
+        public String getSourceName() {
+                return sourceName;
+        }
+        
+        
 
         /**
          * @return the Editing
@@ -151,16 +162,29 @@ public class EditableSource extends AbstractTableEditableElement implements
                 this.editing = Editing;
         }
 
+        @Override
+        public void save() throws UnsupportedOperationException, EditableElementException {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public Object getObject() throws UnsupportedOperationException {
+                return ds;
+        }
+
 	private class NameChangeSourceListener implements SourceListener {
 
+                @Override
 		public void sourceAdded(SourceEvent e) {
 		}
 
+                @Override
 		public void sourceNameChanged(SourceEvent e) {
 			sourceName = e.getNewName();
-			fireIdChanged();
+                        setId(sourceName);
 		}
 
+                @Override
 		public void sourceRemoved(SourceRemovalEvent e) {
 		}
 	}

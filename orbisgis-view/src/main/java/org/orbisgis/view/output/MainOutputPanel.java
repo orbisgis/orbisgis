@@ -30,10 +30,14 @@ package org.orbisgis.view.output;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
+import javax.swing.JToolBar;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -57,6 +61,14 @@ public class MainOutputPanel extends JPanel implements DockingPanel {
         dockingParameters.setTitle(I18N.tr("Output"));
         dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("format-justify-fill"));
         dockingParameters.setCloseable(true);
+        
+        //Create the action tools
+        JToolBar toolBar = new JToolBar();
+        JButton button = new JButton(I18N.tr("Clear all"),OrbisGISIcon.getIcon("erase"));
+        button.setToolTipText(I18N.tr("Clear all log panels"));
+        button.addActionListener(EventHandler.create(ActionListener.class,this,"onClearAll"));
+        toolBar.add(button);        
+        dockingParameters.setToolBar(toolBar);
         
         this.setLayout(new BorderLayout());
         tabbedPane = new JTabbedPane();
@@ -99,6 +111,19 @@ public class MainOutputPanel extends JPanel implements DockingPanel {
         if(tabid>=0) {
             tabbedPane.setSelectedIndex(tabid);
         }
+    }
+    
+    /**
+     * The user click on clear all button
+     */
+    public void onClearAll() {
+        for(int tabId=0;tabId<tabbedPane.getTabCount();tabId++) {
+            Component tabComp = tabbedPane.getComponentAt(tabId);
+            if(tabComp instanceof OutputPanel) {
+                OutputPanel panel = (OutputPanel)tabComp;
+                panel.onMenuClear();
+            }            
+        }            
     }
     
     public void addSubPanel(String tabLabel,OutputPanel subPanel) {

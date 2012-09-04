@@ -49,7 +49,7 @@ public class LayerCollection extends BeanLayer {
         }
         /**
          * Create a new LayerCollection with the name name.
-         * @param name
+         * @param layerType 
          */
 	public LayerCollection(LayerType layerType) {
 		super(layerType);
@@ -163,7 +163,8 @@ public class LayerCollection extends BeanLayer {
 	 * Set the visible attribute. We don't see this object (which is a collection,
          * not a layer) but its leaves. Consequently, whe using this method, we set
          * the visible attribute to isVisible for all the leaves of this collection.
-	 * @throws LayerException
+         * @param isVisible 
+         * @throws LayerException
 	 * @see org.orbisgis.core.layerModel.ILayer#setVisible(boolean)
 	 */
         @Override
@@ -414,7 +415,7 @@ public class LayerCollection extends BeanLayer {
         @Override
         public Set<String> getAllLayersNames() {
                 final Set<String> result = new HashSet<String>();
-                final LayerCollection lc = (LayerCollection) this;
+                final LayerCollection lc = this;
                 if (null != lc.getLayerCollection()) {
                         for (ILayer layer : lc.getChildren()) {
                                 if (layer instanceof LayerCollection) {
@@ -432,18 +433,14 @@ public class LayerCollection extends BeanLayer {
 
         @Override
 	public GeoRaster getRaster() throws DriverException {
-		throw new UnsupportedOperationException(I18N.tr("Cannot do this operation on a layer collection")); //$NON-NLS-1$
+		throw new UnsupportedOperationException(I18N.tr("Cannot do this operation on a layer collection"));
 	}
 
         @Override
-	public int[] getSelection() {
-		return new int[0];
-	}
-
-        @Override
-	public void setSelection(int[] newSelection) {
-	}
-
+	public void setSelection(Set<Integer> newSelection) {
+		throw new UnsupportedOperationException(I18N.tr("No row selection in a layer collection"));
+        }
+      
 	@Override
 	public boolean isStream() {
 		return false;
@@ -474,7 +471,7 @@ public class LayerCollection extends BeanLayer {
          */
         public static void processLayersLeaves(ILayer root, ILayerAction action) {
 		if (root instanceof LayerCollection) {
-			ILayer lc = (ILayer) root;
+			ILayer lc = root;
 			ILayer[] layers = lc.getChildren();
 			for (ILayer layer : layers) {
 				processLayersLeaves(layer, action);
@@ -491,7 +488,7 @@ public class LayerCollection extends BeanLayer {
          */
 	public static void processLayersNodes(ILayer root, ILayerAction action) {
 		if (root instanceof LayerCollection) {
-			ILayer lc = (ILayer) root;
+			ILayer lc = root;
 			ILayer[] layers = lc.getChildren();
 			for (ILayer layer : layers) {
 				processLayersNodes(layer, action);
@@ -550,6 +547,7 @@ public class LayerCollection extends BeanLayer {
 	private class GetEnvelopeLayerAction implements ILayerAction {
 		private Envelope globalEnvelope;
 
+                @Override
 		public void action(ILayer layer) {
 			if (null == globalEnvelope) {
 				globalEnvelope = new Envelope(layer.getEnvelope());
@@ -566,6 +564,7 @@ public class LayerCollection extends BeanLayer {
 	private static class CountLeavesAction implements ILayerAction {
 		private int numberOfLeaves = 0;
 
+                @Override
 		public void action(ILayer layer) {
 			numberOfLeaves++;
 		}

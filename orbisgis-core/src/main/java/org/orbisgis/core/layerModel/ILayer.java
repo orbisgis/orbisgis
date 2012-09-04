@@ -47,6 +47,7 @@ public interface ILayer {
         public static final String PROP_DESCRIPTION = "description";
         public static final String PROP_VISIBLE = "visible";
         public static final String PROP_STYLES = "styles";
+        public static final String PROP_SELECTION = "selection";
         
         
         /**
@@ -352,7 +353,7 @@ public interface ILayer {
 	 * @throws UnsupportedOperationException
 	 *             If this layer doesn't support selection
 	 */
-	int[] getSelection() throws UnsupportedOperationException;
+	Set<Integer> getSelection() throws UnsupportedOperationException;
 
 	/**
 	 * Sets the array of the selected rows
@@ -361,7 +362,7 @@ public interface ILayer {
 	 * @throws UnsupportedOperationException
 	 *             If this layer doesn't support selection
 	 */
-	void setSelection(int[] newSelection) throws UnsupportedOperationException;
+	void setSelection(Set<Integer> newSelection) throws UnsupportedOperationException;
 
         /**
          * Gets the list of all the {@code Rule} embedded in the {@code Style}

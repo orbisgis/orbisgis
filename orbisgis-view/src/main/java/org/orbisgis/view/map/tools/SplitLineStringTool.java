@@ -48,6 +48,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.geometryUtils.GeometryEdit;
+import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.Handler;
 
@@ -89,7 +90,9 @@ public class SplitLineStringTool extends AbstractPointTool {
                                         sds.setGeometry(handler.getGeometryIndex(), lines[0]);
                                         row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(lines[1]);
                                         sds.insertFilledRow(row);
-                                        mc.getActiveLayer().setSelection(new int[]{handler.getGeometryIndex(), (int) (sds.getRowCount() - 1)});
+                                        IntegerUnion newSelection = new IntegerUnion(handler.getGeometryIndex());
+                                        newSelection.add((int)(sds.getRowCount() - 1));
+                                        mc.getActiveLayer().setSelection(newSelection);
                                 }
                         }
 

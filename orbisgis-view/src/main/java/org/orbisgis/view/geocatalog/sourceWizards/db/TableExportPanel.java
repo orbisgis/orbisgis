@@ -76,6 +76,7 @@ public class TableExportPanel extends JDialog {
 
         private static final I18n I18N = I18nFactory.getI18n(TableExportPanel.class);
         private static final Logger LOGGER = Logger.getLogger(Catalog.class);
+        private static final long serialVersionUID = 1L;
         //private final ConnectionPanel firstPanel;
         private final String[] sourceNames;
         private JScrollPane jScrollPane;

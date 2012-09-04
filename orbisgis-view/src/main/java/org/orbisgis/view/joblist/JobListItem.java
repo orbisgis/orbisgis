@@ -45,6 +45,7 @@ import org.orbisgis.view.components.ContainerItemProperties;
  */
 
 public class JobListItem extends ContainerItemProperties {
+        private static final long serialVersionUID = 1L;
         private Job job;
         private ProgressListener listener = 
                 EventHandler.create(ProgressListener.class,
