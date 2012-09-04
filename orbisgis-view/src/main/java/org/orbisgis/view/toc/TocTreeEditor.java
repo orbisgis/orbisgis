@@ -107,26 +107,22 @@ public class TocTreeEditor implements TreeCellEditor {
         @Override
 	public boolean stopCellEditing() {
                 if(lastEditedCell!=null) {
-                        if (lastEditedCell.getLabel().isEmpty()) {
-                                return false;
-                        } else {
-                                if(lastEditedCell.getValue() instanceof ILayer) {
-                                        ILayer l = (ILayer)lastEditedCell.getValue();
-                                        try {
-                                                l.setName(lastEditedCell.getLabel());
-                                        } catch (LayerException e) {
-                                                return false;
-                                        }
-                                        return true;
-                                } else if(lastEditedCell.getValue() instanceof Style) {
-                                        ((Style)lastEditedCell.getValue()).setName(lastEditedCell.getLabel());
-                                        return true;
-                                } else {
-                                        //Unkown type
-                                        LOGGER.debug("Unknown tree editor value");
+                        if(lastEditedCell.getValue() instanceof ILayer) {
+                                ILayer l = (ILayer)lastEditedCell.getValue();
+                                //A layer with a data source can be set with an empty name
+                                if(lastEditedCell.getLabel().isEmpty() && l.getDataSource()==null) {
                                         return false;
+                                } else {
+                                        return true;
                                 }
+                        } else if(lastEditedCell.getValue() instanceof Style) {
+                                return !lastEditedCell.getLabel().isEmpty();
+                        } else {
+                                //Unkown type
+                                LOGGER.debug("Unknown tree editor value");
+                                return false;
                         }
+                        
                 } else {
                         return false;
                 }

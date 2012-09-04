@@ -40,9 +40,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.OwsMapContext;
-import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.JobQueue;
@@ -57,13 +55,14 @@ import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.map.jobs.ReadMapContextJob;
 import org.orbisgis.view.output.OutputManager;
 import org.orbisgis.view.sqlconsole.SQLConsoleFactory;
+import org.orbisgis.view.table.TableEditorFactory;
 import org.orbisgis.view.toc.TocEditorFactory;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * The core manage the view of the application
+ * The core manage the view of the application.
  * This is the main UIContext
  */
 public class Core {
@@ -178,6 +177,7 @@ public class Core {
             editors.addEditorFactory(new TocEditorFactory());
             editors.addEditorFactory(new MapEditorFactory());
             editors.addEditorFactory(new SQLConsoleFactory());
+            editors.addEditorFactory(new TableEditorFactory());
     }
     /**
      * Initialisation of the BackGroundManager Service
@@ -196,6 +196,21 @@ public class Core {
     public void onMainWindowClosing() {
         this.shutdown();
     }
+    
+    /**
+     * Create the central place for editor factories.
+     * This manager will retrieve panel editors and
+     * use the docking manager to show them
+     * @param dm Instance of docking manager
+     */
+    private void makeEditorManager(DockingManager dm) {
+        editors = new EditorManager(dm);
+        Services.registerService(EditorManager.class,
+                                 I18N.tr("Use this instance to open an editable element (map,data source..)"),
+                                 editors);
+        
+    }
+    
     /**
     * Starts the application. This method creates the {@link MainFrame},
     * and manage the Look And Feel declarations
@@ -227,9 +242,7 @@ public class Core {
         makeJobsPanel();
         
         //Load the editor factories manager
-        editors = new EditorManager(dockManager);
-        //TODO Delete this line when the table editor will be merged
-        Services.registerService(EditorManager.class,"Temp editor manager register", editors);
+        makeEditorManager(dockManager);
         
         //Load the GeoCatalog
         makeGeoCatalogPanel();
@@ -238,8 +251,6 @@ public class Core {
         //makeTocAndMap();
         //Load Built-ins Editors
         loadEditorFactories();
-        
-        //Debug create serialisation of panels
         
         //Load the docking layout and editors opened in last OrbisGis instance
         dockManager.setDockingLayoutPersistanceFilePath(viewWorkspace.getDockingLayoutPath());
@@ -256,7 +267,6 @@ public class Core {
         public void run(){
                 initialize();
                 mainFrame.setVisible( true );
-                readDefaultMapContext();
         }
     }
     /**

@@ -41,6 +41,7 @@ public class MapEditorFactory implements SingleEditorFactory {
         private static final Logger LOGGER = Logger.getLogger(MapEditorFactory.class);
         private MapEditor mapPanel = null;
 
+        @Override
         public void dispose() {
                 //Save the loaded map
                 if(mapPanel!=null && mapPanel.getEditableElement()!=null) {

@@ -60,7 +60,7 @@ import javax.swing.event.TreeExpansionListener;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.events.Listener;
+import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
@@ -159,7 +159,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 if (!initialised.getAndSet(true)) {
                         addComponentListener(sizeListener);
                         //Register listener
-                        dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(Listener.class, this, "onDropEditable", "editableList"));
+                        dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(MapTransferHandler.EditableTransferListener.class, this, "onDropEditable", "editableList"));
                         mapControl.addMouseMotionListener(EventHandler.create(MouseMotionListener.class, this, "onMouseMove", "point", "mouseMoved"));
                         mapStatusBar.addVetoableChangeListener(
                                 MapStatusBar.PROP_USER_DEFINED_SCALE_DENOMINATOR,
@@ -397,7 +397,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     public void onClearSelection() {
             for(ILayer layer : mapContext.getLayers()) {
                     if(!layer.acceptsChilds()) {
-                        layer.setSelection(new int[]{});
+                        layer.setSelection(new IntegerUnion());
                     }
             }
     }
@@ -483,7 +483,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         /**
          * Used with Toggle Button (new state can be DESELECTED)
          */
-                @Override
+        @Override
         public void itemStateChanged(ItemEvent ie) {
             if(ie.getStateChange() == ItemEvent.SELECTED) {
                 onToolSelected(automaton);

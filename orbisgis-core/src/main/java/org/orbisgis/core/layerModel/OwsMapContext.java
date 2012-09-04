@@ -29,7 +29,6 @@
 package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
@@ -46,7 +45,6 @@ import net.opengis.ows._2.BoundingBoxType;
 import net.opengis.ows_context.*;
 import org.apache.log4j.Logger;
 import org.gdms.data.*;
-import org.gdms.data.schema.MetadataUtilities;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
@@ -81,7 +79,6 @@ public final class OwsMapContext extends BeanMapContext {
         private boolean open = false;
         private OWSContextType jaxbMapContext = null; //Persistent form of the MapContext
         private long idTime;
-        private boolean selectionInducedRefresh = false;
 
         /**
          * Default constructor
@@ -208,22 +205,6 @@ public final class OwsMapContext extends BeanMapContext {
                 for (MapContextListener listener : listeners) {
                         listener.layerSelectionChanged(this);
                 }
-        }
-
-        /**
-         * @return the selectionInducedRefresh
-         */
-        @Override
-        public boolean isSelectionInducedRefresh() {
-                return selectionInducedRefresh;
-        }
-
-        /**
-         * @param selectionInducedRefresh the selectionInducedRefresh to set
-         */
-        @Override
-        public void setSelectionInducedRefresh(boolean selectionInducedRefresh) {
-                this.selectionInducedRefresh = selectionInducedRefresh;
         }
 
         private final class OpenerListener extends LayerListenerAdapter {
@@ -550,7 +531,8 @@ public final class OwsMapContext extends BeanMapContext {
                                 parseJaxbLayer(ltc, layerCollection);
                         } catch (LayerException ex) {
                                 //The layer is not created if a layer exception is thrown
-                                LOGGER.error(I18N.tr("The layer has not been imported"), ex);
+                                //Create a warning, because the MapContext is loaded
+                                LOGGER.warn(I18N.tr("The layer has not been imported"), ex);
                         }
                 }
                 parentLayer.addLayer(layerCollection);
@@ -666,6 +648,7 @@ public final class OwsMapContext extends BeanMapContext {
          * crs) { this.crs = crs; }
          */
 
+        /**
         @Override
         public void checkSelectionRefresh(final int[] selectedRows,
                 final int[] oldSelectedRows, final DataSource dataSource) {
@@ -700,4 +683,5 @@ public final class OwsMapContext extends BeanMapContext {
                 }
                 setSelectionInducedRefresh(mustUpdate);
         }
+        */
 }

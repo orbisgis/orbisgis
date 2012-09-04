@@ -30,6 +30,7 @@ package org.orbisgis.view.map.jobs;
 
 import com.vividsolutions.jts.geom.Envelope;
 import com.vividsolutions.jts.geom.Geometry;
+import java.util.Set;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
@@ -86,7 +87,8 @@ public class ZoomToSelection implements BackgroundJob {
                         boolean isVectorial = dataSource.isVectorial();
                         boolean isRaster = dataSource.isRaster();
                         //Evaluate the selection bounding box
-                        int[] modelSelection = layer.getSelection();
+                        Set<Integer> modelSelection = layer.getSelection();
+                        int selectionSize = modelSelection.size();
                         int done = 0;
                         if (isVectorial) {
                                 for (int modelId : modelSelection) {
@@ -97,7 +99,7 @@ public class ZoomToSelection implements BackgroundJob {
                                         if (pm.isCancelled()) {
                                                 return null;
                                         } else {
-                                                pm.progressTo(done / modelSelection.length * 100);
+                                                pm.progressTo(done / selectionSize * 100);
                                         }
                                         done++;
                                 }
@@ -107,7 +109,7 @@ public class ZoomToSelection implements BackgroundJob {
                                         if (pm.isCancelled()) {
                                                 return null;
                                         } else {
-                                                pm.progressTo(done / modelSelection.length * 100);
+                                                pm.progressTo(done / selectionSize * 100);
                                         }
                                         done++;
                                 }

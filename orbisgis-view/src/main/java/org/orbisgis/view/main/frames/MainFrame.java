@@ -68,7 +68,7 @@ public class MainFrame extends JFrame {
 	 */
 	public MainFrame(){
                 getContentPane().setLayout(new BorderLayout());
-		setTitle( I18N.tr("OrbisGIS version {0} La Rochelle {1}", getClass().getPackage().getImplementationVersion(),Locale.getDefault().getCountry()));
+		setTitle( I18N.tr("OrbisGIS version {0} La Rochelle {1}", Package.getPackage("org.orbisgis.core").getImplementationVersion(),Locale.getDefault().getCountry()));
                 setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
 		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis")); 
                 createMenu();

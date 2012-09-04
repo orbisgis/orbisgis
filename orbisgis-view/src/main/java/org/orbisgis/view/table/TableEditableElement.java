@@ -28,46 +28,57 @@
  */
 package org.orbisgis.view.table;
 
-import org.gdms.data.DataSource;
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.view.edition.EditableElement;
+import java.util.Set;
+import org.apache.log4j.Logger;
+import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.view.geocatalog.EditableSource;
 
 /**
  * Interface to be implemented by those EditableElements that need to be edited
  * by the table editor.
  * 
  */
-public interface TableEditableElement extends EditableElement {
+public class TableEditableElement extends EditableSource {
+        public static final String TYPE_ID = "TableEditableElement";
+        // Properties names
+        public static final String PROP_SELECTION = "selection";
+        private static final Logger LOGGER = Logger.getLogger(TableEditableElement.class);
+        // Properties
+        protected IntegerUnion selectedGeometries;
 
+        public TableEditableElement(Set<Integer> selection, String sourceName) {
+                super(sourceName);
+                this.selectedGeometries = new IntegerUnion(selection);
+        }
+
+        public TableEditableElement(String sourceName) {
+                super(sourceName);
+                this.selectedGeometries = new IntegerUnion();
+        }
+        
 	/**
-	 * Get the object that manages selection
-	 * 
+	 * Get the selected geometries in the table
 	 * @return
 	 */
-	Selection getSelection();
+	public Set<Integer> getSelection() {
+                return selectedGeometries;
+        }
 
-	/**
-	 * Get the data to populate the table
-	 * 
-	 * @return
-	 */
-	DataSource getDataSource();
+        /**
+         * Set the selected geometries in the table
+         * @param selection 
+         */
+        public void setSelection(Set<Integer> selection) {
+                LOGGER.debug("Editable selection change");
+                Set<Integer> oldSelection = this.selectedGeometries;
+                this.selectedGeometries = new IntegerUnion(selection);
+                propertyChangeSupport.firePropertyChange(PROP_SELECTION, oldSelection, this.selectedGeometries);
+        }
+        
+        
 
-	/**
-	 * Return true if the source can be edited
-	 * 
-	 * @return
-	 */
-	boolean isEditable();
-
-	/**
-	 * Return the MapContext containing the DataSource returned in
-	 * {@link #getDataSource()}. Return null if it is not contained in any
-	 * MapContext
-	 * 
-	 * @return
-	 */
-	MapContext getMapContext();
-	
-	
+        @Override
+        public String getTypeId() {
+                return TYPE_ID;
+        }
 }

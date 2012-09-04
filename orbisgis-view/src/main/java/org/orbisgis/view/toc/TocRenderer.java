@@ -121,7 +121,16 @@ public class TocRenderer extends TocAbstractRenderer {
                                         ILayer layerNode = ((TocTreeNodeLayer) value).getLayer();
                                         Icon layerIcon = TocAbstractRenderer.getLayerIcon(layerNode);
                                         rendererComponent.setIcon(layerIcon);
-                                        rendererComponent.setText(layerNode.getName());
+                                        
+                                        String nodeLabel = layerNode.getName();
+                                        
+                                        if(layerNode.getDataSource()!=null &&
+                                                !nodeLabel.equals(layerNode.getDataSource().getName())) {
+                                                nodeLabel = I18N.tr("Layer:{0} DataSource :({1})",nodeLabel,layerNode.getDataSource().getName());
+                                        }
+                                        rendererComponent.setText(nodeLabel);
+                                        
+                                        
                                         checkBox.setSelected(layerNode.isVisible());
                                 } else if(value instanceof TocTreeNodeStyle)  {
                                         Style styleNode = ((TocTreeNodeStyle) value).getStyle();

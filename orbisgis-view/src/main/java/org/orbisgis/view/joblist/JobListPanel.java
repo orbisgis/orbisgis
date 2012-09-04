@@ -44,6 +44,7 @@ import org.apache.log4j.Logger;
  * but it is heavier than a JList
  */
 public class JobListPanel extends JPanel {
+        private static final long serialVersionUID = 1L;
         private ListModel listModel;
         private ListCellRenderer listRenderer;
         private BoxLayout cellsStack;

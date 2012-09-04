@@ -32,9 +32,16 @@ import java.awt.Component;
 
 /**
  * Creates a filter and the compo.
+ * @param <FilterInterface> Class used to filter items
+ * @param <FilterSerialisation> This class is used to serialise active filters value
  */
-public interface FilterFactory<FilterInterface> {
+public interface FilterFactory<FilterInterface,FilterSerialisation extends ActiveFilter> {
 
+    /**
+     * @return A newly empty created filter
+     */    
+    FilterSerialisation getDefaultFilterValue();
+    
     /**
      * The factory ID
      *
@@ -55,7 +62,7 @@ public interface FilterFactory<FilterInterface> {
      * @param filterValue The new value fired by PropertyChangeEvent
      * @return
      */
-    FilterInterface getFilter(String filterValue);
+    FilterInterface getFilter(FilterSerialisation filterValue);
 
    
     /**
@@ -64,5 +71,5 @@ public interface FilterFactory<FilterInterface> {
      * @param filterValue When the control change the ActiveFilter value must be updated
      * @return The swing component.
      */
-    Component makeFilterField(ActiveFilter filterValue);
+    Component makeFilterField(FilterSerialisation filterValue);
 }

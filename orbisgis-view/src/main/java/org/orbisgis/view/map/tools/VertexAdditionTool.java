@@ -66,9 +66,7 @@ public class VertexAdditionTool extends VertexAddition {
                 try {
                         ILayer activeLayer = mc.getActiveLayer();
                         DataSource sds = activeLayer.getDataSource();
-                        int[] selection = activeLayer.getSelection();
-                        for (int i = 0; i < selection.length; i++) {
-                                int geomIndex = selection[i];
+                        for(Integer geomIndex : activeLayer.getSelection()) {
                                 Geometry g = GeometryEdit.insertVertex(sds.getGeometry(geomIndex), p, tm.getTolerance());
                                 if (g != null) {
                                         sds.setGeometry(geomIndex, g);
@@ -96,9 +94,7 @@ public class VertexAdditionTool extends VertexAddition {
                 try {
                         ILayer activeLayer = mc.getActiveLayer();
                         DataSource sds = activeLayer.getDataSource();
-                        int[] selection = activeLayer.getSelection();
-                        for (int i = 0; i < selection.length; i++) {
-                                int geomIndex = selection[i];
+                        for(Integer geomIndex : activeLayer.getSelection()) {
                                 Geometry geom = GeometryEdit.insertVertex(sds.getGeometry(geomIndex), p, tm.getTolerance());
                                 if (geom != null) {
                                         tm.addGeomToDraw(geom);

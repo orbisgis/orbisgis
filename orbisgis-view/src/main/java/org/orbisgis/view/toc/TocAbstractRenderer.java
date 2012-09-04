@@ -45,7 +45,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 public abstract class TocAbstractRenderer extends TreeLaFRenderer {
-        private static final I18n I18N = I18nFactory.getI18n(TocAbstractRenderer.class);
+        protected static final I18n I18N = I18nFactory.getI18n(TocAbstractRenderer.class);
 
         public TocAbstractRenderer(JTree tree) {
                 super(tree);
