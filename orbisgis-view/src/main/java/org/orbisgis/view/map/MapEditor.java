@@ -31,18 +31,32 @@ package org.orbisgis.view.map;
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.BorderLayout;
 import java.awt.Point;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
+import javax.swing.Timer;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.events.Listener;
+import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
@@ -59,7 +73,13 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.jobs.ZoomToSelection;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.TransitionException;
-import org.orbisgis.view.map.tools.*;
+import org.orbisgis.view.map.tools.CompassTool;
+import org.orbisgis.view.map.tools.MesureLineTool;
+import org.orbisgis.view.map.tools.MesurePolygonTool;
+import org.orbisgis.view.map.tools.PanTool;
+import org.orbisgis.view.map.tools.SelectionTool;
+import org.orbisgis.view.map.tools.ZoomInTool;
+import org.orbisgis.view.map.tools.ZoomOutTool;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -130,7 +150,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 super.addNotify();
                 if (!initialised.getAndSet(true)) {
                         //Register listener
-                        dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(Listener.class, this, "onDropEditable", "editableList"));
+                        dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(MapTransferHandler.EditableTransferListener.class, this, "onDropEditable", "editableList"));
                         mapControl.addMouseMotionListener(EventHandler.create(MouseMotionListener.class, this, "onMouseMove", "point", "mouseMoved"));
                         mapStatusBar.addVetoableChangeListener(
                                 MapStatusBar.PROP_USER_DEFINED_SCALE_DENOMINATOR,
@@ -333,7 +353,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     public void onClearSelection() {
             for(ILayer layer : mapContext.getLayers()) {
                     if(!layer.acceptsChilds()) {
-                        layer.setSelection(new int[]{});
+                        layer.setSelection(new IntegerUnion());
                     }
             }
     }
@@ -419,7 +439,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         /**
          * Used with Toggle Button (new state can be DESELECTED)
          */
-                @Override
+        @Override
         public void itemStateChanged(ItemEvent ie) {
             if(ie.getStateChange() == ItemEvent.SELECTED) {
                 onToolSelected(automaton);

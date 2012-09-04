@@ -38,7 +38,7 @@ public interface BackgroundManager {
 	/**
 	 * Executes an operation in a background thread. This method blocks the
 	 * interface so no more operation than cancel can be done
-	 * 
+	 * This kind of job use the Swing thread
 	 * @param lp
 	 *            instance that executes the action.
 	 */
@@ -46,7 +46,9 @@ public interface BackgroundManager {
 
 	/**
 	 * Executes an operation in a background thread.
-	 * 
+	 * This kind of job does not use the Swing thread,
+         * don't manage swing objects with this job,
+         * or use SwingUtilities.invokeLater() on this job
 	 * @param lp
 	 *            instance that executes the action.
 	 */

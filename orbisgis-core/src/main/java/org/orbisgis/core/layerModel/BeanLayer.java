@@ -34,6 +34,7 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.net.URI;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -41,6 +42,7 @@ import net.opengis.ows_context.*;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
+import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.common.Description;
@@ -57,6 +59,7 @@ public abstract class BeanLayer extends AbstractLayer {
         //bean properties
         private Description description;
         protected List<Style> styleList = new ArrayList<Style>();
+        protected IntegerUnion selection = new IntegerUnion();
         private boolean visible = true;
         private PropertyChangeListener styleListener = EventHandler.create(PropertyChangeListener.class,this,"onStyleChanged","");
         
@@ -242,7 +245,7 @@ public abstract class BeanLayer extends AbstractLayer {
         
     @Override
     public List<Style> getStyles() {
-        return new ArrayList<Style>(styleList);
+        return Collections.unmodifiableList(styleList);
     }
 
     @Override
@@ -327,7 +330,19 @@ public abstract class BeanLayer extends AbstractLayer {
     }
 
     @Override
-    public int indexOf(Style s){
-            return styleList == null ? -1 : styleList.indexOf(s);
-    }
+        public int indexOf(Style s) {
+                return styleList == null ? -1 : styleList.indexOf(s);
+        }
+
+        @Override
+        public Set<Integer> getSelection() {
+                return selection;
+        }
+
+        @Override
+        public void setSelection(Set<Integer> newSelection) {
+                IntegerUnion oldSelection = selection;
+                selection = new IntegerUnion(newSelection);
+                propertyChangeSupport.firePropertyChange(PROP_SELECTION, oldSelection, selection);
+        }
 }

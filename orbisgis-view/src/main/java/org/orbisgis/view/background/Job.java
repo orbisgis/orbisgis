@@ -97,6 +97,7 @@ public class Job implements BackgroundJob, ProgressMonitor {
 		currentThread.start();
 	}
 
+        @Override
 	public void endTask() {
 		pm.endTask();
 		fireSubTaskFinished();

@@ -31,10 +31,10 @@ package org.orbisgis.view.geocatalog.filters.factories;
 import java.awt.Component;
 import javax.swing.JTextField;
 import org.gdms.source.SourceManager;
-import org.orbisgis.view.components.filter.ActiveFilter;
+import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
-import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.components.filter.TextFieldDocumentListener;
+import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -43,7 +43,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * This is the data source name contains x filter
  */
 
-public class NameNotContains implements FilterFactory<IFilter> {
+public class NameNotContains implements FilterFactory<IFilter, DefaultActiveFilter> {
     private static final I18n I18N = I18nFactory.getI18n(NameNotContains.class);
     /**
      * The factory ID
@@ -65,6 +65,11 @@ public class NameNotContains implements FilterFactory<IFilter> {
         return I18N.tr("Not contains");
     }
 
+    @Override
+    public DefaultActiveFilter getDefaultFilterValue() {
+        return new DefaultActiveFilter(getFactoryId(), "");
+    }
+
     /**
      * Make the filter corresponding to the filter value
      *
@@ -72,8 +77,8 @@ public class NameNotContains implements FilterFactory<IFilter> {
      * @return
      */
     @Override
-    public IFilter getFilter(String filterValue) {
-        return new TextFilter(filterValue);
+    public IFilter getFilter(DefaultActiveFilter filterValue) {
+        return new TextFilter(filterValue.getCurrentFilterValue());
     }
 
 
@@ -84,7 +89,7 @@ public class NameNotContains implements FilterFactory<IFilter> {
      * @return The swing component.
      */
     @Override
-    public Component makeFilterField(ActiveFilter filterValue) {
+    public Component makeFilterField(DefaultActiveFilter filterValue) {
         JTextField filterField = new JTextField(filterValue.getCurrentFilterValue());
         //Update the field at each modification        
         filterField.getDocument().addDocumentListener(new TextFieldDocumentListener(filterField,filterValue));

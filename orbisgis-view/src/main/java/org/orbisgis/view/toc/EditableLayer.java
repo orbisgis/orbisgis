@@ -28,42 +28,42 @@
  */
 package org.orbisgis.view.toc;
 
-import org.gdms.data.DataSource;
-import org.orbisgis.core.layerModel.*;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
+import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditableElementException;
-import org.orbisgis.view.edition.EditableElementListener;
-import org.orbisgis.view.table.Selection;
-import org.orbisgis.view.table.TableEditableElement;
+import org.orbisgis.view.map.MapElement;
 
-public class EditableLayer extends AbstractTableEditableElement implements
-		TableEditableElement {
+/**
+ * This editable correspond to a Layer on the {@link Toc}.
+ */
+public class EditableLayer extends EditableElement {
 
 	public static final String EDITABLE_LAYER_TYPE = "EditableLayer";
 
 	private ILayer layer;
-	private EditableElement element;
+	private MapElement element;
 	private MapContext mapContext;
 
-	private IdChangeListener listener;
+	private PropertyChangeListener layerIdListener = EventHandler.create(PropertyChangeListener.class,this,"updateId");
 
-	public EditableLayer(EditableElement element, ILayer layer) {
+	public EditableLayer(MapElement element, ILayer layer) {
 		this.layer = layer;
 		this.element = element;
 		this.mapContext = (MapContext) element.getObject();
-
-		listener = new IdChangeListener();
+                updateId();
 	}
 
         public ILayer getLayer() {
             return layer;
         }
-
-	@Override
-	public String getId() {
-		return element.getId() + ":" + layer.getName();
-	}
+        
+        private void updateId() {
+                setId(element.getId() + ":" + layer.getName());                
+        }
 
 	@Override
 	public String getTypeId() {
@@ -85,22 +85,6 @@ public class EditableLayer extends AbstractTableEditableElement implements
 		return getId().hashCode();
 	}
 
-	@Override
-	public DataSource getDataSource() {
-		return layer.getDataSource();
-	}
-
-	@Override
-	public Selection getSelection() {
-		return new LayerSelection(layer);
-	}
-
-	@Override
-	public boolean isEditable() {
-		return mapContext.getActiveLayer() == layer;
-	}
-
-	@Override
 	public MapContext getMapContext() {
 		return mapContext;
 	}
@@ -108,39 +92,22 @@ public class EditableLayer extends AbstractTableEditableElement implements
 	@Override
 	public void open(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
-		super.open(progressMonitor);
-		element.addElementListener(listener);
-		layer.addLayerListener(listener);
+		layer.addPropertyChangeListener(ILayer.PROP_DESCRIPTION,layerIdListener);
 	}
 
 	@Override
 	public void close(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
-		super.close(progressMonitor);
-		element.removeElementListener(listener);
-		layer.removeLayerListener(listener);
+		layer.removePropertyChangeListener(layerIdListener);
 	}
 
-	private class IdChangeListener extends LayerListenerAdapter implements
-			EditableElementListener, LayerListener {
+        @Override
+        public void save() throws UnsupportedOperationException, EditableElementException {
+                element.save();
+        }
 
-		@Override
-		public void contentChanged(EditableElement element) {
-		}
-
-		@Override
-		public void idChanged(EditableElement element) {
-			fireIdChanged();
-		}
-
-		@Override
-		public void saved(EditableElement element) {
-		}
-
-		@Override
-		public void nameChanged(LayerListenerEvent e) {
-			fireIdChanged();
-		}
-
-	}
+        @Override
+        public Object getObject() throws UnsupportedOperationException {
+                return layer;
+        }
 }

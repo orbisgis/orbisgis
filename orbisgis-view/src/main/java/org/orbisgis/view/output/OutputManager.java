@@ -37,7 +37,6 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.varia.DenyAllFilter;
 import org.apache.log4j.varia.LevelMatchFilter;
 import org.apache.log4j.varia.LevelRangeFilter;
-import org.orbisgis.core.events.Listener;
 import org.orbisgis.view.docking.DockingPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -60,7 +59,7 @@ public class OutputManager {
         private PatternLayout loggingLayout = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
         private PatternLayout infoLayout = new PatternLayout("%m%n");
         //All panel additionnal objects
-        private Listener outputAllListener;
+        private PanelAppender.ShowMessageListener outputAllListener;
         private OutputPanel allPanel;
         
         public OutputManager(boolean debugConsole) {
@@ -92,7 +91,7 @@ public class OutputManager {
                 PanelAppender app = makePanel();
                 app.setLayout(loggingLayout);
                 allPanel = app.getGuiPanel();
-                outputAllListener = EventHandler.create(Listener.class,this,"onNewLogMessage","");
+                outputAllListener = EventHandler.create(PanelAppender.ShowMessageListener.class,this,"onNewLogMessage","");
                 outputPanels.put(LOG_ALL, app);
                 mainPanel.addSubPanel(I18N.tr("All"), app.getGuiPanel());
                 mainPanel.showSubPanel(app.getGuiPanel()); //Select this panel by default                
@@ -177,7 +176,6 @@ public class OutputManager {
 
         /**
          * Return the panel by its panel Id
-         * @param panelName The panel id, the static LOG_* in this class
          * @return 
          */
         public DockingPanel getPanel() {
