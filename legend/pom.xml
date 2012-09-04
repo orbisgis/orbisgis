@@ -58,6 +58,35 @@
                                         <keywords>-ktr</keywords>
                                 </configuration>
                         </plugin>
+                        <plugin>
+                                <groupId>net.alchim31.maven</groupId>
+                                <artifactId>scala-maven-plugin</artifactId>
+                                <version>3.1.0</version>
+                                <executions>
+                                        <execution>
+                                                <id>scala-compile-first</id>
+                                                <phase>process-resources</phase>
+                                                <goals>
+                                                        <goal>add-source</goal>
+                                                        <goal>compile</goal>
+                                                </goals>
+                                        </execution>
+                                        <execution>
+                                                <id>scala-test-compile</id>
+                                                <phase>process-test-resources</phase>
+                                                <goals>
+                                                        <goal>testCompile</goal>
+                                                </goals>
+                                        </execution>
+                                </executions>
+                                <configuration>
+                                        <args>
+                                                <arg>-unchecked</arg>
+                                                <arg>-Xlint</arg>
+                                                <arg>-Ywarn-all</arg>
+                                        </args>
+                                </configuration>
+                        </plugin>
                 </plugins>
         </build>
         <pluginRepositories>
