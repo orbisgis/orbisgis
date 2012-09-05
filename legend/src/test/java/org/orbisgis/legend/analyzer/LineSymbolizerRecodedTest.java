@@ -28,13 +28,23 @@
  */
 package org.orbisgis.legend.analyzer;
 
+import java.awt.Color;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.symbolizers.LineSymbolizerAnalyzer;
+import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
+import org.orbisgis.legend.structure.recode.RecodedColor;
+import org.orbisgis.legend.structure.recode.RecodedReal;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
 
 /**
@@ -48,6 +58,29 @@ public class LineSymbolizerRecodedTest extends AnalyzerTest{
                 LineSymbolizer ls = getLineSymbolizer();
                 LegendStructure l = new LineSymbolizerAnalyzer(ls).getLegend();
                 assertTrue(l instanceof RecodedLine);
+        }
+
+        @Test
+        public void testListenersOnStroke() throws Exception {
+                LineSymbolizer ls = getLineSymbolizer();
+                PenStroke ps = (PenStroke) ls.getStroke();
+                SolidFill sf = (SolidFill) ps.getFill();
+                assertTrue(sf.getColor() instanceof Recode2Color);
+                RecodedSolidFillLegend l = (RecodedSolidFillLegend)new FillAnalyzer(sf).getLegend();
+                RecodedColor rc = (RecodedColor) l.getFillColorLegend();
+                rc.removeItem(0);
+                rc.removeItem(0);
+                rc.removeItem(0);
+                rc.removeItem(0);
+                assertTrue(sf.getColor() instanceof ColorLiteral);
+                rc.addItem("12", new Color(0,0,0));
+                assertTrue(sf.getColor() instanceof Recode2Color);
+                assertTrue(sf.getOpacity() instanceof RealLiteral);
+                RecodedReal rr = (RecodedReal) l.getFillOpacityLegend();
+                rr.addItem("rlal",20.0);
+                assertTrue(sf.getOpacity() instanceof Recode2Real);
+                rr.removeItem(0);
+                assertTrue(sf.getOpacity() instanceof RealLiteral);
         }
 
         private LineSymbolizer getLineSymbolizer() throws Exception {

@@ -66,6 +66,8 @@ abstract trait RecodedLegend extends ParameterLegend {
     }
   }
 
+  def addListener(l : TypeListener) : Unit = listeners += l
+
   def fireTypeChanged() : Unit = {
     val te : TypeEvent = new TypeEvent(this)
     listeners foreach (_.typeChanged(te))

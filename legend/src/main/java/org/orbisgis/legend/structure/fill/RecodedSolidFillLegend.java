@@ -28,9 +28,14 @@
  */
 package org.orbisgis.legend.structure.fill;
 
+import java.beans.EventHandler;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
+import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.legend.structure.recode.RecodedColor;
 import org.orbisgis.legend.structure.recode.RecodedReal;
+import org.orbisgis.legend.structure.recode.type.TypeListener;
 
 /**
  * A {@code Legend} that represents a {@code SolidFill} where the color is defined
@@ -47,6 +52,20 @@ public class RecodedSolidFillLegend extends SolidFillLegend {
          */
         public RecodedSolidFillLegend(SolidFill fill, RecodedColor colorLegend, RecodedReal opacity) {
                 super(fill, colorLegend, opacity);
+                TypeListener tl = EventHandler.create(TypeListener.class, this, "replaceColor", "source.parameter");
+                colorLegend.addListener(tl);
+                TypeListener tlZ = EventHandler.create(TypeListener.class, this, "replaceOpacity", "source.parameter");
+                opacity.addListener(tlZ);
+        }
+
+        public void replaceColor(SeParameter sp){
+                SolidFill sf = getFill();
+                sf.setColor((ColorParameter) sp);
+        }
+
+        public void replaceOpacity(SeParameter sp){
+                SolidFill sf = getFill();
+                sf.setOpacity((RealParameter) sp);
         }
 
 }
