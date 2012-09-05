@@ -187,7 +187,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
          * @return
          */
         private ArrayList<String> loadWMSServers() {
-                CoreWorkspace ws = (CoreWorkspace) Services.getService(CoreWorkspace.class);
+                CoreWorkspace ws = Services.getService(CoreWorkspace.class);
                 File file = new File(ws.getWorkspaceFolder() + File.separator + WMSServerFile);
                 try {
                         if (file.exists()) {
@@ -196,8 +196,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
                                 return readWMSServerFile(WMSConnectionPanel.class.getResourceAsStream(WMSServerFile));
                         }
                 } catch (IOException e) {
-                        //ErrorMessages.error(ErrorMessages.CannotFind + " " + WMSServerFile,
-                        //		e);
+                         LOGGER.error(I18N.tr("Cannot load the list of WMS url"), e);
                 }
 
                 return null;
@@ -236,7 +235,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
          */
         public void saveWMSServerFile() {
                 try {
-                        CoreWorkspace ws = (CoreWorkspace) Services.getService(CoreWorkspace.class);
+                        CoreWorkspace ws = Services.getService(CoreWorkspace.class);
                         File file = new File(ws.getWorkspaceFolder() + File.separator + WMSServerFile);
                         PrintWriter pw = new PrintWriter(file);
                         for (String server : serverswms) {

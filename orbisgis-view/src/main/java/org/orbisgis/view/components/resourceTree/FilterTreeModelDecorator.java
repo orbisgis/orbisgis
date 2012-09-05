@@ -3,8 +3,8 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
  *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
@@ -22,9 +22,8 @@
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * For more information, please consult: <http://www.orbisgis.org/> or contact
+ * directly: info_at_ orbisgis.org
  */
 
 package org.orbisgis.view.components.resourceTree;
@@ -34,7 +33,7 @@ import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 
 /**
- * This class is used to refresh the according a new model.
+ * This class is used to refresh a treemodel according the name of a leaf .
  * 
  * @author Erwan Bocher
  */
@@ -108,6 +107,11 @@ public class FilterTreeModelDecorator extends AbstractTreeModel {
 		model.valueForPathChanged(path, newValue);
 	}
 
+        /**
+         * Return true if the element leaf has been filtered.
+         * @param element
+         * @return 
+         */
 	protected boolean isFiltered(Object element) {
 		if (isFiltered()) {
 			if (!isLeaf(element)) {
@@ -124,6 +128,10 @@ public class FilterTreeModelDecorator extends AbstractTreeModel {
 		}
 	}
 
+        /**
+         * This method refresh the tree based on the names of the leaf.
+         * @param text 
+         */
 	public void filter(String text) {
 		this.filterText = text.toLowerCase();
 
@@ -149,6 +157,10 @@ public class FilterTreeModelDecorator extends AbstractTreeModel {
 		}
 	}
 
+        /**
+         * Return true if the treemodel has been filtered.
+         * @return 
+         */      
 	protected boolean isFiltered() {
 		return !filterText.trim().isEmpty();
 	}
