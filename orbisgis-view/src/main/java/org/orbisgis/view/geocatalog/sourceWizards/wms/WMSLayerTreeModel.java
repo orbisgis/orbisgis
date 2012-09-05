@@ -3,8 +3,8 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
  *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
@@ -22,9 +22,8 @@
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * For more information, please consult: <http://www.orbisgis.org/> or contact
+ * directly: info_at_ orbisgis.org
  */
 package org.orbisgis.view.geocatalog.sourceWizards.wms;
 
@@ -35,11 +34,22 @@ import javax.swing.tree.TreePath;
 import org.gvsig.remoteClient.wms.WMSClient;
 import org.gvsig.remoteClient.wms.WMSLayer;
 
+/**
+ * This class is used to populate a treemodel with the list of layers available
+ * on a WMS server.
+ * 
+ * @author Erwan Bocher
+ */
 public class WMSLayerTreeModel implements TreeModel {
 
 	private WMSClient client;
 	private ArrayList<TreeModelListener> listeners = new ArrayList<TreeModelListener>();
 
+        /**
+         * The WMSClient gets the informations on the WMS server.
+         * It's used to list the name of all layers.
+         * @param client 
+         */
 	public WMSLayerTreeModel(WMSClient client) {
 		this.client = client;
 	}

@@ -68,7 +68,8 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
         private final SRSPanel srsPanel;
 
         /**
-         * The layerConfigurationPanel display the list of layers available in a WMSServer.
+         * The layerConfigurationPanel display the list of layers available in 
+         * a WMSServer.
          * The user can select a set of layers to add them into the geocatalog.
          */
         public LayerConfigurationPanel(SRSPanel srsPanel) {
@@ -95,7 +96,7 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
         }
 
         /**
-         * A method to create a button.
+         * A method to create a button with its action command
          * @param iconName
          * @param actionCommand
          * @return 
@@ -108,7 +109,7 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
         }
 
         /**
-         * A list to manage selected layers.
+         * A list to manage all selected layers.
          * @return 
          */
         private Component getSelectionList() {
@@ -130,7 +131,8 @@ public class LayerConfigurationPanel extends JPanel implements UIPanel {
         }
 
         /**
-         * Create to the add and remove buttons used to select or unselect a list of layers.
+         * Create to the add and remove buttons used to select or unselect a 
+         * list of layers.
          * @return 
          */
         private Component getAddRemoveButtons() {

@@ -56,7 +56,6 @@ public class SRSPanel extends JPanel implements UIPanel {
         /**
          * The SRSPanel lists all available SRS.
          *
-         * @param layerConfiguration
          */
         public SRSPanel() {
         }
@@ -89,7 +88,7 @@ public class SRSPanel extends JPanel implements UIPanel {
         }
 
         /**
-         * Create the JList that store all supported SRS.
+         * Create the JList that stores all supported SRS.
          *
          * @return
          */
