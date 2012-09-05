@@ -30,53 +30,74 @@ package org.orbisgis.view.components.filter;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
- * Manage the content of a single filter component instance
+ * Manage the content of a single filter component instance.
  * 
  * This class is created thanks to the NetBeans user interface.
  * Use the "Add property" NetBeans function to add properties easily.
  * See documentation related to java.beans management systems
  * 
+ * This class provide a serialisation algorithm
+ * through readStream and writeStream
  */
-public class ActiveFilter {
-    private PropertyChangeSupport propertySupport;
-    private final String factoryId;
-
-
-    private String currentFilterValue = "";
+public abstract class ActiveFilter {
+    protected final PropertyChangeSupport propertySupport;
+    private String factoryId;
     public static final String PROP_CURRENTFILTERVALUE = "currentFilterValue";
-
+    
     /**
      * Bean constructor
      * @param factoryId The factory unique ID
-     * @param currentFilterValue The filter value
      */
-    public ActiveFilter(String factoryId,String currentFilterValue) {
+    protected ActiveFilter(String factoryId) {
         propertySupport = new PropertyChangeSupport(this);
         this.factoryId = factoryId;
-        this.currentFilterValue = currentFilterValue;
     }
 
-    /**
-     * Get the value of currentFilterValue
-     *
-     * @return the value of currentFilterValue
-     */
-    public String getCurrentFilterValue() {
-        return currentFilterValue;
-    }
+        @Override
+        public boolean equals(Object obj) {
+                if (!(obj instanceof ActiveFilter)) {
+                        return false;
+                }
+                if (!this.factoryId.equals(((ActiveFilter)obj).factoryId)) {
+                        return false;
+                }
+                return true;
+        }
 
+        @Override
+        public int hashCode() {
+                int hash = 7;
+                hash = 53 * hash + this.factoryId.hashCode();
+                return hash;
+        }
+
+    
+    
     /**
-     * Set the value of currentFilterValue
-     *
-     * @param currentFilterValue new value of currentFilterValue
+     * Writes the content of this filter content into <code>out</code>.
+     * @param out the stream to write into
+     * @throws IOException if an I/O-error occurs
      */
-    public void setCurrentFilterValue(String currentFilterValue) {
-        String oldCurrentFilterValue = this.currentFilterValue;
-        this.currentFilterValue = currentFilterValue;
-        propertySupport.firePropertyChange(PROP_CURRENTFILTERVALUE, oldCurrentFilterValue, currentFilterValue);
+    public void writeStream( DataOutputStream out ) throws IOException {
+            out.writeUTF(factoryId);
     }
+    
+    /**
+     * Reads the content of this filter from <code>out</code>. All
+     * properties should be set to their default value or to the value read
+     * from the stream.
+     * @param in the stream to read
+     * @throws IOException if an I/O-error occurs
+     */
+    public void readStream( DataInputStream in ) throws IOException {
+            factoryId = in.readUTF();
+    }
+    
 
     /**
      * Get the value of factoryId

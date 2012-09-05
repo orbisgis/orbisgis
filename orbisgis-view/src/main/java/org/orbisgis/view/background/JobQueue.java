@@ -70,7 +70,7 @@ public class JobQueue implements BackgroundManager {
 			}
 
 			// Add a new one
-			LOGGER.debug("It's a new job: " + processId);
+			LOGGER.debug("It's a new job: " + processId + " " + newJob.getTaskName());
 			queue.add(newJob);
 			fireJobAdded(newJob);
 			newJob.progressTo(0);

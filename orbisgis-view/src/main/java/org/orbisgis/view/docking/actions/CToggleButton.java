@@ -35,12 +35,16 @@ import java.awt.event.ItemListener;
 import javax.swing.Icon;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.events.EventException;
+import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
 
 /**
  * Implementation of listener on CRadioButton.
  */
 public class CToggleButton extends CRadioButton implements ItemSelectable {
+    public interface StateListener extends Listener<ItemEvent> {
+            
+    }
     private Logger LOGGER = Logger.getLogger(CToggleButton.class);
     private ListenerContainer<ItemEvent> stateChanged = new ListenerContainer<ItemEvent>();
 

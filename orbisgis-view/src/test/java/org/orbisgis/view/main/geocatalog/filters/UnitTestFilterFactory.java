@@ -31,22 +31,23 @@ package org.orbisgis.view.main.geocatalog.filters;
 import java.awt.Component;
 import javax.swing.JTextField;
 import org.gdms.source.SourceManager;
-import org.orbisgis.view.components.filter.ActiveFilter;
+import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
-import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.components.filter.TextFieldDocumentListener;
+import org.orbisgis.view.geocatalog.filters.IFilter;
 
 /**
  * This is the data source name contains x filter.
  * Name contains DataSourceFilterFactory
  */
 
-public class UnitTestFilterFactory implements FilterFactory<IFilter> {
+public class UnitTestFilterFactory implements FilterFactory<IFilter, DefaultActiveFilter> {
     /**
      * The factory ID
      *
      * @return Internal name of the filter type
      */
+    @Override
     public String getFactoryId() {
         return "unittest_factory";
     }
@@ -56,6 +57,7 @@ public class UnitTestFilterFactory implements FilterFactory<IFilter> {
      *
      * @return
      */
+    @Override
     public String getFilterLabel() {
         return "unittest_factory";
     }
@@ -66,7 +68,8 @@ public class UnitTestFilterFactory implements FilterFactory<IFilter> {
      * @param filterValue The new value fired by PropertyChangeEvent
      * @return
      */
-    public IFilter getFilter(String filterValue) {
+    @Override
+    public IFilter getFilter(DefaultActiveFilter filterValue) {
         return new UnitTestFilter();
     }
 
@@ -77,18 +80,26 @@ public class UnitTestFilterFactory implements FilterFactory<IFilter> {
      * @param filterValue When the control change the ActiveFilter value must be updated
      * @return The swing component.
      */
-    public Component makeFilterField(ActiveFilter filterValue) {
+    @Override
+    public Component makeFilterField(DefaultActiveFilter filterValue) {
         JTextField filterField = new JTextField(filterValue.getCurrentFilterValue());
         //Update the field at each modification        
-        filterField.getDocument().addDocumentListener(new TextFieldDocumentListener(filterField,filterValue));
+        filterField.getDocument().addDocumentListener(new TextFieldDocumentListener(filterField, filterValue));
         return filterField;
     }
+
+    @Override
+    public DefaultActiveFilter getDefaultFilterValue() {
+        return new DefaultActiveFilter(getFactoryId(),"");
+    }
+
     
     /**
      * Inner class text filter
      */
     public class UnitTestFilter implements IFilter {
 
+        @Override
         public boolean accepts(SourceManager sm, String sourceName) {
             return false;
         }     

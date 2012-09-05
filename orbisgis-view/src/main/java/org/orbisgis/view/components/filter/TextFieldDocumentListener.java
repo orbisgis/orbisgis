@@ -39,13 +39,13 @@ import javax.swing.event.DocumentListener;
  */
 public class TextFieldDocumentListener implements DocumentListener {
     private JTextField textField;
-    private ActiveFilter activeFilter;
+    private DefaultActiveFilter activeFilter;
     /**
      * Constructor
      * @param textField TextField to read
      * @param activeFilter filter properties to update
      */
-    public TextFieldDocumentListener(JTextField textField,ActiveFilter activeFilter) {
+    public TextFieldDocumentListener(JTextField textField,DefaultActiveFilter activeFilter) {
         this.textField = textField;
         this.activeFilter = activeFilter;
     }

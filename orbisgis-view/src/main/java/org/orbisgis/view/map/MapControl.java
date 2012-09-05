@@ -73,6 +73,7 @@ public class MapControl extends JComponent implements ContainerListener {
         private static final Logger LOGGER = Logger.getLogger(MapControl.class);
         private static final I18n I18N = I18nFactory.getI18n(MapControl.class);
 	private static int lastMapControlId = 0;
+        private static final long serialVersionUID = 1L;
         private AtomicBoolean awaitingDrawing=new AtomicBoolean(false); /*!< A drawing process is currently requested, it is useless to request another */
 	private int mapControlId;
 
@@ -96,6 +97,7 @@ public class MapControl extends JComponent implements ContainerListener {
 	private Drawer drawer;
 
 	private boolean showCoordinates = true;
+        private boolean listenToMapContextBoundingBoxChange = true;
 
 	TransformListener element;
 
@@ -117,8 +119,12 @@ public class MapControl extends JComponent implements ContainerListener {
          * to be read and applied to the MapTransform
          */
         public void onMapContextBoundingBoxChange() {
-		Envelope boundingBox = mapContext.getBoundingBox();
-                mapTransform.setExtent(boundingBox);
+                if(listenToMapContextBoundingBoxChange) {
+                        Envelope boundingBox = mapContext.getBoundingBox();
+                        if (boundingBox != null) {
+                                mapTransform.setExtent(boundingBox);
+                        }           
+                }
         }
         
         
@@ -316,10 +322,15 @@ public class MapControl extends JComponent implements ContainerListener {
 					throw e;
 				}
 			} finally {
-				mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
-                                awaitingDrawing.set(false);
-				MapControl.this.repaint();
-				mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
+                                try {
+                                        listenToMapContextBoundingBoxChange = false;
+                                        mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
+                                        awaitingDrawing.set(false);
+                                        MapControl.this.repaint();
+                                        mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
+                                } finally {
+                                        listenToMapContextBoundingBoxChange = true;
+                                }
 			}
 		}
 
@@ -478,10 +489,8 @@ public class MapControl extends JComponent implements ContainerListener {
 
                 @Override
 		public void selectionChanged(SelectionEvent e) {
-                        if (mapContext.isSelectionInducedRefresh()) {
-                                invalidateImage();
-                                mapContext.setSelectionInducedRefresh(false);
-                        }
+                        //TODO use the bean property selection event (when feature/table-editor will be merged) to find if the redraw has to be done
+                        invalidateImage();
 		}
 
                 @Override

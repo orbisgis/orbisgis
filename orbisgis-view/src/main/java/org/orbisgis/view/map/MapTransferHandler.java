@@ -34,6 +34,7 @@ import java.io.IOException;
 import javax.swing.TransferHandler;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.events.EventException;
+import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.TransferableEditableElement;
@@ -46,6 +47,10 @@ import org.xnap.commons.i18n.I18nFactory;
  * Supports MapElement and EditableSource.
  */
 public class MapTransferHandler  extends TransferHandler{
+    private static final long serialVersionUID = 1L;
+    public interface EditableTransferListener extends Listener<EditableTransferEvent> {
+            
+    }
     static final private Logger GUILOGGER = Logger.getLogger("gui."+MapTransferHandler.class);
     static final private I18n I18N = I18nFactory.getI18n(MapTransferHandler.class);
     private ListenerContainer<EditableTransferEvent> transferEditableEvent = new ListenerContainer<EditableTransferEvent>();

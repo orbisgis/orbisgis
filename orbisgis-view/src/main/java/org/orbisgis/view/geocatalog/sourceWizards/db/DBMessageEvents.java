@@ -3,8 +3,8 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
  *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
@@ -22,26 +22,28 @@
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * For more information, please consult: <http://www.orbisgis.org/> or contact
+ * directly: info_at_ orbisgis.org
  */
 package org.orbisgis.view.geocatalog.sourceWizards.db;
 
+import java.util.EventObject;
+
 /**
- *
- *  @author Erwan Bocher
+ * A class to identify the message returned by the database panel.
+ * @author ebocher
  */
+public class DBMessageEvents extends EventObject {
 
+        String message;
 
-public class DBExporterException extends  Exception{
-
-        public DBExporterException(String message) {
-               super(message);
+        public DBMessageEvents(String message, Object source) {
+                super(source);
+                this.message = message;
         }
 
-        public DBExporterException(String message, NumberFormatException e) {
-                super(message, e);
+        public String getMessage() {
+                return message;
         }
         
 }

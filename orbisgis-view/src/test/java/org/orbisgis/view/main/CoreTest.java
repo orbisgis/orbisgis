@@ -56,9 +56,11 @@ public class CoreTest {
 
     /**
      * Test of startup method, of class Core.
+     * @throws InterruptedException
+     * @throws InvocationTargetException  
      */
     @BeforeClass
-    public static void setUp() {
+    public static void setUp() throws InterruptedException, InvocationTargetException {
         System.out.println("startup");
         if(!GraphicsEnvironment.isHeadless()) {
             instance = new Core(true);
@@ -85,7 +87,7 @@ public class CoreTest {
         UnitTestFilterFactory unitTestFactory = new UnitTestFilterFactory();
         geoCatalog.getFilterFactoryManager().registerFilterFactory(unitTestFactory);
         //Add a new filter with this factory
-        geoCatalog.getFilterFactoryManager().addFilter(unitTestFactory.getFactoryId(), "");
+        geoCatalog.getFilterFactoryManager().addFilter(unitTestFactory.getDefaultFilterValue());
         //In the SourceListModel, search the generated IFilter
         List<IFilter> filters = UImodel.getFilters();
         boolean filterFounds=false;
@@ -137,6 +139,7 @@ public class CoreTest {
     * This runnable is just to wait the execution of other runnables
     */
     private static class DummyThread implements Runnable {
+        @Override
         public void run(){
         }
     }

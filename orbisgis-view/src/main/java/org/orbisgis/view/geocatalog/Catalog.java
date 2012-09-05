@@ -55,17 +55,17 @@ import org.gvsig.remoteClient.wms.WMSLayer;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.events.EventException;
-import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.utils.CollectionUtils;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
+import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.dialogs.OpenGdmsFilePanel;
 import org.orbisgis.view.geocatalog.dialogs.OpenGdmsFolderPanel;
 import org.orbisgis.view.geocatalog.filters.IFilter;
@@ -74,13 +74,13 @@ import org.orbisgis.view.geocatalog.filters.factories.NameNotContains;
 import org.orbisgis.view.geocatalog.filters.factories.SourceTypeIs;
 import org.orbisgis.view.geocatalog.io.ExportInFileOperation;
 import org.orbisgis.view.geocatalog.renderer.DataSourceListCellRenderer;
-import org.orbisgis.view.geocatalog.sourceWizards.db.ConnectionPanel;
 import org.orbisgis.view.geocatalog.sourceWizards.db.TableExportPanel;
 import org.orbisgis.view.geocatalog.sourceWizards.db.TableSelectionPanel;
 import org.orbisgis.view.geocatalog.sourceWizards.wms.LayerConfigurationPanel;
 import org.orbisgis.view.geocatalog.sourceWizards.wms.SRSPanel;
 import org.orbisgis.view.geocatalog.sourceWizards.wms.WMSConnectionPanel;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -109,7 +109,7 @@ public class Catalog extends JPanel implements DockingPanel {
         private static final String DEFAULT_FILTER_FACTORY = "name_contains";
         //The popup menu event listener manager
         private ListenerContainer<MenuPopupEventData> eventSourceListPopupMenuCreating = new ListenerContainer<MenuPopupEventData>();
-        private FilterFactoryManager<IFilter> filterFactoryManager;
+        private FilterFactoryManager<IFilter,DefaultActiveFilter> filterFactoryManager;
 
         /**
          * For the Unit test purpose
@@ -144,16 +144,17 @@ public class Catalog extends JPanel implements DockingPanel {
                 //then add the scroll pane in this panel
                 add(new JScrollPane(makeSourceList()), BorderLayout.CENTER);
                 //Init the filter factory manager
-                filterFactoryManager = new FilterFactoryManager<IFilter>();
+                filterFactoryManager = new FilterFactoryManager<IFilter,DefaultActiveFilter>();
                 //Set the factory that must be shown when the user click on add filter button
                 filterFactoryManager.setDefaultFilterFactory(DEFAULT_FILTER_FACTORY);
                 //Set listener on filter change event, this event will update the filters
-                filterFactoryManager.getEventFilterChange().addListener(sourceListContent,
-                        EventHandler.create(Listener.class,
+                FilterFactoryManager.FilterChangeListener refreshFilterListener = EventHandler.create(FilterFactoryManager.FilterChangeListener.class,
                         sourceListContent, //target of event
                         "setFilters", //target method
                         "source.getFilters" //target method argument
-                        ));
+                        );
+                filterFactoryManager.getEventFilterChange().addListener(sourceListContent,refreshFilterListener);
+                filterFactoryManager.getEventFilterFactoryChange().addListener(sourceListContent,refreshFilterListener);
                 //Add the filter list at the top of the geocatalog
                 add(filterFactoryManager.makeFilterPanel(false), BorderLayout.NORTH);
                 //Create a toolbar to add a new filter
@@ -201,7 +202,7 @@ public class Catalog extends JPanel implements DockingPanel {
          *
          * @return Instance of filterFactoryManager
          */
-        public FilterFactoryManager<IFilter> getFilterFactoryManager() {
+        public FilterFactoryManager<IFilter,DefaultActiveFilter> getFilterFactoryManager() {
                 return filterFactoryManager;
         }
 
@@ -259,6 +260,19 @@ public class Catalog extends JPanel implements DockingPanel {
         }
 
         /**
+         * The user select one or more data source and request to open
+         * the table editor
+         */
+        public void onMenuShowTable() {
+                String[] res = getSelectedSources();
+                EditorManager editorManager = Services.getService(EditorManager.class);
+                for (String source : res) {
+                        TableEditableElement tableDocument = new TableEditableElement(source);
+                        editorManager.openEditable(tableDocument);
+                }
+        }
+        
+        /**
          * The user click on the menu item called "Add/File" The user wants to
          * open a file using the geocatalog. It will open a panel dedicated to
          * the selection of the wanted files. This panel will then return the
@@ -297,16 +311,8 @@ public class Catalog extends JPanel implements DockingPanel {
          */
         public void onMenuAddFromDataBase() {
                 SourceManager sm = getDataManager().getSourceManager();
-                final ConnectionPanel firstPanel = new ConnectionPanel(sm);
-                final TableSelectionPanel secondPanel = new TableSelectionPanel(
-                        firstPanel);
-
-                if (UIFactory.showDialog(new UIPanel[]{firstPanel, secondPanel})) {
-                        for (DBSource dBSource : secondPanel.getSelectedDBSources()) {
-                                String name = sm.getUniqueName(dBSource.getTableName().toString());
-                                sm.register(name, new DBTableSourceDefinition(dBSource));
-                        }
-                }
+                TableImportPanel tableImportPanel = new TableImportPanel(sm);
+                tableImportPanel.setVisible(true);
         }
 
         /**
@@ -399,7 +405,6 @@ public class Catalog extends JPanel implements DockingPanel {
                 SourceManager sm = dm.getSourceManager();
                 String[] res = getSelectedSources();
                 TableExportPanel tableExportPanel = new TableExportPanel(res, sm);
-
                 tableExportPanel.setVisible(true);
         }
 
@@ -565,7 +570,13 @@ public class Catalog extends JPanel implements DockingPanel {
                                 this,
                                 "onMenuSaveInDB"));
                         saveMenu.add(saveInDBItem);
-
+                        //Popup:Open attributes
+                        JMenuItem openTableMenu = new JMenuItem(I18N.tr("Open the attributes"),
+                                OrbisGISIcon.getIcon("openattributes"));
+                        openTableMenu.addActionListener(EventHandler.create(ActionListener.class,
+                                this, "onMenuShowTable"));
+                        rootMenu.add(openTableMenu);
+                        
                 }
 
                 rootMenu.addSeparator();
@@ -626,7 +637,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 SourceListTransferHandler transferHandler = new SourceListTransferHandler();
                 //Call the method this.onDropURI when the user drop uri(like files) on the list control
                 transferHandler.getDropListenerHandler().addListener(this,
-                        EventHandler.create(Listener.class, this, "onDropURI", "uriList"));
+                        EventHandler.create(SourceListTransferHandler.DropUriListener.class, this, "onDropURI", "uriList"));
                 sourceList.setTransferHandler(transferHandler);
                 sourceList.setDragEnabled(true);
                 //Attach the content to the DataSource instance
@@ -641,6 +652,7 @@ public class Catalog extends JPanel implements DockingPanel {
         public void dispose() {
                 //Remove listeners linked with the source list content
                 filterFactoryManager.getEventFilterChange().clearListeners();
+                filterFactoryManager.getEventFilterFactoryChange().clearListeners();
                 sourceListContent.dispose();
         }
 

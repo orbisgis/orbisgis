@@ -31,6 +31,7 @@ package org.orbisgis.core.layerModel;
 import com.vividsolutions.jts.geom.Envelope;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.edition.EditionEvent;
@@ -39,13 +40,13 @@ import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.data.schema.Metadata;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
+import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.core.renderer.se.Style;
 
 public class Layer extends BeanLayer {        
 	private DataSource dataSource;
 	private RefreshSelectionEditionListener editionListener;
-	private int[] selection = new int[0];
 
 	public Layer(String name, DataSource ds) {
 		super(name);
@@ -159,46 +160,24 @@ public class Layer extends BeanLayer {
 
 	private class RefreshSelectionEditionListener implements EditionListener {
 
-        @Override
+                @Override
 		public void multipleModification(MultipleEditionEvent e) {
 			EditionEvent[] events = e.getEvents();
-			int[] selection = getSelection();
-			for (int i = 0; i < events.length; i++) {
-				int[] newSel = getNewSelection(events[i].getRowIndex(),
-						selection);
-				selection = newSel;
-			}
-			setSelection(selection);
+                        for(EditionEvent event : events) {
+                                selection.remove((int)event.getRowIndex());
+                        }
+                        fireSelectionChanged();
 		}
 
-        @Override
+                @Override
 		public void singleModification(EditionEvent e) {
 			if (e.getType() == EditionEvent.DELETE) {
-				int[] selection = getSelection();
-				int[] newSel = getNewSelection(e.getRowIndex(), selection);
-				setSelection(newSel);
+				selection.remove((int)e.getRowIndex());
+                                fireSelectionChanged();
 			} else if (e.getType() == EditionEvent.RESYNC) {
-				setSelection(new int[0]);
+				setSelection(new IntegerUnion());
 			}
 
-		}
-
-		private int[] getNewSelection(long rowIndex, int[] selection) {
-			int[] newSelection = new int[selection.length];
-			int newSelectionIndex = 0;
-			for (int i = 0; i < selection.length; i++) {
-				if (selection[i] != rowIndex) {
-					newSelection[newSelectionIndex] = selection[i];
-					newSelectionIndex++;
-				}
-			}
-
-			if (newSelectionIndex < selection.length) {
-				selection = new int[newSelectionIndex];
-				System.arraycopy(newSelection, 0, selection, 0,
-						newSelectionIndex);
-			}
-			return selection;
 		}
 	}
 
@@ -209,13 +188,8 @@ public class Layer extends BeanLayer {
 	}
 
 	@Override
-	public int[] getSelection() {
-		return selection;
-	}
-
-	@Override
-	public void setSelection(int[] newSelection) {
-		this.selection = newSelection;
+	public void setSelection(Set<Integer> newSelection) {
+		super.setSelection(newSelection);
 		fireSelectionChanged();
 	}
 
