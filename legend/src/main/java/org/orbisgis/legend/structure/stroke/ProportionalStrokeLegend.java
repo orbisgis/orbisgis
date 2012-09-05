@@ -67,7 +67,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
                 ir.setLookupValue(new RealAttribute());
                 ps.setWidth(ir);
                 NumericLegend wa = (NumericLegend) new RealParameterAnalyzer(ir).getLegend();
-                setWidthAnalysis(wa);
+                setLineWidthLegend(wa);
         }
 
         /**
@@ -85,7 +85,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @return
          */
         public double getFirstData() {
-            return ((LinearInterpolationLegend)getWidthAnalysis()).getFirstData();
+            return ((LinearInterpolationLegend)getLineWidthLegend()).getFirstData();
         }
 
         /**
@@ -93,7 +93,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @return
          */
         public double getSecondData() {
-            return ((LinearInterpolationLegend)getWidthAnalysis()).getSecondData();
+            return ((LinearInterpolationLegend)getLineWidthLegend()).getSecondData();
         }
 
         /**
@@ -101,7 +101,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @param d
          */
         public void setFirstData(double d) {
-            ((LinearInterpolationLegend)getWidthAnalysis()).setFirstData(d);
+            ((LinearInterpolationLegend)getLineWidthLegend()).setFirstData(d);
         }
 
         /**
@@ -109,7 +109,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @param d
          */
         public void setSecondData(double d){
-            ((LinearInterpolationLegend)getWidthAnalysis()).setSecondData(d);
+            ((LinearInterpolationLegend)getLineWidthLegend()).setSecondData(d);
         }
 
         /**
@@ -119,7 +119,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @return
          */
         public double getFirstValue() throws ParameterException {
-            return ((LinearInterpolationLegend)getWidthAnalysis()).getFirstValue();
+            return ((LinearInterpolationLegend)getLineWidthLegend()).getFirstValue();
         }
 
         /**
@@ -127,7 +127,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @param d
          */
         public void setFirstValue(double d) {
-            ((LinearInterpolationLegend)getWidthAnalysis()).setFirstValue(d);
+            ((LinearInterpolationLegend)getLineWidthLegend()).setFirstValue(d);
         }
         
         /**
@@ -137,7 +137,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @return
          */
         public double getSecondValue() throws ParameterException {
-            return ((LinearInterpolationLegend)getWidthAnalysis()).getSecondValue();
+            return ((LinearInterpolationLegend)getLineWidthLegend()).getSecondValue();
         }
 
         /**
@@ -145,7 +145,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @param d 
          */
         public void setSecondValue(double d) {
-            ((LinearInterpolationLegend)getWidthAnalysis()).setSecondValue(d);
+            ((LinearInterpolationLegend)getLineWidthLegend()).setSecondValue(d);
         }
 
         /**
@@ -153,7 +153,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @param name
          */
         public void setLookupFieldName(String name) {
-                ((LinearInterpolationLegend)getWidthAnalysis()).setLookupFieldName(name);
+                ((LinearInterpolationLegend)getLineWidthLegend()).setLookupFieldName(name);
         }
 
         /**
@@ -161,7 +161,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @return
          */
         public String getLookupFieldName() {
-                return ((LinearInterpolationLegend)getWidthAnalysis()).getLookupFieldName();
+                return ((LinearInterpolationLegend)getLineWidthLegend()).getLookupFieldName();
         }
         
 }

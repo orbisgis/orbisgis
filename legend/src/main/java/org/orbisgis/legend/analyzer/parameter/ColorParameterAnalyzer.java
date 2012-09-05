@@ -36,7 +36,7 @@ import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.function.AbstractLiteralValidator;
 import org.orbisgis.legend.structure.categorize.Categorize2ColorLegend;
 import org.orbisgis.legend.structure.literal.ColorLiteralLegend;
-import org.orbisgis.legend.structure.recode.Recode2ColorLegend;
+import org.orbisgis.legend.structure.recode.RecodedColor;
 
 /**
  * This class analyzes instances of {@code ColorParameter} to determine if they
@@ -65,7 +65,7 @@ public class ColorParameterAnalyzer extends AbstractLiteralValidator {
                 if (cp instanceof Recode2Color){
                         Recode2Color r2c = (Recode2Color)cp;
                         if(validateRecode(r2c)){
-                                return new Recode2ColorLegend(r2c);
+                                return new RecodedColor(r2c);
                         } else {
                                 throw new UnsupportedOperationException("Not spported yet");
                         }

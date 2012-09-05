@@ -122,7 +122,7 @@ public abstract class ConstantFormWKN extends MarkGraphicLegend {
      * @return
      */
     public Uom getStrokeUom(){
-            return getPenStroke().getUom();
+            return getPenStroke().getStrokeUom();
     }
 
     /**
@@ -130,7 +130,7 @@ public abstract class ConstantFormWKN extends MarkGraphicLegend {
      * @param u
      */
     public void setStrokeUom(Uom u){
-            getPenStroke().setUom(u);
+            getPenStroke().setStrokeUom(u);
     }
 
     /**

@@ -91,7 +91,7 @@ public abstract class ConstantColorAndDashesLine extends SymbolizerLegend {
      * @return
      */
     public Uom getStrokeUom(){
-            return ((PenStrokeLegend) getStrokeLegend()).getUom();
+            return ((PenStrokeLegend) getStrokeLegend()).getStrokeUom();
     }
 
     /**
@@ -99,6 +99,6 @@ public abstract class ConstantColorAndDashesLine extends SymbolizerLegend {
      * @param u
      */
     public void setStrokeUom(Uom u){
-            ((PenStrokeLegend) getStrokeLegend()).setUom(u);
+            ((PenStrokeLegend) getStrokeLegend()).setStrokeUom(u);
     }
 }

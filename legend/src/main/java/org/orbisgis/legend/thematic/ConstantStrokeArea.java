@@ -171,7 +171,7 @@ public abstract class ConstantStrokeArea extends SymbolizerLegend {
      * @return
      */
     public Uom getStrokeUom(){
-            return getStrokeLegend().getUom();
+            return getStrokeLegend().getStrokeUom();
     }
 
     /**
@@ -179,6 +179,6 @@ public abstract class ConstantStrokeArea extends SymbolizerLegend {
      * @param u
      */
     public void setStrokeUom(Uom u){
-            getStrokeLegend().setUom(u);
+            getStrokeLegend().setStrokeUom(u);
     }
 }

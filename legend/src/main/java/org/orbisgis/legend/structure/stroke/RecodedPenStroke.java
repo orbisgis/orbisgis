@@ -35,9 +35,8 @@ import org.orbisgis.legend.structure.fill.FillLegend;
 import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
-import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 import org.orbisgis.legend.structure.parameter.NumericLegend;
-import org.orbisgis.legend.structure.recode.Recode2RealLegend;
+import org.orbisgis.legend.structure.recode.RecodedReal;
 
 /**
  * Represents {@code PenStroke} instances that just contain {@code Recode}
@@ -49,7 +48,7 @@ public class RecodedPenStroke {
 
         private PenStroke stroke;
         private FillLegend fillLegend;
-        private NumericLegend widthLegend;
+        private RecodedReal widthLegend;
         private LegendStructure dashLegend;
 
         public final FillLegend getFillLegend() {
@@ -79,8 +78,8 @@ public class RecodedPenStroke {
         }
 
         public final void setWidthLegend(NumericLegend width) {
-                if(width instanceof RealLiteralLegend || width instanceof Recode2RealLegend){
-                        this.widthLegend = width;
+                if(width instanceof RecodedReal){
+                        this.widthLegend = (RecodedReal) width;
                         stroke.setWidth((RealParameter)width.getParameter());
                 } else {
                         throw new IllegalArgumentException("Can't set the fill legend to something"

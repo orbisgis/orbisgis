@@ -64,7 +64,7 @@ public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend impl
          */
         @Override
         public double getLineWidth() {
-            return ((RealLiteralLegend) getWidthAnalysis()).getDouble();
+            return ((RealLiteralLegend) getLineWidthLegend()).getDouble();
         }
 
         /**
@@ -73,7 +73,7 @@ public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend impl
          */
         @Override
         public void setLineWidth(double width) {
-            ((RealLiteralLegend) getWidthAnalysis()).setDouble(width);
+            ((RealLiteralLegend) getLineWidthLegend()).setDouble(width);
         }
 
         @Override

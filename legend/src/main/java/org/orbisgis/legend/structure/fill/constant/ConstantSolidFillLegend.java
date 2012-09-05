@@ -53,24 +53,26 @@ public class ConstantSolidFillLegend extends SolidFillLegend implements Constant
 
         @Override
         public Color getColor(){
-            ColorLiteralLegend cll = (ColorLiteralLegend) getColorLegend();
+            ColorLiteralLegend cll = (ColorLiteralLegend) getFillColorLegend();
             return cll.getColor();
         }
 
         @Override
         public void setColor(Color col) {
-                ColorLiteralLegend cll = (ColorLiteralLegend) getColorLegend();
+                ColorLiteralLegend cll = (ColorLiteralLegend) getFillColorLegend();
                 cll.setColor(col);
         }
 
         @Override
         public double getOpacity(){
-            return getOpacityLegend().getDouble();
+            RealLiteralLegend rll = (RealLiteralLegend) getFillOpacityLegend();
+            return rll.getDouble();
         }
 
         @Override
         public void setOpacity(double d) {
-                getOpacityLegend().setDouble(d);
+            RealLiteralLegend rll = (RealLiteralLegend) getFillOpacityLegend();
+                rll.setDouble(d);
         }
 
 }

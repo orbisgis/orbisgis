@@ -30,18 +30,20 @@ package org.orbisgis.legend.analyzer;
 
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.legend.AbstractAnalyzer;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.parameter.ColorParameterAnalyzer;
 import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
 import org.orbisgis.legend.structure.categorize.Categorize2ColorLegend;
 import org.orbisgis.legend.structure.fill.CategorizedSolidFillLegend;
-import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.literal.ColorLiteralLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
-import org.orbisgis.legend.structure.recode.Recode2ColorLegend;
+import org.orbisgis.legend.structure.recode.RecodedColor;
+import org.orbisgis.legend.structure.recode.RecodedReal;
 
 /**
  * Used to make analysis and produce {@code LegendStructure} on instances of {@code Fill}.
@@ -81,8 +83,9 @@ public class FillAnalyzer extends AbstractAnalyzer{
                             return new ConstantSolidFillLegend(sf, (ColorLiteralLegend) colorLegend, rll);
                     } else if(colorLegend instanceof Categorize2ColorLegend){
                             return new CategorizedSolidFillLegend(sf, (Categorize2ColorLegend) colorLegend, rll);
-                    } else if(colorLegend instanceof Recode2ColorLegend){
-                            return new RecodedSolidFillLegend(sf, (Recode2ColorLegend) colorLegend, rll);
+                    } else if(colorLegend instanceof RecodedColor){
+                            return new RecodedSolidFillLegend(sf, 
+                                    (RecodedColor)colorLegend, new RecodedReal((RealLiteral)sf.getOpacity()));
                     }
                 }
                 throw new UnsupportedOperationException("We can't do such an anlysis "

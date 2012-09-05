@@ -48,7 +48,7 @@ import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 import org.orbisgis.legend.structure.parameter.NumericLegend;
-import org.orbisgis.legend.structure.recode.Recode2StringLegend;
+import org.orbisgis.legend.structure.recode.RecodedString;
 import org.orbisgis.legend.structure.stroke.*;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
@@ -201,7 +201,7 @@ public class PenStrokeAnalyzer extends AbstractAnalyzer {
                                 //Too many analysis for us.
                                 ret = new PenStrokeLegend(penStroke, width, fill, dashes);
                         }
-                } else if (dashes instanceof Recode2StringLegend && constantFill){
+                } else if (dashes instanceof RecodedString && constantFill){
                         ret = new RecodedDashesPSLegend(penStroke, width, fill, dashes);
                 } else {
                         //We are dealing with a literal

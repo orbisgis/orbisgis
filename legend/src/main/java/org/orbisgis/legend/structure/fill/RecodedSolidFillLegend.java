@@ -29,8 +29,8 @@
 package org.orbisgis.legend.structure.fill;
 
 import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.legend.structure.literal.RealLiteralLegend;
-import org.orbisgis.legend.structure.recode.Recode2ColorLegend;
+import org.orbisgis.legend.structure.recode.RecodedColor;
+import org.orbisgis.legend.structure.recode.RecodedReal;
 
 /**
  * A {@code Legend} that represents a {@code SolidFill} where the color is defined
@@ -45,7 +45,7 @@ public class RecodedSolidFillLegend extends SolidFillLegend {
          * @param fill
          * @param colorLegend
          */
-        public RecodedSolidFillLegend(SolidFill fill, Recode2ColorLegend colorLegend, RealLiteralLegend opacity) {
+        public RecodedSolidFillLegend(SolidFill fill, RecodedColor colorLegend, RecodedReal opacity) {
                 super(fill, colorLegend, opacity);
         }
 

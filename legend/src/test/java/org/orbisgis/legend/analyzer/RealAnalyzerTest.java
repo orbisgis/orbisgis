@@ -48,7 +48,6 @@ import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
 import org.orbisgis.legend.structure.categorize.Categorize2RealLegend;
 import org.orbisgis.legend.structure.interpolation.InterpolationLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
-import org.orbisgis.legend.structure.recode.Recode2RealLegend;
 import org.orbisgis.legend.structure.recode.RecodedReal;
 
 /**
@@ -114,70 +113,9 @@ public class RealAnalyzerTest extends AnalyzerTest {
                 DensityFill df = (DensityFill) (as.getFill());
                 RealParameter rp = df.getHatchesOrientation();
                 RealParameterAnalyzer rpa = new RealParameterAnalyzer(rp);
-                assertTrue(rpa.getLegend() instanceof Recode2RealLegend);
+                assertTrue(rpa.getLegend() instanceof RecodedReal);
         }
 
-        @Test
-        public void testRealRecodeGetters() throws Exception {
-                Recode2RealLegend r2d2 = getRecode2RealLegend(getRecode2Real());
-                assertTrue(r2d2.getKey(0).equals("0"));
-                assertTrue(r2d2.getKey(1).equals("50.0"));
-                assertTrue(r2d2.getItemValue(0)== 45);
-                assertTrue(r2d2.getItemValue(1) == -45);
-                assertTrue(r2d2.getItemValue("0")== 45);
-                assertTrue(r2d2.getItemValue("50.0") == -45);
-        }
-
-        @Test
-        public void testRealRecodeLFN() throws Exception {
-                Recode2RealLegend r2d2 = getRecode2RealLegend(getRecode2Real());
-                assertTrue(r2d2.getLookupFieldName().equals("OUI_EEE92"));
-                r2d2.setLookupFieldName("youhou");
-                assertTrue(r2d2.getLookupFieldName().equals("youhou"));
-        }
-
-        @Test
-        public void testRealRecodeKeySetters() throws Exception {
-                Recode2Real r2 = getRecode2Real();
-                Recode2RealLegend r2d2 = getRecode2RealLegend(r2);
-                r2d2.setKey(0, "youhou ?");
-                r2d2.setKey(1, ":-)");
-                assertTrue(r2d2.getKey(0).equals("youhou ?"));
-                assertTrue(r2d2.getKey(1).equals(":-)"));
-                assertTrue(r2d2.getItemValue(0)== 45);
-                assertTrue(r2d2.getItemValue(1) == -45);
-                assertTrue(r2d2.getItemValue("youhou ?")== 45);
-                assertTrue(r2d2.getItemValue(":-)") == -45);
-                assertNull(r2d2.getItemValue("0"));
-                assertNull(r2d2.getItemValue("50.0"));
-        }
-
-        @Test
-        public void testRealRecodeAddValue() throws Exception {
-                Recode2Real r2 = getRecode2Real();
-                Recode2RealLegend r2d2 = getRecode2RealLegend(r2);
-                r2d2.addItem("0", 25.0);
-                assertTrue(r2d2.getItemValue(0)== 25.0);
-                assertTrue(r2d2.getItemValue("0")== 25.0);
-                assertTrue(r2.getMapItemValue(0).getValue(null) == 25.0);
-                assertTrue(r2.getMapItemValue("0").getValue(null)== 25.0);
-                r2d2.addItem("50.0", 75.0);
-                assertTrue(r2d2.getItemValue(1) == 75.0);
-                assertTrue(r2d2.getItemValue("50.0") == 75);
-                assertTrue(r2.getMapItemValue(1).getValue(null) == 75.0);
-                assertTrue(r2.getMapItemValue("50.0").getValue(null)== 75.0);
-                r2d2.addItem("60.0", 85.0);
-                assertTrue(r2d2.getKey(0).equals("0"));
-                assertTrue(r2d2.getKey(1).equals("50.0"));
-                assertTrue(r2d2.getItemValue(0)== 25.0);
-                assertTrue(r2d2.getItemValue(1) == 75.0);
-                assertTrue(r2d2.getItemValue(2) == 85.0);
-                assertTrue(r2d2.getNumItems() == 3);
-                assertTrue(r2.getNumMapItem() == 3);
-                assertTrue(r2.getMapItemValue(2).getValue(null) == 85.0);
-                assertTrue(r2.getMapItemValue("60.0").getValue(null)== 85.0);
-
-        }
         @Test
         public void testRecodedRealGetters() throws Exception {
                 RecodedReal r2d2 = new RecodedReal(getRecode2Real());
@@ -276,10 +214,5 @@ public class RealAnalyzerTest extends AnalyzerTest {
                 DensityFill df = (DensityFill) (as.getFill());
                 return (Recode2Real)  df.getHatchesOrientation();
 
-        }
-
-        private Recode2RealLegend getRecode2RealLegend(RealParameter rp) throws Exception {
-                RealParameterAnalyzer rpa = new RealParameterAnalyzer(rp);
-                return (Recode2RealLegend) rpa.getLegend();
         }
 }
