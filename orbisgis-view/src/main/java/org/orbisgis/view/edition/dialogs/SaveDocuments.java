@@ -30,11 +30,13 @@ package org.orbisgis.view.edition.dialogs;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -59,11 +61,16 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class SaveDocuments extends JDialog {
         public enum CHOICE { CLOSE, CANCEL };
+        private final static int BUTTON_VERTICAL_SPACE = 5;
+        private static final Dimension minimumPanelDimension = new Dimension(320,200);
+        private final static int PANEL_EMPTY_BORDER = 8; 
+        private final static int BUTTON_EMPTY_BORDER = 10;
+        
+        // Var
         private CHOICE userCoice = CHOICE.CANCEL;
         private static final long serialVersionUID = 1L;
         private List<EditableElement> documents;
         private static final I18n I18N = I18nFactory.getI18n(SaveDocuments.class);
-        private final static int BUTTON_VERTICAL_SPACE = 5;
         private JLabel informationLabel = new JLabel();
         private DefaultListModel listModel = new DefaultListModel();
         private JList documentList = new JList(listModel);
@@ -143,10 +150,26 @@ public class SaveDocuments extends JDialog {
                 cancel.addActionListener(cancelListener);
                 buttonPanel.add(cancel);  
                 updateDocuments();      
-                // TODO Set the same size on all buttons
-                // TODO Set minimal size for this dialog 
+                setSameButtonWidth(buttonPanel); 
+                setMinimumSize(minimumPanelDimension);
+                panel.setBorder(BorderFactory.createEmptyBorder(PANEL_EMPTY_BORDER,
+                        PANEL_EMPTY_BORDER, PANEL_EMPTY_BORDER, PANEL_EMPTY_BORDER));
+                buttonPanel.setBorder(BorderFactory.createEmptyBorder(0,
+                        BUTTON_EMPTY_BORDER, 0, 0));
                 pack();
         }
+        
+        
+        private void setSameButtonWidth(JPanel buttonContainer) {
+                //Set this size to all buttons
+                for(Component component : buttonContainer.getComponents()) {
+                        if(component instanceof JButton) {
+                               component.setMaximumSize(new Dimension(Short.MAX_VALUE,
+                                  component.getMaximumSize().height));
+                        }
+                } 
+        }
+        
         
         /**
          *  Save the selected documents

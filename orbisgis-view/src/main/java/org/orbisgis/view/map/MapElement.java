@@ -150,7 +150,7 @@ public final class MapElement extends EditableElement {
 
 	@Override
 	public String toString() {
-		return getId();
+		return I18N.tr("MapContext - {0}",mapContextFile.getName());
 	}
 
         /**
@@ -162,7 +162,7 @@ public final class MapElement extends EditableElement {
         public MapEditor getMapEditor(){
                 return editor;
         }
-
+        
         /**
          * Sets the editor linked to this {@code MapElement}. This is needed
          * in order to be able to retrieve all the informations about the map
