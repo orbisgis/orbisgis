@@ -34,18 +34,27 @@ import org.orbisgis.core.renderer.se.parameter.SeParameter
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter
 import org.orbisgis.core.renderer.se.parameter.color.Recode2Color
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral
+import org.orbisgis.core.renderer.se.parameter.string.StringAttribute
 import org.orbisgis.legend.structure.parameter.AbstractAttributedRPLegend
 
 class RecodedColor extends AbstractAttributedRPLegend with RecodedLegend {
   
-  var parameter : ColorParameter = new ColorLiteral
+  private var parameter : ColorParameter = new ColorLiteral
 
+  /**
+   * Tries to build a RecodedColor usign the {@code ColorParameter} given in
+   * argument.
+   * @param param
+   */
   def this(param : ColorParameter) = {
     this
     setParameter(param)
   }
 
+  /**
+   * Gets the underlying parameter.
+   * @return
+   */
   def getParameter : ColorParameter = parameter
 
   /**
@@ -54,13 +63,20 @@ class RecodedColor extends AbstractAttributedRPLegend with RecodedLegend {
    * @throws IllegalArgumentException if s is neither a Recode2String nor a StringLiteral
    */
   def setParameter(s : SeParameter) : Unit = s match {
-    case a : ColorLiteral => parameter = a
+    case a : ColorLiteral =>
+      parameter = a
+      fireTypeChanged()
     case b : Recode2Color=>
       parameter = b
       field = getValueReference.getColumnName
+      fireTypeChanged()
     case _ => throw new IllegalArgumentException("This class must be built from a  string recode or literal.")
   }
 
+  /**
+   * Gets the number of elements registerd in this analysis.
+   * @return
+   */
   def size : Int = {
     parameter match {
       case _ : ColorLiteral => 0
@@ -140,9 +156,9 @@ class RecodedColor extends AbstractAttributedRPLegend with RecodedLegend {
    */
   def addItem(key : String, value : Color) = parameter match {
     case c : ColorLiteral =>
-      val temp : Recode2Color = new Recode2Color(c,new StringLiteral(field))
+      val temp : Recode2Color = new Recode2Color(c,new StringAttribute(field))
       temp.addMapItem(key, new ColorLiteral(value))
-      parameter = temp
+      setParameter(temp)
     case a : Recode2Color => a.addMapItem(key, new ColorLiteral(value))
   }
 
@@ -157,7 +173,7 @@ class RecodedColor extends AbstractAttributedRPLegend with RecodedLegend {
       a.removeMapItem(i)
       if(a.getNumMapItem == 0){
         val cl : ColorLiteral = new ColorLiteral(a.getFallbackValue.getColor(null))
-        parameter = cl
+        setParameter(cl)
       }
   }
 
@@ -172,7 +188,7 @@ class RecodedColor extends AbstractAttributedRPLegend with RecodedLegend {
       a.removeMapItem(key)
       if(a.getNumMapItem == 0){
         val cl : ColorLiteral = new ColorLiteral(a.getFallbackValue.getColor(null))
-        parameter = cl
+        setParameter(cl)
       }
   }
 

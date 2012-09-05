@@ -33,11 +33,19 @@ import org.orbisgis.core.renderer.se.parameter.Recode
 import org.orbisgis.core.renderer.se.parameter.ValueReference
 import org.orbisgis.core.renderer.se.parameter.string.StringAttribute
 import org.orbisgis.legend.structure.parameter.ParameterLegend
+import org.orbisgis.legend.structure.recode.`type`.TypeEvent
+import org.orbisgis.legend.structure.recode.`type`.TypeListener
+import scala.collection.mutable.ArrayBuffer
 
 abstract trait RecodedLegend extends ParameterLegend {
 
   var field : String = ""
+  private val  listeners : ArrayBuffer[TypeListener] = ArrayBuffer.empty[TypeListener]
 
+  /**
+   * Gets the {@code ValueReference} used to retrieve the input values for this
+   * value classification.
+   */
   def getValueReference : ValueReference = getParameter match {
     case c : Recode[_,_] => val l = c.getLookupValue
       l match {
@@ -56,5 +64,10 @@ abstract trait RecodedLegend extends ParameterLegend {
     getParameter match {
       case c : Recode[_,_] => c.setLookupValue(new StringAttribute(s))
     }
+  }
+
+  def fireTypeChanged() : Unit = {
+    val te : TypeEvent = new TypeEvent(this)
+    listeners foreach (_.typeChanged(te))
   }
 }

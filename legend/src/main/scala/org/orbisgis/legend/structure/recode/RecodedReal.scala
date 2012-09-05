@@ -33,7 +33,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameter
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter
 import org.orbisgis.core.renderer.se.parameter.real.Recode2Real
-import org.orbisgis.core.renderer.se.parameter.string.StringLiteral
+import org.orbisgis.core.renderer.se.parameter.string.StringAttribute
 import org.orbisgis.legend.structure.parameter.AbstractAttributedRPLegend
 import org.orbisgis.legend.structure.parameter.NumericLegend
 
@@ -140,7 +140,7 @@ class RecodedReal extends AbstractAttributedRPLegend with RecodedLegend with Num
    */
   def addItem(key : String, value : Double) = parameter match {
     case c : RealLiteral =>
-      val temp : Recode2Real = new Recode2Real(c,new StringLiteral(field))
+      val temp : Recode2Real = new Recode2Real(c,new StringAttribute(field))
       temp.addMapItem(key, new RealLiteral(value))
       parameter = temp
     case a : Recode2Real => a.addMapItem(key, new RealLiteral(value))
