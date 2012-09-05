@@ -350,12 +350,12 @@ public class Core {
         private boolean isShutdownVetoed() {
                 List<EditableElement> modifiedElements = new ArrayList<EditableElement>();
                 Collection<EditableElement> editableElement = editors.getEditableElements();
-                if (!editableElement.isEmpty()) {
-                        for(EditableElement editable : editableElement) {
-                                if(editable.isModified()) {
-                                        modifiedElements.add(editable);
-                                }
+                for(EditableElement editable : editableElement) {
+                        if(editable.isModified()) {
+                                modifiedElements.add(editable);
                         }
+                }
+                if (!modifiedElements.isEmpty()) {
                         SaveDocuments.CHOICE userChoice = SaveDocuments.showModal(mainFrame, modifiedElements);
                         return userChoice==SaveDocuments.CHOICE.CANCEL;
                 } else {
