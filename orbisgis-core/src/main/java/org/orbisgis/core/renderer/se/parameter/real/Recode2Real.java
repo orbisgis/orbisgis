@@ -113,6 +113,11 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
         }
 
         @Override
+        public RealLiteral getFallbackValue(){
+                return (RealLiteral) super.getFallbackValue();
+        }
+
+        @Override
         public String toString() {
                 return "NA";
         }
