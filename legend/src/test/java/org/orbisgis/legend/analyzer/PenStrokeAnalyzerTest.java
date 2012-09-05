@@ -41,6 +41,7 @@ import org.orbisgis.legend.structure.stroke.CategorizedDashesPSLegend;
 import org.orbisgis.legend.structure.stroke.PenStrokeLegend;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.structure.stroke.RecodedDashesPSLegend;
+import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
 /**
  * test that we're able to understand what people are doing with PenStrokes.
  * @author Alexis Guéganno
@@ -81,9 +82,8 @@ public class PenStrokeAnalyzerTest extends AnalyzerTest {
                  LineSymbolizer ls =(LineSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
                  PenStroke ps = (PenStroke) (ls.getStroke());
                  PenStrokeAnalyzer psa = new PenStrokeAnalyzer(ps);
-                 PenStrokeLegend psl = (PenStrokeLegend) (psa.getLegend());
+                 RecodedPenStroke psl = (RecodedPenStroke) (psa.getLegend());
                  assertTrue(psl.getDashLegend() instanceof RecodedString);
-                 assertTrue(psl instanceof RecodedDashesPSLegend);
         }
 
         @Test

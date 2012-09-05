@@ -31,6 +31,7 @@ package org.orbisgis.legend.analyzer;
 import java.util.List;
 import java.util.Set;
 import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -42,12 +43,15 @@ import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
 import org.orbisgis.legend.analyzer.parameter.StringParameterAnalyzer;
 import org.orbisgis.legend.structure.categorize.Categorize2StringLegend;
+import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantFillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 import org.orbisgis.legend.structure.parameter.NumericLegend;
+import org.orbisgis.legend.structure.recode.RecodedReal;
+import org.orbisgis.legend.structure.recode.RecodedColor;
 import org.orbisgis.legend.structure.recode.RecodedString;
 import org.orbisgis.legend.structure.stroke.*;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
@@ -113,7 +117,7 @@ public class PenStrokeAnalyzer extends AbstractAnalyzer {
                                         //analysis : we deal with only one feature,
                                         //one type of analysis, and SeParameter instances
                                         //are validated by analyzers during instanciateLegend().
-                                        
+                                        return searchRecode();
                                 }
                         }
                 }
@@ -165,21 +169,59 @@ public class PenStrokeAnalyzer extends AbstractAnalyzer {
          * We have inner legends, let's recognize them before going further.
          */
         private void instanciateLegends(){
-                        RealParameter width= penStroke.getWidth();
-                        RealParameterAnalyzer rpaWidth = new RealParameterAnalyzer(width);
-                        legdWidth = (NumericLegend) rpaWidth.getLegend();
-                        StringParameter dashes = penStroke.getDashArray();
-                        legdDash = null;
-                        Fill fill = penStroke.getFill();
-                        legdFill = null;
-                        if(fill != null){
-                                FillAnalyzer fa = new FillAnalyzer(fill);
-                                legdFill = fa.getLegend();
+                RealParameter width= penStroke.getWidth();
+                RealParameterAnalyzer rpaWidth = new RealParameterAnalyzer(width);
+                legdWidth = (NumericLegend) rpaWidth.getLegend();
+                StringParameter dashes = penStroke.getDashArray();
+                legdDash = null;
+                Fill fill = penStroke.getFill();
+                legdFill = null;
+                if(fill != null){
+                        FillAnalyzer fa = new FillAnalyzer(fill);
+                        legdFill = fa.getLegend();
+                }
+                if(dashes != null){
+                        StringParameterAnalyzer spaDash = new StringParameterAnalyzer(dashes);
+                        legdDash = spaDash.getLegend();
+                }
+        }
+
+        /**
+         * If we're here, we've found there are only recode on the same attribute
+         * in the symbolizer.
+         * @return
+         */
+        private LegendStructure searchRecode() {
+                boolean rf = legdFill == null
+                        || legdFill instanceof ConstantSolidFillLegend
+                        || legdFill instanceof RecodedSolidFillLegend;
+                boolean rw = legdWidth == null
+                        || legdWidth instanceof RealLiteralLegend
+                        || legdWidth instanceof RecodedReal;
+                boolean rd = legdDash == null
+                        || legdDash instanceof StringLiteralLegend
+                        || legdDash instanceof  RecodedString;
+                if(rd && rw && rf){
+                        if(!(legdFill instanceof RecodedSolidFillLegend)){
+                                SolidFill sf = (SolidFill)penStroke.getFill();
+                                legdFill = new RecodedSolidFillLegend(
+                                        sf,
+                                        new RecodedColor(sf.getColor()),
+                                        new RecodedReal(sf.getOpacity()));
                         }
-                        if(dashes != null){
-                                StringParameterAnalyzer spaDash = new StringParameterAnalyzer(dashes);
-                                legdDash = spaDash.getLegend();
-                        }
+                        RecodedReal w = legdWidth instanceof RealLiteralLegend ?
+                                new RecodedReal(((RealLiteralLegend)legdWidth).getLiteral()) :
+                                (RecodedReal) legdWidth;
+                        RecodedString d = legdDash instanceof StringLiteralLegend ?
+                                new RecodedString(((StringLiteralLegend)legdDash).getLiteral()) :
+                                (RecodedString) legdDash;
+                        return new RecodedPenStroke(penStroke,
+                                (RecodedSolidFillLegend) legdFill,
+                                w,
+                                d);
+                }else {
+                        return new PenStrokeLegend(penStroke, legdWidth, legdFill, legdDash);
+                }
         }
 
         /**

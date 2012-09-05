@@ -44,12 +44,22 @@ import org.orbisgis.legend.structure.recode.RecodedReal;
  * be simple analysis.
  * @author Alexis Guéganno
  */
-public class RecodedPenStroke {
+public class RecodedPenStroke implements LegendStructure {
 
         private PenStroke stroke;
         private FillLegend fillLegend;
         private RecodedReal widthLegend;
         private LegendStructure dashLegend;
+
+        public RecodedPenStroke(PenStroke stroke,
+                        RecodedSolidFillLegend fillLegend,
+                        RecodedReal widthLegend,
+                        LegendStructure dashLegend) {
+                this.stroke = stroke;
+                this.fillLegend = fillLegend;
+                this.widthLegend = widthLegend;
+                this.dashLegend = dashLegend;
+        }
 
         public final FillLegend getFillLegend() {
                 return fillLegend;
@@ -82,9 +92,8 @@ public class RecodedPenStroke {
                         this.widthLegend = (RecodedReal) width;
                         stroke.setWidth((RealParameter)width.getParameter());
                 } else {
-                        throw new IllegalArgumentException("Can't set the fill legend to something"
-                                + "that is neither a ConstantSolidFillLegend nor"
-                                + "a RecodedSolidFillLegend.");
+                        throw new IllegalArgumentException("Can't set the width legend to something"
+                                + "that is not embeddable in a Recoded2Real");
                 }
         }
 

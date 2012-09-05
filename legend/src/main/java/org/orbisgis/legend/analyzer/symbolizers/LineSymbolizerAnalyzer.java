@@ -34,10 +34,12 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.AbstractAnalyzer;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
-import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
+import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
+import org.orbisgis.legend.thematic.recode.RecodedLine;
 
 /**
  * This {@code Analyzer} realization is dedicated to the study of {@code
@@ -66,6 +68,8 @@ public class LineSymbolizerAnalyzer extends AbstractAnalyzer {
                 return new UniqueSymbolLine(symbolizer, (ConstantPenStrokeLegend) leg);
             } else if(leg instanceof ProportionalStrokeLegend){
                 return new ProportionalLine(symbolizer, (ProportionalStrokeLegend) leg);
+            } else if(leg instanceof RecodedPenStroke) {
+                return new RecodedLine(symbolizer, (RecodedPenStroke) leg);
             } else {
                 throw new UnsupportedOperationException("We are not able to "
                         + "find any known pattern in this symbolizer");
