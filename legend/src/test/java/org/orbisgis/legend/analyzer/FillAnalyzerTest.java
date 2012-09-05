@@ -28,22 +28,22 @@
  */
 package org.orbisgis.legend.analyzer;
 
-import org.orbisgis.core.renderer.se.LineSymbolizer;
-import org.orbisgis.legend.structure.fill.CategorizedSolidFillLegend;
-import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
-import org.orbisgis.legend.AnalyzerTest;
-import org.orbisgis.core.renderer.se.fill.Fill;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
-import javax.xml.bind.Unmarshaller;
-import net.opengis.se._2_0.core.StyleType;
 import java.io.File;
 import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Unmarshaller;
+import net.opengis.se._2_0.core.StyleType;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
+import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.legend.AnalyzerTest;
+import org.orbisgis.legend.structure.fill.CategorizedSolidFillLegend;
+import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
-import static org.junit.Assert.*;
 
 /**
  *
