@@ -530,7 +530,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 
                 //Add the server panel
                 addFileItem = new JMenuItem(
-                        I18N.tr("Server"),
+                        I18N.tr("WMS server"),
                         OrbisGISIcon.getIcon("server_connect"));
                 addFileItem.addActionListener(EventHandler.create(ActionListener.class,
                         this,
