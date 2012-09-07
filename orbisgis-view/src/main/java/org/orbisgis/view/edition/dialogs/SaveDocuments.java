@@ -128,6 +128,8 @@ public class SaveDocuments extends JDialog {
                 // This button save the selected documents
                 JButton saveSelectedDocuments = new JButton(I18N.tr("&Save"));
                 MenuCommonFunctions.setMnemonic(saveSelectedDocuments);
+                saveSelectedDocuments.setToolTipText(I18N.tr("Save the selected documents,"
+                        + " and close this dialog if there is no more modifed documents"));
                 saveSelectedDocuments.addActionListener(saveListener);                
                 buttonPanel.add(saveSelectedDocuments);
                 buttonPanel.add(Box.createRigidArea(new Dimension(0, BUTTON_VERTICAL_SPACE)));
@@ -135,16 +137,19 @@ public class SaveDocuments extends JDialog {
                 JButton saveAllDocuments = new JButton(I18N.tr("Save &All"));
                 MenuCommonFunctions.setMnemonic(saveAllDocuments);
                 saveAllDocuments.addActionListener(saveAllListener);
+                saveAllDocuments.setToolTipText(I18N.tr("Save all documents and close this dialog"));
                 buttonPanel.add(saveAllDocuments);
                 buttonPanel.add(Box.createRigidArea(new Dimension(0, BUTTON_VERTICAL_SPACE)));
                 // Save All button
                 JButton saveNoneDocuments = new JButton(I18N.tr("Save &None"));
                 MenuCommonFunctions.setMnemonic(saveNoneDocuments);
                 saveNoneDocuments.addActionListener(saveNoneListener);
+                saveNoneDocuments.setToolTipText(I18N.tr("Discard all changes and close this dialog"));                
                 buttonPanel.add(saveNoneDocuments);
                 buttonPanel.add(Box.createVerticalGlue());
                 // Cancel button
                 JButton cancel = new JButton(I18N.tr("&Cancel"));
+                cancel.setToolTipText(I18N.tr("Do nothing and lose nothing"));
                 MenuCommonFunctions.setMnemonic(cancel);
                 informationLabel.setForeground(Color.red.darker());
                 cancel.addActionListener(cancelListener);

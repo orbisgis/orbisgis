@@ -124,11 +124,6 @@ public class TableEditorFactory implements MultipleEditorFactory {
         }
 
         @Override
-        public DockingPanelLayout getLayout(EditorDockable panel) {
-                return new TablePanelLayout(((TableEditor)panel).getTableEditableElement());
-        }
-
-        @Override
         public String getId() {
                 return FACTORY_ID;
         }

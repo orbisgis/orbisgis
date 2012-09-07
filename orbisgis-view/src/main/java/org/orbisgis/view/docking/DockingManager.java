@@ -44,7 +44,12 @@ import bibliothek.gui.dock.layout.DockableProperty;
 import bibliothek.gui.dock.util.PropertyKey;
 import bibliothek.util.PathCombiner;
 import bibliothek.util.xml.XElement;
+import bibliothek.util.xml.XIO;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,8 +58,10 @@ import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import org.apache.log4j.Logger;
+import org.orbisgis.view.docking.internals.ApplicationRessourceDecorator;
 import org.orbisgis.view.docking.internals.CustomMultipleCDockable;
 import org.orbisgis.view.docking.internals.CustomPanelHolder;
+import org.orbisgis.view.docking.internals.CustomSingleCDockable;
 import org.orbisgis.view.docking.internals.DockingArea;
 import org.orbisgis.view.docking.internals.InternalCommonFactory;
 import org.orbisgis.view.docking.internals.OrbisGISView;
@@ -74,6 +81,7 @@ public final class DockingManager {
         private static final I18n I18N = I18nFactory.getI18n(DockingManager.class);
         private static final Logger LOGGER = Logger.getLogger(DockingManager.class);
         File dockingState=null;
+        private static final boolean DOCKING_STATE_XML = true;
         private CControl commonControl; /*!< link to the docking-frames */
         //Docking Area (DockingFrames feature named WorkingArea)
         private Map<String,DockingArea> dockingAreas = new HashMap<String,DockingArea>();
@@ -97,22 +105,60 @@ public final class DockingManager {
             RootMenuPiece laf = new RootMenuPiece(I18N.tr("&Windows"), false,dockableMenuTracker);
             return laf.getMenu();
         }
+        
+        /**
+         * Serialise the entire panels workspace
+         */
+        private void readXML() {
+                XElement backup = new XElement("layout");
+                commonControl.writeXML(backup);
+                try {
+                        // Read the entire XML file in memory
+                        BufferedInputStream in = new BufferedInputStream( new FileInputStream( dockingState ));
+                        XElement element = XIO.readUTF( in );
+                        in.close();
+                        // Use the docking frame serialisation
+                        commonControl.readXML(element);
+                        // Use OrbisGIS serialisation
+                        for(CustomPanelHolder panel : getPanelDecorator()) {
+                                // Only SingleCDockable is not managed for custom layout information
+                                if(panel instanceof CustomSingleCDockable) {
+                                        CustomSingleCDockable scdockable = (CustomSingleCDockable)panel;
+                                        DockingPanelLayout layout = scdockable.getDockingPanel().getDockingParameters().getLayout();
+                                        if(layout != null) {
+                                                commonControl.getResources().put(scdockable.getUniqueId(), new ApplicationRessourceDecorator(layout));
+                                        }
+                                }                                
+                        }
+                } catch (IOException ex) {
+                        LOGGER.error(I18N.tr("Unable to load the docking layout."), ex);
+                        commonControl.readXML(backup);
+                } catch (IllegalArgumentException ex) {
+                        LOGGER.error(I18N.tr("Unable to load the docking layout."), ex);
+                        commonControl.readXML(backup);
+                }
+        }
+
+        private void writeXML() throws IOException {
+                // Make an empty XML tree
+                XElement root = new XElement( "root" );
+                
+                // Use the docking frame serialisation
+                commonControl.writeXML(root);
+                // Save the tree in the file
+                BufferedOutputStream out = new BufferedOutputStream( new FileOutputStream( dockingState ));
+                XIO.writeUTF( root, out );
+                out.close();
+                
+        }
         /**
          * Load the docking layout 
          */
         private void loadLayout() {
             if(dockingState!=null) {
                 if(dockingState.exists()) {
-                    XElement backup = new XElement("layout");
-                    commonControl.writeXML(backup);
-                    try {
-                        commonControl.readXML(dockingState);
-                    } catch (IOException ex) {
-                        LOGGER.error(I18N.tr("Unable to load the docking layout."), ex);
-                        commonControl.readXML(backup);
-                    } catch (IllegalArgumentException ex) {
-                        LOGGER.error(I18N.tr("Unable to load the docking layout."), ex);
-                        commonControl.readXML(backup);
+                    if(DOCKING_STATE_XML) {
+                            readXML();
                     }
                 }
             }            
@@ -123,7 +169,9 @@ public final class DockingManager {
         public void saveLayout() {
             if(dockingState!=null) {
                 try {
-                    commonControl.writeXML(dockingState);
+                    if(DOCKING_STATE_XML) {
+                            writeXML();
+                    }
                 } catch (IOException ex) {
                     LOGGER.error(I18N.tr("Unable to save the docking layout."), ex);
                 }    
@@ -176,16 +224,26 @@ public final class DockingManager {
                 }
                 return null;
         }
-        
+        /**
+         * Get the intermediate panels
+         * @return 
+         */
+        private List<CustomPanelHolder> getPanelDecorator() {
+                List<CustomPanelHolder> activePanel = new ArrayList<CustomPanelHolder>();
+                int count = commonControl.getCDockableCount();
+                for(int i=0; i<count; i++) {
+                        activePanel.add(((CustomPanelHolder)commonControl.getCDockable(i)));
+                }
+                return activePanel;                
+        }
         /**
          * Get the current opened panels
          * @return 
          */
         public List<DockingPanel> getPanels() {
                 List<DockingPanel> activePanel = new ArrayList<DockingPanel>();
-                int count = commonControl.getCDockableCount();
-                for(int i=0; i<count; i++) {
-                        activePanel.add(((CustomPanelHolder)commonControl.getCDockable(i)).getDockingPanel());
+                for(CustomPanelHolder holder : getPanelDecorator()) {
+                        activePanel.add(holder.getDockingPanel());
                 }
                 return activePanel;
         }

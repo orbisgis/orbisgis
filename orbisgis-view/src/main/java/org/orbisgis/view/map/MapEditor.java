@@ -43,6 +43,10 @@ import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.net.URI;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
@@ -64,8 +68,11 @@ import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
+import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.utils.FileUtils;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.button.DropDownButton;
@@ -74,8 +81,10 @@ import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.map.jobs.ReadMapContextJob;
 import org.orbisgis.view.map.jobs.ZoomToSelection;
 import org.orbisgis.view.map.mapsManager.MapsManager;
+import org.orbisgis.view.map.mapsManager.TreeNodeMapElement;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.tools.CompassTool;
@@ -85,6 +94,7 @@ import org.orbisgis.view.map.tools.PanTool;
 import org.orbisgis.view.map.tools.SelectionTool;
 import org.orbisgis.view.map.tools.ZoomInTool;
 import org.orbisgis.view.map.tools.ZoomOutTool;
+import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -125,6 +135,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         dockingPanelParameters.setMinimizable(false);
         dockingPanelParameters.setExternalizable(false);
         dockingPanelParameters.setCloseable(false);
+        dockingPanelParameters.setLayout(new MapEditorPersistance());
         layeredPane.add(mapControl,1);
         layeredPane.add(mapsManager,0);
         mapsManager.setVisible(false);
@@ -158,6 +169,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 super.addNotify();
                 if (!initialised.getAndSet(true)) {
                         addComponentListener(sizeListener);
+                        // Read the default map context file
+                        initMapContext();
                         //Register listener
                         dragDropHandler.getTransferEditableEvent().addListener(this, EventHandler.create(MapTransferHandler.EditableTransferListener.class, this, "onDropEditable", "editableList"));
                         mapControl.addMouseMotionListener(EventHandler.create(MouseMotionListener.class, this, "onMouseMove", "point", "mouseMoved"));
@@ -170,6 +183,50 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                                 EventHandler.create(TreeExpansionListener.class,this,"updateMapControlSize"));
                 }
         }
+
+        private void initMapContext() {
+                BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
+                ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
+                
+                File serialisedMapContextPath = new File(viewWorkspace.getMapContextPath() + File.separator, getMapEditorPersistance().getDefaultMapContext());
+                if(!serialisedMapContextPath.exists()) {
+                        createDefaultMapContext();
+                } else {
+                        TreeNodeMapElement mapFactory = mapsManager.getFactoryManager().create(serialisedMapContextPath);
+                        MapElement mapElement = mapFactory.getMapElement(new NullProgressMonitor());
+                        backgroundManager.backgroundOperation(new ReadMapContextJob(mapElement));
+                }
+        }
+
+       /**
+        * Create the default map context, create it if the map folder is empty
+        */
+        private static void createDefaultMapContext() {
+                BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
+                ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
+
+                //Create an empty map context
+                MapContext defaultMapContext = new OwsMapContext();
+
+                //Load the map context
+                File mapContextFolder = new File(viewWorkspace.getMapContextPath());
+                if (!mapContextFolder.exists()) {
+                        mapContextFolder.mkdir();
+                }
+                File mapContextFile = new File(mapContextFolder, viewWorkspace.getMapContextDefaultFileName());
+                if (mapContextFile.exists()) {
+                        try {
+                                defaultMapContext.read(new FileInputStream(mapContextFile));
+                        } catch (FileNotFoundException ex) {
+                                GUILOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
+                        } catch (IllegalArgumentException ex) {
+                                GUILOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
+                        }
+                }
+                MapElement editableMap = new MapElement(defaultMapContext, mapContextFile);
+                backgroundManager.backgroundOperation(new ReadMapContextJob(editableMap));
+        }
+        
         /**
          * Compute the appropriate components bounds for MapControl
          * and MapsManager and apply theses bounds
@@ -198,7 +255,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
      * Load a new map context
      * @param element 
      */
-    public final void loadMap(MapElement element) {
+    private void loadMap(MapElement element) {
         try {         
             mapEditable = element;
             mapContext = (MapContext) element.getObject();
@@ -213,6 +270,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                     EventHandler.create(ActionListener.class,this,"onReadCursorMapCoordinate"));
             CursorCoordinateLookupTimer.setRepeats(false);
             CursorCoordinateLookupTimer.start();
+            // Update the default map context path with the relative path
+            ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
+            URI rootDir =(new File(viewWorkspace.getMapContextPath()+File.separator)).toURI();
+            String relative = rootDir.relativize(element.getMapContextFile().toURI()).getPath();
+            getMapEditorPersistance().setDefaultMapContext(relative);
             repaint();
         } catch (IllegalStateException ex) {
             GUILOGGER.error(ex);
@@ -220,7 +282,9 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             GUILOGGER.error(ex);
         }        
     }
-    
+    private MapEditorPersistance getMapEditorPersistance() {
+            return ((MapEditorPersistance)dockingPanelParameters.getLayout());
+    }
     /**
      * MouseMove event on the MapControl
      * @param mousePoition x,y position of the event relative to the MapControl component.

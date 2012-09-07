@@ -72,6 +72,6 @@ public class InternalCommonFactory implements MultipleCDockableFactory<CustomMul
         /* Called when storing the current layout */
         @Override
         public DockingPanelLayout write( CustomMultipleCDockable dockable ){
-                return factory.getLayout(dockable.getDockingPanel());
+                return dockable.getDockingPanel().getDockingParameters().getLayout();
         }
 }

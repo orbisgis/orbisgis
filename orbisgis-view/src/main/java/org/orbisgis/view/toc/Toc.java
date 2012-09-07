@@ -888,7 +888,7 @@ public class Toc extends JPanel implements EditorDockable {
                 if (editableElement instanceof MapElement) {
                         MapElement importedMap = (MapElement) editableElement;
                         setEditableMap(importedMap);
-                } else if (editableElement instanceof TableEditableElement) {
+                } else if (mapContext!=null && editableElement instanceof TableEditableElement) {
                         LOGGER.debug("Toc receive TableEditableElement");
                         TableEditableElement tableElement = (TableEditableElement) editableElement;
                         if (!linkedEditableElements.containsKey(

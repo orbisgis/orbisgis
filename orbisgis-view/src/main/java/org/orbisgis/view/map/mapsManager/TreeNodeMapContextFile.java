@@ -48,13 +48,13 @@ import org.orbisgis.view.map.MapElement;
  */
 public final class TreeNodeMapContextFile implements TreeNodeMapElement, MutableTreeNode, TreeNodeCustomIcon  {
 
-        String fileName;
+        File filePath; // Update if parent change
         String label;
         MutableTreeNode parent;
 
         public TreeNodeMapContextFile(File mapContextFilePath) {
                 // For fast loading, take the filename as the ows title
-                fileName = FilenameUtils.getName(mapContextFilePath.getName());
+                filePath = mapContextFilePath;
                 setLabel(FilenameUtils.getBaseName(mapContextFilePath.getName()));
         }
 
@@ -65,9 +65,9 @@ public final class TreeNodeMapContextFile implements TreeNodeMapElement, Mutable
         private File getFilePath() {
                 if(parent instanceof TreeNodeFolder) {
                         TreeNodeFolder parentFolder = (TreeNodeFolder)parent;
-                        return new File(parentFolder.getFolderPath(),fileName);
+                        return new File(parentFolder.getFolderPath(),FilenameUtils.getName(filePath.getName()));
                 } else {
-                        return new File(fileName);
+                        return filePath;
                 }
         }
 

@@ -275,33 +275,6 @@ public class Core {
                 mainFrame.setVisible( true );
         }
     }
-    /**
-     * Read the default map context, create it if the map folder is empty
-     */
-        private void readDefaultMapContext() {
-
-                //Create an empty map context
-                MapContext mapContext = new OwsMapContext();
-
-                //Load the map context
-                File mapContextFolder = new File(viewWorkspace.getMapContextPath());
-                if (!mapContextFolder.exists()) {
-                        mapContextFolder.mkdir();
-                }
-                File mapContextFile = new File(mapContextFolder, viewWorkspace.getMapContextDefaultFileName());
-                if (mapContextFile.exists()) {
-                        try {
-                                mapContext.read(new FileInputStream(mapContextFile));
-                        } catch (FileNotFoundException ex) {
-                                LOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
-                        } catch (IllegalArgumentException ex) {
-                                LOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
-                        }
-                }
-                MapElement editableMap = new MapElement(mapContext, mapContextFile);
-                backgroundManager.backgroundOperation(new ReadMapContextJob(editableMap));
-
-        }
 
     /**
      * Return the docking manager. This function is used by Unit Tests.
@@ -364,10 +337,11 @@ public class Core {
         }
 
         /**
-         * Stops this application, closes the {@link MainFrame} and saves
-    * all properties if the application is not in a {@link #isSecure() secure environment}.
-    * This method is called through the MainFrame.MAIN_FRAME_CLOSING event listener.
-    */
+         * Stops this application, closes the {@link MainFrame} and saves all
+         * properties if the application is not in a {@link #isSecure() secure environment}.
+         * This method is called through the MainFrame.MAIN_FRAME_CLOSING event
+         * listener.
+         */
         public void shutdown() {
                 if (!isShutdownVetoed()) {
                         try {

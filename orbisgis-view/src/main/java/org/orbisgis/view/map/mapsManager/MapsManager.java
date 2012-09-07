@@ -44,12 +44,10 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTree;
-import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
-import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.view.background.BackgroundManager;
@@ -66,7 +64,6 @@ import org.xnap.commons.i18n.I18nFactory;
 public class MapsManager extends JPanel {
         // Minimal tree size is incremented by this emptySpace
         private static final long serialVersionUID = 1L;
-        private static final Logger LOGGER = Logger.getLogger(MapsManager.class);
         private static final I18n I18N = I18nFactory.getI18n(MapsManager.class);
         private JTree tree;
         private DefaultTreeModel treeModel;
@@ -76,7 +73,9 @@ public class MapsManager extends JPanel {
         private TreeNodeMapFactoryManager factoryManager = new TreeNodeMapFactoryManager();
         private MouseListener treeMouse = EventHandler.create(MouseListener.class,this,"onMouseEvent","");
         private AtomicBoolean initialized = new AtomicBoolean(false);
-        
+        /**
+         * Default constructor
+         */
         public MapsManager() {
                 super(new BorderLayout());
                 initInternalFactories();
@@ -97,6 +96,15 @@ public class MapsManager extends JPanel {
                 add(scrollPane,BorderLayout.EAST);
                 setBorder(BorderFactory.createEtchedBorder());
         }
+        /**
+         * Used by the UI to convert a File into a MapElement
+         * @return The Map file factory manager
+         */
+        public TreeNodeMapFactoryManager getFactoryManager() {
+                return factoryManager;
+        }
+        
+        
          private boolean contains(TreePath[] selectionPaths, TreePath path) {
                 for (TreePath treePath : selectionPaths) {
                         boolean equals = true;
@@ -158,13 +166,16 @@ public class MapsManager extends JPanel {
         private JPopupMenu makePopupMenu() {
                 JPopupMenu menu = new JPopupMenu();
                 boolean hasMapSelected = false;
-                for(TreePath treePath : tree.getSelectionPaths()) {
-                        Object component = treePath.getLastPathComponent();
-                        if(component instanceof PopupTreeNode) {
-                                PopupTreeNode treeNode = (PopupTreeNode) component;
-                                treeNode.feedPopupMenu(menu);
-                        } if(component instanceof TreeNodeMapElement) {
-                                hasMapSelected = true;
+                TreePath[] paths = tree.getSelectionPaths();
+                if(paths!=null) {
+                        for(TreePath treePath : paths) {
+                                Object component = treePath.getLastPathComponent();
+                                if(component instanceof PopupTreeNode) {
+                                        PopupTreeNode treeNode = (PopupTreeNode) component;
+                                        treeNode.feedPopupMenu(menu);
+                                } if(component instanceof TreeNodeMapElement) {
+                                        hasMapSelected = true;
+                                }
                         }
                 }
                 if(hasMapSelected) {
