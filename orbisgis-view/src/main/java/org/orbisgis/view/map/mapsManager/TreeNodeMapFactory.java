@@ -29,11 +29,24 @@
 package org.orbisgis.view.map.mapsManager;
 
 import java.io.File;
+import javax.swing.JPopupMenu;
+import javax.swing.tree.MutableTreeNode;
 
 /**
  *
  * @author Nicolas Fortin
  */
 public interface TreeNodeMapFactory {
+                /**
+                 * Construct a TreeNodeMapElement instance 
+                 * @param filePath
+                 * @return Null or an instance of TreeNodeMapElement
+                 */
                 TreeNodeMapElement create(File filePath);
+                /**
+                 * Add new menu items to nodes
+                 * @param node
+                 * @param menu 
+                 */
+                void feedTreeNodePopupMenu(MutableTreeNode node, JPopupMenu menu);
 }

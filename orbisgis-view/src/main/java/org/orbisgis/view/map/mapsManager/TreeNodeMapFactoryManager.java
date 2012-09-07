@@ -29,6 +29,7 @@
 package org.orbisgis.view.map.mapsManager;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
@@ -43,6 +44,14 @@ public class TreeNodeMapFactoryManager {
         public void addFactory(String extension, TreeNodeMapFactory factory) {
                 factories.put(extension.toLowerCase(), factory);
         }
+       /**
+        * @return All registered TreeNodeMapFactory
+        */
+        public Collection<TreeNodeMapFactory> getFactories() {
+                return factories.values();
+        }
+        
+        
         
         public TreeNodeMapElement create(File filePath) {
                 TreeNodeMapFactory factory = factories.get(FilenameUtils.getExtension(filePath.getName()).toLowerCase());

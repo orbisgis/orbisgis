@@ -31,23 +31,29 @@ package org.orbisgis.view.map.mapsManager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.util.Enumeration;
 import javax.swing.ImageIcon;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  *
  * @author Nicolas Fortin
  */
 public final class TreeNodeMapContextFile implements TreeNodeMapElement, MutableTreeNode, TreeNodeCustomIcon  {
-
+        private static final Logger LOGGER = Logger.getLogger(TreeNodeMapContextFile.class);
+        private static final I18n I18N = I18nFactory.getI18n(TreeNodeMapContextFile.class);
+        
         File filePath; // Update if parent change
         String label;
         MutableTreeNode parent;
@@ -56,6 +62,24 @@ public final class TreeNodeMapContextFile implements TreeNodeMapElement, Mutable
                 // For fast loading, take the filename as the ows title
                 filePath = mapContextFilePath;
                 setLabel(FilenameUtils.getBaseName(mapContextFilePath.getName()));
+        }
+        
+        /**
+         * 
+         * @param fileName
+         * @return
+         */
+        public static boolean createEmptyMapContext(File fileName) {
+                
+                //Create an empty map context
+                OwsMapContext emptyMapContext = new OwsMapContext();
+                try {
+                        emptyMapContext.write(new FileOutputStream(fileName));
+                } catch (FileNotFoundException ex) {
+                        LOGGER.error(I18N.tr("Map creation failed"),ex);
+                        return false;
+                }
+                return true;
         }
 
         public void setLabel(String label) {

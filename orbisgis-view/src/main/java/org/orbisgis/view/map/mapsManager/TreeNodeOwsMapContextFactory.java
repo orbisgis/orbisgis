@@ -28,17 +28,50 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
 import java.io.File;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.tree.MutableTreeNode;
+import org.orbisgis.core.Services;
+import org.orbisgis.view.workspace.ViewWorkspace;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * OWS Context Map (extension OWS).
  * @author Nicolas Fortin
  */
 public class TreeNodeOwsMapContextFactory implements TreeNodeMapFactory {
-
+        private static final I18n I18N = I18nFactory.getI18n(TreeNodeOwsMapContextFactory.class);
+        
         @Override
         public TreeNodeMapElement create(File filePath) {
                 return new TreeNodeMapContextFile(filePath);
         }
-        
+
+        /**
+         * Create an empty OWS map at the specified path
+         * @param evt 
+         */
+        public void onCreateEmptyMap(ActionEvent evt) {
+                String path = evt.getActionCommand();
+                TreeNodeMapContextFile.createEmptyMapContext(new File(path));
+        }
+
+        @Override
+        public void feedTreeNodePopupMenu(MutableTreeNode node, JPopupMenu menu) {
+                if(node instanceof TreeNodeFolder) {
+                        ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);                        
+                        File folderPath = ((TreeNodeFolder)node).getFolderPath();
+                        File mapContextFile = new File(folderPath, viewWorkspace.getMapContextDefaultFileName());
+                        JMenuItem createEmptyMap = new JMenuItem(I18N.tr("New empty map"));
+                        createEmptyMap.setToolTipText(I18N.tr("Create a new OWS Map in this folder"));
+                        createEmptyMap.addActionListener(EventHandler.create(ActionListener.class,this,"onCreateEmptyMap",""));
+                        createEmptyMap.setActionCommand(mapContextFile.getAbsolutePath());
+                        menu.add(createEmptyMap);
+                }
+        }
 }

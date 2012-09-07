@@ -39,9 +39,7 @@ import org.orbisgis.view.docking.DockingPanelLayout;
 
 /**
  * The editor Manager is responsible of all EditorFactories.
- * It can 
- *  -for an editableElement, find and open the appropriate editor(s) through declared EditorFactories
- *  -save the state of all EditableElement opened;
+ * This service is used to register editors and open editable elements.
  */
 
 

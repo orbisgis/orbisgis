@@ -170,6 +170,14 @@ public class MapsManager extends JPanel {
                 if(paths!=null) {
                         for(TreePath treePath : paths) {
                                 Object component = treePath.getLastPathComponent();
+                                // All nodes
+                                if(component instanceof MutableTreeNode) {
+                                        MutableTreeNode node = (MutableTreeNode)component;
+                                        for(TreeNodeMapFactory fact : factoryManager.getFactories()) {
+                                                fact.feedTreeNodePopupMenu(node, menu);
+                                        }
+                                }
+                                // Specific nodes
                                 if(component instanceof PopupTreeNode) {
                                         PopupTreeNode treeNode = (PopupTreeNode) component;
                                         treeNode.feedPopupMenu(menu);

@@ -178,7 +178,7 @@ public final class TreeNodeFolder implements MutableTreeNode, PopupTreeNode {
 
         @Override
         public void feedPopupMenu(JPopupMenu menu) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                
         }
         
 }
