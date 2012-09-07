@@ -60,10 +60,13 @@ class RecodedString extends AbstractAttributedRPLegend with RecodedLegend {
    * @throws IllegalArgumentException if s is neither a Recode2String nor a StringLiteral
    */
   def setParameter(s : SeParameter) : Unit = s match {
-    case a : StringLiteral => parameter = a
+    case a : StringLiteral => 
+      parameter = a
+      fireTypeChanged()
     case b : Recode2String => 
       parameter = b
       field = getValueReference.getColumnName
+      fireTypeChanged()
     case _ => throw new IllegalArgumentException("This class must be built from a  string recode or literal.")
   }
 
@@ -140,7 +143,7 @@ class RecodedString extends AbstractAttributedRPLegend with RecodedLegend {
     case c : StringLiteral =>
       val temp = new Recode2String(c,new StringAttribute(field))
       temp.addMapItem(key, new StringLiteral(value))
-      parameter = temp
+      setParameter(temp)
     case a : Recode2String => a.addMapItem(key, new StringLiteral(value))
   }
 
@@ -154,7 +157,7 @@ class RecodedString extends AbstractAttributedRPLegend with RecodedLegend {
     case a : Recode2String =>
       a.removeMapItem(i)
       if(a.getNumMapItem == 0){
-        parameter = new StringLiteral(a.getFallbackValue.getValue(null))
+        setParameter(new StringLiteral(a.getFallbackValue.getValue(null)))
       }
   }
 
@@ -168,7 +171,7 @@ class RecodedString extends AbstractAttributedRPLegend with RecodedLegend {
     case a : Recode2String =>
       a.removeMapItem(key)
       if(a.getNumMapItem == 0){
-        parameter = new StringLiteral(a.getFallbackValue.getValue(null))
+        setParameter(new StringLiteral(a.getFallbackValue.getValue(null)))
       }
   }
 }

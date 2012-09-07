@@ -54,10 +54,13 @@ class RecodedReal extends AbstractAttributedRPLegend with RecodedLegend with Num
    * @throws IllegalArgumentException if s is neither a Recode2String nor a StringLiteral
    */
   def setParameter(s : SeParameter) : Unit = s match {
-    case a : RealLiteral => parameter = a
+    case a : RealLiteral =>
+      parameter = a
+      fireTypeChanged()
     case b : Recode2Real=>
       parameter = b
       field = getValueReference.getColumnName
+      fireTypeChanged()
     case _ => throw new IllegalArgumentException("This class must be built from a  string recode or literal.")
   }
 
@@ -142,7 +145,7 @@ class RecodedReal extends AbstractAttributedRPLegend with RecodedLegend with Num
     case c : RealLiteral =>
       val temp : Recode2Real = new Recode2Real(c,new StringAttribute(field))
       temp.addMapItem(key, new RealLiteral(value))
-      parameter = temp
+      setParameter(temp)
     case a : Recode2Real => a.addMapItem(key, new RealLiteral(value))
   }
 
@@ -157,7 +160,7 @@ class RecodedReal extends AbstractAttributedRPLegend with RecodedLegend with Num
       a.removeMapItem(i)
       if(a.getNumMapItem == 0){
         val cl : RealLiteral = new RealLiteral(a.getFallbackValue.getValue(null))
-        parameter = cl
+        setParameter(cl)
       }
   }
 
@@ -172,7 +175,7 @@ class RecodedReal extends AbstractAttributedRPLegend with RecodedLegend with Num
       a.removeMapItem(key)
       if(a.getNumMapItem == 0){
         val cl : RealLiteral = new RealLiteral(a.getFallbackValue.getValue(null))
-        parameter = cl
+        setParameter(cl)
       }
   }
 }
