@@ -33,7 +33,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Enumeration;
-import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
@@ -56,8 +55,7 @@ public final class TreeNodeMapContextFile extends AbstractTreeNode implements Tr
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeMapContextFile.class);
         
         File filePath; // Update if parent change
-        MutableTreeNode parent;
-
+        
         public TreeNodeMapContextFile(File mapContextFilePath) {
                 // For fast loading, take the filename as the ows title
                 filePath = mapContextFilePath;
@@ -113,11 +111,6 @@ public final class TreeNodeMapContextFile extends AbstractTreeNode implements Tr
         }
 
         @Override
-        public void removeFromParent() {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
         public void setParent(MutableTreeNode mtn) {
                 parent = mtn;
         }
@@ -132,10 +125,6 @@ public final class TreeNodeMapContextFile extends AbstractTreeNode implements Tr
                 return 0;
         }
 
-        @Override
-        public TreeNode getParent() {
-                return parent;
-        }
 
         @Override
         public int getIndex(TreeNode tn) {
@@ -182,11 +171,6 @@ public final class TreeNodeMapContextFile extends AbstractTreeNode implements Tr
                 } catch(FileNotFoundException ex) {
                         throw new IllegalStateException(ex);
                 }
-        }
-
-        @Override
-        List<AbstractTreeNode> getChildren() {
-                return null;
         }
         
 }

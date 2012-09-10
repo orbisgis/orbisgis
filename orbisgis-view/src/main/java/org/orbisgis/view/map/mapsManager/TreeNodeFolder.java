@@ -41,6 +41,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import org.apache.log4j.Logger;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.components.resourceTree.EnumIterator;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
@@ -54,7 +55,6 @@ import org.xnap.commons.i18n.I18nFactory;
 public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, TreeNodePath {
         private List<MutableTreeNode> childs = new ArrayList<MutableTreeNode>();
         private File folderPath;
-        private MutableTreeNode parent = null;
         private static final Logger LOGGER = Logger.getLogger(TreeNodeFolder.class);
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeFolder.class);
         private TreeNodeMapFactoryManager factoryManager;
@@ -99,23 +99,23 @@ public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeN
                                 if(existingChild==null) {
                                         if(newChild.isDirectory()) {
                                                 TreeNodeFolder subDir = new TreeNodeFolder(newChild,factoryManager);
-                                                internalInsert(subDir,getChildCount());
+                                                model.insertNodeInto(subDir, this, getChildCount());
                                                 subDir.updateTree();
                                         } else {
                                                 TreeNodeMapElement child = factoryManager.create(newChild);
                                                 if(child == null) {
-                                                        LOGGER.warn(I18N.tr("Cound not find appropriate reader for the file {0}",newChild.getName()));
+                                                        //Not find appropriate reader for the file
                                                 } else {
                                                         if(child instanceof AbstractTreeNode) {
                                                                 LOGGER.debug("Find new MAP !!");
-                                                                internalInsert((AbstractTreeNode)child, getChildCount());
+                                                                model.insertNodeInto((AbstractTreeNode)child,this, getChildCount());
                                                         } else {
                                                                 LOGGER.error("Illegal factory return object, it must be a extension of AbstractTreeNode");
                                                         }
                                                 }
                                         }
                                 } else {
-                                        internalInsert(existingChild,getChildCount(),false);
+                                        childs.add(existingChild);
                                         if(existingChild instanceof TreeNodeFolder) {
                                                 ((TreeNodeFolder)existingChild).updateTree();
                                         }
@@ -124,25 +124,11 @@ public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeN
                 } catch( SecurityException ex) {
                         LOGGER.error(I18N.tr("Cannot list the directory content"),ex);
                 }
-                if(childs.size()!=oldChilds.size()) {
-                        fireChildrensChange(oldChilds);
-                }
         }        
         private void internalInsert(AbstractTreeNode mtn, int i) {
-                internalInsert(mtn,i,true);
-        }
-        /**
-         * Insert a children at the specified position
-         * @param mtn
-         * @param i
-         * @param isNewChild If true set the parent as this and fire the event
-         */
-        private void internalInsert(AbstractTreeNode mtn, int i,boolean isNewChild) {
                 childs.add(i, mtn);
-                if(isNewChild) {
-                        mtn.setParent(this);
-                        fireInsertChildren(mtn, i);
-                }
+                mtn.setParent(this);
+                mtn.setModel(model);
         }
 
         @Override
@@ -165,19 +151,6 @@ public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeN
                 //User set the folder name
         }
 
-        @Override
-        public void removeFromParent() {
-                if(parent!=null) {
-                        parent.remove(this);
-                }
-        }
-
-        @Override
-        public void setParent(MutableTreeNode mtn) {
-                if(mtn instanceof TreeNodeFolder) {
-                        parent = mtn;
-                }
-        }
 
         @Override
         public TreeNode getChildAt(int i) {
@@ -187,11 +160,6 @@ public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeN
         @Override
         public int getChildCount() {
                 return childs.size();
-        }
-
-        @Override
-        public TreeNode getParent() {
-                return parent;
         }
 
         @Override
@@ -218,10 +186,11 @@ public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeN
         public void feedPopupMenu(JPopupMenu menu) {
                 JMenuItem updateMenu = new JMenuItem(I18N.tr("Update"), OrbisGISIcon.getIcon("arrow_refresh"));
                 updateMenu.setToolTipText(I18N.tr("Update the content of this folder from the file system"));
+                updateMenu.setActionCommand("TreeNodeFolder:Update");
                 updateMenu.addActionListener(
                         EventHandler.create(ActionListener.class,
                         this,"updateTree"));
-                menu.add(updateMenu);
+                MenuCommonFunctions.updateOrInsertMenuItem(menu, updateMenu);
         }
 
         @Override
@@ -233,8 +202,7 @@ public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeN
                         return folderPath;
                 }
         }
-
-        @Override
+        
         List<AbstractTreeNode> getChildren() {
                 List<AbstractTreeNode> childsRet = new ArrayList<AbstractTreeNode>(getChildCount());
                 for(MutableTreeNode child : childs) {

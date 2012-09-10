@@ -72,7 +72,6 @@ import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
 import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.utils.FileUtils;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.button.DropDownButton;
@@ -213,7 +212,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 if (!mapContextFolder.exists()) {
                         mapContextFolder.mkdir();
                 }
-                File mapContextFile = new File(mapContextFolder, viewWorkspace.getMapContextDefaultFileName());
+                File mapContextFile = new File(mapContextFolder, I18N.tr("MyMap.ows"));
                 if (mapContextFile.exists()) {
                         try {
                                 defaultMapContext.read(new FileInputStream(mapContextFile));

@@ -36,6 +36,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import org.orbisgis.core.Services;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -47,6 +48,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class TreeNodeOwsMapContextFactory implements TreeNodeMapFactory {
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeOwsMapContextFactory.class);
         private TreeNodeFolder folderRoot;
+        private static final String ACTION_ADD_OWS_MAP = "TreeNodeOwsMapContextFactory:NewEmptyMap";
         /**
          * Constructor
          * @param folderRoot The root of the Map folder, used to update file system on map insertion
@@ -62,25 +64,51 @@ public class TreeNodeOwsMapContextFactory implements TreeNodeMapFactory {
 
         /**
          * Create an empty OWS map at the specified path
-         * @param evt 
+         *
+         * @param folderNode Where to create an empty map
          */
-        public void onCreateEmptyMap(ActionEvent evt) {
-                String path = evt.getActionCommand();
-                TreeNodeMapContextFile.createEmptyMapContext(new File(path));
-                folderRoot.updateTree();
+        private static File onCreateEmptyMap(TreeNodeFolder folderNode) {
+                File folderPath = folderNode.getFilePath();
+                File mapContextFile;
+                int cpt = 0;
+                do {
+                        if (cpt == 0) {
+                                mapContextFile = new File(folderPath, I18N.tr("MyMap.ows"));
+                        } else {
+                                mapContextFile = new File(folderPath, I18N.tr("MyMap_{0}.ows",cpt));                                
+                        }
+                        cpt++;
+                } while (mapContextFile.exists());
+                TreeNodeMapContextFile.createEmptyMapContext(mapContextFile);
+                folderNode.updateTree();
+                return mapContextFile;
         }
 
         @Override
         public void feedTreeNodePopupMenu(MutableTreeNode node, JPopupMenu menu) {
                 if(node instanceof TreeNodeFolder) {
-                        ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);                        
-                        File folderPath = ((TreeNodeFolder)node).getFilePath();
-                        File mapContextFile = new File(folderPath, viewWorkspace.getMapContextDefaultFileName());
+                        TreeNodeFolder folderNode = (TreeNodeFolder)node;
                         JMenuItem createEmptyMap = new JMenuItem(I18N.tr("New empty map"));
+                        createEmptyMap.setActionCommand(ACTION_ADD_OWS_MAP);
                         createEmptyMap.setToolTipText(I18N.tr("Create a new OWS Map in this folder"));
-                        createEmptyMap.addActionListener(EventHandler.create(ActionListener.class,this,"onCreateEmptyMap",""));
-                        createEmptyMap.setActionCommand(mapContextFile.getAbsolutePath());
-                        menu.add(createEmptyMap);
+                        createEmptyMap.addActionListener(new CreateEmptyMap(folderNode));
+                        MenuCommonFunctions.updateOrInsertMenuItem(menu,createEmptyMap);
                 }
+        }
+        /**
+         * A listener that store a folderNode instance
+         */
+        private static class CreateEmptyMap implements ActionListener {
+                TreeNodeFolder folderNode;
+
+                public CreateEmptyMap(TreeNodeFolder folderNode) {
+                        this.folderNode = folderNode;
+                }
+                
+                @Override
+                public void actionPerformed(ActionEvent ae) {
+                        onCreateEmptyMap(folderNode);
+                }
+                
         }
 }

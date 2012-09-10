@@ -28,27 +28,48 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
-import java.util.List;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
-import org.orbisgis.core.common.BeanPropertyChangeSupport;
+import javax.swing.tree.TreeNode;
 
 /**
  * This is the base class for all items in the tree.
  * It gives the ability to listen for item change
  * @author Nicolas Fortin
  */
-public abstract class AbstractTreeNode extends BeanPropertyChangeSupport implements MutableTreeNode {
+public abstract class AbstractTreeNode implements MutableTreeNode {
         private static final long serialVersionUID = 1L;
+        // Tree Model
+        protected DefaultTreeModel model;
         // Properties        
         private String label = "none";
-        public static final String PROP_LABEL = "label";
-        public static final String PROP_CHILDREN = "children";
+        protected MutableTreeNode parent = null;
 
         @Override
         public String toString() {
                 return label;
         }
 
+        public void setModel(DefaultTreeModel model) {
+                this.model = model;
+        }
+        
+        @Override
+        public void removeFromParent() {
+                if(parent!=null) {
+                        parent.remove(this);
+                }
+        }
+
+        @Override
+        public void setParent(MutableTreeNode mtn) {
+                parent = mtn;
+        }
+        
+        @Override
+        public TreeNode getParent() {
+                return parent;
+        }
         /**
          * Get the value of label of the TreeNode
          *
@@ -64,31 +85,9 @@ public abstract class AbstractTreeNode extends BeanPropertyChangeSupport impleme
          * @param label new value of label
          */
         public void setLabel(String label) {
-                String oldLabel = this.label;
                 this.label = label;
-                propertyChangeSupport.firePropertyChange(PROP_LABEL, oldLabel, label);
-        }
-        
-        /**
-         * Fire the insertion of a new children
-         * @param children
-         * @param index 
-         */
-        protected void fireInsertChildren(AbstractTreeNode children, int index) {
-                propertyChangeSupport.fireIndexedPropertyChange(PROP_CHILDREN, index, null, children);
-        }
-        
-        /**
-         * 
-         * @return The children list or Null if getAllowsChildren is false
-         */
-        abstract List<AbstractTreeNode> getChildren();
-        
-        /**
-         * Children list have been updated.
-         * @param old_Children Children list before the update
-         */
-        protected void fireChildrensChange(List<AbstractTreeNode> old_Children) {
-                propertyChangeSupport.firePropertyChange(PROP_CHILDREN, old_Children, getChildren());
-        }
+                if(model!=null) {
+                        model.nodeChanged(this);
+                }
+        }        
 }
