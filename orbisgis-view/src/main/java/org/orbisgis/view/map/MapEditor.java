@@ -59,8 +59,10 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.TreeExpansionListener;
+import javax.swing.event.TreeModelListener;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
@@ -180,6 +182,9 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         // When the tree is expanded update the manager size
                         mapsManager.getTree().addTreeExpansionListener(
                                 EventHandler.create(TreeExpansionListener.class,this,"updateMapControlSize"));
+                        mapsManager.getTree().getModel().addTreeModelListener(
+                                EventHandler.create(TreeModelListener.class,this,"updateMapControlSize"));
+                        
                 }
         }
 
@@ -230,16 +235,24 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
          * Compute the appropriate components bounds for MapControl
          * and MapsManager and apply theses bounds
          */
-        public void updateMapControlSize() {                        
+        public void updateMapControlSize() {
+                SwingUtilities.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+                                doUpdateMapControlSize();
+                        }
+                });
+        }
+        private void doUpdateMapControlSize() {
                 mapControl.setBounds(0,0,layeredPane.getWidth(),layeredPane.getHeight());
                 if(mapsManager.isVisible()) {
                         Dimension mapsManagerPreferredSize = mapsManager.getMinimalComponentDimension();
                         int hPos = layeredPane.getWidth() - mapsManagerPreferredSize.width;
                         mapsManager.setBounds(hPos,0,mapsManagerPreferredSize.width,Math.min(mapsManagerPreferredSize.height,layeredPane.getHeight()));
                         mapsManager.revalidate();
-                }
+                }                
         }
-
     /**
      * The user Drop a list of Editable
      * @param editableList 
