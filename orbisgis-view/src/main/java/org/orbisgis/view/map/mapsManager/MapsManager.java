@@ -35,6 +35,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
+import java.beans.IndexedPropertyChangeEvent;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.BorderFactory;
@@ -44,10 +47,13 @@ import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTree;
+import javax.swing.SwingUtilities;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.view.background.BackgroundManager;
@@ -65,36 +71,72 @@ public class MapsManager extends JPanel {
         // Minimal tree size is incremented by this emptySpace
         private static final long serialVersionUID = 1L;
         private static final I18n I18N = I18nFactory.getI18n(MapsManager.class);
+        private static final Logger LOGGER = Logger.getLogger(MapsManager.class);
         private JTree tree;
         private DefaultTreeModel treeModel;
         private MutableTreeNode rootNode = new DefaultMutableTreeNode();
+        TreeNodeFolder rootFolder;
         private JScrollPane scrollPane;
         // Store all the compatible map context
         private TreeNodeMapFactoryManager factoryManager = new TreeNodeMapFactoryManager();
         private MouseListener treeMouse = EventHandler.create(MouseListener.class,this,"onMouseEvent","");
         private AtomicBoolean initialized = new AtomicBoolean(false);
+        private PropertyChangeListener listener =
+                EventHandler.create(PropertyChangeListener.class,this,"onTreeChildrenPropertyChange","");
         /**
          * Default constructor
          */
         public MapsManager() {
                 super(new BorderLayout());
-                initInternalFactories();
                 treeModel = new DefaultTreeModel(rootNode, true);
+                treeModel.setAsksAllowsChildren(true);
                 // Retrieve the default ows maps folder
                 ViewWorkspace workspace = Services.getService(ViewWorkspace.class);
                 // Add the root folder
-                TreeNodeFolder rootFolder = new TreeNodeFolder(new File(workspace.getMapContextPath()),factoryManager);
+                rootFolder = new TreeNodeFolder(new File(workspace.getMapContextPath()),factoryManager);
                 rootFolder.setLabel(I18N.tr("Local"));
                 rootNode.insert(rootFolder, 0);
+                initInternalFactories(); // Init file readers
                 // Add the tree in the panel                
                 tree = new JTree(treeModel);
                 tree.addMouseListener(treeMouse);
                 tree.setRootVisible(false);
-                //Expand Local folder
-                tree.expandPath(new TreePath(new Object[] {rootNode,rootFolder}));
                 scrollPane = new JScrollPane(tree);
                 add(scrollPane,BorderLayout.EAST);
                 setBorder(BorderFactory.createEtchedBorder());
+        }
+        
+       
+        /**
+         * Called on tree structure change
+         * @param evt 
+         */
+        public void onTreeChildrenPropertyChange(PropertyChangeEvent evt) {
+                LOGGER.debug("onTreeChildrenPropertyChange "+evt.getSource());
+                if(evt instanceof IndexedPropertyChangeEvent) {
+                        IndexedPropertyChangeEvent evtIndexed = (IndexedPropertyChangeEvent)evt;
+                        TreeNodeFolder folderNode = (TreeNodeFolder)evt.getSource();
+                        TreeNode newNode = (TreeNode)evt.getNewValue();
+                        int childIndex = folderNode.getIndex(newNode);
+                        if(childIndex == -1) {
+                                //Deletion of a child Node
+                                treeModel.nodesWereRemoved(folderNode,
+                                        new int[] {evtIndexed.getIndex()},
+                                        new Object[] {evt.getOldValue()});
+                        } else {
+                                //Insertion of a child Node
+                                LOGGER.debug("onTreeChildrenPropertyChange insertion");
+                                treeModel.nodesWereInserted(folderNode, new int[] {childIndex});
+                        }
+                        evtIndexed.getIndex();
+                } else {                        
+                        // Multiple insertion and deletion
+                }
+                // Register the listener on new Folder
+                if(evt.getNewValue() instanceof TreeNodeFolder) {
+                        TreeNodeFolder newFolder = (TreeNodeFolder)evt.getNewValue();
+                        newFolder.addPropertyChangeListener(TreeNodeFolder.PROP_CHILDREN, listener);
+                }
         }
         /**
          * Used by the UI to convert a File into a MapElement
@@ -131,7 +173,12 @@ public class MapsManager extends JPanel {
         public void setVisible(boolean visible) {
                 super.setVisible(visible);
                 if(visible && !initialized.getAndSet(true)) {
-                        tree.setCellRenderer(new CustomTreeCellRenderer(tree));                                               
+                        //Set a listener to the root folder
+                        rootFolder.addPropertyChangeListener(TreeNodeFolder.PROP_CHILDREN, listener);
+                        rootFolder.updateTree(); //Read the file system tree
+                        tree.setCellRenderer(new CustomTreeCellRenderer(tree));
+                        //Expand Local folder
+                        tree.expandPath(new TreePath(new Object[] {rootNode,rootFolder}));                                               
                 }
         }
         /**
@@ -223,7 +270,7 @@ public class MapsManager extends JPanel {
         *  Load built-ins map factory
         */
         private void initInternalFactories() {
-                factoryManager.addFactory("ows",new TreeNodeOwsMapContextFactory());
+                factoryManager.addFactory("ows",new TreeNodeOwsMapContextFactory(rootFolder));
         }
         /**
          * 

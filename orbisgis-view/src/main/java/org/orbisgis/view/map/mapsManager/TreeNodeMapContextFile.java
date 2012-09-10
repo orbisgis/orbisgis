@@ -33,6 +33,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Enumeration;
+import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
@@ -50,12 +51,11 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * @author Nicolas Fortin
  */
-public final class TreeNodeMapContextFile implements TreeNodeMapElement, MutableTreeNode, TreeNodeCustomIcon  {
+public final class TreeNodeMapContextFile extends AbstractTreeNode implements TreeNodeMapElement, TreeNodePath, TreeNodeCustomIcon  {
         private static final Logger LOGGER = Logger.getLogger(TreeNodeMapContextFile.class);
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeMapContextFile.class);
         
         File filePath; // Update if parent change
-        String label;
         MutableTreeNode parent;
 
         public TreeNodeMapContextFile(File mapContextFilePath) {
@@ -81,25 +81,17 @@ public final class TreeNodeMapContextFile implements TreeNodeMapElement, Mutable
                 }
                 return true;
         }
-
-        public void setLabel(String label) {
-                this.label = label;
-        }
         
-        private File getFilePath() {
-                if(parent instanceof TreeNodeFolder) {
-                        TreeNodeFolder parentFolder = (TreeNodeFolder)parent;
-                        return new File(parentFolder.getFolderPath(),FilenameUtils.getName(filePath.getName()));
+        @Override
+        public File getFilePath() {
+                if(parent instanceof TreeNodePath) {
+                        TreeNodePath parentFolder = (TreeNodePath)parent;
+                        return new File(parentFolder.getFilePath(),FilenameUtils.getName(filePath.getName()));
                 } else {
                         return filePath;
                 }
         }
 
-        @Override
-        public String toString() {
-                return label;
-        }
-        
         @Override
         public void insert(MutableTreeNode mtn, int i) {
                 throw new UnsupportedOperationException("Not supported yet.");
@@ -190,6 +182,11 @@ public final class TreeNodeMapContextFile implements TreeNodeMapElement, Mutable
                 } catch(FileNotFoundException ex) {
                         throw new IllegalStateException(ex);
                 }
+        }
+
+        @Override
+        List<AbstractTreeNode> getChildren() {
+                return null;
         }
         
 }

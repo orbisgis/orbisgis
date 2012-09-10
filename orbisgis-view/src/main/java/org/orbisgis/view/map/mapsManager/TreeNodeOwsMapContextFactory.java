@@ -46,6 +46,14 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class TreeNodeOwsMapContextFactory implements TreeNodeMapFactory {
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeOwsMapContextFactory.class);
+        private TreeNodeFolder folderRoot;
+        /**
+         * Constructor
+         * @param folderRoot The root of the Map folder, used to update file system on map insertion
+         */
+        public TreeNodeOwsMapContextFactory(TreeNodeFolder folderRoot) {
+                this.folderRoot = folderRoot;
+        }
         
         @Override
         public TreeNodeMapElement create(File filePath) {
@@ -59,13 +67,14 @@ public class TreeNodeOwsMapContextFactory implements TreeNodeMapFactory {
         public void onCreateEmptyMap(ActionEvent evt) {
                 String path = evt.getActionCommand();
                 TreeNodeMapContextFile.createEmptyMapContext(new File(path));
+                folderRoot.updateTree();
         }
 
         @Override
         public void feedTreeNodePopupMenu(MutableTreeNode node, JPopupMenu menu) {
                 if(node instanceof TreeNodeFolder) {
                         ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);                        
-                        File folderPath = ((TreeNodeFolder)node).getFolderPath();
+                        File folderPath = ((TreeNodeFolder)node).getFilePath();
                         File mapContextFile = new File(folderPath, viewWorkspace.getMapContextDefaultFileName());
                         JMenuItem createEmptyMap = new JMenuItem(I18N.tr("New empty map"));
                         createEmptyMap.setToolTipText(I18N.tr("Create a new OWS Map in this folder"));

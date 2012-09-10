@@ -28,30 +28,37 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import org.apache.log4j.Logger;
 import org.orbisgis.view.components.resourceTree.EnumIterator;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+        
 /**
  * Represent a folder in the file system
  * @author Nicolas Fortin
  */
-public final class TreeNodeFolder implements MutableTreeNode, PopupTreeNode {
+public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, TreeNodePath {
         private List<MutableTreeNode> childs = new ArrayList<MutableTreeNode>();
         private File folderPath;
         private MutableTreeNode parent = null;
-        private String label;
         private static final Logger LOGGER = Logger.getLogger(TreeNodeFolder.class);
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeFolder.class);
         private TreeNodeMapFactoryManager factoryManager;
+
         /**
          * @param folderPath
          * @param factoryManager 
@@ -64,52 +71,83 @@ public final class TreeNodeFolder implements MutableTreeNode, PopupTreeNode {
                         throw new IllegalArgumentException("The file path must be a directory");
                 }
                 setLabel(folderPath.getName());
+        }
+        /**
+         * Read the file system and insert the new files and folders
+         */
+        public final void updateTree() {
+                Map<String,AbstractTreeNode> existingChilds = new HashMap<String,AbstractTreeNode>();
+                for(MutableTreeNode child : childs) {
+                        if(child instanceof TreeNodePath) {
+                                existingChilds.put(
+                                        ((TreeNodePath)child).getFilePath()
+                                        .getName(),
+                                        (AbstractTreeNode)child);
+                        }
+                }
+                List<AbstractTreeNode> oldChilds = getChildren();
+                //Clear the child list
+                childs = new ArrayList<MutableTreeNode>(oldChilds.size());
+                
+                //Find new files and sub-folders
                 try {
                         String[] list = folderPath.list();
+                        // TODO use DefaultFileMonitor
                         for(String childPath : list) {
                                 File newChild = new File(folderPath,childPath);
-                                if(newChild.isDirectory()) {
-                                        internalInsert(new TreeNodeFolder(newChild,factoryManager),getChildCount());
+                                AbstractTreeNode existingChild = existingChilds.get(newChild.getName());
+                                if(existingChild==null) {
+                                        if(newChild.isDirectory()) {
+                                                TreeNodeFolder subDir = new TreeNodeFolder(newChild,factoryManager);
+                                                internalInsert(subDir,getChildCount());
+                                                subDir.updateTree();
+                                        } else {
+                                                TreeNodeMapElement child = factoryManager.create(newChild);
+                                                if(child == null) {
+                                                        LOGGER.warn(I18N.tr("Cound not find appropriate reader for the file {0}",newChild.getName()));
+                                                } else {
+                                                        if(child instanceof AbstractTreeNode) {
+                                                                LOGGER.debug("Find new MAP !!");
+                                                                internalInsert((AbstractTreeNode)child, getChildCount());
+                                                        } else {
+                                                                LOGGER.error("Illegal factory return object, it must be a extension of AbstractTreeNode");
+                                                        }
+                                                }
+                                        }
                                 } else {
-                                        MutableTreeNode child = factoryManager.create(newChild);
-                                        if(child != null) {
-                                                internalInsert(child, getChildCount());
+                                        internalInsert(existingChild,getChildCount(),false);
+                                        if(existingChild instanceof TreeNodeFolder) {
+                                                ((TreeNodeFolder)existingChild).updateTree();
                                         }
                                 }
                         }
                 } catch( SecurityException ex) {
                         LOGGER.error(I18N.tr("Cannot list the directory content"),ex);
                 }
+                if(childs.size()!=oldChilds.size()) {
+                        fireChildrensChange(oldChilds);
+                }
+        }        
+        private void internalInsert(AbstractTreeNode mtn, int i) {
+                internalInsert(mtn,i,true);
         }
         /**
-         * Get the full path of this folder
-         * @return 
+         * Insert a children at the specified position
+         * @param mtn
+         * @param i
+         * @param isNewChild If true set the parent as this and fire the event
          */
-        public File getFolderPath() {
-                return folderPath;
-        }
-        
-        private void internalInsert(MutableTreeNode mtn, int i) {
+        private void internalInsert(AbstractTreeNode mtn, int i,boolean isNewChild) {
                 childs.add(i, mtn);
-                mtn.setParent(this);
+                if(isNewChild) {
+                        mtn.setParent(this);
+                        fireInsertChildren(mtn, i);
+                }
         }
 
-        public void setLabel(String label) {
-                this.label = label;
-        }
-
-        public String getLabel() {
-                return label;
-        }
-
-        @Override
-        public String toString() {
-                return getLabel();
-        }
-        
         @Override
         public void insert(MutableTreeNode mtn, int i) {
-                internalInsert(mtn,i);
+                internalInsert((AbstractTreeNode)mtn,i);
         }
 
         @Override
@@ -178,7 +216,31 @@ public final class TreeNodeFolder implements MutableTreeNode, PopupTreeNode {
 
         @Override
         public void feedPopupMenu(JPopupMenu menu) {
-                
+                JMenuItem updateMenu = new JMenuItem(I18N.tr("Update"), OrbisGISIcon.getIcon("arrow_refresh"));
+                updateMenu.setToolTipText(I18N.tr("Update the content of this folder from the file system"));
+                updateMenu.addActionListener(
+                        EventHandler.create(ActionListener.class,
+                        this,"updateTree"));
+                menu.add(updateMenu);
+        }
+
+        @Override
+        public File getFilePath() {
+                if(parent instanceof TreeNodePath) {
+                        File parentPath = ((TreeNodePath)parent).getFilePath();
+                        return new File(parentPath,folderPath.getName());
+                } else {
+                        return folderPath;
+                }
+        }
+
+        @Override
+        List<AbstractTreeNode> getChildren() {
+                List<AbstractTreeNode> childsRet = new ArrayList<AbstractTreeNode>(getChildCount());
+                for(MutableTreeNode child : childs) {
+                        childsRet.add((AbstractTreeNode)child);
+                }
+                return childsRet;
         }
         
 }

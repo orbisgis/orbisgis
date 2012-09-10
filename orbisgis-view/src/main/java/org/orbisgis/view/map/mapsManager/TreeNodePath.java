@@ -28,18 +28,12 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
-import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.view.map.MapElement;
+import java.io.File;
 
 /**
- * Maps manager manage only files that contain a MapElement
+ * Item that is linked with the FileSystem, folder or file
  * @author Nicolas Fortin
  */
-public interface TreeNodeMapElement {
-        /**
-         * Create the map element associated with this file
-         * @param pm 
-         * @return 
-         */
-        MapElement getMapElement(ProgressMonitor pm);        
+public interface TreeNodePath {
+        File getFilePath();
 }
