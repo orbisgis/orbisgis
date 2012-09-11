@@ -28,12 +28,142 @@
  */
 package org.orbisgis.view.components.fstree;
 
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.beans.EventHandler;
+import java.io.File;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.JPopupMenu;
 import javax.swing.JTree;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeModel;
+import javax.swing.tree.TreePath;
+import org.apache.commons.io.FilenameUtils;
 
 /**
  *
  * @author Nicolas Fortin
  */
-public class FileTree extends JTree {
+public class FileTree extends JTree implements TreeNodeFileFactoryManager {
+        private static final long serialVersionUID = 1L;
+        private MouseListener treeMouse = EventHandler.create(MouseListener.class,this,"onMouseEvent","");
+        private AtomicBoolean initialized = new AtomicBoolean(false);
+        public FileTree(TreeModel tm) {
+                super(tm);
+        }
+
+        public FileTree() {
+        }
+
+        @Override
+        public void addNotify() {
+                super.addNotify();
+                if(!initialized.getAndSet(true)) {
+                        addMouseListener(treeMouse);
+                }
+        }
+
         
+        
+        
+         private boolean contains(TreePath[] selectionPaths, TreePath path) {
+                for (TreePath treePath : selectionPaths) {
+                        boolean equals = true;
+                        Object[] objectPath = treePath.getPath();
+                        Object[] testPath = path.getPath();
+                        if (objectPath.length != testPath.length) {
+                                equals = false;
+                        } else {
+                                for (int i = 0; i < testPath.length; i++) {
+                                        if (testPath[i] != objectPath[i]) {
+                                                equals = false;
+                                        }
+                                }
+                        }
+                        if (equals) {
+                                return true;
+                        }
+                }
+
+                return false;
+        }
+        /**
+         * Event on Tree, called by listener
+         * @param evt 
+         */
+        public void onMouseEvent(MouseEvent evt) {
+                if (evt.isPopupTrigger()) {
+                        //Update selection
+                        TreePath path = getPathForLocation(evt.getX(), evt.getY());
+                        TreePath[] selectionPaths = getSelectionPaths();
+                        if ((selectionPaths != null) && (path != null)) {
+                                if (!contains(selectionPaths, path)) {
+                                        if (evt.isControlDown()) {
+                                                addSelectionPath(path);
+                                        } else {
+                                                setSelectionPath(path);
+                                        }
+                                }
+                        } else {
+                                setSelectionPath(path);
+                        }
+                        //Show popup
+                        makePopupMenu().show(evt.getComponent(),
+                                evt.getX(), evt.getY());
+                }
+        }        
+        /**
+         * Fetch all selected items to make a popup menu
+         * @return 
+         */
+        private JPopupMenu makePopupMenu() {
+                JPopupMenu menu = new JPopupMenu();
+                TreePath[] paths = getSelectionPaths();
+                if(paths!=null) {
+                        for(TreePath treePath : paths) {
+                                Object component = treePath.getLastPathComponent();
+                                // All nodes
+                                if(component instanceof MutableTreeNode) {
+                                        MutableTreeNode node = (MutableTreeNode)component;
+                                        for(TreeNodeFileFactory fact : getFactories()) {
+                                                fact.feedTreeNodePopupMenu(node, menu);
+                                        }
+                                }
+                                // Specific nodes
+                                if(component instanceof PopupTreeNode) {
+                                        PopupTreeNode treeNode = (PopupTreeNode) component;
+                                        treeNode.feedPopupMenu(menu);
+                                }
+                        }
+                }
+                return menu;
+        }
+        
+        // Map of extensions
+        private Map<String,TreeNodeFileFactory> factories =
+                new HashMap<String,TreeNodeFileFactory>();
+        
+        
+        @Override
+        public void addFactory(String extension, TreeNodeFileFactory factory) {
+                factories.put(extension.toLowerCase(), factory);
+        }
+        
+        @Override
+        public Collection<TreeNodeFileFactory> getFactories() {
+                return factories.values();
+        }      
+        
+        @Override
+        public AbstractTreeNode create(File filePath) {
+                TreeNodeFileFactory factory = factories.get(FilenameUtils.getExtension(filePath.getName()).toLowerCase());
+                if(factory!=null) {
+                        return factory.create(filePath);
+                } else {
+                        return null;
+                }
+        }
 }

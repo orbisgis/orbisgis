@@ -30,36 +30,27 @@ package org.orbisgis.view.components.fstree;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.commons.io.FilenameUtils;
 
 /**
  * Manage all kind of Files factory
  * @author Nicolas Fortin
  */
-public class TreeNodeFileFactoryManager {
-        // Map of extensions
-        private Map<String,TreeNodeFileFactory> factories =
-                new HashMap<String,TreeNodeFileFactory>();
-        public void addFactory(String extension, TreeNodeFileFactory factory) {
-                factories.put(extension.toLowerCase(), factory);
-        }
+public interface TreeNodeFileFactoryManager {
+        /**
+         * Register a factory for the provided file extension
+         * @param extension
+         * @param factory 
+         */
+        public void addFactory(String extension, TreeNodeFileFactory factory);
        /**
         * @return All registered TreeNodeFileFactory
         */
-        public Collection<TreeNodeFileFactory> getFactories() {
-                return factories.values();
-        }
+        public Collection<TreeNodeFileFactory> getFactories();
         
-        
-        
-        public AbstractTreeNode create(File filePath) {
-                TreeNodeFileFactory factory = factories.get(FilenameUtils.getExtension(filePath.getName()).toLowerCase());
-                if(factory!=null) {
-                        return factory.create(filePath);
-                } else {
-                        return null;
-                }
-        }
+        /**
+         * Create a Node instance to handle the provided file
+         * @param filePath
+         * @return 
+         */
+        public AbstractTreeNode create(File filePath);
 }
