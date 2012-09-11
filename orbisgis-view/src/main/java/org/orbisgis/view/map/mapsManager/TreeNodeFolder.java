@@ -92,7 +92,6 @@ public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeN
                 //Find new files and sub-folders
                 try {
                         String[] list = folderPath.list();
-                        // TODO use DefaultFileMonitor
                         for(String childPath : list) {
                                 File newChild = new File(folderPath,childPath);
                                 AbstractTreeNode existingChild = existingChilds.get(newChild.getName());
@@ -107,7 +106,6 @@ public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeN
                                                         //Not find appropriate reader for the file
                                                 } else {
                                                         if(child instanceof AbstractTreeNode) {
-                                                                LOGGER.debug("Find new MAP !!");
                                                                 model.insertNodeInto((AbstractTreeNode)child,this, getChildCount());
                                                         } else {
                                                                 LOGGER.error("Illegal factory return object, it must be a extension of AbstractTreeNode");
