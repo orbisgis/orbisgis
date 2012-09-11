@@ -26,14 +26,16 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.map.mapsManager;
+package org.orbisgis.view.components.fstree;
 
-import javax.swing.JPopupMenu;
+import javax.swing.ImageIcon;
 
 /**
  *
  * @author Nicolas Fortin
  */
-public interface PopupTreeNode {
-        void feedPopupMenu(JPopupMenu menu);
+public interface TreeNodeCustomIcon {
+        ImageIcon getLeafIcon();
+        ImageIcon getClosedIcon();
+        ImageIcon getOpenIcon();
 }

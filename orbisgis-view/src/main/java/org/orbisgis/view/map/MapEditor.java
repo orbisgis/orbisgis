@@ -84,8 +84,9 @@ import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.jobs.ReadMapContextJob;
 import org.orbisgis.view.map.jobs.ZoomToSelection;
+import org.orbisgis.view.components.fstree.AbstractTreeNode;
 import org.orbisgis.view.map.mapsManager.MapsManager;
-import org.orbisgis.view.map.mapsManager.TreeNodeMapElement;
+import org.orbisgis.view.map.mapsManager.TreeLeafMapElement;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.tools.CompassTool;
@@ -196,7 +197,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 if(!serialisedMapContextPath.exists()) {
                         createDefaultMapContext();
                 } else {
-                        TreeNodeMapElement mapFactory = mapsManager.getFactoryManager().create(serialisedMapContextPath);
+                        TreeLeafMapElement mapFactory = (TreeLeafMapElement)mapsManager.getFactoryManager().create(serialisedMapContextPath);
                         MapElement mapElement = mapFactory.getMapElement(new NullProgressMonitor());
                         backgroundManager.backgroundOperation(new ReadMapContextJob(mapElement));
                 }

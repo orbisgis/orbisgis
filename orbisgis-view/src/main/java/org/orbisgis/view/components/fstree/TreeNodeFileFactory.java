@@ -26,14 +26,28 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.map.mapsManager;
+package org.orbisgis.view.components.fstree;
 
 import java.io.File;
+import javax.swing.JPopupMenu;
+import javax.swing.tree.MutableTreeNode;
 
 /**
- * Item that is linked with the FileSystem, folder or file
+ *
  * @author Nicolas Fortin
  */
-public interface TreeNodePath {
-        File getFilePath();
+public interface TreeNodeFileFactory {
+                /**
+                 * Construct a AbstractTreeNode instance 
+                 * @param filePath
+                 * @return Null or an instance of AbstractTreeNode
+                 */
+                AbstractTreeNode create(File filePath);
+                
+                /**
+                 * Add new menu items to nodes
+                 * @param node
+                 * @param menu 
+                 */
+                void feedTreeNodePopupMenu(MutableTreeNode node, JPopupMenu menu);
 }

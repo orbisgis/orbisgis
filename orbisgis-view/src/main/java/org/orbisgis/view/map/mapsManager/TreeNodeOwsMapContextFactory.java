@@ -28,16 +28,15 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
+import org.orbisgis.view.components.fstree.TreeNodeFileFactory;
+import org.orbisgis.view.components.fstree.TreeNodeFolder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.beans.EventHandler;
 import java.io.File;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
-import org.orbisgis.core.Services;
 import org.orbisgis.sif.common.MenuCommonFunctions;
-import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -45,7 +44,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * OWS Context Map (extension OWS).
  * @author Nicolas Fortin
  */
-public class TreeNodeOwsMapContextFactory implements TreeNodeMapFactory {
+public class TreeNodeOwsMapContextFactory implements TreeNodeFileFactory {
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeOwsMapContextFactory.class);
         private TreeNodeFolder folderRoot;
         private static final String ACTION_ADD_OWS_MAP = "TreeNodeOwsMapContextFactory:NewEmptyMap";
@@ -58,8 +57,8 @@ public class TreeNodeOwsMapContextFactory implements TreeNodeMapFactory {
         }
         
         @Override
-        public TreeNodeMapElement create(File filePath) {
-                return new TreeNodeMapContextFile(filePath);
+        public TreeLeafMapElement create(File filePath) {
+                return new TreeLeafMapContextFile(filePath);
         }
 
         /**
@@ -79,7 +78,7 @@ public class TreeNodeOwsMapContextFactory implements TreeNodeMapFactory {
                         }
                         cpt++;
                 } while (mapContextFile.exists());
-                TreeNodeMapContextFile.createEmptyMapContext(mapContextFile);
+                TreeLeafMapContextFile.createEmptyMapContext(mapContextFile);
                 folderNode.updateTree();
                 return mapContextFile;
         }

@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.map.mapsManager;
+package org.orbisgis.view.components.fstree;
 
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
@@ -57,14 +57,14 @@ public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeN
         private File folderPath;
         private static final Logger LOGGER = Logger.getLogger(TreeNodeFolder.class);
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeFolder.class);
-        private TreeNodeMapFactoryManager factoryManager;
+        private TreeNodeFileFactoryManager factoryManager;
 
         /**
          * @param folderPath
          * @param factoryManager 
          * @throws IllegalArgumentException If the provided path represent a file
          */
-        public TreeNodeFolder(File folderPath,TreeNodeMapFactoryManager factoryManager) {
+        public TreeNodeFolder(File folderPath,TreeNodeFileFactoryManager factoryManager) {
                 this.factoryManager = factoryManager;
                 this.folderPath = folderPath;
                 if(!folderPath.isDirectory()) {
@@ -101,15 +101,9 @@ public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeN
                                                 model.insertNodeInto(subDir, this, getChildCount());
                                                 subDir.updateTree();
                                         } else {
-                                                TreeNodeMapElement child = factoryManager.create(newChild);
-                                                if(child == null) {
-                                                        //Not find appropriate reader for the file
-                                                } else {
-                                                        if(child instanceof AbstractTreeNode) {
-                                                                model.insertNodeInto((AbstractTreeNode)child,this, getChildCount());
-                                                        } else {
-                                                                LOGGER.error("Illegal factory return object, it must be a extension of AbstractTreeNode");
-                                                        }
+                                                AbstractTreeNode child = factoryManager.create(newChild);
+                                                if(child != null) {
+                                                        model.insertNodeInto(child,this, getChildCount());
                                                 }
                                         }
                                 } else {

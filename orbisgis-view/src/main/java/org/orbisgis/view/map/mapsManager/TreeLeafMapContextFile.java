@@ -28,6 +28,8 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
+import org.orbisgis.view.components.fstree.TreeNodePath;
+import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -50,13 +52,13 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * @author Nicolas Fortin
  */
-public final class TreeNodeMapContextFile extends AbstractTreeNode implements TreeNodeMapElement, TreeNodePath, TreeNodeCustomIcon  {
-        private static final Logger LOGGER = Logger.getLogger(TreeNodeMapContextFile.class);
-        private static final I18n I18N = I18nFactory.getI18n(TreeNodeMapContextFile.class);
+public final class TreeLeafMapContextFile extends TreeLeafMapElement implements TreeNodePath, TreeNodeCustomIcon  {
+        private static final Logger LOGGER = Logger.getLogger(TreeLeafMapContextFile.class);
+        private static final I18n I18N = I18nFactory.getI18n(TreeLeafMapContextFile.class);
         
         File filePath; // Update if parent change
         
-        public TreeNodeMapContextFile(File mapContextFilePath) {
+        public TreeLeafMapContextFile(File mapContextFilePath) {
                 // For fast loading, take the filename as the ows title
                 filePath = mapContextFilePath;
                 setLabel(FilenameUtils.getBaseName(mapContextFilePath.getName()));

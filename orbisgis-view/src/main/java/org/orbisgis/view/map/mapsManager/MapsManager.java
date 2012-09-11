@@ -28,6 +28,11 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
+import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
+import org.orbisgis.view.components.fstree.CustomTreeCellRenderer;
+import org.orbisgis.view.components.fstree.PopupTreeNode;
+import org.orbisgis.view.components.fstree.TreeNodeFileFactory;
+import org.orbisgis.view.components.fstree.TreeNodeFolder;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Insets;
@@ -73,7 +78,7 @@ public class MapsManager extends JPanel {
         TreeNodeFolder rootFolder;
         private JScrollPane scrollPane;
         // Store all the compatible map context
-        private TreeNodeMapFactoryManager factoryManager = new TreeNodeMapFactoryManager();
+        private TreeNodeFileFactoryManager factoryManager = new TreeNodeFileFactoryManager();
         private MouseListener treeMouse = EventHandler.create(MouseListener.class,this,"onMouseEvent","");
         private AtomicBoolean initialized = new AtomicBoolean(false);
         /**
@@ -86,7 +91,11 @@ public class MapsManager extends JPanel {
                 // Retrieve the default ows maps folder
                 ViewWorkspace workspace = Services.getService(ViewWorkspace.class);
                 // Add the root folder
-                rootFolder = new TreeNodeFolder(new File(workspace.getMapContextPath()),factoryManager);
+                File rootFolderPath = new File(workspace.getMapContextPath());
+                if(!rootFolderPath.exists()) {
+                        rootFolderPath.mkdirs();
+                }
+                rootFolder = new TreeNodeFolder(rootFolderPath,factoryManager);
                 rootFolder.setLabel(I18N.tr("Local"));                
                 initInternalFactories(); // Init file readers
                 // Add the tree in the panel                
@@ -103,7 +112,7 @@ public class MapsManager extends JPanel {
          * Used by the UI to convert a File into a MapElement
          * @return The Map file factory manager
          */
-        public TreeNodeMapFactoryManager getFactoryManager() {
+        public TreeNodeFileFactoryManager getFactoryManager() {
                 return factoryManager;
         }
         
@@ -173,7 +182,6 @@ public class MapsManager extends JPanel {
          */
         private JPopupMenu makePopupMenu() {
                 JPopupMenu menu = new JPopupMenu();
-                boolean hasMapSelected = false;
                 TreePath[] paths = tree.getSelectionPaths();
                 if(paths!=null) {
                         for(TreePath treePath : paths) {
@@ -181,7 +189,7 @@ public class MapsManager extends JPanel {
                                 // All nodes
                                 if(component instanceof MutableTreeNode) {
                                         MutableTreeNode node = (MutableTreeNode)component;
-                                        for(TreeNodeMapFactory fact : factoryManager.getFactories()) {
+                                        for(TreeNodeFileFactory fact : factoryManager.getFactories()) {
                                                 fact.feedTreeNodePopupMenu(node, menu);
                                         }
                                 }
@@ -189,42 +197,10 @@ public class MapsManager extends JPanel {
                                 if(component instanceof PopupTreeNode) {
                                         PopupTreeNode treeNode = (PopupTreeNode) component;
                                         treeNode.feedPopupMenu(menu);
-                                } if(component instanceof TreeNodeMapElement) {
-                                        hasMapSelected = true;
                                 }
                         }
                 }
-                if(hasMapSelected) {
-                        JMenuItem openMapItem = new JMenuItem(I18N.tr("Open the map"), OrbisGISIcon.getIcon("map"));
-                        openMapItem.addActionListener(EventHandler.create(ActionListener.class,this,"onOpenMap"));
-                        menu.insert(openMapItem, 0);
-                        if(menu.getComponentCount()>1) {                                
-                                menu.insert(new JSeparator(), 0);
-                        }
-                }
                 return menu;
-        }
-        /**
-         * 
-         * @return The first selected TreeNodeMapElement
-         */
-        private TreeNodeMapElement getFirstSelectedMap() {
-                for(TreePath treePath : tree.getSelectionPaths()) {
-                        Object component = treePath.getLastPathComponent();
-                        if(component instanceof TreeNodeMapElement) {
-                            return (TreeNodeMapElement) component;
-                        }
-                }
-                return null;                
-        }
-        
-        /**
-         * Open the selected map file (only the first one selected)
-         */
-        public void onOpenMap() {
-                TreeNodeMapElement mapNode = getFirstSelectedMap();
-                BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.backgroundOperation(new ReadMapContextJob(mapNode.getMapElement(new NullProgressMonitor())));
         }
         
        /**

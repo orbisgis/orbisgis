@@ -26,16 +26,14 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.map.mapsManager;
+package org.orbisgis.view.components.fstree;
 
-import javax.swing.ImageIcon;
+import javax.swing.JTree;
 
 /**
  *
  * @author Nicolas Fortin
  */
-public interface TreeNodeCustomIcon {
-        ImageIcon getLeafIcon();
-        ImageIcon getClosedIcon();
-        ImageIcon getOpenIcon();
+public class FileTree extends JTree {
+        
 }

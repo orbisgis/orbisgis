@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.map.mapsManager;
+package org.orbisgis.view.components.fstree;
 
 import java.io.File;
 import java.util.Collection;
@@ -35,26 +35,27 @@ import java.util.Map;
 import org.apache.commons.io.FilenameUtils;
 
 /**
- * Manage all kind of Map
+ * Manage all kind of Files factory
  * @author Nicolas Fortin
  */
-public class TreeNodeMapFactoryManager {
-        private Map<String,TreeNodeMapFactory> factories =
-                new HashMap<String,TreeNodeMapFactory>();
-        public void addFactory(String extension, TreeNodeMapFactory factory) {
+public class TreeNodeFileFactoryManager {
+        // Map of extensions
+        private Map<String,TreeNodeFileFactory> factories =
+                new HashMap<String,TreeNodeFileFactory>();
+        public void addFactory(String extension, TreeNodeFileFactory factory) {
                 factories.put(extension.toLowerCase(), factory);
         }
        /**
-        * @return All registered TreeNodeMapFactory
+        * @return All registered TreeNodeFileFactory
         */
-        public Collection<TreeNodeMapFactory> getFactories() {
+        public Collection<TreeNodeFileFactory> getFactories() {
                 return factories.values();
         }
         
         
         
-        public TreeNodeMapElement create(File filePath) {
-                TreeNodeMapFactory factory = factories.get(FilenameUtils.getExtension(filePath.getName()).toLowerCase());
+        public AbstractTreeNode create(File filePath) {
+                TreeNodeFileFactory factory = factories.get(FilenameUtils.getExtension(filePath.getName()).toLowerCase());
                 if(factory!=null) {
                         return factory.create(filePath);
                 } else {
