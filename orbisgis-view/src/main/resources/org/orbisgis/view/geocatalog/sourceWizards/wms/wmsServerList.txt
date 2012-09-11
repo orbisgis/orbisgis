@@ -1,0 +1,10 @@
+http://cartorisque.prim.net/wms/france
+http://osm.wheregroup.com/cgi-bin/osm_basic.xml?SERVICE=WMS&
+http://services.sandre.eaufrance.fr/geo/zonage
+http://services.sandre.eaufrance.fr/geo/stations
+http://geolittoral.application.equipement.gouv.fr/wms/metropole?
+http://wms1.agr.gc.ca/cgi-bin/mapeco?
+http://sd1878-2.sivit.org/geoserver/wms
+http://ws.carmencarto.fr/WMS/105/ONF_Forets?
+http://ws.carmencarto.fr/WMS/105/ONF_RB_Metro?
+http://atlas.gc.ca/cgi-bin/atlaswms_fr?

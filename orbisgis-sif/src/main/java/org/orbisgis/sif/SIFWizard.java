@@ -3,8 +3,8 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
  *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
@@ -22,9 +22,8 @@
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * For more information, please consult: <http://www.orbisgis.org/> or contact
+ * directly: info_at_ orbisgis.org
  */
 package org.orbisgis.sif;
 
@@ -56,7 +55,7 @@ public class SIFWizard extends AbstractOutsideFrame {
         private void init() {
                 this.setLayout(new BorderLayout());
 
-                this.add(getWizardButtons(), BorderLayout.SOUTH);              
+                this.add(getWizardButtons(), BorderLayout.SOUTH);
 
                 this.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         }
@@ -76,7 +75,6 @@ public class SIFWizard extends AbstractOutsideFrame {
         private void buildMainPanel(SimplePanel[] panels) {
                 mainPanel = new JPanel();
                 mainPanel.setLayout(layout);
-
                 for (int i = 0; i < panels.length; i++) {
                         mainPanel.add(panels[i], Integer.toString(i));
                 }
@@ -93,6 +91,7 @@ public class SIFWizard extends AbstractOutsideFrame {
                                 public void actionPerformed(ActionEvent e) {
                                         index--;
                                         layout.previous(mainPanel);
+                                        updateButtonsStatus();
                                 }
                         });
                 }
@@ -112,6 +111,7 @@ public class SIFWizard extends AbstractOutsideFrame {
                                                 index++;
                                                 layout.next(mainPanel);
                                                 setDefaultButton();
+                                                updateButtonsStatus();
                                         }
                                 }
                         });
@@ -133,7 +133,6 @@ public class SIFWizard extends AbstractOutsideFrame {
                         btnFinish = new JButton(I18N.tr("Finish"));
                         btnFinish.setBorderPainted(false);
                         btnFinish.addActionListener(new ActionListener() {
-
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
                                         exit(true);
@@ -164,17 +163,34 @@ public class SIFWizard extends AbstractOutsideFrame {
                 this.panels = panels;
                 this.index = 0;
                 buildMainPanel(panels);
-                this.add(mainPanel, BorderLayout.CENTER);             
+                this.add(mainPanel, BorderLayout.CENTER);
                 this.setIconImage(getSimplePanel().getIconImage());
                 setDefaultButton();
         }
-
-       
 
         @Override
         protected SimplePanel getSimplePanel() {
                 return panels[index];
         }
 
-        
+        /**
+         * Update the status of all buttons
+         */
+        public void updateButtonsStatus() {
+                if (panels != null) {
+                        if (index == 0) {
+                                btnPrevious.setEnabled(false);
+                        } else {
+                                btnPrevious.setEnabled(true);
+                        }
+
+                        if (index < panels.length - 1) {
+                                btnNext.setEnabled(true);
+                                btnFinish.setEnabled(false);
+                        } else {
+                                btnNext.setEnabled(false);
+                                btnFinish.setEnabled(true);
+                        }
+                }
+        }
 }

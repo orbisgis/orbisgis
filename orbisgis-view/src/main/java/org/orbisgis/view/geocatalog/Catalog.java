@@ -41,16 +41,21 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.SourceAlreadyExistsException;
+import org.gdms.data.stream.StreamSource;
+import org.gdms.data.stream.StreamSourceDefinition;
 import org.gdms.driver.Driver;
 import org.gdms.driver.FileDriver;
 import org.gdms.driver.driverManager.DriverFilter;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.*;
+import org.gvsig.remoteClient.wms.WMSClient;
+import org.gvsig.remoteClient.wms.WMSLayer;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.utils.CollectionUtils;
 import org.orbisgis.view.background.BackgroundJob;
@@ -70,6 +75,9 @@ import org.orbisgis.view.geocatalog.io.ExportInFileOperation;
 import org.orbisgis.view.geocatalog.renderer.DataSourceListCellRenderer;
 import org.orbisgis.view.geocatalog.sourceWizards.db.TableExportPanel;
 import org.orbisgis.view.geocatalog.sourceWizards.db.TableImportPanel;
+import org.orbisgis.view.geocatalog.sourceWizards.wms.LayerConfigurationPanel;
+import org.orbisgis.view.geocatalog.sourceWizards.wms.SRSPanel;
+import org.orbisgis.view.geocatalog.sourceWizards.wms.WMSConnectionPanel;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.table.TableEditableElement;
 import org.xnap.commons.i18n.I18n;
@@ -429,6 +437,37 @@ public class Catalog extends JPanel implements DockingPanel {
         }
 
         /**
+         * The user can load several WMS layers from the same server.
+         */
+        public void onMenuAddWMSServer() {
+                DataManager dm = Services.getService(DataManager.class);
+                SourceManager sm = dm.getSourceManager();
+                SRSPanel srsPanel = new SRSPanel();
+                LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel(srsPanel);
+                WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration);      
+                if (UIFactory.showDialog(new UIPanel[]{wmsConnection,
+                                layerConfiguration, srsPanel})) {
+                        WMSClient client = wmsConnection.getWMSClient();
+                        String validImageFormat = wmsConnection.getFirstImageFormat(client.getFormats());
+                        if (validImageFormat == null) {
+                                LOGGER.error(I18N.tr("Cannot find a valid image format for this WMS server"));
+                        } else {
+                                Object[] layers = layerConfiguration.getSelectedLayers();
+                                for (Object layer : layers) {
+                                        String layerName = ((WMSLayer) layer).getName();
+                                        String uniqueLayerName = layerName;
+                                        if (sm.exists(layerName)) {
+                                                uniqueLayerName = sm.getUniqueName(layerName);
+                                        }
+                                        StreamSource wmsSource = new StreamSource(client.getHost(), client.getPort(), layerName, "wms", validImageFormat, srsPanel.getSRS());
+                                        StreamSourceDefinition streamSourceDefinition = new StreamSourceDefinition(wmsSource);
+                                        sm.register(uniqueLayerName, streamSourceDefinition);
+                                }
+                        }
+                }
+        }
+
+        /**
          * the method that actually process the content of a directory, or a
          * file. If the file is acceptable by the FileFilter, it is processed
          *
@@ -487,6 +526,15 @@ public class Catalog extends JPanel implements DockingPanel {
                 addFileItem.addActionListener(EventHandler.create(ActionListener.class,
                         this,
                         "onMenuAddFromDataBase"));
+                addMenu.add(addFileItem);
+                
+                //Add the server panel
+                addFileItem = new JMenuItem(
+                        I18N.tr("WMS server"),
+                        OrbisGISIcon.getIcon("server_connect"));
+                addFileItem.addActionListener(EventHandler.create(ActionListener.class,
+                        this,
+                        "onMenuAddWMSServer"));
                 addMenu.add(addFileItem);
 
 
