@@ -45,7 +45,8 @@ public interface TreeNodeFileFactory {
                 AbstractTreeNode create(File filePath);
                 
                 /**
-                 * Add new menu items to nodes
+                 * Add new menu items to nodes.
+                 * This method is called for all nodes in the Tree.
                  * @param node
                  * @param menu 
                  */

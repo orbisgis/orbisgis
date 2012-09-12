@@ -28,14 +28,17 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
-import org.orbisgis.view.components.fstree.TreeNodePath;
-import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Enumeration;
 import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import org.apache.commons.io.FilenameUtils;
@@ -43,6 +46,10 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.common.MenuCommonFunctions;
+import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
+import org.orbisgis.view.components.fstree.TreeNodePath;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
 import org.xnap.commons.i18n.I18n;
@@ -91,6 +98,39 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
                         return filePath;
                 }
         }
+
+        public void onDeleteFile() {
+                if(filePath.exists()) {            
+                        int result = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                                I18N.tr("Are you sure you want to delete permanently the selected files ?"),
+                                I18N.tr("Remove the files"),
+                                JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+                        if(result == JOptionPane.YES_OPTION) {
+                                try {
+                                        if(!filePath.delete()) {   
+                                                LOGGER.error(I18N.tr("Cannot remove the file"));
+                                        }
+                                } catch(SecurityException ex) {
+                                        LOGGER.error(I18N.tr("Cannot remove the file {0}",filePath.getName()),ex);
+                                }                        
+                        } else {
+                                return;
+                        }
+                }
+                model.removeNodeFromParent(this);
+        }
+        @Override
+        public void feedPopupMenu(JPopupMenu menu) {
+                super.feedPopupMenu(menu);
+                JMenuItem folderRemove = new JMenuItem(I18N.tr("Delete"),
+                        OrbisGISIcon.getIcon("remove"));
+                folderRemove.setToolTipText(I18N.tr("Remove permanently the map"));
+                folderRemove.setActionCommand("delete");
+                folderRemove.addActionListener(
+                EventHandler.create(ActionListener.class,
+                this, "onDeleteFile"));
+                MenuCommonFunctions.updateOrInsertMenuItem(menu,folderRemove);
+        }       
 
         @Override
         public void insert(MutableTreeNode mtn, int i) {

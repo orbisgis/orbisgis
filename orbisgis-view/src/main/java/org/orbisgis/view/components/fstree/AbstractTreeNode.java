@@ -34,7 +34,7 @@ import javax.swing.tree.TreeNode;
 
 /**
  * This is the base class for all items in the tree.
- * It gives the ability to listen for item change
+ * The tree model is used to fire events related to node modifications.
  * @author Nicolas Fortin
  */
 public abstract class AbstractTreeNode implements MutableTreeNode {
@@ -49,7 +49,11 @@ public abstract class AbstractTreeNode implements MutableTreeNode {
         public String toString() {
                 return label;
         }
-
+        /**
+         * Set the tree model of this item.
+         * This method must be called by the parent item on insertion.
+         * @param model 
+         */
         public void setModel(DefaultTreeModel model) {
                 this.model = model;
         }

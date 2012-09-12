@@ -31,7 +31,7 @@ package org.orbisgis.view.components.fstree;
 import javax.swing.ImageIcon;
 
 /**
- *
+ * To set a custom Icon to a Node implements theses methods
  * @author Nicolas Fortin
  */
 public interface TreeNodeCustomIcon {

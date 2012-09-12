@@ -28,19 +28,28 @@
  */
 package org.orbisgis.view.components.fstree;
 
+import java.awt.Desktop;
+import java.awt.Toolkit;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
+import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.components.resourceTree.EnumIterator;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -49,13 +58,13 @@ import org.xnap.commons.i18n.I18nFactory;
 
         
 /**
- * Represent a folder in the file system
+ * Represent a folder in the file system.
  * @author Nicolas Fortin
  */
 public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, TreeNodePath {
         private List<MutableTreeNode> childs = new ArrayList<MutableTreeNode>();
         private File folderPath;
-        private static final Logger LOGGER = Logger.getLogger(TreeNodeFolder.class);
+        private static final Logger LOGGER = Logger.getLogger("gui." + TreeNodeFolder.class);
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeFolder.class);
         private TreeNodeFileFactoryManager factoryManager;
 
@@ -174,17 +183,106 @@ public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeN
                 return new EnumIterator<MutableTreeNode>(childs.iterator());
         }
 
+        /**
+         * File&Folder deletion
+         */
+        public void onDeleteFolder() {
+                if(folderPath.exists()) {
+                        int result = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                                I18N.tr("Are you sure you want to delete permanently the selected files ?"),
+                                I18N.tr("Remove the files"),
+                                JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+                        if(result == JOptionPane.YES_OPTION) {
+                                try {
+                                        FileUtils.deleteDirectory(folderPath);
+                                } catch(IOException ex) {
+                                        LOGGER.error(I18N.tr("Cannot remove the folder {0}",folderPath.getName()),ex);
+                                }                        
+                        } else {
+                                return;
+                        }
+                }
+                model.removeNodeFromParent(this);
+        }
+        /**
+         * Copy the folder path to the ClipBoard
+         */
+        public void onCopyPath() {
+                StringSelection pathString = new StringSelection(folderPath.getAbsolutePath());
+                try {
+                        Clipboard clipboard = 
+                                Toolkit.getDefaultToolkit().getSystemClipboard();
+                        clipboard.setContents(pathString, pathString);
+                        LOGGER.info(I18N.tr("The path {0} has been copied to the clipboard",folderPath.getAbsolutePath()));
+                } catch (Throwable ex) {
+                        LOGGER.error(I18N.tr("Could not copy the folder path to the clipboard"),ex);
+                }
+        }
+        
         @Override
         public void feedPopupMenu(JPopupMenu menu) {
-                JMenuItem updateMenu = new JMenuItem(I18N.tr("Update"), OrbisGISIcon.getIcon("arrow_refresh"));
+                if (menu.getComponentCount() > 0) {
+                        menu.addSeparator();
+                }
+                // Open the folder
+                JMenuItem copyPathMenu = new JMenuItem(I18N.tr("Copy the path"));
+                copyPathMenu.setToolTipText(I18N.tr("Copy the folder path in the clipboard"));
+                copyPathMenu.setActionCommand("TreeNodeFolder:CopyPath");
+                copyPathMenu.addActionListener(
+                        EventHandler.create(ActionListener.class,
+                        this, "onCopyPath"));
+                MenuCommonFunctions.updateOrInsertMenuItem(menu, copyPathMenu);
+                // Read the file system to update the tree
+                JMenuItem updateMenu = new JMenuItem(I18N.tr("Update"),
+                        OrbisGISIcon.getIcon("arrow_refresh"));
                 updateMenu.setToolTipText(I18N.tr("Update the content of this folder from the file system"));
                 updateMenu.setActionCommand("TreeNodeFolder:Update");
                 updateMenu.addActionListener(
                         EventHandler.create(ActionListener.class,
-                        this,"updateTree"));
+                        this, "updateTree"));
                 MenuCommonFunctions.updateOrInsertMenuItem(menu, updateMenu);
+                // Add a new Sub Folder
+                JMenuItem newSubFolder = new JMenuItem(I18N.tr("New folder"),
+                        OrbisGISIcon.getIcon("folder_add"));
+                newSubFolder.setToolTipText(I18N.tr("Create a sub-folder"));
+                newSubFolder.setActionCommand("TreeNodeFolder:newSubFolder");
+                newSubFolder.addActionListener(
+                        EventHandler.create(ActionListener.class,
+                        this, "onNewSubFolder"));
+                MenuCommonFunctions.updateOrInsertMenuItem(menu, newSubFolder);
+                // Remove the folder
+                //The root folder cannot be removed
+                if(parent instanceof TreeNodeFolder) {
+                        JMenuItem folderRemove = new JMenuItem(I18N.tr("Delete"),
+                                OrbisGISIcon.getIcon("remove"));
+                        folderRemove.setToolTipText(I18N.tr("Remove permanently the folder"));
+                        folderRemove.setActionCommand("delete");
+                        folderRemove.addActionListener(
+                        EventHandler.create(ActionListener.class,
+                        this, "onDeleteFolder"));
+                        MenuCommonFunctions.updateOrInsertMenuItem(menu,folderRemove);
+                }
         }
 
+        /**
+         * Create a sub folder, the folder name is given through an input dialog
+         */
+        public void onNewSubFolder() {                
+                String folderName = JOptionPane.showInputDialog(UIFactory.getMainFrame(), I18N.tr("Enter the folder name"), "Folder");
+                if(folderName!=null) {
+                        File newFolderPath = new File(folderPath,folderName);
+                        try {
+                                if(!newFolderPath.mkdir()) {
+                                        LOGGER.error(I18N.tr("The folder creation has failed"));
+                                } else {
+                                        updateTree();
+                                }
+                        } catch(Throwable ex) {
+                                LOGGER.error(I18N.tr("The folder creation has failed"),ex);
+                        }
+                }
+        }
+        
         @Override
         public File getFilePath() {
                 if(parent instanceof TreeNodePath) {
@@ -194,7 +292,10 @@ public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeN
                         return folderPath;
                 }
         }
-        
+        /**
+         * Return the children of this folder
+         * @return 
+         */
         List<AbstractTreeNode> getChildren() {
                 List<AbstractTreeNode> childsRet = new ArrayList<AbstractTreeNode>(getChildCount());
                 for(MutableTreeNode child : childs) {

@@ -44,7 +44,7 @@ import javax.swing.tree.TreePath;
 import org.apache.commons.io.FilenameUtils;
 
 /**
- *
+ * This JTree Can be linked with the file system thanks to the TreeNodeFolder
  * @author Nicolas Fortin
  */
 public class FileTree extends JTree implements TreeNodeFileFactoryManager {
@@ -62,12 +62,10 @@ public class FileTree extends JTree implements TreeNodeFileFactoryManager {
         public void addNotify() {
                 super.addNotify();
                 if(!initialized.getAndSet(true)) {
+                        setCellRenderer(new CustomTreeCellRenderer(this));
                         addMouseListener(treeMouse);
                 }
         }
-
-        
-        
         
          private boolean contains(TreePath[] selectionPaths, TreePath path) {
                 for (TreePath treePath : selectionPaths) {
@@ -75,19 +73,16 @@ public class FileTree extends JTree implements TreeNodeFileFactoryManager {
                         Object[] objectPath = treePath.getPath();
                         Object[] testPath = path.getPath();
                         if (objectPath.length != testPath.length) {
-                                equals = false;
+                                return false;
                         } else {
                                 for (int i = 0; i < testPath.length; i++) {
                                         if (testPath[i] != objectPath[i]) {
-                                                equals = false;
+                                                return false;
                                         }
                                 }
                         }
-                        if (equals) {
-                                return true;
-                        }
+                        return true;
                 }
-
                 return false;
         }
         /**
@@ -114,7 +109,8 @@ public class FileTree extends JTree implements TreeNodeFileFactoryManager {
                         makePopupMenu().show(evt.getComponent(),
                                 evt.getX(), evt.getY());
                 }
-        }        
+        }
+        
         /**
          * Fetch all selected items to make a popup menu
          * @return 

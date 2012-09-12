@@ -107,7 +107,6 @@ public class MapsManager extends JPanel {
                         //Set a listener to the root folder
                         rootFolder.setModel(treeModel);
                         rootFolder.updateTree(); //Read the file system tree
-                        tree.setCellRenderer(new CustomTreeCellRenderer(tree));
                         //Expand Local folder
                         tree.expandPath(new TreePath(new Object[] {rootNode,rootFolder}));                                               
                 }
@@ -117,7 +116,7 @@ public class MapsManager extends JPanel {
         *  Load built-ins map factory
         */
         private void initInternalFactories() {
-                tree.addFactory("ows",new TreeNodeOwsMapContextFactory(rootFolder));
+                tree.addFactory("ows",new TreeNodeOwsMapContextFactory());
         }
         /**
          * 

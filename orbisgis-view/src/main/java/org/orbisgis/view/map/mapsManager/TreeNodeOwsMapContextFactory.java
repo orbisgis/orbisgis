@@ -28,8 +28,6 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
-import org.orbisgis.view.components.fstree.TreeNodeFileFactory;
-import org.orbisgis.view.components.fstree.TreeNodeFolder;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -37,6 +35,8 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import org.orbisgis.sif.common.MenuCommonFunctions;
+import org.orbisgis.view.components.fstree.TreeNodeFileFactory;
+import org.orbisgis.view.components.fstree.TreeNodeFolder;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -46,14 +46,11 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class TreeNodeOwsMapContextFactory implements TreeNodeFileFactory {
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeOwsMapContextFactory.class);
-        private TreeNodeFolder folderRoot;
         private static final String ACTION_ADD_OWS_MAP = "TreeNodeOwsMapContextFactory:NewEmptyMap";
         /**
          * Constructor
-         * @param folderRoot The root of the Map folder, used to update file system on map insertion
          */
-        public TreeNodeOwsMapContextFactory(TreeNodeFolder folderRoot) {
-                this.folderRoot = folderRoot;
+        public TreeNodeOwsMapContextFactory() {
         }
         
         @Override

@@ -28,8 +28,6 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
-import org.orbisgis.view.components.fstree.AbstractTreeNode;
-import org.orbisgis.view.components.fstree.PopupTreeNode;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import javax.swing.JMenuItem;
@@ -39,6 +37,8 @@ import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.components.fstree.AbstractTreeNode;
+import org.orbisgis.view.components.fstree.PopupTreeNode;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.map.jobs.ReadMapContextJob;
