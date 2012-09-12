@@ -36,10 +36,9 @@ import java.beans.EventHandler;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
@@ -59,8 +58,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * Represent a folder in the file system.
  * @author Nicolas Fortin
  */
-public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, TreeNodePath {
-        private List<MutableTreeNode> childs = new ArrayList<MutableTreeNode>();
+public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, TreeNodePath {
+        private List<MutableTreeNode> children = new ArrayList<MutableTreeNode>();
         private File folderPath;
         private static final Logger LOGGER = Logger.getLogger("gui." + TreeNodeFolder.class);
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeFolder.class);
@@ -82,50 +81,49 @@ public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeN
         /**
          * Read the file system and insert the new files and folders
          */
-        public final void updateTree() {
-                Map<String,AbstractTreeNode> existingChilds = new HashMap<String,AbstractTreeNode>();
-                for(MutableTreeNode child : childs) {
-                        if(child instanceof TreeNodePath) {
-                                existingChilds.put(
-                                        ((TreeNodePath)child).getFilePath()
-                                        .getName(),
-                                        (AbstractTreeNode)child);
-                        }
-                }
-                List<AbstractTreeNode> oldChilds = getChildren();
-                //Clear the child list
-                childs = new ArrayList<MutableTreeNode>(oldChilds.size());
-                
-                //Find new files and sub-folders
+        public void updateTree() {    
+                List<String> fsList;
                 try {
-                        String[] list = folderPath.list();
-                        for(String childPath : list) {
-                                File newChild = new File(folderPath,childPath);
-                                AbstractTreeNode existingChild = existingChilds.get(newChild.getName());
-                                if(existingChild==null) {
-                                        if(newChild.isDirectory()) {
-                                                TreeNodeFolder subDir = new TreeNodeFolder(newChild,factoryManager);
-                                                model.insertNodeInto(subDir, this, getChildCount());
-                                                subDir.updateTree();
-                                        } else {
-                                                AbstractTreeNode child = factoryManager.create(newChild);
-                                                if(child != null) {
-                                                        model.insertNodeInto(child,this, getChildCount());
-                                                }
-                                        }
-                                } else {
-                                        childs.add(existingChild);
-                                        if(existingChild instanceof TreeNodeFolder) {
-                                                ((TreeNodeFolder)existingChild).updateTree();
-                                        }
-                                }
-                        }
+                        fsList = new ArrayList<String>(Arrays.asList(folderPath.list()));
                 } catch( SecurityException ex) {
                         LOGGER.error(I18N.tr("Cannot list the directory content"),ex);
+                        return;
                 }
-        }        
+                // Find deleted sub-elements 
+                List<MutableTreeNode> childrenToRemove = new ArrayList<MutableTreeNode>(children.size());
+                for(MutableTreeNode child : children) {
+                        if(child instanceof TreeNodePath) {
+                                String childFileName = ((TreeNodePath)child).getFilePath()
+                                        .getName();
+                                if(!fsList.contains(childFileName)) {
+                                        childrenToRemove.add(child);
+                                } else {
+                                        fsList.remove(childFileName);
+                                }
+                        }
+                }
+                // Effective children removal
+                for(MutableTreeNode child : childrenToRemove) {
+                        model.removeNodeFromParent(child);
+                }
+                // Add the new children
+                for(String childPath : fsList) {
+                        File newChild = new File(folderPath, childPath);
+                        if (newChild.isDirectory()) {
+                                TreeNodeFolder subDir = new TreeNodeFolder(newChild, factoryManager);
+                                model.insertNodeInto(subDir, this, getChildCount());
+                                subDir.updateTree();
+                        } else {
+                                AbstractTreeNode child = factoryManager.create(newChild);
+                                if (child != null) {
+                                        model.insertNodeInto(child, this, getChildCount());
+                                }
+                        }
+                }
+        }
+        
         private void internalInsert(AbstractTreeNode mtn, int i) {
-                childs.add(i, mtn);
+                children.add(i, mtn);
                 mtn.setParent(this);
                 mtn.setModel(model);
         }
@@ -137,12 +135,12 @@ public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeN
 
         @Override
         public void remove(int i) {
-                childs.remove(i);
+                children.remove(i);
         }
 
         @Override
         public void remove(MutableTreeNode mtn) {
-                childs.remove(mtn);
+                children.remove(mtn);
         }
 
         @Override
@@ -153,17 +151,17 @@ public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeN
 
         @Override
         public TreeNode getChildAt(int i) {
-                return childs.get(i);
+                return children.get(i);
         }
 
         @Override
         public int getChildCount() {
-                return childs.size();
+                return children.size();
         }
 
         @Override
         public int getIndex(TreeNode tn) {
-                return childs.indexOf(tn);
+                return children.indexOf(tn);
         }
 
         @Override
@@ -178,7 +176,7 @@ public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeN
 
         @Override
         public Enumeration<MutableTreeNode> children() {
-                return new EnumIterator<MutableTreeNode>(childs.iterator());
+                return new EnumIterator<MutableTreeNode>(children.iterator());
         }
 
         /**
@@ -294,12 +292,12 @@ public final class TreeNodeFolder extends AbstractTreeNode implements PopupTreeN
          * Return the children of this folder
          * @return 
          */
-        List<AbstractTreeNode> getChildren() {
-                List<AbstractTreeNode> childsRet = new ArrayList<AbstractTreeNode>(getChildCount());
-                for(MutableTreeNode child : childs) {
-                        childsRet.add((AbstractTreeNode)child);
+        public List<AbstractTreeNode> getChildren() {
+                List<AbstractTreeNode> childrenRet = new ArrayList<AbstractTreeNode>(getChildCount());
+                for(MutableTreeNode child : children) {
+                        childrenRet.add((AbstractTreeNode)child);
                 }
-                return childsRet;
+                return childrenRet;
         }
         
 }
