@@ -33,7 +33,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 
 /**
- *
+ * All handled files type implements this factory
  * @author Nicolas Fortin
  */
 public interface TreeNodeFileFactory {

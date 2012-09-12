@@ -34,7 +34,7 @@ import javax.swing.JTree;
 import org.orbisgis.view.components.renderers.TreeLaFRenderer;
 
 /**
- *
+ * This rendered take the icon of the TreeNodeCustomIcon interface 
  * @author Nicolas Fortin
  */
 public class CustomTreeCellRenderer extends TreeLaFRenderer {

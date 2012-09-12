@@ -69,7 +69,6 @@ public class FileTree extends JTree implements TreeNodeFileFactoryManager {
         
          private boolean contains(TreePath[] selectionPaths, TreePath path) {
                 for (TreePath treePath : selectionPaths) {
-                        boolean equals = true;
                         Object[] objectPath = treePath.getPath();
                         Object[] testPath = path.getPath();
                         if (objectPath.length != testPath.length) {

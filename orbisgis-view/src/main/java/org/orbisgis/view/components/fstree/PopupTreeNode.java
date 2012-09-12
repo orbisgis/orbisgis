@@ -31,7 +31,7 @@ package org.orbisgis.view.components.fstree;
 import javax.swing.JPopupMenu;
 
 /**
- *
+ * Node that handle pop-up menu
  * @author Nicolas Fortin
  */
 public interface PopupTreeNode {
