@@ -28,26 +28,69 @@
  */
 package org.orbisgis.view.map.mapsManager.jobs;
 
+import java.util.List;
+import javax.swing.SwingUtilities;
+import net.opengis.ows._2.LanguageStringType;
+import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
+import org.orbisgis.view.map.MapElement;
+import org.orbisgis.view.map.mapsManager.TreeLeafMapContextFile;
+import org.orbisgis.view.map.mapsManager.TreeLeafMapElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * Update the tree node to replace the filename by the good title and description
+ * Update the tree node to replace the filename by the title
+ * described in the map context files.
  * @author Nicolas Fortin
  */
 public class ReadStoredMap implements BackgroundJob {
         private static final I18n I18N = I18nFactory.getI18n(ReadStoredMap.class);
+        List<TreeLeafMapElement> mapContextFiles;
+
+        public ReadStoredMap(List<TreeLeafMapElement> mapContextFiles) {
+                this.mapContextFiles = mapContextFiles;
+        }       
         
         @Override
         public void run(ProgressMonitor pm) {
-                //
+                for(int elIndex=0; elIndex<mapContextFiles.size();elIndex++) {
+                        TreeLeafMapElement mapEl = mapContextFiles.get(elIndex);
+                        MapContext el = mapEl.getMapElement(pm).getMapContext();
+                        if(el instanceof OwsMapContext) {
+                                OwsMapContext mapContext = (OwsMapContext)el;
+                                if(mapContext.getJAXBObject().getGeneral()!=null) {
+                                        LanguageStringType title = mapContext.getJAXBObject().getGeneral().getTitle();
+                                        if(title!=null && !title.getValue().isEmpty())
+                                        SwingUtilities.invokeLater(new DoRename(mapEl,title.getValue()));
+                                }
+                        }
+                        pm.progressTo(elIndex / mapContextFiles.size() * 100);
+                        if(pm.isCancelled()) {
+                                return;
+                        }
+                }
         }
 
         @Override
         public String getTaskName() {
                 return I18N.tr("Parse maps title and description");
+        }
+        
+        private static class DoRename implements Runnable {
+                TreeLeafMapElement treeNode;
+                String newLabel;
+
+                public DoRename(TreeLeafMapElement treeNode, String newLabel) {
+                        this.treeNode = treeNode;
+                        this.newLabel = newLabel;
+                }                
+                @Override
+                public void run() {
+                        treeNode.setLabel(newLabel);
+                }                
         }
         
 }

@@ -40,6 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
@@ -70,9 +71,28 @@ public class FileTree extends JTree implements TreeNodeFileFactoryManager {
                 if(!initialized.getAndSet(true)) {
                         setCellRenderer(new CustomTreeCellRenderer(this));
                         addMouseListener(treeMouse);
+                        getSelectionModel().addTreeSelectionListener(
+                                EventHandler.create(TreeSelectionListener.class,
+                                this,"onSelectionChange"));
                 }
         }
-        
+        /**
+         * Called when the tree selection change.
+         * Update the tree editable state
+         */
+        public void onSelectionChange() {
+                TreePath[] Selected = getSelectionPaths();
+                
+                if(Selected!=null) {
+                        TreePath firstSelected = Selected[Selected.length-1];
+                        Object comp = firstSelected.getLastPathComponent();
+                        if(comp instanceof AbstractTreeNode) {
+                                if(!isEditing()) {
+                                        setEditable(((AbstractTreeNode)comp).isEditable());
+                                }
+                        }
+                }
+        }
          private boolean contains(TreePath[] selectionPaths, TreePath path) {
                 for (TreePath treePath : selectionPaths) {
                         Object[] objectPath = treePath.getPath();

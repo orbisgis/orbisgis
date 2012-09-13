@@ -33,6 +33,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerCollectionEvent;
@@ -150,7 +151,7 @@ public final class MapElement extends EditableElement {
 
 	@Override
 	public String toString() {
-		return I18N.tr("MapContext - {0}",mapContextFile.getName());
+		return I18N.tr("MapContext - {0}",FilenameUtils.getBaseName(mapContextFile.getName()));
 	}
 
         /**

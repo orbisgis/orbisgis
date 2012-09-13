@@ -32,6 +32,8 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -40,11 +42,14 @@ import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
 import org.orbisgis.core.Services;
+import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.FileTree;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
 import org.orbisgis.view.components.fstree.TreeNodeFolder;
+import org.orbisgis.view.map.mapsManager.jobs.ReadStoredMap;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -99,16 +104,34 @@ public class MapsManager extends JPanel {
         public TreeNodeFileFactoryManager getFactoryManager() {
                 return tree;
         }
+        
+        private List<TreeLeafMapElement> getAllMapElements(TreeNode parentNode) {
+                List<TreeLeafMapElement> mapElements = new ArrayList<TreeLeafMapElement>();
+                if(!parentNode.isLeaf()) {
+                        for(int childIndex=0; childIndex < parentNode.getChildCount(); childIndex++) {
+                                TreeNode nodeElement = parentNode.getChildAt(childIndex);
+                                if(nodeElement instanceof TreeLeafMapElement) {
+                                        mapElements.add((TreeLeafMapElement)nodeElement);
+                                } else {
+                                        mapElements.addAll(getAllMapElements(nodeElement));
+                                }
+                        }
+                }                
+                return mapElements;
+        }
          
         @Override
         public void setVisible(boolean visible) {
                 super.setVisible(visible);
                 if(visible && !initialized.getAndSet(true)) {
-                        //Set a listener to the root folder
+                        // Set a listener to the root folder
                         rootFolder.setModel(treeModel);
                         rootFolder.updateTree(); //Read the file system tree
-                        //Expand Local folder
-                        tree.expandPath(new TreePath(new Object[] {rootNode,rootFolder}));                                               
+                        // Expand Local folder
+                        tree.expandPath(new TreePath(new Object[] {rootNode,rootFolder}));  
+                        // Fetch all maps to find their titles
+                        BackgroundManager bm = Services.getService(BackgroundManager.class);
+                        bm.nonBlockingBackgroundOperation(new ReadStoredMap(getAllMapElements(rootFolder)));
                 }
         }
         

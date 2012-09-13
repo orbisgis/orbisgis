@@ -434,7 +434,11 @@ public final class OwsMapContext extends BeanMapContext {
                 }
         }
 
-        private OWSContextType getJAXBObject() {
+        /**
+         * 
+         * @return The internal serialisation objects of the Map Context
+         */
+        public OWSContextType getJAXBObject() {
                 if (jaxbMapContext == null) {
                         return createJaxbMapContext();
                 }

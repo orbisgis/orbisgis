@@ -35,16 +35,21 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.Enumeration;
+import java.util.Locale;
+import java.util.logging.Level;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
+import net.opengis.ows._2.LanguageStringType;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.OwsMapContext;
+import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.MenuCommonFunctions;
@@ -69,6 +74,7 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
                 // For fast loading, take the filename as the ows title
                 filePath = mapContextFilePath;
                 setLabel(FilenameUtils.getBaseName(mapContextFilePath.getName()));
+                setEditable(false);
         }
         
         /**
@@ -79,10 +85,20 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
         public static boolean createEmptyMapContext(File fileName) {
                 
                 //Create an empty map context
-                OwsMapContext emptyMapContext = new OwsMapContext();
+                OwsMapContext emptyMapContext = new OwsMapContext();                
                 try {
+                        //Set minimal informations
+                        emptyMapContext.open(null);
+                        Description mapDescription = new Description();
+                        mapDescription.addTitle(Locale.getDefault(),
+                                FilenameUtils.getBaseName(fileName.getName()));
+                        emptyMapContext.setDescription(mapDescription);
+                        emptyMapContext.close(null);
                         emptyMapContext.write(new FileOutputStream(fileName));
                 } catch (FileNotFoundException ex) {
+                        LOGGER.error(I18N.tr("Map creation failed"),ex);
+                        return false;
+                } catch (LayerException ex) {
                         LOGGER.error(I18N.tr("Map creation failed"),ex);
                         return false;
                 }
@@ -148,8 +164,9 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
         }
 
         @Override
-        public void setUserObject(Object o) {                
-                LOGGER.debug("Map title change to : " + o);
+        public void setUserObject(Object o) {
+                // The map context need to be open and close to edit the label,
+                // this can be quite long and register some data sources..
         }
 
         @Override
@@ -202,13 +219,17 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
         public ImageIcon getOpenIcon() {
                 throw new UnsupportedOperationException("Not supported.");
         }
+        
+        private OwsMapContext getMapContext() throws FileNotFoundException {
+                OwsMapContext mapContext = new OwsMapContext();
+                mapContext.read(new FileInputStream(getFilePath()));
+                return mapContext;
+        }
 
         @Override
         public MapElement getMapElement(ProgressMonitor pm) {
-                MapContext mapContext = new OwsMapContext();
                 try {
-                        mapContext.read(new FileInputStream(getFilePath()));
-                        MapElement mapElement = new MapElement(mapContext, getFilePath());
+                        MapElement mapElement = new MapElement(getMapContext(), getFilePath());
                         return mapElement;
                 } catch(FileNotFoundException ex) {
                         throw new IllegalStateException(ex);
