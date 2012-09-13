@@ -88,6 +88,13 @@ public final class DockingManager {
 	/** the available preferences for docking frames */
         private PreferenceTreeModel preferences;
 
+        /**
+         * @return the managed frame
+         */
+        public JFrame getOwner() {
+                return owner;
+        }
+
         
         /**
          * 

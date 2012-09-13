@@ -36,6 +36,7 @@ import java.util.Set;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelLayout;
+import org.orbisgis.view.edition.dialogs.SaveDocuments;
 
 /**
  * The editor Manager is responsible of all EditorFactories.
@@ -104,7 +105,24 @@ public class EditorManager {
                 
                 // Open the element in editors
                 for(EditorDockable editor : getEditors()) {
-                        editor.setEditableElement(editableElement);                        
+                        if(editor.match(editableElement)) {
+                                // Get the current loaded document
+                                EditableElement oldEditable = editor.getEditableElement();
+                                if(oldEditable!=null) {
+                                        if(oldEditable.isModified()) {
+                                                //Ask the user to save changes
+                                                //before loosing the old editable
+                                                List<EditableElement> modifiedDocs = new ArrayList<EditableElement>();
+                                                modifiedDocs.add(oldEditable);
+                                                SaveDocuments.CHOICE userChoice = SaveDocuments.showModal(dockingManager.getOwner(), modifiedDocs);                                                
+                                                if(userChoice==SaveDocuments.CHOICE.CANCEL) {
+                                                        //The user cancel the loading of elements
+                                                        return;
+                                                }
+                                        }
+                                }                                
+                                editor.setEditableElement(editableElement);
+                        }
                 }
                 
                 //Open the element in MultipleEditorFactories
