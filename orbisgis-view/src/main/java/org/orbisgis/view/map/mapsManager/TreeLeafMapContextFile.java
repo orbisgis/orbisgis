@@ -138,14 +138,16 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
         @Override
         public void feedPopupMenu(JPopupMenu menu) {
                 super.feedPopupMenu(menu);
-                JMenuItem folderRemove = new JMenuItem(I18N.tr("Delete"),
-                        OrbisGISIcon.getIcon("remove"));
-                folderRemove.setToolTipText(I18N.tr("Remove permanently the map"));
-                folderRemove.setActionCommand("delete");
-                folderRemove.addActionListener(
-                EventHandler.create(ActionListener.class,
-                this, "onDeleteFile"));
-                MenuCommonFunctions.updateOrInsertMenuItem(menu,folderRemove);
+                if(!isLoaded()) {
+                        JMenuItem folderRemove = new JMenuItem(I18N.tr("Delete"),
+                                OrbisGISIcon.getIcon("remove"));
+                        folderRemove.setToolTipText(I18N.tr("Remove permanently the map"));
+                        folderRemove.setActionCommand("delete");
+                        folderRemove.addActionListener(
+                        EventHandler.create(ActionListener.class,
+                        this, "onDeleteFile"));
+                        MenuCommonFunctions.updateOrInsertMenuItem(menu,folderRemove);
+                }
         }       
 
         @Override

@@ -48,21 +48,30 @@ public class CustomTreeCellRenderer extends TreeLaFRenderer {
 			boolean selected, boolean expanded, boolean leaf, int row,
 			boolean hasFocus) {
                 Component nativeRendererComp = lookAndFeelRenderer.getTreeCellRendererComponent(
-                        tree, value, selected, expanded, leaf, row, hasFocus); 
-                if(value instanceof TreeNodeCustomIcon && nativeRendererComp instanceof JLabel) {
+                        tree, value, selected, expanded, leaf, row, hasFocus);
+                if (nativeRendererComp instanceof JLabel) {
                         JLabel rendererComponent = (JLabel) nativeRendererComp;
-                        TreeNodeCustomIcon treeNode = (TreeNodeCustomIcon) value;
-                        if(leaf) {
-                                rendererComponent.setIcon(treeNode.getLeafIcon());
-                        } else {
-                                if(expanded) {
-                                        rendererComponent.setIcon(treeNode.getOpenIcon());
+                        // Let the node to customise rendering
+                        if (value instanceof TreeNodeCustomLabel) {
+                                if(((TreeNodeCustomLabel)value).applyCustomLabel(rendererComponent)) {
+                                        //Reload the lof renderer to recover the initial state
+                                        updateLFRenderer();                                        
+                                }
+                        }
+                        if (value instanceof TreeNodeCustomIcon) {
+                                TreeNodeCustomIcon treeNode = (TreeNodeCustomIcon) value;
+                                if (leaf) {
+                                        rendererComponent.setIcon(treeNode.getLeafIcon());
                                 } else {
-                                        rendererComponent.setIcon(treeNode.getClosedIcon());
+                                        if (expanded) {
+                                                rendererComponent.setIcon(treeNode.getOpenIcon());
+                                        } else {
+                                                rendererComponent.setIcon(treeNode.getClosedIcon());
+                                        }
                                 }
                         }
                 }
                 return nativeRendererComp;
-	}
+        }
 
 }

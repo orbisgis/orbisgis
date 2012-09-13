@@ -285,6 +285,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             URI rootDir =(new File(viewWorkspace.getMapContextPath()+File.separator)).toURI();
             String relative = rootDir.relativize(element.getMapContextFile().toURI()).getPath();
             getMapEditorPersistance().setDefaultMapContext(relative);
+            // Set the loaded map hint to the MapCatalog
+            mapsManager.setLoadedMap(element.getMapContextFile());
             repaint();
         } catch (IllegalStateException ex) {
             GUILOGGER.error(ex);

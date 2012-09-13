@@ -49,6 +49,7 @@ import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.FileTree;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
 import org.orbisgis.view.components.fstree.TreeNodeFolder;
+import org.orbisgis.view.components.fstree.TreeNodePath;
 import org.orbisgis.view.map.mapsManager.jobs.ReadStoredMap;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
@@ -67,6 +68,7 @@ public class MapsManager extends JPanel {
         private MutableTreeNode rootNode = new DefaultMutableTreeNode();
         TreeNodeFolder rootFolder;
         private JScrollPane scrollPane;
+        private File loadedMap;
         // Store all the compatible map context
         
         private AtomicBoolean initialized = new AtomicBoolean(false);
@@ -132,6 +134,8 @@ public class MapsManager extends JPanel {
                         // Fetch all maps to find their titles
                         BackgroundManager bm = Services.getService(BackgroundManager.class);
                         bm.nonBlockingBackgroundOperation(new ReadStoredMap(getAllMapElements(rootFolder)));
+                        // Apply loaded map property on map nodes
+                        applyLoadedMapHint();
                 }
         }
         
@@ -147,6 +151,30 @@ public class MapsManager extends JPanel {
          */
         public JTree getTree() {
                 return tree;
+        }
+        
+        /**
+         * Update the state of the tree to show to the user
+         * a visual hint that a map is currently shown in the MapEditor or not.
+         * @param loadedMap 
+         */
+        public void setLoadedMap(File loadedMap) {
+                this.loadedMap = loadedMap;
+                applyLoadedMapHint();
+        }
+        private void applyLoadedMapHint() {
+                if(loadedMap!=null) {
+                        List<TreeLeafMapElement> mapElements = getAllMapElements(rootNode);
+                        for(TreeLeafMapElement mapEl : mapElements) {
+                                if(mapEl instanceof TreeNodePath) {
+                                        if(((TreeNodePath)mapEl).getFilePath().equals(loadedMap)) {
+                                                mapEl.setLoaded(true);
+                                        } else {
+                                                mapEl.setLoaded(false);
+                                        }
+                                }
+                        }
+                }
         }
         
         /**
