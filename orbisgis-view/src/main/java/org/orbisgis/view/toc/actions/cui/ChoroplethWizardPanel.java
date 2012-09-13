@@ -6,6 +6,7 @@ package org.orbisgis.view.toc.actions.cui;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.net.URL;
 import java.util.List;
 import javax.swing.JPanel;
@@ -46,9 +47,10 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
     private static final Logger LOGGER = Logger.getLogger(ChoroplethWizardPanel.class);
     /** I18n */
     private final static I18n I18N = I18nFactory.getI18n(ChoroplethWizardPanel.class);
-
+    
     private ChoroplethDataModel choroplethDataModel;
     private FreqChartDataModel freqChartDataModel;
+    private FreqChart freqChart;
 
     /**
      * Choropleth constructor
@@ -72,7 +74,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
         freqChartDataModel = new FreqChartDataModel(data);
 
-        FreqChart freqChart = new FreqChart(freqChartDataModel);
+        freqChart = new FreqChart(freqChartDataModel);
 
         freqChart.getPanel();
 
@@ -89,6 +91,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab(I18N.tr("Distribution"), dist);
         tabbedPane.addTab(I18N.tr("Symbology"), symb);
+        tabbedPane.setPreferredSize(new Dimension(500,500));
 
         this.add(tabbedPane);
 

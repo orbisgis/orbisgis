@@ -7,7 +7,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.List;
-import javax.swing.AbstractButton;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -20,6 +19,10 @@ import javax.swing.SpinnerNumberModel;
 import javax.swing.SpringLayout;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import org.orbisgis.core.Services;
+import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.view.background.BackgroundJob;
+import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.toc.actions.cui.choropleth.dataModel.ChoroplethDataModel;
 import org.orbisgis.view.toc.actions.cui.freqChart.FreqChart;
 import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
@@ -34,7 +37,7 @@ public class ChoroplethDistInputPanel extends JPanel {
 
     /** I18n */
     private final static I18n I18N = I18nFactory.getI18n(ChoroplethDistInputPanel.class);
-
+    
     /** The frequence chart data model */
     private FreqChartDataModel freqChartDataModel;
     /** The choropleth data model */
@@ -60,7 +63,7 @@ public class ChoroplethDistInputPanel extends JPanel {
 
     /** The first combobox field element */
     private String firstCmbFieldElem = I18N.tr("1st num attrib");
-
+    
     /** The method string name*/
     private String quantileStr = I18N.tr("quantile");
     private String meanStr = I18N.tr("mean");
@@ -88,21 +91,41 @@ public class ChoroplethDistInputPanel extends JPanel {
     private void initPanel() {
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
-        JPanel north = initNorthPanel();
-        JPanel center = initCenterPanel();
-        JPanel chartInputPan = initChartInputPanel();
+        BackgroundManager bm = Services.getService(BackgroundManager.class);
+        bm.backgroundOperation(new BackgroundJob() {
 
-        this.add(north);
-        this.add(center);
-        this.add(freqChart.getPanel());
-        this.add(chartInputPan);
+            @Override
+            public void run(ProgressMonitor pm) {
+                add(initNorthPanel());
+                add(initCenterPanel());
+                updateComboField();
+                updateComboBoxNbrClasses();
+            }
 
-        updateComboField();
-        updateComboBoxNbrClasses();
+            @Override
+            public String getTaskName() {
+                return "DrawInputPanel";
+            }
+        });
 
+
+        BackgroundManager bm2 = Services.getService(BackgroundManager.class);
+        bm2.backgroundOperation(new BackgroundJob() {
+
+            @Override
+            public void run(ProgressMonitor pm) {
+                add(freqChart.getPanel());
+                add(initChartInputPanel());
+            }
+
+            @Override
+            public String getTaskName() {
+                return "DrawFreqChart";
+            }
+        });
     }
 
-     /**
+    /**
      * Init the North Distribution Panel
      */
     private JPanel initNorthPanel() {
@@ -114,20 +137,32 @@ public class ChoroplethDistInputPanel extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                String fields = String.valueOf(cmbField.getSelectedItem());
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.backgroundOperation(new BackgroundJob() {
 
-                if (fields.equals(firstCmbFieldElem)) {
-                    statModel.setField(statModel.getFields().get(0));
-                    freqChartDataModel.setData(statModel.getData());
-                } else {
-                    statModel.setField(fields);
-                    freqChartDataModel.setData(statModel.getData());
-                }
-                yule.setSelected(true);
-                freqChartDataModel.setClassNumber(freqChartDataModel.getClassNumberGen());
-                freqChart.clearData();
-                freqChart.repaint();
-                updateChartInput();
+                    @Override
+                    public void run(ProgressMonitor pm) {
+                        String fields = String.valueOf(cmbField.getSelectedItem());
+
+                        if (fields.equals(firstCmbFieldElem)) {
+                            statModel.setField(statModel.getFields().get(0));
+                            freqChartDataModel.setData(statModel.getData());
+                        } else {
+                            statModel.setField(fields);
+                            freqChartDataModel.setData(statModel.getData());
+                        }
+                        yule.setSelected(true);
+                        freqChartDataModel.setClassNumber(freqChartDataModel.getClassNumberGen());
+                        freqChart.clearData();
+                        freqChart.repaint();
+                        updateChartInput();
+                    }
+
+                    @Override
+                    public String getTaskName() {
+                        return "FieldActionPerformed";
+                    }
+                });
             }
         });
 
@@ -154,7 +189,7 @@ public class ChoroplethDistInputPanel extends JPanel {
         return north;
     }
 
-     /**
+    /**
      * Init the Center Distribution Panel
      */
     private JPanel initCenterPanel() {
@@ -172,13 +207,24 @@ public class ChoroplethDistInputPanel extends JPanel {
 
             @Override
             public void itemStateChanged(ItemEvent e) {
-                AbstractButton abstractButton = (AbstractButton) e.getSource();
-                boolean selected = abstractButton.getModel().isSelected();
-                if (selected) {
-                    freqChartDataModel.setClassNumber(freqChartDataModel.getClassNumberGen());
-                    freqChart.clearData();
-                    freqChart.repaint();
-                }
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.backgroundOperation(new BackgroundJob() {
+
+                    @Override
+                    public void run(ProgressMonitor pm) {
+                        boolean selected = yule.isSelected();
+                        if (selected) {
+                            freqChartDataModel.setClassNumber(freqChartDataModel.getClassNumberGen());
+                            freqChart.clearData();
+                            freqChart.repaint();
+                        }
+                    }
+
+                    @Override
+                    public String getTaskName() {
+                        return "YuleStateChanged";
+                    }
+                });
             }
         });
         JButton plus = new JButton("+");
@@ -186,10 +232,22 @@ public class ChoroplethDistInputPanel extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                yule.setSelected(false);
-                freqChartDataModel.setClassNumber(freqChartDataModel.getClassNumber() + 1);
-                freqChart.clearData();
-                freqChart.repaint();
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.backgroundOperation(new BackgroundJob() {
+
+                    @Override
+                    public void run(ProgressMonitor pm) {
+                        yule.setSelected(false);
+                        freqChartDataModel.setClassNumber(freqChartDataModel.getClassNumber() + 1);
+                        freqChart.clearData();
+                        freqChart.repaint();
+                    }
+
+                    @Override
+                    public String getTaskName() {
+                        return "yuleMoreButton";
+                    }
+                });
             }
         });
 
@@ -198,13 +256,25 @@ public class ChoroplethDistInputPanel extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                yule.setSelected(false);
-                int classMin = freqChartDataModel.getClassNumber() - 1;
-                if (classMin > 0) {
-                    freqChartDataModel.setClassNumber(classMin);
-                    freqChart.clearData();
-                    freqChart.repaint();
-                }
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.backgroundOperation(new BackgroundJob() {
+
+                    @Override
+                    public void run(ProgressMonitor pm) {
+                        yule.setSelected(false);
+                        int classMin = freqChartDataModel.getClassNumber() - 1;
+                        if (classMin > 0) {
+                            freqChartDataModel.setClassNumber(classMin);
+                            freqChart.clearData();
+                            freqChart.repaint();
+                        }
+                    }
+
+                    @Override
+                    public String getTaskName() {
+                        return "yuleLessButton";
+                    }
+                });
             }
         });
 
@@ -218,7 +288,7 @@ public class ChoroplethDistInputPanel extends JPanel {
         return center;
     }
 
-     /**
+    /**
      * Init the ChartInput Distribution Panel
      */
     private JPanel initChartInputPanel() {
@@ -337,39 +407,52 @@ public class ChoroplethDistInputPanel extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            String method = (String) cmbMethod.getSelectedItem();
 
-            ChoroplethDataModel.StatisticMethod methode = ChoroplethDataModel.StatisticMethod.MANUAL;
+            BackgroundManager bm = Services.getService(BackgroundManager.class);
+            bm.backgroundOperation(new BackgroundJob() {
 
-            if (method.equals(quantileStr)) {
-                methode = ChoroplethDataModel.StatisticMethod.QUANTILES;
-            } else if (method.equals(meanStr)) {
-                methode = ChoroplethDataModel.StatisticMethod.MEAN;
-            } else if (method.equals(jenksStr)) {
-                methode = ChoroplethDataModel.StatisticMethod.JENKS;
-            } else if (method.equals(manualStr)) {
-                methode = ChoroplethDataModel.StatisticMethod.MANUAL;
-            }
+                @Override
+                public void run(ProgressMonitor pm) {
+                    String method = (String) cmbMethod.getSelectedItem();
 
-            cmbClass.removeActionListener(cmbClassListener);
-            cmbClass.removeAllItems();
-            int[] allowed = statModel.getNumberOfClassesAllowed(freqChartDataModel, methode);
-            for (int i = 0; i < allowed.length; i++) {
-                cmbClass.addItem(allowed[i]);
-            }
-            if (method.equals(meanStr)) {
-                cmbClass.setSelectedIndex(1);
-            } else {
-                cmbClass.setSelectedIndex(4);
-            }
-            freqChartDataModel.setThresholdNumber(Integer.parseInt(cmbClass.getSelectedItem().toString()));
-            cmbClass.addActionListener(cmbClassListener);
+                    ChoroplethDataModel.StatisticMethod methode = ChoroplethDataModel.StatisticMethod.MANUAL;
 
-            statModel.setStatisticMethod(freqChartDataModel, methode);
+                    if (method.equals(quantileStr)) {
+                        methode = ChoroplethDataModel.StatisticMethod.QUANTILES;
+                    } else if (method.equals(meanStr)) {
+                        methode = ChoroplethDataModel.StatisticMethod.MEAN;
+                    } else if (method.equals(jenksStr)) {
+                        methode = ChoroplethDataModel.StatisticMethod.JENKS;
+                    } else if (method.equals(manualStr)) {
+                        methode = ChoroplethDataModel.StatisticMethod.MANUAL;
+                    }
 
-            freqChart.repaint();
-            updateChartInput();
-            choroplethRangeTabPanel.refresh(freqChartDataModel);
+                    cmbClass.removeActionListener(cmbClassListener);
+                    cmbClass.removeAllItems();
+                    int[] allowed = statModel.getNumberOfClassesAllowed(freqChartDataModel, methode);
+                    for (int i = 0; i < allowed.length; i++) {
+                        cmbClass.addItem(allowed[i]);
+                    }
+                    if (method.equals(meanStr)) {
+                        cmbClass.setSelectedIndex(1);
+                    } else {
+                        cmbClass.setSelectedIndex(4);
+                    }
+                    freqChartDataModel.setThresholdNumber(Integer.parseInt(cmbClass.getSelectedItem().toString()));
+                    cmbClass.addActionListener(cmbClassListener);
+
+                    statModel.setStatisticMethod(freqChartDataModel, methode);
+
+                    freqChart.repaint();
+                    updateChartInput();
+                    choroplethRangeTabPanel.refresh(freqChartDataModel);
+                }
+
+                @Override
+                public String getTaskName() {
+                    return "StatisticMethodChange";
+                }
+            });
         }
     }
 
@@ -380,11 +463,25 @@ public class ChoroplethDistInputPanel extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            freqChartDataModel.setThresholdNumber(Integer.parseInt(cmbClass.getSelectedItem().toString()));
-            freqChartDataModel.generateChartData();
-            choroplethRangeTabPanel.refresh(freqChartDataModel);
-            freqChart.repaint();
-            updateChartInput();
+
+            BackgroundManager bm = Services.getService(BackgroundManager.class);
+            bm.backgroundOperation(new BackgroundJob() {
+
+                @Override
+                public void run(ProgressMonitor pm) {
+                    freqChartDataModel.setThresholdNumber(Integer.parseInt(cmbClass.getSelectedItem().toString()));
+                    freqChartDataModel.generateChartData();
+                    choroplethRangeTabPanel.refresh(freqChartDataModel);
+                    freqChart.repaint();
+                    updateChartInput();
+                }
+
+                @Override
+                public String getTaskName() {
+                    return "CmbClassChange";
+                }
+            });
+
         }
     }
 }

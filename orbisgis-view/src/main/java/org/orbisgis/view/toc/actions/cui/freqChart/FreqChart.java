@@ -117,7 +117,7 @@ public class FreqChart {
         freqChartRender.init(title, labelX, labelY, displayLabel);
 
         JFreeChart chart = freqChartRender.repaint(freqChartDataModel);
-
+        
         chartPanel = new ChartPanel(chart);
         chartPanel.setPopupMenu(null);
         chartPanel.setMouseZoomable(false);

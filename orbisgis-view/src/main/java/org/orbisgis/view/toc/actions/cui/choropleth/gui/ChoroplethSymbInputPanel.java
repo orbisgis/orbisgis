@@ -16,6 +16,10 @@ import javax.swing.SpinnerModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import org.orbisgis.core.Services;
+import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.view.background.BackgroundJob;
+import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.toc.actions.cui.freqChart.FreqChart;
 import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
 import org.xnap.commons.i18n.I18n;
@@ -29,7 +33,6 @@ public class ChoroplethSymbInputPanel extends JPanel {
 
     /** I18n */
     private final static I18n I18N = I18nFactory.getI18n(ChoroplethSymbInputPanel.class);
-
     /** The frequence chart data model */
     private FreqChartDataModel freqChartDataModel;
     /** The frequency chart panel */
@@ -61,15 +64,26 @@ public class ChoroplethSymbInputPanel extends JPanel {
      */
     private void initPanel() {
 
-        JPanel north = initNorthPanel();
-        JPanel center = initCenterPanel();
-        JPanel south = new JPanel();
-        south.add(choroplethRangeTabPanel);
+        BackgroundManager bm = Services.getService(BackgroundManager.class);
+        bm.backgroundOperation(new BackgroundJob() {
 
-        this.setLayout(new BorderLayout());
-        this.add(north, BorderLayout.NORTH);
-        this.add(center, BorderLayout.CENTER);
-        this.add(south, BorderLayout.SOUTH);
+            @Override
+            public void run(ProgressMonitor pm) {
+                JPanel south = new JPanel();
+                south.add(choroplethRangeTabPanel);
+
+                setLayout(new BorderLayout());
+                add(initNorthPanel(), BorderLayout.NORTH);
+                add(initCenterPanel(), BorderLayout.CENTER);
+                add(south, BorderLayout.SOUTH);
+            }
+
+            @Override
+            public String getTaskName() {
+                return "DrawSymbPanel";
+            }
+        });
+
     }
 
     /**
@@ -283,12 +297,12 @@ public class ChoroplethSymbInputPanel extends JPanel {
     private void changeColor(JPanel sender) {
         List<Color> color = freqChartDataModel.getColorInit();
         if (sender.getName().equals("COLOR_BEGIN")) {
-            color.set(0,JColorChooser.showDialog(sender, I18N.tr("Pick a begin color"), freqChartDataModel.getColorInit().get(0)));
+            color.set(0, JColorChooser.showDialog(sender, I18N.tr("Pick a begin color"), freqChartDataModel.getColorInit().get(0)));
             freqChartDataModel.setColorInit(color);
             pnlColorBegin.setBackground(color.get(0));
             pnlColorBegin.invalidate();
         } else {
-            color.set(1,JColorChooser.showDialog(sender, I18N.tr("Pick a end color"), freqChartDataModel.getColorInit().get(1)));
+            color.set(1, JColorChooser.showDialog(sender, I18N.tr("Pick a end color"), freqChartDataModel.getColorInit().get(1)));
             freqChartDataModel.setColorInit(color);
             pnlColorEnd.setBackground(color.get(1));
             pnlColorEnd.invalidate();
