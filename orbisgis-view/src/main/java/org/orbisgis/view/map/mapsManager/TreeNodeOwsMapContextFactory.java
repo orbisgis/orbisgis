@@ -32,8 +32,11 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
+import org.apache.log4j.Logger;
+import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactory;
 import org.orbisgis.view.components.fstree.TreeNodeFolder;
@@ -47,6 +50,8 @@ import org.xnap.commons.i18n.I18nFactory;
 public class TreeNodeOwsMapContextFactory implements TreeNodeFileFactory {
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeOwsMapContextFactory.class);
         private static final String ACTION_ADD_OWS_MAP = "TreeNodeOwsMapContextFactory:NewEmptyMap";
+        private static final Logger LOGGER = Logger.getLogger(TreeNodeOwsMapContextFactory.class);
+        
         /**
          * Constructor
          */
@@ -63,21 +68,26 @@ public class TreeNodeOwsMapContextFactory implements TreeNodeFileFactory {
          *
          * @param folderNode Where to create an empty map
          */
-        private static File onCreateEmptyMap(TreeNodeFolder folderNode) {
-                File folderPath = folderNode.getFilePath();
-                File mapContextFile;
-                int cpt = 0;
-                do {
-                        if (cpt == 0) {
-                                mapContextFile = new File(folderPath, I18N.tr("MyMap.ows"));
-                        } else {
-                                mapContextFile = new File(folderPath, I18N.tr("MyMap_{0}.ows",cpt));                                
+        private static void onCreateEmptyMap(TreeNodeFolder folderNode) {
+                File folderPath = folderNode.getFilePath();                
+                String folderName = JOptionPane.showInputDialog(UIFactory.getMainFrame(), I18N.tr("Enter the Map file name"), I18N.tr("MyMap"));
+                if(folderName!=null) {
+                        if (!folderName.endsWith(".ows")) {
+                                folderName = folderName + ".ows";
                         }
-                        cpt++;
-                } while (mapContextFile.exists());
-                TreeLeafMapContextFile.createEmptyMapContext(mapContextFile);
-                folderNode.updateTree();
-                return mapContextFile;
+                        File mapContextFile = new File(folderPath, folderName);
+                        try {
+                                if(mapContextFile.exists()) {
+                                        LOGGER.error(I18N.tr("The specified file name already exist"));
+                                        return;
+                                }
+                                if(TreeLeafMapContextFile.createEmptyMapContext(mapContextFile)) {
+                                        folderNode.updateTree();
+                                }
+                        } catch (Throwable ex) {
+                                LOGGER.error(I18N.tr("The map creation has failed"), ex);
+                        }
+                }
         }
 
         @Override

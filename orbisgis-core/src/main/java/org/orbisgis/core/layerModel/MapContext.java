@@ -35,6 +35,7 @@ import java.io.OutputStream;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.progress.ProgressMonitor;
 
 /**
@@ -50,7 +51,29 @@ public interface MapContext {
         public static final String PROP_ACTIVELAYER = "activeLayer";
         public static final String PROP_LAYERMODEL = "layerModel";
         public static final String PROP_COORDINATEREFERENCESYSTEM = "coordinateReferenceSystem";
+        public static final String PROP_DESCRIPTION = "description";
+
+        /**
+         * Get the value of description
+         *
+         * @return the value of description
+         */
+        public Description getDescription();
+
+        /**
+         * Set the value of description
+         *
+         * @param description new value of description
+         */
+        public void setDescription(Description description);
         
+        /**
+         * Use the description and return the most appropriate Title
+         * for the default Locale.
+         * @return 
+         */
+        public String getTitle();
+
         /**
         * Add a property-change listener for all properties.
         * The listener is called for all properties.

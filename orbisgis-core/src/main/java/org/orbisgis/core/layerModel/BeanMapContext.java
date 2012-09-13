@@ -31,7 +31,10 @@ package org.orbisgis.core.layerModel;
 import com.vividsolutions.jts.geom.Envelope;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Locale;
+import java.util.Map;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.common.Description;
 
 /**
  * Define Map Context properties as Java Beans, add the ability to
@@ -48,6 +51,34 @@ public abstract class BeanMapContext implements MapContext {
         protected ILayer activeLayer = null;
         protected ILayer layerModel;
         protected int epsg_code = -1;
+        protected Description description = new Description();
+        
+        @Override
+        public Description getDescription() {
+                return description;
+        }
+        
+        @Override
+        public void setDescription(Description description) {
+                Description oldDescription = this.description;
+                this.description = description;
+                propertyChangeSupport.firePropertyChange(PROP_DESCRIPTION, oldDescription, description);
+        }
+        
+        @Override
+        public String getTitle() {
+                String title = description.getTitle(Locale.getDefault());                
+                if(title==null) {
+                        Map<Locale,String> titles = description.getTitles();
+                        if(!titles.isEmpty()) {
+                                return titles.values().iterator().next();
+                        } else {
+                                return "";
+                        }
+                } else {
+                        return title;
+                }
+        }
 
         /**
          * Get the value of the EPSG code
@@ -61,13 +92,13 @@ public abstract class BeanMapContext implements MapContext {
         /**
          * Set the value of the EPSG code
          *
-         * @param coordinateReferenceSystem new value of the EPSG code
+         * @param epsg new value of the EPSG code
          */
         public void setCoordinateReferenceSystem(int epsg) {
                 int oldEPSG_code = this.epsg_code;
                 this.epsg_code = oldEPSG_code;
                 propertyChangeSupport.firePropertyChange(PROP_COORDINATEREFERENCESYSTEM, oldEPSG_code, epsg);
-        } 
+        }
        
         
         /**
@@ -129,6 +160,7 @@ public abstract class BeanMapContext implements MapContext {
          *
          * @param selectedStyles new value of selectedStyles
          */
+        @Override
         public void setSelectedStyles(Style[] selectedStyles) {
                 Style[] oldSelectedStyles = this.selectedStyles;
                 this.selectedStyles = selectedStyles;

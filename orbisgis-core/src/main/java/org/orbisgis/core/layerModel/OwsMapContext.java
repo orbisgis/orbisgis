@@ -37,14 +37,28 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Map.Entry;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 import net.opengis.ows._2.BoundingBoxType;
-import net.opengis.ows_context.*;
+import net.opengis.ows._2.LanguageStringType;
+import net.opengis.ows_context.LayerType;
+import net.opengis.ows_context.OWSContextType;
+import net.opengis.ows_context.ObjectFactory;
+import net.opengis.ows_context.OnlineResourceType;
+import net.opengis.ows_context.ResourceListType;
+import net.opengis.ows_context.StyleType;
+import net.opengis.ows_context.URLType;
 import org.apache.log4j.Logger;
-import org.gdms.data.*;
+import org.gdms.data.AlreadyClosedException;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceEvent;
 import org.gdms.source.SourceListener;
@@ -58,6 +72,7 @@ import org.orbisgis.core.renderer.Renderer;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.common.Description;
+import org.orbisgis.core.renderer.se.common.LocalizedText;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.xnap.commons.i18n.I18n;
@@ -356,7 +371,30 @@ public final class OwsMapContext extends BeanMapContext {
                         bbox.getUpperCorner().add(boundingBox.getMaxY());
                         mapContextSerialisation.getGeneral().setBoundingBox(ows_factory.createBoundingBox(bbox));
                 }
-               
+                //GeneralType:Title
+                Map<Locale,String> titles = description.getTitles();
+                if(!titles.isEmpty()) {
+                        //Take the first one
+                        for(Entry<Locale,String> entry : titles.entrySet()) {
+                                LanguageStringType title = ows_factory.createLanguageStringType();
+                                title.setLang(LocalizedText.toLanguageTag(entry.getKey()));
+                                title.setValue(entry.getValue());
+                                mapContextSerialisation.getGeneral().setTitle(title);
+                                break; //Ows-context does not support multi-lingual
+                        }
+                }
+                //GeneralType:Abstract
+                Map<Locale,String> abstracts = description.getAbstractTexts();
+                if(!abstracts.isEmpty()) {
+                        //Take the first one
+                        for(Entry<Locale,String> entry : abstracts.entrySet()) {
+                                LanguageStringType mapAbstract = ows_factory.createLanguageStringType();
+                                mapAbstract.setLang(LocalizedText.toLanguageTag(entry.getKey()));
+                                mapAbstract.setValue(entry.getValue());
+                                mapContextSerialisation.getGeneral().setAbstract(mapAbstract);
+                                break; //Ows-context does not support multi-lingual
+                        }
+                }
                 //ResourceList
                 ResourceListType rs = ows_context_factory.createResourceListType();
                 mapContextSerialisation.setResourceList(rs);
@@ -547,7 +585,21 @@ public final class OwsMapContext extends BeanMapContext {
                                 if (lowerCorner.size() >= 2 && upperCorner.size() >= 2) {
                                         setBoundingBox(new Envelope(lowerCorner.get(0), upperCorner.get(0), lowerCorner.get(1), upperCorner.get(1)));
                                 }
+                        }                        
+                        //Load title
+                        Description nextDescription = new Description();
+                        if(jaxbMapContext.getGeneral().getTitle() != null) {
+                                LanguageStringType title = jaxbMapContext.getGeneral().getTitle();
+                                nextDescription.addTitle(LocalizedText.forLanguageTag(title.getLang()),
+                                        title.getValue());
                         }
+                        //Load abstract
+                        if(jaxbMapContext.getGeneral().getAbstract() != null) {
+                                LanguageStringType mapAbstract = jaxbMapContext.getGeneral().getAbstract();
+                                nextDescription.addAbstract(LocalizedText.forLanguageTag(mapAbstract.getLang()),
+                                        mapAbstract.getValue());
+                        }
+                        setDescription(nextDescription);
                         //Collect DataSource URI already loaded
 
                         //Load layers and DataSource
