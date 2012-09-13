@@ -456,7 +456,7 @@ public final class OwsMapContext extends BeanMapContext {
                 checkIsOpen();
 
                 //Backup Consistent data
-                jaxbMapContext = (OWSContextType) getJAXBObject();
+                jaxbMapContext = getJAXBObject();
 
                 // Close the layers
                 if (pm == null) {
