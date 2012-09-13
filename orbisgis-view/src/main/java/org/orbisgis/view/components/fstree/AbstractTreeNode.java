@@ -44,6 +44,26 @@ public abstract class AbstractTreeNode implements MutableTreeNode {
         // Properties        
         private String label = "none";
         protected MutableTreeNode parent = null;
+        private boolean editable = true;
+
+        /**
+         * Get the value of editable
+         *
+         * @return the value of editable
+         */
+        public boolean isEditable() {
+                return editable;
+        }
+
+        /**
+         * Set the value of editable
+         *
+         * @param editable new value of editable
+         */
+        public void setEditable(boolean editable) {
+                this.editable = editable;
+        }
+
 
         @Override
         public String toString() {

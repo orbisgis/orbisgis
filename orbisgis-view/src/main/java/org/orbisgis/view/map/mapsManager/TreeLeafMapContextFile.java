@@ -63,7 +63,7 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
         private static final Logger LOGGER = Logger.getLogger(TreeLeafMapContextFile.class);
         private static final I18n I18N = I18nFactory.getI18n(TreeLeafMapContextFile.class);
         
-        File filePath; // Update if parent change
+        private File filePath; // Call getFilePath() instead of using this variable
         
         public TreeLeafMapContextFile(File mapContextFilePath) {
                 // For fast loading, take the filename as the ows title
@@ -93,25 +93,25 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
         public File getFilePath() {
                 if(parent instanceof TreeNodePath) {
                         TreeNodePath parentFolder = (TreeNodePath)parent;
-                        return new File(parentFolder.getFilePath(),FilenameUtils.getName(filePath.getName()));
+                        return new File(parentFolder.getFilePath(),filePath.getName());
                 } else {
                         return filePath;
                 }
         }
 
         public void onDeleteFile() {
-                if(filePath.exists()) {            
+                if(getFilePath().exists()) {            
                         int result = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
                                 I18N.tr("Are you sure you want to delete permanently the selected files ?"),
                                 I18N.tr("Remove the files"),
                                 JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
                         if(result == JOptionPane.YES_OPTION) {
                                 try {
-                                        if(!filePath.delete()) {   
+                                        if(!getFilePath().delete()) {   
                                                 LOGGER.error(I18N.tr("Cannot remove the file"));
                                         }
                                 } catch(SecurityException ex) {
-                                        LOGGER.error(I18N.tr("Cannot remove the file {0}",filePath.getName()),ex);
+                                        LOGGER.error(I18N.tr("Cannot remove the file {0}",getFilePath().getName()),ex);
                                 }                        
                         } else {
                                 return;
@@ -148,8 +148,8 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
         }
 
         @Override
-        public void setUserObject(Object o) {
-                throw new UnsupportedOperationException("Not supported yet.");
+        public void setUserObject(Object o) {                
+                LOGGER.debug("Map title change to : " + o);
         }
 
         @Override

@@ -42,7 +42,6 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreePath;
 import org.orbisgis.core.Services;
-import org.orbisgis.view.components.fstree.CustomTreeCellRenderer;
 import org.orbisgis.view.components.fstree.FileTree;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
 import org.orbisgis.view.components.fstree.TreeNodeFolder;
@@ -75,6 +74,7 @@ public class MapsManager extends JPanel {
                 treeModel.setAsksAllowsChildren(true);
                 // Add the tree in the panel                
                 tree = new FileTree(treeModel);
+                tree.setEditable(true);
                 // Retrieve the default ows maps folder
                 ViewWorkspace workspace = Services.getService(ViewWorkspace.class);
                 // Add the root folder

@@ -84,7 +84,7 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
         public void updateTree() {    
                 List<String> fsList;
                 try {
-                        fsList = new ArrayList<String>(Arrays.asList(folderPath.list()));
+                        fsList = new ArrayList<String>(Arrays.asList(getFilePath().list()));
                 } catch( SecurityException ex) {
                         LOGGER.error(I18N.tr("Cannot list the directory content"),ex);
                         return;
@@ -108,7 +108,7 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
                 }
                 // Add the new children
                 for(String childPath : fsList) {
-                        File newChild = new File(folderPath, childPath);
+                        File newChild = new File(getFilePath(), childPath);
                         if (newChild.isDirectory()) {
                                 TreeNodeFolder subDir = new TreeNodeFolder(newChild, factoryManager);
                                 model.insertNodeInto(subDir, this, getChildCount());
@@ -146,9 +146,20 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
         @Override
         public void setUserObject(Object o) {
                 //User set the folder name
+                File curPath = getFilePath();
+                File dest = new File(curPath.getParentFile(),o.toString());
+                if(dest.exists()) {
+                        LOGGER.error("The specified folder already exists");
+                        return;
+                }
+                if(curPath.renameTo(dest)) {
+                        folderPath = dest;
+                        setLabel(folderPath.getName());
+                } else {
+                        LOGGER.error("The specified folder name is not correct");                        
+                }
         }
-
-
+        
         @Override
         public TreeNode getChildAt(int i) {
                 return children.get(i);
@@ -183,16 +194,16 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
          * File&Folder deletion
          */
         public void onDeleteFolder() {
-                if(folderPath.exists()) {
+                if(getFilePath().exists()) {
                         int result = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
                                 I18N.tr("Are you sure you want to delete permanently the selected files ?"),
                                 I18N.tr("Remove the files"),
                                 JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
                         if(result == JOptionPane.YES_OPTION) {
                                 try {
-                                        FileUtils.deleteDirectory(folderPath);
+                                        FileUtils.deleteDirectory(getFilePath());
                                 } catch(IOException ex) {
-                                        LOGGER.error(I18N.tr("Cannot remove the folder {0}",folderPath.getName()),ex);
+                                        LOGGER.error(I18N.tr("Cannot remove the folder {0}",getFilePath().getName()),ex);
                                 }                        
                         } else {
                                 return;
@@ -204,12 +215,12 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
          * Copy the folder path to the ClipBoard
          */
         public void onCopyPath() {
-                StringSelection pathString = new StringSelection(folderPath.getAbsolutePath());
+                StringSelection pathString = new StringSelection(getFilePath().getAbsolutePath());
                 try {
                         Clipboard clipboard = 
                                 Toolkit.getDefaultToolkit().getSystemClipboard();
                         clipboard.setContents(pathString, pathString);
-                        LOGGER.info(I18N.tr("The path {0} has been copied to the clipboard",folderPath.getAbsolutePath()));
+                        LOGGER.info(I18N.tr("The path {0} has been copied to the clipboard",getFilePath().getAbsolutePath()));
                 } catch (Throwable ex) {
                         LOGGER.error(I18N.tr("Could not copy the folder path to the clipboard"),ex);
                 }
@@ -266,7 +277,7 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
         public void onNewSubFolder() {                
                 String folderName = JOptionPane.showInputDialog(UIFactory.getMainFrame(), I18N.tr("Enter the folder name"), "Folder");
                 if(folderName!=null) {
-                        File newFolderPath = new File(folderPath,folderName);
+                        File newFolderPath = new File(getFilePath(),folderName);
                         try {
                                 if(!newFolderPath.mkdir()) {
                                         LOGGER.error(I18N.tr("The folder creation has failed"));

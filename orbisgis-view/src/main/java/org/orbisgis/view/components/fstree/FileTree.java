@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.components.fstree;
 
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
@@ -36,12 +37,15 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeModel;
 import javax.swing.tree.TreePath;
 import org.apache.commons.io.FilenameUtils;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * This JTree Can be linked with the file system thanks to the TreeNodeFolder
@@ -51,6 +55,8 @@ public class FileTree extends JTree implements TreeNodeFileFactoryManager {
         private static final long serialVersionUID = 1L;
         private MouseListener treeMouse = EventHandler.create(MouseListener.class,this,"onMouseEvent","");
         private AtomicBoolean initialized = new AtomicBoolean(false);
+        private static final I18n I18N = I18nFactory.getI18n(FileTree.class);
+        
         public FileTree(TreeModel tm) {
                 super(tm);
         }
@@ -111,13 +117,36 @@ public class FileTree extends JTree implements TreeNodeFileFactoryManager {
         }
         
         /**
-         * Fetch all selected items to make a popup menu
+         * The user select the menu rename
+         */
+        public void onRenameItem() {
+                TreePath[] paths = getSelectionPaths();
+                if(paths!=null && paths.length==1) {
+                        super.startEditingAtPath(paths[0]);
+                }
+                
+        }
+        /**
+         * Fetch all selected items to make a pop-up menu
          * @return 
          */
         private JPopupMenu makePopupMenu() {
                 JPopupMenu menu = new JPopupMenu();
                 TreePath[] paths = getSelectionPaths();
                 if(paths!=null) {
+                        // Generic action on single TreeNode
+                        if(paths.length == 1) {
+                                Object component = paths[0].getLastPathComponent();
+                                if(component instanceof AbstractTreeNode) {
+                                        AbstractTreeNode aTreeNode = (AbstractTreeNode) component;
+                                        if(aTreeNode.isEditable()) {
+                                                JMenuItem editMenu = new JMenuItem(I18N.tr("Rename"));
+                                                editMenu.addActionListener(
+                                                        EventHandler.create(ActionListener.class,this,"onRenameItem"));
+                                                menu.add(editMenu);
+                                        }
+                                }
+                        }
                         for(TreePath treePath : paths) {
                                 Object component = treePath.getLastPathComponent();
                                 // All nodes

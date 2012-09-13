@@ -181,10 +181,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                                 EventHandler.create(VetoableChangeListener.class, this,
                                 "onUserSetScaleDenominator", ""));
                         // When the tree is expanded update the manager size
-                        mapsManager.getTree().addTreeExpansionListener(
-                                EventHandler.create(TreeExpansionListener.class,this,"updateMapControlSize"));
-                        mapsManager.getTree().getModel().addTreeModelListener(
-                                EventHandler.create(TreeModelListener.class,this,"updateMapControlSize"));
+                        mapsManager.getTree().addComponentListener(sizeListener);
                         
                 }
         }
