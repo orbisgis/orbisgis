@@ -46,6 +46,8 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  */
 public class ProxyPreferenceModel extends DefaultPreferenceModel {
+    private static interface StringPreferenceListener extends PreferenceListener<String>{};
+            
     private static final I18n I18N = I18nFactory.getI18n(ProxyPreferenceModel.class);
     // JAVA proxy properties constant
     // @see http://docs.oracle.com/javase/1.4.2/docs/guide/net/properties.html
@@ -121,7 +123,7 @@ public class ProxyPreferenceModel extends DefaultPreferenceModel {
      */
     public ProxyPreferenceModel initListeners() {
         //useProxy.addPreferenceListener(EventHandler.create(PreferenceListener.class, this,"onChangeUseProxy",""));        
-        proxyPort.addPreferenceListener(EventHandler.create(PreferenceListener.class, this,"onUserSetProxyPort",""));        
+        proxyPort.addPreferenceListener(EventHandler.create(StringPreferenceListener.class, this,"onUserSetProxyPort",""));        
         return this;
     }
     

@@ -99,7 +99,7 @@ public class LocalizedText {
      * @note ([a-zA-Z]{2,8})-?([a-zA-Z]{2}|[0-9]{3})?-?([0-9a-zA-Z]*)? regex should work
      */
     public static String[] separateLocale(String localeRepresentation) {
-            List<String> ret = new ArrayList(3);
+            List<String> ret = new ArrayList<String>(3);
             int start = 0;
             do {
                     int end = localeRepresentation.indexOf(lang_sep, start);

@@ -98,6 +98,7 @@ public class TocRenderer extends TocAbstractRenderer {
                 }
                 return new ImageIcon(image);
         }
+        
 	@Override
 	public Component getTreeCellRendererComponent(JTree tree, Object value,
 			boolean selected, boolean expanded, boolean leaf, int row,

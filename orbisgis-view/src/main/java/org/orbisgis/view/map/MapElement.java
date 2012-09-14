@@ -33,6 +33,7 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerCollectionEvent;
@@ -71,6 +72,19 @@ public final class MapElement extends EditableElement {
                 this.mapContextFile = mapContextFile;
                 mapId = String.valueOf(mapContext.getIdTime());
 	}
+
+        public File getMapContextFile() {
+                return mapContextFile;
+        }       
+        
+        /**
+         * Update the modified state
+         * @param modified 
+         */
+        public void setModified(Boolean modified) {
+            this.modified = modified;
+        }
+
         /**
          * Call setModified(true);
          */
@@ -137,7 +151,7 @@ public final class MapElement extends EditableElement {
 
 	@Override
 	public String toString() {
-		return getId();
+		return I18N.tr("MapContext - {0}",FilenameUtils.getBaseName(mapContextFile.getName()));
 	}
 
         /**
@@ -149,7 +163,7 @@ public final class MapElement extends EditableElement {
         public MapEditor getMapEditor(){
                 return editor;
         }
-
+        
         /**
          * Sets the editor linked to this {@code MapElement}. This is needed
          * in order to be able to retrieve all the informations about the map

@@ -71,12 +71,5 @@ public interface MultipleEditorFactory extends EditorFactory {
      * @return 
      */
     public EditorDockable create(DockingPanelLayout layout);
-    
-    /**
-     * Retrieves the persistent information of this panel
-     * @note The provided panel was created by this factory
-     * @param panel
-     * @return 
-     */
-    public DockingPanelLayout getLayout(EditorDockable panel);        
+           
 }

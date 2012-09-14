@@ -53,7 +53,7 @@ public abstract class TreeLaFRenderer implements TreeCellRenderer {
         /**
          * Builds a new {@code TreeLaFRenderer} associated to the given {@link 
          * Jtree}. The constructor also sets a listener to L&F events.
-         * @param list Where the listener has to be installed
+         * @param tree Where the listener has to be installed
          */
         public TreeLaFRenderer(JTree tree) {
                 initialize(tree);

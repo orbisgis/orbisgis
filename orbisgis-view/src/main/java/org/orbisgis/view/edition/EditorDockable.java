@@ -51,7 +51,6 @@ public interface EditorDockable extends DockingPanel {
         /**
          * Load the specified editable element
          * @param editableElement
-         * @return false if the editable has not been successfully loaded
          */
         void setEditableElement(EditableElement editableElement);
 }

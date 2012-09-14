@@ -68,7 +68,7 @@ public class Description {
         abstractTexts = new HashMap<Locale, String>();
         keywords = new  HashMap<URI,Keywords>();
     }
-    
+
     /**
      * Builds a new {@code Description} from the given
      * {@code DescriptionType}.

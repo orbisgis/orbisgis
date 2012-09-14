@@ -34,26 +34,30 @@ import java.beans.EventHandler;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.OwsMapContext;
-import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.JobQueue;
 import org.orbisgis.view.docking.DockingManager;
+import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorManager;
+import org.orbisgis.view.edition.dialogs.SaveDocuments;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.joblist.JobsPanel;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.map.MapElement;
+import org.orbisgis.view.map.jobs.ReadMapContextJob;
 import org.orbisgis.view.output.OutputManager;
 import org.orbisgis.view.sqlconsole.SQLConsoleFactory;
 import org.orbisgis.view.table.TableEditorFactory;
@@ -77,7 +81,7 @@ public class Core {
     private ViewWorkspace viewWorkspace;
     private OutputManager loggerCollection;    /*!< Loggings panels */     
     private BackgroundManager backgroundManager;
-            
+             
     private static final Rectangle MAIN_VIEW_POSITION_AND_SIZE = new Rectangle(20,20,800,600);/*!< Bounds of mainView, x,y and width height*/
     private DockingManager dockManager = null; /*!< The DockStation manager */
     
@@ -93,6 +97,9 @@ public class Core {
     public Core(boolean debugMode) {
         this.mainContext = new MainContext(debugMode);
         this.viewWorkspace = new ViewWorkspace(this.mainContext.getCoreWorkspace());
+        
+        Services.registerService(ViewWorkspace.class, I18N.tr("Contains view folders path"),
+                        viewWorkspace);
         initSwingJobs();
         initSIF();
     }
@@ -103,6 +110,7 @@ public class Core {
     public Catalog getGeoCatalog() {
         return geoCatalog;
     }
+    
     /**
      * Init the SIF ui factory
      */
@@ -250,9 +258,6 @@ public class Core {
         //Load Built-ins Editors
         loadEditorFactories();
         
-        // Some editors need DataSources loaded by the MapContext
-        backgroundManager.backgroundOperation(new ReadMapContextProcess());
-        
         //Load the docking layout and editors opened in last OrbisGis instance
         dockManager.setDockingLayoutPersistanceFilePath(viewWorkspace.getDockingLayoutPath());
         
@@ -270,6 +275,7 @@ public class Core {
                 mainFrame.setVisible( true );
         }
     }
+
     /**
      * Return the docking manager. This function is used by Unit Tests.
      * @return The Docking Manager
@@ -310,59 +316,49 @@ public class Core {
         
     }
     /**
-    * Stops this application, closes the {@link MainFrame} and saves
-    * all properties if the application is not in a {@link #isSecure() secure environment}.
-    * This method is called through the MainFrame.MAIN_FRAME_CLOSING event listener.
-    */
-    public void shutdown(){
-        try{
-            mainContext.saveStatus(); //Save the services status
-            this.dispose();
+     * Save or discard editable element modification.
+     * Show a dialog if there is at least one unsaved editable element.
+     * @return True if the application must cancel the close shutdown operation
+     */
+        private boolean isShutdownVetoed() {
+                List<EditableElement> modifiedElements = new ArrayList<EditableElement>();
+                Collection<EditableElement> editableElement = editors.getEditableElements();
+                for(EditableElement editable : editableElement) {
+                        if(editable.isModified()) {
+                                modifiedElements.add(editable);
+                        }
+                }
+                if (!modifiedElements.isEmpty()) {
+                        SaveDocuments.CHOICE userChoice = SaveDocuments.showModal(mainFrame, modifiedElements);
+                        return userChoice==SaveDocuments.CHOICE.CANCEL;
+                } else {
+                        return false;
+                }
         }
-        finally {      
-            //While Plugins are not implemented do not close the VM in finally clause
-            //SwingUtilities.invokeLater( new Runnable(){
-            //   /** If an error occuring while unload resources, java machine
-            //    * may continue to run. In this case, the following command
-            //    * would terminate the application.
-            //    */
-            //    public void run(){
-            //            System.exit(0);
-            //    }
-            //} );
-        }        
-    }
-    private class ReadMapContextProcess implements BackgroundJob {
 
-                @Override
-                public void run(ProgressMonitor pm) {                        
-                        //Create an empty map context
-                        MapContext mapContext = new OwsMapContext();
-
-                        //Load the map context
-                        File mapContextFolder = new File(viewWorkspace.getMapContextPath());
-                        if(!mapContextFolder.exists()) {
-                                mapContextFolder.mkdir();
+        /**
+         * Stops this application, closes the {@link MainFrame} and saves all
+         * properties if the application is not in a {@link #isSecure() secure environment}.
+         * This method is called through the MainFrame.MAIN_FRAME_CLOSING event
+         * listener.
+         */
+        public void shutdown() {
+                if (!isShutdownVetoed()) {
+                        try {
+                                mainContext.saveStatus(); //Save the services status
+                                this.dispose();
+                        } finally {
+                                //While Plugins are not implemented do not close the VM in finally clause
+                                //SwingUtilities.invokeLater( new Runnable(){
+                                //   /** If an error occuring while unload resources, java machine
+                                //    * may continue to run. In this case, the following command
+                                //    * would terminate the application.
+                                //    */
+                                //    public void run(){
+                                //            System.exit(0);
+                                //    }
+                                //} );
                         }
-                        File mapContextFile = new File(mapContextFolder, "mapcontext");
-                        if(mapContextFile.exists()) {
-                                try {
-                                        mapContext.read(new FileInputStream(mapContextFile));
-                                } catch (FileNotFoundException ex) {
-                                        LOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."),ex);
-                                } catch (IllegalArgumentException ex) {
-                                        LOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."),ex);
-                                }
-                        }
-                        MapElement editableMap = new MapElement(mapContext,mapContextFile);
-                        editableMap.open(pm);
-                        editors.openEditable(editableMap); 
                 }
-
-                @Override
-                public String getTaskName() {
-                        return I18N.tr("Open the map context");
-                }
-            
-    }
+        }
 }

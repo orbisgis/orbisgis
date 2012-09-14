@@ -55,7 +55,7 @@ public class ViewWorkspace {
         public static final String PROP_SIFPATH = "SIFPath";
         private String mapContextPath;
         public static final String PROP_MAPCONTEXTPATH = "mapContextPath";
-
+        
         /**
          * Get the value of mapContextPath
          * This folder contains all serialised Map Context shown in
