@@ -69,6 +69,8 @@ public class FileTree extends JTree implements TreeNodeFileFactoryManager {
         public void addNotify() {
                 super.addNotify();
                 if(!initialized.getAndSet(true)) {
+                        setTransferHandler(new FileTreeTransferHandler());
+                        setDragEnabled(true);
                         setCellRenderer(new CustomTreeCellRenderer(this));
                         addMouseListener(treeMouse);
                         getSelectionModel().addTreeSelectionListener(

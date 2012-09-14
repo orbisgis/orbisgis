@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
@@ -50,7 +51,10 @@ import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.MenuCommonFunctions;
+import org.orbisgis.view.components.fstree.DragTreeNode;
+import org.orbisgis.view.components.fstree.TransferableNodePaths;
 import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
+import org.orbisgis.view.components.fstree.TreeNodeFolder;
 import org.orbisgis.view.components.fstree.TreeNodePath;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
@@ -61,7 +65,7 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * @author Nicolas Fortin
  */
-public final class TreeLeafMapContextFile extends TreeLeafMapElement implements TreeNodePath, TreeNodeCustomIcon  {
+public final class TreeLeafMapContextFile extends TreeLeafMapElement implements TreeNodePath, TreeNodeCustomIcon, DragTreeNode  {
         private static final Logger LOGGER = Logger.getLogger(TreeLeafMapContextFile.class);
         private static final I18n I18N = I18nFactory.getI18n(TreeLeafMapContextFile.class);
         
@@ -235,4 +239,24 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
                 }
         }
         
+
+        @Override
+        public Transferable getTransferable() {
+                if(parent instanceof TreeNodeFolder) {
+                        return new TransferableNodePaths(this);
+                } else {
+                        return null;
+                }
+        }
+
+        @Override
+        public boolean completeTransferable(Transferable transferable) {
+                if(transferable instanceof TransferableNodePaths 
+                        && parent instanceof TreeNodeFolder) {
+                        ((TransferableNodePaths)transferable).addPath(this);
+                        return true;
+                } else {
+                        return false;
+                }
+        }
 }

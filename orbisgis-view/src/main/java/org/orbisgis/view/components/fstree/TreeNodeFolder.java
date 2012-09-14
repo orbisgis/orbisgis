@@ -31,6 +31,8 @@ package org.orbisgis.view.components.fstree;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
@@ -38,10 +40,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
+import javax.swing.TransferHandler.TransferSupport;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import org.apache.commons.io.FileUtils;
@@ -58,7 +63,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Represent a folder in the file system.
  * @author Nicolas Fortin
  */
-public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, TreeNodePath {
+public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, TreeNodePath, DropDestinationTreeNode, DragTreeNode {
         private List<MutableTreeNode> children = new ArrayList<MutableTreeNode>();
         private File folderPath;
         private static final Logger LOGGER = Logger.getLogger("gui." + TreeNodeFolder.class);
@@ -310,5 +315,120 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
                 }
                 return childrenRet;
         }
+
+        @Override
+        public boolean canImport(TransferSupport ts) {
+                return ts.isDataFlavorSupported(TransferableNodePaths.PATHS_FLAVOR);
+        }
+
+        /**
+         * Extract all components of the path to compare with the second argument
+         * @param path
+         * @param compPath Absolute path
+         * @return 
+         */
+        private static boolean hasAParent(File path,String compPath) {
+                File parent = path.getParentFile();
+                while(parent!=null) {
+                        if(compPath.equals(parent.getAbsolutePath())) {
+                                return true;
+                        }
+                        parent = parent.getParentFile();
+                }
+                return false;
+        }
         
+
+        /**
+         * Extract all components of the path to compare with the second argument
+         * @param path
+         * @param paths Set of Absolute path
+         * @return 
+         */
+        private static boolean hasAParentInPathList(File path,Set<String> paths) {
+                File parent = path.getParentFile();
+                while(parent!=null) {
+                        if(paths.contains(parent.getAbsolutePath())) {
+                                return true;
+                        }
+                        parent = parent.getParentFile();
+                }
+                return false;
+        }
+        
+        @Override
+        public boolean importData(TransferSupport ts) {
+                if(ts.isDataFlavorSupported(TransferableNodePaths.PATHS_FLAVOR)) {
+                        // Move Nodes and Move Files
+                        Object nodePathObj;
+                        try {
+                        nodePathObj = ts.getTransferable().
+                                getTransferData(TransferableNodePaths.PATHS_FLAVOR);
+                        } catch(UnsupportedFlavorException ex) {
+                                LOGGER.error(ex.getLocalizedMessage(),ex);
+                                return false;
+                        } catch(IOException ex) {
+                                LOGGER.error(ex.getLocalizedMessage(),ex);
+                                return false;
+                        }
+                        if(!(nodePathObj instanceof TransferableNodePaths)) {
+                                return false;
+                        }
+                        TransferableNodePaths nodePath = (TransferableNodePaths)nodePathObj;
+                        // Moved paths set
+                        Set<String> paths = new HashSet<String>();
+                        for(TreeNodePath treeNode : nodePath.getPaths()) {
+                                File treeFilePath = treeNode.getFilePath();
+                                paths.add(treeFilePath.getAbsolutePath());                                
+                        }
+                        // Process folder and files moves
+                        for(TreeNodePath treeNode : nodePath.getPaths()) {
+                                // Ignore if a parent path is already on the list
+                                // or if this folder node is the child of a transfered path
+                                File treeFilePath = treeNode.getFilePath();
+                                if (!hasAParentInPathList(treeFilePath, paths)
+                                        && !hasAParent(getFilePath(), treeFilePath.getAbsolutePath())) {
+                                        try {
+                                                File dest = new File(getFilePath(),treeFilePath.getName());
+                                                if(!dest.exists()) {
+                                                        // Remove from the parent
+                                                        model.removeNodeFromParent((MutableTreeNode)treeNode);
+                                                        // Move the folder
+                                                        FileUtils.moveToDirectory(treeFilePath, getFilePath(),false);
+                                                        // Add in this directory
+                                                        model.insertNodeInto((MutableTreeNode)treeNode, this, getChildCount());
+                                                } else {
+                                                        LOGGER.warn(I18N.tr("Destination file {0} already exists, cannot move {1}",dest,treeFilePath));
+                                                }
+                                        } catch (IOException ex) {
+                                                LOGGER.error(ex.getLocalizedMessage(), ex);
+                                                return false;
+                                        }
+                                }
+                        }
+                        return true;
+                } else {
+                        return false;
+                }
+        }
+
+        @Override
+        public Transferable getTransferable() {
+                if(parent instanceof TreeNodeFolder) {
+                        return new TransferableNodePaths(this);
+                } else {
+                        return null;
+                }
+        }
+
+        @Override
+        public boolean completeTransferable(Transferable transferable) {
+                if(transferable instanceof TransferableNodePaths 
+                        && parent instanceof TreeNodeFolder) {
+                        ((TransferableNodePaths)transferable).addPath(this);
+                        return true;
+                } else {
+                        return false;
+                }
+        }
 }
