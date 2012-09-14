@@ -85,6 +85,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.jobs.ReadMapContextJob;
 import org.orbisgis.view.map.jobs.ZoomToSelection;
 import org.orbisgis.view.components.fstree.AbstractTreeNode;
+import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.map.mapsManager.MapsManager;
 import org.orbisgis.view.map.mapsManager.TreeLeafMapElement;
 import org.orbisgis.view.map.tool.Automaton;
@@ -600,6 +601,10 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         //This layer can not be inserted, we continue to the next layer
                         GUILOGGER.warn(I18N.tr("Unable to create and drop the layer"),e);
                     }
+                } else if(eElement instanceof MapElement) {
+                        EditorManager em = Services.getService(EditorManager.class);
+                        em.openEditable(eElement);                                
+                        return;
                 }
             }
         }

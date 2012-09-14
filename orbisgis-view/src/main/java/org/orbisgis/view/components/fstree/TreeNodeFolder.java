@@ -412,7 +412,11 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
 
         @Override
         public boolean completeTransferable(TransferableList transferable) {
-                transferable.addTransferable(new TransferableNodePaths(this));
-                return true;
+                if(parent instanceof TreeNodeFolder) {
+                        transferable.addTransferable(new TransferableNodePaths(this));
+                        return true;
+                } else {
+                        return false;
+                }
         }
 }

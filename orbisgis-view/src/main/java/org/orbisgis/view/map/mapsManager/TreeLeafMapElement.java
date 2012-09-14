@@ -29,7 +29,7 @@
 package org.orbisgis.view.map.mapsManager;
 
 import java.awt.Font;
-import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
@@ -47,11 +47,12 @@ import org.orbisgis.view.components.fstree.PopupTreeNode;
 import org.orbisgis.view.components.fstree.TransferableList;
 import org.orbisgis.view.components.fstree.TransferableNodePaths;
 import org.orbisgis.view.components.fstree.TreeNodeCustomLabel;
-import org.orbisgis.view.components.fstree.TreeNodeFolder;
 import org.orbisgis.view.components.fstree.TreeNodePath;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
+import org.orbisgis.view.map.TransferableMap;
 import org.orbisgis.view.map.jobs.ReadMapContextJob;
+import org.orbisgis.view.toc.TransferableLayer;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -136,6 +137,9 @@ public abstract class TreeLeafMapElement extends AbstractTreeNode implements Pop
         @Override
         public boolean completeTransferable(TransferableList transferable) {
                 transferable.addTransferable(new TransferableNodePaths(this));
+                if(!transferable.isDataFlavorSupported(TransferableMap.mapFlavor)) {
+                        transferable.addTransferable(new TransferableMap(getMapElement(new NullProgressMonitor())));
+                }
                 return true;
         }
 }
