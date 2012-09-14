@@ -100,7 +100,7 @@ public class TransferableNodePaths implements Transferable {
         @Override
         public Object getTransferData(DataFlavor df) throws UnsupportedFlavorException, IOException {
                 if(df.equals(PATHS_FLAVOR)) {
-                        return this;
+                        return paths;
                 } else if(df.equals(uriListFlavor.getUriListFlavor())) {
                         List<URI> uriList = new ArrayList<URI>();
                         for(TreeNodePath nodePath : paths) {

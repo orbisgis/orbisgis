@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
-import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
@@ -51,11 +50,7 @@ import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.MenuCommonFunctions;
-import org.orbisgis.view.components.fstree.DragTreeNode;
-import org.orbisgis.view.components.fstree.TransferableNodePaths;
 import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
-import org.orbisgis.view.components.fstree.TreeNodeFolder;
-import org.orbisgis.view.components.fstree.TreeNodePath;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
 import org.xnap.commons.i18n.I18n;
@@ -65,15 +60,13 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * @author Nicolas Fortin
  */
-public final class TreeLeafMapContextFile extends TreeLeafMapElement implements TreeNodePath, TreeNodeCustomIcon, DragTreeNode  {
+public final class TreeLeafMapContextFile extends TreeLeafMapElement implements TreeNodeCustomIcon  {
         private static final Logger LOGGER = Logger.getLogger(TreeLeafMapContextFile.class);
         private static final I18n I18N = I18nFactory.getI18n(TreeLeafMapContextFile.class);
-        
-        private File filePath; // Call getFilePath() instead of using this variable
-        
+                
         public TreeLeafMapContextFile(File mapContextFilePath) {
                 // For fast loading, take the filename as the ows title
-                filePath = mapContextFilePath;
+                super(mapContextFilePath);
                 setLabel(FilenameUtils.getBaseName(mapContextFilePath.getName()));
                 setEditable(false);
         }
@@ -106,16 +99,6 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
                 return true;
         }
         
-        @Override
-        public File getFilePath() {
-                if(parent instanceof TreeNodePath) {
-                        TreeNodePath parentFolder = (TreeNodePath)parent;
-                        return new File(parentFolder.getFilePath(),filePath.getName());
-                } else {
-                        return filePath;
-                }
-        }
-
         public void onDeleteFile() {
                 if(getFilePath().exists()) {            
                         int result = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
@@ -236,27 +219,6 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
                         return mapElement;
                 } catch(FileNotFoundException ex) {
                         throw new IllegalStateException(ex);
-                }
-        }
-        
-
-        @Override
-        public Transferable getTransferable() {
-                if(parent instanceof TreeNodeFolder) {
-                        return new TransferableNodePaths(this);
-                } else {
-                        return null;
-                }
-        }
-
-        @Override
-        public boolean completeTransferable(Transferable transferable) {
-                if(transferable instanceof TransferableNodePaths 
-                        && parent instanceof TreeNodeFolder) {
-                        ((TransferableNodePaths)transferable).addPath(this);
-                        return true;
-                } else {
-                        return false;
                 }
         }
 }

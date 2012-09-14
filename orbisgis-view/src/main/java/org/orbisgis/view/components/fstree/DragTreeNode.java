@@ -35,21 +35,12 @@ import java.awt.datatransfer.Transferable;
  * @author Nicolas Fortin
  */
 public interface DragTreeNode {
-
-        /**
-         * Get the transferable of this node
-         *
-         * @return
-         */
-        Transferable getTransferable();
-
         /**
          * Complete the provided transferable
          *
-         * @param transferable Transferable returned by another node during the
-         * drag process
+         * @param transferable Transferable merged with other nodes
          * @return True if it is done, false if the transferable is unknown by
          * the node
          */
-        boolean completeTransferable(Transferable transferable);
+        boolean completeTransferable(TransferableList transferable);
 }

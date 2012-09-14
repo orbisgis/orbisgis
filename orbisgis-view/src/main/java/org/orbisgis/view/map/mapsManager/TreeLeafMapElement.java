@@ -29,8 +29,10 @@
 package org.orbisgis.view.map.mapsManager;
 
 import java.awt.Font;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.io.File;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -40,8 +42,13 @@ import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.AbstractTreeNode;
+import org.orbisgis.view.components.fstree.DragTreeNode;
 import org.orbisgis.view.components.fstree.PopupTreeNode;
+import org.orbisgis.view.components.fstree.TransferableList;
+import org.orbisgis.view.components.fstree.TransferableNodePaths;
 import org.orbisgis.view.components.fstree.TreeNodeCustomLabel;
+import org.orbisgis.view.components.fstree.TreeNodeFolder;
+import org.orbisgis.view.components.fstree.TreeNodePath;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.map.jobs.ReadMapContextJob;
@@ -49,13 +56,29 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * Maps manager manage only files that contain a MapElement
+ * TreeLeafMapElement files that contain all implementations of MapContext
  * @author Nicolas Fortin
  */
-public abstract class TreeLeafMapElement extends AbstractTreeNode implements PopupTreeNode, TreeNodeCustomLabel {
+
+public abstract class TreeLeafMapElement extends AbstractTreeNode implements PopupTreeNode, TreeNodeCustomLabel, DragTreeNode,TreeNodePath {
         private static final I18n I18N = I18nFactory.getI18n(TreeLeafMapElement.class);
         private boolean loaded = false;
+        private File filePath; // Call getFilePath() instead of using this variable
 
+        public TreeLeafMapElement(File filePath) {
+                this.filePath = filePath;
+        }
+
+        
+        @Override
+        public File getFilePath() {
+                if(parent instanceof TreeNodePath) {
+                        TreeNodePath parentFolder = (TreeNodePath)parent;
+                        return new File(parentFolder.getFilePath(),filePath.getName());
+                } else {
+                        return filePath;
+                }
+        }
         /**
          * @return The state of this map
          */
@@ -108,5 +131,11 @@ public abstract class TreeLeafMapElement extends AbstractTreeNode implements Pop
                 } else {
                         return false;
                 }
+        }
+        
+        @Override
+        public boolean completeTransferable(TransferableList transferable) {
+                transferable.addTransferable(new TransferableNodePaths(this));
+                return true;
         }
 }

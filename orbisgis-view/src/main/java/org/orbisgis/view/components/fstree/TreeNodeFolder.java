@@ -31,7 +31,6 @@ package org.orbisgis.view.components.fstree;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
-import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
@@ -360,10 +359,13 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
         public boolean importData(TransferSupport ts) {
                 if(ts.isDataFlavorSupported(TransferableNodePaths.PATHS_FLAVOR)) {
                         // Move Nodes and Move Files
-                        Object nodePathObj;
+                        List<TreeNodePath> nodePath = new ArrayList<TreeNodePath>();
                         try {
-                        nodePathObj = ts.getTransferable().
+                                Object objTrans = ts.getTransferable().
                                 getTransferData(TransferableNodePaths.PATHS_FLAVOR);
+                                if(objTrans instanceof List) {
+                                        nodePath = (List<TreeNodePath>)objTrans; 
+                                }
                         } catch(UnsupportedFlavorException ex) {
                                 LOGGER.error(ex.getLocalizedMessage(),ex);
                                 return false;
@@ -371,18 +373,14 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
                                 LOGGER.error(ex.getLocalizedMessage(),ex);
                                 return false;
                         }
-                        if(!(nodePathObj instanceof TransferableNodePaths)) {
-                                return false;
-                        }
-                        TransferableNodePaths nodePath = (TransferableNodePaths)nodePathObj;
                         // Moved paths set
                         Set<String> paths = new HashSet<String>();
-                        for(TreeNodePath treeNode : nodePath.getPaths()) {
+                        for(TreeNodePath treeNode : nodePath) {
                                 File treeFilePath = treeNode.getFilePath();
                                 paths.add(treeFilePath.getAbsolutePath());                                
                         }
                         // Process folder and files moves
-                        for(TreeNodePath treeNode : nodePath.getPaths()) {
+                        for(TreeNodePath treeNode : nodePath) {
                                 // Ignore if a parent path is already on the list
                                 // or if this folder node is the child of a transfered path
                                 File treeFilePath = treeNode.getFilePath();
@@ -413,22 +411,8 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
         }
 
         @Override
-        public Transferable getTransferable() {
-                if(parent instanceof TreeNodeFolder) {
-                        return new TransferableNodePaths(this);
-                } else {
-                        return null;
-                }
-        }
-
-        @Override
-        public boolean completeTransferable(Transferable transferable) {
-                if(transferable instanceof TransferableNodePaths 
-                        && parent instanceof TreeNodeFolder) {
-                        ((TransferableNodePaths)transferable).addPath(this);
-                        return true;
-                } else {
-                        return false;
-                }
+        public boolean completeTransferable(TransferableList transferable) {
+                transferable.addTransferable(new TransferableNodePaths(this));
+                return true;
         }
 }

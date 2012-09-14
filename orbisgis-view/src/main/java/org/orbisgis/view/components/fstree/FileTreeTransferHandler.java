@@ -57,16 +57,12 @@ public class FileTreeTransferHandler extends TransferHandler {
                 if(paths==null) {
                         return null;
                 }
-                Transferable nodeTransferable = null;
+                TransferableList nodeTransferable = new TransferableList();
                 for(TreePath nodePath : paths) {
                         Object nodeComp = nodePath.getLastPathComponent();
                         if(nodeComp instanceof DragTreeNode) {
                                 DragTreeNode dragNode = (DragTreeNode)nodeComp;
-                                if(nodeTransferable==null) {
-                                        nodeTransferable = dragNode.getTransferable();
-                                } else {
-                                        dragNode.completeTransferable(nodeTransferable);
-                                }
+                                dragNode.completeTransferable(nodeTransferable);
                         }
                 }
                 return nodeTransferable;
