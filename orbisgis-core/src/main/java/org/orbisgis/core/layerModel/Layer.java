@@ -78,8 +78,12 @@ public class Layer extends BeanLayer {
     @Override
 	public void close() throws LayerException {
 		try {
-                        if (dataSource.isEditable()) {
-                                dataSource.removeEditionListener(editionListener);
+                        if (dataSource.isEditable()) {                                
+                                try {
+                                        dataSource.removeEditionListener(editionListener);
+                                } catch(UnsupportedOperationException ex) {
+                                        //Ignore
+                                }
                         }
 			dataSource.close();
 		} catch (AlreadyClosedException e) {
@@ -104,7 +108,11 @@ public class Layer extends BeanLayer {
                         }
 			// Listen modifications to update selection
                         if (dataSource.isEditable()) {
-                                dataSource.addEditionListener(editionListener);
+                                try {
+                                        dataSource.addEditionListener(editionListener);
+                                } catch (UnsupportedOperationException ex) {
+                                        LOGGER.warn(I18N.tr("The layer cannot listen to source modifications"),ex);
+                                }
                         }
 		} catch (DriverException e) {
 			throw new LayerException(I18N.tr("Cannot open the layer"), e);
