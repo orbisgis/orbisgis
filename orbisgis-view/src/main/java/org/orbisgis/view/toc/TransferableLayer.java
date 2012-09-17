@@ -65,6 +65,7 @@ public class TransferableLayer implements Transferable {
 		this.nodes = nodesList.toArray(new EditableLayer[nodesList.size()]);
 	}
 
+        @Override
 	public Object getTransferData(DataFlavor flavor)
 			throws UnsupportedFlavorException, IOException {
 		Object ret = null;
@@ -87,12 +88,14 @@ public class TransferableLayer implements Transferable {
 		return ret;
 	}
 
+        @Override
 	public DataFlavor[] getTransferDataFlavors() {
 		return (new DataFlavor[] { layerFlavor,
 				TransferableEditableElement.editableElementFlavor,
 				DataFlavor.stringFlavor });
 	}
 
+        @Override
 	public boolean isDataFlavorSupported(DataFlavor flavor) {
 		return flavor.equals(TransferableEditableElement.editableElementFlavor)
 				|| flavor.equals(getLayerFlavor())

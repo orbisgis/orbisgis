@@ -28,12 +28,16 @@
  */
 package org.orbisgis.core;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.util.Locale;
+import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.OwsMapContext;
-import static org.junit.Assert.*;
+import org.orbisgis.core.renderer.se.common.Description;
 
 /**
  *
@@ -45,7 +49,7 @@ public class OwsMapContextTest extends AbstractTest  {
         @Before
 	public void setUp() throws Exception {
 		super.setUp();
-		AbstractTest.registerDataManager();
+		registerDataManager();
 	}
         
         
@@ -64,4 +68,32 @@ public class OwsMapContextTest extends AbstractTest  {
 		mc.close(null);
 	}
 
+        @Test
+        public void testTitleAndDescriptionMapContext() throws Exception {
+                String title = "Map of Ankh-Morpork";
+                Locale locale = Locale.UK;
+                String mapAbstract = "The principal city of the Sto Plains";
+                // Define the map description
+                Description mapDescription = new Description();
+                mapDescription.addTitle(locale, title);
+                mapDescription.addAbstract(locale, mapAbstract);
+                MapContext mc = new OwsMapContext();
+                mc.open(null);
+                mc.setDescription(mapDescription);
+                mc.close(null);
+                ByteArrayOutputStream mapData = new ByteArrayOutputStream();
+                mc.write(mapData);
+                // Map data contain the serialisation
+                // Read this data with another instance
+                MapContext mc2 = new OwsMapContext();
+                mc2.read(new ByteArrayInputStream(mapData.toByteArray()));
+                mc2.open(null);
+                // Test default title
+                assertTrue(mc2.getTitle().equals(title));
+                // Test the title with the provided locale
+                assertTrue(mc2.getDescription().getTitle(locale).equals(title));
+                // Test the abstract with the provided locale
+                assertTrue(mc2.getDescription().getAbstract(locale).equals(mapAbstract));
+                mc2.close(null);
+        }
 }

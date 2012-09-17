@@ -31,6 +31,7 @@ package org.orbisgis.core.common;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.VetoableChangeSupport;
+import org.orbisgis.core.events.OGVetoableChangeSupport;
 
 /**
  * This class expose the bean property change support.
@@ -38,7 +39,7 @@ import java.beans.VetoableChangeSupport;
 public class BeanPropertyChangeSupport {
 
     protected transient final PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-    protected transient final VetoableChangeSupport vetoableChangeSupport = new VetoableChangeSupport(this);
+    protected transient final VetoableChangeSupport vetoableChangeSupport = new OGVetoableChangeSupport(this);
     
     /**
      * Add a property-change listener for all properties.

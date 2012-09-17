@@ -1,54 +1,55 @@
-/**
+/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information.
- *
+ * manipulate and create vector and raster spatial information. 
+ * 
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
- *
+ * 
  * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
- *
+ * 
  * This file is part of OrbisGIS.
- *
+ * 
  * OrbisGIS is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- *
+ * 
  * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- *
+ * 
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.docking;
+package org.orbisgis.view.components.resourceTree;
+
+import java.util.Enumeration;
+import java.util.Iterator;
 
 /**
- * This factory provides a way to define multiple instance of 
+ * @param <Item> Enumeration item class
+ * @author Nicolas Fortin
  */
-public interface DockingPanelFactory {
-    
-    /**
-     * Create an empty layout, will be used to apply XML file or a byte stream
-     * @return 
-     */
-    public DockingPanelLayout makeEmptyLayout();
-    /**
-     * 
-     * @param layout
-     * @return True if the layout corresponding to the layout of this factory
-     */
-    public boolean match(DockingPanelLayout layout);
-    /**
-     * Return a new DockingPanel for this panel informations
-     * @param layout
-     * @return 
-     */
-    public DockingPanel create(DockingPanelLayout layout);
-    
+public class EnumIterator<Item extends Object> implements Enumeration<Item> {
+
+        private Iterator<Item> it;
+
+        public EnumIterator(Iterator<Item> it) {
+                this.it = it;
+        }
+
+        @Override
+        public boolean hasMoreElements() {
+                return it.hasNext();
+        }
+
+        @Override
+        public Item nextElement() {
+                return it.next();
+        }
 }
