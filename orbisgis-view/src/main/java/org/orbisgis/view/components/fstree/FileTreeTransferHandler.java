@@ -43,7 +43,7 @@ public class FileTreeTransferHandler extends TransferHandler {
 
         @Override
         public int getSourceActions(JComponent jc) {
-                return COPY_OR_MOVE;
+                return COPY;
         }
 
         @Override

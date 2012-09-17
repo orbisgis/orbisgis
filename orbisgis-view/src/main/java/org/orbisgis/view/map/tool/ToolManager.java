@@ -151,7 +151,11 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                                 if (activeLayer != null) {
                                         activeLayer.addLayerListener(layerListener);
                                         if (activeLayer.getDataSource().isEditable()) {
-                                                activeLayer.getDataSource().addEditionListener(layerListener);
+                                                try {
+                                                        activeLayer.getDataSource().addEditionListener(layerListener);
+                                                } catch(UnsupportedOperationException ex) {
+                                                        UILOGGER.warn(I18N.tr("The ToolManager cannot listen to source modifications"),ex);
+                                                }
                                         }
                                         activeLayer.getDataSource().addDataSourceListener(layerListener);
                                 }
