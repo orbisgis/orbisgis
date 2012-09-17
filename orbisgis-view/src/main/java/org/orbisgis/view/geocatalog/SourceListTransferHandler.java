@@ -34,10 +34,8 @@ import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.StringTokenizer;
 import javax.swing.JComponent;
 import javax.swing.JList;
 import javax.swing.TransferHandler;
@@ -45,6 +43,7 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.events.EventException;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.core.events.ListenerContainer;
+import org.orbisgis.view.components.UriListFlavor;
 
 /**
  * Swing Handler for dragging data source list items.
@@ -56,14 +55,9 @@ public class SourceListTransferHandler extends TransferHandler{
         private ListenerContainer<DropUriEventObject> dropListenerHandler = new ListenerContainer<DropUriEventObject>();
         private static final Logger LOGGER = Logger.getLogger("gui."+SourceListTransferHandler.class);
         private static final long serialVersionUID = 1L;
-        private DataFlavor uriListFlavor = null;
+        private UriListFlavor uriListFlavor = new UriListFlavor();
 
         public SourceListTransferHandler() {
-                try {
-                        uriListFlavor = new DataFlavor("text/uri-list;class=java.lang.String");
-                } catch (ClassNotFoundException ex) {
-                        LOGGER.error("Uri flavor not supported",ex);
-                }
         }
 
         public ListenerContainer<DropUriEventObject> getDropListenerHandler() {
@@ -81,7 +75,7 @@ public class SourceListTransferHandler extends TransferHandler{
                 boolean isFileList = ts.isDataFlavorSupported(DataFlavor.javaFileListFlavor);
                 boolean isUriList = false;
                 if(uriListFlavor!=null) {
-                        isUriList = ts.isDataFlavorSupported(uriListFlavor);
+                        isUriList = ts.isDataFlavorSupported(uriListFlavor.getUriListFlavor());
                 }
                 return isFileList || isUriList;
         }
@@ -105,13 +99,20 @@ public class SourceListTransferHandler extends TransferHandler{
                 //Native javaFileList used in priority
                 if(ts.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
                         try {
-                                List<File> files = (List<File>)ts.getTransferable().getTransferData(DataFlavor.javaFileListFlavor);
-                                //Construct URI list from files
-                                List<URI> uriList = new ArrayList<URI>(files.size());
-                                for(File file : files) {
-                                        uriList.add(file.toURI());
-                                }                                
-                                return dropDataSource(uriList);
+                                Object transferData = ts.getTransferable().
+                                        getTransferData(DataFlavor.javaFileListFlavor);
+                                if(transferData instanceof List) {
+                                        //guaranteed to be of type java.io.File
+                                        List<File> files = (List<File>)transferData;
+                                        //Construct URI list from files
+                                        List<URI> uriList = new ArrayList<URI>(files.size());
+                                        for(File file : files) {
+                                                uriList.add(file.toURI());
+                                        }                                
+                                        return dropDataSource(uriList);
+                                } else {
+                                        return false;
+                                }
                         } catch (UnsupportedFlavorException ex) {
                                 LOGGER.error(ex);
                                 return false;
@@ -121,30 +122,12 @@ public class SourceListTransferHandler extends TransferHandler{
                         }
                 } else {
                         try {
-                                String filesChain = (String)ts.getTransferable().getTransferData(uriListFlavor);
-                                String lineSep = System.getProperty("line.separator"); //RFC 2483 says that lines are terminated with a CRLF pair
-                                List<URI> uriList = new ArrayList<URI>();
-                                for(StringTokenizer stringTokenizer = new StringTokenizer(filesChain, lineSep); stringTokenizer.hasMoreTokens();)
-                                {
-                                        String line = stringTokenizer.nextToken();
-                                        //If the URI line is not a comment
-                                        if(!(line.startsWith("#") || line.isEmpty()))
-                                        {
-                                                try {
-                                                        URI dataUri = new URI(line.trim());
-                                                        uriList.add(dataUri);
-                                                } catch (URISyntaxException ex) {
-                                                        LOGGER.debug(ex);
-                                                        continue;
-                                                }
-                                        }
-                                 }
-                                return dropDataSource(uriList);
+                                return dropDataSource(uriListFlavor.getUriList(ts.getTransferable()));
                         } catch (UnsupportedFlavorException ex) {
-                                LOGGER.error(ex);
+                                LOGGER.error(ex.getLocalizedMessage(),ex);
                                 return false;
                         } catch (IOException ex) {
-                                LOGGER.error(ex);
+                                LOGGER.error(ex.getLocalizedMessage(),ex);
                                 return false;
                         }
                 }

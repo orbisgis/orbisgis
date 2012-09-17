@@ -28,8 +28,12 @@
  */
 package org.orbisgis.sif.common;
 
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import javax.swing.AbstractButton;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.MenuElement;
 
 /**
  * Common tools to Swing Menu
@@ -56,4 +60,60 @@ public class MenuCommonFunctions {
                 actionComponent.setText(componentLabel.replaceFirst("&",""));
         }
     }
+    
+    /**
+     * @param menu
+     * @param menuItem
+     * @return True if another item was found with the same actionCommand 
+     */
+    private static boolean recursiveUpdateOrInsertMenuItem(MenuElement menu, JMenuItem menuItem,boolean hideOnUpdate) {
+            boolean updated = false;
+            for(MenuElement menuEl : menu.getSubElements()) {
+                    if(menuEl instanceof JMenuItem) {
+                            JMenuItem subMenuItem = (JMenuItem)menuEl;
+                            String actionCommand = subMenuItem.getActionCommand();
+                            if(actionCommand.equals(menuItem.getActionCommand())) {
+                                    if (hideOnUpdate) {
+                                            subMenuItem.setVisible(false);
+                                    } else {
+                                            for (ActionListener listener : menuItem.getActionListeners()) {
+                                                    subMenuItem.addActionListener(listener);
+                                            }
+                                    }
+                                    updated = true;
+                            }
+                    } else {
+                            updated = updated || recursiveUpdateOrInsertMenuItem(menuEl,menuItem,hideOnUpdate);
+                    }
+            }           
+            return updated;
+    }
+
+        /**
+         * Depending on menuItem actionCommand, if a sub menu of menu has the
+         * same actionCommand then the already inserted menu item receive all
+         * the action listeners of the provided menuItem
+         *
+         * @param menu Root of menu items
+         * @param menuItem New menu item to insert
+         */
+        public static void updateOrInsertMenuItem(JPopupMenu menu, JMenuItem menuItem) {
+                updateOrInsertMenuItem(menu, menuItem, false);
+        }
+
+        /**
+         * Depending on menuItem actionCommand, if a sub menu of menu has the
+         * same actionCommand then the already inserted menu item receive all
+         * the action listeners of the provided menuItem
+         *
+         * @param menu Root of menu items
+         * @param menuItem New menu item to insert
+         * @param hideOnUpdate If this action already exists, hide it from the
+         * menu
+         */
+        public static void updateOrInsertMenuItem(JPopupMenu menu, JMenuItem menuItem, boolean hideOnUpdate) {
+                if (!recursiveUpdateOrInsertMenuItem(menu, menuItem, hideOnUpdate)) {
+                        menu.add(menuItem);
+                }
+        }
 }
