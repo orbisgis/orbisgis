@@ -29,6 +29,7 @@
 package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
@@ -53,6 +54,7 @@ import net.opengis.ows_context.OnlineResourceType;
 import net.opengis.ows_context.ResourceListType;
 import net.opengis.ows_context.StyleType;
 import net.opengis.ows_context.URLType;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
@@ -498,8 +500,15 @@ public final class OwsMapContext extends BeanMapContext {
                 try {
                         if (sm.exists(resourceUri)) {
                                 return dm.getDataSourceFactory().getDataSource(sm.getNameFor(resourceUri));
-                        } else {
-                                return dm.getDataSourceFactory().getDataSource(dm.getSourceManager().nameAndRegister(resourceUri));
+                        } else {                                
+                                if (resourceUri.getScheme().equals("file")) {
+                                        File file = new File(resourceUri);
+                                        String sourceName = sm.getUniqueName(FilenameUtils.removeExtension(file.getName()));
+                                        sm.register(sourceName, resourceUri);
+                                        return dm.getDataSourceFactory().getDataSource(sourceName);
+                                }else{
+                                        return dm.getDataSourceFactory().getDataSource(sm.nameAndRegister(resourceUri));
+                                }
                         }
                 } catch (SourceAlreadyExistsException ex) {
                         throw new DataSourceCreationException(ex);
