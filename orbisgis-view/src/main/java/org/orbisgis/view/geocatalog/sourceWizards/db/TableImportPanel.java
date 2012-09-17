@@ -51,6 +51,7 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.multiInputPanel.MIPValidation;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.PasswordType;
+import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -130,18 +131,18 @@ public class TableImportPanel extends JDialog {
          * @throws SQLException
          * @throws DriverException
          */
-        private JTree getTableTree(String[] parameters, String passWord) throws SQLException, DriverException {
+        private JTree getTableTree(String[] parameters, String passWord, String login) throws SQLException, DriverException {
                 if (tableTree == null) {
                         DriverManager driverManager = sourceManager.getDriverManager();
                         String dbType = parameters[0];
                         DBDriver dbDriver = (DBDriver) driverManager.getDriver(dbType);
                         String cs = dbDriver.getConnectionString(parameters[1], Integer.valueOf(
-                                parameters[2]), Boolean.valueOf(parameters[3]), parameters[4], parameters[5],
+                                parameters[2]), Boolean.valueOf(parameters[3]), parameters[4], login,
                                 passWord);
                         Connection connection = dbDriver.getConnection(cs);
 
                         dBSource = new DBSource(parameters[1], Integer.valueOf(
-                                parameters[2]), parameters[4], parameters[5], passWord, dbDriver.getPrefixes()[0], Boolean.valueOf(parameters[3]));
+                                parameters[2]), parameters[4], login, passWord, dbDriver.getPrefixes()[0], Boolean.valueOf(parameters[3]));
 
                         final String[] schemas = dbDriver.getSchemas(connection);
 
@@ -240,12 +241,16 @@ public class TableImportPanel extends JDialog {
         public boolean onConnect() {
                 String dataBaseUri = connectionToolBar.getCmbDataBaseUri().getSelectedItem().toString();
                 if (!dataBaseUri.isEmpty()) {
-                        MultiInputPanel passwordDialog = new MultiInputPanel(I18N.tr("Please set a password"));
+                        MultiInputPanel passwordDialog = new MultiInputPanel(I18N.tr("Please set the user name and a password "));
+                        passwordDialog.addInput("login", I18N.tr("Login"), "",new TextBoxType(10));
                         passwordDialog.addInput("password", I18N.tr("Password"), "", new PasswordType(10));
                         passwordDialog.addValidation(new MIPValidation() {
 
                                 @Override
                                 public String validate(MultiInputPanel mid) {
+                                         if (mid.getInput("login").isEmpty()) {
+                                                return I18N.tr("The login cannot be empty.");
+                                        }
                                         if (mid.getInput("password").isEmpty()) {
                                                 return I18N.tr("The password cannot be empty.");
                                         }
@@ -257,8 +262,9 @@ public class TableImportPanel extends JDialog {
                         if (UIFactory.showDialog(passwordDialog)) {
                                 try {
                                         String passWord = passwordDialog.getInput("password");
+                                        String login = passwordDialog.getInput("login");
                                         String properties = connectionToolBar.getDbProperties().getProperty(dataBaseUri);
-                                        tableTree = getTableTree(properties.split(","), passWord);
+                                        tableTree = getTableTree(properties.split(","), login,passWord);
                                         jScrollPane.setViewportView(tableTree);
                                         return true;
 
