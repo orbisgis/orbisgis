@@ -180,7 +180,11 @@ public class MapControl extends JComponent implements ContainerListener {
 		DataSource dataSource = rootLayer.getDataSource();
 		if (dataSource != null) {
                         if (dataSource.isEditable()) {
-                                dataSource.addEditionListener(refreshLayerListener);
+                                try {
+                                        dataSource.addEditionListener(refreshLayerListener);
+                                } catch (UnsupportedOperationException ex) {
+                                        LOGGER.warn(I18N.tr("The MapEditor cannot listen to source modifications"), ex);
+                                }
                         }
 			dataSource.addDataSourceListener(refreshLayerListener);
 		}
@@ -196,7 +200,11 @@ public class MapControl extends JComponent implements ContainerListener {
 		DataSource dataSource = rootLayer.getDataSource();
 		if (dataSource != null) {
                         if (dataSource.isEditable()) {
-                                dataSource.removeEditionListener(refreshLayerListener);
+                                try {
+                                        dataSource.removeEditionListener(refreshLayerListener);
+                                } catch (UnsupportedOperationException ex) {
+                                        // ignore
+                                }
                         }
 			dataSource.removeDataSourceListener(refreshLayerListener);
 		}

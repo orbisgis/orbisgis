@@ -66,7 +66,13 @@ public class DataSourceTableModel extends AbstractTableModel {
                 this.element = element;
                 dataSource = element.getDataSource();
                 dataSourceListener = new ModificationListener();
-                dataSource.addEditionListener(dataSourceListener);
+                if(dataSource.isEditable()) {
+                        try {
+                                dataSource.addEditionListener(dataSourceListener);
+                        } catch (UnsupportedOperationException ex) {
+                                LOGGER.warn(I18N.tr("The TableEditor cannot listen to source modifications"), ex);
+                        }
+                }
                 dataSource.addMetadataEditionListener(dataSourceListener);
         }
 
@@ -81,7 +87,13 @@ public class DataSourceTableModel extends AbstractTableModel {
          */
         public void dispose() {
                 dataSource.removeEditionListener(dataSourceListener);
-                dataSource.removeMetadataEditionListener(dataSourceListener);
+                if (dataSource.isEditable()) {
+                        try {
+                                dataSource.removeMetadataEditionListener(dataSourceListener);
+                        } catch (UnsupportedOperationException ex) {
+                                // Ignore
+                        }
+                }
         }
 
         /**
