@@ -57,6 +57,8 @@ import org.xnap.commons.i18n.I18nFactory;
 public class SourceListModel extends AbstractListModel {
         private static final I18n I18N = I18nFactory.getI18n(SourceListModel.class);
 	private static final Logger LOGGER = Logger.getLogger(SourceListModel.class);
+        private static final long serialVersionUID = 1L;
+        
         private SourceListener sourceListener=null; /*!< The listener put in the sourceManager*/
 	private ContainerItemProperties[] sourceList;/*!< Sources */
 	private List<IFilter> filters = new ArrayList<IFilter>(); /*!< Active filters */
@@ -174,7 +176,14 @@ public class SourceListModel extends AbstractListModel {
 	private void readDataManager() {
             SourceManager sourceManager = getDataManager().getSourceManager();
             String[] tempSourceNames = sourceManager.getSourceNames(); //Retrieve all sources names
-
+            List<String> wkn_SourceNames = new ArrayList<String>();
+            for(String sourceName : tempSourceNames) {
+                    Source source = sourceManager.getSource(sourceName);
+                    if(source.isWellKnownName()) {
+                            wkn_SourceNames.add(sourceName);
+                    }
+            }
+            tempSourceNames = wkn_SourceNames.toArray(new String[wkn_SourceNames.size()]);            
             if (!filters.isEmpty()) {
                 //Apply filter with the Or
                 tempSourceNames = filter(sourceManager, tempSourceNames, new AndFilter());
@@ -186,7 +195,7 @@ public class SourceListModel extends AbstractListModel {
                 //System table are not shown, except if the user want to see them (through or filter)
                 tempSourceNames = filter(sourceManager, tempSourceNames, new DefaultFilter());
             }
-            //Sort source list
+            //Sort source list 
             Arrays.sort(tempSourceNames,ComparatorUtils.NATURAL_COMPARATOR);
             this.sourceList = new ContainerItemProperties[tempSourceNames.length];
             //Set the label of elements from Data Source information
@@ -310,10 +319,10 @@ public class SourceListModel extends AbstractListModel {
             * @param sourceName Source name
             * @return True if the Source should be shown
             */
-            @Override
-            public boolean accepts(SourceManager sm, String sourceName) {
-                Source source = sm.getSource(sourceName);
-                return (source != null) && !source.isSystemTableSource();			
-            }
-	}
+                @Override
+                public boolean accepts(SourceManager sm, String sourceName) {
+                        Source source = sm.getSource(sourceName);
+                        return (source != null) && !source.isSystemTableSource();
+                }
+        }
 }
