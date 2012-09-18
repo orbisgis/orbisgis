@@ -46,11 +46,15 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.TableDescription;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.events.Listener;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.multiInputPanel.MIPValidation;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.PasswordType;
+import org.orbisgis.sif.multiInputPanel.TextBoxType;
+import org.orbisgis.view.background.BackgroundJob;
+import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -124,93 +128,6 @@ public class TableImportPanel extends JDialog {
         }
 
         /**
-         * Populate a tree with the list of tables and views.
-         *
-         * @return
-         * @throws SQLException
-         * @throws DriverException
-         */
-        private JTree getTableTree(String[] parameters, String passWord) throws SQLException, DriverException {
-                if (tableTree == null) {
-                        DriverManager driverManager = sourceManager.getDriverManager();
-                        String dbType = parameters[0];
-                        DBDriver dbDriver = (DBDriver) driverManager.getDriver(dbType);
-                        String cs = dbDriver.getConnectionString(parameters[1], Integer.valueOf(
-                                parameters[2]), Boolean.valueOf(parameters[3]), parameters[4], parameters[5],
-                                passWord);
-                        Connection connection = dbDriver.getConnection(cs);
-
-                        dBSource = new DBSource(parameters[1], Integer.valueOf(
-                                parameters[2]), parameters[4], parameters[5], passWord, dbDriver.getPrefixes()[0], Boolean.valueOf(parameters[3]));
-
-                        final String[] schemas = dbDriver.getSchemas(connection);
-
-                        DefaultMutableTreeNode rootNode =
-                                new DefaultMutableTreeNode(connection.getCatalog());
-
-                        // Add Data to the tree
-                        for (String schema : schemas) {
-
-                                final TableDescription[] tableDescriptions = dbDriver.getTables(connection, null, schema, null,
-                                        new String[]{"TABLE"});
-                                final TableDescription[] viewDescriptions = dbDriver.getTables(connection, null, schema, null,
-                                        new String[]{"VIEW"});
-
-                                if (tableDescriptions.length == 0
-                                        && viewDescriptions.length == 0) {
-                                        continue;
-                                }
-
-                                // list schemas
-                                DefaultMutableTreeNode schemaNode = new DefaultMutableTreeNode(
-                                        new SchemaNode(schema));
-                                rootNode.add(schemaNode);
-
-                                // list Tables
-                                DefaultMutableTreeNode tableNode = new DefaultMutableTreeNode(
-                                        I18N.tr("Tables"));
-
-                                // we send possible loading errors to the Output window
-                                DriverException[] exs = dbDriver.getLastNonBlockingErrors();
-                                if (exs.length != 0) {
-                                        for (int i = 0; i < exs.length; i++) {
-                                                //    om.println(exs[i].getMessage(), Color.ORANGE);
-                                                LOGGER.error(exs[i].getMessage(), exs[i].getCause());
-                                        }
-                                }
-
-                                if (tableDescriptions.length > 0) {
-                                        schemaNode.add(tableNode);
-                                        for (TableDescription tableDescription : tableDescriptions) {
-                                                tableNode.add(new DefaultMutableTreeNode(new TableNode(
-                                                        tableDescription)));
-                                        }
-                                }
-
-                                // list View
-                                DefaultMutableTreeNode viewNode = new DefaultMutableTreeNode(
-                                        I18N.tr("Views"));
-                                if (viewDescriptions.length > 0) {
-                                        schemaNode.add(viewNode);
-                                        for (TableDescription viewDescription : viewDescriptions) {
-                                                viewNode.add(new DefaultMutableTreeNode(new ViewNode(
-                                                        viewDescription)));
-                                        }
-                                }
-                        }
-
-                        connection.close();
-
-                        tableTree = new JTree(rootNode);
-                        tableTree.setRootVisible(true);
-                        tableTree.setShowsRootHandles(true);
-                        tableTree.setCellRenderer(new TableTreeCellRenderer());
-                }
-
-                return tableTree;
-        }
-
-        /**
          * Get the current dbsource build when the connection is done.
          *
          * @return
@@ -240,12 +157,16 @@ public class TableImportPanel extends JDialog {
         public boolean onConnect() {
                 String dataBaseUri = connectionToolBar.getCmbDataBaseUri().getSelectedItem().toString();
                 if (!dataBaseUri.isEmpty()) {
-                        MultiInputPanel passwordDialog = new MultiInputPanel(I18N.tr("Please set a password"));
+                        MultiInputPanel passwordDialog = new MultiInputPanel(I18N.tr("Please set the user name and a password "));
+                        passwordDialog.addInput("login", I18N.tr("Login"), "",new TextBoxType(10));
                         passwordDialog.addInput("password", I18N.tr("Password"), "", new PasswordType(10));
                         passwordDialog.addValidation(new MIPValidation() {
 
                                 @Override
                                 public String validate(MultiInputPanel mid) {
+                                         if (mid.getInput("login").isEmpty()) {
+                                                return I18N.tr("The login cannot be empty.");
+                                        }
                                         if (mid.getInput("password").isEmpty()) {
                                                 return I18N.tr("The password cannot be empty.");
                                         }
@@ -255,24 +176,12 @@ public class TableImportPanel extends JDialog {
                         });
 
                         if (UIFactory.showDialog(passwordDialog)) {
-                                try {
                                         String passWord = passwordDialog.getInput("password");
+                                        String login = passwordDialog.getInput("login");
                                         String properties = connectionToolBar.getDbProperties().getProperty(dataBaseUri);
-                                        tableTree = getTableTree(properties.split(","), passWord);
-                                        jScrollPane.setViewportView(tableTree);
+                                        BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
+                                        backgroundManager.backgroundOperation(new PopulatingDBTree(properties.split(","),login, passWord));
                                         return true;
-
-                                } catch (DriverException ex) {
-                                        JOptionPane.showMessageDialog(jScrollPane, I18N.tr("Cannot connect the database"));
-                                        LOGGER.error(ex);
-                                        return false;
-                                } catch (SQLException ex) {
-                                        JOptionPane.showMessageDialog(jScrollPane, I18N.tr("Cannot connect the database"));
-                                        LOGGER.error(ex);
-                                        return false;
-                                }
-
-
                         }
                 }
                 return false;
@@ -348,4 +257,111 @@ public class TableImportPanel extends JDialog {
                 }
 
         }
+        
+        /**
+         * This method is used to populate the treemodel with a list of tables 
+         * and views available in the database.
+         */
+        private class PopulatingDBTree implements BackgroundJob {
+                private final String[] parameters;
+                private final String passWord;
+                private final String login;
+
+                
+                public PopulatingDBTree(String[] parameters,String login, String passWord) {
+                        this.parameters = parameters;
+                        this.login=login;
+                        this.passWord=passWord;
+                }
+
+                @Override
+                public void run(org.orbisgis.progress.ProgressMonitor pm) {
+                        try {
+                                DriverManager driverManager = sourceManager.getDriverManager();
+                                String dbType = parameters[0];
+                                DBDriver dbDriver = (DBDriver) driverManager.getDriver(dbType);
+                                final String cs = dbDriver.getConnectionString(parameters[1], Integer.valueOf(
+                                        parameters[2]), Boolean.valueOf(parameters[3]), parameters[4], login,
+                                        passWord);
+                                Connection connection = dbDriver.getConnection(cs);
+
+                                dBSource = new DBSource(parameters[1], Integer.valueOf(
+                                        parameters[2]), parameters[4], login, passWord, dbDriver.getPrefixes()[0], Boolean.valueOf(parameters[3]));
+
+                                final String[] schemas = dbDriver.getSchemas(connection);
+                               
+
+                                DefaultMutableTreeNode rootNode =
+                                        new DefaultMutableTreeNode(connection.getCatalog());
+                                // Add Data to the tree
+                                for (String schema : schemas) {
+
+                                        final TableDescription[] tableDescriptions = dbDriver.getTables(connection, null, schema, null,
+                                                new String[]{"TABLE"});
+                                        final TableDescription[] viewDescriptions = dbDriver.getTables(connection, null, schema, null,
+                                                new String[]{"VIEW"});
+
+                                        if (tableDescriptions.length == 0
+                                                && viewDescriptions.length == 0) {
+                                                continue;
+                                        }
+
+                                        // list schemas
+                                        DefaultMutableTreeNode schemaNode = new DefaultMutableTreeNode(
+                                                new SchemaNode(schema));
+                                        rootNode.add(schemaNode);
+
+                                        // list Tables
+                                        DefaultMutableTreeNode tableNode = new DefaultMutableTreeNode(
+                                                I18N.tr("Tables"));
+
+                                        // we send possible loading errors to the Output window
+                                        DriverException[] exs = dbDriver.getLastNonBlockingErrors();
+                                        if (exs.length != 0) {
+                                                for (int i = 0; i < exs.length; i++) {
+                                                        //    om.println(exs[i].getMessage(), Color.ORANGE);
+                                                        LOGGER.error(exs[i].getMessage(), exs[i].getCause());
+                                                }
+                                        }
+
+                                        if (tableDescriptions.length > 0) {
+                                                schemaNode.add(tableNode);
+                                                for (TableDescription tableDescription : tableDescriptions) {
+                                                        tableNode.add(new DefaultMutableTreeNode(new TableNode(
+                                                                tableDescription)));
+                                                }
+                                        }
+
+                                        // list View
+                                        DefaultMutableTreeNode viewNode = new DefaultMutableTreeNode(
+                                                I18N.tr("Views"));
+                                        if (viewDescriptions.length > 0) {
+                                                schemaNode.add(viewNode);
+                                                for (TableDescription viewDescription : viewDescriptions) {
+                                                        viewNode.add(new DefaultMutableTreeNode(new ViewNode(
+                                                                viewDescription)));
+                                                }
+                                        }
+                                }
+
+                                connection.close();
+                                tableTree = new JTree(rootNode);
+                                tableTree.setRootVisible(true);
+                                tableTree.setShowsRootHandles(true);
+                                tableTree.setCellRenderer(new TableTreeCellRenderer());  
+                                jScrollPane.setViewportView(tableTree);
+                        } catch (DriverException ex) {
+                                LOGGER.error(I18N.tr("Cannot list the tables and views"), ex);
+                        } catch (SQLException ex) {
+                                LOGGER.error(I18N.tr("Cannot open the connection"), ex);
+                        }
+                }
+
+                @Override
+                public String getTaskName() {
+                        return I18N.tr("Populating the database list...");
+                }
+                
+        }
+
 }

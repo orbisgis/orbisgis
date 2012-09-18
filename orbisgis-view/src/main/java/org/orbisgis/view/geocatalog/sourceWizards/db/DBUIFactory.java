@@ -48,7 +48,6 @@ public class DBUIFactory {
         static String HOST = "host";
         static String PORT = "port";
         static String DBNAME = "dbname";
-        static String USER = "user";
         static String SSL = "ssl";
         static String CONNAME = "conname";
 
@@ -73,8 +72,6 @@ public class DBUIFactory {
                         "0", new TextBoxType(LENGTH));
                 connectionMP.addInput(DBNAME, I18N.tr("Database name"),
                         "database_name", new TextBoxType(LENGTH));
-                connectionMP.addInput(USER, I18N.tr("User name"),
-                        "postgres", new TextBoxType(LENGTH));
 
                 connectionMP.addInput(SSL, I18N.tr("SSL"), new CheckBoxChoice(false));
 
@@ -137,8 +134,6 @@ public class DBUIFactory {
                         connectionParams[2], new TextBoxType(LENGTH));
                 connectionMP.addInput(DBNAME, I18N.tr("Database name"),
                         connectionParams[4], new TextBoxType(LENGTH));
-                connectionMP.addInput(USER, I18N.tr("User name"),
-                        connectionParams[5], new TextBoxType(LENGTH));
 
 
                 connectionMP.addInput(SSL, I18N.tr("SSL"), new CheckBoxChoice(Boolean.valueOf(connectionParams[3])));
