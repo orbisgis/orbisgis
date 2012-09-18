@@ -153,12 +153,7 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
         public void setUserObject(Object o) {
                 // The map context need to be open and close to edit the label,
                 // this can be quite long and register some data sources..
-        }
-
-        @Override
-        public void setParent(MutableTreeNode mtn) {
-                parent = mtn;
-        }
+        }        
 
         @Override
         public TreeNode getChildAt(int i) {

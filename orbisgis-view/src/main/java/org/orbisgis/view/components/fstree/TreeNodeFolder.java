@@ -82,6 +82,15 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
                 }
                 setLabel(folderPath.getName());
         }
+
+        @Override
+        public void setParent(MutableTreeNode mtn) {
+                super.setParent(mtn);
+                // Only sub folder can be renamed
+                setEditable(mtn instanceof TreeNodeFolder);
+        }
+        
+        
         /**
          * Read the file system and insert the new files and folders
          */
@@ -93,7 +102,7 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
                         LOGGER.error(I18N.tr("Cannot list the directory content"),ex);
                         return;
                 }
-                // Find deleted sub-elements 
+                // Find deleted sub-elements, and update existing sub-folders 
                 List<MutableTreeNode> childrenToRemove = new ArrayList<MutableTreeNode>(children.size());
                 for(MutableTreeNode child : children) {
                         if(child instanceof TreeNodePath) {
@@ -103,6 +112,9 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
                                         childrenToRemove.add(child);
                                 } else {
                                         fsList.remove(childFileName);
+                                        if(child instanceof TreeNodeFolder) {
+                                                ((TreeNodeFolder)child).updateTree();
+                                        }
                                 }
                         }
                 }
@@ -110,7 +122,7 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
                 for(MutableTreeNode child : childrenToRemove) {
                         model.removeNodeFromParent(child);
                 }
-                // Add the new children
+                // Add the new children, and update new sub-folders 
                 for(String childPath : fsList) {
                         File newChild = new File(getFilePath(), childPath);
                         if (newChild.isDirectory()) {

@@ -31,7 +31,10 @@ package org.orbisgis.view.map.mapsManager;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.beans.EventHandler;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -39,17 +42,20 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.FileTree;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
 import org.orbisgis.view.components.fstree.TreeNodeFolder;
 import org.orbisgis.view.components.fstree.TreeNodePath;
+import org.orbisgis.view.map.MapEditorPersistance;
 import org.orbisgis.view.map.mapsManager.jobs.ReadStoredMap;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
@@ -63,10 +69,12 @@ public class MapsManager extends JPanel {
         // Minimal tree size is incremented by this emptySpace
         private static final long serialVersionUID = 1L;
         private static final I18n I18N = I18nFactory.getI18n(MapsManager.class);
+        private static final Logger LOGGER = Logger.getLogger(MapsManager.class);
         private FileTree tree;
         private DefaultTreeModel treeModel;
         private MutableTreeNode rootNode = new DefaultMutableTreeNode();
-        TreeNodeFolder rootFolder;
+        private TreeNodeFolder rootFolder;
+        private TreeNodeRemoteRoot rootRemote;
         private JScrollPane scrollPane;
         private File loadedMap;
         // Store all the compatible map context
@@ -90,9 +98,11 @@ public class MapsManager extends JPanel {
                         rootFolderPath.mkdirs();
                 }
                 rootFolder = new TreeNodeFolder(rootFolderPath,tree);
-                rootFolder.setLabel(I18N.tr("Local"));                
+                rootFolder.setLabel(I18N.tr("Local")); 
+                rootRemote = new TreeNodeRemoteRoot();
                 initInternalFactories(); // Init file readers
-                treeModel.insertNodeInto(rootFolder,rootNode, 0);
+                treeModel.insertNodeInto(rootFolder, rootNode, rootNode.getChildCount());
+                treeModel.insertNodeInto(rootRemote, rootNode, rootNode.getChildCount());
                 tree.setRootVisible(false);
                 scrollPane = new JScrollPane(tree);
                 add(scrollPane,BorderLayout.EAST);
@@ -131,12 +141,16 @@ public class MapsManager extends JPanel {
                         rootFolder.updateTree(); //Read the file system tree
                         // Expand Local folder
                         tree.expandPath(new TreePath(new Object[] {rootNode,rootFolder}));  
-                        // Fetch all maps to find their titles
-                        BackgroundManager bm = Services.getService(BackgroundManager.class);
-                        bm.nonBlockingBackgroundOperation(new ReadStoredMap(getAllMapElements(rootFolder)));
+                        updateMapsTitle();
                         // Apply loaded map property on map nodes
                         applyLoadedMapHint();
                 }
+        }
+        
+        private void updateMapsTitle() {
+                // Fetch all maps to find their titles
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.nonBlockingBackgroundOperation(new ReadStoredMap(getAllMapElements(rootFolder)));                
         }
         
        /**
@@ -152,11 +166,29 @@ public class MapsManager extends JPanel {
         public JTree getTree() {
                 return tree;
         }
-        
+
         /**
-         * Update the state of the tree to show to the user
-         * a visual hint that a map is currently shown in the MapEditor or not.
-         * @param loadedMap 
+         * The map manager will read and update the map server list
+         * @param mapCatalogServers 
+         */
+        public void setServerList(List<String> mapCatalogServers) {
+                rootRemote.setServerList(mapCatalogServers);
+                for (String serverAdress : mapCatalogServers) {
+                        try {
+                                URL serverUrl = new URL(serverAdress);
+                                treeModel.insertNodeInto(new TreeNodeMapCatalogServer(serverUrl), rootRemote, rootRemote.getChildCount());
+                        } catch (MalformedURLException ex) {
+                                LOGGER.error(I18N.tr("Cannot load map catalog server {0}", serverAdress), ex);
+                        }
+                }
+        }
+
+        /**
+         * Update the state of the tree to show to the user a visual hint that a
+         * map is currently shown in the MapEditor or not.
+         *
+         * @param loadedMap
+         
          */
         public void setLoadedMap(File loadedMap) {
                 this.loadedMap = loadedMap;
