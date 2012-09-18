@@ -300,8 +300,6 @@ public class ConnectionToolBar extends JToolBar {
                                 sb.append(mip.getInput(DBUIFactory.SSL));
                                 sb.append(",");
                                 sb.append(mip.getInput(DBUIFactory.DBNAME));
-                                sb.append(",");
-                                sb.append(mip.getInput(DBUIFactory.USER));
                                 getDbProperties().setProperty(connectionName, sb.toString());
                                 getCmbDataBaseUri().addItem(connectionName);
                                 getCmbDataBaseUri().setSelectedItem(connectionName);
@@ -337,8 +335,6 @@ public class ConnectionToolBar extends JToolBar {
                                 sb.append(mip.getInput(DBUIFactory.SSL));
                                 sb.append(",");
                                 sb.append(mip.getInput(DBUIFactory.DBNAME));
-                                sb.append(",");
-                                sb.append(mip.getInput(DBUIFactory.USER));
                                 getDbProperties().setProperty(connectionName, sb.toString());
                                 getCmbDataBaseUri().addItem(connectionName);
                                 getCmbDataBaseUri().setSelectedItem(connectionName);
