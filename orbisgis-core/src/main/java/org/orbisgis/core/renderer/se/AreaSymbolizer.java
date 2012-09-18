@@ -274,6 +274,10 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
         @Override
         public HashSet<String> dependsOnFeature() {
                 HashSet<String> ret = new HashSet<String>();
+                
+                if(this.getGeometryAttribute()!=null){
+                    ret.addAll(this.getGeometryAttribute().dependsOnFeature());
+                }
                 if (translate != null) {
                         ret.addAll(translate.dependsOnFeature());
                 }
