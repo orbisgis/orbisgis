@@ -83,6 +83,34 @@ public class RemoteMapCatalog {
                 }
                 return true;
         }
+        
+        /**
+         * Read the parser and feed the provided list with workspaces
+         * @param workspaces Writable, empty list of workspaces
+         * @param parser Opened parser
+         * @throws XMLStreamException 
+         */
+        public void parseXML(List<Workspace> workspaces,XMLStreamReader parser) throws XMLStreamException {
+                List<String> hierarchy = new ArrayList<String>();
+                for (int event = parser.next();
+                        event != XMLStreamConstants.END_DOCUMENT;
+                        event = parser.next()) {
+                        // For each XML elements
+                        switch(event) {
+                                case XMLStreamConstants.START_ELEMENT:
+                                        hierarchy.add(parser.getLocalName());
+                                        break;
+                                case XMLStreamConstants.END_ELEMENT:
+                                        hierarchy.remove(hierarchy.size()-1);
+                                        break;
+                                case XMLStreamConstants.CHARACTERS:
+                                        if(endsWith(hierarchy,"items","item")) {
+                                                workspaces.add(new Workspace(cParams, parser.getText()));
+                                        }
+                                        break;
+                        }                               
+                }                
+        }
         /***
          * Request the workspaces synchronously.
          * This call may take a long time to execute.
@@ -115,25 +143,7 @@ public class RemoteMapCatalog {
                 try {
                         parser = factory.createXMLStreamReader(in);
                         // Fill workspaces
-                        List<String> hierarchy = new ArrayList<String>();
-                        for (int event = parser.next();
-                                event != XMLStreamConstants.END_DOCUMENT;
-                                event = parser.next()) {
-                                // For each XML elements
-                                switch(event) {
-                                        case XMLStreamConstants.START_ELEMENT:
-                                                hierarchy.add(parser.getLocalName());
-                                                break;
-                                        case XMLStreamConstants.END_ELEMENT:
-                                                hierarchy.remove(hierarchy.size()-1);
-                                                break;
-                                        case XMLStreamConstants.CHARACTERS:
-                                                if(endsWith(hierarchy,"items","item")) {
-                                                        workspaces.add(new Workspace(cParams, parser.getText()));
-                                                }
-                                                break;
-                                }                               
-                        }
+                        parseXML(workspaces,parser);
                         parser.close();
                 } catch(XMLStreamException ex) {
                         throw new IOException(I18N.tr("Invalid XML content"),ex);
