@@ -31,10 +31,16 @@ package org.orbisgis.core.layerModel.mapcatalog;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * The remote map catalog is a Representational State Transfer Map Catalog client.
@@ -43,8 +49,8 @@ import java.util.List;
  */
 public class RemoteMapCatalog {
         private ConnectionProperties cParams;
-        private static final String ENCODING = "UTF-8";
         private static final String LIST_WORKSPACES = "/workspaces";
+        private static final I18n I18N = I18nFactory.getI18n(RemoteMapCatalog.class);
         
         /**
          * Constructor
@@ -57,10 +63,29 @@ public class RemoteMapCatalog {
         
         
         public Workspace getDefaultWorkspace() {
-                return new Workspace(remoteCatalogUri,"default");
+                return new Workspace(cParams,"default");
+        }
+        /**
+         * Check that the provided list ends with the provided items
+         * @param hierarchy
+         * @param items
+         * @return 
+         */
+        private static boolean endsWith(List<String> hierarchy,String... items) {
+                if(hierarchy.size()<items.length) {
+                        return false;
+                }
+                final int firstI = hierarchy.size()-items.length;
+                for(int i=firstI;i<hierarchy.size();i++) {
+                        if(!hierarchy.get(i).equals(items[i-firstI])) {
+                                return false;
+                        }
+                }
+                return true;
         }
         /***
-         * Request the workspaces synchronously, this call may take a long time to execute
+         * Request the workspaces synchronously.
+         * This call may take a long time to execute.
          * @return A list of workspaces
          * @throws IOException The request fail
          */
@@ -69,18 +94,50 @@ public class RemoteMapCatalog {
                 // Construct request
                 URL requestWorkspacesURL =
                         new URL(cParams.getApiUrl()+LIST_WORKSPACES);
-                URLConnection connection = requestWorkspacesURL.openConnection();
-                connection.setUseCaches(false);
+                // Establish connection
+                HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
+                connection.setRequestMethod("GET");
+                
+		if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                        throw new IOException(I18N.tr("HTTP Error message : {0}",connection.getResponseMessage()));
+                }
+                
                 // Read the response content
                 BufferedReader in = new BufferedReader(
                                     new InputStreamReader(
                                     connection.getInputStream()));
-                String decodedString;
-                while ((decodedString = in.readLine()) != null) {
-                        System.out.println(decodedString);
+                
+                
+                XMLInputFactory factory = XMLInputFactory.newInstance();
+                
+                // Parse Data
+                XMLStreamReader parser;
+                try {
+                        parser = factory.createXMLStreamReader(in);
+                        // Fill workspaces
+                        List<String> hierarchy = new ArrayList<String>();
+                        for (int event = parser.next();
+                                event != XMLStreamConstants.END_DOCUMENT;
+                                event = parser.next()) {
+                                // For each XML elements
+                                switch(event) {
+                                        case XMLStreamConstants.START_ELEMENT:
+                                                hierarchy.add(parser.getLocalName());
+                                                break;
+                                        case XMLStreamConstants.END_ELEMENT:
+                                                hierarchy.remove(hierarchy.size()-1);
+                                                break;
+                                        case XMLStreamConstants.CHARACTERS:
+                                                if(endsWith(hierarchy,"items","item")) {
+                                                        workspaces.add(new Workspace(cParams, parser.getText()));
+                                                }
+                                                break;
+                                }                               
+                        }
+                        parser.close();
+                } catch(XMLStreamException ex) {
+                        throw new IOException(I18N.tr("Invalid XML content"),ex);
                 }
-                in.close();
-                connection.
                 //URLEncoder.encode(args[1], ENCODING);
                 return workspaces;
         }

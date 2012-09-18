@@ -28,20 +28,24 @@
  */
 package org.orbisgis.core.layerModel.mapcatalog;
 
-import java.net.URL;
-
 /**
- *
+ * Workspace structure and reader
  * @author Nicolas Fortin
  */
 public class Workspace  {
-        private URL remoteCatalogUri;
+        private ConnectionProperties cParams;
         String workspaceName;
 
-        public Workspace(URL remoteCatalogUri, String workspaceName) {
-                this.remoteCatalogUri = remoteCatalogUri;
+        public Workspace(ConnectionProperties cParams, String workspaceName) {
+                this.cParams = cParams;
                 this.workspaceName = workspaceName;
         }
-        
-        
+
+        /**
+         * Return the workspace name, non localized
+         * @return 
+         */
+        public String getWorkspaceName() {
+                return workspaceName;
+        }
 }
