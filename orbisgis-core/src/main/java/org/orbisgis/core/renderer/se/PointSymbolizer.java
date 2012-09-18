@@ -214,7 +214,12 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 
     @Override
     public HashSet<String> dependsOnFeature() {
-        return graphic.dependsOnFeature();
+        HashSet<String> ret = new HashSet<String>();
+        if (this.getGeometryAttribute() != null) {
+            ret.addAll(this.getGeometryAttribute().dependsOnFeature());
+        }
+        ret.addAll(graphic.dependsOnFeature());
+        return ret;
     }
 
     @Override
