@@ -28,13 +28,25 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
+import org.apache.log4j.Logger;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.components.fstree.AbstractTreeNode;
+import org.orbisgis.view.components.fstree.PopupTreeNode;
 import org.orbisgis.view.components.resourceTree.EnumIterator;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -42,8 +54,9 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * @author Nicolas Fortin
  */
-public class TreeNodeRemoteRoot extends AbstractTreeNode {
+public class TreeNodeRemoteRoot extends AbstractTreeNode implements PopupTreeNode {
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeRemoteRoot.class);
+        private static final Logger LOGGER = Logger.getLogger(TreeNodeRemoteRoot.class);
         private List<TreeNodeMapCatalogServer> children = new ArrayList<TreeNodeMapCatalogServer>();
         // This list must be updated to the current state of shown servers
         private List<String> serverList;
@@ -65,11 +78,19 @@ public class TreeNodeRemoteRoot extends AbstractTreeNode {
         }
 
         /**
-         * Set the server list, without reading it.
+         * Set the server list
          * Keep updated to the current state of shown servers
          * @param serverList 
          */
-        public void setServerList(List<String> serverList) {
+        public void setServerList(List<String> serverList) {                
+                for (String serverAdress : serverList) {
+                        try {
+                                URL serverUrl = new URL(serverAdress);
+                                model.insertNodeInto(new TreeNodeMapCatalogServer(serverUrl), this, getChildCount());
+                        } catch (MalformedURLException ex) {
+                                LOGGER.error(I18N.tr("Cannot load map catalog server {0}", serverAdress), ex);
+                        }
+                }
                 this.serverList = serverList;
         }        
         
@@ -120,5 +141,31 @@ public class TreeNodeRemoteRoot extends AbstractTreeNode {
         @Override
         public Enumeration<? extends Object> children() {
                 return new EnumIterator<TreeNodeMapCatalogServer>(children.iterator());
+        }
+        /**
+         * Prompt the user to type the server URL
+         */
+        public void onAddServer() {
+                String serverURLString = JOptionPane.showInputDialog(UIFactory.getMainFrame(), I18N.tr("Enter the server URL"), "");
+                if(serverURLString!=null) {
+                        try {
+                                URL serverURL = new URL(serverURLString);
+                                model.insertNodeInto(new TreeNodeMapCatalogServer(serverURL), this, getChildCount());
+                        } catch( MalformedURLException ex) {
+                                LOGGER.error(I18N.tr("You type an incorrect URL {0}",serverURLString),ex);
+                        }
+                }
+        }
+        
+        @Override
+        public void feedPopupMenu(JPopupMenu menu) {
+                JMenuItem addServer = new JMenuItem(I18N.tr("Add Map Catalog server"),
+                        OrbisGISIcon.getIcon("world_add"));
+                addServer.setToolTipText(I18N.tr("Add a new remote map catalog"));
+                addServer.setActionCommand("TreeNodeRemoteRoot:addServer");
+                addServer.addActionListener(
+                        EventHandler.create(ActionListener.class,
+                        this, "onAddServer"));
+                MenuCommonFunctions.updateOrInsertMenuItem(menu, addServer);
         }
 }

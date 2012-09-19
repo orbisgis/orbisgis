@@ -102,14 +102,14 @@ public class EditorManager {
         * @param editableElement 
         */
         public void openEditable(EditableElement editableElement) {
-                
+                Set<EditableElement> ignoreModifiedEditables = new HashSet<EditableElement>();
                 // Open the element in editors
                 for(EditorDockable editor : getEditors()) {
                         if(editor.match(editableElement)) {
                                 // Get the current loaded document
                                 EditableElement oldEditable = editor.getEditableElement();
                                 if(oldEditable!=null) {
-                                        if(oldEditable.isModified()) {
+                                        if(oldEditable.isModified() && !ignoreModifiedEditables.contains(oldEditable)) {
                                                 //Ask the user to save changes
                                                 //before loosing the old editable
                                                 List<EditableElement> modifiedDocs = new ArrayList<EditableElement>();
@@ -118,6 +118,10 @@ public class EditorManager {
                                                 if(userChoice==SaveDocuments.CHOICE.CANCEL) {
                                                         //The user cancel the loading of elements
                                                         return;
+                                                }
+                                                if(oldEditable.isModified()) {
+                                                        // The user do not want to save this editable, do not ask for it in for the next editor
+                                                        ignoreModifiedEditables.add(oldEditable);
                                                 }
                                         }
                                 }                                

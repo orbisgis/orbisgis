@@ -94,6 +94,11 @@ public final class MapElement extends EditableElement {
 	@Override
 	public void save() throws UnsupportedOperationException {
                 try {
+                        //Create folders if needed
+                        File parentFolder = mapContextFile.getParentFile();
+                        if(!parentFolder.exists()) {
+                                parentFolder.mkdirs();
+                        }
                         mapContext.write(new FileOutputStream(mapContextFile));
                 } catch (FileNotFoundException ex) {
                         throw new UnsupportedOperationException(ex);

@@ -141,7 +141,6 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
         private void internalInsert(AbstractTreeNode mtn, int i) {
                 children.add(i, mtn);
                 mtn.setParent(this);
-                mtn.setModel(model);
         }
 
         @Override
@@ -291,7 +290,7 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
          * Create a sub folder, the folder name is given through an input dialog
          */
         public void onNewSubFolder() {                
-                String folderName = JOptionPane.showInputDialog(UIFactory.getMainFrame(), I18N.tr("Enter the folder name"), "Folder");
+                String folderName = JOptionPane.showInputDialog(UIFactory.getMainFrame(), I18N.tr("Enter the folder name"), I18N.tr("Folder"));
                 if(folderName!=null) {
                         File newFolderPath = new File(getFilePath(),folderName);
                         try {

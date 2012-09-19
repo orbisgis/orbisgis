@@ -55,15 +55,11 @@ public class MapEditorPersistance implements DockingPanelLayout, Serializable {
         private static final String URL_NODE = "mapcatalog";
         private static final String URL_NODE_PROPERTY = "url";
                 
-                
-                
         public MapEditorPersistance() {
                 ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
                 setDefaultMapContext(viewWorkspace.getDockingLayoutFile());
-                // Add a default Web Map Catalog for test purpose
-                // TODO remove this instruction
-                mapCatalogUrlList.add("http://poulpe.heig-vd.ch/scapc2/serviceapi/index.php");
         }
+        
         /**
          * Update the default map context
          * @param defaultMapContext 

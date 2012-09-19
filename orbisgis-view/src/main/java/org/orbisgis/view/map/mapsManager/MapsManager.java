@@ -42,6 +42,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
+import javax.swing.event.TreeModelEvent;
 import javax.swing.event.TreeModelListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -52,10 +53,10 @@ import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.FileTree;
+import org.orbisgis.view.components.fstree.FileTreeModel;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
 import org.orbisgis.view.components.fstree.TreeNodeFolder;
 import org.orbisgis.view.components.fstree.TreeNodePath;
-import org.orbisgis.view.map.MapEditorPersistance;
 import org.orbisgis.view.map.mapsManager.jobs.ReadStoredMap;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
@@ -85,7 +86,7 @@ public class MapsManager extends JPanel {
          */
         public MapsManager() {
                 super(new BorderLayout());
-                treeModel = new DefaultTreeModel(rootNode, true);
+                treeModel = new FileTreeModel(rootNode, true);
                 treeModel.setAsksAllowsChildren(true);
                 // Add the tree in the panel                
                 tree = new FileTree(treeModel);
@@ -137,16 +138,33 @@ public class MapsManager extends JPanel {
                 super.setVisible(visible);
                 if(visible && !initialized.getAndSet(true)) {
                         // Set a listener to the root folder
-                        rootFolder.setModel(treeModel);
                         rootFolder.updateTree(); //Read the file system tree
-                        // Expand Local folder
+                        // Expand Local and remote folder
                         tree.expandPath(new TreePath(new Object[] {rootNode,rootFolder}));  
+                        tree.expandPath(new TreePath(new Object[] {rootNode,rootRemote}));  
                         updateMapsTitle();
                         // Apply loaded map property on map nodes
                         applyLoadedMapHint();
+                        // Add model listener to do animations
+                        //treeModel.addTreeModelListener(
+                        //        EventHandler.create(TreeModelListener.class,
+                        //        this,"treeNodesChanged","","treeNodesChanged"));
                 }
         }
-        
+        /**
+         * A node in the tree has been updated.
+         * Refresh immediately if it is a busyNode
+         * @param tme 
+         */
+        public void treeNodesChanged(TreeModelEvent tme) {
+                TreePath nodePath = tme.getTreePath();
+                Object nodeObj = nodePath.getLastPathComponent();
+                if(nodeObj instanceof TreeNodeBusy) {
+                        LOGGER.debug("tree.repaint()");
+                        tree.repaint();
+                }
+                
+        }
         private void updateMapsTitle() {
                 // Fetch all maps to find their titles
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
@@ -173,14 +191,6 @@ public class MapsManager extends JPanel {
          */
         public void setServerList(List<String> mapCatalogServers) {
                 rootRemote.setServerList(mapCatalogServers);
-                for (String serverAdress : mapCatalogServers) {
-                        try {
-                                URL serverUrl = new URL(serverAdress);
-                                treeModel.insertNodeInto(new TreeNodeMapCatalogServer(serverUrl), rootRemote, rootRemote.getChildCount());
-                        } catch (MalformedURLException ex) {
-                                LOGGER.error(I18N.tr("Cannot load map catalog server {0}", serverAdress), ex);
-                        }
-                }
         }
 
         /**
@@ -196,7 +206,7 @@ public class MapsManager extends JPanel {
         }
         private void applyLoadedMapHint() {
                 if(loadedMap!=null) {
-                        List<TreeLeafMapElement> mapElements = getAllMapElements(rootNode);
+                        List<TreeLeafMapElement> mapElements = getAllMapElements(rootFolder);
                         for(TreeLeafMapElement mapEl : mapElements) {
                                 if(mapEl instanceof TreeNodePath) {
                                         if(((TreeNodePath)mapEl).getFilePath().equals(loadedMap)) {

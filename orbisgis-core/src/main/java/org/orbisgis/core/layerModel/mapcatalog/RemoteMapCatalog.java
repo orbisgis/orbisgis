@@ -125,7 +125,6 @@ public class RemoteMapCatalog {
                 // Establish connection
                 HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
                 connection.setRequestMethod("GET");
-                
 		if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                         throw new IOException(I18N.tr("HTTP Error message : {0}",connection.getResponseMessage()));
                 }
