@@ -29,6 +29,8 @@
 package org.orbisgis.view.map.mapsManager;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.tree.MutableTreeNode;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
@@ -70,10 +72,10 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer {
         public int getChildCount() {
                 long curTime = System.currentTimeMillis();
                 if(lastWorkspacesDownload + CACHE_EXPIRATION < curTime) {
-                        LOGGER.debug("TreeNodeMapCatalogServer::DownloadWorkspaces");
                         lastWorkspacesDownload = curTime;
                         // Clear all childrens
-                        for(MutableTreeNode child : children) {
+                        List<MutableTreeNode> childrenToRemove = new ArrayList<MutableTreeNode>(children);
+                        for(MutableTreeNode child : childrenToRemove) {
                                 model.removeNodeFromParent(child);
                         }
                         // Insert busy Node
