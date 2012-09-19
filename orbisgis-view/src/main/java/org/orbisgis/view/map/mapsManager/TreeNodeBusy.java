@@ -32,7 +32,6 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.Enumeration;
 import javax.swing.ImageIcon;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
@@ -127,6 +126,7 @@ public class TreeNodeBusy extends AbstractTreeNode implements TreeNodeCustomIcon
                         }
                         // Run the timer
                         animationTimer.start();
+                        model.nodeChanged(this);
                 }
                 this.doAnimation = doAnimation;
         }

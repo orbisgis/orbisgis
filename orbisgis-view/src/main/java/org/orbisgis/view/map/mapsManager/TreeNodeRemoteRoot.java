@@ -32,20 +32,16 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
 import org.apache.log4j.Logger;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.MenuCommonFunctions;
-import org.orbisgis.view.components.fstree.AbstractTreeNode;
+import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
 import org.orbisgis.view.components.fstree.PopupTreeNode;
-import org.orbisgis.view.components.resourceTree.EnumIterator;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -54,10 +50,9 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * @author Nicolas Fortin
  */
-public class TreeNodeRemoteRoot extends AbstractTreeNode implements PopupTreeNode {
+public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements PopupTreeNode {
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeRemoteRoot.class);
         private static final Logger LOGGER = Logger.getLogger(TreeNodeRemoteRoot.class);
-        private List<TreeNodeMapCatalogServer> children = new ArrayList<TreeNodeMapCatalogServer>();
         // This list must be updated to the current state of shown servers
         private List<String> serverList;
 
@@ -68,9 +63,9 @@ public class TreeNodeRemoteRoot extends AbstractTreeNode implements PopupTreeNod
         
         @Override
         public void insert(MutableTreeNode mtn, int i) {
+                super.insert(mtn, i);                        
                 if(mtn instanceof TreeNodeMapCatalogServer) {
                         TreeNodeMapCatalogServer newChild = (TreeNodeMapCatalogServer)mtn;
-                        children.add(i, newChild);
                         if(serverList!=null) {
                                 serverList.add(i,newChild.getServerUrl().toExternalForm());
                         }
@@ -96,7 +91,7 @@ public class TreeNodeRemoteRoot extends AbstractTreeNode implements PopupTreeNod
         
         @Override
         public void remove(int i) {
-                children.remove(i);
+                super.remove(i);
                 if(serverList!=null) {
                         serverList.remove(i);
                 }
@@ -104,8 +99,7 @@ public class TreeNodeRemoteRoot extends AbstractTreeNode implements PopupTreeNod
 
         @Override
         public void remove(MutableTreeNode mtn) {
-                remove(getIndex(mtn));
-                
+                remove(getIndex(mtn));                
         }
 
         @Override
@@ -113,35 +107,6 @@ public class TreeNodeRemoteRoot extends AbstractTreeNode implements PopupTreeNod
                 // Read only
         }
 
-        @Override
-        public TreeNode getChildAt(int i) {
-                return children.get(i);
-        }
-
-        @Override
-        public int getChildCount() {
-                return children.size();
-        }
-
-        @Override
-        public int getIndex(TreeNode tn) {
-                return children.indexOf(tn);
-        }
-
-        @Override
-        public boolean getAllowsChildren() {
-                return true;
-        }
-
-        @Override
-        public boolean isLeaf() {
-                return false;
-        }
-
-        @Override
-        public Enumeration<? extends Object> children() {
-                return new EnumIterator<TreeNodeMapCatalogServer>(children.iterator());
-        }
         /**
          * Prompt the user to type the server URL
          */

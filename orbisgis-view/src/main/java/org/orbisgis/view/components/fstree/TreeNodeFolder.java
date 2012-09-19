@@ -38,7 +38,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -47,12 +46,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler.TransferSupport;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.MenuCommonFunctions;
-import org.orbisgis.view.components.resourceTree.EnumIterator;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -62,8 +59,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Represent a folder in the file system.
  * @author Nicolas Fortin
  */
-public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, TreeNodePath, DropDestinationTreeNode, DragTreeNode {
-        private List<MutableTreeNode> children = new ArrayList<MutableTreeNode>();
+public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTreeNode, TreeNodePath, DropDestinationTreeNode, DragTreeNode {
         private File folderPath;
         private static final Logger LOGGER = Logger.getLogger("gui." + TreeNodeFolder.class);
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeFolder.class);
@@ -136,27 +132,7 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
                                 }
                         }
                 }
-        }
-        
-        private void internalInsert(AbstractTreeNode mtn, int i) {
-                children.add(i, mtn);
-                mtn.setParent(this);
-        }
-
-        @Override
-        public void insert(MutableTreeNode mtn, int i) {
-                internalInsert((AbstractTreeNode)mtn,i);
-        }
-
-        @Override
-        public void remove(int i) {
-                children.remove(i);
-        }
-
-        @Override
-        public void remove(MutableTreeNode mtn) {
-                children.remove(mtn);
-        }
+        }        
 
         @Override
         public void setUserObject(Object o) {
@@ -175,36 +151,6 @@ public class TreeNodeFolder extends AbstractTreeNode implements PopupTreeNode, T
                 }
         }
         
-        @Override
-        public TreeNode getChildAt(int i) {
-                return children.get(i);
-        }
-
-        @Override
-        public int getChildCount() {
-                return children.size();
-        }
-
-        @Override
-        public int getIndex(TreeNode tn) {
-                return children.indexOf(tn);
-        }
-
-        @Override
-        public boolean getAllowsChildren() {
-                return true;
-        }
-
-        @Override
-        public boolean isLeaf() {
-                return false;
-        }
-
-        @Override
-        public Enumeration<MutableTreeNode> children() {
-                return new EnumIterator<MutableTreeNode>(children.iterator());
-        }
-
         /**
          * File&Folder deletion
          */

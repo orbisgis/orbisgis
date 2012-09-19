@@ -29,16 +29,11 @@
 package org.orbisgis.view.map.mapsManager;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
 import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.components.fstree.AbstractTreeNode;
-import org.orbisgis.view.components.resourceTree.EnumIterator;
+import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
 import org.orbisgis.view.map.mapsManager.jobs.DownloadWorkspaces;
 
 /**
@@ -47,12 +42,11 @@ import org.orbisgis.view.map.mapsManager.jobs.DownloadWorkspaces;
  * expand this node.
  * @author Nicolas Fortin
  */
-public class TreeNodeMapCatalogServer extends AbstractTreeNode {
+public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer {
         // Download again the workspaces if the expiration is reach
         // and this node is expanded
         private static final long CACHE_EXPIRATION = 60000;
         URL serverUrl;
-        List<MutableTreeNode> children = new ArrayList<MutableTreeNode>();
         private static final Logger LOGGER = Logger.getLogger(TreeNodeMapCatalogServer.class);
         private long lastWorkspacesDownload = 0;
 
@@ -63,29 +57,8 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNode {
         }
 
         @Override
-        public void insert(MutableTreeNode mtn, int i) {
-                children.add(i,mtn);
-        }
-
-        @Override
-        public void remove(int i) {
-                children.remove(i);
-        }
-
-        @Override
-        public void remove(MutableTreeNode mtn) {
-                int childIndex = getIndex(mtn);
-                remove(childIndex);
-        }
-
-        @Override
         public void setUserObject(Object o) {
                 // Change server adress ?
-        }
-
-        @Override
-        public TreeNode getChildAt(int i) {
-                return children.get(i);
         }
 
         @Override
@@ -105,33 +78,14 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNode {
                         BackgroundManager bm = Services.getService(BackgroundManager.class);
                         bm.nonBlockingBackgroundOperation(new DownloadWorkspaces(this,busyNode));
                 }
-                return children.size();
+                return super.getChildCount();
         }
 
-        @Override
-        public int getIndex(TreeNode tn) {
-                return children.indexOf(tn);
-        }
-
-        @Override
-        public boolean getAllowsChildren() {
-                return true;
-        }
-
-        @Override
-        public boolean isLeaf() {
-                return false;
-        }
         /**
          * Return the url associated with this server
          * @return 
          */
         public URL getServerUrl() {
                 return serverUrl;
-        }
-        
-        @Override
-        public Enumeration<? extends Object> children() {
-                return new EnumIterator<MutableTreeNode>(children.iterator());
         }
 }

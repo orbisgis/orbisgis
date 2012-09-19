@@ -31,6 +31,7 @@ package org.orbisgis.view.map.mapsManager;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Insets;
+import java.awt.Rectangle;
 import java.beans.EventHandler;
 import java.io.File;
 import java.net.MalformedURLException;
@@ -145,26 +146,9 @@ public class MapsManager extends JPanel {
                         updateMapsTitle();
                         // Apply loaded map property on map nodes
                         applyLoadedMapHint();
-                        // Add model listener to do animations
-                        //treeModel.addTreeModelListener(
-                        //        EventHandler.create(TreeModelListener.class,
-                        //        this,"treeNodesChanged","","treeNodesChanged"));
                 }
         }
-        /**
-         * A node in the tree has been updated.
-         * Refresh immediately if it is a busyNode
-         * @param tme 
-         */
-        public void treeNodesChanged(TreeModelEvent tme) {
-                TreePath nodePath = tme.getTreePath();
-                Object nodeObj = nodePath.getLastPathComponent();
-                if(nodeObj instanceof TreeNodeBusy) {
-                        LOGGER.debug("tree.repaint()");
-                        tree.repaint();
-                }
-                
-        }
+        
         private void updateMapsTitle() {
                 // Fetch all maps to find their titles
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
