@@ -29,7 +29,6 @@
 package org.orbisgis.view.map.mapsManager;
 
 import java.awt.Font;
-import java.awt.datatransfer.DataFlavor;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.io.File;
@@ -41,7 +40,7 @@ import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.components.fstree.AbstractTreeNode;
+import org.orbisgis.view.components.fstree.AbstractTreeNodeLeaf;
 import org.orbisgis.view.components.fstree.DragTreeNode;
 import org.orbisgis.view.components.fstree.PopupTreeNode;
 import org.orbisgis.view.components.fstree.TransferableList;
@@ -52,7 +51,6 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.map.TransferableMap;
 import org.orbisgis.view.map.jobs.ReadMapContextJob;
-import org.orbisgis.view.toc.TransferableLayer;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -61,7 +59,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Nicolas Fortin
  */
 
-public abstract class TreeLeafMapElement extends AbstractTreeNode implements PopupTreeNode, TreeNodeCustomLabel, DragTreeNode,TreeNodePath {
+public abstract class TreeLeafMapElement extends AbstractTreeNodeLeaf implements PopupTreeNode, TreeNodeCustomLabel, DragTreeNode,TreeNodePath {
         private static final I18n I18N = I18nFactory.getI18n(TreeLeafMapElement.class);
         private boolean loaded = false;
         private File filePath; // Call getFilePath() instead of using this variable

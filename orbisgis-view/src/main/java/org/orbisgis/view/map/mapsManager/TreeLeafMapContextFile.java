@@ -135,56 +135,10 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
         }       
 
         @Override
-        public void insert(MutableTreeNode mtn, int i) {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public void remove(int i) {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public void remove(MutableTreeNode mtn) {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
         public void setUserObject(Object o) {
                 // The map context need to be open and close to edit the label,
                 // this can be quite long and register some data sources..
         }        
-
-        @Override
-        public TreeNode getChildAt(int i) {
-                throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public int getChildCount() {
-                return 0;
-        }
-
-
-        @Override
-        public int getIndex(TreeNode tn) {
-                throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public boolean getAllowsChildren() {
-                return false;
-        }
-
-        @Override
-        public boolean isLeaf() {
-                return true;
-        }
-
-        @Override
-        public Enumeration<TreeNode> children() {
-                throw new UnsupportedOperationException("Not supported.");
-        }
 
         @Override
         public ImageIcon getLeafIcon() {

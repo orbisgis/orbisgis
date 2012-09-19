@@ -64,11 +64,9 @@ public class DownloadWorkspaces implements BackgroundJob {
                         RemoteMapCatalog mapServer = new RemoteMapCatalog(parameters);
                         List<Workspace> workspaces = mapServer.getWorkspaces();
                         SwingUtilities.invokeLater(new FeedServerNode(server, workspaces));
-                        Thread.sleep(30000);
                 } catch(IOException ex) {
                         // Download fail, inform the user
                         // By logging and by the busy icon
-                } catch(InterruptedException ex) {
                 } finally {
                         // Stop animation
                         treeNodeBusyHint.setDoAnimation(false);
@@ -90,7 +88,9 @@ public class DownloadWorkspaces implements BackgroundJob {
                 }
                 @Override
                 public void run() {
-                        //
+                        for(Workspace workspace : workspaces) {
+                                server.addWorkspace(workspace);
+                        }
                 }                
         }
 }

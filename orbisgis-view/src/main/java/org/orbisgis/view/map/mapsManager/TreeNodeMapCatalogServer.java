@@ -32,6 +32,7 @@ import java.net.URL;
 import javax.swing.tree.MutableTreeNode;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.layerModel.mapcatalog.Workspace;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
 import org.orbisgis.view.map.mapsManager.jobs.DownloadWorkspaces;
@@ -54,6 +55,10 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer {
                 this.serverUrl = serverUrl;
                 setLabel(serverUrl.toExternalForm());
                 setEditable(false);
+        }
+        
+        public void addWorkspace(Workspace newWorkspace) {
+                model.insertNodeInto(new TreeNodeWorkspace(newWorkspace), this, getChildCount());
         }
 
         @Override

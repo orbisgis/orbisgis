@@ -28,69 +28,35 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
-import java.util.Enumeration;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
-import org.orbisgis.view.components.fstree.AbstractTreeNode;
+import org.orbisgis.core.layerModel.mapcatalog.Workspace;
+import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
 
 /**
  *
  * @author Nicolas Fortin
  */
-public class TreeNodeWorkspace extends AbstractTreeNode {
-
-        public TreeNodeWorkspace(String wkName) {
-                setLabel(wkName);
+public class TreeNodeWorkspace extends AbstractTreeNodeContainer {
+        Workspace workspace;
+        /**
+         * Constructor
+         * @param workspace Workspace structure
+         */
+        public TreeNodeWorkspace(Workspace workspace) {
+                this.workspace = workspace;
+                setLabel(workspace.getWorkspaceName());
+                setEditable(false);
         }
         
-        @Override
-        public void insert(MutableTreeNode mtn, int i) {
-                throw new UnsupportedOperationException("Not supported yet.");
+        /**
+         * 
+         * @return Workspace structure
+         */
+        public Workspace getWorkspace() {
+                return workspace;
         }
-
-        @Override
-        public void remove(int i) {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public void remove(MutableTreeNode mtn) {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-
+        
         @Override
         public void setUserObject(Object o) {
-                //Rename workspace
-        }
-
-        @Override
-        public TreeNode getChildAt(int i) {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public int getChildCount() {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public int getIndex(TreeNode tn) {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public boolean getAllowsChildren() {
-                return false;
-        }
-
-        @Override
-        public boolean isLeaf() {
-                return true;
-        }
-
-        @Override
-        public Enumeration<? extends Object> children() {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-        
+                //Rename workspace ?
+        }        
 }

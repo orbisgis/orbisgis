@@ -30,71 +30,38 @@ package org.orbisgis.view.map.mapsManager;
 
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
-import java.util.Enumeration;
 import javax.swing.ImageIcon;
 import javax.swing.Timer;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
-import org.orbisgis.view.components.fstree.AbstractTreeNode;
+import org.orbisgis.view.components.fstree.AbstractTreeNodeLeaf;
 import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * This node represent the download operation in progress.
  * The user is able to cancel this process from this node
  * @author Nicolas Fortin
  */
-public class TreeNodeBusy extends AbstractTreeNode implements TreeNodeCustomIcon {
+public class TreeNodeBusy extends AbstractTreeNodeLeaf implements TreeNodeCustomIcon {
         private static final int FRAME_DURATION = 100;
         private static final String[] frames = new String[]{"progress_1",
                 "progress_2","progress_3","progress_4"};
         private Timer animationTimer;
         private int curFrame = 0;
         private boolean doAnimation = false;
+        private static final I18n I18N = I18nFactory.getI18n(TreeNodeBusy.class);
 
         public TreeNodeBusy() {                
                 setEditable(false);
-        }
-        
-        @Override
-        public void insert(MutableTreeNode mtn, int i) {
-                throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public void remove(int i) {
-                throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public void remove(MutableTreeNode mtn) {
-                throw new UnsupportedOperationException("Not supported.");
-        }
+                setLabel(I18N.tr("Downloading.."));
+        }        
 
         @Override
         public void setUserObject(Object o) {
                 // Read only
         }
 
-        @Override
-        public TreeNode getChildAt(int i) {
-                throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public int getChildCount() {
-                return 0;
-        }
-
-        @Override
-        public int getIndex(TreeNode tn) {
-                throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public boolean getAllowsChildren() {
-                return false;
-        }
         /**
          * Called by the time when the frame is finished
          */
@@ -107,6 +74,8 @@ public class TreeNodeBusy extends AbstractTreeNode implements TreeNodeCustomIcon
                 model.nodeChanged(this);
                 if(doAnimation) {
                         animationTimer.start();
+                } else {
+                        model.removeNodeFromParent(this);
                 }
         }
         
@@ -129,16 +98,6 @@ public class TreeNodeBusy extends AbstractTreeNode implements TreeNodeCustomIcon
                         model.nodeChanged(this);
                 }
                 this.doAnimation = doAnimation;
-        }
-
-        @Override
-        public boolean isLeaf() {
-                return true;
-        }
-
-        @Override
-        public Enumeration<? extends Object> children() {
-                throw new UnsupportedOperationException("Not supported.");
         }
 
         @Override
