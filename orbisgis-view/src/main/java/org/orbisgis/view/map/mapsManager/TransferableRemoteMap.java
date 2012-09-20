@@ -26,45 +26,37 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.map;
+package org.orbisgis.view.map.mapsManager;
 
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import org.orbisgis.view.edition.TransferableEditableElement;
+import org.orbisgis.core.layerModel.mapcatalog.RemoteMapContext;
+import org.orbisgis.view.map.MapElement;
+import org.orbisgis.view.map.TransferableMap;
 
 /**
- * Transfer of a MapElement
+ *
  * @author Nicolas Fortin
  */
-public class TransferableMap implements Transferable {
-        
-	public final static DataFlavor mapFlavor = new DataFlavor(MapElement.class,
-			"EditableMap");
-        private MapElement mapElement;
+public class TransferableRemoteMap extends TransferableMap {
+        RemoteMapContext remoteMap;
 
-        protected TransferableMap() {
-                
-        }
-        public TransferableMap(MapElement mapElement) {
-                this.mapElement = mapElement;
+        public TransferableRemoteMap(RemoteMapContext remoteMap) {
+                this.remoteMap = remoteMap;
         }
         
-        
-        @Override
-        public DataFlavor[] getTransferDataFlavors() {
-                return new DataFlavor[]{mapFlavor, TransferableEditableElement.editableElementFlavor};
-        }
-
-        @Override
-        public boolean isDataFlavorSupported(DataFlavor df) {
-                return df.equals(mapFlavor) || df.equals(TransferableEditableElement.editableElementFlavor);
-        }
-
+        /**
+         * Transfer is requested, the remote map must be download and
+         * a file name must be defined
+         * @param df
+         * @return
+         * @throws UnsupportedFlavorException
+         * @throws IOException 
+         */
         @Override
         public Object getTransferData(DataFlavor df) throws UnsupportedFlavorException, IOException {
-                return new MapElement[] {mapElement};
+                
+                return new MapElement[] {null};
         }
-        
 }

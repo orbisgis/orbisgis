@@ -31,18 +31,14 @@ package org.orbisgis.core.layerModel.mapcatalog;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.net.URL;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamReader;
-import org.junit.AfterClass;
-import org.junit.Test;
 import static org.junit.Assert.*;
-import org.junit.BeforeClass;
+import org.junit.Test;
 
 /**
  *
@@ -51,6 +47,7 @@ import org.junit.BeforeClass;
 public class WorkspaceTest {
         /**
          * Test of parseXML method, of class Workspace.
+         * @throws Exception 
          */
         @Test
         public void testParseXML() throws Exception {
@@ -59,12 +56,12 @@ public class WorkspaceTest {
                 ConnectionProperties cParams = new ConnectionProperties(apiUrl);
                 // Expected result
                 List<RemoteMapContext> expectedContext = new ArrayList<RemoteMapContext>();
-                RemoteMapContext first = new RemoteMapContext(cParams);
+                RemoteMapContext first = new RemoteOwsMapContext(cParams);
                 first.setId(0);
                 first.getDescription().addTitle(Locale.getDefault(), "test save");
                 first.getDescription().addAbstract(Locale.getDefault(), "save an existing project...");
                 expectedContext.add(first);
-                RemoteMapContext second = new RemoteMapContext(cParams);
+                RemoteMapContext second = new RemoteOwsMapContext(cParams);
                 second.setId(5);
                 second.getDescription().addTitle(Locale.getDefault(), "2 Layers,"
                         + " Elections fédérales 2007, Conseil National");

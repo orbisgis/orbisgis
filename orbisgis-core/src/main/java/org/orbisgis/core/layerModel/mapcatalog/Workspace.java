@@ -31,8 +31,10 @@ package org.orbisgis.core.layerModel.mapcatalog;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -51,7 +53,8 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Nicolas Fortin
  */
 public class Workspace  {
-        private static final String LIST_CONTEXT = "/context";
+        private static final String ENCODING = "utf-8";
+        private static final String LIST_CONTEXT = "/context?workspace=";
         private static final I18n I18N = I18nFactory.getI18n(Workspace.class);
         private ConnectionProperties cParams;
         private String workspaceName;
@@ -80,7 +83,7 @@ public class Workspace  {
                                 case XMLStreamConstants.START_ELEMENT:
                                         hierarchy.add(parser.getLocalName());
                                         if(RemoteCommons.endsWith(hierarchy,"items","item")) {
-                                                curMapContext = new RemoteMapContext(cParams);
+                                                curMapContext = new RemoteOwsMapContext(cParams);
                                         }
                                         break;
                                 case XMLStreamConstants.END_ELEMENT:
@@ -118,6 +121,7 @@ public class Workspace  {
         
         /**
          * Retrieve the list of MapContext linked with this workspace
+         * This call may take a long time to execute.
          * @return
          * @throws IOException Connection failure 
          */
@@ -125,11 +129,11 @@ public class Workspace  {
                 List<RemoteMapContext> contextList = new ArrayList<RemoteMapContext>();
                 // Construct request
                 URL requestWorkspacesURL =
-                        new URL(cParams.getApiUrl()+LIST_CONTEXT);
+                        new URL(cParams.getApiUrl()+LIST_CONTEXT+URLEncoder.encode(workspaceName, ENCODING));
                 // Establish connection
                 HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
                 connection.setRequestMethod("GET");
-                connection.addRequestProperty("workspace", workspaceName);
+
 		if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                         throw new IOException(I18N.tr("HTTP Error {0} message : {1}",connection.getResponseCode(),connection.getResponseMessage()));
                 }

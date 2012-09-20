@@ -26,45 +26,27 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.map;
+package org.orbisgis.core.layerModel.mapcatalog;
 
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
-import org.orbisgis.view.edition.TransferableEditableElement;
+import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.layerModel.OwsMapContext;
 
 /**
- * Transfer of a MapElement
+ *
  * @author Nicolas Fortin
  */
-public class TransferableMap implements Transferable {
-        
-	public final static DataFlavor mapFlavor = new DataFlavor(MapElement.class,
-			"EditableMap");
-        private MapElement mapElement;
+public class RemoteOwsMapContext extends RemoteMapContext {
 
-        protected TransferableMap() {
-                
-        }
-        public TransferableMap(MapElement mapElement) {
-                this.mapElement = mapElement;
-        }
-        
-        
-        @Override
-        public DataFlavor[] getTransferDataFlavors() {
-                return new DataFlavor[]{mapFlavor, TransferableEditableElement.editableElementFlavor};
+        public RemoteOwsMapContext(ConnectionProperties cParams) {
+                super(cParams);
         }
 
         @Override
-        public boolean isDataFlavorSupported(DataFlavor df) {
-                return df.equals(mapFlavor) || df.equals(TransferableEditableElement.editableElementFlavor);
-        }
-
-        @Override
-        public Object getTransferData(DataFlavor df) throws UnsupportedFlavorException, IOException {
-                return new MapElement[] {mapElement};
+        public MapContext getMapContext() throws IOException {             
+                OwsMapContext mapContext = new OwsMapContext();
+                mapContext.read(getMapContent());
+                return mapContext;
         }
         
 }

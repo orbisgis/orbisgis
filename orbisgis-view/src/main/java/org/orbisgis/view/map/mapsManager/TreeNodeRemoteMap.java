@@ -32,6 +32,8 @@ import javax.swing.ImageIcon;
 import org.orbisgis.core.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeLeaf;
+import org.orbisgis.view.components.fstree.DragTreeNode;
+import org.orbisgis.view.components.fstree.TransferableList;
 import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
 import org.orbisgis.view.icons.OrbisGISIcon;
 
@@ -39,7 +41,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  * Map on the server side
  * @author Nicolas Fortin
  */
-public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeCustomIcon {
+public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeCustomIcon,DragTreeNode {
         private RemoteMapContext remoteMapConnection;
 
         public TreeNodeRemoteMap(RemoteMapContext remoteMapConnection) {
@@ -72,5 +74,11 @@ public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeC
         @Override
         public ImageIcon getOpenIcon() {
                 throw new UnsupportedOperationException("Not supported.");
+        }
+
+        @Override
+        public boolean completeTransferable(TransferableList transferable) {
+                transferable.addTransferable(new TransferableRemoteMap(remoteMapConnection));
+                return true;
         }
 }

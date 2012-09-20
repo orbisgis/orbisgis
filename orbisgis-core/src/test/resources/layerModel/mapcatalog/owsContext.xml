@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<OWSContext xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns="http://www.opengis.net/ows-context" xmlns:ns4="http://www.opengis.net/se/2.0/core" xmlns:ns3="http://www.w3.org/1999/xlink" xmlns:ns9="http://www.opengis.net/wms/2.0" xmlns:ns5="http://www.opengis.net/fes/2.0" xmlns:ns6="http://www.opengis.net/gml" xmlns:ns10="http://www.opengis.net/se/2.0/raster" xmlns:ns7="http://www.opengis.net/sld/2.0" xmlns:ns8="http://www.opengis.net/se/2.0/thematic" id="0">
+  <General>
+    <ns2:BoundingBox crs="EPSG:21781">
+      <ns2:LowerCorner>469780.12703816866 106382.45822784811</ns2:LowerCorner>
+      <ns2:UpperCorner>594355.4527086668 188696.78734177217</ns2:UpperCorner>
+    </ns2:BoundingBox>
+    <ns2:Title>test save</ns2:Title>
+    <ns2:Abstract>save an existing project...</ns2:Abstract>
+    <ns2:Keywords>
+      <ns2:Keyword>Keyword1</ns2:Keyword>
+      <ns2:Keyword>Keyword2</ns2:Keyword>
+    </ns2:Keywords>
+  </General>
+  <ResourceList>
+    <Layer hidden="false" id="scapdata#g4districts98">
+      <ns2:Title>Résultats par district</ns2:Title>
+      <DataURL>
+	<OnlineResource ns3:href="pgsql://poulpe.heig-vd.ch:5432/scapdata/g4districts98"/>
+      </DataURL>
+      <StyleList>
+	<Style current="true">
+	  <SLD>
+	    <ns4:Style version="2.0.0">
+	      <ns4:Rule>
+		<ns4:AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+		  <ns4:Name>Area symbolizer</ns4:Name>
+		  <ns4:Extension>
+		    <ns4:ExtensionParameter name="level">1</ns4:ExtensionParameter>
+		  </ns4:Extension>
+		  <ns4:SolidFill>
+		    <ns4:Color>
+		      <ns4:Categorize thresholdBelongsTo="succeeding" fallbackValue="#FF0000">
+			<ns4:LookupValue>
+			  <ns5:ValueReference>onu_2002</ns5:ValueReference>
+			</ns4:LookupValue>
+			<ns4:Value>#D5FFDF</ns4:Value>
+			<ns4:Threshold>37.9</ns4:Threshold>
+			<ns4:Value>#B3F5C1</ns4:Value>
+			<ns4:Threshold>46.2</ns4:Threshold>
+			<ns4:Value>#90E2A2</ns4:Value>
+			<ns4:Threshold>54.6</ns4:Threshold>
+			<ns4:Value>#6CC67F</ns4:Value>
+			<ns4:Threshold>62.9</ns4:Threshold>
+			<ns4:Value>#408C50</ns4:Value>
+			<ns4:Extension>
+			  <ns4:ExtensionParameter name="method">MANUAL</ns4:ExtensionParameter>
+			</ns4:Extension>
+		      </ns4:Categorize>
+		    </ns4:Color>
+		    <ns4:Opacity>1.0</ns4:Opacity>
+		  </ns4:SolidFill>
+		  <ns4:PenStroke>
+		    <ns4:LinearRapport>false</ns4:LinearRapport>
+		    <ns4:Extension>
+		      <ns4:ExtensionParameter name="offsetRapport">off</ns4:ExtensionParameter>
+		    </ns4:Extension>
+		    <ns4:SolidFill>
+		      <ns4:Color>#000000</ns4:Color>
+		      <ns4:Opacity>1.0</ns4:Opacity>
+		    </ns4:SolidFill>
+		    <ns4:Width>0.1</ns4:Width>
+		  </ns4:PenStroke>
+		</ns4:AreaSymbolizer>
+	      </ns4:Rule>
+	    </ns4:Style>
+	  </SLD>
+	</Style>
+      </StyleList>
+      <Server service="urn:ogc:serviceType:WMS" version="1.3.0">
+	<OnlineResource ns3:href="http://poulpe.heig-vd.ch/orbis_wms/WMS"/>
+      </Server>
+    </Layer>
+  </ResourceList>
+</OWSContext>
