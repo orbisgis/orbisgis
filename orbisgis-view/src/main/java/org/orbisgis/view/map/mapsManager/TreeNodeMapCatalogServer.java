@@ -28,16 +28,27 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.mapcatalog.Workspace;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
+import org.orbisgis.view.components.fstree.PopupTreeNode;
+import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.mapsManager.jobs.DownloadWorkspaces;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Map Catalog server node.
@@ -45,18 +56,38 @@ import org.orbisgis.view.map.mapsManager.jobs.DownloadWorkspaces;
  * expand this node.
  * @author Nicolas Fortin
  */
-public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer {
+public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implements TreeNodeCustomIcon,PopupTreeNode {
+
+        public static enum SERVER_STATUS { DISCONNECTED, CONNECTED, UNREACHABLE };
         // Download again the workspaces if the expiration is reach
         // and this node is expanded
         private static final long CACHE_EXPIRATION = 60000;
         URL serverUrl;
         private static final Logger LOGGER = Logger.getLogger(TreeNodeMapCatalogServer.class);
         private long lastWorkspacesDownload = 0;
-
+        private SERVER_STATUS serverStatus = SERVER_STATUS.DISCONNECTED;
+        private static final I18n I18N = I18nFactory.getI18n(TreeNodeMapCatalogServer.class);
+                
         public TreeNodeMapCatalogServer(URL serverUrl) {
                 this.serverUrl = serverUrl;
                 setLabel(serverUrl.toExternalForm());
                 setEditable(false);
+        }
+
+        /**
+         * @return The shown server status
+         */
+        public SERVER_STATUS getServerStatus() {
+                return serverStatus;
+        }
+
+        /**
+         * Set the node status to show a visual hint to the user
+         * @param serverStatus 
+         */
+        public void setServerStatus(SERVER_STATUS serverStatus) {
+                this.serverStatus = serverStatus;
+                model.nodeChanged(this);
         }
         
         public void addWorkspace(Workspace newWorkspace) {
@@ -88,11 +119,53 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer {
                 return super.getChildCount();
         }
 
+        private ImageIcon getServerIcon() {
+                switch(serverStatus) {
+                        case DISCONNECTED:
+                                return OrbisGISIcon.getIcon("worldmap");
+                        case CONNECTED:
+                                return OrbisGISIcon.getIcon("worldmap");
+                        default:
+                                return OrbisGISIcon.getIcon("worldmap");
+                }
+        }
         /**
          * Return the url associated with this server
          * @return 
          */
         public URL getServerUrl() {
                 return serverUrl;
+        }
+        
+        @Override
+        public ImageIcon getLeafIcon() {
+                throw new UnsupportedOperationException("Not supported.");
+        }
+
+        @Override
+        public ImageIcon getClosedIcon() {
+                return getServerIcon();
+        }
+
+        @Override
+        public ImageIcon getOpenIcon() {
+                return getServerIcon();
+        }        
+        /**
+         * Remove this node
+         */
+        public void onDeleteServer() {
+                model.removeNodeFromParent(this);
+        }
+        @Override
+        public void feedPopupMenu(JPopupMenu menu) {                
+                JMenuItem folderRemove = new JMenuItem(I18N.tr("Delete"),
+                        OrbisGISIcon.getIcon("world_delete"));
+                folderRemove.setToolTipText(I18N.tr("Remove this server"));
+                folderRemove.setActionCommand("delete");
+                folderRemove.addActionListener(
+                EventHandler.create(ActionListener.class,
+                this, "onDeleteServer"));
+                MenuCommonFunctions.updateOrInsertMenuItem(menu,folderRemove);
         }
 }

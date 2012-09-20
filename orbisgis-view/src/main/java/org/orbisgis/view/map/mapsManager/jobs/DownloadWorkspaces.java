@@ -31,6 +31,7 @@ package org.orbisgis.view.map.mapsManager.jobs;
 import java.io.IOException;
 import java.util.List;
 import javax.swing.SwingUtilities;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.mapcatalog.ConnectionProperties;
 import org.orbisgis.core.layerModel.mapcatalog.RemoteMapCatalog;
 import org.orbisgis.core.layerModel.mapcatalog.Workspace;
@@ -49,7 +50,8 @@ public class DownloadWorkspaces implements BackgroundJob {
         private static final I18n I18N = I18nFactory.getI18n(ReadStoredMap.class);
         private TreeNodeMapCatalogServer server;
         private TreeNodeBusy treeNodeBusyHint;
-
+        private static final Logger LOGGER = Logger.getLogger(DownloadWorkspaces.class);
+        
         public DownloadWorkspaces(TreeNodeMapCatalogServer server, TreeNodeBusy treeNodeBusyHint) {
                 this.server = server;
                 this.treeNodeBusyHint = treeNodeBusyHint;
@@ -66,7 +68,9 @@ public class DownloadWorkspaces implements BackgroundJob {
                         SwingUtilities.invokeLater(new FeedServerNode(server, workspaces));
                 } catch(IOException ex) {
                         // Download fail, inform the user
-                        // By logging and by the busy icon
+                        // By logging and by the server icon
+                        LOGGER.error(I18N.tr("Cannot download the server's workspaces of {0}",server.getServerUrl().getHost()),ex);
+                        SwingUtilities.invokeLater(new FeedServerNode(server, null));
                 } finally {
                         // Stop animation
                         treeNodeBusyHint.setDoAnimation(false);
@@ -88,8 +92,13 @@ public class DownloadWorkspaces implements BackgroundJob {
                 }
                 @Override
                 public void run() {
-                        for(Workspace workspace : workspaces) {
-                                server.addWorkspace(workspace);
+                        if(workspaces!=null) {
+                                for(Workspace workspace : workspaces) {
+                                        server.addWorkspace(workspace);
+                                }
+                                server.setServerStatus(TreeNodeMapCatalogServer.SERVER_STATUS.CONNECTED);
+                        } else {
+                                server.setServerStatus(TreeNodeMapCatalogServer.SERVER_STATUS.UNREACHABLE);
                         }
                 }                
         }

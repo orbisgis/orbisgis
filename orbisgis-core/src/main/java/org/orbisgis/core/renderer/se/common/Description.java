@@ -100,6 +100,36 @@ public class Description {
         }
     }
 
+        @Override
+        public boolean equals(Object obj) {
+                if (!(obj instanceof Description)) {
+                        return false;
+                }
+                final Description other = (Description) obj;
+                if (this.titles != other.titles && (this.titles == null || !this.titles.equals(other.titles))) {
+                        return false;
+                }
+                if (this.abstractTexts != other.abstractTexts && (this.abstractTexts == null || !this.abstractTexts.equals(other.abstractTexts))) {
+                        return false;
+                }
+                if (this.keywords != other.keywords && (this.keywords == null || !this.keywords.equals(other.keywords))) {
+                        return false;
+                }
+                return true;
+        }
+
+        @Override
+        public int hashCode() {
+                int hash = 7;
+                hash = 67 * hash + (this.titles != null ? this.titles.hashCode() : 0);
+                hash = 67 * hash + (this.abstractTexts != null ? this.abstractTexts.hashCode() : 0);
+                hash = 67 * hash + (this.keywords != null ? this.keywords.hashCode() : 0);
+                return hash;
+        }
+
+    
+    
+    
     private void putKeywordsType(KeywordsType kt) throws InvalidStyle {
         CodeType ct = kt.getType();
         if(ct!=null){

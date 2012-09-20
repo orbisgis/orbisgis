@@ -66,25 +66,6 @@ public class RemoteMapCatalog {
                 return new Workspace(cParams,"default");
         }
         /**
-         * Check that the provided list ends with the provided items
-         * @param hierarchy
-         * @param items
-         * @return 
-         */
-        private static boolean endsWith(List<String> hierarchy,String... items) {
-                if(hierarchy.size()<items.length) {
-                        return false;
-                }
-                final int firstI = hierarchy.size()-items.length;
-                for(int i=firstI;i<hierarchy.size();i++) {
-                        if(!hierarchy.get(i).equals(items[i-firstI])) {
-                                return false;
-                        }
-                }
-                return true;
-        }
-        
-        /**
          * Read the parser and feed the provided list with workspaces
          * @param workspaces Writable, empty list of workspaces
          * @param parser Opened parser
@@ -104,7 +85,7 @@ public class RemoteMapCatalog {
                                         hierarchy.remove(hierarchy.size()-1);
                                         break;
                                 case XMLStreamConstants.CHARACTERS:
-                                        if(endsWith(hierarchy,"items","item")) {
+                                        if(RemoteCommons.endsWith(hierarchy,"items","item")) {
                                                 workspaces.add(new Workspace(cParams, parser.getText()));
                                         }
                                         break;
@@ -126,7 +107,7 @@ public class RemoteMapCatalog {
                 HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
                 connection.setRequestMethod("GET");
 		if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                        throw new IOException(I18N.tr("HTTP Error message : {0}",connection.getResponseMessage()));
+                        throw new IOException(I18N.tr("HTTP Error {0} message : {1}",connection.getResponseCode(),connection.getResponseMessage()));
                 }
                 
                 // Read the response content

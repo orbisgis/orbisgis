@@ -28,24 +28,131 @@
  */
 package org.orbisgis.core.layerModel.mapcatalog;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamReader;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
+
 /**
  * Workspace structure and reader
  * @author Nicolas Fortin
  */
 public class Workspace  {
+        private static final String LIST_CONTEXT = "/context";
+        private static final I18n I18N = I18nFactory.getI18n(Workspace.class);
         private ConnectionProperties cParams;
-        String workspaceName;
+        private String workspaceName;
+        private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
         public Workspace(ConnectionProperties cParams, String workspaceName) {
                 this.cParams = cParams;
                 this.workspaceName = workspaceName;
         }
-
+        
+        
+        /**
+         * Read the parser and feed the provided list with workspaces
+         * @param mapContextList Writable, empty list of RemoteMapContext
+         * @param parser Opened parser
+         * @throws XMLStreamException 
+         */
+        public void parseXML(List<RemoteMapContext> mapContextList,XMLStreamReader parser) throws XMLStreamException {
+                List<String> hierarchy = new ArrayList<String>();
+                RemoteMapContext curMapContext = null;
+                for (int event = parser.next();
+                        event != XMLStreamConstants.END_DOCUMENT;
+                        event = parser.next()) {
+                        // For each XML elements
+                        switch(event) {
+                                case XMLStreamConstants.START_ELEMENT:
+                                        hierarchy.add(parser.getLocalName());
+                                        if(RemoteCommons.endsWith(hierarchy,"items","item")) {
+                                                curMapContext = new RemoteMapContext(cParams);
+                                        }
+                                        break;
+                                case XMLStreamConstants.END_ELEMENT:
+                                        if(RemoteCommons.endsWith(hierarchy,"items","item")) {
+                                                mapContextList.add(curMapContext);
+                                        }
+                                        hierarchy.remove(hierarchy.size()-1);
+                                        break;
+                                case XMLStreamConstants.CHARACTERS:
+                                        if(RemoteCommons.endsWith(hierarchy,"items","item","id")) {
+                                                curMapContext.setId(Integer.parseInt(parser.getText()));
+                                        } else if(RemoteCommons.endsWith(hierarchy,"items","item","title")) {
+                                                curMapContext.getDescription().addTitle(Locale.getDefault(), parser.getText());                                                
+                                        } else if(RemoteCommons.endsWith(hierarchy,"items","item","abstract")) {
+                                                curMapContext.getDescription().addAbstract(Locale.getDefault(), parser.getText());                                                
+                                        } else if(RemoteCommons.endsWith(hierarchy,"items","item","date")) {
+                                                try {
+                                                        curMapContext.setDate(FORMAT.parse(parser.getText()));
+                                                } catch( ParseException ex) {
+                                                        // Silently ignore the date parse failure
+                                                }
+                                        }
+                                        break;
+                        }                               
+                }                
+        }
+        
         /**
          * Return the workspace name, non localized
          * @return 
          */
         public String getWorkspaceName() {
                 return workspaceName;
+        }
+        
+        /**
+         * Retrieve the list of MapContext linked with this workspace
+         * @return
+         * @throws IOException Connection failure 
+         */
+        public List<RemoteMapContext> getMapContextList() throws IOException {
+                List<RemoteMapContext> contextList = new ArrayList<RemoteMapContext>();
+                // Construct request
+                URL requestWorkspacesURL =
+                        new URL(cParams.getApiUrl()+LIST_CONTEXT);
+                // Establish connection
+                HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
+                connection.setRequestMethod("GET");
+                connection.addRequestProperty("workspace", workspaceName);
+		if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                        throw new IOException(I18N.tr("HTTP Error {0} message : {1}",connection.getResponseCode(),connection.getResponseMessage()));
+                }
+                
+                // Read the response content
+                BufferedReader in = new BufferedReader(
+                                    new InputStreamReader(
+                                    connection.getInputStream()));
+                
+                
+                XMLInputFactory factory = XMLInputFactory.newInstance();
+                
+                // Parse Data
+                XMLStreamReader parser;
+                try {
+                        parser = factory.createXMLStreamReader(in);
+                        // Fill workspaces
+                        parseXML(contextList, parser);
+                        parser.close();
+                } catch(XMLStreamException ex) {
+                        throw new IOException(I18N.tr("Invalid XML content"),ex);
+                }
+                //URLEncoder.encode(args[1], ENCODING);
+                return contextList;
         }
 }
