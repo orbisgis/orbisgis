@@ -95,7 +95,6 @@ public class TreeNodeBusy extends AbstractTreeNodeLeaf implements TreeNodeCustom
                         }
                         // Run the timer
                         animationTimer.start();
-                        model.nodeChanged(this);
                 }
                 this.doAnimation = doAnimation;
         }

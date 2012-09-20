@@ -51,10 +51,15 @@ public class CustomTreeCellRenderer extends TreeLaFRenderer {
                         tree, value, selected, expanded, leaf, row, hasFocus);
                 if (nativeRendererComp instanceof JLabel) {
                         JLabel rendererComponent = (JLabel) nativeRendererComp;
+                        String toolTipText=null;
+                        if(value instanceof AbstractTreeNode) {
+                                toolTipText = ((AbstractTreeNode)value).getToolTipText();
+                        }
+                        rendererComponent.setToolTipText(toolTipText);
                         // Let the node to customise rendering
                         if (value instanceof TreeNodeCustomLabel) {
                                 if(((TreeNodeCustomLabel)value).applyCustomLabel(rendererComponent)) {
-                                        //Reload the lof renderer to recover the initial state
+                                        //Reload the laf renderer to recover the initial state
                                         updateLFRenderer();                                        
                                 }
                         }

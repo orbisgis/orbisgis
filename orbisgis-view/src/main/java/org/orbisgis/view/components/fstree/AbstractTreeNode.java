@@ -45,6 +45,25 @@ public abstract class AbstractTreeNode implements MutableTreeNode {
         private String label = "none";
         protected MutableTreeNode parent = null;
         private boolean editable = true;
+        private String toolTipText;
+
+        /**
+         * Get the value of toolTipText
+         *
+         * @return the value of toolTipText
+         */
+        public String getToolTipText() {
+                return toolTipText;
+        }
+
+        /**
+         * Set the value of toolTipText
+         *
+         * @param toolTipText new value of toolTipText
+         */
+        public void setToolTipText(String toolTipText) {
+                this.toolTipText = toolTipText;
+        }
 
         /**
          * Get the value of editable

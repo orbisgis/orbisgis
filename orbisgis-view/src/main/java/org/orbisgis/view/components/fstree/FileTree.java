@@ -76,6 +76,7 @@ public class FileTree extends JTree implements TreeNodeFileFactoryManager {
                         getSelectionModel().addTreeSelectionListener(
                                 EventHandler.create(TreeSelectionListener.class,
                                 this,"onSelectionChange"));
+                        javax.swing.ToolTipManager.sharedInstance().registerComponent(this);
                 }
         }
         /**

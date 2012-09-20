@@ -28,14 +28,28 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.tree.MutableTreeNode;
+import org.orbisgis.core.Services;
+import org.orbisgis.core.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.core.layerModel.mapcatalog.Workspace;
+import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
+import org.orbisgis.view.map.mapsManager.jobs.DownloadRemoteMapContext;
+import org.orbisgis.view.map.mapsManager.jobs.DownloadWorkspaces;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  *
  * @author Nicolas Fortin
  */
 public class TreeNodeWorkspace extends AbstractTreeNodeContainer {
+        private static final long CACHE_EXPIRATION = 60000;
+        private long lastContextDownload = 0;
+        private static final I18n I18N = I18nFactory.getI18n(TreeNodeWorkspace.class);
+        
         Workspace workspace;
         /**
          * Constructor
@@ -45,6 +59,36 @@ public class TreeNodeWorkspace extends AbstractTreeNodeContainer {
                 this.workspace = workspace;
                 setLabel(workspace.getWorkspaceName());
                 setEditable(false);
+        }
+        
+        /**
+         * Add this Remote map context
+         * @param context 
+         */
+        public void addContext(RemoteMapContext context) {
+                model.insertNodeInto(new TreeNodeRemoteMap(context), this, getChildCount());
+        }
+        
+        
+
+        @Override
+        public int getChildCount() {
+                long curTime = System.currentTimeMillis();
+                if(lastContextDownload + CACHE_EXPIRATION < curTime) {
+                        lastContextDownload = curTime;
+                        // Clear all childrens
+                        List<MutableTreeNode> childrenToRemove = new ArrayList<MutableTreeNode>(children);
+                        for(MutableTreeNode child : childrenToRemove) {
+                                model.removeNodeFromParent(child);
+                        }
+                        // Insert busy Node
+                        TreeNodeBusy busyNode = new TreeNodeBusy();
+                        model.insertNodeInto(busyNode, this, 0);
+                        // Launch the download job
+                        BackgroundManager bm = Services.getService(BackgroundManager.class);
+                        bm.nonBlockingBackgroundOperation(new DownloadRemoteMapContext(this,busyNode));
+                }
+                return super.getChildCount();
         }
         
         /**

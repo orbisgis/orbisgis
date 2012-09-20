@@ -78,7 +78,7 @@ public class WorkspaceTest {
                 second.setDate((new SimpleDateFormat("yyyy-MM-dd")).parse("2012-09-20"));
                 expectedContext.add(second);
 
-
+                // Read the xml file in test resources
                 FileReader inFile = new FileReader("src/test/resources/layerModel/mapcatalog/context.xml");
                 BufferedReader in = new BufferedReader(inFile);
                 XMLInputFactory factory = XMLInputFactory.newInstance();
