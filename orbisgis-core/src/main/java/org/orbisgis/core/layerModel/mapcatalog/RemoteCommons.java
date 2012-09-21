@@ -42,6 +42,15 @@ import java.util.Map.Entry;
  * @author Nicolas Fortin
  */
 public class RemoteCommons {
+
+        public static void putParameters(OutputStream out, String key, String value, String encoding) throws IOException {
+                Writer writer = new OutputStreamWriter(out, encoding);
+                writer.write(key);
+                writer.write("=");
+                writer.write(URLEncoder.encode(value, encoding));
+                writer.write("&");
+                writer.close();
+        }        
         /**
          * Send via the output stream the provided parameters
          * @param out Out stream
@@ -50,8 +59,7 @@ public class RemoteCommons {
          * @throws IOException  
          */
         public static void putParameters(OutputStream out, Map<String, String> parameters, String encoding) throws IOException {
-                Writer writer;
-                writer = new OutputStreamWriter(out, encoding);
+                Writer writer = new OutputStreamWriter(out, encoding);
                 for (Entry<String,String> entry : parameters.entrySet()) {
                         writer.write(entry.getKey());
                         writer.write("=");

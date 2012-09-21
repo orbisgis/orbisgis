@@ -32,17 +32,16 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -58,7 +57,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class Workspace  {
         private static final String ENCODING = "utf-8";
         private static final String LIST_CONTEXT = "/context";
-        private static final String PUBLISH_CONTEXT = "/context/save?workspace=";
+        private static final String PUBLISH_CONTEXT = "/context/save";
         private static final I18n I18N = I18nFactory.getI18n(Workspace.class);
         private ConnectionProperties cParams;
         private String workspaceName;
@@ -109,17 +108,21 @@ public class Workspace  {
         public int publishMapContext(MapContext mapContext) throws IOException  {
                 // Construct request
                 URL requestWorkspacesURL =
-                        new URL(cParams.getApiUrl()+PUBLISH_CONTEXT+URLEncoder.encode(workspaceName, ENCODING));
+                        new URL(cParams.getApiUrl()+PUBLISH_CONTEXT);
                 // Establish connection
                 HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
                 connection.setRequestMethod("POST");
-                connection.setConnectTimeout(cParams.getConnectionTimeOut());
-                // Send MapContext DATA
                 connection.setDoOutput(true);
+                connection.setConnectTimeout(cParams.getConnectionTimeOut());
                 OutputStream out = connection.getOutputStream();
+                RemoteCommons.putParameters(out,"workspace",workspaceName,ENCODING);
+                // Send MapContext DATA
+                Writer writer = new OutputStreamWriter(out, ENCODING);
+                writer.write("owc=");
+                writer.close();
                 mapContext.write(out);
                 out.flush();
-                
+                out.close();                
                 // Get response
 		if (connection.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
                         throw new IOException(I18N.tr("HTTP Error {0} message : {1}",connection.getResponseCode(),connection.getResponseMessage()));
@@ -216,10 +219,8 @@ public class Workspace  {
                 connection.setRequestMethod("POST");
                 connection.setDoOutput(true);
                 connection.setConnectTimeout(cParams.getConnectionTimeOut());
-                Map<String,String> params = new HashMap<String,String>();
-                params.put("workspace",workspaceName);
                 OutputStream out = connection.getOutputStream();
-                RemoteCommons.putParameters(out,params,ENCODING);
+                RemoteCommons.putParameters(out,"workspace",workspaceName,ENCODING);
                 out.close();
                 
                 // Send parameters

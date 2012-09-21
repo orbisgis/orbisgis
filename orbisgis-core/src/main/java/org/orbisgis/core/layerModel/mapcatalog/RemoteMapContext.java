@@ -33,11 +33,14 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.xml.stream.Location;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -53,6 +56,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Nicolas Fortin
  */
 public abstract class RemoteMapContext {
+        private static final String ENCODING = "utf-8";
         private static final String GET_CONTEXT = "/context/";
         private int id = 0;
         private Description description = new Description();
@@ -205,11 +209,20 @@ public abstract class RemoteMapContext {
         protected InputStream getMapContent() throws IOException {
                 // Construct request
                 URL requestWorkspacesURL =
-                        new URL(cParams.getApiUrl()+GET_CONTEXT+id+"?workspace="+workspaceName);
+                        new URL(cParams.getApiUrl()+GET_CONTEXT+id);
                 // Establish connection
                 HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
-                connection.setRequestMethod("GET");
+
+                
+                
+                connection.setRequestMethod("POST");
+                connection.setDoOutput(true);
                 connection.setConnectTimeout(cParams.getConnectionTimeOut());
+                OutputStream out = connection.getOutputStream();
+                RemoteCommons.putParameters(out,"workspace",workspaceName,ENCODING);
+                out.close();                
+                
+                
 		if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                         throw new IOException(I18N.tr("HTTP Error {0} message : {1}",connection.getResponseCode(),connection.getResponseMessage()));
                 }
