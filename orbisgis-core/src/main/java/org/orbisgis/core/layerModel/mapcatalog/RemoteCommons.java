@@ -28,13 +28,39 @@
  */
 package org.orbisgis.core.layerModel.mapcatalog;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.net.URLEncoder;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  *
  * @author Nicolas Fortin
  */
 public class RemoteCommons {
+        /**
+         * Send via the output stream the provided parameters
+         * @param out Out stream
+         * @param parameters
+         * @param encoding
+         * @throws IOException  
+         */
+        public static void putParameters(OutputStream out, Map<String, String> parameters, String encoding) throws IOException {
+                Writer writer;
+                writer = new OutputStreamWriter(out, encoding);
+                for (Entry<String,String> entry : parameters.entrySet()) {
+                        writer.write(entry.getKey());
+                        writer.write("=");
+                        writer.write(URLEncoder.encode(entry.getValue(), encoding));
+                        writer.write("&");
+                }
+                writer.close();
+        }
+
         /**
          * Check that the provided list ends with the provided items
          * @param hierarchy

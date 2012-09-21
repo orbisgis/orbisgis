@@ -39,12 +39,15 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import org.orbisgis.core.layerModel.MapContext;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -54,7 +57,8 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class Workspace  {
         private static final String ENCODING = "utf-8";
-        private static final String LIST_CONTEXT = "/context?workspace=";
+        private static final String LIST_CONTEXT = "/context";
+        private static final String PUBLISH_CONTEXT = "/context/save?workspace=";
         private static final I18n I18N = I18nFactory.getI18n(Workspace.class);
         private ConnectionProperties cParams;
         private String workspaceName;
@@ -64,7 +68,83 @@ public class Workspace  {
                 this.cParams = cParams;
                 this.workspaceName = workspaceName;
         }
+        /**
+         * <result>
+    <status>
+        <code></code>
+        <message></message>
+    </status>
+    (<id></id>)
+</result>
+         */
         
+        private int parsePublishResponse(XMLStreamReader parser) throws XMLStreamException {
+                List<String> hierarchy = new ArrayList<String>();
+                for (int event = parser.next();
+                        event != XMLStreamConstants.END_DOCUMENT;
+                        event = parser.next()) {
+                        // For each XML elements
+                        switch(event) {
+                                case XMLStreamConstants.START_ELEMENT:
+                                        hierarchy.add(parser.getLocalName());
+                                        break;
+                                case XMLStreamConstants.END_ELEMENT:
+                                        hierarchy.remove(hierarchy.size()-1);
+                                        break;
+                                case XMLStreamConstants.CHARACTERS:
+                                        if(RemoteCommons.endsWith(hierarchy,"items","item","id")) {
+                                                //
+                                        }
+                                        break;
+                        }                               
+                }                
+                throw new XMLStreamException("Bad response on publishing a map context");
+        }
+        /**
+         * Add a mapcontext to the workspace
+         * @param mapContext
+         * @return The ID of the published map context
+         * @throws IOException 
+         */
+        public int publishMapContext(MapContext mapContext) throws IOException  {
+                // Construct request
+                URL requestWorkspacesURL =
+                        new URL(cParams.getApiUrl()+PUBLISH_CONTEXT+URLEncoder.encode(workspaceName, ENCODING));
+                // Establish connection
+                HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setConnectTimeout(cParams.getConnectionTimeOut());
+                // Send MapContext DATA
+                connection.setDoOutput(true);
+                OutputStream out = connection.getOutputStream();
+                mapContext.write(out);
+                out.flush();
+                
+                // Get response
+		if (connection.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+                        throw new IOException(I18N.tr("HTTP Error {0} message : {1}",connection.getResponseCode(),connection.getResponseMessage()));
+                }
+                
+                // Get response content
+                BufferedReader in = new BufferedReader(
+                                    new InputStreamReader(
+                                    connection.getInputStream()));
+                
+                
+                XMLInputFactory factory = XMLInputFactory.newInstance();
+                
+                // Parse Data
+                XMLStreamReader parser;
+                try {
+                        parser = factory.createXMLStreamReader(in);
+                        // Fill workspaces
+                        int resId = parsePublishResponse(parser);
+                        parser.close();
+                        return resId;
+                } catch(XMLStreamException ex) {
+                        throw new IOException(I18N.tr("Invalid XML content"),ex);
+                }
+        }
         
         /**
          * Read the parser and feed the provided list with workspaces
@@ -84,6 +164,7 @@ public class Workspace  {
                                         hierarchy.add(parser.getLocalName());
                                         if(RemoteCommons.endsWith(hierarchy,"items","item")) {
                                                 curMapContext = new RemoteOwsMapContext(cParams);
+                                                curMapContext.setWorkspaceName(workspaceName);
                                         }
                                         break;
                                 case XMLStreamConstants.END_ELEMENT:
@@ -129,10 +210,20 @@ public class Workspace  {
                 List<RemoteMapContext> contextList = new ArrayList<RemoteMapContext>();
                 // Construct request
                 URL requestWorkspacesURL =
-                        new URL(cParams.getApiUrl()+LIST_CONTEXT+URLEncoder.encode(workspaceName, ENCODING));
+                        new URL(cParams.getApiUrl()+LIST_CONTEXT);
                 // Establish connection
                 HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
-                connection.setRequestMethod("GET");
+                connection.setRequestMethod("POST");
+                connection.setDoOutput(true);
+                connection.setConnectTimeout(cParams.getConnectionTimeOut());
+                Map<String,String> params = new HashMap<String,String>();
+                params.put("workspace",workspaceName);
+                OutputStream out = connection.getOutputStream();
+                RemoteCommons.putParameters(out,params,ENCODING);
+                out.close();
+                
+                // Send parameters
+                
 
 		if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                         throw new IOException(I18N.tr("HTTP Error {0} message : {1}",connection.getResponseCode(),connection.getResponseMessage()));

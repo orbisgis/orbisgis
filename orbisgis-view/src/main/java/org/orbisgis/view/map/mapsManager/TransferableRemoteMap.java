@@ -30,21 +30,32 @@ package org.orbisgis.view.map.mapsManager;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.File;
 import java.io.IOException;
+import org.apache.log4j.Logger;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.mapcatalog.RemoteMapContext;
+import org.orbisgis.view.edition.TransferableEditableElement;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.map.TransferableMap;
+import org.orbisgis.view.workspace.ViewWorkspace;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
- *
+ * Download the Map Content only if the user drop this transferable
  * @author Nicolas Fortin
  */
 public class TransferableRemoteMap extends TransferableMap {
+        private static final Logger LOGGER = Logger.getLogger(TransferableRemoteMap.class);
+        private static final I18n I18N = I18nFactory.getI18n(TransferableRemoteMap.class);
         RemoteMapContext remoteMap;
 
         public TransferableRemoteMap(RemoteMapContext remoteMap) {
                 this.remoteMap = remoteMap;
         }
+
+        
         
         /**
          * Transfer is requested, the remote map must be download and
@@ -52,11 +63,27 @@ public class TransferableRemoteMap extends TransferableMap {
          * @param df
          * @return
          * @throws UnsupportedFlavorException
-         * @throws IOException 
          */
         @Override
-        public Object getTransferData(DataFlavor df) throws UnsupportedFlavorException, IOException {
-                
-                return new MapElement[] {null};
+        public Object getTransferData(DataFlavor df) throws UnsupportedFlavorException {
+                if(df.equals(TransferableMap.mapFlavor) || df.equals(TransferableEditableElement.editableElementFlavor) ) {
+                        //Find appropriate file name
+                        ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
+                        //Load the map context
+                        File mapContextFolder = new File(viewWorkspace.getMapContextPath());
+                        if (!mapContextFolder.exists()) {
+                                mapContextFolder.mkdir();
+                        }
+                        File mapContextFile = new File(mapContextFolder, remoteMap.getDescription().getDefaultTitle() + "."+ remoteMap.getFileExtension());
+                        try {
+                                MapElement mapElement = new MapElement(remoteMap.getMapContext(), mapContextFile);
+                                return new MapElement[] {mapElement};
+                        } catch( IOException ex) {
+                                LOGGER.error(I18N.tr("Error while downloading the map content"),ex);
+                                return ex;
+                        }
+                } else {
+                        return null;
+                }
         }
 }

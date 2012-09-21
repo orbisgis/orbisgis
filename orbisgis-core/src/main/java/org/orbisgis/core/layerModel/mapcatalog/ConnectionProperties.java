@@ -36,7 +36,7 @@ import java.net.URL;
  */
 public class ConnectionProperties {
 
-        private int connectionTimeOut = 30;
+        private int connectionTimeOut = 30000; // In milliseconds
 
         private URL apiUrl;
 
@@ -70,7 +70,7 @@ public class ConnectionProperties {
         /**
          * Get the value of connectionTimeOut
          *
-         * @return the value of connectionTimeOut
+         * @return the value of connectionTimeOut in milliseconds
          */
         public int getConnectionTimeOut() {
                 return connectionTimeOut;
@@ -79,7 +79,7 @@ public class ConnectionProperties {
         /**
          * Set the value of connectionTimeOut
          *
-         * @param connectionTimeOut new value of connectionTimeOut
+         * @param connectionTimeOut new value of connectionTimeOut in milliseconds
          */
         public void setConnectionTimeOut(int connectionTimeOut) {
                 this.connectionTimeOut = connectionTimeOut;

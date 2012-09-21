@@ -30,13 +30,9 @@ package org.orbisgis.core.layerModel.mapcatalog;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -47,7 +43,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import org.antlr.grammar.v3.ANTLRParser;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.renderer.se.common.Description;
 import org.xnap.commons.i18n.I18n;
@@ -62,6 +57,7 @@ public abstract class RemoteMapContext {
         private int id = 0;
         private Description description = new Description();
         private ConnectionProperties cParams;
+        private String workspaceName;
         private Date date;
         private static final I18n I18N = I18nFactory.getI18n(RemoteMapContext.class);
 
@@ -74,10 +70,10 @@ public abstract class RemoteMapContext {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(Object obj) {                
                 if(!(obj instanceof RemoteMapContext)) {
                         return false;
-                }                
+                }         
                 final RemoteMapContext other = (RemoteMapContext) obj;
                 if (this.id != other.id) {
                         return false;
@@ -86,6 +82,9 @@ public abstract class RemoteMapContext {
                         return false;
                 }
                 if (this.cParams != other.cParams && (this.cParams == null || !this.cParams.equals(other.cParams))) {
+                        return false;
+                }
+                if ((this.workspaceName == null) ? (other.workspaceName != null) : !this.workspaceName.equals(other.workspaceName)) {
                         return false;
                 }
                 if (this.date != other.date && (this.date == null || !this.date.equals(other.date))) {
@@ -97,11 +96,22 @@ public abstract class RemoteMapContext {
         @Override
         public int hashCode() {
                 int hash = 7;
-                hash = 89 * hash + this.id;
-                hash = 89 * hash + (this.description != null ? this.description.hashCode() : 0);
-                hash = 89 * hash + (this.cParams != null ? this.cParams.hashCode() : 0);
-                hash = 89 * hash + (this.date != null ? this.date.hashCode() : 0);
+                hash = 67 * hash + this.id;
+                hash = 67 * hash + (this.description != null ? this.description.hashCode() : 0);
+                hash = 67 * hash + (this.cParams != null ? this.cParams.hashCode() : 0);
+                hash = 67 * hash + (this.workspaceName != null ? this.workspaceName.hashCode() : 0);
+                hash = 67 * hash + (this.date != null ? this.date.hashCode() : 0);
                 return hash;
+        }
+
+        
+
+        /**
+         * Set the workspace name associated with this id
+         * @param workspaceName 
+         */
+        public void setWorkspaceName(String workspaceName) {
+                this.workspaceName = workspaceName;
         }
 
         
@@ -165,7 +175,12 @@ public abstract class RemoteMapContext {
         public InputStream extractMapContent(InputStream completeIn, String encoding) throws IOException {
                 // Read the entire DATA
                 String data = readStream(completeIn);
-                ByteArrayInputStream in = new ByteArrayInputStream(data.getBytes(encoding));
+                ByteArrayInputStream in;
+                if(encoding != null) {
+                        in = new ByteArrayInputStream(data.getBytes(encoding));
+                } else {
+                        in = new ByteArrayInputStream(data.getBytes());
+                }
                 XMLInputFactory factory = XMLInputFactory.newInstance();                
                 // Parse Data
                 XMLStreamReader parser;
@@ -190,10 +205,11 @@ public abstract class RemoteMapContext {
         protected InputStream getMapContent() throws IOException {
                 // Construct request
                 URL requestWorkspacesURL =
-                        new URL(cParams.getApiUrl()+GET_CONTEXT+id);
+                        new URL(cParams.getApiUrl()+GET_CONTEXT+id+"?workspace="+workspaceName);
                 // Establish connection
                 HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
                 connection.setRequestMethod("GET");
+                connection.setConnectTimeout(cParams.getConnectionTimeOut());
 		if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                         throw new IOException(I18N.tr("HTTP Error {0} message : {1}",connection.getResponseCode(),connection.getResponseMessage()));
                 }
@@ -243,4 +259,9 @@ public abstract class RemoteMapContext {
          * @throws IOException The request fail 
          */
         public abstract MapContext getMapContext() throws IOException;
+        /**
+         * 
+         * @return The file extension used to save this kind of map context
+         */
+        public abstract String getFileExtension();
 }

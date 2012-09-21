@@ -261,14 +261,13 @@ public class TableImportPanel extends JDialog {
                                         tableTree = getTableTree(properties.split(","), passWord);
                                         jScrollPane.setViewportView(tableTree);
                                         return true;
-
                                 } catch (DriverException ex) {
                                         JOptionPane.showMessageDialog(jScrollPane, I18N.tr("Cannot connect the database"));
-                                        LOGGER.error(ex);
+                                        LOGGER.error(ex.getLocalizedMessage(),ex);
                                         return false;
                                 } catch (SQLException ex) {
                                         JOptionPane.showMessageDialog(jScrollPane, I18N.tr("Cannot connect the database"));
-                                        LOGGER.error(ex);
+                                        LOGGER.error(ex.getLocalizedMessage(),ex);
                                         return false;
                                 }
 

@@ -48,5 +48,10 @@ public class RemoteOwsMapContext extends RemoteMapContext {
                 mapContext.read(getMapContent());
                 return mapContext;
         }
+
+        @Override
+        public String getFileExtension() {
+                return "ows";
+        }
         
 }
