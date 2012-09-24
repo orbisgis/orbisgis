@@ -28,12 +28,15 @@
  */
 package org.orbisgis.core.layerModel.mapcatalog;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -48,6 +51,15 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.BufferedHttpEntity;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 import org.orbisgis.core.layerModel.MapContext;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -101,13 +113,68 @@ public class Workspace  {
                 }                
                 throw new XMLStreamException("Bad response on publishing a map context");
         }
+        
+        private String getMapData(MapContext mapContext) throws UnsupportedEncodingException {
+                ByteArrayOutputStream mapData = new ByteArrayOutputStream();
+                mapContext.write(mapData);
+                return mapData.toString(ENCODING);
+        }
+        public int publishMapContext(MapContext mapContext) throws IOException {
+                int workspaceId = 0;
+                HttpClient httpClient = new DefaultHttpClient();
+                HttpPost httpPost = new HttpPost(cParams.getApiUrl()+PUBLISH_CONTEXT);
+
+                // Parameters
+                List<NameValuePair> formparams = new ArrayList<NameValuePair>();
+                formparams.add(new BasicNameValuePair("workspace",workspaceName));
+                formparams.add(new BasicNameValuePair("owc",getMapData(mapContext)));
+                UrlEncodedFormEntity owcEntity = new UrlEncodedFormEntity(formparams, "UTF-8");
+                httpPost.setEntity(owcEntity);
+                HttpResponse response = httpClient.execute(httpPost);
+                
+                // Get response
+                int responseCode = response.getStatusLine().getStatusCode();
+		if (!(responseCode == HttpURLConnection.HTTP_CREATED
+                        || responseCode == HttpURLConnection.HTTP_OK )) { //Old api response
+                        throw new IOException(I18N.tr("HTTP Error {0} message : {1}",responseCode,response.getStatusLine().getReasonPhrase()));
+                }
+
+                HttpEntity responseEntity = response.getEntity();
+
+                if (responseEntity != null) {
+                        responseEntity = new BufferedHttpEntity(responseEntity);
+                        InputStream instream = new BufferedInputStream(responseEntity.getContent());
+                                                    
+                        // Get response content
+                        BufferedReader in = new BufferedReader(
+                                        new InputStreamReader(
+                                        instream));
+
+
+                        XMLInputFactory factory = XMLInputFactory.newInstance();
+
+                        // Parse Data
+                        XMLStreamReader parser;
+                        try {
+                                parser = factory.createXMLStreamReader(in);
+                                // Fill workspaces
+                                workspaceId = parsePublishResponse(parser);
+                                parser.close();
+                        } catch(XMLStreamException ex) {
+                                throw new IOException(I18N.tr("Invalid XML content"),ex);
+                        }
+                }
+                httpClient.getConnectionManager().shutdown();
+                return workspaceId;
+        }
+        
         /**
          * Add a mapcontext to the workspace
          * @param mapContext
          * @return The ID of the published map context
          * @throws IOException 
          */
-        public int publishMapContext(MapContext mapContext) throws IOException  {
+        public int builtinsPublishMapContext(MapContext mapContext) throws IOException  {
                 // Construct request
                 URL requestWorkspacesURL =
                         new URL(cParams.getApiUrl()+PUBLISH_CONTEXT);
