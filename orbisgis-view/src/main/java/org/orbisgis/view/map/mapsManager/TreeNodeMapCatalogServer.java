@@ -30,6 +30,9 @@ package org.orbisgis.view.map.mapsManager;
 
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -69,9 +72,12 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeMapCatalogServer.class);
                 
         public TreeNodeMapCatalogServer(URL serverUrl) {
+                setServerUrl(serverUrl);
+        }
+        
+        private void setServerUrl(URL serverUrl) {
                 this.serverUrl = serverUrl;
-                setLabel(serverUrl.toExternalForm());
-                setEditable(false);
+                setLabel(serverUrl.toExternalForm());                
         }
 
         /**
@@ -96,25 +102,36 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
 
         @Override
         public void setUserObject(Object o) {
-                // Change server adress ?
+                String userUri = o.toString();
+                try {
+                        setServerUrl(new URL(userUri));
+                        update();
+                } catch(MalformedURLException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(),ex);
+                }
         }
-
+        /**
+         * Refresh the map catalog content
+         */
+        public void update() {
+                lastWorkspacesDownload = System.currentTimeMillis();
+                // Clear all childrens
+                List<MutableTreeNode> childrenToRemove = new ArrayList<MutableTreeNode>(children);
+                for(MutableTreeNode child : childrenToRemove) {
+                        model.removeNodeFromParent(child);
+                }
+                // Insert busy Node
+                TreeNodeBusy busyNode = new TreeNodeBusy();
+                model.insertNodeInto(busyNode, this, 0);
+                // Launch the download job
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.nonBlockingBackgroundOperation(new DownloadWorkspaces(this,busyNode));
+                
+        }
         @Override
         public int getChildCount() {
-                long curTime = System.currentTimeMillis();
-                if(lastWorkspacesDownload + CACHE_EXPIRATION < curTime) {
-                        lastWorkspacesDownload = curTime;
-                        // Clear all childrens
-                        List<MutableTreeNode> childrenToRemove = new ArrayList<MutableTreeNode>(children);
-                        for(MutableTreeNode child : childrenToRemove) {
-                                model.removeNodeFromParent(child);
-                        }
-                        // Insert busy Node
-                        TreeNodeBusy busyNode = new TreeNodeBusy();
-                        model.insertNodeInto(busyNode, this, 0);
-                        // Launch the download job
-                        BackgroundManager bm = Services.getService(BackgroundManager.class);
-                        bm.nonBlockingBackgroundOperation(new DownloadWorkspaces(this,busyNode));
+                if(lastWorkspacesDownload + CACHE_EXPIRATION < System.currentTimeMillis()) {
+                        update();
                 }
                 return super.getChildCount();
         }
