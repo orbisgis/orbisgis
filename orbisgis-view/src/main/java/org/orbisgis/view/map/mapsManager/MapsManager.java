@@ -36,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
@@ -102,6 +103,7 @@ public class MapsManager extends JPanel {
                 treeModel.insertNodeInto(rootRemote, rootNode, rootNode.getChildCount());
                 tree.setRootVisible(false);
                 scrollPane = new JScrollPane(tree);
+                add(new JLabel(I18N.tr("Maps manager")),BorderLayout.NORTH);
                 add(scrollPane,BorderLayout.EAST);
                 setBorder(BorderFactory.createEtchedBorder());
         }
@@ -204,27 +206,8 @@ public class MapsManager extends JPanel {
          * @return Height in pixels
          */
         public Dimension getMinimalComponentDimension() {                
-                Insets borders = getInsets();
-                Insets sBorders = scrollPane.getInsets();
+                Dimension panel = getPreferredSize();
                 Dimension treeDim = tree.getPreferredSize();
-                JScrollBar bar = scrollPane.getVerticalScrollBar();
-                Dimension barsize = new Dimension(0, 0);
-                if(bar!=null) {
-                        if(bar.isVisible()) {
-                                barsize = bar.getPreferredSize();
-                                
-                        }
-                }
-                return new Dimension(treeDim.width+
-                        borders.left+
-                        borders.right+
-                        sBorders.left+
-                        sBorders.right+
-                        barsize.width
-                        ,treeDim.height+
-                        borders.top+
-                        borders.bottom+
-                        sBorders.top+
-                        sBorders.bottom);
+                return new Dimension(panel.width,treeDim.height+getMinimumSize().height);
         }
 }
