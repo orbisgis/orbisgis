@@ -84,13 +84,7 @@ public final class MapElement extends EditableElement {
         public void setModified(Boolean modified) {
             this.modified = modified;
         }
-
-        /**
-         * Call setModified(true);
-         */
-        public void setModified() {
-                setModified(true);
-        }
+        
 	@Override
 	public void save() throws UnsupportedOperationException {
                 try {

@@ -29,6 +29,7 @@
 package org.orbisgis.view.map.mapsManager.jobs;
 
 import java.io.IOException;
+import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.mapcatalog.Workspace;
@@ -47,17 +48,44 @@ public class UploadMapContext implements BackgroundJob {
         private static final Logger LOGGER = Logger.getLogger(UploadMapContext.class);
         private MapContext mapContext;
         private TreeNodeWorkspace workspaceNode;
+        private Integer mapContextid;
 
+        /**
+         * Upload a new Map Context
+         * @param mapContext
+         * @param workspaceNode
+         * @param mapContextid 
+         */
+        public UploadMapContext(MapContext mapContext, TreeNodeWorkspace workspaceNode, int mapContextid) {
+                this.mapContext = mapContext;
+                this.workspaceNode = workspaceNode;
+                this.mapContextid = mapContextid;
+        }
+        
+        /**
+         * Update an existing remote map context
+         * @param mapContext
+         * @param workspaceNode 
+         */
         public UploadMapContext(MapContext mapContext, TreeNodeWorkspace workspaceNode) {
                 this.mapContext = mapContext;
                 this.workspaceNode = workspaceNode;
-        }        
+                this.mapContextid = null;
+        }
+        
         
         @Override
         public void run(ProgressMonitor pm) {
                 Workspace workspace = workspaceNode.getWorkspace();
                 try {
-                        workspace.publishMapContext(mapContext);
+                        workspace.publishMapContext(mapContext,mapContextid);
+                        SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                        workspaceNode.update();
+                                }
+                        });
+                        
                 } catch(IOException ex) {
                         LOGGER.error(ex.getLocalizedMessage(),ex);
                 }

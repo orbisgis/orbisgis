@@ -74,9 +74,10 @@ public class TransferableRemoteMap extends TransferableMap {
                         if (!mapContextFolder.exists()) {
                                 mapContextFolder.mkdir();
                         }
-                        File mapContextFile = new File(mapContextFolder, remoteMap.getDescription().getDefaultTitle() + "."+ remoteMap.getFileExtension());
+                        File mapContextFile = new File(mapContextFolder, remoteMap.getDescription().getDefaultTitle() + "." + remoteMap.getFileExtension());
                         try {
                                 MapElement mapElement = new MapElement(remoteMap.getMapContext(), mapContextFile);
+                                mapElement.setModified(true);
                                 return new MapElement[] {mapElement};
                         } catch( IOException ex) {
                                 LOGGER.error(I18N.tr("Error while downloading the map content"),ex);

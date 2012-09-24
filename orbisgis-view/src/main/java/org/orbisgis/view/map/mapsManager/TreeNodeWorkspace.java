@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
-import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -78,24 +77,24 @@ public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements Drop
                 model.insertNodeInto(new TreeNodeRemoteMap(context), this, getChildCount());
         }
         
+        /**
+         * Refresh the content of the workspace
+         */
+        public void update() {
+                lastContextDownload = System.currentTimeMillis();
+                // Insert busy Node
+                TreeNodeBusy busyNode = new TreeNodeBusy();
+                model.insertNodeInto(busyNode, this, 0);
+                // Launch the download job
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.nonBlockingBackgroundOperation(new DownloadRemoteMapContext(this,busyNode));
+        }
         
 
         @Override
         public int getChildCount() {
-                long curTime = System.currentTimeMillis();
-                if(lastContextDownload + CACHE_EXPIRATION < curTime) {
-                        lastContextDownload = curTime;
-                        // Clear all childrens
-                        List<MutableTreeNode> childrenToRemove = new ArrayList<MutableTreeNode>(children);
-                        for(MutableTreeNode child : childrenToRemove) {
-                                model.removeNodeFromParent(child);
-                        }
-                        // Insert busy Node
-                        TreeNodeBusy busyNode = new TreeNodeBusy();
-                        model.insertNodeInto(busyNode, this, 0);
-                        // Launch the download job
-                        BackgroundManager bm = Services.getService(BackgroundManager.class);
-                        bm.nonBlockingBackgroundOperation(new DownloadRemoteMapContext(this,busyNode));
+                if(lastContextDownload + CACHE_EXPIRATION < System.currentTimeMillis()) {
+                        update();
                 }
                 return super.getChildCount();
         }
@@ -138,5 +137,18 @@ public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements Drop
                         return false;
                 }
                 
+        }
+        /**
+         * Update the current context with the provided list
+         * @param contexts 
+         */
+        public void setContext(List<RemoteMapContext> contexts) {
+                List<MutableTreeNode> childrenToRemove = new ArrayList<MutableTreeNode>(children);
+                for (MutableTreeNode child : childrenToRemove) {                        
+                        model.removeNodeFromParent(child);
+                }
+                for(RemoteMapContext newMap : contexts) {
+                        addContext(newMap);
+                }
         }
 }

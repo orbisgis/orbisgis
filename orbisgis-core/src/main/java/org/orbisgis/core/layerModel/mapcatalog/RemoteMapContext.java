@@ -106,6 +106,14 @@ public abstract class RemoteMapContext {
                 return hash;
         }
 
+        /**
+         * 
+         * @return The Map id
+         */
+        public int getId() {
+                return id;
+        }
+
         
 
         /**

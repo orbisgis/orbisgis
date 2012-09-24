@@ -65,7 +65,10 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * Workspace structure and reader
+ * Workspace structure and reader.
+ * 
+ * The workspace currently use Apache http.client with the old API
+ * java.net can be used for upload easily with the new API.
  * @author Nicolas Fortin
  */
 public class Workspace  {
@@ -119,53 +122,61 @@ public class Workspace  {
                 mapContext.write(mapData);
                 return mapData.toString(ENCODING);
         }
-        public int publishMapContext(MapContext mapContext) throws IOException {
-                int workspaceId = 0;
+        public int publishMapContext(MapContext mapContext, Integer mapContextId) throws IOException {
+                int newMapContextId = 0;
                 HttpClient httpClient = new DefaultHttpClient();
-                HttpPost httpPost = new HttpPost(cParams.getApiUrl()+PUBLISH_CONTEXT);
+                HttpPost httpPost = new HttpPost(cParams.getApiUrl() + PUBLISH_CONTEXT);
 
                 // Parameters
                 List<NameValuePair> formparams = new ArrayList<NameValuePair>();
-                formparams.add(new BasicNameValuePair("workspace",workspaceName));
-                formparams.add(new BasicNameValuePair("owc",getMapData(mapContext)));
+                formparams.add(new BasicNameValuePair("workspace", workspaceName));
+                formparams.add(new BasicNameValuePair("owc", getMapData(mapContext)));
+                if (mapContextId != null) {
+                        formparams.add(new BasicNameValuePair("id", mapContextId.toString()));
+                }
                 UrlEncodedFormEntity owcEntity = new UrlEncodedFormEntity(formparams, "UTF-8");
                 httpPost.setEntity(owcEntity);
                 HttpResponse response = httpClient.execute(httpPost);
-                
+
                 // Get response
                 int responseCode = response.getStatusLine().getStatusCode();
-		if (!(responseCode == HttpURLConnection.HTTP_CREATED
-                        || responseCode == HttpURLConnection.HTTP_OK )) { //Old api response
-                        throw new IOException(I18N.tr("HTTP Error {0} message : {1}",responseCode,response.getStatusLine().getReasonPhrase()));
+                if (!((responseCode == HttpURLConnection.HTTP_CREATED && mapContextId==null) ||
+                        (responseCode == HttpURLConnection.HTTP_OK && mapContextId!=null)
+                        || responseCode == HttpURLConnection.HTTP_OK)) { //Old api response
+                        throw new IOException(I18N.tr("HTTP Error {0} message : {1}", responseCode, response.getStatusLine().getReasonPhrase()));
                 }
 
-                HttpEntity responseEntity = response.getEntity();
+                if (mapContextId == null) {
+                        HttpEntity responseEntity = response.getEntity();
 
-                if (responseEntity != null) {
-                        responseEntity = new BufferedHttpEntity(responseEntity);
-                        InputStream instream = new BufferedInputStream(responseEntity.getContent());
-                                                    
-                        // Get response content
-                        BufferedReader in = new BufferedReader(
+                        if (responseEntity != null) {
+                                responseEntity = new BufferedHttpEntity(responseEntity);
+                                InputStream instream = new BufferedInputStream(responseEntity.getContent());
+
+                                // Get response content
+                                BufferedReader in = new BufferedReader(
                                         new InputStreamReader(
                                         instream));
 
 
-                        XMLInputFactory factory = XMLInputFactory.newInstance();
+                                XMLInputFactory factory = XMLInputFactory.newInstance();
 
-                        // Parse Data
-                        XMLStreamReader parser;
-                        try {
-                                parser = factory.createXMLStreamReader(in);
-                                // Fill workspaces
-                                workspaceId = parsePublishResponse(parser);
-                                parser.close();
-                        } catch(XMLStreamException ex) {
-                                throw new IOException(I18N.tr("Invalid XML content"),ex);
+                                // Parse Data
+                                XMLStreamReader parser;
+                                try {
+                                        parser = factory.createXMLStreamReader(in);
+                                        // Fill workspaces
+                                        newMapContextId = parsePublishResponse(parser);
+                                        parser.close();
+                                } catch (XMLStreamException ex) {
+                                        throw new IOException(I18N.tr("Invalid XML content"), ex);
+                                }
                         }
+                        httpClient.getConnectionManager().shutdown();
+                        return newMapContextId;
+                } else {
+                        return mapContextId;
                 }
-                httpClient.getConnectionManager().shutdown();
-                return workspaceId;
         }
         
         /**
@@ -191,6 +202,7 @@ public class Workspace  {
                 writer.close();
                 ByteArrayOutputStream mapData = new ByteArrayOutputStream();
                 mapContext.write(mapData);
+                mapData.flush();
                 // Encode the XML end write to the output stream
                 out.write(URLEncoder.encode(mapData.toString(ENCODING),ENCODING).getBytes(ENCODING));
                 out.flush();

@@ -28,22 +28,34 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import javax.swing.ImageIcon;
+import javax.swing.TransferHandler.TransferSupport;
+import org.apache.log4j.Logger;
+import org.orbisgis.core.Services;
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.core.renderer.se.common.Description;
+import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeLeaf;
 import org.orbisgis.view.components.fstree.DragTreeNode;
+import org.orbisgis.view.components.fstree.DropDestinationTreeNode;
 import org.orbisgis.view.components.fstree.TransferableList;
 import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.map.MapElement;
+import org.orbisgis.view.map.TransferableMap;
+import org.orbisgis.view.map.mapsManager.jobs.UploadMapContext;
 
 /**
  * Map on the server side
  * @author Nicolas Fortin
  */
-public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeCustomIcon,DragTreeNode {
+public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeCustomIcon,DragTreeNode, DropDestinationTreeNode {
         private RemoteMapContext remoteMapConnection;
-
+        private static final Logger LOGGER = Logger.getLogger(TreeNodeRemoteMap.class);
+        
         public TreeNodeRemoteMap(RemoteMapContext remoteMapConnection) {
                 this.remoteMapConnection = remoteMapConnection;
                 Description description = remoteMapConnection.getDescription();
@@ -80,5 +92,32 @@ public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeC
         public boolean completeTransferable(TransferableList transferable) {
                 transferable.addTransferable(new TransferableRemoteMap(remoteMapConnection));
                 return true;
+        }
+
+        @Override
+        public boolean canImport(TransferSupport ts) {
+                return ts.isDataFlavorSupported(TransferableMap.mapFlavor);
+        }
+
+        @Override
+        public boolean importData(TransferSupport ts) {
+                // Uploading and updating of a Map
+                try {
+                        // Retrieve the MapContext
+                        Object mapObj = ts.getTransferable().getTransferData(TransferableMap.mapFlavor);
+                        MapElement[] mapArray = (MapElement[])mapObj;
+                        if(mapArray.length!=0) {
+                                MapContext mapToUpload = mapArray[0].getMapContext();
+                                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                                bm.nonBlockingBackgroundOperation(new UploadMapContext(mapToUpload, (TreeNodeWorkspace)getParent(),remoteMapConnection.getId()));
+                        }
+                        return true;
+                } catch (UnsupportedFlavorException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(),ex);
+                        return false;
+                } catch (IOException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(),ex);
+                        return false;
+                }
         }
 }
