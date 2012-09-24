@@ -112,7 +112,7 @@ public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements Pop
          */
         public void onAddServer() {
                 String serverURLString = JOptionPane.showInputDialog(UIFactory.getMainFrame(), I18N.tr("Enter the server URL"), "");
-                if(serverURLString!=null) {
+                if(serverURLString!=null && !serverURLString.isEmpty()) {
                         try {
                                 URL serverURL = new URL(serverURLString);
                                 model.insertNodeInto(new TreeNodeMapCatalogServer(serverURL), this, getChildCount());

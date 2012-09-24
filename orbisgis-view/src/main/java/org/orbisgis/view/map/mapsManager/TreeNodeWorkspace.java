@@ -28,16 +28,25 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.TransferHandler.TransferSupport;
 import javax.swing.tree.MutableTreeNode;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.core.layerModel.mapcatalog.Workspace;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
+import org.orbisgis.view.components.fstree.DropDestinationTreeNode;
+import org.orbisgis.view.map.MapElement;
+import org.orbisgis.view.map.TransferableMap;
 import org.orbisgis.view.map.mapsManager.jobs.DownloadRemoteMapContext;
-import org.orbisgis.view.map.mapsManager.jobs.DownloadWorkspaces;
+import org.orbisgis.view.map.mapsManager.jobs.UploadMapContext;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -45,11 +54,11 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * @author Nicolas Fortin
  */
-public class TreeNodeWorkspace extends AbstractTreeNodeContainer {
+public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements DropDestinationTreeNode {
         private static final long CACHE_EXPIRATION = 60000;
         private long lastContextDownload = 0;
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeWorkspace.class);
-        
+        private static final Logger LOGGER = Logger.getLogger(TreeNodeWorkspace.class);
         Workspace workspace;
         /**
          * Constructor
@@ -102,5 +111,32 @@ public class TreeNodeWorkspace extends AbstractTreeNodeContainer {
         @Override
         public void setUserObject(Object o) {
                 //Rename workspace ?
-        }        
+        }
+
+        @Override
+        public boolean canImport(TransferSupport ts) {
+                return ts.isDataFlavorSupported(TransferableMap.mapFlavor);
+        }
+
+        @Override
+        public boolean importData(TransferSupport ts) {
+                // Uploading of a Map
+                try {
+                        // Retrieve the MapContext
+                        Object mapObj = ts.getTransferable().getTransferData(TransferableMap.mapFlavor);
+                        MapElement[] mapArray = (MapElement[])mapObj;
+                        if(mapArray.length!=0) {
+                                MapContext mapToUpload = mapArray[0].getMapContext();
+                                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                                bm.nonBlockingBackgroundOperation(new UploadMapContext(mapToUpload, this));
+                        }
+                        return true;
+                } catch (UnsupportedFlavorException ex) {
+                        return false;
+                } catch (IOException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(),ex);
+                        return false;
+                }
+                
+        }
 }

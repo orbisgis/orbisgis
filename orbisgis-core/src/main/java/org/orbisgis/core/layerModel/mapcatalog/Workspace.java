@@ -29,6 +29,7 @@
 package org.orbisgis.core.layerModel.mapcatalog;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
@@ -36,6 +37,7 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -91,8 +93,8 @@ public class Workspace  {
                                         hierarchy.remove(hierarchy.size()-1);
                                         break;
                                 case XMLStreamConstants.CHARACTERS:
-                                        if(RemoteCommons.endsWith(hierarchy,"items","item","id")) {
-                                                //
+                                        if(RemoteCommons.endsWith(hierarchy,"result","id")) {
+                                                return Integer.parseInt(parser.getText());
                                         }
                                         break;
                         }                               
@@ -120,11 +122,15 @@ public class Workspace  {
                 Writer writer = new OutputStreamWriter(out, ENCODING);
                 writer.write("owc=");
                 writer.close();
-                mapContext.write(out);
+                ByteArrayOutputStream mapData = new ByteArrayOutputStream();
+                mapContext.write(mapData);
+                // Encode the XML end write to the output stream
+                out.write(URLEncoder.encode(mapData.toString(ENCODING),ENCODING).getBytes(ENCODING));
                 out.flush();
-                out.close();                
+                out.close();
                 // Get response
-		if (connection.getResponseCode() != HttpURLConnection.HTTP_CREATED) {
+		if (!(connection.getResponseCode() == HttpURLConnection.HTTP_CREATED
+                        || connection.getResponseCode() == HttpURLConnection.HTTP_OK )) { //Old api response
                         throw new IOException(I18N.tr("HTTP Error {0} message : {1}",connection.getResponseCode(),connection.getResponseMessage()));
                 }
                 
