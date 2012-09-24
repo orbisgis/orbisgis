@@ -46,9 +46,7 @@ import java.beans.VetoableChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URL;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
@@ -86,6 +84,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.jobs.ReadMapContextJob;
 import org.orbisgis.view.map.jobs.ZoomToSelection;
 import org.orbisgis.view.map.mapsManager.MapsManager;
+import org.orbisgis.view.map.mapsManager.TreeLeafMapContextFile;
 import org.orbisgis.view.map.mapsManager.TreeLeafMapElement;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.TransitionException;
@@ -209,8 +208,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
                 ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
 
-                //Create an empty map context
-                MapContext defaultMapContext = new OwsMapContext();
+                MapContext defaultMapContext = new OwsMapContext();             
+                
 
                 //Load the map context
                 File mapContextFolder = new File(viewWorkspace.getMapContextPath());
@@ -218,14 +217,17 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         mapContextFolder.mkdir();
                 }
                 File mapContextFile = new File(mapContextFolder, I18N.tr("MyMap.ows"));
-                if (mapContextFile.exists()) {
-                        try {
-                                defaultMapContext.read(new FileInputStream(mapContextFile));
-                        } catch (FileNotFoundException ex) {
-                                GUILOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
-                        } catch (IllegalArgumentException ex) {
-                                GUILOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
-                        }
+                
+                if (!mapContextFile.exists()) {
+                        //Create an empty map context
+                        TreeLeafMapContextFile.createEmptyMapContext(mapContextFile);
+                }                
+                try {
+                        defaultMapContext.read(new FileInputStream(mapContextFile));
+                } catch (FileNotFoundException ex) {
+                        GUILOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
+                } catch (IllegalArgumentException ex) {
+                        GUILOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
                 }
                 MapElement editableMap = new MapElement(defaultMapContext, mapContextFile);
                 backgroundManager.backgroundOperation(new ReadMapContextJob(editableMap));

@@ -82,6 +82,10 @@ public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements Drop
          */
         public void update() {
                 lastContextDownload = System.currentTimeMillis();
+                List<MutableTreeNode> childrenToRemove = new ArrayList<MutableTreeNode>(children);
+                for (MutableTreeNode child : childrenToRemove) {
+                        model.removeNodeFromParent(child);
+                }
                 // Insert busy Node
                 TreeNodeBusy busyNode = new TreeNodeBusy();
                 model.insertNodeInto(busyNode, this, 0);
@@ -137,18 +141,5 @@ public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements Drop
                         return false;
                 }
                 
-        }
-        /**
-         * Update the current context with the provided list
-         * @param contexts 
-         */
-        public void setContext(List<RemoteMapContext> contexts) {
-                List<MutableTreeNode> childrenToRemove = new ArrayList<MutableTreeNode>(children);
-                for (MutableTreeNode child : childrenToRemove) {                        
-                        model.removeNodeFromParent(child);
-                }
-                for(RemoteMapContext newMap : contexts) {
-                        addContext(newMap);
-                }
         }
 }

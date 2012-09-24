@@ -74,6 +74,8 @@ public class TreeNodeBusy extends AbstractTreeNodeLeaf implements TreeNodeCustom
                 model.nodeChanged(this);
                 if(doAnimation) {
                         animationTimer.start();
+                } else {
+                        model.removeNodeFromParent(this);                        
                 }
         }
         

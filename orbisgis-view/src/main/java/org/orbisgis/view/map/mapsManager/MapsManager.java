@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -206,11 +207,20 @@ public class MapsManager extends JPanel {
                 Insets borders = getInsets();
                 Insets sBorders = scrollPane.getInsets();
                 Dimension treeDim = tree.getPreferredSize();
+                JScrollBar bar = scrollPane.getVerticalScrollBar();
+                Dimension barsize = new Dimension(0, 0);
+                if(bar!=null) {
+                        if(bar.isVisible()) {
+                                barsize = bar.getPreferredSize();
+                                
+                        }
+                }
                 return new Dimension(treeDim.width+
                         borders.left+
                         borders.right+
                         sBorders.left+
-                        sBorders.right
+                        sBorders.right+
+                        barsize.width
                         ,treeDim.height+
                         borders.top+
                         borders.bottom+

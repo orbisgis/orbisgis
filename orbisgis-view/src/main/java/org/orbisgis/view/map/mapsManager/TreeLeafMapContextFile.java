@@ -69,7 +69,7 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
         }
         
         /**
-         * 
+         * Create and save a minimal ows Map context file
          * @param fileName
          * @return
          */

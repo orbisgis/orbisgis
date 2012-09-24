@@ -29,10 +29,8 @@
 package org.orbisgis.view.map.mapsManager.jobs;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import javax.swing.SwingUtilities;
-import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.mapcatalog.RemoteMapContext;
@@ -95,7 +93,9 @@ public class DownloadRemoteMapContext implements BackgroundJob {
                 @Override
                 public void run() {
                         if(contexts!=null) {
-                                workspaceNode.setContext(contexts);
+                                for(RemoteMapContext context : contexts) {
+                                        workspaceNode.addContext(context);
+                                }
                         } else {
                                 TreeNode parent = workspaceNode.getParent();
                                 if(!(parent instanceof TreeNodeMapCatalogServer)) {
