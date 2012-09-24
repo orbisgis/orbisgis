@@ -59,7 +59,7 @@ public abstract class RemoteMapContext {
         private int id = 0;
         private Description description = new Description();
         private ConnectionProperties cParams;
-        private String workspaceName;
+        private transient String workspaceName; // Not serialised
         private Date date;
         private static final I18n I18N = I18nFactory.getI18n(RemoteMapContext.class);
 
@@ -84,9 +84,6 @@ public abstract class RemoteMapContext {
                         return false;
                 }
                 if (this.cParams != other.cParams && (this.cParams == null || !this.cParams.equals(other.cParams))) {
-                        return false;
-                }
-                if ((this.workspaceName == null) ? (other.workspaceName != null) : !this.workspaceName.equals(other.workspaceName)) {
                         return false;
                 }
                 if (this.date != other.date && (this.date == null || !this.date.equals(other.date))) {
