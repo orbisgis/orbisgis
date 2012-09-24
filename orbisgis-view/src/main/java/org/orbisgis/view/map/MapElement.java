@@ -78,6 +78,13 @@ public final class MapElement extends EditableElement {
         }       
         
         /**
+         * Set this element as modified
+         */
+        public void setModified() {
+                setModified(true);
+        }
+        
+        /**
          * Update the modified state
          * @param modified 
          */
