@@ -59,7 +59,7 @@ public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeC
         public TreeNodeRemoteMap(RemoteMapContext remoteMapConnection) {
                 this.remoteMapConnection = remoteMapConnection;
                 Description description = remoteMapConnection.getDescription();
-                if(description!=null && !description.getDefaultTitle().isEmpty()) {
+                if(description!=null && description.getDefaultTitle()!=null && !description.getDefaultTitle().isEmpty()) {
                         setLabel(description.getDefaultTitle());
                         setToolTipText(description.getDefaultAbstract());
                 }else {
