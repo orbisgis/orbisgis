@@ -59,6 +59,7 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.multiInputPanel.MIPValidation;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.PasswordType;
+import org.orbisgis.sif.multiInputPanel.TextBoxType;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.geocatalog.Catalog;
@@ -86,7 +87,7 @@ public class TableExportPanel extends JDialog {
         private JComboBox comboBoxSchemas;
         private String[] schemas = new String[]{"public"};
         private String[] dbParameters = null;
-        private String dbpassWord;
+        private String dbpassWord, dbLogin;
 
         public TableExportPanel(String[] layerNames, SourceManager sourceManager) {
                 this.sourceNames = layerNames;
@@ -189,7 +190,7 @@ public class TableExportPanel extends JDialog {
                                         userParams.put("host", dbParameters[1]);
                                         int port = Integer.valueOf(dbParameters[2]);
                                         userParams.put("dbName", dbParameters[4]);
-                                        userParams.put("userName", dbParameters[5]);
+                                        userParams.put("userName", dbLogin);
                                         userParams.put("password", dbpassWord);
                                         backgroundManager.backgroundOperation(new ExportToDatabase(i, row, userParams, port));
                                 }
@@ -212,16 +213,17 @@ public class TableExportPanel extends JDialog {
          * @param passWord
          * @throws SQLException
          */
-        public void populateSchemas(String[] parameters, String passWord) throws SQLException {
+        public void populateSchemas(String[] parameters, String login, String passWord) throws SQLException {
 
                 try {
                         dbParameters = parameters;
                         dbpassWord = passWord;
+                        dbLogin=login;
                         String dbType = parameters[0];
                         DriverManager driverManager = sourceManager.getDriverManager();
                         DBDriver dbDriver = (DBDriver) driverManager.getDriver(dbType);
                         String cs = dbDriver.getConnectionString(parameters[1], Integer.valueOf(
-                                parameters[2]), Boolean.valueOf(parameters[3]), parameters[4], parameters[5],
+                                parameters[2]), Boolean.valueOf(parameters[3]), parameters[4], login,
                                 passWord);
                         Connection connection = dbDriver.getConnection(cs);
                         schemas = dbDriver.getSchemas(connection);
@@ -307,15 +309,23 @@ public class TableExportPanel extends JDialog {
                 }
         }
 
+        /**
+         * Set the login and password and them connect to the database
+         * @return 
+         */
         public boolean onConnect() {
                 String dataBaseUri = connectionToolBar.getCmbDataBaseUri().getSelectedItem().toString();
                 if (!dataBaseUri.isEmpty()) {
                         MultiInputPanel passwordDialog = new MultiInputPanel(I18N.tr("Please set a password"));
+                        passwordDialog.addInput("login", I18N.tr("Login"), "", new TextBoxType(10));                        
                         passwordDialog.addInput("password", I18N.tr("Password"), "", new PasswordType(10));
                         passwordDialog.addValidation(new MIPValidation() {
 
                                 @Override
                                 public String validate(MultiInputPanel mid) {
+                                        if (mid.getInput("login").isEmpty()) {
+                                                return I18N.tr("The login cannot be empty.");
+                                        }
                                         if (mid.getInput("password").isEmpty()) {
                                                 return I18N.tr("The password cannot be empty.");
                                         }
@@ -327,8 +337,9 @@ public class TableExportPanel extends JDialog {
                         if (UIFactory.showDialog(passwordDialog)) {
                                 try {
                                         String passWord = passwordDialog.getInput("password");
+                                        String login = passwordDialog.getInput("login");
                                         String properties = connectionToolBar.getDbProperties().getProperty(dataBaseUri);
-                                        populateSchemas(properties.split(","), passWord);
+                                        populateSchemas(properties.split(","), login, passWord);
                                         return true;
 
                                 } catch (SQLException ex) {
@@ -371,6 +382,10 @@ public class TableExportPanel extends JDialog {
                 }
         }
 
+        /**
+         * Show a message
+         * @param message 
+         */
         public void onMessagePanel(String message) {
                 JOptionPane.showMessageDialog(jScrollPane, message);
         }

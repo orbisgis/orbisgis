@@ -211,6 +211,11 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
         @Override
         public HashSet<String> dependsOnFeature() {
                 HashSet<String> ret = new HashSet<String>();
+                
+                if(this.getGeometryAttribute()!=null){
+                    ret.addAll(this.getGeometryAttribute().dependsOnFeature());
+                }
+                 
                 if (perpendicularOffset != null) {
                         ret.addAll(perpendicularOffset.dependsOnFeature());
                 }
