@@ -61,6 +61,7 @@ import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
+import javax.swing.event.TreeExpansionListener;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
@@ -183,6 +184,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         mapsManager.setServerList(getMapEditorPersistance().getMapCatalogUrlList());
                         // When the tree is expanded update the manager size
                         mapsManager.getTree().addComponentListener(sizeListener);
+                        mapsManager.getTree().addTreeExpansionListener(EventHandler.create(TreeExpansionListener.class,this,"updateMapControlSize"));
                         
                 }
         }
