@@ -29,7 +29,6 @@
 package org.orbisgis.core.layerModel;
 
 import com.vividsolutions.jts.geom.Envelope;
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
@@ -54,7 +53,6 @@ import net.opengis.ows_context.OnlineResourceType;
 import net.opengis.ows_context.ResourceListType;
 import net.opengis.ows_context.StyleType;
 import net.opengis.ows_context.URLType;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
@@ -77,6 +75,7 @@ import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.core.renderer.se.common.LocalizedText;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.utils.FileUtils;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -500,15 +499,10 @@ public final class OwsMapContext extends BeanMapContext {
                 try {
                         if (sm.exists(resourceUri)) {
                                 return dm.getDataSourceFactory().getDataSource(sm.getNameFor(resourceUri));
-                        } else {                                
-                                if (resourceUri.getScheme().equals("file")) {
-                                        File file = new File(resourceUri);
-                                        String sourceName = sm.getUniqueName(FilenameUtils.removeExtension(file.getName()));
-                                        sm.register(sourceName, resourceUri);
-                                        return dm.getDataSourceFactory().getDataSource(sourceName);
-                                }else{
-                                        return dm.getDataSourceFactory().getDataSource(sm.nameAndRegister(resourceUri));
-                                }
+                        } else {
+                                String sourceName = sm.getUniqueName(FileUtils.getNameFromURI(resourceUri));
+                                sm.register(sourceName, resourceUri);
+                                return dm.getDataSourceFactory().getDataSource(sourceName);
                         }
                 } catch (SourceAlreadyExistsException ex) {
                         throw new DataSourceCreationException(ex);
