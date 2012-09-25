@@ -140,7 +140,7 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                 Connection c;
                 if (connString.toLowerCase().contains("ssl=true")) {
                         Properties props = new Properties();
-                        props.setProperty("sslfactory", "org.postgresql.ssl.NonValidationFactory");
+                        props.setProperty("sslfactory", "org.postgresql.ssl.NonValidatingFactory");
                         c = DriverManager.getConnection(connString, props);
 
                 } else {
