@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.map.mapsManager;
 
+import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.net.MalformedURLException;
@@ -36,6 +37,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -62,12 +64,9 @@ import org.xnap.commons.i18n.I18nFactory;
 public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implements TreeNodeCustomIcon,PopupTreeNode {
 
         public static enum SERVER_STATUS { DISCONNECTED, CONNECTED, UNREACHABLE };
-        // Download again the workspaces if the expiration is reach
-        // and this node is expanded
-        private static final long CACHE_EXPIRATION = 60000;
         URL serverUrl;
         private static final Logger LOGGER = Logger.getLogger(TreeNodeMapCatalogServer.class);
-        private long lastWorkspacesDownload = 0;
+        AtomicBoolean downloaded = new AtomicBoolean(false);
         private SERVER_STATUS serverStatus = SERVER_STATUS.DISCONNECTED;
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeMapCatalogServer.class);
                 
@@ -114,7 +113,6 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
          * Refresh the map catalog content
          */
         public void update() {
-                lastWorkspacesDownload = System.currentTimeMillis();
                 // Clear all childrens
                 List<MutableTreeNode> childrenToRemove = new ArrayList<MutableTreeNode>(children);
                 for(MutableTreeNode child : childrenToRemove) {
@@ -130,7 +128,7 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
         }
         @Override
         public int getChildCount() {
-                if(lastWorkspacesDownload + CACHE_EXPIRATION < System.currentTimeMillis()) {
+                if(!downloaded.getAndSet(true)) {
                         update();
                 }
                 return super.getChildCount();
@@ -175,7 +173,16 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
                 model.removeNodeFromParent(this);
         }
         @Override
-        public void feedPopupMenu(JPopupMenu menu) {                
+        public void feedPopupMenu(JPopupMenu menu) {     
+                // Find the Rename menu and change the label
+                for(Component component : menu.getComponents()) {
+                        if(component instanceof JMenuItem) {
+                                JMenuItem item = (JMenuItem) component;
+                                if(item.getActionCommand().equals("rename")) {
+                                        item.setText(I18N.tr("Edit the URL"));
+                                }
+                        }
+                }           
                 JMenuItem folderRemove = new JMenuItem(I18N.tr("Delete"),
                         OrbisGISIcon.getIcon("world_delete"));
                 folderRemove.setToolTipText(I18N.tr("Remove this server"));
@@ -184,5 +191,14 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
                 EventHandler.create(ActionListener.class,
                 this, "onDeleteServer"));
                 MenuCommonFunctions.updateOrInsertMenuItem(menu,folderRemove);
+                if(downloaded.get()) {
+                        JMenuItem updateMenu = new JMenuItem(I18N.tr("Update"),
+                                OrbisGISIcon.getIcon("arrow_refresh"));
+                        updateMenu.setToolTipText(I18N.tr("Download the server content"));
+                        updateMenu.setActionCommand("Update");
+                        updateMenu.addActionListener(
+                                EventHandler.create(ActionListener.class,this,"update"));
+                        MenuCommonFunctions.updateOrInsertMenuItem(menu, updateMenu);
+                }
         }
 }

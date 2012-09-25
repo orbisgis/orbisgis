@@ -166,6 +166,7 @@ public class FileTree extends JTree implements TreeNodeFileFactoryManager {
                                                 JMenuItem editMenu = new JMenuItem(I18N.tr("Rename"));
                                                 editMenu.addActionListener(
                                                         EventHandler.create(ActionListener.class,this,"onRenameItem"));
+                                                editMenu.setActionCommand("rename");
                                                 menu.add(editMenu);
                                         }
                                 }

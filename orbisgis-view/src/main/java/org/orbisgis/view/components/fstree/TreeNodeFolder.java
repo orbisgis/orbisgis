@@ -204,7 +204,7 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
                 JMenuItem updateMenu = new JMenuItem(I18N.tr("Update"),
                         OrbisGISIcon.getIcon("arrow_refresh"));
                 updateMenu.setToolTipText(I18N.tr("Update the content of this folder from the file system"));
-                updateMenu.setActionCommand("TreeNodeFolder:Update");
+                updateMenu.setActionCommand("Update");
                 updateMenu.addActionListener(
                         EventHandler.create(ActionListener.class,
                         this, "updateTree"));
@@ -228,7 +228,7 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
                         folderRemove.addActionListener(
                         EventHandler.create(ActionListener.class,
                         this, "onDeleteFolder"));
-                        MenuCommonFunctions.updateOrInsertMenuItem(menu,folderRemove);
+                        MenuCommonFunctions.updateOrInsertMenuItem(menu,folderRemove,true);
                 }
         }
 

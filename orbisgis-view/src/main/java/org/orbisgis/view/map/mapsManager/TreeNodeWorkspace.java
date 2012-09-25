@@ -29,9 +29,14 @@
 package org.orbisgis.view.map.mapsManager;
 
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler.TransferSupport;
 import javax.swing.tree.MutableTreeNode;
 import org.apache.log4j.Logger;
@@ -39,9 +44,12 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.core.layerModel.mapcatalog.Workspace;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
 import org.orbisgis.view.components.fstree.DropDestinationTreeNode;
+import org.orbisgis.view.components.fstree.PopupTreeNode;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.map.TransferableMap;
 import org.orbisgis.view.map.mapsManager.jobs.DownloadRemoteMapContext;
@@ -53,11 +61,10 @@ import org.xnap.commons.i18n.I18nFactory;
  *
  * @author Nicolas Fortin
  */
-public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements DropDestinationTreeNode {
-        private static final long CACHE_EXPIRATION = 60000;
-        private long lastContextDownload = 0;
+public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements DropDestinationTreeNode, PopupTreeNode {
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeWorkspace.class);
         private static final Logger LOGGER = Logger.getLogger(TreeNodeWorkspace.class);
+        AtomicBoolean downloaded = new AtomicBoolean(false);
         Workspace workspace;
         /**
          * Constructor
@@ -81,7 +88,6 @@ public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements Drop
          * Refresh the content of the workspace
          */
         public void update() {
-                lastContextDownload = System.currentTimeMillis();
                 List<MutableTreeNode> childrenToRemove = new ArrayList<MutableTreeNode>(children);
                 for (MutableTreeNode child : childrenToRemove) {
                         model.removeNodeFromParent(child);
@@ -97,7 +103,7 @@ public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements Drop
 
         @Override
         public int getChildCount() {
-                if(lastContextDownload + CACHE_EXPIRATION < System.currentTimeMillis()) {
+                if(!downloaded.getAndSet(true)) {
                         update();
                 }
                 return super.getChildCount();
@@ -141,5 +147,18 @@ public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements Drop
                         return false;
                 }
                 
+        }
+
+        @Override
+        public void feedPopupMenu(JPopupMenu menu) {
+                if(downloaded.get()) {
+                        JMenuItem updateMenu = new JMenuItem(I18N.tr("Update"),
+                                OrbisGISIcon.getIcon("arrow_refresh"));
+                        updateMenu.setToolTipText(I18N.tr("Download the workspace content"));
+                        updateMenu.setActionCommand("Update");
+                        updateMenu.addActionListener(
+                                EventHandler.create(ActionListener.class,this,"update"));
+                        MenuCommonFunctions.updateOrInsertMenuItem(menu, updateMenu);
+                }
         }
 }
