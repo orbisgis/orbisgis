@@ -108,7 +108,7 @@ public class MapsManager extends JPanel {
                 // Disable mouse event propagation on this label
                 title.addMouseListener(new MouseAdapter(){}); 
                 add(title,BorderLayout.NORTH);
-                add(scrollPane,BorderLayout.EAST);
+                add(scrollPane,BorderLayout.CENTER);
                 setBorder(BorderFactory.createEtchedBorder());
         }
         

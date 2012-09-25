@@ -252,14 +252,14 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 mapControl.setBounds(0,0,layeredPane.getWidth(),layeredPane.getHeight());
                 if(mapsManager.isVisible()) {
                         Dimension mapsManagerPreferredSize = mapsManager.getMinimalComponentDimension();
-                        int hPos = layeredPane.getWidth() - mapsManagerPreferredSize.width;
-                        mapsManager.setBounds(hPos,0,mapsManagerPreferredSize.width,Math.min(mapsManagerPreferredSize.height,layeredPane.getHeight()));
+                        int hPos = layeredPane.getWidth() - Math.min(mapsManagerPreferredSize.width,layeredPane.getWidth());
+                        mapsManager.setBounds(hPos,0,Math.min(mapsManagerPreferredSize.width,layeredPane.getWidth()),Math.min(mapsManagerPreferredSize.height,layeredPane.getHeight()));
                         mapsManager.revalidate();
                 }                
         }
     /**
      * The user Drop a list of Editable
-     * @param editableList 
+     * @param editableList
      */
     public void onDropEditable(EditableElement[] editableList) {
         BackgroundManager bm = Services.getService(BackgroundManager.class);
