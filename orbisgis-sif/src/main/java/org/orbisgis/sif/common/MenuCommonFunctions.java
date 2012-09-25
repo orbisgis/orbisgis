@@ -51,7 +51,7 @@ public class MenuCommonFunctions {
      * @param actionComponent The menu item
      */
     public static void setMnemonic(AbstractButton actionComponent) {
-        String componentLabel = actionComponent.getText().toLowerCase();
+        String componentLabel = actionComponent.getText();
         int charpos=componentLabel.indexOf("&");
         if(charpos!=-1 && componentLabel.length()>charpos+1) {
                 if(componentLabel.charAt(charpos+1)!=KeyEvent.VK_AMPERSAND) {
