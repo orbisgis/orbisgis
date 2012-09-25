@@ -49,6 +49,12 @@ public class FileUtilsTest {
                 URI u = URI.create("http://toto.com/wms?hello=toto&tableName=mytable");
                 assertEquals("mytable", FileUtils.getNameFromURI(u));
                 
+                URI exoticURI = URI.create("pgsql://poulpe.heig-vd.ch:5432/scapdata/g4districts98");
+                assertEquals("g4districts98", FileUtils.getNameFromURI(exoticURI));
+                
+                URI uJDBC = URI.create("postgresql://127.0.0.1:5432/gisdb?user=postgres&password=postgres&schema=gis_schema&table=bat");
+                assertEquals("bat", FileUtils.getNameFromURI(uJDBC));
+                
                 u = URI.create("jdbc://toto.com:4567/mydb?tableName=helloworld");
                 assertEquals("helloworld", FileUtils.getNameFromURI(u));
         }

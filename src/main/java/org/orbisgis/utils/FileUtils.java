@@ -48,7 +48,6 @@ import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
-
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
@@ -58,7 +57,9 @@ import org.apache.commons.io.IOUtils;
 public final class FileUtils {
 
         private static final int BUF_SIZE = 1024 * 64;
-
+        private static final String TABLE_PARAM = "tablename=";
+        private static final String TABLE_PARAM_JDBC = "table=";
+        
         /**
          * Copies the specified folder in the destination folder
          *
@@ -629,13 +630,28 @@ public final class FileUtils {
                 } else {
                         String q = u.getQuery();
                         if (q != null && !q.isEmpty()) {
+                                // With & parameters
                                 String[] pat = q.split("&");
                                 for (int i = 0; i < pat.length; i++) {
-                                        if (pat[i].toLowerCase().startsWith("tablename=")) {
-                                                return pat[i].toLowerCase().substring(10);
+                                        if (pat[i].toLowerCase().startsWith(TABLE_PARAM)) {
+                                                // Extract Table name
+                                                return pat[i].toLowerCase().substring(TABLE_PARAM.length());
+                                        } else if (pat[i].toLowerCase().startsWith(TABLE_PARAM_JDBC)) {
+                                                // Extract Table name
+                                                return pat[i].toLowerCase().substring(TABLE_PARAM_JDBC.length());
                                         }
                                 }
                         }
+                        String path = u.getPath();
+                        if (path != null && !path.isEmpty()) {
+                                String[] paths = path.split("/");
+                                if(paths.length>=1) {
+                                        if(!paths[paths.length-1].isEmpty()) {
+                                                return paths[paths.length-1];
+                                        }
+                                }
+                        }
+                        
                 }
                 
                 throw new UnsupportedOperationException();
