@@ -835,9 +835,33 @@ public class Toc extends JPanel implements EditorDockable {
 
         @Override
         public boolean match(EditableElement editableElement) {
+                if(mapContext!=null && editableElement instanceof TableEditableElement) {
+                        // A table editor is going to be opened
+                        TableEditableElement tableElement = (TableEditableElement) editableElement;
+                        registerTableElement(tableElement);
+                }
                 return editableElement instanceof MapElement;
         }
 
+        private void registerTableElement(TableEditableElement tableElement) {
+                if (!linkedEditableElements.containsKey(
+                        tableElement.getSourceName())
+                        && hasDataSource(mapContext.getLayerModel(),
+                        tableElement.getSourceName())) {
+                        LOGGER.debug("Link the editable element with the toc");
+                        //Need to track geometry selection with this element
+                        // MapContext selection change -> Table selection
+                        linkedEditableElements.put(tableElement.getSourceName(), tableElement);
+                        // Table selection change -> Layer selection
+                        tableElement.addPropertyChangeListener(TableEditableElement.PROP_SELECTION, tableSelectionChangeListener);
+                        //Unlink the table element when it is closed
+                        tableElement.addPropertyChangeListener(TableEditableElement.PROP_OPEN, tableEditableClose);
+                        //If the table has already an active selection, load it
+                        if (!tableElement.getSelection().isEmpty()) {
+                                onTableSelectionChange(tableElement);
+                        }
+                }
+        }
         @Override
         public EditableElement getEditableElement() {
                 return mapElement;
@@ -859,7 +883,7 @@ public class Toc extends JPanel implements EditorDockable {
                 EditorManager manager = Services.getService(EditorManager.class);
                 for(EditableElement editable : manager.getEditableElements()) {
                         if(editable instanceof TableEditableElement) {
-                                setEditableElement(editable);
+                                registerTableElement((TableEditableElement)editable);
                         }
                 }
         }
@@ -888,26 +912,6 @@ public class Toc extends JPanel implements EditorDockable {
                 if (editableElement instanceof MapElement) {
                         MapElement importedMap = (MapElement) editableElement;
                         setEditableMap(importedMap);
-                } else if (mapContext!=null && editableElement instanceof TableEditableElement) {
-                        LOGGER.debug("Toc receive TableEditableElement");
-                        TableEditableElement tableElement = (TableEditableElement) editableElement;
-                        if (!linkedEditableElements.containsKey(
-                                tableElement.getSourceName()) &&
-                                hasDataSource(mapContext.getLayerModel(),
-                                tableElement.getSourceName())) {
-                                LOGGER.debug("Link the editable element with the toc");
-                                //Need to track geometry selection with this element
-                                // MapContext selection change -> Table selection
-                                linkedEditableElements.put(tableElement.getSourceName(), tableElement);
-                                // Table selection change -> Layer selection
-                                tableElement.addPropertyChangeListener(TableEditableElement.PROP_SELECTION, tableSelectionChangeListener);
-                                //Unlink the table element when it is closed
-                                tableElement.addPropertyChangeListener(TableEditableElement.PROP_OPEN,tableEditableClose);
-                                //If the table has already an active selection, load it
-                                if(!tableElement.getSelection().isEmpty()) {
-                                        onTableSelectionChange(tableElement);
-                                }
-                        }
                 }
         }
         
