@@ -264,7 +264,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     public void onDropEditable(EditableElement[] editableList) {
         BackgroundManager bm = Services.getService(BackgroundManager.class);
         //Load the layers in the background
-        bm.backgroundOperation(new DropDataSourceProcess(editableList));
+        bm.nonBlockingBackgroundOperation(new DropDataSourceProcess(editableList));
     }
     
     /**
@@ -607,8 +607,15 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         GUILOGGER.warn(I18N.tr("Unable to create and drop the layer"),e);
                     }
                 } else if(eElement instanceof MapElement) {
-                        EditorManager em = Services.getService(EditorManager.class);
-                        em.openEditable(eElement);                                
+                        final MapElement mapElement = (MapElement)eElement;
+                        mapElement.open(pm);
+                        SwingUtilities.invokeLater(new Runnable() {
+                                                @Override
+                                                public void run() {                                                        
+                                                        EditorManager em = Services.getService(EditorManager.class);                        
+                                                        em.openEditable(mapElement);  
+                                                }
+                                        });                              
                         return;
                 }
             }
