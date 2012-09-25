@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: OrbisGis 4.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-09-19 15:43+0100\n"
-"PO-Revision-Date: 2012-09-21 16:25+0100\n"
+"PO-Revision-Date: 2012-09-25 11:24+0100\n"
 "Last-Translator: Gwendall Petit <gwendall.petit@ec-nantes.fr>\n"
 "Language-Team: OrbisGis <info _at_ orbisgis.org>\n"
 "Language: fr\n"
@@ -24,7 +24,7 @@ msgstr "&Apparence et comportement"
 
 #: java/org/orbisgis/view/docking/DockingManager.java:112
 msgid "&Windows"
-msgstr "&Fenêtre"
+msgstr "F&enêtre"
 
 #: java/org/orbisgis/view/docking/DockingManager.java:141
 #: java/org/orbisgis/view/docking/DockingManager.java:144
@@ -133,7 +133,7 @@ msgstr "Fichier"
 
 #: java/org/orbisgis/view/geocatalog/Catalog.java:524
 msgid "DataBase"
-msgstr "Base de Données"
+msgstr "Base de données"
 
 #: java/org/orbisgis/view/geocatalog/Catalog.java:533
 msgid "WMS server"
@@ -149,7 +149,7 @@ msgstr "Sauver"
 
 #: java/org/orbisgis/view/geocatalog/Catalog.java:566
 msgid "Database"
-msgstr "Base de Données"
+msgstr "Base de données"
 
 #: java/org/orbisgis/view/geocatalog/Catalog.java:573
 msgid "Open the attributes"
@@ -340,7 +340,7 @@ msgstr "Port par défaut"
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:74
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:138
 msgid "Database name"
-msgstr "Nom de la Base de Données"
+msgstr "Nom de la base de données"
 
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:76
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:140
@@ -360,7 +360,7 @@ msgstr "Veuillez spécifier un nom de connexion"
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:91
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:156
 msgid "The database name is mandatory"
-msgstr "Le nom de la Base de Données est obligatoire"
+msgstr "Le nom de la base de données est obligatoire"
 
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:95
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/DBUIFactory.java:160
@@ -379,7 +379,7 @@ msgstr "Impossible de formater le code du port dans un int"
 
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:101
 msgid "Save sources in a database"
-msgstr "Sauver les sources dans une Base de Données"
+msgstr "Sauver les sources dans une base de données"
 
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:155
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:97
@@ -389,7 +389,7 @@ msgstr "Annuler"
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:177
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:320
 msgid "Please connect to a database"
-msgstr "Veuillez vous connecter à la Base de Données"
+msgstr "Veuillez vous connecter à la base de données"
 
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:180
 msgid "At least one row must be checked."
@@ -397,13 +397,13 @@ msgstr "Au moins une ligne doit être cochée"
 
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:293
 msgid "Saving the source in a database."
-msgstr "Sauver la source dans une Base de Données"
+msgstr "Sauver la source dans une base de données"
 
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:303
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/DataBaseTableModel.java:124
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:228
 msgid "Cannot connect to the database."
-msgstr "Impossible de se connecter à la Base de Données"
+msgstr "Impossible de se connecter à la base de données"
 
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableExportPanel.java:313
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:243
@@ -424,7 +424,7 @@ msgstr "Le mot de passe ne peut pas être vide."
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:266
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:270
 msgid "Cannot connect the database"
-msgstr "Impossible de connecter à la Base de Données"
+msgstr "Impossible de connecter à la base de données"
 
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/DataBaseTableModel.java:120
 msgid "This table does not exist."
@@ -436,7 +436,7 @@ msgstr "La source de données requise ne peut pas être crée."
 
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:81
 msgid "Open tables or views from a database"
-msgstr "Ouvrir les tables ou vues d'une Base de Données"
+msgstr "Ouvrir les tables ou vues d'une base de données"
 
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:93
 msgid "Open"
@@ -452,7 +452,7 @@ msgstr "Vues"
 
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:325
 msgid "The database contains any tables or views."
-msgstr "La Base de Données ne contient aucune tables ou vues"
+msgstr "La base de données ne contient aucunes tables ou vues"
 
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/TableImportPanel.java:330
 msgid "At least one table or view must be selected."
@@ -468,7 +468,7 @@ msgstr ""
 
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionToolBar.java:108
 msgid "Connect to the database"
-msgstr "Connecter à la Base de Données"
+msgstr "Connecter à la base de données"
 
 #: java/org/orbisgis/view/geocatalog/sourceWizards/db/ConnectionToolBar.java:114
 msgid "Disconnect"
@@ -777,7 +777,7 @@ msgstr "Chercher..."
 
 #: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:178
 msgid "Search text in the document"
-msgstr "Chercher du texte dans ce document"
+msgstr "Chercher du texte dans l'éditeur"
 
 #: java/org/orbisgis/view/sqlconsole/ui/SQLConsolePanel.java:186
 msgid "Quote"
@@ -977,7 +977,7 @@ msgstr "Zoomer sur la sélection"
 
 #: java/org/orbisgis/view/map/MapEditor.java:359
 msgid "Zoom to visible selected geometries"
-msgstr "Zoomer sur les couches visibles sélectionnées"
+msgstr "Zoomer sur les objets sélectionnés"
 
 #: java/org/orbisgis/view/map/MapEditor.java:368
 msgid "Full extent"
@@ -985,7 +985,7 @@ msgstr "Zoom étendu"
 
 #: java/org/orbisgis/view/map/MapEditor.java:369
 msgid "Zoom to show all geometries"
-msgstr "Zoom pour voir toutes les géométries"
+msgstr "Zoom étendu"
 
 #: java/org/orbisgis/view/map/MapEditor.java:381
 msgid "Mesure tools"
@@ -997,7 +997,7 @@ msgstr "Arbre des cartes"
 
 #: java/org/orbisgis/view/map/MapEditor.java:393
 msgid "Show/Hide maps tree"
-msgstr "Afficher/Cacher l'arbre de s cartes"
+msgstr "Afficher/Cacher le gestionnaire de cartes"
 
 #: java/org/orbisgis/view/map/MapEditor.java:513
 msgid "Unable to choose this tool"
@@ -1210,7 +1210,7 @@ msgstr "Distance : {0}"
 
 #: java/org/orbisgis/view/map/tools/MesureLineTool.java:97
 msgid "This tool mesure the length on the map"
-msgstr "Cet outil mesure la longueur sur la carte"
+msgstr "Cet outil mesure la longueur"
 
 #: java/org/orbisgis/view/map/tools/MesureLineTool.java:101
 msgid "Mesure length"
@@ -1647,7 +1647,7 @@ msgstr "Supprimer la couche du contexte cartographique"
 
 #: java/org/orbisgis/view/toc/Toc.java:572
 msgid "Zoom to"
-msgstr "Zoomer vers"
+msgstr "Zoomer sur la couche"
 
 #: java/org/orbisgis/view/toc/Toc.java:573
 msgid "Zoom to the layer bounding box"
@@ -1732,7 +1732,7 @@ msgstr "Aucun éditeur approprié pour cette légende"
 #: java/org/orbisgis/view/toc/actions/cui/NoPanel.java:64
 #: java/org/orbisgis/view/toc/actions/cui/NoPanel.java:69
 msgid "bug !"
-msgstr "bug !"
+msgstr "Bug !"
 
 #: java/org/orbisgis/view/toc/actions/cui/LegendsPanel.java:175
 msgid "Layer :"
@@ -1809,15 +1809,15 @@ msgstr "Configuration du remplissage"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueAreaSE.java:210
 msgid "Enable fill : "
-msgstr "Désactiver le remplissage :"
+msgstr "Désactiver :"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueAreaSE.java:221
 msgid "Fill color :"
-msgstr "Couleur de remplissage :"
+msgstr "Couleur :"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueAreaSE.java:225
 msgid "Fill opacity :"
-msgstr "Opacité du remplissage"
+msgstr "Opacité :"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlStyle.java:94
 msgid "Style configuration"
@@ -1825,7 +1825,7 @@ msgstr "Configuration du style"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:202
 msgid "Enable line : "
-msgstr "Désactiver le contour"
+msgstr "Désactiver"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:213
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLine.java:207
@@ -1836,17 +1836,17 @@ msgstr "Unité de mesure :"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:216
 msgid "Line width :"
-msgstr "Épaisseur du contour :"
+msgstr "Épaisseur :"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:219
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLine.java:215
 msgid "Line color :"
-msgstr "Couleur du contour :"
+msgstr "Couleur :"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:222
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLine.java:218
 msgid "Line opacity :"
-msgstr "Opacité du contour :"
+msgstr "Opacité :"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniqueLineSE.java:225
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlProportionalLine.java:221
@@ -1919,7 +1919,7 @@ msgstr "Sur le sommet"
 
 #: java/org/orbisgis/view/toc/actions/cui/legends/PnlUniquePointSE.java:339
 msgid "On centroid"
-msgstr "Sur le centroïd"
+msgstr "Sur le centroïde"
 
 #: java/org/orbisgis/view/table/TableEditorFactory.java:59
 #, java-format
@@ -1971,7 +1971,7 @@ msgstr "Inverser la sélection"
 
 #: java/org/orbisgis/view/table/TableEditor.java:337
 msgid "Reverse the current selection"
-msgstr "Inverse la sélection courante"
+msgstr "Inverser la sélection courante"
 
 #: java/org/orbisgis/view/table/TableEditor.java:346
 msgid "In the map editor, zoom to the selected rows"
@@ -2033,7 +2033,7 @@ msgstr "Type de champ :\t{0}\n"
 
 #: java/org/orbisgis/view/table/TableEditor.java:602
 msgid "Constraints :\n"
-msgstr "Constraintes :\n"
+msgstr "Contraintes :\n"
 
 #: java/org/orbisgis/view/table/TableEditor.java:604
 #, java-format
@@ -2106,12 +2106,12 @@ msgid ""
 "Table {0}, statistics of the column {1}.\n"
 msgstr ""
 "\n"
-"Table {0}, statistiques de la colonne {1}.\n"
+"Table : {0} - Statistiques de la colonne : {1}.\n"
 
 #: java/org/orbisgis/view/table/jobs/ComputeFieldStatistics.java:107
 #, java-format
 msgid "Row count : {0}\n"
-msgstr "Row count : {0}\n"
+msgstr "Nombre de ligne : {0}\n"
 
 #: java/org/orbisgis/view/table/jobs/ComputeFieldStatistics.java:108
 #, java-format

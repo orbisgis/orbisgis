@@ -58,6 +58,7 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.utils.CollectionUtils;
+import org.orbisgis.utils.FileUtils;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
@@ -186,13 +187,8 @@ public class Catalog extends JPanel implements DockingPanel {
         public void onDropURI(List<URI> uriDrop) {
                 SourceManager src = getDataManager().getSourceManager();
                 for (URI uri : uriDrop) {
-                        // Use the file name as the data source name
-                        if (uri.getScheme().equals("file")) {
-                                File file = new File(uri);
-                                src.register(src.getUniqueName(FilenameUtils.removeExtension(file.getName())), uri);
-                        } else {
-                                src.nameAndRegister(uri);
-                        }
+                        String sourceName = src.getUniqueName(FileUtils.getNameFromURI(uri));
+                        src.register(sourceName, uri);
                 }
         }
 
