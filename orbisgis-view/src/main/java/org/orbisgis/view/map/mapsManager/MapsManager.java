@@ -30,6 +30,8 @@ package org.orbisgis.view.map.mapsManager;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.Scrollbar;
+import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +39,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -101,7 +104,10 @@ public class MapsManager extends JPanel {
                 treeModel.insertNodeInto(rootRemote, rootNode, rootNode.getChildCount());
                 tree.setRootVisible(false);
                 scrollPane = new JScrollPane(tree);
-                add(new JLabel(I18N.tr("Maps manager")),BorderLayout.NORTH);
+                JLabel title = new JLabel(I18N.tr("Maps manager"));
+                // Disable mouse event propagation on this label
+                title.addMouseListener(new MouseAdapter(){}); 
+                add(title,BorderLayout.NORTH);
                 add(scrollPane,BorderLayout.EAST);
                 setBorder(BorderFactory.createEtchedBorder());
         }
@@ -206,6 +212,12 @@ public class MapsManager extends JPanel {
         public Dimension getMinimalComponentDimension() {                
                 Dimension panel = getPreferredSize();
                 Dimension treeDim = tree.getPreferredSize();
-                return new Dimension(panel.width,treeDim.height+getMinimumSize().height);
+                // Get the vertical scrollbar width
+                JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
+                if(scrollBar!=null && scrollBar.isVisible()) {
+                        return new Dimension(panel.width+scrollBar.getWidth(),treeDim.height+getMinimumSize().height);
+                } else {
+                        return new Dimension(panel.width,treeDim.height+getMinimumSize().height);
+                }
         }
 }
