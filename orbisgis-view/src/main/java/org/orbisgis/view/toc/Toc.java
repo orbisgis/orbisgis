@@ -50,6 +50,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.JToolBar;
 import javax.swing.JTree;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
@@ -143,7 +144,14 @@ public class Toc extends JPanel implements EditorDockable {
                 //Initialise an empty tree
                 add(new JScrollPane(makeTree()));
 
-        }        
+        } 
+        
+        public JToolBar makeToolBar() {
+                JToolBar toolBar = new JToolBar();
+                //TODO
+                return toolBar;
+        }
+        
         /**
          * A linked table selection has been updated
          *
