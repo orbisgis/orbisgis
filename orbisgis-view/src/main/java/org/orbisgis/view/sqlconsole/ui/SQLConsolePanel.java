@@ -34,27 +34,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.EventHandler;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.AbstractButton;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import javax.swing.Timer;
+import javax.swing.*;
 import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
 import org.apache.commons.io.FileUtils;
@@ -309,7 +294,7 @@ public class SQLConsolePanel extends JPanel {
          */
         public void onExecute() {                
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.backgroundOperation(new ExecuteScriptProcess(getText(), this,mapContext));
+                bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(getText(), this,mapContext));
         }
                
         /**

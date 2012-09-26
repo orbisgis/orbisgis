@@ -253,7 +253,7 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
          */
         private void connect() {
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.backgroundOperation(new BackgroundJob() {
+                bm.nonBlockingBackgroundOperation(new BackgroundJob() {
 
                         @Override
                         public void run(ProgressMonitor pm) {
