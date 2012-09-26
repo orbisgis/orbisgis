@@ -37,9 +37,11 @@ import java.util.Properties
 import org.gdms.data.DataSourceFactory
 import org.gdms.sql.engine.GdmSQLPredef._
 import org.gdms.sql.engine.AbstractEngineStep
+import org.gdms.sql.engine.logical.LogicPlanOptimizer
 import org.gdms.sql.engine.operations._
 import org.gdms.sql.evaluator.Evaluators._
 import org.gdms.sql.evaluator.{Expression, Field}
+import org.gdms.sql.function.SpatialIndexedFunction
 
 /**
  * Step P1: Join ptimisations that do require access to the DataSourceFactory.
@@ -47,7 +49,8 @@ import org.gdms.sql.evaluator.{Expression, Field}
  * - Joins tagged as spatials are looked at and a table is chosen for index scan.
  * - Equi-joins are found, and a table is chosen for index scan.
  */
-case object PhysicalJoinOptimStep extends AbstractEngineStep[(Operation, DataSourceFactory), (Operation, DataSourceFactory)]("DSF-aware join optimisations") {
+case object PhysicalJoinOptimStep extends AbstractEngineStep[(Operation, DataSourceFactory), (Operation, DataSourceFactory)]("DSF-aware join optimisations")
+                                     with LogicPlanOptimizer {
 
   def doOperation(op: (Operation, DataSourceFactory))(implicit p: Properties): (Operation, DataSourceFactory) = {
     // optimize joins
@@ -56,9 +59,28 @@ case object PhysicalJoinOptimStep extends AbstractEngineStep[(Operation, DataSou
         LOG.info("Optimizing joins with DSF")
         LOG.info(op)
       }
+      optimizeSpatialIndexedJoins(op._1)
       optimizeJoins(op._2, op._1)
     }
     op
+  }
+    
+  /**
+   * Tags an InnerJoin with a SpatialIndexedFunction in its expression as spatial.
+   */
+  private def optimizeSpatialIndexedJoins(o: Operation) {
+    matchOperationFromBottom(o, {
+        // finds if there is a SpatialIndexedFunction in the Expression
+        case Join(i @ Inner(ex,false,None), c, _) => c match {
+            case _: Join =>
+            case _ => matchExpressionAndAny(ex, {
+                  // we have a spatial indexed join
+                  case func(_,_: SpatialIndexedFunction,_) => i.spatial = true
+                  case _ =>
+                })
+          }
+        case _ =>
+      })
   }
   
   private def optimizeJoins(dsf: DataSourceFactory ,op: Operation) {

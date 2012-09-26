@@ -39,7 +39,6 @@ import org.gdms.sql.engine.AbstractEngineStep
 import org.gdms.sql.engine.logical.LogicPlanOptimizer
 import org.gdms.sql.engine.operations._
 import org.gdms.sql.evaluator.Evaluators._
-import org.gdms.sql.function.SpatialIndexedFunction
 
 /**
  * Step 3: Basic join optimizations that do not require access to the DSF.
@@ -57,11 +56,6 @@ case object LogicalJoinOptimStep extends AbstractEngineStep[Operation, Operation
         LOG.info("Optimizing cross joins.")
       }
       optimizeCrossJoins(op)
-      
-      if (isPropertyTurnedOn(Flags.EXPLAIN)) {
-        LOG.info("Tagging spatial joins.")
-      }
-      optimizeSpatialIndexedJoins(op)
     }
     op
   }
@@ -84,24 +78,6 @@ case object LogicalJoinOptimStep extends AbstractEngineStep[Operation, Operation
             j
           }
         case a => a
-      })
-  }
-  
-  /**
-   * Tags an InnerJoin with a SpatialIndexedFunction in its expression as spatial.
-   */
-  private def optimizeSpatialIndexedJoins(o: Operation) {
-    matchOperationFromBottom(o, {
-        // finds if there is a SpatialIndexedFunction in the Expression
-        case Join(i @ Inner(ex,false,None), c, _) => c match {
-            case _: Join =>
-            case _ => matchExpressionAndAny(ex, {
-                  // we have a spatial indexed join
-                  case func(_,_: SpatialIndexedFunction,_) => i.spatial = true
-                  case _ =>
-                })
-          }
-        case _ =>
       })
   }
 }
