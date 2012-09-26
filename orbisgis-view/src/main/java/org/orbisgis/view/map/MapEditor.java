@@ -41,6 +41,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.io.File;
@@ -123,8 +124,10 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private Point lastTranslatedCursorPosition = new Point();
     private AtomicBoolean initialised = new AtomicBoolean(false);
     private MapsManager mapsManager = new MapsManager();
-    JLayeredPane layeredPane = new JLayeredPane();
-    ComponentListener sizeListener = EventHandler.create(ComponentListener.class,this,"updateMapControlSize",null,"componentResized");
+    private JLayeredPane layeredPane = new JLayeredPane();
+    private ComponentListener sizeListener = EventHandler.create(ComponentListener.class,this,"updateMapControlSize",null,"componentResized");
+    private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified");
+    
     /**
      * Constructor
      */
@@ -132,7 +135,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         super(new BorderLayout());
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName("map_editor");
-        dockingPanelParameters.setTitle(I18N.tr("Map"));
+        updateMapLabel();
         dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
         dockingPanelParameters.setMinimizable(false);
         dockingPanelParameters.setExternalizable(false);
@@ -153,7 +156,17 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         dragDropHandler = new MapTransferHandler();        
         this.setTransferHandler(dragDropHandler);
     }
-    
+    private void updateMapLabel() {
+                if (mapEditable == null) {
+                        dockingPanelParameters.setTitle(I18N.tr("Map"));
+                } else {
+                        if (mapEditable.isModified()) {
+                                dockingPanelParameters.setTitle(I18N.tr("Map Editor \"{0}\" [Modified]",mapEditable.getMapContext().getTitle()));
+                        } else {
+                                dockingPanelParameters.setTitle(I18N.tr("Map Editor \"{0}\"",mapEditable.getMapContext().getTitle()));
+                        }
+                }
+        }
     public void onUserSetScaleDenominator(PropertyChangeEvent pce) throws PropertyVetoException {
             long newScale = (Long)pce.getNewValue();
             if(newScale<1) {
@@ -272,7 +285,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
      * @param element 
      */
     private void loadMap(MapElement element) {
-        try {         
+        try {      
+            removeListeners();    
             mapEditable = element;
             mapContext = (MapContext) element.getObject();
             //We (unfortunately) need a cross reference here : this way, we'll
@@ -293,6 +307,9 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             getMapEditorPersistance().setDefaultMapContext(relative);
             // Set the loaded map hint to the MapCatalog
             mapsManager.setLoadedMap(element.getMapContextFile());
+            // Update the editor label with the new editable name
+            updateMapLabel();
+            mapEditable.addPropertyChangeListener(MapElement.PROP_MODIFIED, modificationListener);
             repaint();
         } catch (IllegalStateException ex) {
             GUILOGGER.error(ex);
@@ -318,6 +335,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         CursorCoordinateLookupTimer.stop();
                         CursorCoordinateLookupTimer=null;
                 }
+                removeListeners();
         }
     
     
@@ -579,6 +597,21 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         public void actionPerformed(ActionEvent ae) {
             onToolSelected(automaton);
         }
+    }
+    /**
+     * Remove the listeners on the current loaded document
+     */
+    private void removeListeners() {
+            if(mapEditable!=null) {
+                    mapEditable.removePropertyChangeListener(modificationListener);
+            }
+    }
+    
+    /**
+     * The editable has been modified
+     */
+    public void onMapModified() {
+            updateMapLabel();
     }
     /**
      * This task is created when the user Drag Source from GeoCatalog

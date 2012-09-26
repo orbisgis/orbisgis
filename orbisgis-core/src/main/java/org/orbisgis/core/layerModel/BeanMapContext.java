@@ -31,8 +31,6 @@ package org.orbisgis.core.layerModel;
 import com.vividsolutions.jts.geom.Envelope;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.Locale;
-import java.util.Map;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.common.Description;
 
@@ -67,17 +65,7 @@ public abstract class BeanMapContext implements MapContext {
         
         @Override
         public String getTitle() {
-                String title = description.getTitle(Locale.getDefault());                
-                if(title==null) {
-                        Map<Locale,String> titles = description.getTitles();
-                        if(!titles.isEmpty()) {
-                                return titles.values().iterator().next();
-                        } else {
-                                return "";
-                        }
-                } else {
-                        return title;
-                }
+                return description.getDefaultTitle();
         }
 
         /**
