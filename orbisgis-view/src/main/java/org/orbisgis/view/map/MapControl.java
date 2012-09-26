@@ -447,16 +447,27 @@ public class MapControl extends JComponent implements ContainerListener {
 		public void layerAdded(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
 				addLayerListenerRecursively(layer, this);
-				if (mapTransform.getExtent() == null || mapTransform.getExtent().isNull()) {
+                                ILayer[] model = getMapContext().getLayers();
+                                int count = 0;
+                                //We check that we have only one spatial layer in
+                                //the layer model. It it is the case, we will :
+                                // - set adjustExtent to true in the MapTransform
+                                // - set the extent of the map to the extent of the layer.
+                                for(int i=0; i<model.length && count <2;i++){
+                                        if(model[i] instanceof Layer){
+                                                count++;
+                                        }
+                                }
+				if (count == 1) {
 					final Envelope e = layer.getEnvelope();
 					if (e != null) {
                                                 mapTransform.setAdjustExtent(true);
 						mapTransform.setExtent(e);
 					}
 				} else {
-                			invalidateImage();
-				}
-			}
+                                        invalidateImage();
+                                }
+                        }
 		}
 
                 @Override
