@@ -88,6 +88,7 @@ import org.gdms.data.stream.StreamSourceDefinition;
 import org.gdms.data.system.SystemSource;
 import org.gdms.data.system.SystemSourceDefinition;
 import org.gdms.driver.DataSet;
+import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.asc.AscDriver;
@@ -1270,33 +1271,62 @@ public final class DefaultSourceManager implements SourceManager {
 
         @Override
         public boolean exists(URI uri) {
-                for (ExtendedSource e : nameSource.values()) {
-                        try {
-                                if (uri.equals(e.getURI())) {
-                                        return true;
-                                }
-                        } catch (DriverException ex) {
-                                LOG.warn("Problem while retriving URI for '" + e.getName()
-                                        + "'. Ignoring.", ex);
+                return getSourceName(getDataSourceDefinition(uri))!=null;
+        }
+        /**
+         * Return the DBSource constructed from the provided URI
+         * @param uri URI with 
+         * @return 
+         */
+        private DBTableSourceDefinition uriToDBDef(URI uri) {
+                final String scheme = uri.getScheme().toLowerCase();
+                String table = null;
+                String sch = null;
+                String user = null;
+                String password = null;
+                boolean ssl = false;
+                String dbName = uri.getPath();
+                if (dbName.startsWith("/")) {
+                        dbName = dbName.substring(1);
+                }
+                String[] params = uri.getQuery().split("&");
+                for (int i = 0; i < params.length; i++) {
+                        String[] vals = params[i].split("=");
+                        if ("table".equalsIgnoreCase(vals[0])) {
+                                table = vals[1];
+                        } else if ("schema".equalsIgnoreCase(vals[0])) {
+                                sch = vals[1];
+                        } else if ("user".equalsIgnoreCase(vals[0])) {
+                                user = vals[1];
+                        } else if ("password".equalsIgnoreCase(vals[0])) {
+                                password = vals[1];
+                        } else if ("ssl".equalsIgnoreCase(vals[0]) && "true".equalsIgnoreCase(vals[1])) {
+                                ssl = true;
                         }
                 }
-
-                return false;
+                DBSource s = new DBSource(uri.getHost(), uri.getPort(), dbName, user,
+                        password, sch, table, "jdbc:" + scheme, ssl);
+                return new DBTableSourceDefinition(s);
+        }
+        
+        private DataSourceDefinition<? extends Driver> getDataSourceDefinition(URI uri) throws UnsupportedOperationException {
+                final String scheme = uri.getScheme().toLowerCase();
+                if ("file".equals(scheme)) {
+                        return new FileSourceDefinition(new File(uri), DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+                } else if (scheme.startsWith("http")) {
+                        throw new UnsupportedOperationException("Unsupported URI: " + uri);
+                } else {
+                        return uriToDBDef(uri);
+                }                
         }
 
         @Override
         public String getNameFor(URI uri) throws NoSuchTableException {
-                for (ExtendedSource e : nameSource.values()) {
-                        try {
-                                if (uri.equals(e.getURI())) {
-                                        return e.getName();
-                                }
-                        } catch (DriverException ex) {
-                                LOG.warn("Problem while retriving URI for '" + e.getName()
-                                        + "'. Ignoring.", ex);
-                        }
+                String sourceName = getSourceName(getDataSourceDefinition(uri));
+                if(sourceName==null) {
+                        throw new NoSuchTableException("for '" + uri.toString() + "'");
+                } else {
+                        return sourceName;
                 }
-
-                throw new NoSuchTableException("for '" + uri.toString() + "'");
         }
 }
