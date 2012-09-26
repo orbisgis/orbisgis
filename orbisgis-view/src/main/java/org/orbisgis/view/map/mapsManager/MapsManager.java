@@ -119,7 +119,13 @@ public class MapsManager extends JPanel {
         public TreeNodeFileFactoryManager getFactoryManager() {
                 return tree;
         }
-        
+        /**
+         * Update the shown elements in the disk tree
+         */
+        public void updateDiskTree() {
+                rootFolder.updateTree();
+                applyLoadedMapHint();
+        }
         private List<TreeLeafMapElement> getAllMapElements(TreeNode parentNode) {
                 List<TreeLeafMapElement> mapElements = new ArrayList<TreeLeafMapElement>();
                 if(!parentNode.isLeaf()) {

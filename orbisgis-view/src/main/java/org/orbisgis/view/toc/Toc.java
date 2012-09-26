@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -129,7 +130,8 @@ public class Toc extends JPanel implements EditorDockable {
         private Map<String, TableEditableElement> linkedEditableElements = new HashMap<String, TableEditableElement>();
         private PropertyChangeListener tableSelectionChangeListener = EventHandler.create(PropertyChangeListener.class,this,"onTableSelectionChange","source");
         private PropertyChangeListener tableEditableClose = EventHandler.create(PropertyChangeListener.class,this,"onTableEditableClose","source");
-                
+        private JButton saveButton;
+        private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified");
         /**
          * Constructor
          */
@@ -140,18 +142,39 @@ public class Toc extends JPanel implements EditorDockable {
                 dockingPanelParameters.setName("toc");
                 dockingPanelParameters.setTitle(I18N.tr("Toc"));
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
-
+                dockingPanelParameters.setToolBar(makeToolBar());
                 //Initialise an empty tree
                 add(new JScrollPane(makeTree()));
 
         } 
         
-        public JToolBar makeToolBar() {
+        private JToolBar makeToolBar() {
                 JToolBar toolBar = new JToolBar();
-                //TODO
+                saveButton = new JButton(I18N.tr("Save"), OrbisGISIcon.getIcon("save"));
+                saveButton.setToolTipText(I18N.tr("Save the Map"));
+                saveButton.setEnabled(false);                
+                saveButton.addActionListener(EventHandler.create(ActionListener.class,this,"onSaveMapContext"));
+                toolBar.add(saveButton);
                 return toolBar;
         }
         
+        /**
+         * User click on the save button
+         */
+        public void onSaveMapContext() {
+                if(mapElement!=null) {
+                        mapElement.save();
+                }
+        }
+        
+        /**
+         * The Map Element has been updated
+         */
+        public void onMapModified() {
+                if(mapElement!=null) {
+                        saveButton.setEnabled(mapElement.isModified());
+                }
+        }
         /**
          * A linked table selection has been updated
          *
@@ -204,6 +227,7 @@ public class Toc extends JPanel implements EditorDockable {
                 }
                 return updated;
         }
+        
         /**
          *
          * @return The editable map
@@ -502,6 +526,7 @@ public class Toc extends JPanel implements EditorDockable {
                         removePropertyListeners(new TocTreeNodeLayer(this.mapContext.getLayerModel()));
                         this.mapContext.getLayerModel().removeLayerListenerRecursively(tocLayerListener);
                         this.mapContext.removeMapContextListener(tocMapContextListener);
+                        mapElement.removePropertyChangeListener(modificationListener);
                         for(TableEditableElement editable : linkedEditableElements.values()) {
                                 unlinkTableSelectionListening(editable);
                         }
@@ -511,12 +536,14 @@ public class Toc extends JPanel implements EditorDockable {
 
                 if (newMapElement != null) {
                         this.mapContext = ((MapContext) newMapElement.getObject());
-
+                        
                         this.mapElement = newMapElement;
                         // Add the listeners to the new MapContext
                         this.mapContext.addMapContextListener(tocMapContextListener);
                         final ILayer root = this.mapContext.getLayerModel();
                         addPropertyListeners(new TocTreeNodeLayer(root));
+                        mapElement.addPropertyChangeListener(MapElement.PROP_MODIFIED,modificationListener);
+                        onMapModified();
                         root.addLayerListenerRecursively(tocLayerListener);
                         // Apply treeModel and clear the selection        
                         fireSelectionEvent.set(false);

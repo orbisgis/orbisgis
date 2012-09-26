@@ -608,10 +608,16 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     }
     
     /**
-     * The editable has been modified
+     * The editable modified state is switching
      */
     public void onMapModified() {
-            updateMapLabel();
+            SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                                updateMapLabel();
+                                mapsManager.updateDiskTree();
+                        }
+                });
     }
     /**
      * This task is created when the user Drag Source from GeoCatalog
