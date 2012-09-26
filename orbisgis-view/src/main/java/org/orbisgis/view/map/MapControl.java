@@ -97,7 +97,6 @@ public class MapControl extends JComponent implements ContainerListener {
 	private Drawer drawer;
 
 	private boolean showCoordinates = true;
-        private boolean listenToMapContextBoundingBoxChange = true;
 
 	TransformListener element;
 
@@ -119,11 +118,9 @@ public class MapControl extends JComponent implements ContainerListener {
          * to be read and applied to the MapTransform
          */
         public void onMapContextBoundingBoxChange() {
-                if(listenToMapContextBoundingBoxChange) {
-                        Envelope boundingBox = mapContext.getBoundingBox();
-                        if (boundingBox != null) {
-                                mapTransform.setExtent(boundingBox);
-                        }           
+                Envelope boundingBox = mapContext.getBoundingBox();
+                if (boundingBox != null) {
+                        mapTransform.setExtent(boundingBox);
                 }
         }
         
@@ -320,27 +317,21 @@ public class MapControl extends JComponent implements ContainerListener {
                 @Override
 		public void run(ProgressMonitor pm) {
 			synchronized (this) {
-				this.pm = new CancellablePM(cancel, pm);
-				pm = this.pm;
-			}
-			try {
-				mapContext.draw( mapTransform, pm);
-			} catch (ClosedDataSourceException e) {
-				if (!cancel) {
-					throw e;
-				}
-			} finally {
-                                try {
-                                        listenToMapContextBoundingBoxChange = false;
-                                        mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
-                                        awaitingDrawing.set(false);
-                                        MapControl.this.repaint();
-                                        mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
-                                } finally {
-                                        listenToMapContextBoundingBoxChange = true;
+                                this.pm = new CancellablePM(cancel, pm);
+                                pm = this.pm;
+                        }
+                        try {
+                                mapContext.draw(mapTransform, pm);
+                        } catch (ClosedDataSourceException e) {
+                                invalidateImage();
+                                if (!cancel) {
+                                        throw e;
                                 }
-			}
-		}
+                        } finally {
+                                awaitingDrawing.set(false);
+                                MapControl.this.repaint();
+                        }
+                }
 
 		public void cancel() {
 			synchronized (this) {
