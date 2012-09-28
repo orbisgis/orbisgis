@@ -106,20 +106,22 @@ trait Writer {
     g.writeStringField("type", typ)
     
     // special case for GeometryCollection
-    if (!a.isInstanceOf[GeometryCollection]) {
-      g.writeArrayFieldStart("coordinates")
-      a match {
-        case p :Point => writePoint(g, p)
-        case p: LineString => writeLineString(g, p)
-        case p: Polygon => writePolygon(g, p)
-        case p: MultiPoint => writeMultiPoint(g, p)
-        case p: MultiLineString => writeMultiLineString(g, p)
-        case p: MultiPolygon => writeMultiPolygon(g, p)
-        case a => throw new DriverException("Found unknown geometry type: " + a)
-      }
-    } else {
-      g.writeArrayFieldStart("geometries")
-      writeGeometryCollection(g, a.asInstanceOf[GeometryCollection])
+    a match {
+      case p :Point => g.writeArrayFieldStart("coordinates")
+        writePoint(g, p)
+      case p: LineString => g.writeArrayFieldStart("coordinates")
+        writeLineString(g, p)
+      case p: Polygon => g.writeArrayFieldStart("coordinates")
+        writePolygon(g, p)
+      case p: MultiPoint => g.writeArrayFieldStart("coordinates")
+        writeMultiPoint(g, p)
+      case p: MultiLineString => g.writeArrayFieldStart("coordinates")
+        writeMultiLineString(g, p)
+      case p: MultiPolygon => g.writeArrayFieldStart("coordinates")
+        writeMultiPolygon(g, p)
+      case p: GeometryCollection => g.writeArrayFieldStart("geometries")
+        writeGeometryCollection(g, p)
+      case a => throw new DriverException("Found unknown geometry type: " + a)
     }
     g.writeEndArray
   }
