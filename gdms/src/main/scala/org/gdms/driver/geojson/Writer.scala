@@ -106,10 +106,7 @@ trait Writer {
     g.writeStringField("type", typ)
     
     // special case for GeometryCollection
-    if (a.isInstanceOf[GeometryCollection]) {
-      g.writeArrayFieldStart("geometries")
-      writeGeometryCollection(g, a.asInstanceOf[GeometryCollection])
-    } else {
+    if (!a.isInstanceOf[GeometryCollection]) {
       g.writeArrayFieldStart("coordinates")
       a match {
         case p :Point => writePoint(g, p)
@@ -120,6 +117,9 @@ trait Writer {
         case p: MultiPolygon => writeMultiPolygon(g, p)
         case a => throw new DriverException("Found unknown geometry type: " + a)
       }
+    } else {
+      g.writeArrayFieldStart("geometries")
+      writeGeometryCollection(g, a.asInstanceOf[GeometryCollection])
     }
     g.writeEndArray
   }
