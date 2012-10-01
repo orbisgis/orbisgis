@@ -37,11 +37,14 @@ import org.orbisgis.view.docking.DockingPanel;
 public interface EditorDockable extends DockingPanel {
         
         /**
-         * 
+         * Return true if this editor would replace the current editable by this one.
+         * If this editor return true and the old editable is marked has modified
+         * then a dialog is shown to save the old editable
          * @param editableElement
          * @return 
          */
         boolean match(EditableElement editableElement);
+        
         /**
          * Return the currently open editable
          * @return An instance of EditableElement or null
@@ -49,7 +52,9 @@ public interface EditorDockable extends DockingPanel {
         EditableElement getEditableElement();
         
         /**
-         * Load the specified editable element
+         * Load the specified editable element.
+         * Only called if match was
+         * previously called with the same editable.
          * @param editableElement
          */
         void setEditableElement(EditableElement editableElement);

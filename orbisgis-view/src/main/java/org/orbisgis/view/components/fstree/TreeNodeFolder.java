@@ -30,12 +30,17 @@ package org.orbisgis.view.components.fstree;
 
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -47,6 +52,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler.TransferSupport;
 import javax.swing.tree.MutableTreeNode;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.common.MenuCommonFunctions;
@@ -238,7 +244,7 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
         public void onNewSubFolder() {                
                 String folderName = JOptionPane.showInputDialog(UIFactory.getMainFrame(), I18N.tr("Enter the folder name"), I18N.tr("Folder"));
                 if(folderName!=null) {
-                        File newFolderPath = new File(getFilePath(),folderName);
+                        File newFolderPath = getUniqueFileName(new File(getFilePath(),folderName));
                         try {
                                 if(!newFolderPath.mkdir()) {
                                         LOGGER.error(I18N.tr("The folder creation has failed"));
@@ -311,7 +317,67 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
                 }
                 return false;
         }
+        /**
+         * Return the appropriate file path to not overwrite existing files
+         * @param basePath Path of the file
+         * @return Non existing file path
+         */
+        private static File getUniqueFileName(final File fullPath) {
+                int cpt = 0;
+                final String fileNameWithExt = fullPath.getName();
+                final File basePath = fullPath.getParentFile();
+                final String extension = FilenameUtils.getExtension(fileNameWithExt);
+                final String baseName = FilenameUtils.getBaseName(fileNameWithExt);
+                File fileName = fullPath;
+                while (fileName.exists()) {
+                        String newFileName = baseName
+                                +"_"+(cpt++)+"."
+                                + extension;
+                        fileName = new File(basePath,newFileName);
+                }
+                return fileName;
+        }
         
+        /**
+         * Create a file from a Reader instance in this folder
+         * @param ts
+         * @param flavor
+         * @return 
+         */
+        private boolean importReader(TransferSupport ts, DataFlavor flavor) {
+                try {
+                        Transferable tf = ts.getTransferable();
+                        // From this transferable, a file can be created
+                        BufferedReader br = new BufferedReader((Reader) tf.getTransferData(flavor));
+                        File fileName;
+                        if (tf instanceof TransferableFileContent) {
+                                // The filename is given by the drag source
+                                fileName = new File(getFilePath(), ((TransferableFileContent) tf).getFileNameHint());
+                        } else {
+                                // The filename must be given by the user
+                                String contentFileName = JOptionPane.showInputDialog(UIFactory.getMainFrame(), I18N.tr("Enter the folder name"), I18N.tr("Folder"));
+                                if (contentFileName != null) {
+                                        fileName = new File(getFilePath(), contentFileName);
+                                } else {
+                                        return false;
+                                }
+                        }
+                        // If the file exists found a new one
+                        fileName = getUniqueFileName(fileName);
+                        FileWriter writer = new FileWriter(fileName);
+                        while (br.ready()) {
+                                writer.write(br.read());
+                        }
+                        writer.close();
+                        return true;
+                } catch (UnsupportedFlavorException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(), ex);
+                        return false;
+                } catch (IOException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(), ex);
+                        return false;
+                }
+        }
         @Override
         public boolean importData(TransferSupport ts) {
                 if(ts.isDataFlavorSupported(TransferableNodePaths.PATHS_FLAVOR)) {
@@ -361,8 +427,15 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
                                         }
                                 }
                         }
-                        return true;
+                        return true;                
                 } else {
+                        Transferable tf = ts.getTransferable();
+                        DataFlavor[] flavors = tf.getTransferDataFlavors();
+                        for(DataFlavor flavor : flavors) {
+                                if(flavor.isRepresentationClassReader()) {
+                                        return importReader(ts, flavor);
+                                }
+                        }
                         return false;
                 }
         }
