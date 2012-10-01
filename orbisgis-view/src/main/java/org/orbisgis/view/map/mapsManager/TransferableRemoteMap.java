@@ -32,9 +32,13 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.mapcatalog.RemoteMapContext;
+import org.orbisgis.view.components.fstree.TransferableFileContent;
 import org.orbisgis.view.edition.TransferableEditableElement;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.map.TransferableMap;
@@ -55,7 +59,19 @@ public class TransferableRemoteMap extends TransferableMap {
                 this.remoteMap = remoteMap;
         }
 
-        
+        @Override
+        public boolean isDataFlavorSupported(DataFlavor df) {
+                return super.isDataFlavorSupported(df) || df.equals(TransferableFileContent.FILE_CONTENT_FLAVOR);
+        }
+
+        @Override
+        public DataFlavor[] getTransferDataFlavors() {
+                // Append FILE_CONTENT_FLAVOR
+                DataFlavor[] flavors = super.getTransferDataFlavors();
+                DataFlavor[] extendedFlavors = Arrays.copyOf(flavors, flavors.length + 1);
+                extendedFlavors[extendedFlavors.length-1] = TransferableFileContent.FILE_CONTENT_FLAVOR;
+                return extendedFlavors;
+        }       
         
         /**
          * Transfer is requested, the remote map must be download and
@@ -83,8 +99,34 @@ public class TransferableRemoteMap extends TransferableMap {
                                 LOGGER.error(I18N.tr("Error while downloading the map content"),ex);
                                 return ex;
                         }
+                        
+                } else if(df.equals(TransferableFileContent.FILE_CONTENT_FLAVOR)) {
+                        // Make a Reader
+                        try {
+                                return new ReaderWithName(remoteMap);
+                        } catch(IOException ex) {
+                                LOGGER.error(ex.getLocalizedMessage(),ex);
+                                return null;
+                        }
                 } else {
                         return null;
                 }
+        }
+
+        /**
+         * Reader input stream that provide a content file name
+         */
+        private static class ReaderWithName extends InputStreamReader implements TransferableFileContent {
+                RemoteMapContext remoteMapContext;
+
+                public ReaderWithName(RemoteMapContext remoteMapContext) throws UnsupportedEncodingException, IOException {
+                        super(remoteMapContext.getMapContent(),remoteMapContext.getContentEncoding());
+                        this.remoteMapContext = remoteMapContext;
+                }
+                
+                @Override
+                public String getFileNameHint() {
+                        return remoteMapContext.getDescription().getDefaultTitle() + "." + remoteMapContext.getFileExtension();
+                }    
         }
 }

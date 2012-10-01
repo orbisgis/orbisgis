@@ -70,7 +70,14 @@ public abstract class RemoteMapContext {
         public RemoteMapContext(ConnectionProperties cParams) {
                 this.cParams = cParams;
         }
-
+        
+        /**
+         * @return getMapContent() encoding
+         */
+        public String getContentEncoding() {
+                return ENCODING;
+        }
+        
         @Override
         public boolean equals(Object obj) {                
                 if(!(obj instanceof RemoteMapContext)) {
@@ -209,7 +216,7 @@ public abstract class RemoteMapContext {
          * @return
          * @throws IOException  
          */
-        protected InputStream getMapContent() throws IOException {
+        public InputStream getMapContent() throws IOException {
                 // Construct request
                 URL requestWorkspacesURL =
                         new URL(cParams.getApiUrl()+GET_CONTEXT+id);

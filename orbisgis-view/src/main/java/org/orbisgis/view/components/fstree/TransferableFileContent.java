@@ -29,53 +29,18 @@
 package org.orbisgis.view.components.fstree;
 
 import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
 import java.io.Reader;
 
 /**
- * This transferable is able to define the name and the content of a file.
+ * If a transferable object implement this interface then it could define the name and the content of a file.
  * @author Nicolas Fortin
  */
-public class TransferableFileContent implements Transferable {
+public interface TransferableFileContent {
 
         public static final DataFlavor FILE_CONTENT_FLAVOR =
                 new DataFlavor(Reader.class, "TransferableFileContent");
-        private Reader fileContent;
-        private String fileNameHint;
-
-        /**
-         * @param fileContent The reader returned by this transferable
-         * @param fileNameHint File name proposal for this content
-         */
-        public TransferableFileContent(Reader fileContent, String fileNameHint) {
-                this.fileContent = fileContent;
-                this.fileNameHint = fileNameHint;
-        }
-
         /**
          * @return File name proposal for this content
          */
-        public String getFileNameHint() {
-                return fileNameHint;
-        }
-
-        @Override
-        public DataFlavor[] getTransferDataFlavors() {
-                return new DataFlavor[]{FILE_CONTENT_FLAVOR};
-        }
-
-        @Override
-        public boolean isDataFlavorSupported(DataFlavor df) {
-                return df.equals(FILE_CONTENT_FLAVOR);
-        }
-
-        @Override
-        public Object getTransferData(DataFlavor df) throws UnsupportedFlavorException, IOException {
-                if (df.equals(FILE_CONTENT_FLAVOR)) {
-                        return fileContent;
-                }
-                return null;
-        }
+        String getFileNameHint();
 }
