@@ -36,7 +36,6 @@ import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
-
 /**
  * Choropleth class
  * @author maxence
@@ -47,7 +46,6 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
     private static final Logger LOGGER = Logger.getLogger(ChoroplethWizardPanel.class);
     /** I18n */
     private final static I18n I18N = I18nFactory.getI18n(ChoroplethWizardPanel.class);
-    
     private ChoroplethDataModel choroplethDataModel;
     private FreqChartDataModel freqChartDataModel;
     private FreqChart freqChart;
@@ -91,7 +89,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
         JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.addTab(I18N.tr("Distribution"), dist);
         tabbedPane.addTab(I18N.tr("Symbology"), symb);
-        tabbedPane.setPreferredSize(new Dimension(500,500));
+        tabbedPane.setPreferredSize(new Dimension(500, 500));
 
         this.add(tabbedPane);
 
@@ -104,7 +102,7 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
 
     @Override
     public String getTitle() {
-        return "Choropleth Wizard";
+        return I18N.tr("Choropleth Wizard");
     }
 
     @Override
@@ -170,4 +168,3 @@ public class ChoroplethWizardPanel extends JPanel implements UIPanel {
         return as;
     }
 }
-

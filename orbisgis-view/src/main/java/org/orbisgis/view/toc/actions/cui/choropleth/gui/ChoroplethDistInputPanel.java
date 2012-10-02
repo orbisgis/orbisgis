@@ -37,7 +37,6 @@ public class ChoroplethDistInputPanel extends JPanel {
 
     /** I18n */
     private final static I18n I18N = I18nFactory.getI18n(ChoroplethDistInputPanel.class);
-    
     /** The frequence chart data model */
     private FreqChartDataModel freqChartDataModel;
     /** The choropleth data model */
@@ -60,10 +59,8 @@ public class ChoroplethDistInputPanel extends JPanel {
     private JCheckBox yule;
     /** The current number of row */
     private int nbRow;
-
     /** The first combobox field element */
     private String firstCmbFieldElem = I18N.tr("1st num attrib");
-    
     /** The method string name*/
     private String quantileStr = I18N.tr("quantile");
     private String meanStr = I18N.tr("mean");
@@ -104,7 +101,7 @@ public class ChoroplethDistInputPanel extends JPanel {
 
             @Override
             public String getTaskName() {
-                return "DrawInputPanel";
+                return I18N.tr("Draw Input Panel");
             }
         });
 
@@ -120,7 +117,7 @@ public class ChoroplethDistInputPanel extends JPanel {
 
             @Override
             public String getTaskName() {
-                return "DrawFreqChart";
+                return I18N.tr("Draw Freq Chart");
             }
         });
     }
@@ -138,31 +135,7 @@ public class ChoroplethDistInputPanel extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.backgroundOperation(new BackgroundJob() {
-
-                    @Override
-                    public void run(ProgressMonitor pm) {
-                        String fields = String.valueOf(cmbField.getSelectedItem());
-
-                        if (fields.equals(firstCmbFieldElem)) {
-                            statModel.setField(statModel.getFields().get(0));
-                            freqChartDataModel.setData(statModel.getData());
-                        } else {
-                            statModel.setField(fields);
-                            freqChartDataModel.setData(statModel.getData());
-                        }
-                        yule.setSelected(true);
-                        freqChartDataModel.setClassNumber(freqChartDataModel.getClassNumberGen());
-                        freqChart.clearData();
-                        freqChart.repaint();
-                        updateChartInput();
-                    }
-
-                    @Override
-                    public String getTaskName() {
-                        return "FieldActionPerformed";
-                    }
-                });
+                bm.backgroundOperation(new BGOCmbField());
             }
         });
 
@@ -222,7 +195,7 @@ public class ChoroplethDistInputPanel extends JPanel {
 
                     @Override
                     public String getTaskName() {
-                        return "YuleStateChanged";
+                        return I18N.tr("Yule State Changed");
                     }
                 });
             }
@@ -245,7 +218,7 @@ public class ChoroplethDistInputPanel extends JPanel {
 
                     @Override
                     public String getTaskName() {
-                        return "yuleMoreButton";
+                        return I18N.tr("Yule More Button");
                     }
                 });
             }
@@ -272,7 +245,7 @@ public class ChoroplethDistInputPanel extends JPanel {
 
                     @Override
                     public String getTaskName() {
-                        return "yuleLessButton";
+                        return I18N.tr("Yule Less Button");
                     }
                 });
             }
@@ -409,50 +382,7 @@ public class ChoroplethDistInputPanel extends JPanel {
         public void actionPerformed(ActionEvent e) {
 
             BackgroundManager bm = Services.getService(BackgroundManager.class);
-            bm.backgroundOperation(new BackgroundJob() {
-
-                @Override
-                public void run(ProgressMonitor pm) {
-                    String method = (String) cmbMethod.getSelectedItem();
-
-                    ChoroplethDataModel.StatisticMethod methode = ChoroplethDataModel.StatisticMethod.MANUAL;
-
-                    if (method.equals(quantileStr)) {
-                        methode = ChoroplethDataModel.StatisticMethod.QUANTILES;
-                    } else if (method.equals(meanStr)) {
-                        methode = ChoroplethDataModel.StatisticMethod.MEAN;
-                    } else if (method.equals(jenksStr)) {
-                        methode = ChoroplethDataModel.StatisticMethod.JENKS;
-                    } else if (method.equals(manualStr)) {
-                        methode = ChoroplethDataModel.StatisticMethod.MANUAL;
-                    }
-
-                    cmbClass.removeActionListener(cmbClassListener);
-                    cmbClass.removeAllItems();
-                    int[] allowed = statModel.getNumberOfClassesAllowed(freqChartDataModel, methode);
-                    for (int i = 0; i < allowed.length; i++) {
-                        cmbClass.addItem(allowed[i]);
-                    }
-                    if (method.equals(meanStr)) {
-                        cmbClass.setSelectedIndex(1);
-                    } else {
-                        cmbClass.setSelectedIndex(4);
-                    }
-                    freqChartDataModel.setThresholdNumber(Integer.parseInt(cmbClass.getSelectedItem().toString()));
-                    cmbClass.addActionListener(cmbClassListener);
-
-                    statModel.setStatisticMethod(freqChartDataModel, methode);
-
-                    freqChart.repaint();
-                    updateChartInput();
-                    choroplethRangeTabPanel.refresh(freqChartDataModel);
-                }
-
-                @Override
-                public String getTaskName() {
-                    return "StatisticMethodChange";
-                }
-            });
+            bm.backgroundOperation(new BGOCmbMethod());
         }
     }
 
@@ -478,10 +408,80 @@ public class ChoroplethDistInputPanel extends JPanel {
 
                 @Override
                 public String getTaskName() {
-                    return "CmbClassChange";
+                    return I18N.tr("Cmb Class Change");
                 }
             });
+        }
+    }
 
+    private class BGOCmbField implements BackgroundJob {
+
+        @Override
+        public void run(ProgressMonitor pm) {
+            String fields = String.valueOf(cmbField.getSelectedItem());
+
+            if (fields.equals(firstCmbFieldElem)) {
+                statModel.setField(statModel.getFields().get(0));
+                freqChartDataModel.setData(statModel.getData());
+            } else {
+                statModel.setField(fields);
+                freqChartDataModel.setData(statModel.getData());
+            }
+            yule.setSelected(true);
+            freqChartDataModel.setClassNumber(freqChartDataModel.getClassNumberGen());
+            freqChart.clearData();
+            freqChart.repaint();
+            updateChartInput();
+        }
+
+        @Override
+        public String getTaskName() {
+            return I18N.tr("Field Action Performed");
+        }
+    }
+
+    private class BGOCmbMethod implements BackgroundJob {
+
+        @Override
+        public void run(ProgressMonitor pm) {
+            String method = (String) cmbMethod.getSelectedItem();
+
+            ChoroplethDataModel.StatisticMethod methode = ChoroplethDataModel.StatisticMethod.MANUAL;
+
+            if (method.equals(quantileStr)) {
+                methode = ChoroplethDataModel.StatisticMethod.QUANTILES;
+            } else if (method.equals(meanStr)) {
+                methode = ChoroplethDataModel.StatisticMethod.MEAN;
+            } else if (method.equals(jenksStr)) {
+                methode = ChoroplethDataModel.StatisticMethod.JENKS;
+            } else if (method.equals(manualStr)) {
+                methode = ChoroplethDataModel.StatisticMethod.MANUAL;
+            }
+
+            cmbClass.removeActionListener(cmbClassListener);
+            cmbClass.removeAllItems();
+            int[] allowed = statModel.getNumberOfClassesAllowed(freqChartDataModel, methode);
+            for (int i = 0; i < allowed.length; i++) {
+                cmbClass.addItem(allowed[i]);
+            }
+            if (method.equals(meanStr)) {
+                cmbClass.setSelectedIndex(1);
+            } else {
+                cmbClass.setSelectedIndex(4);
+            }
+            freqChartDataModel.setThresholdNumber(Integer.parseInt(cmbClass.getSelectedItem().toString()));
+            cmbClass.addActionListener(cmbClassListener);
+
+            statModel.setStatisticMethod(freqChartDataModel, methode);
+
+            freqChart.repaint();
+            updateChartInput();
+            choroplethRangeTabPanel.refresh(freqChartDataModel);
+        }
+
+        @Override
+        public String getTaskName() {
+            return I18N.tr("Statistic Method Change");
         }
     }
 }

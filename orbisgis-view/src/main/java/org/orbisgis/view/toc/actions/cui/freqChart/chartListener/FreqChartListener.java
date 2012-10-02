@@ -19,6 +19,8 @@ import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.toc.actions.cui.freqChart.dataModel.FreqChartDataModel;
 import org.orbisgis.view.toc.actions.cui.freqChart.render.FreqChartRender;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * FreqChartListener
@@ -27,6 +29,8 @@ import org.orbisgis.view.toc.actions.cui.freqChart.render.FreqChartRender;
 public class FreqChartListener implements ChartMouseListener,
         MouseMotionListener {
 
+     /** I18n */
+    private final static I18n I18N = I18nFactory.getI18n(FreqChartListener.class);
     /** The frequence chart panel */
     private ChartPanel chartPanel;
     /** The frequence chart data model */
@@ -97,7 +101,7 @@ public class FreqChartListener implements ChartMouseListener,
 
             @Override
             public String getTaskName() {
-                return "ClicMouseEvent";
+                return I18N.tr("Clic Mouse Event");
             }
         });
     }
@@ -125,7 +129,7 @@ public class FreqChartListener implements ChartMouseListener,
 
             @Override
             public String getTaskName() {
-                return "DragMouseEvent";
+                return I18N.tr("Drag Mouse Event");
             }
         });
     }
@@ -191,7 +195,7 @@ public class FreqChartListener implements ChartMouseListener,
 
             @Override
             public String getTaskName() {
-                return "MoveMouseEvent";
+                return I18N.tr("Move Mouse Event");
             }
         });
     }

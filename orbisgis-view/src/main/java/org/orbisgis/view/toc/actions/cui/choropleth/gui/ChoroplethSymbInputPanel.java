@@ -80,7 +80,7 @@ public class ChoroplethSymbInputPanel extends JPanel {
 
             @Override
             public String getTaskName() {
-                return "DrawSymbPanel";
+                return I18N.tr("Draw Symb Panel");
             }
         });
 
