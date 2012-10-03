@@ -180,7 +180,7 @@ public class TableImportPanel extends JDialog {
                                         String login = passwordDialog.getInput("login");
                                         String properties = connectionToolBar.getDbProperties().getProperty(dataBaseUri);
                                         BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
-                                        backgroundManager.backgroundOperation(new PopulatingDBTree(properties.split(","),login, passWord));
+                                        backgroundManager.nonBlockingBackgroundOperation(new PopulatingDBTree(properties.split(","),login, passWord));
                                         return true;
                         }
                 }

@@ -192,7 +192,7 @@ public class TableExportPanel extends JDialog {
                                         userParams.put("dbName", dbParameters[4]);
                                         userParams.put("userName", dbLogin);
                                         userParams.put("password", dbpassWord);
-                                        backgroundManager.backgroundOperation(new ExportToDatabase(i, row, userParams, port));
+                                        backgroundManager.nonBlockingBackgroundOperation(new ExportToDatabase(i, row, userParams, port));
                                 }
                         }
                 }
