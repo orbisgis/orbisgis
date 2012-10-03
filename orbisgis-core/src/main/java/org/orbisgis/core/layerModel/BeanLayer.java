@@ -138,7 +138,9 @@ public abstract class BeanLayer extends AbstractLayer {
                         String resourceSerialisation = "";
                         try {
                                 URI srcUri = src.getURI();
-                                resourceSerialisation = srcUri.toString();
+                                if(srcUri!=null) {
+                                        resourceSerialisation = srcUri.toString();
+                                }
                         } catch (DriverException ex) {
                                 LOGGER.error(I18N.tr("Unable to serialise the data source of layer {0}",getName()),ex);
                         }
