@@ -195,9 +195,15 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 if(!serialisedMapContextPath.exists()) {
                         createDefaultMapContext();
                 } else {
-                        TreeLeafMapElement mapFactory = (TreeLeafMapElement)mapsManager.getFactoryManager().create(serialisedMapContextPath);
-                        MapElement mapElement = mapFactory.getMapElement(new NullProgressMonitor());
-                        backgroundManager.backgroundOperation(new ReadMapContextJob(mapElement));
+                        TreeLeafMapElement defaultMap = (TreeLeafMapElement)mapsManager.getFactoryManager().create(serialisedMapContextPath);
+                        try {
+                                MapElement mapElement = defaultMap.getMapElement(new NullProgressMonitor());
+                                backgroundManager.backgroundOperation(new ReadMapContextJob(mapElement));
+                        } catch(IllegalArgumentException ex) {
+                                //Map XML is invalid
+                                GUILOGGER.warn(I18N.tr("Fail to load the map context, starting with an empty map context"),ex);
+                                createDefaultMapContext();
+                        }
                 }
         }
 
