@@ -86,9 +86,9 @@ public class DataSourceTableModel extends AbstractTableModel {
          * Remove data source listeners
          */
         public void dispose() {
-                dataSource.removeEditionListener(dataSourceListener);
                 if (dataSource.isEditable()) {
                         try {
+                                dataSource.removeEditionListener(dataSourceListener);
                                 dataSource.removeMetadataEditionListener(dataSourceListener);
                         } catch (UnsupportedOperationException ex) {
                                 // Ignore
