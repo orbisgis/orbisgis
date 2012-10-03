@@ -859,6 +859,19 @@ public class Toc extends JPanel implements EditorDockable {
                         //If the table has already an active selection, load it
                         if (!tableElement.getSelection().isEmpty()) {
                                 onTableSelectionChange(tableElement);
+                        } else {
+                                if(mapContext!=null) {
+                                        //If the table has no selection set the current selection
+                                        ILayer[] layers = mapContext.getLayers();
+                                        Set<Integer> mergedSelection = new IntegerUnion();
+                                        for (ILayer layer : layers) {
+                                                DataSource source = layer.getDataSource();
+                                                if (source != null && source.getName().equals(tableElement.getSourceName())) {
+                                                        mergedSelection.addAll(layer.getSelection());
+                                                }
+                                        }
+                                        tableElement.setSelection(mergedSelection);
+                                }
                         }
                 }
         }

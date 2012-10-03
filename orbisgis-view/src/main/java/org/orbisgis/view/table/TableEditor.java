@@ -648,10 +648,6 @@ public class TableEditor extends JPanel implements EditorDockable {
 
         @Override
         public boolean match(EditableElement editableElement) {
-                if(editableElement instanceof TableEditableElement) {
-                        TableEditableElement tableElement = (TableEditableElement) editableElement;
-                        return tableElement.getDataSource().equals(tableEditableElement.getDataSource());
-                }
                 return false;
         }
 
