@@ -343,8 +343,10 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
 
 		return null;
 	}
-        
-        public class WmsConnectionJob implements BackgroundJob {
+        /**
+         * Fetch information about the Wms service from the Internet
+         */
+        private class WmsConnectionJob implements BackgroundJob {
 
                 @Override
                 public void run(ProgressMonitor pm) {
