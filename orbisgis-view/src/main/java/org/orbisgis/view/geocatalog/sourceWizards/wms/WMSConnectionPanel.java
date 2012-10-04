@@ -253,58 +253,8 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
          */
         private void connect() {
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.nonBlockingBackgroundOperation(new BackgroundJob() {
+                bm.nonBlockingBackgroundOperation(new WmsConnectionJob());
 
-                        @Override
-                        public void run(ProgressMonitor pm) {
-                                String originalWmsURL = cmbURLServer.getSelectedItem().toString();
-                                String wmsURL = originalWmsURL.trim();
-                                try {
-                                        if (client == null) {
-                                                client = getWMSClient(wmsURL);
-                                        } else {
-                                                if (!client.getHost().equals(wmsURL)) {
-                                                        client = getWMSClient(wmsURL);
-                                                }
-                                        }
-                                        configPanel.setClient(client);                                        
-                                        client.getCapabilities(null, false, null);
-                                        //This action populates the UI with all informations about the server.
-                                        configPanel.initialize();
-                                        SwingUtilities.invokeLater(new Runnable() {
-
-                                                @Override
-                                                public void run() {
-                                                        lblVersion.setText(I18N.tr("Version :")
-                                                                + changeNullForEmptyString(client.getVersion()));
-                                                        lblTitle.setText(I18N.tr("Nom :")
-                                                                + changeNullForEmptyString(client.getServiceName()));
-                                                        txtDescription.setText(client.getServiceInformation().abstr);
-                                                        txtDescription.setCaretPosition(0);
-
-                                                }
-                                        });
-
-                                        if (!serverswms.contains(originalWmsURL)) {
-                                                serverswms.add(originalWmsURL);
-                                                saveWMSServerFile();
-                                        }
-
-                                } catch (ConnectException e) {
-                                        LOGGER.error(I18N.tr("orbisgis.errorMessages.wms.CannotConnect"
-                                                + " " + wmsURL), e);
-                                } catch (IOException e) {
-                                        LOGGER.error(
-                                                I18N.tr("orbisgis.errorMessages.wms.CannotGetCapabilities"
-                                                + " " + wmsURL), e);
-                                }
-                        }
-
-                        @Override
-                        public String getTaskName() {
-                                return I18N.tr("Connecting to the server...");
-                        }
-                });
         }
 
         /**
@@ -393,4 +343,56 @@ public class WMSConnectionPanel extends JPanel implements UIPanel {
 
 		return null;
 	}
+        
+        public class WmsConnectionJob implements BackgroundJob {
+
+                @Override
+                public void run(ProgressMonitor pm) {
+                        String originalWmsURL = cmbURLServer.getSelectedItem().toString();
+                        String wmsURL = originalWmsURL.trim();
+                        try {
+                                if (client == null) {
+                                        client = getWMSClient(wmsURL);
+                                } else {
+                                        if (!client.getHost().equals(wmsURL)) {
+                                                client = getWMSClient(wmsURL);
+                                        }
+                                }
+                                configPanel.setClient(client);
+                                client.getCapabilities(null, false, null);
+                                //This action populates the UI with all informations about the server.
+                                configPanel.initialize();
+                                SwingUtilities.invokeLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                                lblVersion.setText(I18N.tr("Version :")
+                                                        + changeNullForEmptyString(client.getVersion()));
+                                                lblTitle.setText(I18N.tr("Nom :")
+                                                        + changeNullForEmptyString(client.getServiceName()));
+                                                txtDescription.setText(client.getServiceInformation().abstr);
+                                                txtDescription.setCaretPosition(0);
+
+                                        }
+                                });
+
+                                if (!serverswms.contains(originalWmsURL)) {
+                                        serverswms.add(originalWmsURL);
+                                        saveWMSServerFile();
+                                }
+
+                        } catch (ConnectException e) {
+                                LOGGER.error(I18N.tr("orbisgis.errorMessages.wms.CannotConnect"
+                                        + " " + wmsURL), e);
+                        } catch (IOException e) {
+                                LOGGER.error(
+                                        I18N.tr("orbisgis.errorMessages.wms.CannotGetCapabilities"
+                                        + " " + wmsURL), e);
+                        }
+                }
+
+                @Override
+                public String getTaskName() {
+                        return I18N.tr("Connecting to the server...");
+                }
+        }
 }

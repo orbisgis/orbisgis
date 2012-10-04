@@ -39,7 +39,15 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.*;
+import javax.swing.DefaultCellEditor;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.SwingUtilities;
 import javax.swing.table.TableColumn;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceFactory;
@@ -280,15 +288,30 @@ public class TableExportPanel extends JDialog {
                                         s.setValueParameter(e.getKey(), ValueFactory.createValue(e.getValue()));
                                 }
                                 s.execute();
-                                jtableExporter.remove(rowId);
+                                SwingUtilities.invokeLater(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                                jtableExporter.remove(rowId);
+                                        }
+                                });
                         } catch (SemanticException ex) {
-                                LOGGER.warn(ex.getMessage(), ex);
-                                JOptionPane.showMessageDialog(jScrollPane, ex.getMessage());
+                                LOGGER.warn(ex.getLocalizedMessage(), ex);
+                                showOkOnlyDialog(ex.getLocalizedMessage());
                         } catch (IOException ex) {
-                                LOGGER.warn(ex.getMessage(), ex);
-                                JOptionPane.showMessageDialog(jScrollPane, ex.getMessage());
+                                LOGGER.warn(ex.getLocalizedMessage(), ex);
+                                showOkOnlyDialog(ex.getLocalizedMessage());
                         }
                 }
+ 
+                private void showOkOnlyDialog(final String message) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                         JOptionPane.showMessageDialog(jScrollPane, message);
+                                }
+                        });                       
+                }
+
 
                 @Override
                 public String getTaskName() {
