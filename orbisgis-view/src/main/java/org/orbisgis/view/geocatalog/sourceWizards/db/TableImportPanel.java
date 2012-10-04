@@ -180,7 +180,7 @@ public class TableImportPanel extends JDialog {
                                         String login = passwordDialog.getInput("login");
                                         String properties = connectionToolBar.getDbProperties().getProperty(dataBaseUri);
                                         BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
-                                        backgroundManager.backgroundOperation(new PopulatingDBTree(properties.split(","),login, passWord));
+                                        backgroundManager.nonBlockingBackgroundOperation(new PopulatingDBTree(properties.split(","),login, passWord));
                                         return true;
                         }
                 }
@@ -319,7 +319,6 @@ public class TableImportPanel extends JDialog {
                                         DriverException[] exs = dbDriver.getLastNonBlockingErrors();
                                         if (exs.length != 0) {
                                                 for (int i = 0; i < exs.length; i++) {
-                                                        //    om.println(exs[i].getMessage(), Color.ORANGE);
                                                         LOGGER.error(exs[i].getMessage(), exs[i].getCause());
                                                 }
                                         }
@@ -345,11 +344,8 @@ public class TableImportPanel extends JDialog {
                                 }
 
                                 connection.close();
-                                tableTree = new JTree(rootNode);
-                                tableTree.setRootVisible(true);
-                                tableTree.setShowsRootHandles(true);
-                                tableTree.setCellRenderer(new TableTreeCellRenderer());  
-                                jScrollPane.setViewportView(tableTree);
+                                // Apply the new model in the swing thread
+                                SwingUtilities.invokeLater(new LoadTreeNode(rootNode));
                         } catch (DriverException ex) {
                                 LOGGER.error(I18N.tr("Cannot list the tables and views"), ex);
                         } catch (SQLException ex) {
@@ -360,6 +356,23 @@ public class TableImportPanel extends JDialog {
                 @Override
                 public String getTaskName() {
                         return I18N.tr("Populating the database list...");
+                }
+                
+        }
+        private class LoadTreeNode implements Runnable {
+                DefaultMutableTreeNode rootNode;
+
+                public LoadTreeNode(DefaultMutableTreeNode rootNode) {
+                        this.rootNode = rootNode;
+                }
+                
+                @Override
+                public void run() {                        
+                        tableTree = new JTree(rootNode);
+                        tableTree.setRootVisible(true);
+                        tableTree.setShowsRootHandles(true);
+                        tableTree.setCellRenderer(new TableTreeCellRenderer());  
+                        jScrollPane.setViewportView(tableTree);
                 }
                 
         }
