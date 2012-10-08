@@ -33,21 +33,10 @@
  */
 package org.gdms.source;
 
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FilenameFilter;
+import java.io.*;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.Arrays;
-
-import org.junit.Assume;
-import org.junit.Before;
-import org.junit.Test;
-
-import static org.junit.Assert.*;
-
 import org.gdms.TestBase;
 import org.gdms.TestResourceHandler;
 import org.gdms.data.DataSource;
@@ -69,6 +58,10 @@ import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.sql.strategies.SumQuery;
+import static org.junit.Assert.*;
+import org.junit.Assume;
+import org.junit.Before;
+import org.junit.Test;
 
 public class SourceManagementTest extends TestBase {
 
@@ -136,11 +129,11 @@ public class SourceManagementTest extends TestBase {
                                 return !name.startsWith(".");
                         }
                 });
-                // 2 files : spatial_ref + directory.xml
-                assertEquals(2, content.length);
-                String[] res = new String[]{content[0].getName(), content[1].getName()};
+                // 1 file : directory.xml
+                assertEquals(1, content.length);
+                String[] res = new String[]{content[0].getName()};
                 Arrays.sort(res);
-                String[] comp = new String[]{"directory.xml", "spatial_ref_sys_extended.gdms"};
+                String[] comp = new String[]{"directory.xml"};
                 assertArrayEquals(res, comp);
         }
 

@@ -37,27 +37,11 @@
  */
 package org.gdms.sql.function.spatial.tin.create;
 
+import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.LinearRing;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
-import org.jdelaunay.delaunay.ConstrainedMesh;
-import org.jdelaunay.delaunay.error.DelaunayError;
-import org.jdelaunay.delaunay.geometries.DEdge;
-import org.jdelaunay.delaunay.geometries.DPoint;
-import org.jdelaunay.delaunay.geometries.DTriangle;
-
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -66,6 +50,11 @@ import org.gdms.driver.DiskBufferDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.spatial.tin.model.TINMetadataFactory;
+import org.jdelaunay.delaunay.ConstrainedMesh;
+import org.jdelaunay.delaunay.error.DelaunayError;
+import org.jdelaunay.delaunay.geometries.DEdge;
+import org.jdelaunay.delaunay.geometries.DPoint;
+import org.jdelaunay.delaunay.geometries.DTriangle;
 
 /**
  *

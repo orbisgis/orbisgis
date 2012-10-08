@@ -129,8 +129,6 @@ public final class DefaultSourceManager implements SourceManager {
         private String lastUID = "gdms" + System.currentTimeMillis();
         private List<String> contextPaths = new ArrayList<String>();
         private static final Pattern DOT = Pattern.compile("\\.");
-        public static final String SPATIAL_REF_SYSTEM = "spatial_ref_table";
-        public static final String SPATIAL_REF_TABLE_SYSTEM_PATH = "spatial_ref_sys_extended.gdms";
 
         public DefaultSourceManager(DataSourceFactory dsf, String baseDir) {
                 dm.registerDriver(CSVDriver.class);
@@ -1005,23 +1003,7 @@ public final class DefaultSourceManager implements SourceManager {
          */
         @Override
         public void loadSystemTables() {
-
-                // create spatial_ref_sys source
-                if (!exists(SPATIAL_REF_SYSTEM)) {
-                        InputStream in = this.getClass().getResourceAsStream(
-                                SPATIAL_REF_TABLE_SYSTEM_PATH);
-                        String tempPath = getSourceInfoDirectory().getAbsolutePath()
-                                + File.separator + SPATIAL_REF_TABLE_SYSTEM_PATH;
-                        try {
-                                FileUtils.copyInputStreamToFile(in, new File(tempPath));
-                                register(SPATIAL_REF_SYSTEM, new SystemSourceDefinition(
-                                        new SystemSource(new File(tempPath))));
-                        } catch (IOException e) {
-                                LOG.warn("Cannot load the spatial reference system. The coordinate"
-                                        + "tranformations won't be available.");
-                        }
-
-                }
+              
 
         }
 
