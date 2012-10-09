@@ -158,10 +158,10 @@ public class SourceManagementTest extends TestBase {
                                 return !name.startsWith(".");
                         }
                 });
-                assertEquals(2, content.length);
-                String[] res = new String[]{content[0].getName(), content[1].getName()};
+                assertEquals(1, content.length);
+                String[] res = new String[]{content[0].getName()};
                 Arrays.sort(res);
-                String[] comp = new String[]{"directory.xml", "spatial_ref_sys_extended.gdms"};
+                String[] comp = new String[]{"directory.xml"};
                 assertArrayEquals(res, comp);
         }
 
