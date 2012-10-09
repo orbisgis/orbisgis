@@ -60,6 +60,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.BufferedHttpEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -75,7 +76,8 @@ public class Workspace  {
         private static final String ENCODING = "utf-8";
         private static final String LIST_CONTEXT = "/context";
         private static final String PUBLISH_CONTEXT = "/context/save";
-        private static final I18n I18N = I18nFactory.getI18n(Workspace.class);
+        private static final I18n I18N = I18nFactory.getI18n(Workspace.class);        
+        private static final Logger LOGGER = Logger.getLogger(Workspace.class);
         private ConnectionProperties cParams;
         private String workspaceName;
         private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
@@ -185,7 +187,7 @@ public class Workspace  {
          * @return The ID of the published map context
          * @throws IOException 
          */
-        public int builtinsPublishMapContext(MapContext mapContext) throws IOException  {
+        public int builtinsPublishMapContext(MapContext mapContext, Integer mapContextId) throws IOException  {
                 // Construct request
                 URL requestWorkspacesURL =
                         new URL(cParams.getApiUrl()+PUBLISH_CONTEXT);
@@ -195,42 +197,39 @@ public class Workspace  {
                 connection.setDoOutput(true);
                 connection.setConnectTimeout(cParams.getConnectionTimeOut());
                 OutputStream out = connection.getOutputStream();
-                RemoteCommons.putParameters(out,"workspace",workspaceName,ENCODING);
-                // Send MapContext DATA
-                Writer writer = new OutputStreamWriter(out, ENCODING);
-                writer.write("owc=");
-                writer.close();
-                ByteArrayOutputStream mapData = new ByteArrayOutputStream();
-                mapContext.write(mapData);
-                mapData.flush();
-                // Encode the XML end write to the output stream
-                out.write(URLEncoder.encode(mapData.toString(ENCODING),ENCODING).getBytes(ENCODING));
-                out.flush();
+                mapContext.write(out);
                 out.close();
+                
                 // Get response
-		if (!(connection.getResponseCode() == HttpURLConnection.HTTP_CREATED
-                        || connection.getResponseCode() == HttpURLConnection.HTTP_OK )) { //Old api response
-                        throw new IOException(I18N.tr("HTTP Error {0} message : {1}",connection.getResponseCode(),connection.getResponseMessage()));
+                int responseCode = connection.getResponseCode();
+                if (!((responseCode == HttpURLConnection.HTTP_CREATED && mapContextId==null) ||
+                        (responseCode == HttpURLConnection.HTTP_OK && mapContextId!=null)
+                        || responseCode == HttpURLConnection.HTTP_OK)) { //Old api response
+                        throw new IOException(I18N.tr("HTTP Error {0} message : {1}", connection.getResponseCode(),connection.getResponseMessage()));
                 }
                 
-                // Get response content
-                BufferedReader in = new BufferedReader(
-                                    new InputStreamReader(
-                                    connection.getInputStream()));
-                
-                
-                XMLInputFactory factory = XMLInputFactory.newInstance();
-                
-                // Parse Data
-                XMLStreamReader parser;
-                try {
-                        parser = factory.createXMLStreamReader(in);
-                        // Fill workspaces
-                        int resId = parsePublishResponse(parser);
-                        parser.close();
-                        return resId;
-                } catch(XMLStreamException ex) {
-                        throw new IOException(I18N.tr("Invalid XML content"),ex);
+                if(mapContextId==null) {
+                        // Get response content
+                        BufferedReader in = new BufferedReader(
+                                            new InputStreamReader(
+                                            connection.getInputStream()));
+
+
+                        XMLInputFactory factory = XMLInputFactory.newInstance();
+
+                        // Parse Data
+                        XMLStreamReader parser;
+                        try {
+                                parser = factory.createXMLStreamReader(in);
+                                // Fill workspaces
+                                int resId = parsePublishResponse(parser);
+                                parser.close();
+                                return resId;
+                        } catch(XMLStreamException ex) {
+                                throw new IOException(I18N.tr("Invalid XML content"),ex);
+                        }
+                } else {
+                        return mapContextId;
                 }
         }
         
