@@ -34,10 +34,6 @@
 package org.gdms.data.system;
 
 import java.io.File;
-
-import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.utils.I18N;
-
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceDefinition;
@@ -49,6 +45,8 @@ import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 import org.gdms.source.directory.DefinitionType;
 import org.gdms.source.directory.SystemDefinitionType;
+import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 public class SystemSourceDefinition extends FileSourceDefinition {
 
