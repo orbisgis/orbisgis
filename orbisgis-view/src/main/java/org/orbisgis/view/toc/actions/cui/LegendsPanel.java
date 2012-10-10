@@ -286,7 +286,7 @@ public class LegendsPanel extends JPanel implements UIPanel, LegendContext {
 
         @Override
         public String getTitle() {
-                return I18N.tr("Advanced style edition");
+                return I18N.tr("Simple style edition");
         }
 
 
