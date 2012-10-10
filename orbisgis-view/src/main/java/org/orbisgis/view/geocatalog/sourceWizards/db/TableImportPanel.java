@@ -243,14 +243,15 @@ public class TableImportPanel extends JDialog {
                         for (int i = 0; i < selectedNodes; i++) {
                                 Object selectedObject = ((DefaultMutableTreeNode) treePath[i].getLastPathComponent()).getUserObject();
                                 if (selectedObject instanceof TableNode) {
-                                        TableNode tableNode = (TableNode) selectedObject;
+					DBSource clonedDBSource = dBSource.clone();
+					TableNode tableNode = (TableNode) selectedObject;
                                         String tableName = tableNode.getName();
-                                        dBSource.setTableName(tableName);
-                                        dBSource.setSchemaName(tableNode.getSchema());
+                                        clonedDBSource.setTableName(tableName);
+                                        clonedDBSource.setSchemaName(tableNode.getSchema());
                                         if (sourceManager.exists(tableName)) {
                                                 tableName = sourceManager.getUniqueName(tableName);
                                         }
-                                        sourceManager.register(tableName, new DBTableSourceDefinition(dBSource));
+                                        sourceManager.register(tableName, new DBTableSourceDefinition(clonedDBSource));
                                 }
                         }
                         dispose();
