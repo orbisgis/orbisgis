@@ -282,9 +282,9 @@ public class SourceManagementTest extends TestBase {
         
         @Test
         public void testEmpty() throws Exception {
-                assertFalse(sm.isEmpty());
+                assertTrue(sm.isEmpty());
                 assertTrue(sm.isEmpty(true));
-                assertFalse(sm.isEmpty(false));
+                assertTrue(sm.isEmpty(false));
                 
                 sm.register(SOURCE, testFile);
                 
@@ -293,12 +293,12 @@ public class SourceManagementTest extends TestBase {
                 
                 sm.remove(SOURCE);
                 
-                assertFalse(sm.isEmpty());
+                assertTrue(sm.isEmpty());
                 assertTrue(sm.isEmpty(true));
                 
                 sm.removeAll();
-                
-                assertFalse(sm.isEmpty());
+
+                assertTrue(sm.isEmpty());
                 assertTrue(sm.isEmpty(true));
         }
 

@@ -159,7 +159,7 @@ public class CustomQueriesTest extends TestBase {
                 dsf.getSourceManager().remove("name");
                 path = TestResourceHandler.TESTRESOURCES + "/points.shp";
                 executeSuccess("CALL register('" + path + "', 'file');");
-                executeSuccess("CALL register('postgresql', 'file', '23' , 'file', 'as', 'file', 'as', 'file2');");
+                executeSuccess("CALL register('postgresql', 'file', 23 , 'file', 'as', 'file', 'as', 'file2');");
                 executeFail("CALL register('as', 'file', 'as');");
                 executeFail("CALL register('as', 'file', 'as', 'as2');");
                 executeFail("CALL register('as', 'file', 'as', 'as', 'as3');");
