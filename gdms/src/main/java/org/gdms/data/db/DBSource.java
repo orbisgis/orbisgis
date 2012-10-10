@@ -93,6 +93,31 @@ public class DBSource implements Serializable {
                 this.ssl = ssl;
         }
 
+        @Override
+        public DBSource clone(){
+                return new DBSource(host, port, dbName, user,
+                            password, schemaName, tableName, prefix, ssl);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+                if(o instanceof DBSource){
+                        DBSource db = (DBSource) o;
+                        boolean h = host == null ? db.host == null : host.equals(db.host);
+                        boolean tn = tableName == null ? db.tableName == null : tableName.equals(db.tableName);
+                        boolean sn = schemaName == null ? db.schemaName == null : schemaName.equals(db.schemaName);
+                        boolean u = user == null ? db.user == null : user.equals(db.user);
+                        boolean por = port == db.port;
+                        boolean dbn = dbName == null ? db.dbName == null : dbName.equals(db.dbName);
+                        boolean pref = prefix == null ? db.prefix == null : prefix.equals(db.prefix);
+                        boolean ss = (ssl && db.ssl) || (!ssl && !db.ssl);
+                        return h && tn && sn && u && por && dbn && pref && ss;
+
+                } else {
+                        return false;
+                }
+        }
+
         public String getDbName() {
                 return dbName;
         }

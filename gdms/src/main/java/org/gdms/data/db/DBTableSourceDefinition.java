@@ -197,15 +197,16 @@ public class DBTableSourceDefinition extends AbstractDataSourceDefinition<DBDriv
         public boolean equals(Object obj) {
                 if (obj instanceof DBTableSourceDefinition) {
                         DBTableSourceDefinition dsd = (DBTableSourceDefinition) obj;
-                        return (equals(dsd.def.getDbms(), def.getDbms())
-                                && equals(dsd.def.getDbName(), def.getDbName())
-                                && equals(dsd.def.getHost(), def.getHost())
-                                && equals(dsd.def.getPassword(), def.getPassword())
-                                && (dsd.def.getPort() == def.getPort())
-                                && equals(dsd.def.getUser(), def.getUser())
-                                && equals(dsd.def.getTableName(), def.getTableName())
-                                && equals(dsd.def.getSchemaName(), def.getSchemaName())
-                                && equals(dsd.def.getPrefix(), def.getPrefix()));
+                        boolean dbms = equals(dsd.def.getDbms(), def.getDbms());
+                        boolean dbName = equals(dsd.def.getDbName(), def.getDbName());
+                        boolean host = equals(dsd.def.getHost(), def.getHost());
+                        boolean password = equals(dsd.def.getPassword(), def.getPassword());
+                        boolean port = dsd.def.getPort() == def.getPort();
+                        boolean user = equals(dsd.def.getUser(), def.getUser());
+                        boolean tableName = equals(dsd.def.getTableName(), def.getTableName());
+                        boolean schemaName = equals(dsd.def.getSchemaName(), def.getSchemaName());
+                        boolean prefix = equals(dsd.def.getPrefix(), def.getPrefix());
+                        return dbms && dbName && host && password && port && user && tableName && schemaName && prefix;
                 } else {
                         return false;
                 }

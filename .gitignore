@@ -1,5 +1,8 @@
 **/target
 **/nbactions.xml
 nbactions.xml
-
+**/*.iml
+*.iml
 /target/
+.idea
+**/.ensime*

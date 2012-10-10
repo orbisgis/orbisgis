@@ -197,6 +197,13 @@ public class DBDriverTest extends TestBase {
                 testReadAllTypes(hsqldbDBSource, hsqldbSrc);
         }
 
+        @Test
+        public void testDBSourceClone() throws Exception {
+                DBSource cloned = schemaPostgreSQLDBSource.clone();
+                assertTrue(cloned!=schemaPostgreSQLDBSource);
+                assertTrue(cloned.equals(schemaPostgreSQLDBSource));
+        }
+
         private void testCreateAllTypes(DBSource dbSource, boolean byte_,
                 boolean stringLength) throws Exception {
                 DefaultMetadata metadata = new DefaultMetadata();
