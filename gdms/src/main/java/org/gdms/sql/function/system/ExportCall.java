@@ -34,9 +34,6 @@
 package org.gdms.sql.function.system;
 
 import java.io.File;
-
-import org.orbisgis.progress.ProgressMonitor;
-
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
@@ -50,6 +47,7 @@ import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.executor.AbstractExecutorFunction;
 import org.gdms.sql.function.executor.ExecutorFunctionSignature;
 import org.gdms.sql.function.table.TableArgument;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  *
@@ -73,7 +71,7 @@ public final class ExportCall extends AbstractExecutorFunction {
                         } finally {
                                 sourceManager.remove(destName);
                         }
-                } else if (values.length > 6 && values.length < 9) {
+                } else if (values.length > 6 && values.length < 10) {
 
                         DataSet ds = tables[0];
                         String vendor = values[0].toString();
@@ -84,12 +82,14 @@ public final class ExportCall extends AbstractExecutorFunction {
                         final String password = values[5].toString();
                         String schemaName = null;
                         String tableName = null;
+                        boolean isSSL = false;
                         if (values.length == 7) {
                                 tableName = values[6].toString();
                         }
-                        if (values.length == 8) {
+                        if (values.length == 9) {
                                 schemaName = values[6].toString();
                                 tableName = values[7].toString();
+                                isSSL= values[8].getAsBoolean();
                         }
                         
                         if (!vendor.startsWith("jdbc:")) {
@@ -98,7 +98,7 @@ public final class ExportCall extends AbstractExecutorFunction {
 
                         String destName = sourceManager.nameAndRegister(new DBTableSourceDefinition(
                                 new DBSource(host, port, dbName,
-                                user, password, schemaName, tableName, vendor)));
+                                user, password, schemaName, tableName, vendor,isSSL)));
                         try {
                                 dsf.saveContents(destName, ds);
                         } catch (DriverException ex) {
@@ -125,9 +125,9 @@ public final class ExportCall extends AbstractExecutorFunction {
         public String getSqlOrder() {
                 return "1) EXECUTE Export(myTable, '/home/myuser/myFile.shp')\n"
                         + "2) EXECUTE Export(myTable, 'vendor', 'host', port, "
-                        + "dbName, user, password, tableName);\n"
+                        + "'dbName', 'user', 'password', 'tableName');\n"
                         + "3) EXECUTE Export(myTable, 'vendor', 'host', port, "
-                        + "dbName, user, password, schema, tableName);\n";
+                        + "'dbName', 'user', 'password', 'schema', 'tableName', isSSL);\n";
         }
 
         @Override
@@ -140,7 +140,7 @@ public final class ExportCall extends AbstractExecutorFunction {
                                 new ExecutorFunctionSignature(TableArgument.ANY, ScalarArgument.STRING,
                                 ScalarArgument.STRING, ScalarArgument.INT, ScalarArgument.STRING,
                                 ScalarArgument.STRING, ScalarArgument.STRING, ScalarArgument.STRING,
-                                ScalarArgument.STRING)
+                                ScalarArgument.STRING, ScalarArgument.BOOLEAN)
                         };
         }
 }

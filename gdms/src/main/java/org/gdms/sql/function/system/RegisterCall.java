@@ -79,13 +79,14 @@ public final class RegisterCall extends AbstractExecutorFunction {
                                                 + "Path: " + file.getAbsolutePath());
                                 }
                                 sourceManager.register(name, file);
-                        } else if ((values.length == 8) || (values.length == 9)) {
+                        } else if ((values.length == 8) || (values.length == 10)) {
                                 final String vendor = values[0].toString();
                                 final String host = values[1].toString();
-                                final String port = values[2].toString();
+                                final int port = values[2].getAsInt();
                                 final String dbName = values[3].toString();
                                 final String user = values[4].toString();
                                 final String password = values[5].toString();
+                                boolean isSSL = false;
                                 String schemaName = null;
                                 String tableName = null;
                                 String name = null;
@@ -93,26 +94,27 @@ public final class RegisterCall extends AbstractExecutorFunction {
                                         tableName = values[6].toString();
                                         name = values[7].toString();
                                 }
-                                if (values.length == 9) {
+                                if (values.length == 10) {
                                         schemaName = values[6].toString();
                                         tableName = values[7].toString();
-                                        name = values[8].toString();
+                                        isSSL = values[8].getAsBoolean();
+                                        name = values[9].toString();
                                 }
 
                                 if (tableName == null) {
                                         throw new FunctionException("Not implemented yet");
                                 }
                                 sourceManager.register(name, new DBTableSourceDefinition(
-                                        new DBSource(host, Integer.parseInt(port), dbName,
-                                        user, password, schemaName, tableName, "jdbc:" + vendor)));
+                                        new DBSource(host, port, dbName,
+                                        user, password, schemaName, tableName, "jdbc:" + vendor, isSSL)));
                         } else {
                                 throw new FunctionException("Usage: \n"
                                         + "1) EXECUTE register ('path_to_file');\n"
                                         + "2) EXECUTE register ('path_to_file', 'name');\n"
                                         + "3) EXECUTE register ('vendor', 'host', port, "
-                                        + "dbName, user, password, tableName, dsEntryName);\n"
+                                        + "'dbName', 'user', 'password', 'tableName', 'dsEntryName');\n"
                                         + "4) EXECUTE register ('vendor', 'host', port, "
-                                        + "dbName, user, password, schema, tableName, dsEntryName);\n");
+                                        + "'dbName', 'user', 'password', 'schema', 'tableName', isSSL,'dsEntryName');\n");
                         }
                 } catch (SourceAlreadyExistsException e) {
                         throw new FunctionException(e);
@@ -135,9 +137,9 @@ public final class RegisterCall extends AbstractExecutorFunction {
                         + "1) EXECUTE register ('path_to_file');\n"
                         + "2) EXECUTE register ('path_to_file', 'name');\n"
                         + "3) EXECUTE register ('vendor', 'host', port, "
-                        + "dbName, user, password, tableName, dsEntryName);\n"
+                        + "'dbName', 'user', 'password', 'tableName', 'dsEntryName');\n"
                         + "4) EXECUTE register ('vendor', 'host', port, "
-                        + "dbName, user, password, schema, tableName, dsEntryName);\n";
+                        + "'dbName', 'user', 'password', 'schema', 'tableName', isSSL, 'dsEntryName');\n";
         }
 
         public Metadata getMetadata(Metadata[] tables) {
@@ -151,15 +153,15 @@ public final class RegisterCall extends AbstractExecutorFunction {
                                 new ExecutorFunctionSignature(ScalarArgument.STRING,
                                 ScalarArgument.STRING),
                                 new ExecutorFunctionSignature(ScalarArgument.STRING,
-                                ScalarArgument.STRING, ScalarArgument.STRING,
+                                ScalarArgument.STRING, ScalarArgument.INT,
                                 ScalarArgument.STRING, ScalarArgument.STRING,
                                 ScalarArgument.STRING, ScalarArgument.STRING,
                                 ScalarArgument.STRING),
                                 new ExecutorFunctionSignature(ScalarArgument.STRING,
+                                ScalarArgument.STRING, ScalarArgument.INT,
                                 ScalarArgument.STRING, ScalarArgument.STRING,
                                 ScalarArgument.STRING, ScalarArgument.STRING,
-                                ScalarArgument.STRING, ScalarArgument.STRING,
-                                ScalarArgument.STRING, ScalarArgument.STRING)
+                                ScalarArgument.STRING,  ScalarArgument.BOOLEAN, ScalarArgument.STRING)
                         };
         }
 }
