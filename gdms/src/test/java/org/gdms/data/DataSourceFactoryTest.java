@@ -93,7 +93,7 @@ public class DataSourceFactoryTest extends TestBase {
                 sm.register("temp", super.getAnyNonSpatialResource());
 
                 sm.removeAll();
-                assertArrayEquals(new String[]{"spatial_ref_table"}, sm.getSourceNames());
+                assertArrayEquals(new String[]{}, sm.getSourceNames());
         }
 
         @Test
