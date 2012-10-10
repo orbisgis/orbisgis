@@ -68,13 +68,12 @@ public class RemoteMapCatalogTest {
                 mapCatalog.parseXML(workspaces, parser);                        
                 parser.close();
                 
-                assertEquals(workspaces.size(), 6);
+                assertEquals(workspaces.size(), 4);
                 List<String> workspacesNames = new ArrayList<String>();
                 for(Workspace workspace : workspaces) {
                         workspacesNames.add(workspace.getWorkspaceName());
                 }
                 assertTrue(workspacesNames.containsAll(
-                        Arrays.asList("default","erwan","gwen","julien",
-                        "nicolas","olivier")));
+                        Arrays.asList("default","erwan","gwen","nicolas")));
         }
 }

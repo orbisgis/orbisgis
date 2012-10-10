@@ -28,19 +28,14 @@
  */
 package org.orbisgis.core.layerModel.mapcatalog;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.io.Writer;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -51,15 +46,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.BufferedHttpEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
 import org.xnap.commons.i18n.I18n;
@@ -86,15 +72,6 @@ public class Workspace  {
                 this.cParams = cParams;
                 this.workspaceName = workspaceName;
         }
-        /**
-         * <result>
-    <status>
-        <code></code>
-        <message></message>
-    </status>
-    (<id></id>)
-</result>
-         */
         
         private int parsePublishResponse(XMLStreamReader parser) throws XMLStreamException {
                 List<String> hierarchy = new ArrayList<String>();
@@ -124,62 +101,6 @@ public class Workspace  {
                 mapContext.write(mapData);
                 return mapData.toString(ENCODING);
         }
-        public int publishMapContext(MapContext mapContext, Integer mapContextId) throws IOException {
-                int newMapContextId = 0;
-                HttpClient httpClient = new DefaultHttpClient();
-                HttpPost httpPost = new HttpPost(cParams.getApiUrl() + PUBLISH_CONTEXT);
-
-                // Parameters
-                List<NameValuePair> formparams = new ArrayList<NameValuePair>();
-                formparams.add(new BasicNameValuePair("workspace", workspaceName));
-                formparams.add(new BasicNameValuePair("owc", getMapData(mapContext)));
-                if (mapContextId != null) {
-                        formparams.add(new BasicNameValuePair("id", mapContextId.toString()));
-                }
-                UrlEncodedFormEntity owcEntity = new UrlEncodedFormEntity(formparams, "UTF-8");
-                httpPost.setEntity(owcEntity);
-                HttpResponse response = httpClient.execute(httpPost);
-
-                // Get response
-                int responseCode = response.getStatusLine().getStatusCode();
-                if (!((responseCode == HttpURLConnection.HTTP_CREATED && mapContextId==null) ||
-                        (responseCode == HttpURLConnection.HTTP_OK && mapContextId!=null)
-                        || responseCode == HttpURLConnection.HTTP_OK)) { //Old api response
-                        throw new IOException(I18N.tr("HTTP Error {0} message : {1}", responseCode, response.getStatusLine().getReasonPhrase()));
-                }
-
-                if (mapContextId == null) {
-                        HttpEntity responseEntity = response.getEntity();
-
-                        if (responseEntity != null) {
-                                responseEntity = new BufferedHttpEntity(responseEntity);
-                                InputStream instream = new BufferedInputStream(responseEntity.getContent());
-
-                                // Get response content
-                                BufferedReader in = new BufferedReader(
-                                        new InputStreamReader(
-                                        instream));
-
-
-                                XMLInputFactory factory = XMLInputFactory.newInstance();
-
-                                // Parse Data
-                                XMLStreamReader parser;
-                                try {
-                                        parser = factory.createXMLStreamReader(in);
-                                        // Fill workspaces
-                                        newMapContextId = parsePublishResponse(parser);
-                                        parser.close();
-                                } catch (XMLStreamException ex) {
-                                        throw new IOException(I18N.tr("Invalid XML content"), ex);
-                                }
-                        }
-                        httpClient.getConnectionManager().shutdown();
-                        return newMapContextId;
-                } else {
-                        return mapContextId;
-                }
-        }
         
         /**
          * Add a mapcontext to the workspace
@@ -187,7 +108,7 @@ public class Workspace  {
          * @return The ID of the published map context
          * @throws IOException 
          */
-        public int builtinsPublishMapContext(MapContext mapContext, Integer mapContextId) throws IOException  {
+        public int PublishMapContext(MapContext mapContext, Integer mapContextId) throws IOException  {
                 // Construct request
                 URL requestWorkspacesURL =
                         new URL(cParams.getApiUrl()+PUBLISH_CONTEXT);
@@ -197,7 +118,7 @@ public class Workspace  {
                 connection.setDoOutput(true);
                 connection.setConnectTimeout(cParams.getConnectionTimeOut());
                 OutputStream out = connection.getOutputStream();
-                mapContext.write(out);
+                mapContext.write(out); // Send map context
                 out.close();
                 
                 // Get response

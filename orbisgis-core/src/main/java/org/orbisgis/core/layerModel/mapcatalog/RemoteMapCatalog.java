@@ -85,8 +85,8 @@ public class RemoteMapCatalog {
                                         hierarchy.remove(hierarchy.size()-1);
                                         break;
                                 case XMLStreamConstants.CHARACTERS:
-                                        if(RemoteCommons.endsWith(hierarchy,"items","item")) {
-                                                workspaces.add(new Workspace(cParams, parser.getText()));
+                                        if(RemoteCommons.endsWith(hierarchy,"workspaces","workspace")) {
+                                                workspaces.add(new Workspace(cParams, parser.getText().trim()));
                                         }
                                         break;
                         }                               

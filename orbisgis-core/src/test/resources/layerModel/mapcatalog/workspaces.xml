@@ -1,15 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
-<result>
-    <status>
-        <code>200</code>
-        <message>Success</message>
-    </status>
-    <items>
-<item>default</item>
-<item>erwan</item>
-<item>gwen</item>
-<item>julien</item>
-<item>nicolas</item>
-<item>olivier</item>
-</items>
-</result>
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaces> 
+    <workspace>
+        default
+    </workspace>
+    <workspace>
+        erwan
+    </workspace>
+    <workspace>
+        gwen
+    </workspace>
+    <workspace>
+        nicolas
+    </workspace>
+</workspaces>
