@@ -40,14 +40,17 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import net.opengis.ows._2.LanguageStringType;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.renderer.se.common.LocalizedText;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -60,19 +63,35 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class Workspace  {
         private static final String ENCODING = "utf-8";
-        private static final String LIST_CONTEXT = "/context";
-        private static final String PUBLISH_CONTEXT = "/context/save";
+        private static final String LIST_CONTEXT = "/contexts";
+        private static final String PUBLISH_CONTEXT = "/contexts";
         private static final I18n I18N = I18nFactory.getI18n(Workspace.class);        
         private static final Logger LOGGER = Logger.getLogger(Workspace.class);
         private ConnectionProperties cParams;
         private String workspaceName;
         private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-
+        /**
+         * Construct a workspake identifier
+         * @param cParams
+         * @param workspaceName 
+         */
         public Workspace(ConnectionProperties cParams, String workspaceName) {
                 this.cParams = cParams;
                 this.workspaceName = workspaceName;
         }
         
+        /**
+         * 
+         * @param dateStr The date with the format Workspace.FORMAT
+         * @return 
+         */
+        public static Date parseDate(String dateStr) throws ParseException {
+                return FORMAT.parse(dateStr);
+        }
+        
+        private String getPublishUrl() {
+                return cParams.getApiUrl()+"/workspaces/"+workspaceName+PUBLISH_CONTEXT;
+        }
         private int parsePublishResponse(XMLStreamReader parser) throws XMLStreamException {
                 List<String> hierarchy = new ArrayList<String>();
                 for (int event = parser.next();
@@ -108,15 +127,16 @@ public class Workspace  {
          * @return The ID of the published map context
          * @throws IOException 
          */
-        public int PublishMapContext(MapContext mapContext, Integer mapContextId) throws IOException  {
+        public int publishMapContext(MapContext mapContext, Integer mapContextId) throws IOException  {
                 // Construct request
                 URL requestWorkspacesURL =
-                        new URL(cParams.getApiUrl()+PUBLISH_CONTEXT);
+                        new URL(getPublishUrl());
                 // Establish connection
                 HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
                 connection.setRequestMethod("POST");
                 connection.setDoOutput(true);
                 connection.setConnectTimeout(cParams.getConnectionTimeOut());
+                connection.addRequestProperty("Content-Type", "text/xml");
                 OutputStream out = connection.getOutputStream();
                 mapContext.write(out); // Send map context
                 out.close();
@@ -124,9 +144,8 @@ public class Workspace  {
                 // Get response
                 int responseCode = connection.getResponseCode();
                 if (!((responseCode == HttpURLConnection.HTTP_CREATED && mapContextId==null) ||
-                        (responseCode == HttpURLConnection.HTTP_OK && mapContextId!=null)
-                        || responseCode == HttpURLConnection.HTTP_OK)) { //Old api response
-                        throw new IOException(I18N.tr("HTTP Error {0} message : {1}", connection.getResponseCode(),connection.getResponseMessage()));
+                        (responseCode == HttpURLConnection.HTTP_OK && mapContextId!=null))) {
+                        throw new IOException(I18N.tr("HTTP Error {0} message : {1} with the URL {2}", connection.getResponseCode(),connection.getResponseMessage(),requestWorkspacesURL));
                 }
                 
                 if(mapContextId==null) {
@@ -163,6 +182,7 @@ public class Workspace  {
         public void parseXML(List<RemoteMapContext> mapContextList,XMLStreamReader parser) throws XMLStreamException {
                 List<String> hierarchy = new ArrayList<String>();
                 RemoteMapContext curMapContext = null;
+                Locale curLocale = null;
                 for (int event = parser.next();
                         event != XMLStreamConstants.END_DOCUMENT;
                         event = parser.next()) {
@@ -170,30 +190,48 @@ public class Workspace  {
                         switch(event) {
                                 case XMLStreamConstants.START_ELEMENT:
                                         hierarchy.add(parser.getLocalName());
-                                        if(RemoteCommons.endsWith(hierarchy,"items","item")) {
+                                        if(RemoteCommons.endsWith(hierarchy,"contexts","context")) {
                                                 curMapContext = new RemoteOwsMapContext(cParams);
                                                 curMapContext.setWorkspaceName(workspaceName);
                                         }
+                                        // Parse attributes
+                                        for (int attributeId = 0; attributeId < parser.getAttributeCount(); attributeId++) {
+                                                String attributeName = parser.getAttributeLocalName(attributeId);
+                                                if (attributeName.equals("id")) {
+                                                        curMapContext.setId(Integer.parseInt(parser.getAttributeValue(attributeId)));
+                                                } else if (attributeName.equals("date")) {
+                                                        String attributeValue = parser.getAttributeValue(attributeId);
+                                                        try {
+                                                                curMapContext.setDate(parseDate(attributeValue));
+                                                        } catch (ParseException ex) {
+                                                                LOGGER.warn(I18N.tr("Cannot parse the provided date {0}",attributeValue),ex);
+                                                        }
+                                                } else if (attributeName.equals("lang")) {
+                                                         curLocale=LocalizedText.forLanguageTag(parser.getAttributeValue(attributeId));
+                                                }
+                                        }
                                         break;
                                 case XMLStreamConstants.END_ELEMENT:
-                                        if(RemoteCommons.endsWith(hierarchy,"items","item")) {
+                                        if(RemoteCommons.endsWith(hierarchy,"contexts","context")) {
                                                 mapContextList.add(curMapContext);
+                                                curMapContext = null;
                                         }
+                                        curLocale = null;
                                         hierarchy.remove(hierarchy.size()-1);
                                         break;
                                 case XMLStreamConstants.CHARACTERS:
-                                        if(RemoteCommons.endsWith(hierarchy,"items","item","id")) {
-                                                curMapContext.setId(Integer.parseInt(parser.getText()));
-                                        } else if(RemoteCommons.endsWith(hierarchy,"items","item","title")) {
-                                                curMapContext.getDescription().addTitle(Locale.getDefault(), parser.getText());                                                
-                                        } else if(RemoteCommons.endsWith(hierarchy,"items","item","abstract")) {
-                                                curMapContext.getDescription().addAbstract(Locale.getDefault(), parser.getText());                                                
-                                        } else if(RemoteCommons.endsWith(hierarchy,"items","item","date")) {
-                                                try {
-                                                        curMapContext.setDate(FORMAT.parse(parser.getText()));
-                                                } catch( ParseException ex) {
-                                                        // Silently ignore the date parse failure
+                                        if (RemoteCommons.endsWith(hierarchy,"contexts","context","title")) {
+                                                Locale descLocale = Locale.getDefault();
+                                                if(curLocale!=null) {
+                                                        descLocale = curLocale;
                                                 }
+                                                curMapContext.getDescription().addTitle(descLocale, parser.getText().trim());                                                
+                                        } else if(RemoteCommons.endsWith(hierarchy,"contexts","context","abstract")) {
+                                                Locale descLocale = Locale.getDefault();
+                                                if(curLocale!=null) {
+                                                        descLocale = curLocale;
+                                                }
+                                                curMapContext.getDescription().addAbstract(descLocale, parser.getText().trim());                                                
                                         }
                                         break;
                         }                               

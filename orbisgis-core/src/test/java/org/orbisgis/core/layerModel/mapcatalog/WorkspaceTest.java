@@ -54,26 +54,6 @@ public class WorkspaceTest {
                 // Unused URL
                 URL apiUrl = new URL("http://poulpe.heig-vd.ch/scapc2/serviceapi/index.php");
                 ConnectionProperties cParams = new ConnectionProperties(apiUrl);
-                // Expected result
-                List<RemoteMapContext> expectedContext = new ArrayList<RemoteMapContext>();
-                RemoteMapContext first = new RemoteOwsMapContext(cParams);
-                first.setId(0);
-                first.getDescription().addTitle(Locale.getDefault(), "test save");
-                first.getDescription().addAbstract(Locale.getDefault(), "save an existing project...");
-                expectedContext.add(first);
-                RemoteMapContext second = new RemoteOwsMapContext(cParams);
-                second.setId(5);
-                second.getDescription().addTitle(Locale.getDefault(), "2 Layers,"
-                        + " Elections fédérales 2007, Conseil National");
-                second.getDescription().addAbstract(Locale.getDefault(),
-                        "Les élections fédérales suisses de 2007 ont eu lieu"
-                        + " le 21 octobre 2007. Elles ont permis le"
-                        + " renouvellement des 200 membres qui composent"
-                        + " le Conseil national (CN) et des 43 à 46 membres"
-                        + " du Conseil des États (CE), élus le 24 octobre"
-                        + " 2003, pour la 48e législature de quatre ans (2007-2011).");
-                second.setDate((new SimpleDateFormat("yyyy-MM-dd")).parse("2012-09-20"));
-                expectedContext.add(second);
 
                 // Read the xml file in test resources
                 FileReader inFile = new FileReader("src/test/resources/layerModel/mapcatalog/context.xml");
@@ -91,6 +71,15 @@ public class WorkspaceTest {
                 parser.close();
                 
                 assertEquals(context.size(), 2);
-                assertTrue(context.containsAll(expectedContext));
+
+                assertEquals(context.get(0).getDescription().getTitle(Locale.ENGLISH), "My custom context");
+                assertEquals(context.get(0).getDescription().getAbstract(Locale.ENGLISH), "Some text here.");
+                assertEquals(context.get(0).getDate(), Workspace.parseDate("2012-09-12"));
+                assertEquals(context.get(0).getId(), 0);
+
+                assertEquals(context.get(1).getDescription().getDefaultTitle(), "My context");
+                assertEquals(context.get(1).getDescription().getDefaultAbstract(), "Some interesting text here.");
+                assertEquals(context.get(1).getDate(), Workspace.parseDate("2012-08-22"));
+                assertEquals(context.get(1).getId(), 1);
         }
 }

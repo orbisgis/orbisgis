@@ -1,21 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<result>
-        <status>
-                <code>200</code>
-                <message>Success</message>
-        </status>
-        <items>
-                <item>
-                        <id>0</id>
-                        <title>test save</title>
-                        <abstract>save an existing project...</abstract>
-                        <date/>
-                </item>
-                <item>
-                        <id>5</id>
-                        <title>2 Layers, Elections fédérales 2007, Conseil National</title>
-                        <abstract>Les élections fédérales suisses de 2007 ont eu lieu le 21 octobre 2007. Elles ont permis le renouvellement des 200 membres qui composent le Conseil national (CN) et des 43 à 46 membres du Conseil des États (CE), élus le 24 octobre 2003, pour la 48e législature de quatre ans (2007-2011).</abstract>
-                        <date>2012-09-20</date>
-                </item>
-        </items>
-</result>
+<contexts>
+  <context id="0" date="2012-09-12">
+    <title xml:lang="en">My custom context</title>
+    <abstract xml:lang="en">Some text here.</abstract>
+  </context>
+  <context id="1" date="2012-08-22" path="personal/">
+    <title>My context</title>
+    <abstract>Some interesting text here.</abstract>
+  </context>
+</contexts>
