@@ -28,19 +28,15 @@
  */
 package org.orbisgis.core.layerModel.mapcatalog;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import javax.xml.stream.Location;
-import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -55,7 +51,6 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public abstract class RemoteMapContext {
         private static final String ENCODING = "utf-8";
-        private static final String GET_CONTEXT = "/context/";
         private int id = 0;
         private Description description = new Description();
         private ConnectionProperties cParams;
@@ -63,6 +58,9 @@ public abstract class RemoteMapContext {
         private Date date;
         private static final I18n I18N = I18nFactory.getI18n(RemoteMapContext.class);
 
+        private String getMapContextUrl() {
+                return cParams.getApiUrl()+"/workspaces/"+workspaceName+"/contexts/"+id;
+        }
         /**
          * Constructor
          * @param cParams Connection parameters
@@ -169,45 +167,6 @@ public abstract class RemoteMapContext {
                 return description;
         }
         
-        private static String readStream(InputStream in) throws IOException {
-                StringBuilder stringBuilder = new StringBuilder();
-                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
-                for (String line = bufferedReader.readLine(); line != null; line = bufferedReader.readLine()) {
-                        stringBuilder.append(line);
-                }
-                bufferedReader.close();
-                return stringBuilder.toString();
-        }
-
-        /**
-         * Using old API, this reader need to extract sub nodes before returning
-         * @param completeIn 
-         * @param encoding 
-         * @return
-         * @throws IOException  
-         */
-        public InputStream extractMapContent(InputStream completeIn, String encoding) throws IOException {
-                // Read the entire DATA
-                String data = readStream(completeIn);
-                ByteArrayInputStream in;
-                if(encoding != null) {
-                        in = new ByteArrayInputStream(data.getBytes(encoding));
-                } else {
-                        in = new ByteArrayInputStream(data.getBytes());
-                }
-                XMLInputFactory factory = XMLInputFactory.newInstance();                
-                // Parse Data
-                XMLStreamReader parser;
-                try {
-                        parser = factory.createXMLStreamReader(in);
-                        // Fill workspaces
-                        InputStream mapStream = parseXML(parser,data);
-                        parser.close();
-                        return mapStream;
-                } catch(XMLStreamException ex) {
-                        throw new IOException(I18N.tr("Invalid XML content"),ex);
-                }                             
-        }
         /**
          * Return the stream of the map content node
          * This call may take a long time to execute.
@@ -219,62 +178,19 @@ public abstract class RemoteMapContext {
         public InputStream getMapContent() throws IOException {
                 // Construct request
                 URL requestWorkspacesURL =
-                        new URL(cParams.getApiUrl()+GET_CONTEXT+id);
+                        new URL(getMapContextUrl());
                 // Establish connection
                 HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
-
-                
-                
-                connection.setRequestMethod("POST");
-                connection.setDoOutput(true);
-                connection.setConnectTimeout(cParams.getConnectionTimeOut());
-                OutputStream out = connection.getOutputStream();
-                RemoteCommons.putParameters(out,"workspace",workspaceName,ENCODING);
-                out.close();                
-                
+    
+                connection.setRequestMethod("GET");
+                connection.setConnectTimeout(cParams.getConnectionTimeOut());                
                 
 		if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                        throw new IOException(I18N.tr("HTTP Error {0} message : {1}",connection.getResponseCode(),connection.getResponseMessage()));
+                        throw new IOException(I18N.tr("HTTP Error {0} message : {1} while downloading from {2}",connection.getResponseCode(),connection.getResponseMessage(),getMapContextUrl()));
                 }
-                return extractMapContent(connection.getInputStream(),connection.getContentEncoding());
+                return connection.getInputStream();
         }
-
-        /**
-         * Read the parser extract the map content data
-         * @param parser Opened parser
-         * @param data 
-         * @throws XMLStreamException 
-         * @return Map content data or null if the map content data is empty
-         */
-        public InputStream parseXML(XMLStreamReader parser,String data) throws XMLStreamException {
-                List<String> hierarchy = new ArrayList<String>();
-                Location begin=null;
-                Location end=null;
-                for (int event = parser.next();
-                        event != XMLStreamConstants.END_DOCUMENT;
-                        event = parser.next()) {
-                        // For each XML elements
-                        switch (event) {
-                                case XMLStreamConstants.START_ELEMENT:
-                                        hierarchy.add(parser.getLocalName());
-                                        break;
-                                case XMLStreamConstants.END_ELEMENT:
-                                        if(RemoteCommons.endsWith(hierarchy, "result", "status")) {
-                                                begin = parser.getLocation();
-                                        } else if (RemoteCommons.endsWith(hierarchy, "result", "OWSContext")) {
-                                                end = parser.getLocation();
-                                        }
-                                        hierarchy.remove(hierarchy.size() - 1);
-                                        break;
-                        }
-                }
-                if(begin!=null && end!=null) {
-                        String mapContent = data.substring(begin.getCharacterOffset(), end.getCharacterOffset());
-                        return new ByteArrayInputStream(mapContent.getBytes());
-                } else {
-                        throw new XMLStreamException(I18N.tr("Incomplete map context response"));
-                }
-        }
+        
         /**
          * Connect to the server and request the map content.
          * This call may take a long time to execute.
