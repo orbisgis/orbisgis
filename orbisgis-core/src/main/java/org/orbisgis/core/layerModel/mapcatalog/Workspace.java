@@ -68,7 +68,7 @@ public class Workspace  {
         private static final Logger LOGGER = Logger.getLogger(Workspace.class);
         private ConnectionProperties cParams;
         private String workspaceName;
-        private static final DateFormat FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+        private static final DateFormat FORMAT = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss z");
         /**
          * Construct a workspake identifier
          * @param cParams
@@ -90,6 +90,10 @@ public class Workspace  {
         
         private String getPublishUrl() {
                 return cParams.getApiUrl()+"/workspaces/"+workspaceName+PUBLISH_CONTEXT;
+        }
+        
+        private String getMapContextListUrl() {
+                return cParams.getApiUrl()+"/workspaces/"+workspaceName+LIST_CONTEXT;
         }
         private int parsePublishResponse(XMLStreamReader parser) throws XMLStreamException {
                 List<String> hierarchy = new ArrayList<String>();
@@ -259,18 +263,11 @@ public class Workspace  {
                 List<RemoteMapContext> contextList = new ArrayList<RemoteMapContext>();
                 // Construct request
                 URL requestWorkspacesURL =
-                        new URL(cParams.getApiUrl()+LIST_CONTEXT);
+                        new URL(getMapContextListUrl());
                 // Establish connection
                 HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setDoOutput(true);
+                connection.setRequestMethod("GET");
                 connection.setConnectTimeout(cParams.getConnectionTimeOut());
-                OutputStream out = connection.getOutputStream();
-                RemoteCommons.putParameters(out,"workspace",workspaceName,ENCODING);
-                out.close();
-                
-                // Send parameters
-                
 
 		if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                         throw new IOException(I18N.tr("HTTP Error {0} message : {1}",connection.getResponseCode(),connection.getResponseMessage()));
