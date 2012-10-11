@@ -34,7 +34,6 @@
 package org.gdms.driver.io;
 
 import java.io.File;
-
 import org.gdms.driver.DriverException;
 
 /**

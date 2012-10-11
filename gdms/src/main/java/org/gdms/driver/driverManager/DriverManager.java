@@ -75,6 +75,8 @@ public final class DriverManager {
         public static final String DEFAULT_SINGLE_TABLE_NAME = "main";
         private FileDriverRegister fdr = new FileDriverRegister();
         private Set<String> driverFileExtensions = new HashSet<String>();
+        private Set<String> exporterFileExtensions = new HashSet<String>();
+        private Set<String> importerFileExtensions = new HashSet<String>();
 
         public FileImporter getFileImporter(File file) {
                 for (Entry<String, Class<? extends Importer>> e : importClasses.entrySet()) {
@@ -251,13 +253,41 @@ public final class DriverManager {
          * @param file a file (does not need to exist)
          * @return true if supported by any driver.
          */
-        public boolean isFileSupported(File file) {
+        public boolean isDriverFileSupported(File file) {
                 final String name = file.getName();
                 int ix = name.lastIndexOf('.');
                 if (ix != -1 && ix + 1 != name.length()) {
                         return driverFileExtensions.contains(name.substring(ix + 1).toLowerCase());
                 }
                 
+                return false;
+        }
+        
+        /**
+         * Returns true if the file is supported by any exporter registered in this DriverManager.
+         * @param file
+         * @return 
+         */
+        public boolean isExporterFileSupported(File file){
+                final String name = file.getName();
+                int ix = name.lastIndexOf('.');
+                if (ix != -1 && ix + 1 != name.length()) {
+                        return exporterFileExtensions.contains(name.substring(ix + 1).toLowerCase());
+                }
+                return false;
+        }
+        
+        /**
+         * Returns true if the file is supported by any exporter registered in this DriverManager.
+         * @param file
+         * @return 
+         */
+        public boolean isImporterFileSupported(File file){
+                final String name = file.getName();
+                int ix = name.lastIndexOf('.');
+                if (ix != -1 && ix + 1 != name.length()) {
+                        return importerFileExtensions.contains(name.substring(ix + 1).toLowerCase());
+                }
                 return false;
         }
 
@@ -289,7 +319,11 @@ public final class DriverManager {
         public void registerImporter(Class<? extends Importer> importerClass) {
                 LOG.trace("Registering driver " + importerClass.getName());
                 try {
-                        Importer driver = importerClass.newInstance();
+                        Importer driver = importerClass.newInstance();                       
+                        if (driver instanceof FileImporter) {
+                                FileImporter fD = (FileImporter) driver;
+                                importerFileExtensions.addAll(Arrays.asList(fD.getFileExtensions()));
+                        }
                         importClasses.put(driver.getImporterId(), importerClass);
                         fireImporterAdded(driver.getImporterId(), importerClass);
                 } catch (InstantiationException e) {
@@ -305,6 +339,10 @@ public final class DriverManager {
                 LOG.trace("Registering driver " + exporterClass.getName());
                 try {
                         Exporter driver = exporterClass.newInstance();
+                        if (driver instanceof FileExporter) {
+                                FileExporter fD = (FileExporter) driver;
+                                exporterFileExtensions.addAll(Arrays.asList(fD.getFileExtensions()));
+                        }
                         exportClasses.put(driver.getExporterId(), exporterClass);
                         fireExporterAdded(driver.getExporterId(), exporterClass);
                 } catch (InstantiationException e) {

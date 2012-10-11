@@ -105,11 +105,11 @@ public class DriverManagerTest extends TestBase {
         public void testSupportedFiles() {
                 final DriverManager dm = sm.getDriverManager();
                 
-                assertTrue(dm.isFileSupported(new File("toto.shp")));
-                assertTrue(dm.isFileSupported(new File("toto.jpg")));
-                assertFalse(dm.isFileSupported(new File("toto.xls")));
-                assertFalse(dm.isFileSupported(new File("toto.")));
-                assertFalse(dm.isFileSupported(new File("jpg")));
+                assertTrue(dm.isDriverFileSupported(new File("toto.shp")));
+                assertTrue(dm.isDriverFileSupported(new File("toto.jpg")));
+                assertFalse(dm.isDriverFileSupported(new File("toto.xls")));
+                assertFalse(dm.isDriverFileSupported(new File("toto.")));
+                assertFalse(dm.isDriverFileSupported(new File("jpg")));
         }
 
         /**
