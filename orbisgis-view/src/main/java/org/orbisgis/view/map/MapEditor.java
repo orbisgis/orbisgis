@@ -90,13 +90,7 @@ import org.orbisgis.view.map.mapsManager.MapsManager;
 import org.orbisgis.view.map.mapsManager.TreeLeafMapElement;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.TransitionException;
-import org.orbisgis.view.map.tools.CompassTool;
-import org.orbisgis.view.map.tools.MesureLineTool;
-import org.orbisgis.view.map.tools.MesurePolygonTool;
-import org.orbisgis.view.map.tools.PanTool;
-import org.orbisgis.view.map.tools.SelectionTool;
-import org.orbisgis.view.map.tools.ZoomInTool;
-import org.orbisgis.view.map.tools.ZoomOutTool;
+import org.orbisgis.view.map.tools.*;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -391,6 +385,24 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         autoSelection.add(mesureButton);
         toolBar.add(mesureButton);
         mesureButton.setSelectedItem(defaultMenu);
+        
+        //Drawing Tools
+        JPopupMenu graphicToolsMenu = new JPopupMenu();
+        defaultMenu = createMenuItem(new FencePolygonTool());
+        graphicToolsMenu.add(defaultMenu);
+        graphicToolsMenu.add(createMenuItem(new PickCoordinatesPointTool() ));
+        
+         //Create the Mesure Tools Popup Button
+        DropDownButton graphicToolsButton = new DropDownButton();
+        if(useButtonText) {
+            graphicToolsButton.setName(I18N.tr("Graphic tools"));
+        }
+        graphicToolsButton.setButtonAsMenuItem(true);
+        //Add Menu to the Popup Button
+        graphicToolsButton.setComponentPopupMenu(graphicToolsMenu);
+        autoSelection.add(graphicToolsButton);
+        toolBar.add(graphicToolsButton);
+        graphicToolsButton.setSelectedItem(defaultMenu);
         
         // Show/Hide maps manager
         toolBar.add(addButton(OrbisGISIcon.getIcon("map"),

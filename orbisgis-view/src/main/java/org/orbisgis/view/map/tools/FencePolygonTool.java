@@ -30,6 +30,7 @@ package org.orbisgis.view.map.tools;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
+import java.awt.Color;
 import java.io.File;
 import java.io.IOException;
 import java.util.Observable;
@@ -50,6 +51,14 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.renderer.se.CompositeSymbolizer;
+import org.orbisgis.core.renderer.se.LineSymbolizer;
+import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
@@ -74,7 +83,19 @@ public class FencePolygonTool extends AbstractPolygonTool {
                         }
 
                         layer = createFenceLayer(g);
-
+                        //Create a style and add it to the fence layer
+                        Style fenceStyle = new Style(layer, false);
+                        CompositeSymbolizer symbolizer = new CompositeSymbolizer();
+                        LineSymbolizer symb = new LineSymbolizer();
+                        PenStroke ps = (PenStroke) symb.getStroke();
+                        ((SolidFill) (ps).getFill()).setColor(new ColorLiteral(Color.ORANGE));
+                        ps.setWidth(new RealLiteral(1));
+                        symbolizer.addSymbolizer(symb);
+                        Rule r = new Rule();
+                        r.setCompositeSymbolizer(symbolizer);
+                        fenceStyle.addRule(r);
+                        layer.addStyle(fenceStyle);
+                        
                         vc.getLayerModel().insertLayer(layer, 0);
                 } catch (LayerException e) {
                         UILOGGER.error(I18N.tr("Cannot use fence tool"), e);

@@ -28,22 +28,17 @@
  */
 package org.orbisgis.view.map.tools;
 
+import com.vividsolutions.jts.geom.MultiPolygon;
 import java.util.Observable;
-
-import javax.swing.AbstractButton;
- 
+import org.gdms.data.DataSource;
+import org.gdms.data.types.Type;
+import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
-
-
-import com.vividsolutions.jts.geom.MultiPolygon;
-import org.gdms.data.DataSource;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
 
 public class MultipolygonTool extends AbstractMultipolygonTool {
 

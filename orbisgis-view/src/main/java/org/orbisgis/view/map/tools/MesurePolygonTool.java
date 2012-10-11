@@ -28,25 +28,18 @@
  */
 package org.orbisgis.view.map.tools;
 
-import java.awt.Color;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.Polygon;
 import java.awt.Graphics;
 import java.text.DecimalFormat;
 import java.util.Observable;
-
-import javax.swing.AbstractButton;
-
-import org.orbisgis.core.Services;
+import javax.swing.ImageIcon;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.DrawingException;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
-
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.Polygon;
-import javax.swing.ImageIcon;
-import org.apache.log4j.Logger;
-import org.orbisgis.view.icons.OrbisGISIcon;
 
 public class MesurePolygonTool extends AbstractPolygonTool {
         protected static Logger GUI_LOGGER = Logger.getLogger("gui."+MesurePolygonTool.class);
