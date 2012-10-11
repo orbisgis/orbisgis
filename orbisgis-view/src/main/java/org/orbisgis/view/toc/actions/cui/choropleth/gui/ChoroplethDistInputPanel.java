@@ -414,6 +414,9 @@ public class ChoroplethDistInputPanel extends JPanel {
         }
     }
 
+    /**
+     * Background Job for a field action perform
+     */
     private class BGOCmbField implements BackgroundJob {
 
         @Override
@@ -440,6 +443,9 @@ public class ChoroplethDistInputPanel extends JPanel {
         }
     }
 
+    /**
+     * Background Job for a statistic method change
+     */
     private class BGOCmbMethod implements BackgroundJob {
 
         @Override
