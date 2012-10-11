@@ -47,7 +47,6 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
-import net.opengis.ows._2.LanguageStringType;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.renderer.se.common.LocalizedText;
@@ -101,14 +100,18 @@ public class Workspace  {
                         switch(event) {
                                 case XMLStreamConstants.START_ELEMENT:
                                         hierarchy.add(parser.getLocalName());
+                                        // Parse attributes
+                                        if(RemoteCommons.endsWith(hierarchy, "context")) {
+                                                for (int attributeId = 0; attributeId < parser.getAttributeCount(); attributeId++) {
+                                                        String attributeName = parser.getAttributeLocalName(attributeId);
+                                                        if (attributeName.equals("id")) {
+                                                                return Integer.parseInt(parser.getAttributeValue(attributeId));
+                                                        }
+                                                }
+                                        }
                                         break;
                                 case XMLStreamConstants.END_ELEMENT:
                                         hierarchy.remove(hierarchy.size()-1);
-                                        break;
-                                case XMLStreamConstants.CHARACTERS:
-                                        if(RemoteCommons.endsWith(hierarchy,"result","id")) {
-                                                return Integer.parseInt(parser.getText());
-                                        }
                                         break;
                         }                               
                 }                
