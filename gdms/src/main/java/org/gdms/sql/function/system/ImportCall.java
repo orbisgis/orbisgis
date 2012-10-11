@@ -34,10 +34,7 @@
 package org.gdms.sql.function.system;
 
 import java.io.File;
-
 import org.apache.commons.io.FilenameUtils;
-import org.orbisgis.progress.ProgressMonitor;
-
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
@@ -48,6 +45,7 @@ import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.executor.AbstractExecutorFunction;
 import org.gdms.sql.function.executor.ExecutorFunctionSignature;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  *

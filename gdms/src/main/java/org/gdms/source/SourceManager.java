@@ -36,17 +36,13 @@ package org.gdms.source;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-
-import org.gdms.data.DataSourceCreation;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceDefinition;
-import org.gdms.data.DataSourceFinalizationException;
-import org.gdms.data.NoSuchTableException;
+import org.gdms.data.*;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.exporter.ExportSourceDefinition;
 import org.gdms.data.importer.ImportSourceDefinition;
 import org.gdms.data.schema.Schema;
 import org.gdms.data.stream.StreamSource;
+import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.driverManager.DriverManager;
@@ -657,4 +653,13 @@ public interface SourceManager {
          */
         void exportTo(String name, ExportSourceDefinition def) throws DriverException, NoSuchTableException
                 , DataSourceCreationException;
+        
+        /**
+         * Exports a dataSource to the specified export source definition.
+         * @param dataSet an existing dataset
+         * @param file a file to export
+         * @throws DriverException
+         */
+        void exportTo(DataSet dataSet,File file) throws DriverException;
+        
 }

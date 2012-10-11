@@ -36,37 +36,15 @@ package org.gdms.source;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.net.URI;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.progress.ProgressMonitor;
-
-import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreation;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceDefinition;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.DataSourceFinalizationException;
-import org.gdms.data.InitializationException;
-import org.gdms.data.NoSuchTableException;
-import org.gdms.data.OCCounterDecorator;
-import org.gdms.data.SourceAlreadyExistsException;
+import org.gdms.data.*;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.exporter.ExportSourceDefinition;
@@ -77,16 +55,10 @@ import org.gdms.data.importer.FileImportDefinition;
 import org.gdms.data.importer.ImportSourceDefinition;
 import org.gdms.data.memory.MemorySourceCreation;
 import org.gdms.data.memory.MemorySourceDefinition;
-import org.gdms.data.schema.DefaultSchema;
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.data.schema.RootSchema;
-import org.gdms.data.schema.Schema;
+import org.gdms.data.schema.*;
 import org.gdms.data.sql.SQLSourceDefinition;
 import org.gdms.data.stream.StreamSource;
 import org.gdms.data.stream.StreamSourceDefinition;
-import org.gdms.data.system.SystemSource;
-import org.gdms.data.system.SystemSourceDefinition;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
@@ -112,6 +84,8 @@ import org.gdms.source.directory.Sources;
 import org.gdms.sql.engine.Engine;
 import org.gdms.sql.engine.ParseException;
 import org.gdms.sql.engine.SQLStatement;
+import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 
 public final class DefaultSourceManager implements SourceManager {
 
@@ -1198,22 +1172,8 @@ public final class DefaultSourceManager implements SourceManager {
                 // differentiate between schema names and table names
                 if (exists(name)) {
                         DataSource d = getDataSource(name, new NullProgressMonitor());
-
-                        def.setDataSourceFactory(dsf);
                         d.open();
-                        if (def.getSchema().getTableCount() > 1) {
-                                throw new DriverException("This export definition expects a schema with "
-                                        + def.getSchema().getTableCount() + " table, not a single table.");
-                        } else if (def.getSchema().getTableCount() == 1) {
-                                final Metadata met = def.getSchema().getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
-                                // checks metadata are compatible
-                                String error = MetadataUtilities.check(met, d.getMetadata());
-                                if (error != null) {
-                                        throw new DriverException("Cannot export '" + name + "': "
-                                                + error);
-                                }
-                        }
-                        def.export(d, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+                        exportTo(d, def);   
                         d.close();
                 } else if (schemaExists(name)) {
                         String[] names = getSourceNames();
@@ -1249,6 +1209,36 @@ public final class DefaultSourceManager implements SourceManager {
                 } else {
                         throw new NoSuchTableException(name);
                 }
+        }
+        @Override
+        public void exportTo(DataSet dataSet,File file) throws DriverException{
+                exportTo(dataSet, new FileExportDefinition(file));
+        }
+        
+        
+        /**
+         * Export a datasource to a file
+         * @param dataSource
+         * @param def
+         * @throws DriverException
+         * @throws NoSuchTableException
+         * @throws DataSourceCreationException 
+         */
+        private void exportTo(DataSet dataSet, ExportSourceDefinition def) throws DriverException {
+                        def.setDataSourceFactory(dsf);
+                        if (def.getSchema().getTableCount() > 1) {
+                                throw new DriverException("This export definition expects a schema with "
+                                        + def.getSchema().getTableCount() + " table, not a single table.");
+                        } else if (def.getSchema().getTableCount() == 1) {
+                                final Metadata met = def.getSchema().getTableByName(DriverManager.DEFAULT_SINGLE_TABLE_NAME);
+                                // checks metadata are compatible
+                                String error = MetadataUtilities.check(met, dataSet.getMetadata());
+                                if (error != null) {
+                                        throw new DriverException("Cannot export the datasource': "
+                                                + error);
+                                }
+                        }
+                        def.export(dataSet, DriverManager.DEFAULT_SINGLE_TABLE_NAME);
         }
 
         @Override
