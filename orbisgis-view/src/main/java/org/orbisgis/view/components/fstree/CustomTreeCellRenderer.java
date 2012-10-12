@@ -53,7 +53,10 @@ public class CustomTreeCellRenderer extends TreeLaFRenderer {
                         JLabel rendererComponent = (JLabel) nativeRendererComp;
                         String toolTipText=null;
                         if(value instanceof AbstractTreeNode) {
-                                toolTipText = ((AbstractTreeNode)value).getToolTipText();
+                                String nodeToolType = ((AbstractTreeNode)value).getToolTipText();
+                                if(nodeToolType!=null && !nodeToolType.isEmpty()) {
+                                        toolTipText = nodeToolType;
+                                }
                         }
                         rendererComponent.setToolTipText(toolTipText);
                         // Let the node to customise rendering
