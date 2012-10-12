@@ -34,12 +34,17 @@
 package org.gdms.sql.function.system;
 
 import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
+import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
@@ -62,15 +67,30 @@ public final class ExportCall extends AbstractExecutorFunction {
                 if (values.length == 1) {
                         DataSet ds = tables[0];
                         String file = values[0].getAsString();
-
-                        String destName = sourceManager.nameAndRegister(new File(file));
-                        try {
-                                dsf.saveContents(destName, ds, pm);
-                        } catch (DriverException ex) {
-                                throw new FunctionException(ex);
-                        } finally {
-                                sourceManager.remove(destName);
+                        DriverManager driverManager = dsf.getSourceManager().getDriverManager();
+                        File f = new File(file);
+                        if (driverManager.isDriverFileSupported(f)) {
+                                String destName = sourceManager.nameAndRegister(f);
+                                try {
+                                        dsf.saveContents(destName, ds, pm);
+                                } catch (DriverException ex) {
+                                        throw new FunctionException(ex);
+                                } finally {
+                                        sourceManager.remove(destName);
+                                }
                         }
+                        else if(driverManager.isExporterFileSupported(f )){                                
+                                try {
+                                        sourceManager.exportTo(ds, f);
+                                } catch (DriverException ex) {
+                                        throw new FunctionException("Cannot export the dataset", ex);
+                                }
+                        }
+                        else {
+                                throw new FunctionException("This file format is not supported yet!");
+                        }
+
+                             
                 } else if (values.length > 6 && values.length < 10) {
 
                         DataSet ds = tables[0];

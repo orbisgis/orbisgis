@@ -38,13 +38,7 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
-
 import org.apache.log4j.Logger;
-import org.jproj.CRSFactory;
-import org.orbisgis.progress.NullProgressMonitor;
-import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.utils.I18N;
-
 import org.gdms.data.db.DBSource;
 import org.gdms.data.db.DBTableSourceDefinition;
 import org.gdms.data.edition.EditionDecorator;
@@ -70,6 +64,10 @@ import org.gdms.sql.engine.Engine;
 import org.gdms.sql.engine.ParseException;
 import org.gdms.sql.engine.SQLStatement;
 import org.gdms.sql.function.FunctionManager;
+import org.jproj.CRSFactory;
+import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.utils.I18N;
 
 /**
  * Main Factory and entry point for Gdms.
