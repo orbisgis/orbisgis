@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.context.main;
 
+import java.io.File;
 import java.io.IOException;
 import org.apache.log4j.*;
 import org.apache.log4j.varia.LevelRangeFilter;
@@ -86,6 +87,7 @@ public class MainContext {
                 initFileLogger(coreWorkspace);
         }
         dataSourceFactory = new DataSourceFactory(coreWorkspace.getSourceFolder(), coreWorkspace.getTempFolder(), coreWorkspace.getPluginFolder());
+        dataSourceFactory.setResultDir(new File(coreWorkspace.getResultsFolder()));
         dataManager = new DefaultDataManager(dataSourceFactory);
         registerServices();
     }

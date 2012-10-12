@@ -51,25 +51,20 @@
  */
 package org.orbisgis.view.map.tools;
 
-import java.util.Observable;
-
-import javax.swing.AbstractButton;
- 
-import org.gdms.data.values.Value;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
-import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.view.map.tool.ToolManager;
-import org.orbisgis.view.map.tool.TransitionException;
-
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Point;
+import java.util.Observable;
 import javax.swing.ImageIcon;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.DriverException;
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.map.tool.ToolManager;
+import org.orbisgis.view.map.tool.TransitionException;
 
 public class PointTool extends AbstractPointTool {
 
