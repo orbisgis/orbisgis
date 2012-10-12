@@ -29,13 +29,14 @@
 package org.orbisgis.core.layerModel.mapcatalog;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -47,6 +48,7 @@ import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.renderer.se.common.LocalizedText;
@@ -88,12 +90,12 @@ public class Workspace  {
                 return FORMAT.parse(dateStr);
         }
         
-        private String getPublishUrl() {
-                return cParams.getApiUrl()+"/workspaces/"+workspaceName+PUBLISH_CONTEXT;
+        private String getPublishUrl() throws UnsupportedEncodingException {
+                return cParams.getApiUrl()+"/workspaces/"+URLEncoder.encode(workspaceName,ENCODING)+PUBLISH_CONTEXT;
         }
         
-        private String getMapContextListUrl() {
-                return cParams.getApiUrl()+"/workspaces/"+workspaceName+LIST_CONTEXT;
+        private String getMapContextListUrl() throws UnsupportedEncodingException {
+                return cParams.getApiUrl()+"/workspaces/"+URLEncoder.encode(workspaceName,ENCODING)+LIST_CONTEXT;
         }
         private int parsePublishResponse(XMLStreamReader parser) throws XMLStreamException {
                 List<String> hierarchy = new ArrayList<String>();
@@ -120,13 +122,7 @@ public class Workspace  {
                         }                               
                 }                
                 throw new XMLStreamException("Bad response on publishing a map context");
-        }
-        
-        private String getMapData(MapContext mapContext) throws UnsupportedEncodingException {
-                ByteArrayOutputStream mapData = new ByteArrayOutputStream();
-                mapContext.write(mapData);
-                return mapData.toString(ENCODING);
-        }
+        }        
         
         /**
          * Add a mapcontext to the workspace
@@ -186,10 +182,11 @@ public class Workspace  {
          * @param parser Opened parser
          * @throws XMLStreamException 
          */
-        public void parseXML(List<RemoteMapContext> mapContextList,XMLStreamReader parser) throws XMLStreamException {
+        public void parseXML(List<RemoteMapContext> mapContextList,XMLStreamReader parser) throws XMLStreamException, UnsupportedEncodingException {
                 List<String> hierarchy = new ArrayList<String>();
                 RemoteMapContext curMapContext = null;
                 Locale curLocale = null;
+                StringBuilder characters = new StringBuilder();
                 for (int event = parser.next();
                         event != XMLStreamConstants.END_DOCUMENT;
                         event = parser.next()) {
@@ -222,24 +219,25 @@ public class Workspace  {
                                         if(RemoteCommons.endsWith(hierarchy,"contexts","context")) {
                                                 mapContextList.add(curMapContext);
                                                 curMapContext = null;
-                                        }
-                                        curLocale = null;
-                                        hierarchy.remove(hierarchy.size()-1);
-                                        break;
-                                case XMLStreamConstants.CHARACTERS:
-                                        if (RemoteCommons.endsWith(hierarchy,"contexts","context","title")) {
+                                        } else if (RemoteCommons.endsWith(hierarchy,"contexts","context","title")) {
                                                 Locale descLocale = Locale.getDefault();
                                                 if(curLocale!=null) {
                                                         descLocale = curLocale;
                                                 }
-                                                curMapContext.getDescription().addTitle(descLocale, parser.getText().trim());                                                
+                                                curMapContext.getDescription().addTitle(descLocale,StringEscapeUtils.unescapeHtml(characters.toString().trim()));                                                
                                         } else if(RemoteCommons.endsWith(hierarchy,"contexts","context","abstract")) {
                                                 Locale descLocale = Locale.getDefault();
                                                 if(curLocale!=null) {
                                                         descLocale = curLocale;
                                                 }
-                                                curMapContext.getDescription().addAbstract(descLocale, parser.getText().trim());                                                
+                                                curMapContext.getDescription().addAbstract(descLocale, StringEscapeUtils.unescapeHtml(characters.toString().trim()));
                                         }
+                                        characters = new StringBuilder();
+                                        curLocale = null;
+                                        hierarchy.remove(hierarchy.size()-1);
+                                        break;
+                                case XMLStreamConstants.CHARACTERS:
+                                        characters.append(StringEscapeUtils.unescapeHtml(parser.getText()));
                                         break;
                         }                               
                 }                
@@ -271,27 +269,21 @@ public class Workspace  {
 
 		if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                         throw new IOException(I18N.tr("HTTP Error {0} message : {1}",connection.getResponseCode(),connection.getResponseMessage()));
-                }
-                
-                // Read the response content
-                BufferedReader in = new BufferedReader(
-                                    new InputStreamReader(
-                                    connection.getInputStream()));
-                
+                }               
                 
                 XMLInputFactory factory = XMLInputFactory.newInstance();
                 
                 // Parse Data
                 XMLStreamReader parser;
                 try {
-                        parser = factory.createXMLStreamReader(in);
+                        parser = factory.createXMLStreamReader(connection.getInputStream(),connection.getContentEncoding());
+                        LOGGER.debug("Downloading workspace list Encoding :"+parser.getEncoding());
                         // Fill workspaces
                         parseXML(contextList, parser);
                         parser.close();
                 } catch(XMLStreamException ex) {
                         throw new IOException(I18N.tr("Invalid XML content"),ex);
                 }
-                //URLEncoder.encode(args[1], ENCODING);
                 return contextList;
         }
 }

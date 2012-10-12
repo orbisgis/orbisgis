@@ -73,12 +73,11 @@ public class WorkspaceTest {
 
                 assertEquals(context.get(0).getDescription().getTitle(Locale.ENGLISH), "My custom context");
                 assertEquals(context.get(0).getDescription().getAbstract(Locale.ENGLISH), "Some text here.");
-                assertEquals(context.get(0).getDate(), Workspace.parseDate("2012-09-12"));
+                assertEquals(context.get(0).getDate(), Workspace.parseDate("2012.10.12 15:13:29 CEST"));
                 assertEquals(context.get(0).getId(), 0);
 
-                assertEquals(context.get(1).getDescription().getDefaultTitle(), "My context");
-                assertEquals(context.get(1).getDescription().getDefaultAbstract(), "Some interesting text here.");
-                assertEquals(context.get(1).getDate(), Workspace.parseDate("2012-08-22"));
+                assertEquals(context.get(1).getDescription().getDefaultTitle(), "Représentation par diagrammes");
+                assertEquals(context.get(1).getDate(), Workspace.parseDate("2012.10.12 15:13:34 CEST"));
                 assertEquals(context.get(1).getId(), 1);
         }
 }

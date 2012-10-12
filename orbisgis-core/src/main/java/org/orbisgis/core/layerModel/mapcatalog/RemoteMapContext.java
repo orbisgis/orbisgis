@@ -28,18 +28,11 @@
  */
 package org.orbisgis.core.layerModel.mapcatalog;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import javax.xml.stream.Location;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamReader;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.renderer.se.common.Description;
 import org.xnap.commons.i18n.I18n;

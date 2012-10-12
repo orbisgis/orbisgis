@@ -60,11 +60,6 @@ public class RemoteMapCatalog {
                 this.cParams = connectionProperties;
         }
         
-        
-        
-        public Workspace getDefaultWorkspace() {
-                return new Workspace(cParams,"default");
-        }
         /**
          * Read the parser and feed the provided list with workspaces
          * @param workspaces Writable, empty list of workspaces

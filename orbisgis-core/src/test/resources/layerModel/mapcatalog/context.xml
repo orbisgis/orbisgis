@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
-<contexts>
-  <context id="0" date="2012-09-12">
-    <title xml:lang="en">My custom context</title>
-    <abstract xml:lang="en">Some text here.</abstract>
-  </context>
-  <context id="1" date="2012-08-22" path="personal/">
-    <title>My context</title>
-    <abstract>Some interesting text here.</abstract>
-  </context>
+<?xml version="1.0" encoding="UTF-8"?>
+<contexts> 
+        <context id="0" date="2012.10.12 15:13:29 CEST">
+                <title xml:lang="en">My custom context</title>
+                <abstract xml:lang="en">Some text here.</abstract>
+        </context> 
+        <context id="1" date="2012.10.12 15:13:34 CEST">
+                <title>Repr&#233;sentation par diagrammes</title>
+        </context>
 </contexts>
+
