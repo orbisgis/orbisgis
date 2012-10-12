@@ -287,7 +287,7 @@ public class Catalog extends JPanel implements DockingPanel {
                                 File file = files[i];
                                 //If there is a driver compatible with
                                 //this file extensions
-                                if (sourceManager.getDriverManager().isFileSupported(file)) {
+                                if (sourceManager.getDriverManager().isDriverFileSupported(file)) {
                                         //Try to add the data source
                                         try {
                                                 String name = sourceManager.getUniqueName(FilenameUtils.removeExtension(file.getName()));
@@ -483,7 +483,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 } else {
                         DataManager dm = Services.getService(DataManager.class);
                         DriverManager dr = dm.getSourceManager().getDriverManager();
-                        if (filter.accept(file) && dr.isFileSupported(file)) {
+                        if (filter.accept(file) && dr.isDriverFileSupported(file)) {
                                 SourceManager sourceManager = dm.getSourceManager();
                                 try {
                                         String name = sourceManager.getUniqueName(FilenameUtils.removeExtension(file.getName()));
