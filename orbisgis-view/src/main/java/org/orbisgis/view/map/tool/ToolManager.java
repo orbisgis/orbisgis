@@ -564,13 +564,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                                         }
                                 });
                                 toolPopUp.add(item);
-                        }
-                        // TODO (pyf): ajouter des plugins dans la popup
-//                        WorkbenchContext wbContext = Services.getService(WorkbenchContext.class);
-//                        JComponent[] menus = wbContext.getWorkbench().getFrame().getMenuMapTreePopup().getJMenus();
-//                        for (JComponent menu : menus) {
-//                                toolPopUp.add(menu);
-//                        }
+                        }                      
 
                 }
         }
@@ -733,9 +727,11 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 return toolsGeometryFactory;
         }
 
+        @Override
         public void mouseEntered(MouseEvent me) {
         }
 
+        @Override
         public void mouseExited(MouseEvent me) {
         }
 
@@ -840,4 +836,15 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                         }
                 }
         }
+
+        /**
+         * This method return the current component that correponds to
+         * the mapcontrol.
+         * @return 
+         */
+        public Component getComponent() {
+                return component;
+        }
+        
+        
 }
