@@ -874,6 +874,10 @@ public final class DataSourceFactory {
          */
         public void setResultDir(File resultDir) {
                 this.resultDir = resultDir;
+
+                if (!this.resultDir.exists()) {
+                        this.resultDir.mkdirs();
+                }
         }
 
         /**
