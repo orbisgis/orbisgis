@@ -150,15 +150,17 @@ trait Parser {
    */
   private def buildMetadata(vals: Map[String, Int], met: DefaultMetadata) {
     // change NULL type to String type (with NULL values)
-    val cvals = vals map { 
+    val cvals = vals map {
       case (n, v) if v == NULL => (n, STRING)
       case a => a
     }
     
     // reorder to get 'the_geom' first
-    met.addField("the_geom", cvals.head._2)
-    cvals.tail foreach { case (n, v) => met.addField(n, v) }
-    
+    met.addField("the_geom", cvals.get("$").getOrElse(STRING))
+    cvals foreach {
+      case ("$", _) =>  //Already added.
+      case (n, v) => met.addField(n, v)
+    }
   }
     
   /**

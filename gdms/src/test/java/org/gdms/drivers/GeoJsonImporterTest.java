@@ -48,6 +48,7 @@ import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.LineString;
 import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.Polygon;
+import org.gdms.driver.geojson.GeoJsonImporter;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -315,5 +316,26 @@ public class GeoJsonImporterTest {
                 assertEquals(Type.INT, met.getFieldType(1).getTypeCode());
                 assertEquals("name", met.getFieldName(2));
                 assertEquals(Type.STRING, met.getFieldType(2).getTypeCode());
+        }
+
+        @Test
+        public void testProbFile() throws Exception {
+                JsonFactory f = new JsonFactory();
+                JsonParser jp = f.createJsonParser(new File("/home/alexis/gitProjects/orbisgis-irstv/gdms/src/test/resources/org/gdms/drivers/Metadata-order.json"));
+                DummyParser p = new DummyParser();
+                Metadata met = p.metadata(jp);
+                checkType(met, "the_geom", Type.POINT);
+                checkType(met, "ID", Type.STRING);
+                checkType(met, "ID_COM", Type.STRING);
+                checkType(met, "ORIGIN_NOM", Type.STRING);
+                checkType(met, "NATURE", Type.STRING);
+                checkType(met, "NOM", Type.STRING);
+                checkType(met, "IMPORTANCE", Type.STRING);
+                assertTrue(true);
+        }
+
+        private void checkType(Metadata m, String name, int type) throws Exception{
+                int i = m.getFieldIndex(name);
+                assertTrue(m.getFieldType(i).getTypeCode() == type);
         }
 }
