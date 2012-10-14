@@ -35,6 +35,8 @@ package org.gdms.drivers;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -321,7 +323,9 @@ public class GeoJsonImporterTest {
         @Test
         public void testProbFile() throws Exception {
                 JsonFactory f = new JsonFactory();
-                JsonParser jp = f.createJsonParser(new File("/home/alexis/gitProjects/orbisgis-irstv/gdms/src/test/resources/org/gdms/drivers/Metadata-order.json"));
+                URL is = GeoJsonImporterTest.class.getResource("Metadata-order.json");
+                File file = new File(is.getFile());
+                JsonParser jp = f.createJsonParser(file);
                 DummyParser p = new DummyParser();
                 Metadata met = p.metadata(jp);
                 checkType(met, "the_geom", Type.POINT);
