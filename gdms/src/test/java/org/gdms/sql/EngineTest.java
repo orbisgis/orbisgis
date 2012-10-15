@@ -143,6 +143,8 @@ public class EngineTest extends TestBase {
 
                 sm.delete(d.getName());
         }
+        
+       
 
         @Test
         public void testFieldAndTableParametrizedQuery() throws Exception {
@@ -160,6 +162,75 @@ public class EngineTest extends TestBase {
                 assertEquals(1, d.getRowCount());
                 assertEquals(1, d.getFieldCount());
                 assertEquals(42, d.getInt(0, 0));
+                d.close();
+
+                sm.delete(d.getName());
+
+                st.setFieldParameter("myfield", "bonjour");
+                st.setTableParameter("mytable", "toto");
+
+                d = dsf.getDataSource(st, DataSourceFactory.DEFAULT, new NullProgressMonitor());
+
+                d.open();
+                assertEquals(1, d.getRowCount());
+                assertEquals(1, d.getFieldCount());
+                assertEquals("hello!", d.getString(0, 0));
+                d.close();
+
+                sm.delete(d.getName());
+        }
+        
+        @Test
+        public void testOperatorTableParametrizedQuery() throws Exception {
+                sm.register("toto", "SELECT 42+1 as hi, 'hello!' AS bonjour;");
+
+                final String sql = "SELECT @{myfield} FROM @{mytable};";
+
+                SQLStatement st = Engine.parse(sql, dsf.getProperties());
+                st.setFieldParameter("myfield", "hi");
+                st.setTableParameter("mytable", "toto");
+
+                DataSource d = dsf.getDataSource(st, DataSourceFactory.DEFAULT, new NullProgressMonitor());
+
+                d.open();
+                assertEquals(1, d.getRowCount());
+                assertEquals(1, d.getFieldCount());
+                assertEquals(43, d.getInt(0, 0));
+                d.close();
+
+                sm.delete(d.getName());
+
+                st.setFieldParameter("myfield", "bonjour");
+                st.setTableParameter("mytable", "toto");
+
+                d = dsf.getDataSource(st, DataSourceFactory.DEFAULT, new NullProgressMonitor());
+
+                d.open();
+                assertEquals(1, d.getRowCount());
+                assertEquals(1, d.getFieldCount());
+                assertEquals("hello!", d.getString(0, 0));
+                d.close();
+
+                sm.delete(d.getName());
+        }
+        
+        
+        @Test
+        public void testFieldFunctionAndOperatorTableParametrizedQuery() throws Exception {
+                sm.register("toto", "SELECT autonumeric()+1 as hi, 'hello!' AS bonjour;");
+
+                final String sql = "SELECT @{myfield} FROM @{mytable};";
+
+                SQLStatement st = Engine.parse(sql, dsf.getProperties());
+                st.setFieldParameter("myfield", "hi");
+                st.setTableParameter("mytable", "toto");
+
+                DataSource d = dsf.getDataSource(st, DataSourceFactory.DEFAULT, new NullProgressMonitor());
+
+                d.open();
+                assertEquals(1, d.getRowCount());
+                assertEquals(1, d.getFieldCount());
+                assertEquals(1, d.getInt(0, 0));
                 d.close();
 
                 sm.delete(d.getName());
