@@ -344,6 +344,16 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private JToolBar createToolBar(boolean useButtonText) {
         JToolBar toolBar = new JToolBar();
         ButtonGroup autoSelection = new ButtonGroup();
+        //Navigation Tools
+        autoSelection.add(addButton(toolBar,new ZoomInTool(),useButtonText));
+        autoSelection.add(addButton(toolBar,new ZoomOutTool(),useButtonText));
+        autoSelection.add(addButton(toolBar,new PanTool(),useButtonText));
+        //Full extent button
+        toolBar.add(addButton(OrbisGISIcon.getIcon("world"),
+                I18N.tr("Full extent"),
+                I18N.tr("Zoom to show all geometries"),
+                useButtonText,"onFullExtent"));
+        toolBar.addSeparator();
         //Selection button
         autoSelection.add(addButton(toolBar, new SelectionTool(), useButtonText));
         //Clear selection
@@ -358,15 +368,6 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 I18N.tr("Zoom to visible selected geometries"),
                 useButtonText,"onZoomToSelection"));
         toolBar.addSeparator();
-        //Navigation Tools
-        autoSelection.add(addButton(toolBar,new ZoomInTool(),useButtonText));
-        autoSelection.add(addButton(toolBar,new ZoomOutTool(),useButtonText));
-        autoSelection.add(addButton(toolBar,new PanTool(),useButtonText));
-        //Full extent button
-        toolBar.add(addButton(OrbisGISIcon.getIcon("world"),
-                I18N.tr("Full extent"),
-                I18N.tr("Zoom to show all geometries"),
-                useButtonText,"onFullExtent"));
 
         //Mesure Tools
         JPopupMenu mesureMenu = new JPopupMenu();
