@@ -40,7 +40,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- *
+ * Add or Replace a MapContext on the server
  * @author Nicolas Fortin
  */
 public class UploadMapContext implements BackgroundJob {
@@ -51,10 +51,10 @@ public class UploadMapContext implements BackgroundJob {
         private Integer mapContextid;
 
         /**
-         * Upload a new Map Context
-         * @param mapContext
-         * @param workspaceNode
-         * @param mapContextid 
+         * Upload a new Map Context or update an existing one
+         * @param mapContext Map context to upload
+         * @param workspaceNode Workspace tree node
+         * @param mapContextid Null on Add map context, or the map id on update 
          */
         public UploadMapContext(MapContext mapContext, TreeNodeWorkspace workspaceNode, int mapContextid) {
                 this.mapContext = mapContext;
