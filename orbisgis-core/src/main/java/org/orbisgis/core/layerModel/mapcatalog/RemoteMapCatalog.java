@@ -35,11 +35,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -50,7 +50,6 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class RemoteMapCatalog {
         private ConnectionProperties cParams;
-        private static final String LIST_WORKSPACES = "/workspaces";
         private static final I18n I18N = I18nFactory.getI18n(RemoteMapCatalog.class);
         
         /**
@@ -69,6 +68,10 @@ public class RemoteMapCatalog {
          */
         public void parseXML(List<Workspace> workspaces,XMLStreamReader parser) throws XMLStreamException {
                 List<String> hierarchy = new ArrayList<String>();
+                // Hold workspace name
+                StringBuilder characters = new StringBuilder();
+                // Starting with a valid event, iterating while the parser
+                // does not reach the end document XML tag
                 for (int event = parser.next();
                         event != XMLStreamConstants.END_DOCUMENT;
                         event = parser.next()) {
@@ -78,17 +81,20 @@ public class RemoteMapCatalog {
                                         hierarchy.add(parser.getLocalName());
                                         break;
                                 case XMLStreamConstants.END_ELEMENT:
+                                        if(RemoteCommons.endsWith(hierarchy,"workspaces","workspace")) {
+                                                workspaces.add(new Workspace(cParams,characters.toString().trim()));
+                                        }
                                         hierarchy.remove(hierarchy.size()-1);
+                                        characters = new StringBuilder(); // Clear the string buffer
                                         break;
                                 case XMLStreamConstants.CHARACTERS:
-                                        if(RemoteCommons.endsWith(hierarchy,"workspaces","workspace")) {
-                                                workspaces.add(new Workspace(cParams, parser.getText().trim()));
-                                        }
+                                        characters.append(StringEscapeUtils.unescapeHtml(parser.getText()));
                                         break;
                         }                               
                 }                
         }
-        /***
+
+        /**
          * Request the workspaces synchronously.
          * This call may take a long time to execute.
          * @return A list of workspaces
@@ -98,35 +104,34 @@ public class RemoteMapCatalog {
                 List<Workspace> workspaces = new ArrayList<Workspace>();
                 // Construct request
                 URL requestWorkspacesURL =
-                        new URL(cParams.getApiUrl()+LIST_WORKSPACES);
+                        new URL(RemoteCommons.getUrlWorkspaceList(cParams));
                 // Establish connection
                 HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setConnectTimeout(cParams.getConnectionTimeOut());
-		if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                        throw new IOException(I18N.tr("HTTP Error {0} message : {1}",connection.getResponseCode(),connection.getResponseMessage()));
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                        throw new IOException(I18N.tr("HTTP Error {0} message : {1}", connection.getResponseCode(), connection.getResponseMessage()));
                 }
-                
+
                 // Read the response content
                 BufferedReader in = new BufferedReader(
-                                    new InputStreamReader(
-                                    connection.getInputStream(),
+                        new InputStreamReader(
+                        connection.getInputStream(),
                         RemoteCommons.getConnectionCharset(connection)));
-                
+
                 //"Content-Type" "text/xml; charset=utf-8"
                 XMLInputFactory factory = XMLInputFactory.newInstance();
-                
+
                 // Parse Data
                 XMLStreamReader parser;
                 try {
                         parser = factory.createXMLStreamReader(in);
                         // Fill workspaces
-                        parseXML(workspaces,parser);
+                        parseXML(workspaces, parser);
                         parser.close();
-                } catch(XMLStreamException ex) {
-                        throw new IOException(I18N.tr("Invalid XML content"),ex);
+                } catch (XMLStreamException ex) {
+                        throw new IOException(I18N.tr("Invalid XML content"), ex);
                 }
-                //URLEncoder.encode(args[1], ENCODING);
                 return workspaces;
         }
 }

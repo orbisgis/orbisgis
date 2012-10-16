@@ -54,7 +54,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- *
+ * A map context on the client hard drive.
  * @author Nicolas Fortin
  */
 public final class TreeLeafMapContextFile extends TreeLeafMapElement implements TreeNodeCustomIcon  {

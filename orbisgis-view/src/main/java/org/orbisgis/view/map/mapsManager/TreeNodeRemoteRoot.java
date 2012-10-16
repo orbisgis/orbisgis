@@ -47,7 +47,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- *
+ * List of remote map catalog servers
  * @author Nicolas Fortin
  */
 public class TreeNodeRemoteRoot extends AbstractTreeNodeContainer implements PopupTreeNode {

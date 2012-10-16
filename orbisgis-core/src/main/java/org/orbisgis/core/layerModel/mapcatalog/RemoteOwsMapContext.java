@@ -33,11 +33,14 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.OwsMapContext;
 
 /**
- *
+ * Ows specific map context implementation of a remote map context.
  * @author Nicolas Fortin
  */
 public class RemoteOwsMapContext extends RemoteMapContext {
-
+        /**
+         * Constructor
+         * @param cParams Connection parameters
+         */
         public RemoteOwsMapContext(ConnectionProperties cParams) {
                 super(cParams);
         }

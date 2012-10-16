@@ -74,6 +74,6 @@ public class RemoteMapCatalogTest {
                         workspacesNames.add(workspace.getWorkspaceName());
                 }
                 assertTrue(workspacesNames.containsAll(
-                        Arrays.asList("default","erwan","gwen","nicolas")));
+                        Arrays.asList("default","toto","titi","tata")));
         }
 }

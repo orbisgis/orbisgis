@@ -28,16 +28,81 @@
  */
 package org.orbisgis.core.layerModel.mapcatalog;
 
+import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
- *
+ * Collection of static methods for doing common operation during
+ * transaction with the remote API.
  * @author Nicolas Fortin
  */
 public class RemoteCommons {
+        private static final String ENCODING = "UTF-8";
         private static final String CHARSET_KEY = "charset=";
-
+        private static final String WORKSPACES = "/workspaces";
+        private static final String CONTEXTS = "/contexts";        
+        
+        /**
+         * API Get workspace list.
+         * GET /workspaces
+         * @param cParams Connection parameters
+         * @return URL of the server 
+         */
+        public static String getUrlWorkspaceList(ConnectionProperties cParams) {
+                return cParams.getApiUrl() + WORKSPACES;
+        }
+        
+        /**
+         * API Get context list.
+         * GET /workspaces/:name/contexts
+         * @param cParams Connection parameters
+         * @param workspaceName Workspace name
+         * @return URL of the server
+         */
+        public static String getUrlContextList(ConnectionProperties cParams,String workspaceName) throws IOException {
+                return getUrlWorkspaceList(cParams)+"/"+URLEncoder.encode(workspaceName, ENCODING)+CONTEXTS;
+        }
+        /**
+         * API Post context list.
+         * POST /workspaces/:name/contexts
+         * @param cParams Connection parameters
+         * @param workspaceName Workspace name
+         * @return URL of the server
+         */
+        public static String getUrlPostContext(ConnectionProperties cParams,String workspaceName) throws IOException {
+                return getUrlContextList(cParams,workspaceName);
+        }
+        
+        /**
+         * API Get a context.
+         * GET /workspaces/:name/contexts/:id
+         * @param cParams Connection parameters
+         * @return URL of the server
+         */
+        public static String getUrlContext(ConnectionProperties cParams,String workspaceName,Integer contextId) throws IOException {
+                return getUrlContextList(cParams,workspaceName)+"/"+contextId;
+        }
+        /**
+         * API Update a context.
+         * POST /workspaces/:name/contexts/:id
+         * @param cParams Connection parameters
+         * @return URL of the server
+         */
+        public static String getUrlUpdateContext(ConnectionProperties cParams,String workspaceName,Integer contextId) throws IOException {
+                return getUrlContext(cParams,workspaceName,contextId);
+        }
+        /**
+         * API Remove a context.
+         * DELETE /workspaces/:name/contexts/:id
+         * @param cParams Connection parameters
+         * @return URL of the server
+         */
+        public static String getUrlDeleteContext(ConnectionProperties cParams,String workspaceName,Integer contextId) throws IOException {
+                return getUrlContext(cParams,workspaceName,contextId);
+        }
+        
         /**
          * Check that the provided list ends with the provided items
          * @param hierarchy

@@ -35,8 +35,6 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -63,9 +61,6 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Nicolas Fortin
  */
 public class Workspace  {
-        private static final String ENCODING = "utf-8";
-        private static final String LIST_CONTEXT = "/contexts";
-        private static final String PUBLISH_CONTEXT = "/contexts";
         private static final I18n I18N = I18nFactory.getI18n(Workspace.class);        
         private static final Logger LOGGER = Logger.getLogger(Workspace.class);
         private ConnectionProperties cParams;
@@ -89,18 +84,7 @@ public class Workspace  {
         public static Date parseDate(String dateStr) throws ParseException {
                 return FORMAT.parse(dateStr);
         }
-        
-        private String getPublishUrl(Integer mapContextId) throws UnsupportedEncodingException {
-                if(mapContextId==null) {
-                        return cParams.getApiUrl()+"/workspaces/"+URLEncoder.encode(workspaceName,ENCODING)+PUBLISH_CONTEXT;
-                } else{
-                        return cParams.getApiUrl()+"/workspaces/"+URLEncoder.encode(workspaceName,ENCODING)+PUBLISH_CONTEXT+"/"+mapContextId;
-                }
-        }
-        
-        private String getMapContextListUrl() throws UnsupportedEncodingException {
-                return cParams.getApiUrl()+"/workspaces/"+URLEncoder.encode(workspaceName,ENCODING)+LIST_CONTEXT;
-        }
+
         private int parsePublishResponse(XMLStreamReader parser) throws XMLStreamException {
                 List<String> hierarchy = new ArrayList<String>();
                 for (int event = parser.next();
@@ -136,8 +120,14 @@ public class Workspace  {
          */
         public int publishMapContext(MapContext mapContext, Integer mapContextId) throws IOException  {
                 // Construct request
-                URL requestWorkspacesURL =
-                        new URL(getPublishUrl(mapContextId));
+                URL requestWorkspacesURL;
+                if(mapContextId==null) {
+                        // Post a new map context
+                        requestWorkspacesURL = new URL(RemoteCommons.getUrlPostContext(cParams, workspaceName));
+                } else {
+                        // Update an existing map context
+                        requestWorkspacesURL = new URL(RemoteCommons.getUrlUpdateContext(cParams, workspaceName, mapContextId));
+                }
                 // Establish connection
                 HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
                 connection.setRequestMethod("POST");
@@ -147,14 +137,14 @@ public class Workspace  {
                 OutputStream out = connection.getOutputStream();
                 mapContext.write(out); // Send map context
                 out.close();
-                
+
                 // Get response
                 int responseCode = connection.getResponseCode();
-                if (!((responseCode == HttpURLConnection.HTTP_CREATED && mapContextId==null) ||
-                        (responseCode == HttpURLConnection.HTTP_OK && mapContextId!=null))) {
-                        throw new IOException(I18N.tr("HTTP Error {0} message : {1} with the URL {2}", connection.getResponseCode(),connection.getResponseMessage(),requestWorkspacesURL));
+                if (!((responseCode == HttpURLConnection.HTTP_CREATED && mapContextId == null)
+                        || (responseCode == HttpURLConnection.HTTP_OK && mapContextId != null))) {
+                        throw new IOException(I18N.tr("HTTP Error {0} message : {1} with the URL {2}", connection.getResponseCode(), connection.getResponseMessage(), requestWorkspacesURL));
                 }
-                
+
                 if(mapContextId==null) {
                         // Get response content
                         BufferedReader in = new BufferedReader(
@@ -266,18 +256,18 @@ public class Workspace  {
                 List<RemoteMapContext> contextList = new ArrayList<RemoteMapContext>();
                 // Construct request
                 URL requestWorkspacesURL =
-                        new URL(getMapContextListUrl());
+                        new URL(RemoteCommons.getUrlContextList(cParams, workspaceName));
                 // Establish connection
                 HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setConnectTimeout(cParams.getConnectionTimeOut());
 
-		if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                        throw new IOException(I18N.tr("HTTP Error {0} message : {1}",connection.getResponseCode(),connection.getResponseMessage()));
-                }               
-                
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                        throw new IOException(I18N.tr("HTTP Error {0} message : {1}", connection.getResponseCode(), connection.getResponseMessage()));
+                }
+
                 XMLInputFactory factory = XMLInputFactory.newInstance();
-                
+
                 // Read the response content
                 BufferedReader in = new BufferedReader(
                                     new InputStreamReader(

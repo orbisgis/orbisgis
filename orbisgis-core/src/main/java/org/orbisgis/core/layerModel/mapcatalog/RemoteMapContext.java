@@ -31,7 +31,6 @@ package org.orbisgis.core.layerModel.mapcatalog;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import org.orbisgis.core.layerModel.MapContext;
@@ -44,7 +43,6 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Nicolas Fortin
  */
 public abstract class RemoteMapContext {
-        private static final String ENCODING = "utf-8";
         private int id = 0;
         private Description description = new Description();
         private ConnectionProperties cParams;
@@ -52,9 +50,6 @@ public abstract class RemoteMapContext {
         private Date date;
         private static final I18n I18N = I18nFactory.getI18n(RemoteMapContext.class);
 
-        private String getMapContextUrl() {
-                return cParams.getApiUrl()+"/workspaces/"+workspaceName+"/contexts/"+id;
-        }
         /**
          * Constructor
          * @param cParams Connection parameters
@@ -69,8 +64,9 @@ public abstract class RemoteMapContext {
          */
         public void delete() throws IOException {
                 // Construct request
+                String url = RemoteCommons.getUrlDeleteContext(cParams, workspaceName, id);
                 URL requestWorkspacesURL =
-                        new URL(getMapContextUrl());
+                        new URL(url);
                 // Establish connection
                 HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
     
@@ -78,15 +74,8 @@ public abstract class RemoteMapContext {
                 connection.setConnectTimeout(cParams.getConnectionTimeOut());                
                 
 		if (!(connection.getResponseCode() == HttpURLConnection.HTTP_OK || connection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT)) {
-                        throw new IOException(I18N.tr("HTTP Error {0} message : {1} while removing the map context from {2}",connection.getResponseCode(),connection.getResponseMessage(),getMapContextUrl()));
+                        throw new IOException(I18N.tr("HTTP Error {0} message : {1} while removing the map context from {2}",connection.getResponseCode(),connection.getResponseMessage(),url));
                 }                
-        }
-        
-        /**
-         * @return getMapContent() encoding
-         */
-        public String getContentEncoding() {
-                return ENCODING;
         }
         
         @Override
@@ -188,16 +177,17 @@ public abstract class RemoteMapContext {
          */
         public InputStream getMapContent() throws IOException {
                 // Construct request
+                String url = RemoteCommons.getUrlContext(cParams, workspaceName, id);
                 URL requestWorkspacesURL =
-                        new URL(getMapContextUrl());
+                        new URL(url);
                 // Establish connection
                 HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
-    
+
                 connection.setRequestMethod("GET");
-                connection.setConnectTimeout(cParams.getConnectionTimeOut());                
-                
-		if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
-                        throw new IOException(I18N.tr("HTTP Error {0} message : {1} while downloading from {2}",connection.getResponseCode(),connection.getResponseMessage(),getMapContextUrl()));
+                connection.setConnectTimeout(cParams.getConnectionTimeOut());
+
+                if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
+                        throw new IOException(I18N.tr("HTTP Error {0} message : {1} while downloading from {2}", connection.getResponseCode(), connection.getResponseMessage(), url));
                 }
                 return connection.getInputStream();
         }

@@ -58,7 +58,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- *
+ * A workspace on a remote server, hold a list of map context
  * @author Nicolas Fortin
  */
 public class TreeNodeWorkspace extends AbstractTreeNodeContainer implements DropDestinationTreeNode, PopupTreeNode {

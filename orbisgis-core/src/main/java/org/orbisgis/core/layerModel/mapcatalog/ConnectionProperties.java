@@ -31,12 +31,15 @@ package org.orbisgis.core.layerModel.mapcatalog;
 import java.net.URL;
 
 /**
- *
+ * Hold parameters that define a connexion to a remote catalog API.
  * @author Nicolas Fortin
  */
 public class ConnectionProperties {
-
-        private int connectionTimeOut = 30000; // In milliseconds
+        /**
+         * The connexion fails if it exceed this waiting time in milliseconds.
+         */
+        public static final int DEFAULT_CONNECTION_TIMEOUT = 30000;
+        private int connectionTimeOut = DEFAULT_CONNECTION_TIMEOUT; // In milliseconds
 
         private URL apiUrl;
 

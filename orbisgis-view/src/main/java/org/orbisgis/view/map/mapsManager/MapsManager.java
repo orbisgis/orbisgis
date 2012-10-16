@@ -30,7 +30,6 @@ package org.orbisgis.view.map.mapsManager;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Scrollbar;
 import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.util.ArrayList;
@@ -61,7 +60,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- *
+ * A title and a tree that show local and remote map contexts
  * @author Nicolas Fortin
  */
 public class MapsManager extends JPanel {

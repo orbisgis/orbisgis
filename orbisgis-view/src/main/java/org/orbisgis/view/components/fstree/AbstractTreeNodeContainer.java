@@ -36,7 +36,7 @@ import javax.swing.tree.TreeNode;
 import org.orbisgis.view.components.resourceTree.EnumIterator;
 
 /**
- * A node that can contains other nodes
+ * A node that can contain other nodes
  * @author Nicolas Fortin
  */
 public abstract class AbstractTreeNodeContainer extends AbstractTreeNode {
