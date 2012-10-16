@@ -1,61 +1,46 @@
-/**
+/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information.
- *
+ * manipulate and create vector and raster spatial information. 
+ * 
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
- *
+ * 
  * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
- *
+ * 
  * This file is part of OrbisGIS.
- *
+ * 
  * OrbisGIS is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- *
+ * 
  * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- *
+ * 
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.edition;
+package org.orbisgis.view.components.fstree;
 
-import org.orbisgis.view.docking.DockingPanel;
+import java.awt.datatransfer.DataFlavor;
+import java.io.Reader;
 
 /**
- * This particular panel is an editor.
- * It has methods related to editable management. 
+ * If a transferable object implement this interface then it could define the name and the content of a file.
+ * @author Nicolas Fortin
  */
-public interface EditorDockable extends DockingPanel {
-        
+public interface TransferableFileContent {
+
+        public static final DataFlavor FILE_CONTENT_FLAVOR =
+                new DataFlavor(Reader.class, "TransferableFileContent");
         /**
-         * Return true if this editor would replace the current editable by this one.
-         * If this editor return true and the old editable is marked has modified
-         * then a dialog is shown to save the old editable
-         * @param editableElement
-         * @return 
+         * @return File name proposal for this content
          */
-        boolean match(EditableElement editableElement);
-        
-        /**
-         * Return the currently open editable
-         * @return An instance of EditableElement or null
-         */
-        EditableElement getEditableElement();
-        
-        /**
-         * Load the specified editable element.
-         * Only called if match was
-         * previously called with the same editable.
-         * @param editableElement
-         */
-        void setEditableElement(EditableElement editableElement);
+        String getFileNameHint();
 }

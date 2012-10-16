@@ -41,6 +41,7 @@ import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.io.File;
@@ -62,7 +63,6 @@ import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.event.TreeExpansionListener;
-import javax.swing.event.TreeModelListener;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
@@ -80,13 +80,13 @@ import org.orbisgis.view.components.button.DropDownButton;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorDockable;
+import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.jobs.ReadMapContextJob;
 import org.orbisgis.view.map.jobs.ZoomToSelection;
-import org.orbisgis.view.components.fstree.AbstractTreeNode;
-import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.map.mapsManager.MapsManager;
+import org.orbisgis.view.map.mapsManager.TreeLeafMapContextFile;
 import org.orbisgis.view.map.mapsManager.TreeLeafMapElement;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.TransitionException;
@@ -118,8 +118,10 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private Point lastTranslatedCursorPosition = new Point();
     private AtomicBoolean initialised = new AtomicBoolean(false);
     private MapsManager mapsManager = new MapsManager();
-    JLayeredPane layeredPane = new JLayeredPane();
-    ComponentListener sizeListener = EventHandler.create(ComponentListener.class,this,"updateMapControlSize",null,"componentResized");
+    private JLayeredPane layeredPane = new JLayeredPane();
+    private ComponentListener sizeListener = EventHandler.create(ComponentListener.class,this,"updateMapControlSize",null,"componentResized");
+    private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified");
+    
     /**
      * Constructor
      */
@@ -127,7 +129,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         super(new BorderLayout());
         dockingPanelParameters = new DockingPanelParameters();
         dockingPanelParameters.setName("map_editor");
-        dockingPanelParameters.setTitle(I18N.tr("Map"));
+        updateMapLabel();
         dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
         dockingPanelParameters.setMinimizable(false);
         dockingPanelParameters.setExternalizable(false);
@@ -148,7 +150,17 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         dragDropHandler = new MapTransferHandler();        
         this.setTransferHandler(dragDropHandler);
     }
-    
+    private void updateMapLabel() {
+                if (mapEditable == null) {
+                        dockingPanelParameters.setTitle(I18N.tr("Map"));
+                } else {
+                        if (mapEditable.isModified()) {
+                                dockingPanelParameters.setTitle(I18N.tr("Map Editor \"{0}\" [Modified]",mapEditable.getMapContext().getTitle()));
+                        } else {
+                                dockingPanelParameters.setTitle(I18N.tr("Map Editor \"{0}\"",mapEditable.getMapContext().getTitle()));
+                        }
+                }
+        }
     public void onUserSetScaleDenominator(PropertyChangeEvent pce) throws PropertyVetoException {
             long newScale = (Long)pce.getNewValue();
             if(newScale<1) {
@@ -175,8 +187,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                                 MapStatusBar.PROP_USER_DEFINED_SCALE_DENOMINATOR,
                                 EventHandler.create(VetoableChangeListener.class, this,
                                 "onUserSetScaleDenominator", ""));
+                        // Load the Remote Map Catalog servers and keep track for updates
+                        mapsManager.setServerList(getMapEditorPersistance().getMapCatalogUrlList());
                         // When the tree is expanded update the manager size
                         mapsManager.getTree().addComponentListener(sizeListener);
+                        mapsManager.getTree().addTreeExpansionListener(EventHandler.create(TreeExpansionListener.class,this,"updateMapControlSize"));
                         
                 }
         }
@@ -208,8 +223,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
                 ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
 
-                //Create an empty map context
-                MapContext defaultMapContext = new OwsMapContext();
+                MapContext defaultMapContext = new OwsMapContext();             
+                
 
                 //Load the map context
                 File mapContextFolder = new File(viewWorkspace.getMapContextPath());
@@ -217,14 +232,17 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         mapContextFolder.mkdir();
                 }
                 File mapContextFile = new File(mapContextFolder, I18N.tr("MyMap.ows"));
-                if (mapContextFile.exists()) {
-                        try {
-                                defaultMapContext.read(new FileInputStream(mapContextFile));
-                        } catch (FileNotFoundException ex) {
-                                GUILOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
-                        } catch (IllegalArgumentException ex) {
-                                GUILOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
-                        }
+                
+                if (!mapContextFile.exists()) {
+                        //Create an empty map context
+                        TreeLeafMapContextFile.createEmptyMapContext(mapContextFile);
+                }                
+                try {
+                        defaultMapContext.read(new FileInputStream(mapContextFile));
+                } catch (FileNotFoundException ex) {
+                        GUILOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
+                } catch (IllegalArgumentException ex) {
+                        GUILOGGER.error(I18N.tr("The saved map context cannot be read, starting with an empty map context."), ex);
                 }
                 MapElement editableMap = new MapElement(defaultMapContext, mapContextFile);
                 backgroundManager.backgroundOperation(new ReadMapContextJob(editableMap));
@@ -247,19 +265,19 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 mapControl.setBounds(0,0,layeredPane.getWidth(),layeredPane.getHeight());
                 if(mapsManager.isVisible()) {
                         Dimension mapsManagerPreferredSize = mapsManager.getMinimalComponentDimension();
-                        int hPos = layeredPane.getWidth() - mapsManagerPreferredSize.width;
-                        mapsManager.setBounds(hPos,0,mapsManagerPreferredSize.width,Math.min(mapsManagerPreferredSize.height,layeredPane.getHeight()));
+                        int hPos = layeredPane.getWidth() - Math.min(mapsManagerPreferredSize.width,layeredPane.getWidth());
+                        mapsManager.setBounds(hPos,0,Math.min(mapsManagerPreferredSize.width,layeredPane.getWidth()),Math.min(mapsManagerPreferredSize.height,layeredPane.getHeight()));
                         mapsManager.revalidate();
                 }                
         }
     /**
      * The user Drop a list of Editable
-     * @param editableList 
+     * @param editableList
      */
     public void onDropEditable(EditableElement[] editableList) {
         BackgroundManager bm = Services.getService(BackgroundManager.class);
         //Load the layers in the background
-        bm.backgroundOperation(new DropDataSourceProcess(editableList));
+        bm.nonBlockingBackgroundOperation(new DropDataSourceProcess(editableList));
     }
     
     /**
@@ -267,7 +285,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
      * @param element 
      */
     private void loadMap(MapElement element) {
-        try {         
+        try {      
+            removeListeners();    
             mapEditable = element;
             mapContext = (MapContext) element.getObject();
             //We (unfortunately) need a cross reference here : this way, we'll
@@ -288,6 +307,9 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             getMapEditorPersistance().setDefaultMapContext(relative);
             // Set the loaded map hint to the MapCatalog
             mapsManager.setLoadedMap(element.getMapContextFile());
+            // Update the editor label with the new editable name
+            updateMapLabel();
+            mapEditable.addPropertyChangeListener(MapElement.PROP_MODIFIED, modificationListener);
             repaint();
         } catch (IllegalStateException ex) {
             GUILOGGER.error(ex);
@@ -313,6 +335,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         CursorCoordinateLookupTimer.stop();
                         CursorCoordinateLookupTimer=null;
                 }
+                removeListeners();
         }
     
     
@@ -595,6 +618,27 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         }
     }
     /**
+     * Remove the listeners on the current loaded document
+     */
+    private void removeListeners() {
+            if(mapEditable!=null) {
+                    mapEditable.removePropertyChangeListener(modificationListener);
+            }
+    }
+    
+    /**
+     * The editable modified state is switching
+     */
+    public void onMapModified() {
+            SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                                updateMapLabel();
+                                mapsManager.updateDiskTree();
+                        }
+                });
+    }
+    /**
      * This task is created when the user Drag Source from GeoCatalog
      * to the map directly. The layer is created directly on the root.
      */
@@ -621,8 +665,15 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         GUILOGGER.warn(I18N.tr("Unable to create and drop the layer"),e);
                     }
                 } else if(eElement instanceof MapElement) {
-                        EditorManager em = Services.getService(EditorManager.class);
-                        em.openEditable(eElement);                                
+                        final MapElement mapElement = (MapElement)eElement;
+                        mapElement.open(pm);
+                        SwingUtilities.invokeLater(new Runnable() {
+                                                @Override
+                                                public void run() {                                                        
+                                                        EditorManager em = Services.getService(EditorManager.class);                        
+                                                        em.openEditable(mapElement);  
+                                                }
+                                        });                              
                         return;
                 }
             }

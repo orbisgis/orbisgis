@@ -116,6 +116,7 @@ public class SaveDocuments extends JDialog {
         private void create() {
                 JPanel panel = new JPanel(new BorderLayout());
                 setContentPane(panel);
+                informationLabel.setPreferredSize(new Dimension(1, 1));   
                 panel.add(informationLabel,BorderLayout.NORTH);
                 // Add document list at center
                 add(documentList, BorderLayout.CENTER);
@@ -249,7 +250,7 @@ public class SaveDocuments extends JDialog {
         }
         
         private static String getLocalisedDocumentErrorMessage(EditableElement document,Throwable ex) {
-                return I18N.tr("The document {0} cannot be saved due to the following error {1}",document,ex.getLocalizedMessage());
+                return "<html>"+I18N.tr("The document {0} cannot be saved due to the following error {1}",document,ex.getLocalizedMessage())+"</html>";
         }
         
         /**

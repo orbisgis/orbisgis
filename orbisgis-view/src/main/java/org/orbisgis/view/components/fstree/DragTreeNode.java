@@ -28,10 +28,8 @@
  */
 package org.orbisgis.view.components.fstree;
 
-import java.awt.datatransfer.Transferable;
-
 /**
- *
+ * Node that support dragging implement this interface
  * @author Nicolas Fortin
  */
 public interface DragTreeNode {

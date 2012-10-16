@@ -26,45 +26,60 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.map;
+package org.orbisgis.view.components.fstree;
 
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.datatransfer.UnsupportedFlavorException;
-import java.io.IOException;
-import org.orbisgis.view.edition.TransferableEditableElement;
+import java.util.Enumeration;
+import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeNode;
 
 /**
- * Transfer of a MapElement
+ * A node without sub-nodes
  * @author Nicolas Fortin
  */
-public class TransferableMap implements Transferable {
-        
-	public final static DataFlavor mapFlavor = new DataFlavor(MapElement.class,
-			"EditableMap");
-        private MapElement mapElement;
+public abstract class AbstractTreeNodeLeaf extends AbstractTreeNode {
 
-        protected TransferableMap() {
-                
-        }
-        public TransferableMap(MapElement mapElement) {
-                this.mapElement = mapElement;
-        }
-        
-        
         @Override
-        public DataFlavor[] getTransferDataFlavors() {
-                return new DataFlavor[]{mapFlavor, TransferableEditableElement.editableElementFlavor};
+        public void insert(MutableTreeNode mtn, int i) {
+                throw new UnsupportedOperationException("Not supported.");
         }
 
         @Override
-        public boolean isDataFlavorSupported(DataFlavor df) {
-                return df.equals(mapFlavor) || df.equals(TransferableEditableElement.editableElementFlavor);
+        public void remove(int i) {
+                throw new UnsupportedOperationException("Not supported.");
         }
 
         @Override
-        public Object getTransferData(DataFlavor df) throws UnsupportedFlavorException, IOException {
-                return new MapElement[] {mapElement};
+        public void remove(MutableTreeNode mtn) {
+                throw new UnsupportedOperationException("Not supported.");
         }
         
+        @Override
+        public TreeNode getChildAt(int i) {
+                throw new UnsupportedOperationException("Not supported.");
+        }
+
+        @Override
+        public int getChildCount() {
+                return 0;
+        }
+
+        @Override
+        public int getIndex(TreeNode tn) {
+                throw new UnsupportedOperationException("Not supported.");
+        }
+
+        @Override
+        public boolean getAllowsChildren() {
+                return false;
+        }
+
+        @Override
+        public boolean isLeaf() {
+                return true;
+        }
+
+        @Override
+        public Enumeration<? extends Object> children() {
+                throw new UnsupportedOperationException("Not supported.");
+        } 
 }

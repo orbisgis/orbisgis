@@ -597,14 +597,24 @@ public final class OwsMapContext extends BeanMapContext {
                         Description nextDescription = new Description();
                         if(jaxbMapContext.getGeneral().getTitle() != null) {
                                 LanguageStringType title = jaxbMapContext.getGeneral().getTitle();
-                                nextDescription.addTitle(LocalizedText.forLanguageTag(title.getLang()),
-                                        title.getValue());
+                                Locale locale;
+                                if(title.getLang()!=null) {
+                                        locale = LocalizedText.forLanguageTag(title.getLang());
+                                } else {
+                                        locale = Locale.getDefault();
+                                }
+                                nextDescription.addTitle(locale,title.getValue());
                         }
                         //Load abstract
                         if(jaxbMapContext.getGeneral().getAbstract() != null) {
                                 LanguageStringType mapAbstract = jaxbMapContext.getGeneral().getAbstract();
-                                nextDescription.addAbstract(LocalizedText.forLanguageTag(mapAbstract.getLang()),
-                                        mapAbstract.getValue());
+                                Locale locale;
+                                if(mapAbstract.getLang()!=null) {
+                                        locale = LocalizedText.forLanguageTag(mapAbstract.getLang());
+                                } else {
+                                        locale = Locale.getDefault();
+                                }
+                                nextDescription.addAbstract(locale,mapAbstract.getValue());
                         }
                         setDescription(nextDescription);
                         //Collect DataSource URI already loaded

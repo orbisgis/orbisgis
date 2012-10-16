@@ -73,6 +73,7 @@ public class Description {
      * Builds a new {@code Description} from the given
      * {@code DescriptionType}.
      * @param dt
+     * @throws org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle  
      */
     public Description(DescriptionType dt) throws InvalidStyle{
         this();
@@ -100,6 +101,78 @@ public class Description {
         }
     }
 
+        @Override
+        public boolean equals(Object obj) {
+                if (!(obj instanceof Description)) {
+                        return false;
+                }
+                final Description other = (Description) obj;
+                if (this.titles != other.titles && (this.titles == null || !this.titles.equals(other.titles))) {
+                        return false;
+                }
+                if (this.abstractTexts != other.abstractTexts && (this.abstractTexts == null || !this.abstractTexts.equals(other.abstractTexts))) {
+                        return false;
+                }
+                if (this.keywords != other.keywords && (this.keywords == null || !this.keywords.equals(other.keywords))) {
+                        return false;
+                }
+                return true;
+        }
+
+        @Override
+        public int hashCode() {
+                int hash = 7;
+                hash = 67 * hash + (this.titles != null ? this.titles.hashCode() : 0);
+                hash = 67 * hash + (this.abstractTexts != null ? this.abstractTexts.hashCode() : 0);
+                hash = 67 * hash + (this.keywords != null ? this.keywords.hashCode() : 0);
+                return hash;
+        }
+
+    /**
+     * Find the most appropriate title close to the default Locale
+     * @return Title or Null if there is no title at all
+     */
+    public String getDefaultTitle() {
+            // Find the title with default locale
+            String title = getTitle(Locale.getDefault());
+            if(title!=null) {
+                    return title;
+            }
+            // Search with the lang only
+            title = getTitle(new Locale(Locale.getDefault().getLanguage()));
+            if(title!=null) {
+                    return title;
+            }
+            // Get the first title
+            if(!titles.isEmpty()) {
+                    return titles.values().iterator().next();
+            } else {
+                    return null;
+            }
+    }
+    /**
+     * Find the most appropriate title close to the default Locale
+     * @return Title or Null if there is no title at all
+     */
+    public String getDefaultAbstract() {
+            // Find the title with default locale
+            String defaultAbstract = getAbstract(Locale.getDefault());
+            if(defaultAbstract!=null) {
+                    return defaultAbstract;
+            }
+            // Search with the lang only
+            defaultAbstract = getAbstract(new Locale(Locale.getDefault().getLanguage()));
+            if(defaultAbstract!=null) {
+                    return defaultAbstract;
+            }
+            // Get the first title
+            if(!abstractTexts.isEmpty()) {
+                    return abstractTexts.values().iterator().next();
+            } else {
+                    return null;
+            }
+    }
+    
     private void putKeywordsType(KeywordsType kt) throws InvalidStyle {
         CodeType ct = kt.getType();
         if(ct!=null){
@@ -231,7 +304,7 @@ public class Description {
     /**
      * Initialise the data of the provided description type with
      * the JAXB representation of this object.
-     * @param[in-out] dt Instance of DescriptionType
+     * @param dt Instance of DescriptionType
      */
     public void initJAXBType(DescriptionType dt) {
         ObjectFactory of = new ObjectFactory();
