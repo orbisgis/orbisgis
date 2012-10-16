@@ -51,90 +51,56 @@
  */
 package org.orbisgis.view.map.tools;
 
-import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Point;
 import java.awt.Graphics;
-import java.awt.Point;
-import java.awt.geom.Point2D;
+import java.awt.Graphics2D;
+import java.util.Observable;
 import javax.swing.ImageIcon;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.renderer.util.SymbolUtil;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.map.tool.FinishedAutomatonException;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 
-/**
- * Tool to move the map extent
- * 
- */
-public class PanTool extends AbstractDragTool {
+public class PickCoordinatesPointTool extends AbstractPointTool {
+
+        protected static Logger GUI_LOGGER = Logger.getLogger("gui."+PickCoordinatesPointTool.class);
+        
+        
+
+        @Override
+        protected void pointDone(Point point, MapContext mc, ToolManager tm)
+                throws TransitionException {                             
+                Graphics g = tm.getComponent().getGraphics();
+                if ((g != null) && (g instanceof Graphics2D)) {
+                                SymbolUtil.flashPoint(point, (Graphics2D) g, tm.getMapTransform());
+                                GUI_LOGGER.info(I18N.tr("Coordinate : {0}", point.toText()));
+                        }
+                }
+        
+        @Override
+        public String getName() {
+                return I18N.tr("Pick a point");
+        }
 
         @Override
         public ImageIcon getImageIcon() {
-            return OrbisGISIcon.getIcon("pan");
-        }
-        
-        
-
-	@Override
-	public void transitionTo_MouseReleased(MapContext vc, ToolManager tm)
-			throws TransitionException, FinishedAutomatonException {
-                // get the current point
-		double[] v = tm.getValues();
-
-                // get the start point (of the dragging move)
-                double[] firstPoint = getFirstPoint();
-
-                // diff
-		double dx = firstPoint[0] - v[0];
-		double dy = firstPoint[1] - v[1];
-
-                // move the envelope
-		Envelope extent = tm.getMapTransform().getExtent();
-		tm.getMapTransform().setExtent(
-				new Envelope(extent.getMinX() + dx, extent.getMaxX() + dx,
-						extent.getMinY() + dy, extent.getMaxY() + dy));
-
-                // we're done, this will get us back to StandBy
-		transition(Code.FINISHED);
-	}
-
-	@Override
-	public void drawIn_MouseDown(Graphics g, MapContext vc, ToolManager tm) {
-                // this is what is displayed when dragging
-
-                // current point position
-                double[] firstPoint = getFirstPoint();
-
-                // get the corresponding point in the map
-		Point p = tm.getMapTransform().fromMapPoint(
-				new Point2D.Double(firstPoint[0], firstPoint[1]));
-		int height = tm.getMapTransform().getHeight();
-		int width = tm.getMapTransform().getWidth();
-
-                // draw the new map...
-		g.clearRect(0, 0, width, height);
-		g.drawImage(tm.getMapTransform().getImage(), tm.getLastMouseX() - p.x,
-				tm.getLastMouseY() - p.y, null);
-	}
-
-        @Override
-	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolUtilities.layerCountGreaterThan(vc, 0);
-	}
-
-        @Override
-	public String getName() {
-		return I18N.tr("Pan");
-	}
-
-        @Override
-        public String getTooltip() {
-            return I18N.tr("The Pan Tool");
+               return OrbisGISIcon.getIcon("coordinate_capture");
         }
 
         @Override
-        public ImageIcon getCursor() {
-            return OrbisGISIcon.getIcon("pan");
+        public boolean isEnabled(MapContext vc, ToolManager tm) {
+                return vc.getLayerModel().getLayerCount() > 0;
+        }
+
+        @Override
+        public boolean isVisible(MapContext vc, ToolManager tm) {
+                return isEnabled(vc, tm);
         }
         
+        @Override
+        public void update(Observable o, Object o1) {
+                
+        }
 }

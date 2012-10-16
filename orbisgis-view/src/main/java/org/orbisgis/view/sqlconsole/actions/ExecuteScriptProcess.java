@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.sqlconsole.actions;
 
+import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
@@ -73,6 +74,17 @@ public class ExecuteScriptProcess implements BackgroundJob {
         public String getTaskName() {
                 return I18N.tr("Executing script");
         }
+        
+        private void showPanelMessage(final String message) {
+                if (panel != null) {
+                        SwingUtilities.invokeLater(new Runnable() {
+                                @Override
+                                public void run() {
+                                        panel.setStatusMessage(message);
+                                }
+                        });
+                }
+        }
 
         @Override
         public void run(ProgressMonitor pm) {
@@ -88,9 +100,7 @@ public class ExecuteScriptProcess implements BackgroundJob {
                                 statements = Engine.parseScript(script, dsf.getProperties()).getStatements();
                         } catch (ParseException e) {
                                 LOGGER.error(I18N.tr("Cannot parse script"), e);
-                                if (panel != null) {
-                                        panel.setStatusMessage(I18N.tr("Failed to parse the script."));
-                                }
+                                showPanelMessage(I18N.tr("Failed to parse the script."));
                                 return;
                         }
 
@@ -190,9 +200,8 @@ public class ExecuteScriptProcess implements BackgroundJob {
 
                 long t2 = System.currentTimeMillis();
                 double lastExecTime = ((t2 - t1) / 1000.0);
-                LOGGER.debug("Execution time: " + lastExecTime);
-                if (panel != null) {
-                        panel.setStatusMessage(I18N.tr("Execution time: {0}",lastExecTime));
-                }
+                String message = I18N.tr("Execution time: {0}",lastExecTime);
+                LOGGER.debug(message);
+                showPanelMessage(message);
         }
 }

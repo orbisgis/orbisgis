@@ -33,8 +33,10 @@ import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import javax.swing.JOptionPane;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerCollectionEvent;
 import org.orbisgis.core.layerModel.LayerException;
@@ -44,6 +46,7 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.MapContextListener;
 import org.orbisgis.core.layerModel.SelectionEvent;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.toc.Toc;
 import org.xnap.commons.i18n.I18n;
@@ -90,21 +93,45 @@ public final class MapElement extends EditableElement {
          */
         public void setModified(Boolean modified) {
             this.modified = modified;
+        }        
+        private boolean hasNotWellKnownDataSources() {
+                for(ILayer layer : mapContext.getLayers()) {
+                        DataSource source = layer.getDataSource();
+                        if(source!=null) {
+                                if(!source.getSource().isWellKnownName()) {
+                                        return true;
+                                }
+                        }
+                }
+                return false;
         }
         
 	@Override
 	public void save() throws UnsupportedOperationException {
-                try {
-                        //Create folders if needed
-                        File parentFolder = mapContextFile.getParentFile();
-                        if(!parentFolder.exists()) {
-                                parentFolder.mkdirs();
+                // If a layer hold a not well known source then alert the user
+                boolean doSave = true;
+                if(hasNotWellKnownDataSources()) {
+                        int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                                I18N.tr("Some layers use temporary data source, are you sure to save this map and loose layers with temporary data sources ?"),
+                                I18N.tr("Temporary layers data source"),
+                                JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+                        if(response == JOptionPane.NO_OPTION) {
+                                doSave = false;
                         }
-                        mapContext.write(new FileOutputStream(mapContextFile));
-                } catch (FileNotFoundException ex) {
-                        throw new UnsupportedOperationException(ex);
                 }
-                setModified(false);
+                if(doSave) {
+                        try {
+                                //Create folders if needed
+                                File parentFolder = mapContextFile.getParentFile();
+                                if(!parentFolder.exists()) {
+                                        parentFolder.mkdirs();
+                                }
+                                mapContext.write(new FileOutputStream(mapContextFile));
+                        } catch (FileNotFoundException ex) {
+                                throw new UnsupportedOperationException(ex);
+                        }
+                        setModified(false);
+                }
 	}
 
 	@Override

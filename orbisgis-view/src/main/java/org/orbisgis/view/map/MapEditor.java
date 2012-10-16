@@ -90,13 +90,7 @@ import org.orbisgis.view.map.mapsManager.TreeLeafMapContextFile;
 import org.orbisgis.view.map.mapsManager.TreeLeafMapElement;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.TransitionException;
-import org.orbisgis.view.map.tools.CompassTool;
-import org.orbisgis.view.map.tools.MesureLineTool;
-import org.orbisgis.view.map.tools.MesurePolygonTool;
-import org.orbisgis.view.map.tools.PanTool;
-import org.orbisgis.view.map.tools.SelectionTool;
-import org.orbisgis.view.map.tools.ZoomInTool;
-import org.orbisgis.view.map.tools.ZoomOutTool;
+import org.orbisgis.view.map.tools.*;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -210,9 +204,15 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 if(!serialisedMapContextPath.exists()) {
                         createDefaultMapContext();
                 } else {
-                        TreeLeafMapElement mapFactory = (TreeLeafMapElement)mapsManager.getFactoryManager().create(serialisedMapContextPath);
-                        MapElement mapElement = mapFactory.getMapElement(new NullProgressMonitor());
-                        backgroundManager.backgroundOperation(new ReadMapContextJob(mapElement));
+                        TreeLeafMapElement defaultMap = (TreeLeafMapElement)mapsManager.getFactoryManager().create(serialisedMapContextPath);
+                        try {
+                                MapElement mapElement = defaultMap.getMapElement(new NullProgressMonitor());
+                                backgroundManager.backgroundOperation(new ReadMapContextJob(mapElement));
+                        } catch(IllegalArgumentException ex) {
+                                //Map XML is invalid
+                                GUILOGGER.warn(I18N.tr("Fail to load the map context, starting with an empty map context"),ex);
+                                createDefaultMapContext();
+                        }
                 }
         }
 
@@ -367,6 +367,16 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private JToolBar createToolBar(boolean useButtonText) {
         JToolBar toolBar = new JToolBar();
         ButtonGroup autoSelection = new ButtonGroup();
+        //Navigation Tools
+        autoSelection.add(addButton(toolBar,new ZoomInTool(),useButtonText));
+        autoSelection.add(addButton(toolBar,new ZoomOutTool(),useButtonText));
+        autoSelection.add(addButton(toolBar,new PanTool(),useButtonText));
+        //Full extent button
+        toolBar.add(addButton(OrbisGISIcon.getIcon("world"),
+                I18N.tr("Full extent"),
+                I18N.tr("Zoom to show all geometries"),
+                useButtonText,"onFullExtent"));
+        toolBar.addSeparator();
         //Selection button
         autoSelection.add(addButton(toolBar, new SelectionTool(), useButtonText));
         //Clear selection
@@ -381,15 +391,6 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 I18N.tr("Zoom to visible selected geometries"),
                 useButtonText,"onZoomToSelection"));
         toolBar.addSeparator();
-        //Navigation Tools
-        autoSelection.add(addButton(toolBar,new ZoomInTool(),useButtonText));
-        autoSelection.add(addButton(toolBar,new ZoomOutTool(),useButtonText));
-        autoSelection.add(addButton(toolBar,new PanTool(),useButtonText));
-        //Full extent button
-        toolBar.add(addButton(OrbisGISIcon.getIcon("world"),
-                I18N.tr("Full extent"),
-                I18N.tr("Zoom to show all geometries"),
-                useButtonText,"onFullExtent"));
 
         //Mesure Tools
         JPopupMenu mesureMenu = new JPopupMenu();
@@ -408,6 +409,24 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         autoSelection.add(mesureButton);
         toolBar.add(mesureButton);
         mesureButton.setSelectedItem(defaultMenu);
+        
+        //Drawing Tools
+        JPopupMenu graphicToolsMenu = new JPopupMenu();
+        defaultMenu = createMenuItem(new FencePolygonTool());
+        graphicToolsMenu.add(defaultMenu);
+        graphicToolsMenu.add(createMenuItem(new PickCoordinatesPointTool() ));
+        
+         //Create the Mesure Tools Popup Button
+        DropDownButton graphicToolsButton = new DropDownButton();
+        if(useButtonText) {
+            graphicToolsButton.setName(I18N.tr("Graphic tools"));
+        }
+        graphicToolsButton.setButtonAsMenuItem(true);
+        //Add Menu to the Popup Button
+        graphicToolsButton.setComponentPopupMenu(graphicToolsMenu);
+        autoSelection.add(graphicToolsButton);
+        toolBar.add(graphicToolsButton);
+        graphicToolsButton.setSelectedItem(defaultMenu);
         
         // Show/Hide maps manager
         toolBar.add(addButton(OrbisGISIcon.getIcon("map"),

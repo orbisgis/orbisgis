@@ -430,10 +430,8 @@ public class MapTransform implements PointTransformation {
                 dest.setLocation(src.x, src.y);
                 trans.transform(dest, dest);
         }
-        /**
-         * Choose a fairly conservative decimation distance to avoid visual artifacts
-         */
-        private static final double DECIMATION_DISTANCE = 1.3;
+        
+        
 
         public ShapeWriter getShapeWriter() {
                 if (converter == null) {
@@ -441,8 +439,12 @@ public class MapTransform implements PointTransformation {
                         converter.setRemoveDuplicatePoints(true);
                         MAXPIXEL_DISPLAY = 0.5 / (25.4 / getDpi());
                 }
-                Double dec = adjustedExtent == null ? 0 : MAXPIXEL_DISPLAY / getScaleDenominator();
-                converter.setDecimation(dec);
+                /**
+                * Choose a fairly conservative decimation distance to avoid visual artifacts
+                * TODO : decimation must be activate in relation with the crs to prevent rendering bug
+                */
+                // Double dec = adjustedExtent == null ? 0 : MAXPIXEL_DISPLAY / getScaleDenominator();
+                //converter.setDecimation(dec);
                 return converter;
         }
 

@@ -287,7 +287,7 @@ public class Catalog extends JPanel implements DockingPanel {
                                 File file = files[i];
                                 //If there is a driver compatible with
                                 //this file extensions
-                                if (sourceManager.getDriverManager().isFileSupported(file)) {
+                                if (sourceManager.getDriverManager().isDriverFileSupported(file)) {
                                         //Try to add the data source
                                         try {
                                                 String name = sourceManager.getUniqueName(FilenameUtils.removeExtension(file.getName()));
@@ -483,7 +483,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 } else {
                         DataManager dm = Services.getService(DataManager.class);
                         DriverManager dr = dm.getSourceManager().getDriverManager();
-                        if (filter.accept(file) && dr.isFileSupported(file)) {
+                        if (filter.accept(file) && dr.isDriverFileSupported(file)) {
                                 SourceManager sourceManager = dm.getSourceManager();
                                 try {
                                         String name = sourceManager.getUniqueName(FilenameUtils.removeExtension(file.getName()));
@@ -565,6 +565,8 @@ public class Catalog extends JPanel implements DockingPanel {
                                 this,
                                 "onMenuSaveInDB"));
                         saveMenu.add(saveInDBItem);
+                        //Separator between add/save/new and the attribute table.
+                        rootMenu.addSeparator();
                         //Popup:Open attributes
                         JMenuItem openTableMenu = new JMenuItem(I18N.tr("Open the attributes"),
                                 OrbisGISIcon.getIcon("openattributes"));
@@ -576,6 +578,18 @@ public class Catalog extends JPanel implements DockingPanel {
 
                 rootMenu.addSeparator();
 
+                //Add function to remove a source
+                if (!sourceList.isSelectionEmpty()) {
+
+                        JMenuItem removeSourceItem = new JMenuItem(
+                                    I18N.tr("Remove the source"),
+                                    OrbisGISIcon.getIcon("remove"));
+                        removeSourceItem.addActionListener(EventHandler.create(ActionListener.class,
+                                    this,
+                                    "onMenuRemoveSource"));
+                        rootMenu.add(removeSourceItem);
+                }
+
                 //Popup:ClearGeocatalog (added if the datasource manager is not empty)
                 DataManager dm = Services.getService(DataManager.class);
                 SourceManager dr = dm.getSourceManager();
@@ -586,18 +600,6 @@ public class Catalog extends JPanel implements DockingPanel {
                                 this,
                                 "onMenuClearGeoCatalog"));
                         rootMenu.add(clearCatalogItem);
-                }
-
-                //Add function to remove a source
-                if (!sourceList.isSelectionEmpty()) {
-
-                        JMenuItem removeSourceItem = new JMenuItem(
-                                I18N.tr("Remove the source"),
-                                OrbisGISIcon.getIcon("remove"));
-                        removeSourceItem.addActionListener(EventHandler.create(ActionListener.class,
-                                this,
-                                "onMenuRemoveSource"));
-                        rootMenu.add(removeSourceItem);
                 }
 
                 //////////////////////////////

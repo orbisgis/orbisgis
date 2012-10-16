@@ -34,7 +34,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.EventHandler;
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -309,7 +308,7 @@ public class SQLConsolePanel extends JPanel {
          */
         public void onExecute() {                
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
-                bm.backgroundOperation(new ExecuteScriptProcess(getText(), this,mapContext));
+                bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(getText(), this,mapContext));
         }
                
         /**

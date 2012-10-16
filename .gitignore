@@ -2,5 +2,5 @@ target
 nbactions.xml
 **/nb-configuration.xml
 *mo
+*iml
 .idea
-*.iml

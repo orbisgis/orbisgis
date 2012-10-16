@@ -92,7 +92,7 @@ public class PnlRule extends JPanel implements ISELegendPanel {
                 gbc.gridx = 0;
                 gbc.gridy = 0;
                 gbc.anchor = GridBagConstraints.LINE_START;
-                panel.add(new JLabel("Title : "), gbc);
+                panel.add(new JLabel(I18N.tr("Title : ")), gbc);
                 gbc = new GridBagConstraints();
                 gbc.gridx = 1;
                 gbc.gridy = 0;
