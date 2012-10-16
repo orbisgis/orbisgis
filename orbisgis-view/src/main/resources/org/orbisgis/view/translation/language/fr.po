@@ -1022,7 +1022,7 @@ msgstr "Dessin"
 #: java/org/orbisgis/view/map/MapControl.java:616
 #, java-format
 msgid "Tool error {0}"
-msgstr "Erreur d'outil {0}"
+msgstr "Erreur d''outil {0}"
 
 #: java/org/orbisgis/view/map/mapsManager/MapsManager.java:103
 msgid "Local"
