@@ -28,18 +28,33 @@
  */
 package org.orbisgis.view.docking.internals;
 
-import bibliothek.gui.dock.common.action.*;
+import bibliothek.gui.dock.common.action.CAction;
+import bibliothek.gui.dock.common.action.CButton;
+import bibliothek.gui.dock.common.action.CDropDownButton;
+import bibliothek.gui.dock.common.action.CMenu;
+import bibliothek.gui.dock.common.action.CRadioButton;
+import bibliothek.gui.dock.common.action.CRadioGroup;
+import bibliothek.gui.dock.common.action.CSeparator;
 import java.awt.Component;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentListener;
 import java.awt.event.ItemListener;
 import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.*;
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
+import javax.swing.DefaultButtonModel;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JSeparator;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
+import javax.swing.MenuElement;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.events.Listener;
 import org.orbisgis.view.components.button.DropDownButton;
 import org.orbisgis.view.docking.actions.CToggleButton;
 
@@ -199,6 +214,8 @@ public class ToolBarActions {
                     CButton dockingFramesButton = new CButton(button.getText(), button.getIcon());
                     dockingFramesButton.setTooltip(button.getToolTipText());
                     transferActionsListeners(button,dockingFramesButton);
+                    //button.addPropertyChangeListener(AbstractButton., null);
+                    //EventHandler.create(PropertyChangeListener.class,dockingFramesButton,"setEnabled","newValue")
                     action = dockingFramesButton;
                 } else if (component instanceof JSeparator) {
                     action = CSeparator.SEPARATOR;

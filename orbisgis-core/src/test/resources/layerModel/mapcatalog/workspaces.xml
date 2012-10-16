@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<workspaces> 
+    <workspace>
+        default
+    </workspace>
+    <workspace>
+        toto
+    </workspace>
+    <workspace>
+        titi
+    </workspace>
+    <workspace>
+        tata
+    </workspace>
+</workspaces>

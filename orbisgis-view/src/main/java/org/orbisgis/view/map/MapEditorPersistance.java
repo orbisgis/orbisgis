@@ -33,6 +33,8 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import org.orbisgis.core.Services;
 import org.orbisgis.view.docking.DockingPanelLayout;
 import org.orbisgis.view.workspace.ViewWorkspace;
@@ -42,14 +44,22 @@ import org.orbisgis.view.workspace.ViewWorkspace;
  * @author Nicolas Fortin
  */
 public class MapEditorPersistance implements DockingPanelLayout, Serializable {
-        private static final long serialVersionUID = 1L; // One by new property
+        private static final long serialVersionUID = 2L; // One by new property
         private static final String PROP_DEFAULTMAPCONTEXT = "defaultMapContext";
+        
         private String defaultMapContext = ""; //Default map context on application start
-
+        private List<String> mapCatalogUrlList = new ArrayList<String>();
+        
+        // XML consts
+        private static final String URL_LIST_NODE = "mapCatalogUrlList";
+        private static final String URL_NODE = "mapcatalog";
+        private static final String URL_NODE_PROPERTY = "url";
+                
         public MapEditorPersistance() {
                 ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
                 setDefaultMapContext(viewWorkspace.getDockingLayoutFile());
         }
+        
         /**
          * Update the default map context
          * @param defaultMapContext 
@@ -57,6 +67,23 @@ public class MapEditorPersistance implements DockingPanelLayout, Serializable {
         final public void setDefaultMapContext(String defaultMapContext) {
                 this.defaultMapContext = defaultMapContext;
         }
+
+        /**
+         * Set the map context server list
+         * @param mapCatalogUrlList 
+         */
+        public void setMapCatalogUrlList(List<String> mapCatalogUrlList) {
+                this.mapCatalogUrlList = new ArrayList<String>(mapCatalogUrlList);
+        }
+
+        /**
+         * Retrieve the list of map context
+         * @return 
+         */
+        public List<String> getMapCatalogUrlList() {
+                return mapCatalogUrlList;
+        }
+        
         /**
          * 
          * @return The last loaded map context path, or the default one
@@ -69,13 +96,25 @@ public class MapEditorPersistance implements DockingPanelLayout, Serializable {
         public void writeStream(DataOutputStream out) throws IOException {
                 out.writeLong(serialVersionUID);
                 out.writeUTF(defaultMapContext);
+                out.writeInt(mapCatalogUrlList.size());
+                for(String mcUrl : mapCatalogUrlList) {
+                        out.writeUTF(mcUrl);
+                }
         }
 
         @Override
         public void readStream(DataInputStream in) throws IOException {
                 // Check version
-                if(in.readLong()==serialVersionUID) {
+                long version = in.readLong();
+                if(version>=1) {
                         setDefaultMapContext(in.readUTF());
+                        mapCatalogUrlList.clear();
+                        if(version==serialVersionUID) {
+                                int size = in.readInt();
+                                for(int i=0;i<size;i++) {
+                                        mapCatalogUrlList.add(in.readUTF());
+                                }
+                        }
                 }
         }
 
@@ -83,12 +122,26 @@ public class MapEditorPersistance implements DockingPanelLayout, Serializable {
         public void writeXML(XElement element) {
                 element.addLong("serialVersionUID", serialVersionUID);
                 element.addString(PROP_DEFAULTMAPCONTEXT, defaultMapContext);
+                XElement urlList = new XElement(URL_LIST_NODE);                
+                for(String mcUrl : mapCatalogUrlList) {
+                        urlList.addElement(URL_NODE).addString(URL_NODE_PROPERTY, mcUrl);
+                }
+                element.addElement(urlList);
         }
 
         @Override
         public void readXML(XElement element) {
-                if(element.getLong("serialVersionUID")==serialVersionUID) {
+                long version = element.getLong("serialVersionUID");
+                if(version>=1) {
                         setDefaultMapContext(element.getString(PROP_DEFAULTMAPCONTEXT));
+                        mapCatalogUrlList.clear();
+                        if(version==serialVersionUID) {
+                                for(XElement map : element.getElement(URL_LIST_NODE).children()) {
+                                        if(map.getName().equals(URL_NODE)) {
+                                                mapCatalogUrlList.add(map.getString(URL_NODE_PROPERTY));
+                                        }
+                                }
+                        }                        
                 }
         }        
 }
