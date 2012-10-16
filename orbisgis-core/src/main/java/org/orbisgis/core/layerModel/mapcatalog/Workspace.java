@@ -90,8 +90,12 @@ public class Workspace  {
                 return FORMAT.parse(dateStr);
         }
         
-        private String getPublishUrl() throws UnsupportedEncodingException {
-                return cParams.getApiUrl()+"/workspaces/"+URLEncoder.encode(workspaceName,ENCODING)+PUBLISH_CONTEXT;
+        private String getPublishUrl(Integer mapContextId) throws UnsupportedEncodingException {
+                if(mapContextId==null) {
+                        return cParams.getApiUrl()+"/workspaces/"+URLEncoder.encode(workspaceName,ENCODING)+PUBLISH_CONTEXT;
+                } else{
+                        return cParams.getApiUrl()+"/workspaces/"+URLEncoder.encode(workspaceName,ENCODING)+PUBLISH_CONTEXT+"/"+mapContextId;
+                }
         }
         
         private String getMapContextListUrl() throws UnsupportedEncodingException {
@@ -133,7 +137,7 @@ public class Workspace  {
         public int publishMapContext(MapContext mapContext, Integer mapContextId) throws IOException  {
                 // Construct request
                 URL requestWorkspacesURL =
-                        new URL(getPublishUrl());
+                        new URL(getPublishUrl(mapContextId));
                 // Establish connection
                 HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
                 connection.setRequestMethod("POST");
@@ -155,7 +159,8 @@ public class Workspace  {
                         // Get response content
                         BufferedReader in = new BufferedReader(
                                             new InputStreamReader(
-                                            connection.getInputStream()));
+                                            connection.getInputStream(),
+                                RemoteCommons.getConnectionCharset(connection)));
 
 
                         XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -273,11 +278,16 @@ public class Workspace  {
                 
                 XMLInputFactory factory = XMLInputFactory.newInstance();
                 
+                // Read the response content
+                BufferedReader in = new BufferedReader(
+                                    new InputStreamReader(
+                                    connection.getInputStream(),
+                        RemoteCommons.getConnectionCharset(connection)));
+                
                 // Parse Data
                 XMLStreamReader parser;
                 try {
-                        parser = factory.createXMLStreamReader(connection.getInputStream(),connection.getContentEncoding());
-                        LOGGER.debug("Downloading workspace list Encoding :"+parser.getEncoding());
+                        parser = factory.createXMLStreamReader(in);
                         // Fill workspaces
                         parseXML(contextList, parser);
                         parser.close();

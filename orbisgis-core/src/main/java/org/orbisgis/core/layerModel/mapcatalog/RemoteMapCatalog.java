@@ -35,6 +35,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
@@ -109,9 +110,10 @@ public class RemoteMapCatalog {
                 // Read the response content
                 BufferedReader in = new BufferedReader(
                                     new InputStreamReader(
-                                    connection.getInputStream()));
+                                    connection.getInputStream(),
+                        RemoteCommons.getConnectionCharset(connection)));
                 
-                
+                //"Content-Type" "text/xml; charset=utf-8"
                 XMLInputFactory factory = XMLInputFactory.newInstance();
                 
                 // Parse Data

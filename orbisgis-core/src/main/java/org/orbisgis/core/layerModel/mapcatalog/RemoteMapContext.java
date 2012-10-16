@@ -31,6 +31,7 @@ package org.orbisgis.core.layerModel.mapcatalog;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import org.orbisgis.core.layerModel.MapContext;
@@ -60,6 +61,25 @@ public abstract class RemoteMapContext {
          */
         public RemoteMapContext(ConnectionProperties cParams) {
                 this.cParams = cParams;
+        }
+        
+        /**
+         * Delete this map context on the remote server.
+         * This call may take a long time to execute.
+         */
+        public void delete() throws IOException {
+                // Construct request
+                URL requestWorkspacesURL =
+                        new URL(getMapContextUrl());
+                // Establish connection
+                HttpURLConnection connection = (HttpURLConnection) requestWorkspacesURL.openConnection();
+    
+                connection.setRequestMethod("DELETE");
+                connection.setConnectTimeout(cParams.getConnectionTimeOut());                
+                
+		if (!(connection.getResponseCode() == HttpURLConnection.HTTP_OK || connection.getResponseCode() == HttpURLConnection.HTTP_NO_CONTENT)) {
+                        throw new IOException(I18N.tr("HTTP Error {0} message : {1} while removing the map context from {2}",connection.getResponseCode(),connection.getResponseMessage(),getMapContextUrl()));
+                }                
         }
         
         /**
@@ -163,8 +183,6 @@ public abstract class RemoteMapContext {
         /**
          * Return the stream of the map content node
          * This call may take a long time to execute.
-         * Using old API, this reader need to extract sub nodes before returning
-         * the input stream that correspond to the map content
          * @return
          * @throws IOException  
          */

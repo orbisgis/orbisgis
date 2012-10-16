@@ -44,7 +44,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- *
+ * Download the remote map context and update the tree
  * @author Nicolas Fortin
  */
 public class DownloadRemoteMapContext implements BackgroundJob {

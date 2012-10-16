@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.layerModel.mapcatalog;
 
+import java.net.HttpURLConnection;
 import java.util.List;
 
 /**
@@ -35,6 +36,7 @@ import java.util.List;
  * @author Nicolas Fortin
  */
 public class RemoteCommons {
+        private static final String CHARSET_KEY = "charset=";
 
         /**
          * Check that the provided list ends with the provided items
@@ -53,5 +55,24 @@ public class RemoteCommons {
                         }
                 }
                 return true;
-        }        
+        }
+        
+        /**
+         * Parse the connection content type and return the content charset
+         * @param connection
+         * @return Connection charset or "utf-8" if unknown
+         */
+        public static String getConnectionCharset(HttpURLConnection connection) {
+                String contentType = connection.getContentType();
+                int charsetIndex = contentType.indexOf(CHARSET_KEY);
+                if(charsetIndex!=-1) {
+                        int charsetEndIndex = contentType.indexOf(";", charsetIndex);
+                        if(charsetEndIndex==-1) {
+                                return contentType.substring(charsetIndex+CHARSET_KEY.length());
+                        } else {
+                                return contentType.substring(charsetIndex+CHARSET_KEY.length(),charsetEndIndex);                                        
+                        }
+                }
+                return "UTF-8";
+        }
 }

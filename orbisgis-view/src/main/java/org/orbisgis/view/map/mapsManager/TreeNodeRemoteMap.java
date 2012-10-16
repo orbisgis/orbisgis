@@ -29,9 +29,13 @@
 package org.orbisgis.view.map.mapsManager;
 
 import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
 import java.io.IOException;
 import javax.swing.ImageIcon;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.TransferHandler.TransferSupport;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
@@ -39,15 +43,18 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeLeaf;
 import org.orbisgis.view.components.fstree.DragTreeNode;
 import org.orbisgis.view.components.fstree.DropDestinationTreeNode;
+import org.orbisgis.view.components.fstree.PopupTreeNode;
 import org.orbisgis.view.components.fstree.TransferableList;
 import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.map.TransferableMap;
+import org.orbisgis.view.map.mapsManager.jobs.DeleteRemoteMapContext;
 import org.orbisgis.view.map.mapsManager.jobs.UploadMapContext;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -56,7 +63,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Map on the server side
  * @author Nicolas Fortin
  */
-public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeCustomIcon,DragTreeNode, DropDestinationTreeNode {
+public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeCustomIcon,DragTreeNode, DropDestinationTreeNode, PopupTreeNode {
         private RemoteMapContext remoteMapConnection;
         private static final Logger LOGGER = Logger.getLogger(TreeNodeRemoteMap.class);
         private static final I18n I18N = I18nFactory.getI18n(TreeNodeRemoteMap.class);
@@ -72,7 +79,14 @@ public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeC
                 }
                 setEditable(false);
         }
-
+        /**
+         * 
+         * @return The internal representation of the remote map context
+         */
+        public RemoteMapContext getRemoteMapContext() {
+                return remoteMapConnection;
+        }
+        
         @Override
         public void setUserObject(Object o) {
                 // Change map title ?
@@ -133,5 +147,20 @@ public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeC
                         LOGGER.error(ex.getLocalizedMessage(),ex);
                         return false;
                 }
+        }
+        public void onDeleteMap() {
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.nonBlockingBackgroundOperation(new DeleteRemoteMapContext(this));                
+        }
+        @Override
+        public void feedPopupMenu(JPopupMenu menu) {
+                JMenuItem remove = new JMenuItem(I18N.tr("Delete"),
+                        OrbisGISIcon.getIcon("remove"));
+                remove.setToolTipText(I18N.tr("Remove this map on the server"));
+                remove.setActionCommand("delete");
+                remove.addActionListener(
+                EventHandler.create(ActionListener.class,
+                this, "onDeleteMap"));
+                MenuCommonFunctions.updateOrInsertMenuItem(menu,remove);
         }
 }
