@@ -903,7 +903,8 @@ public class Toc extends JPanel implements EditorDockable {
         
         /**
          * Search in the layer the provided data source name
-         * @param source 
+         * @param layer
+         * @param sourceName
          */
         private boolean hasDataSource(ILayer layer,String sourceName) {
                 DataSource source = layer.getDataSource();
@@ -1155,6 +1156,13 @@ public class Toc extends JPanel implements EditorDockable {
                         maybeShowPopup(e);
                 }
 
+                /**
+                 * Determines whether {@code path} is one of the {@code
+                 * TreePath} contained in {@code selectionPaths}.
+                 * @param selectionPaths
+                 * @param path
+                 * @return
+                 */
                 private boolean contains(TreePath[] selectionPaths, TreePath path) {
                         for (TreePath treePath : selectionPaths) {
                                 boolean equals = true;
@@ -1164,7 +1172,7 @@ public class Toc extends JPanel implements EditorDockable {
                                         equals = false;
                                 } else {
                                         for (int i = 0; i < testPath.length; i++) {
-                                                if (testPath[i] != objectPath[i]) {
+                                                if (!(testPath[i].equals(objectPath[i]))) {
                                                         equals = false;
                                                 }
                                         }
@@ -1182,7 +1190,7 @@ public class Toc extends JPanel implements EditorDockable {
                                 //Update selection
                                 TreePath path = tree.getPathForLocation(e.getX(), e.getY());
                                 TreePath[] selectionPaths = tree.getSelectionPaths();
-                                if ((selectionPaths != null) && (path != null)) {
+                                if (selectionPaths != null && path != null){
                                         if (!contains(selectionPaths, path)) {
                                                 if (e.isControlDown()) {
                                                         tree.addSelectionPath(path);
