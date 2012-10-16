@@ -33,7 +33,7 @@ import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 
 /**
- *
+ * A node without sub-nodes
  * @author Nicolas Fortin
  */
 public abstract class AbstractTreeNodeLeaf extends AbstractTreeNode {
