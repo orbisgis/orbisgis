@@ -44,7 +44,7 @@ import org.orbisgis.view.map.MapElement;
  */
 public class TransferableLayer implements Transferable {
 
-	private static DataFlavor layerFlavor = new DataFlavor(EditableLayer.class,
+	public final static DataFlavor LAYER_FLAVOR = new DataFlavor(EditableLayer.class,
 			"EditableLayer");
 
 	private EditableLayer[] nodes;
@@ -69,7 +69,7 @@ public class TransferableLayer implements Transferable {
 	public Object getTransferData(DataFlavor flavor)
 			throws UnsupportedFlavorException, IOException {
 		Object ret = null;
-		if (flavor.equals(layerFlavor)) {
+		if (flavor.equals(LAYER_FLAVOR)) {
 			ret = nodes;
 		} else if (flavor
 				.equals(TransferableEditableElement.editableElementFlavor)) {
@@ -90,7 +90,7 @@ public class TransferableLayer implements Transferable {
 
         @Override
 	public DataFlavor[] getTransferDataFlavors() {
-		return (new DataFlavor[] { layerFlavor,
+		return (new DataFlavor[] { LAYER_FLAVOR,
 				TransferableEditableElement.editableElementFlavor,
 				DataFlavor.stringFlavor });
 	}
@@ -103,7 +103,7 @@ public class TransferableLayer implements Transferable {
 	}
 
 	public static DataFlavor getLayerFlavor() {
-		return layerFlavor;
+		return LAYER_FLAVOR;
 	}
 
 	private boolean contains(ArrayList<EditableLayer> nodes, ILayer resource) {
