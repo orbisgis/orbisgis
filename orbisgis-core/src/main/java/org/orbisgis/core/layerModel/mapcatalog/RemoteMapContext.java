@@ -175,7 +175,7 @@ public abstract class RemoteMapContext {
          * @return
          * @throws IOException  
          */
-        public InputStream getMapContent() throws IOException {
+        public HttpURLConnection getMapContent() throws IOException {
                 // Construct request
                 String url = RemoteCommons.getUrlContext(cParams, workspaceName, id);
                 URL requestWorkspacesURL =
@@ -189,7 +189,7 @@ public abstract class RemoteMapContext {
                 if (connection.getResponseCode() != HttpURLConnection.HTTP_OK) {
                         throw new IOException(I18N.tr("HTTP Error {0} message : {1} while downloading from {2}", connection.getResponseCode(), connection.getResponseMessage(), url));
                 }
-                return connection.getInputStream();
+                return connection;
         }
         
         /**

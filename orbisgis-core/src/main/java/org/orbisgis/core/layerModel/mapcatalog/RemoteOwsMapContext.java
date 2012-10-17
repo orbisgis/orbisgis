@@ -48,7 +48,7 @@ public class RemoteOwsMapContext extends RemoteMapContext {
         @Override
         public MapContext getMapContext() throws IOException {             
                 OwsMapContext mapContext = new OwsMapContext();
-                mapContext.read(getMapContent());
+                mapContext.read(getMapContent().getInputStream());
                 return mapContext;
         }
 

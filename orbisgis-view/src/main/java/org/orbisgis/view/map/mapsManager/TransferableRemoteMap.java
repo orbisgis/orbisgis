@@ -32,11 +32,14 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.HttpURLConnection;
 import java.util.Arrays;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.layerModel.mapcatalog.RemoteCommons;
 import org.orbisgis.core.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.view.components.fstree.TransferableFileContent;
 import org.orbisgis.view.edition.TransferableEditableElement;
@@ -53,7 +56,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class TransferableRemoteMap extends TransferableMap {
         private static final Logger LOGGER = Logger.getLogger(TransferableRemoteMap.class);
         private static final I18n I18N = I18nFactory.getI18n(TransferableRemoteMap.class);
-        RemoteMapContext remoteMap;
+        private RemoteMapContext remoteMap;
 
         public TransferableRemoteMap(RemoteMapContext remoteMap) {
                 this.remoteMap = remoteMap;
@@ -103,7 +106,9 @@ public class TransferableRemoteMap extends TransferableMap {
                 } else if(df.equals(TransferableFileContent.FILE_CONTENT_FLAVOR)) {
                         // Make a Reader
                         try {
-                                return new ReaderWithName(remoteMap);
+                                //Establish connection with the remote map
+                                HttpURLConnection connection = remoteMap.getMapContent();
+                                return new ReaderWithName(connection.getInputStream(),RemoteCommons.getConnectionCharset(connection),remoteMap);
                         } catch(IOException ex) {
                                 LOGGER.error(ex.getLocalizedMessage(),ex);
                                 return null;
@@ -117,10 +122,10 @@ public class TransferableRemoteMap extends TransferableMap {
          * Reader input stream that provide a content file name
          */
         private static class ReaderWithName extends InputStreamReader implements TransferableFileContent {
-                RemoteMapContext remoteMapContext;
+                private RemoteMapContext remoteMapContext;
 
-                public ReaderWithName(RemoteMapContext remoteMapContext) throws UnsupportedEncodingException, IOException {
-                        super(remoteMapContext.getMapContent(),remoteMapContext.getContentEncoding());
+                public ReaderWithName(InputStream inputStream, String encoding, RemoteMapContext remoteMapContext) throws UnsupportedEncodingException, IOException {
+                        super(inputStream, encoding);
                         this.remoteMapContext = remoteMapContext;
                 }
                 
