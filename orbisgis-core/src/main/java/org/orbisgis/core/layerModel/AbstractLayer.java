@@ -103,7 +103,9 @@ public abstract class AbstractLayer implements ILayer {
 	}
 
 	public void addLayerListener(LayerListener listener) {
-		listeners.add(listener);
+                if(!listeners.contains(listener)){
+                        listeners.add(listener);
+                }
 	}
 
 	public void removeLayerListener(LayerListener listener) {
@@ -144,6 +146,7 @@ public abstract class AbstractLayer implements ILayer {
 		return path2.toArray(new ILayer[path2.size()]);
 	}
 
+        @Override
 	public void moveTo(ILayer layer, int index) throws LayerException {
 		ILayer oldParent = getParent();
 		oldParent.remove(this, true);
