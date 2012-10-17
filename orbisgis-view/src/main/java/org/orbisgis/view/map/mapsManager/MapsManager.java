@@ -30,13 +30,15 @@ package org.orbisgis.view.map.mapsManager;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.Insets;
+import java.awt.event.MouseAdapter;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -44,9 +46,11 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
 import javax.swing.tree.TreeNode;
 import javax.swing.tree.TreePath;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.FileTree;
+import org.orbisgis.view.components.fstree.FileTreeModel;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactoryManager;
 import org.orbisgis.view.components.fstree.TreeNodeFolder;
 import org.orbisgis.view.components.fstree.TreeNodePath;
@@ -56,17 +60,19 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- *
+ * A title and a tree that show local and remote map contexts
  * @author Nicolas Fortin
  */
 public class MapsManager extends JPanel {
         // Minimal tree size is incremented by this emptySpace
         private static final long serialVersionUID = 1L;
         private static final I18n I18N = I18nFactory.getI18n(MapsManager.class);
+        private static final Logger LOGGER = Logger.getLogger(MapsManager.class);
         private FileTree tree;
         private DefaultTreeModel treeModel;
         private MutableTreeNode rootNode = new DefaultMutableTreeNode();
-        TreeNodeFolder rootFolder;
+        private TreeNodeFolder rootFolder;
+        private TreeNodeRemoteRoot rootRemote;
         private JScrollPane scrollPane;
         private File loadedMap;
         // Store all the compatible map context
@@ -77,7 +83,7 @@ public class MapsManager extends JPanel {
          */
         public MapsManager() {
                 super(new BorderLayout());
-                treeModel = new DefaultTreeModel(rootNode, true);
+                treeModel = new FileTreeModel(rootNode, true);
                 treeModel.setAsksAllowsChildren(true);
                 // Add the tree in the panel                
                 tree = new FileTree(treeModel);
@@ -90,12 +96,18 @@ public class MapsManager extends JPanel {
                         rootFolderPath.mkdirs();
                 }
                 rootFolder = new TreeNodeFolder(rootFolderPath,tree);
-                rootFolder.setLabel(I18N.tr("Local"));                
+                rootFolder.setLabel(I18N.tr("Local")); 
+                rootRemote = new TreeNodeRemoteRoot();
                 initInternalFactories(); // Init file readers
-                treeModel.insertNodeInto(rootFolder,rootNode, 0);
+                treeModel.insertNodeInto(rootFolder, rootNode, rootNode.getChildCount());
+                treeModel.insertNodeInto(rootRemote, rootNode, rootNode.getChildCount());
                 tree.setRootVisible(false);
                 scrollPane = new JScrollPane(tree);
-                add(scrollPane,BorderLayout.EAST);
+                JLabel title = new JLabel(I18N.tr("Maps manager"));
+                // Disable mouse event propagation on this label
+                title.addMouseListener(new MouseAdapter(){}); 
+                add(title,BorderLayout.NORTH);
+                add(scrollPane,BorderLayout.CENTER);
                 setBorder(BorderFactory.createEtchedBorder());
         }
         
@@ -106,7 +118,13 @@ public class MapsManager extends JPanel {
         public TreeNodeFileFactoryManager getFactoryManager() {
                 return tree;
         }
-        
+        /**
+         * Update the shown elements in the disk tree
+         */
+        public void updateDiskTree() {
+                rootFolder.updateTree();
+                applyLoadedMapHint();
+        }
         private List<TreeLeafMapElement> getAllMapElements(TreeNode parentNode) {
                 List<TreeLeafMapElement> mapElements = new ArrayList<TreeLeafMapElement>();
                 if(!parentNode.isLeaf()) {
@@ -127,16 +145,20 @@ public class MapsManager extends JPanel {
                 super.setVisible(visible);
                 if(visible && !initialized.getAndSet(true)) {
                         // Set a listener to the root folder
-                        rootFolder.setModel(treeModel);
                         rootFolder.updateTree(); //Read the file system tree
-                        // Expand Local folder
+                        // Expand Local and remote folder
                         tree.expandPath(new TreePath(new Object[] {rootNode,rootFolder}));  
-                        // Fetch all maps to find their titles
-                        BackgroundManager bm = Services.getService(BackgroundManager.class);
-                        bm.nonBlockingBackgroundOperation(new ReadStoredMap(getAllMapElements(rootFolder)));
+                        tree.expandPath(new TreePath(new Object[] {rootNode,rootRemote}));  
+                        updateMapsTitle();
                         // Apply loaded map property on map nodes
                         applyLoadedMapHint();
                 }
+        }
+        
+        private void updateMapsTitle() {
+                // Fetch all maps to find their titles
+                BackgroundManager bm = Services.getService(BackgroundManager.class);
+                bm.nonBlockingBackgroundOperation(new ReadStoredMap(getAllMapElements(rootFolder)));                
         }
         
        /**
@@ -152,11 +174,21 @@ public class MapsManager extends JPanel {
         public JTree getTree() {
                 return tree;
         }
-        
+
         /**
-         * Update the state of the tree to show to the user
-         * a visual hint that a map is currently shown in the MapEditor or not.
-         * @param loadedMap 
+         * The map manager will read and update the map server list
+         * @param mapCatalogServers 
+         */
+        public void setServerList(List<String> mapCatalogServers) {
+                rootRemote.setServerList(mapCatalogServers);
+        }
+
+        /**
+         * Update the state of the tree to show to the user a visual hint that a
+         * map is currently shown in the MapEditor or not.
+         *
+         * @param loadedMap
+         
          */
         public void setLoadedMap(File loadedMap) {
                 this.loadedMap = loadedMap;
@@ -164,7 +196,7 @@ public class MapsManager extends JPanel {
         }
         private void applyLoadedMapHint() {
                 if(loadedMap!=null) {
-                        List<TreeLeafMapElement> mapElements = getAllMapElements(rootNode);
+                        List<TreeLeafMapElement> mapElements = getAllMapElements(rootFolder);
                         for(TreeLeafMapElement mapEl : mapElements) {
                                 if(mapEl instanceof TreeNodePath) {
                                         if(((TreeNodePath)mapEl).getFilePath().equals(loadedMap)) {
@@ -183,18 +215,14 @@ public class MapsManager extends JPanel {
          * @return Height in pixels
          */
         public Dimension getMinimalComponentDimension() {                
-                Insets borders = getInsets();
-                Insets sBorders = scrollPane.getInsets();
+                Dimension panel = getPreferredSize();
                 Dimension treeDim = tree.getPreferredSize();
-                return new Dimension(treeDim.width+
-                        borders.left+
-                        borders.right+
-                        sBorders.left+
-                        sBorders.right
-                        ,treeDim.height+
-                        borders.top+
-                        borders.bottom+
-                        sBorders.top+
-                        sBorders.bottom);
+                // Get the vertical scrollbar width
+                JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
+                if(scrollBar!=null && scrollBar.isVisible()) {
+                        return new Dimension(panel.width+scrollBar.getWidth(),treeDim.height+getMinimumSize().height);
+                } else {
+                        return new Dimension(panel.width,treeDim.height+getMinimumSize().height);
+                }
         }
 }

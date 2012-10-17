@@ -34,14 +34,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.Enumeration;
 import java.util.Locale;
 import javax.swing.ImageIcon;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
-import javax.swing.tree.MutableTreeNode;
-import javax.swing.tree.TreeNode;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.LayerException;
@@ -57,7 +54,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- *
+ * A map context on the client hard drive.
  * @author Nicolas Fortin
  */
 public final class TreeLeafMapContextFile extends TreeLeafMapElement implements TreeNodeCustomIcon  {
@@ -72,7 +69,7 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
         }
         
         /**
-         * 
+         * Create and save a minimal ows Map context file
          * @param fileName
          * @return
          */
@@ -135,61 +132,10 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
         }       
 
         @Override
-        public void insert(MutableTreeNode mtn, int i) {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public void remove(int i) {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
-        public void remove(MutableTreeNode mtn) {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-
-        @Override
         public void setUserObject(Object o) {
                 // The map context need to be open and close to edit the label,
                 // this can be quite long and register some data sources..
-        }
-
-        @Override
-        public void setParent(MutableTreeNode mtn) {
-                parent = mtn;
-        }
-
-        @Override
-        public TreeNode getChildAt(int i) {
-                throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public int getChildCount() {
-                return 0;
-        }
-
-
-        @Override
-        public int getIndex(TreeNode tn) {
-                throw new UnsupportedOperationException("Not supported.");
-        }
-
-        @Override
-        public boolean getAllowsChildren() {
-                return false;
-        }
-
-        @Override
-        public boolean isLeaf() {
-                return true;
-        }
-
-        @Override
-        public Enumeration<TreeNode> children() {
-                throw new UnsupportedOperationException("Not supported.");
-        }
+        }        
 
         @Override
         public ImageIcon getLeafIcon() {

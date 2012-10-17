@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.map.mapsManager.jobs;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.SwingUtilities;
 import net.opengis.ows._2.LanguageStringType;
@@ -35,8 +36,6 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
-import org.orbisgis.view.map.MapElement;
-import org.orbisgis.view.map.mapsManager.TreeLeafMapContextFile;
 import org.orbisgis.view.map.mapsManager.TreeLeafMapElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -50,6 +49,10 @@ public class ReadStoredMap implements BackgroundJob {
         private static final I18n I18N = I18nFactory.getI18n(ReadStoredMap.class);
         List<TreeLeafMapElement> mapContextFiles;
 
+        public ReadStoredMap(TreeLeafMapElement mapContextFile) {
+                mapContextFiles = new ArrayList<TreeLeafMapElement>();
+                mapContextFiles.add(mapContextFile);
+        }       
         public ReadStoredMap(List<TreeLeafMapElement> mapContextFiles) {
                 this.mapContextFiles = mapContextFiles;
         }       

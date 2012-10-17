@@ -81,20 +81,19 @@ public final class MapElement extends EditableElement {
         }       
         
         /**
-         * Update the modified state
-         * @param modified 
-         */
-        public void setModified(Boolean modified) {
-            this.modified = modified;
-        }
-
-        /**
-         * Call setModified(true);
+         * Set this element as modified
          */
         public void setModified() {
                 setModified(true);
         }
         
+        /**
+         * Update the modified state
+         * @param modified 
+         */
+        public void setModified(Boolean modified) {
+            this.modified = modified;
+        }        
         private boolean hasNotWellKnownDataSources() {
                 for(ILayer layer : mapContext.getLayers()) {
                         DataSource source = layer.getDataSource();
@@ -122,6 +121,11 @@ public final class MapElement extends EditableElement {
                 }
                 if(doSave) {
                         try {
+                                //Create folders if needed
+                                File parentFolder = mapContextFile.getParentFile();
+                                if(!parentFolder.exists()) {
+                                        parentFolder.mkdirs();
+                                }
                                 mapContext.write(new FileOutputStream(mapContextFile));
                         } catch (FileNotFoundException ex) {
                                 throw new UnsupportedOperationException(ex);

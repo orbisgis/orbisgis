@@ -101,6 +101,7 @@ public class TreeNodeOwsMapContextFactory implements TreeNodeFileFactory {
                         MenuCommonFunctions.updateOrInsertMenuItem(menu,createEmptyMap);
                 }
         }
+        
         /**
          * A listener that store a folderNode instance
          */
