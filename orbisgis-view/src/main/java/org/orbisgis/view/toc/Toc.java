@@ -975,18 +975,6 @@ public class Toc extends JPanel implements EditorDockable {
                         for (final ILayer layer : e.getAffected()) {
                                 layer.removePropertyChangeListener(tocStyleListListener);
                                 layer.removeLayerListener(this);
-                                //TODO Close editors attached to this ILayer
-                                //Or do the job on the Editor (logic)
-                                /*
-                                * EditorManager em =
-                                * Services.getService(EditorManager.class);
-                                * IEditor[] editors = em.getEditor(new
-                                * EditableLayer(element, lyr)); for
-                                * (IEditor editor : editors) { if
-                                * (!em.closeEditor(editor)) { return
-                                * false; } }
-                                *
-                                */
                         }
                         return true;
                 }
@@ -1088,11 +1076,7 @@ public class Toc extends JPanel implements EditorDockable {
                                         }
                                 }
                         }
-                        try {
-                                dropNode.setVisible(true);
-                        }  catch (LayerException e) {
-                            LOGGER.error(e);
-                        }
+                        treeModel.nodeChanged(new TocTreeNodeLayer(dropNode));
                 }
 
                 @Override
