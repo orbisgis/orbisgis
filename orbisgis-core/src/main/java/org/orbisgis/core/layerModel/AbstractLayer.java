@@ -186,8 +186,11 @@ public abstract class AbstractLayer implements ILayer {
 	private void fireLayerMovedEvent(ILayer parent, ILayer layer) {
                 LayerCollectionEvent evt = new LayerCollectionEvent(parent,
 					new ILayer[] { layer });
+                LayerCollectionEvent ev2 = new LayerCollectionEvent(layer.getParent(),
+					new ILayer[] { layer });
 		for (LayerListener listener : listeners) {
 			listener.layerMoved(evt);
+			listener.layerMoved(ev2);
 		}
 
 	}
