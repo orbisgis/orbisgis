@@ -573,13 +573,7 @@ public class Catalog extends JPanel implements DockingPanel {
                         openTableMenu.addActionListener(EventHandler.create(ActionListener.class,
                                 this, "onMenuShowTable"));
                         rootMenu.add(openTableMenu);
-                        
-                }
-
-                rootMenu.addSeparator();
-
-                //Add function to remove a source
-                if (!sourceList.isSelectionEmpty()) {
+                        rootMenu.addSeparator();
 
                         JMenuItem removeSourceItem = new JMenuItem(
                                     I18N.tr("Remove the source"),
