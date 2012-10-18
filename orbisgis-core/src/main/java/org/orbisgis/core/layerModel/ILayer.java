@@ -210,6 +210,12 @@ public interface ILayer {
 
 	ILayer[] getLayerPath();
 
+        /**
+         * Inserts this in {@code layer} at index {@code index}.
+         * @param layer
+         * @param index
+         * @throws LayerException
+         */
 	void moveTo(ILayer layer, int index) throws LayerException;
 
 	void moveTo(ILayer layer) throws LayerException;

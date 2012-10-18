@@ -265,17 +265,7 @@ public class LayerCollection extends BeanLayer {
          */
         @Override
 	public void addLayer(ILayer layer, boolean isMoving) throws LayerException {
-		if (null != layer) {
-			if (isMoving) {
-				layerCollection.add(layer);
-				layer.setParent(this);
-			} else {
-				setNamesRecursively(layer, getRoot().getAllLayersNames());
-				layerCollection.add(layer);
-				layer.setParent(this);
-				fireLayerAddedEvent(new ILayer[] { layer });
-			}
-		}
+                insertLayer(layer, layerCollection.size(),isMoving);
 	}
 
 
@@ -310,15 +300,13 @@ public class LayerCollection extends BeanLayer {
 	public void insertLayer(ILayer layer, int index, boolean isMoving)
 			throws LayerException {
 		if (null != layer) {
-			if (isMoving) {
-				layerCollection.add(index, layer);
-				layer.setParent(this);
-			} else {
-				setNamesRecursively(layer, getRoot().getAllLayersNames());
-				layerCollection.add(index, layer);
-				layer.setParent(this);
-				fireLayerAddedEvent(new ILayer[] { layer });
-			}
+                        int i = Math.min(index, this.layerCollection.size());
+                        setNamesRecursively(layer, getRoot().getAllLayersNames());
+                        layerCollection.add(i, layer);
+                        layer.setParent(this);
+                        if(!isMoving){
+                                fireLayerAddedEvent(new ILayer[] { layer });
+                        }
 		}
 
 	}
