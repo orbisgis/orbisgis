@@ -654,6 +654,11 @@ public class Toc extends JPanel implements EditorDockable {
                         importStyle.setToolTipText(I18N.tr("Import a style from a file."));
                         importStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onImportStyle"));
                         popup.add(importStyle);
+                        //display the menu to add a new style
+                        JMenuItem addStyle = new JMenuItem(I18N.tr("Add style"), OrbisGISIcon.getIcon("add"));
+                        addStyle.setToolTipText(I18N.tr("Add a new style."));
+                        addStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onAddStyle"));
+                        popup.add(addStyle);
                 }
                 //Popup:Open attributes
                 JMenuItem openTableMenu = new JMenuItem(I18N.tr("Open the attributes"),
@@ -811,37 +816,43 @@ public class Toc extends JPanel implements EditorDockable {
         }
 
         /**
+         * Add a new default style to the selected layer.
+         */
+        public void onAddStyle() {
+                ILayer[] layers = mapContext.getSelectedLayers();
+                if (layers.length == 1) {
+                        ILayer layer = layers[0];
+                        Style s = new Style(layer, true);
+                        layer.addStyle(s);
+
+                }
+        }
+
+        /**
          * The user choose to import a style and to add it to the selected layer
          * through the dedicated menu.
          */
         public void onImportStyle() {
-                try {
-                        ILayer[] layers = mapContext.getSelectedLayers();
-                        if (layers.length == 1) {
-                                ILayer layer = layers[0];
-                                Type typ = layer.getDataSource().getMetadata().getFieldType(layer.getDataSource().getSpatialFieldIndex());
+                ILayer[] layers = mapContext.getSelectedLayers();
+                if (layers.length == 1) {
+                        ILayer layer = layers[0];
+                        final OpenFilePanel inputXMLPanel = new OpenFilePanel(
+                                "org.orbisgis.core.ui.editorViews.toc.actions.ImportStyle",
+                                "Choose a location");
 
-                                final OpenFilePanel inputXMLPanel = new OpenFilePanel(
-                                        "org.orbisgis.core.ui.editorViews.toc.actions.ImportStyle",
-                                        "Choose a location");
+                        inputXMLPanel.addFilter("se", "Symbology Encoding 2.0 (FeatureTypeStyle");
 
-                                inputXMLPanel.addFilter("se", "Symbology Encoding 2.0 (FeatureTypeStyle");
-
-                                if (UIFactory.showDialog(inputXMLPanel)) {
-                                        String seFile = inputXMLPanel.getSelectedFile().getAbsolutePath();
-                                        try {
-                                                layer.addStyle(0, new Style(layer, seFile));
-                                        } catch (SeExceptions.InvalidStyle ex) {
-                                                LOGGER.error(I18N.tr(ex.getLocalizedMessage()));
-                                                String msg = ex.getMessage().replace("<", "\n    - ").replace(',', ' ').replace(": ", "\n - ");
-                                                JOptionPane.showMessageDialog(null, msg,
-                                                        "Error while loading the style", JOptionPane.ERROR_MESSAGE);
-                                        }
+                        if (UIFactory.showDialog(inputXMLPanel)) {
+                                String seFile = inputXMLPanel.getSelectedFile().getAbsolutePath();
+                                try {
+                                        layer.addStyle(new Style(layer, seFile));
+                                } catch (SeExceptions.InvalidStyle ex) {
+                                        LOGGER.error(ex.getLocalizedMessage());
+                                        String msg = ex.getMessage().replace("<", "\n    - ").replace(',', ' ').replace(": ", "\n - ");
+                                        JOptionPane.showMessageDialog(null, msg,
+                                                "Error while loading the style", JOptionPane.ERROR_MESSAGE);
                                 }
                         }
-
-                } catch (DriverException e) {
-                        LOGGER.error("Error while loading the style", e);
                 }
         }
 
@@ -855,6 +866,7 @@ public class Toc extends JPanel implements EditorDockable {
                         if(styles.length == 1){
                                 Style style = styles[0];
                                 ILayer layer = style.getLayer();
+                                int index = layer.indexOf(style);
                                 // Obtain MapTransform
                                 MapEditor editor = mapElement.getMapEditor();
                                 MapTransform mt = editor.getMapControl().getMapTransform();
@@ -865,7 +877,7 @@ public class Toc extends JPanel implements EditorDockable {
                                 LegendUIController controller = new LegendUIController(style);
 
                                 if (UIFactory.showDialog((UIPanel)controller.getMainPanel())) {
-                                        layer.setStyle(0,controller.getEditedFeatureTypeStyle());
+                                        layer.setStyle(index,controller.getEditedFeatureTypeStyle());
                                 }
                         }
 		} catch (SeExceptions.InvalidStyle ex) {
@@ -879,6 +891,7 @@ public class Toc extends JPanel implements EditorDockable {
                         try {
                                 Style style = ((TocTreeNodeStyle) selObjs.getLastPathComponent()).getStyle();
                                 Layer layer = (Layer) style.getLayer();
+                                int index = layer.indexOf(style);
                                 Type typ = layer.getDataSource().getMetadata().getFieldType(
                                         layer.getDataSource().getSpatialFieldIndex());
                                 //In order to be able to cancel all of our modifications,
@@ -892,7 +905,7 @@ public class Toc extends JPanel implements EditorDockable {
                                 pan.init(mt, typ, copy, legends, layer);
                                 if (UIFactory.showDialog(pan)) {
                                         try {
-                                                layer.setStyle(0, pan.getStyleWrapper().getStyle());
+                                                layer.setStyle(index, pan.getStyleWrapper().getStyle());
                                         } catch (ClassificationMethodException e) {
                                                 LOGGER.error(e.getMessage());
                                         }
