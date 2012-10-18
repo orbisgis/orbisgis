@@ -847,7 +847,7 @@ public class Toc extends JPanel implements EditorDockable {
                                 try {
                                         layer.addStyle(new Style(layer, seFile));
                                 } catch (SeExceptions.InvalidStyle ex) {
-                                        LOGGER.error(I18N.tr(ex.getLocalizedMessage()));
+                                        LOGGER.error(ex.getLocalizedMessage());
                                         String msg = ex.getMessage().replace("<", "\n    - ").replace(',', ' ').replace(": ", "\n - ");
                                         JOptionPane.showMessageDialog(null, msg,
                                                 "Error while loading the style", JOptionPane.ERROR_MESSAGE);
