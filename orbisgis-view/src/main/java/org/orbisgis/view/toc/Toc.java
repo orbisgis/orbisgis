@@ -598,6 +598,11 @@ public class Toc extends JPanel implements EditorDockable {
                 return popup;
         }
 
+	/**
+	 * This method will fill the popup given in argument with all the fields needed
+	 * to handle layers and layer collections.
+	 * @param popup
+	 */
         private void makePopupLayer(JPopupMenu popup){
                 // Fetch selected layers for Row selection
                 TreePath[] selectedItems = tree.getSelectionPaths();
