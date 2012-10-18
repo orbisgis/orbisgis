@@ -37,7 +37,7 @@ import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.driver.DriverException;
 import org.gdms.source.SourceManager;
-import org.jproj.CoordinateReferenceSystem;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.xnap.commons.i18n.I18n;
@@ -105,8 +105,7 @@ public class DataBaseTableModel extends AbstractTableModel {
                                         String geomField = ds.getFieldName(ds.getSpatialFieldIndex());
                                         CoordinateReferenceSystem crs = ds.getCRS();
                                         if (crs != null) {
-                                                crsName = crs.getName();
-                                                epsgCode = crs.getEPSGCode();
+                                                crsName = crs.getIdentifiers().toString();
                                         }
                                         ds.close();
                                         DataBaseRow row = new DataBaseRow(sourceName, sourceName,
