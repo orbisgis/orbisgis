@@ -35,9 +35,8 @@ package org.gdms.data.values;
 
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.Polygon;
-import org.jproj.CoordinateReferenceSystem;
-
 import org.gdms.data.types.Type;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  *

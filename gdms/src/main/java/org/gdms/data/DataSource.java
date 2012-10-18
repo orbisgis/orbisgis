@@ -33,20 +33,17 @@
  */
 package org.gdms.data;
 
+import com.vividsolutions.jts.geom.Geometry;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Iterator;
-
-import com.vividsolutions.jts.geom.Geometry;
-import org.grap.model.GeoRaster;
-import org.jproj.CoordinateReferenceSystem;
-
 import org.gdms.data.edition.Commiter;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MetadataEditionListener;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.schema.Metadata;
+import org.gdms.data.stream.GeoStream;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -55,7 +52,8 @@ import org.gdms.driver.DataSet;
 import org.gdms.driver.Driver;
 import org.gdms.driver.DriverException;
 import org.gdms.source.Source;
-import org.gdms.data.stream.GeoStream;
+import org.grap.model.GeoRaster;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * A data source currently registered in Gdms. A DataSource is the object needed to manipulate some data

@@ -56,6 +56,7 @@ public class MesurePolygonTool extends AbstractPolygonTool {
 		return button;
 	}
 
+        @Override
 	public void setButton(AbstractButton button) {
 		this.button = button;
 	}

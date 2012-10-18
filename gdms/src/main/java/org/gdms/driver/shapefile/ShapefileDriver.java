@@ -33,55 +33,27 @@
  */
 package org.gdms.driver.shapefile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import com.vividsolutions.jts.geom.*;
+import java.io.*;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryFactory;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 import org.apache.log4j.Logger;
-import org.jproj.CoordinateReferenceSystem;
-import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.utils.FileUtils;
-
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.schema.DefaultMetadata;
-import org.gdms.data.schema.DefaultSchema;
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.data.schema.Schema;
-import org.gdms.data.types.CRSConstraint;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.DefaultTypeDefinition;
-import org.gdms.data.types.Dimension3DConstraint;
-import org.gdms.data.types.InvalidTypeException;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeDefinition;
-import org.gdms.data.types.TypeFactory;
+import org.gdms.data.crs.SpatialReferenceSystem;
+import org.gdms.data.schema.*;
+import org.gdms.data.types.*;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.AbstractDataSet;
-import org.gdms.driver.DataSet;
-import org.gdms.driver.DriverException;
-import org.gdms.driver.DriverUtilities;
-import org.gdms.driver.FileReadWriteDriver;
+import org.gdms.driver.*;
 import org.gdms.driver.dbf.DBFDriver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.geometryUtils.GeometryClean;
 import org.gdms.source.SourceManager;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.utils.FileUtils;
 
 public final class ShapefileDriver extends AbstractDataSet implements FileReadWriteDriver {
 
@@ -189,7 +161,7 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
 
                         File prj = FileUtils.getFileWithExtension(file, "prj");
                         if (prj != null && prj.exists()) {
-                                crs = dataSourceFactory.getCrsFactory().createFromPrj(prj);
+                                crs = SpatialReferenceSystem.createFromPrj(prj);
                                 if (crs != null) {
                                         CRSConstraint cc = new CRSConstraint(crs);
                                         constraints = new Constraint[]{dc, cc};
@@ -204,6 +176,8 @@ public final class ShapefileDriver extends AbstractDataSet implements FileReadWr
                         metadata.addField(0, "the_geom", gtype, constraints);
                         metadata.addAll(driver.getMetadata());
 
+                } catch (FactoryException e) {
+                        throw new DriverException(e);                
                 } catch (IOException e) {
                         throw new DriverException(e);
                 } catch (ShapefileException e) {

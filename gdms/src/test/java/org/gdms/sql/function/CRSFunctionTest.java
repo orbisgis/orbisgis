@@ -33,7 +33,9 @@
  */
 package org.gdms.sql.function;
 
-import org.junit.AfterClass;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.io.WKBReader;
+import com.vividsolutions.jts.io.WKTReader;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -62,12 +64,34 @@ public class CRSFunctionTest extends TestBase {
                 assertTrue(ds.isNull(0, 0));
                 ds.close();
                 
-                ds = dsf.getDataSourceFromSQL("SELECT ST_CRS(ST_SetCRS(the_geom, 'EPSG:27582')) from init;");
+                ds = dsf.getDataSourceFromSQL("SELECT ST_CRS(ST_SetCRS(the_geom, 'EPSG:27572')) from init;");
                 
                 ds.open();
                 for (int i = 0; i < ds.getRowCount(); i++) {
-                        assertEquals("EPSG:27582", ds.getString(i, 0));
+                        assertTrue( ds.getString(i, 0).contains("EPSG:27572"));
                 }
+                ds.close();
+        }
+        
+        
+        @Test
+        public void testST_Transform() throws Exception {
+                dsf.executeSQL("CREATE TABLE init AS SELECT 'POINT(584173.736059813 2594514.82833411)'::GEOMETRY as the_geom;");
+                DataSource ds = dsf.getDataSourceFromSQL("SELECT * from init;");
+                //EPSG:27572;584173.736059813;2594514.82833411;EPSG:4326;;0.01
+                
+                WKTReader wKTReader = new WKTReader();
+                Geometry targetGeom = wKTReader.read("POINT(2.114551393 50.345609791)");
+                ds.open();
+                assertTrue(!ds.isNull(0, 0));
+                ds.close();
+                
+                ds = dsf.getDataSourceFromSQL("SELECT ST_TRANSFORM(the_geom, 'EPSG:27572', 'EPSG:4326') from init;");
+                
+                ds.open();
+                
+                assertTrue(ds.getGeometry(0).equalsExact(targetGeom, 0.01));
+                
                 ds.close();
         }
 }

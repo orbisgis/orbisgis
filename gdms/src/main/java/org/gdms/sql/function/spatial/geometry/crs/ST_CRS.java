@@ -33,7 +33,7 @@
  */
 package org.gdms.sql.function.spatial.geometry.crs;
 
-import org.jproj.CoordinateReferenceSystem;
+
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -43,6 +43,7 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Gets the CRS name of a geometry.
@@ -60,7 +61,11 @@ public class ST_CRS extends AbstractScalarSpatialFunction {
                 if (crs == null) {
                         return ValueFactory.createNullValue();
                 } else {
-                        return ValueFactory.createValue(crs.getName());
+                        String identifiers = crs.getIdentifiers().toString();
+                        if(!identifiers.isEmpty()){
+                                return ValueFactory.createValue(identifiers);
+                        }
+                        return ValueFactory.createValue(crs.getName().getCode());
                 }
                 
         }

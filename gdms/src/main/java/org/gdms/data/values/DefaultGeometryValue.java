@@ -33,21 +33,14 @@
  */
 package org.gdms.data.values;
 
-import java.util.Arrays;
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
+import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.io.ParseException;
-import org.jproj.CoordinateReferenceSystem;
-
+import java.util.Arrays;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.geometryUtils.GeometryTypeUtil;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 abstract class DefaultGeometryValue extends AbstractValue implements GeometryValue {
 

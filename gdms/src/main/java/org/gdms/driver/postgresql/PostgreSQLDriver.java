@@ -33,48 +33,27 @@
  */
 package org.gdms.driver.postgresql;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.WKTWriter;
+import java.sql.*;
+import java.util.*;
+import java.util.logging.Level;
 import org.apache.log4j.Logger;
-import org.jproj.CoordinateReferenceSystem;
-import org.postgis.jts.JtsBinaryParser;
-import org.postgresql.PGConnection;
-
 import org.gdms.data.schema.Metadata;
 import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.data.types.CRSConstraint;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.Dimension3DConstraint;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeFactory;
+import org.gdms.data.types.*;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.TableDescription;
-import org.gdms.driver.jdbc.AutonumericRule;
-import org.gdms.driver.jdbc.BooleanRule;
-import org.gdms.driver.jdbc.ConversionRule;
-import org.gdms.driver.jdbc.DateRule;
-import org.gdms.driver.jdbc.DefaultDBDriver;
-import org.gdms.driver.jdbc.StringRule;
-import org.gdms.driver.jdbc.TimeRule;
-import org.gdms.driver.jdbc.TimestampRule;
+import org.gdms.driver.jdbc.*;
 import org.gdms.source.SourceManager;
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.postgis.jts.JtsBinaryParser;
+import org.postgresql.PGConnection;
 
 /**
  *
@@ -194,7 +173,13 @@ public final class PostgreSQLDriver extends DefaultDBDriver {
                                 // -1 means no value for postgis < 2.0
                                 // 0 means no value for postgis >= 2.0
                                 if (srid != -1 && srid != 0) {
-                                        crs = getDataSourceFactory().getCrsFactory().createFromName("EPSG:" + srid);
+                                        try {
+                                                crs = CRS.decode("EPSG:" + srid);
+                                        } catch (NoSuchAuthorityCodeException ex) {
+                                                 throw new DriverException("Cannot find the authority for the coordinate reference system: " + srid, ex);
+                                        } catch (FactoryException ex) {
+                                                throw new DriverException("Cannot find a factory for EPSG:" + srid, ex);
+                                        }
                                 }
                                 geometryFields.add(geomFieldName);
                                 geometryTypes.put(geomFieldName, res.getString("type"));

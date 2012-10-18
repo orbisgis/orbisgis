@@ -33,29 +33,20 @@
  */
 package org.gdms.data.values;
 
+import com.vividsolutions.jts.geom.*;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.Locale;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
 import org.apache.log4j.Logger;
-import org.grap.model.GeoRaster;
-import org.jproj.CoordinateReferenceSystem;
-
 import org.gdms.data.stream.GeoStream;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.InvalidTypeException;
 import org.gdms.data.types.Type;
+import org.grap.model.GeoRaster;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Factory to create {@link Value} instances from basic types.
