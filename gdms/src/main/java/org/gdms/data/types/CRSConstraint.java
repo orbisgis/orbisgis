@@ -33,10 +33,16 @@
  */
 package org.gdms.data.types;
 
-import org.jproj.CRSFactory;
-import org.jproj.CoordinateReferenceSystem;
 
+
+
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.gdms.data.crs.SpatialReferenceSystem;
 import org.gdms.data.values.Value;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
 
 /**
  * Indicates that the field is part of the primary key.
@@ -44,16 +50,20 @@ import org.gdms.data.values.Value;
  */
 public final class CRSConstraint extends AbstractConstraint {
 
-        private CoordinateReferenceSystem crs;
+        private CoordinateReferenceSystem coordinateReferenceSystem;
 
         public CRSConstraint(CoordinateReferenceSystem constraintValue) {
-                crs = constraintValue;
+                coordinateReferenceSystem = constraintValue;
         }
 
-        CRSConstraint(byte[] constraintBytes) {
-                CRSFactory f = new CRSFactory();
-                crs = f.createFromParameters(null, new String(constraintBytes));
-        }
+        public CRSConstraint(byte[] constraintBytes) {       
+                try {
+                        coordinateReferenceSystem =  SpatialReferenceSystem.parse(new String(constraintBytes))  ;
+                } catch (FactoryException ex) {
+                        throw new RuntimeException("Cannot create the CRS", ex);
+                }                
+        }        
+        
         
         /**
          * For use only as a sample in ConstraintFactory.
@@ -78,12 +88,12 @@ public final class CRSConstraint extends AbstractConstraint {
 
         @Override
         public String getConstraintValue() {
-                return crs.toString();
+                return coordinateReferenceSystem.toString();
         }
 
         @Override
         public byte[] getBytes() {
-                return crs.getParameterString().getBytes();
+                return coordinateReferenceSystem.toWKT().getBytes();
         }
 
         @Override
@@ -92,6 +102,6 @@ public final class CRSConstraint extends AbstractConstraint {
         }
 
         public CoordinateReferenceSystem getCRS() {
-                return crs;
+                return coordinateReferenceSystem;
         }
 }

@@ -33,25 +33,16 @@
  */
 package org.gdms.data.values;
 
+import com.vividsolutions.jts.geom.*;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.regex.Pattern;
-
-import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.GeometryCollection;
-import com.vividsolutions.jts.geom.LineString;
-import com.vividsolutions.jts.geom.MultiLineString;
-import com.vividsolutions.jts.geom.MultiPoint;
-import com.vividsolutions.jts.geom.MultiPolygon;
-import com.vividsolutions.jts.geom.Point;
-import com.vividsolutions.jts.geom.Polygon;
-import org.grap.model.GeoRaster;
-import org.jproj.CoordinateReferenceSystem;
-
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.grap.model.GeoRaster;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Represents a null value

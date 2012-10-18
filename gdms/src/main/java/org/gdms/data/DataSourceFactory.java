@@ -64,7 +64,6 @@ import org.gdms.sql.engine.Engine;
 import org.gdms.sql.engine.ParseException;
 import org.gdms.sql.engine.SQLStatement;
 import org.gdms.sql.function.FunctionManager;
-import org.jproj.CRSFactory;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.utils.I18N;
@@ -126,7 +125,6 @@ public final class DataSourceFactory {
         private IndexManager indexManager;
         private File resultDir;
         private PlugInManager plugInManager;
-        private CRSFactory crsFactory;
         private static final Logger LOG = Logger.getLogger(DataSourceFactory.class);
         private FunctionManager functionManager = new FunctionManager();
         private GdmsProperties properties = new GdmsProperties(defaultProperties);
@@ -779,9 +777,7 @@ public final class DataSourceFactory {
                 } catch (ClassNotFoundException e) {
                         throw new InitializationException(e);
                 }
-
-                crsFactory = new CRSFactory();
-
+               
                 sourceManager = new DefaultSourceManager(this, sourceInfoDir);
                 try {
                         sourceManager.init();
@@ -793,6 +789,9 @@ public final class DataSourceFactory {
                 if (pluginDir != null) {
                         plugInManager = new PlugInManager(new File(pluginDir), this);
                 }
+                
+                //Used to reverse  the lon/lat order
+                System.setProperty("org.geotools.referencing.forceXY", "true"); 
 
         }
 
@@ -965,13 +964,6 @@ public final class DataSourceFactory {
          */
         public PlugInManager getPlugInManager() {
                 return plugInManager;
-        }
-
-        /**
-         * @return the CRS factory for this instance of Gdms.
-         */
-        public CRSFactory getCrsFactory() {
-                return crsFactory;
         }
 
         /**

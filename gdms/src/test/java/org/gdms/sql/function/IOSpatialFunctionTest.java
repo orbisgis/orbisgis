@@ -33,22 +33,22 @@
  */
 package org.gdms.sql.function;
 
-import org.junit.Test;
-import org.gdms.data.types.Type;
-import org.gdms.data.values.ValueFactory;
-import org.gdms.sql.FunctionTest;
-import org.gdms.sql.function.spatial.geometry.io.ST_AsWKT;
-import org.gdms.sql.function.spatial.geometry.io.ST_GeomFromText;
-
 import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryFactory;
 import com.vividsolutions.jts.geom.Point;
 import com.vividsolutions.jts.io.WKTWriter;
-
-import static org.junit.Assert.*;
-
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import org.gdms.sql.FunctionTest;
+import org.gdms.sql.function.spatial.geometry.io.ST_AsWKT;
+import org.gdms.sql.function.spatial.geometry.io.ST_GeomFromText;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
+import org.opengis.referencing.crs.SingleCRS;
 
 public class IOSpatialFunctionTest extends FunctionTest {
 
@@ -82,18 +82,17 @@ public class IOSpatialFunctionTest extends FunctionTest {
                                  ValueFactory.createValue(4326)});
                 
                 assertNotNull(ret.getCRS());
-                assertEquals("WGS84", ret.getCRS().getDatum().getName());
+                
+                assertTrue(ret.getCRS().getIdentifiers().toString().contains("EPSG:4326"));
                 
                 ret = st.evaluate(dsf, new Value[] { ValueFactory.createValue(wkt),
-                                 ValueFactory.createValue("4326")});
+                                 ValueFactory.createValue(4326)});
                 
                 assertNotNull(ret.getCRS());
-                assertEquals("WGS84", ret.getCRS().getDatum().getName());
-                
+                assertTrue(ret.getCRS().getIdentifiers().toString().contains("EPSG:4326"));                
                 ret = st.evaluate(dsf, new Value[] { ValueFactory.createValue(wkt),
-                                 ValueFactory.createValue("EPSG:4326")});
+                                 ValueFactory.createValue(4326)});
                 
                 assertNotNull(ret.getCRS());
-                assertEquals("WGS84", ret.getCRS().getDatum().getName());
-        }
+                assertTrue(ret.getCRS().getIdentifiers().toString().contains("EPSG:4326"));        }
 }

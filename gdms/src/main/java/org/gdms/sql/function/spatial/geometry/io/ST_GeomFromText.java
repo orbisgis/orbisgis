@@ -36,8 +36,8 @@ package org.gdms.sql.function.spatial.geometry.io;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.io.ParseException;
 import com.vividsolutions.jts.io.WKTReader;
-import org.jproj.CoordinateReferenceSystem;
-
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -47,6 +47,10 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Convert a WKT string value into a geometry value
@@ -68,9 +72,15 @@ public final class ST_GeomFromText extends AbstractScalarSpatialFunction {
                         }
                         
                         if (args.length > 1 && !args[1].isNull()) {
-                                String crsStr = args[1].toString();
-                                CoordinateReferenceSystem crs = dsf.getCrsFactory().createFromName(crsStr);
-                                return ValueFactory.createValue(geom, crs);
+                                try {
+                                        String crsStr = args[1].toString();
+                                        CoordinateReferenceSystem crs = CRS.decode("EPSG:"+crsStr);
+                                        return ValueFactory.createValue(geom, crs);
+                                } catch (NoSuchAuthorityCodeException ex) {
+                                         throw  new FunctionException("No such authority code", ex);
+                                } catch (FactoryException ex) {
+                                        throw  new FunctionException("Cannot find a factory", ex);
+                                }
                         } else {
                                 return ValueFactory.createValue(geom);
                         }

@@ -20,6 +20,11 @@
                         <name>IRSTV repository</name>  
                         <url>http://repo.orbisgis.org</url>  
                 </repository>  
+                <repository>
+            <id>osgeo</id>
+            <name>Open Source Geospatial Foundation Repository</name>
+            <url>http://download.osgeo.org/webdav/geotools/</url>
+                </repository>
         </repositories>  
         <properties>
                 <netbeans.hint.license>Gdms</netbeans.hint.license>
@@ -68,11 +73,6 @@
                         <scope>test</scope>
                 </dependency>
                 <dependency>
-                        <groupId>org.jproj</groupId>
-                        <artifactId>jproj</artifactId>
-                        <version>0.2-SNAPSHOT</version>
-                </dependency>
-                <dependency>
                         <groupId>org.scala-lang</groupId>
                         <artifactId>scala-library</artifactId>
                         <version>2.9.2</version>
@@ -97,6 +97,16 @@
                         <artifactId>remoteServiceApi</artifactId>
                         <version>1.0-SNAPSHOT</version>
                         <type>jar</type>
+                </dependency>
+                <dependency>
+                        <groupId>org.geotools</groupId>
+                        <artifactId>gt-epsg-hsql</artifactId>
+                        <version>8.2</version>
+                </dependency>
+                <dependency>
+                        <groupId>org.geotools</groupId>
+                        <artifactId>gt-api</artifactId>
+                        <version>8.2</version>
                 </dependency>
         </dependencies>
         <build>

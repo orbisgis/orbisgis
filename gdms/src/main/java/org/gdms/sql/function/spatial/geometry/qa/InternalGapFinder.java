@@ -33,10 +33,6 @@
  */
 package org.gdms.sql.function.spatial.geometry.qa;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.GeometryCollection;
 import com.vividsolutions.jts.geom.GeometryFactory;
@@ -44,16 +40,18 @@ import com.vividsolutions.jts.geom.Polygon;
 import com.vividsolutions.jts.index.SpatialIndex;
 import com.vividsolutions.jts.index.strtree.STRtree;
 import com.vividsolutions.jts.operation.union.CascadedPolygonUnion;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import org.apache.log4j.Logger;
-import org.jproj.CoordinateReferenceSystem;
-import org.orbisgis.progress.ProgressMonitor;
-
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DataSet;
 import org.gdms.driver.DiskBufferDriver;
 import org.gdms.driver.DriverException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.orbisgis.progress.ProgressMonitor;
 
 public final class InternalGapFinder {
 

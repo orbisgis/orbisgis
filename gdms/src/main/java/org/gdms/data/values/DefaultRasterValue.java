@@ -33,29 +33,19 @@
  */
 package org.gdms.data.values;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
 import ij.ImagePlus;
-import ij.process.ByteProcessor;
-import ij.process.ColorProcessor;
-import ij.process.FloatProcessor;
-import ij.process.ImageProcessor;
-import ij.process.ShortProcessor;
-import org.grap.io.RasterReader;
-import org.grap.model.GeoRaster;
-import org.grap.model.GeoRasterFactory;
-import org.grap.model.RasterMetadata;
-import org.jproj.CoordinateReferenceSystem;
-import org.orbisgis.utils.ByteUtils;
-
+import ij.process.*;
+import java.io.*;
 import org.gdms.data.InitializationException;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+import org.grap.io.RasterReader;
+import org.grap.model.GeoRaster;
+import org.grap.model.GeoRasterFactory;
+import org.grap.model.RasterMetadata;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.orbisgis.utils.ByteUtils;
 
 final class DefaultRasterValue extends AbstractValue implements RasterValue {
 

@@ -33,30 +33,16 @@
  */
 package org.gdms.driver.geotif;
 
+import com.vividsolutions.jts.geom.Envelope;
 import java.io.File;
 import java.io.IOException;
-
-import com.vividsolutions.jts.geom.Envelope;
+import java.util.logging.Level;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
-import org.grap.model.GeoRaster;
-import org.grap.model.GeoRasterFactory;
-import org.grap.model.RasterMetadata;
-import org.jproj.CoordinateReferenceSystem;
-import org.orbisgis.progress.ProgressMonitor;
-
 import org.gdms.data.DataSourceFactory;
-import org.gdms.data.schema.DefaultMetadata;
-import org.gdms.data.schema.DefaultSchema;
-import org.gdms.data.schema.Metadata;
-import org.gdms.data.schema.MetadataUtilities;
-import org.gdms.data.schema.Schema;
-import org.gdms.data.types.CRSConstraint;
-import org.gdms.data.types.Constraint;
-import org.gdms.data.types.RasterTypeConstraint;
-import org.gdms.data.types.Type;
-import org.gdms.data.types.TypeDefinition;
-import org.gdms.data.types.TypeFactory;
+import org.gdms.data.crs.SpatialReferenceSystem;
+import org.gdms.data.schema.*;
+import org.gdms.data.types.*;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.AbstractDataSet;
@@ -65,6 +51,12 @@ import org.gdms.driver.DriverException;
 import org.gdms.driver.FileReadWriteDriver;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
+import org.grap.model.GeoRaster;
+import org.grap.model.GeoRasterFactory;
+import org.grap.model.RasterMetadata;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.orbisgis.progress.ProgressMonitor;
 
 public abstract class AbstractRasterDriver extends AbstractDataSet implements FileReadWriteDriver {
 
@@ -92,7 +84,7 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
 
                         File prj = org.orbisgis.utils.FileUtils.getFileWithExtension(file, "prj");
                         if (prj != null && prj.exists()) {
-                                crs = dsf.getCrsFactory().createFromPrj(prj);
+                                crs = SpatialReferenceSystem.createFromPrj(prj);
                                 if (crs != null) {
                                         CRSConstraint cc = new CRSConstraint(crs);
                                         constraints = new Constraint[]{dc, cc};
@@ -107,6 +99,8 @@ public abstract class AbstractRasterDriver extends AbstractDataSet implements Fi
                         gdmsMetadata.addField("raster", TypeFactory.createType(Type.RASTER, constraints));
 
 
+                } catch (FactoryException e) {
+                        throw new DriverException("Cannot get the coordinate reference system: " + file, e);
                 } catch (IOException e) {
                         throw new DriverException("Cannot access the source: " + file, e);
                 }
