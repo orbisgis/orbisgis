@@ -31,6 +31,11 @@ package org.orbisgis.view.main;
 import java.awt.Rectangle;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -66,6 +71,8 @@ import org.xnap.commons.i18n.I18nFactory;
 public class Core {
     private static final I18n I18N = I18nFactory.getI18n(Core.class);        
     private static final Logger LOGGER = Logger.getLogger(Core.class);
+    /** Buffer to copy resource to file */
+    private static final int BUFFER_LENGTH = 4096;
     /////////////////////
     //view package
     private EditorManager editors;         /*!< Management of editors */
@@ -252,9 +259,46 @@ public class Core {
         loadEditorFactories();
         
         //Load the docking layout and editors opened in last OrbisGis instance
+        File savedDockingLayout = new File(viewWorkspace.getDockingLayoutPath());
+        if(!savedDockingLayout.exists()) {
+                // Copy the default docking layout
+                // First OrbisGIS start
+                copyDefaultDockingLayout(savedDockingLayout);
+        }
         dockManager.setDockingLayoutPersistanceFilePath(viewWorkspace.getDockingLayoutPath());
         
     }
+    /**
+     * Copy the default docking layout to the specified file path.
+     * @param savedDockingLayout 
+     */
+    private void copyDefaultDockingLayout(File savedDockingLayout) {
+                InputStream xmlFileStream = DockingManager.class.getResourceAsStream("default_docking_layout.xml");
+                if (xmlFileStream != null) {
+                        try {
+                                FileOutputStream writer = new FileOutputStream(savedDockingLayout);
+                                try {
+                                        byte[] buffer = new byte[BUFFER_LENGTH];
+                                        for (int n; (n = xmlFileStream.read(buffer)) != -1;) {
+                                                writer.write(buffer, 0, n);
+                                        }
+                                } finally {
+                                        writer.close();
+                                }
+                        } catch (FileNotFoundException ex) {
+                                LOGGER.error(I18N.tr("Unable to save the docking layout."), ex);
+                        } catch (IOException ex) {
+                                LOGGER.error(I18N.tr("Unable to save the docking layout."), ex);
+                        } finally {
+                                try {
+                                        xmlFileStream.close();
+                                } catch (IOException ex) {
+                                        LOGGER.error(I18N.tr("Unable to save the docking layout."), ex);
+                                }
+                        }
+                }
+        }       
+    
     /**
      * Change the state of the main frame in the swing thread
      */
