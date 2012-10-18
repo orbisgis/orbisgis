@@ -33,18 +33,25 @@
  */
 package org.gdms.sql.function.spatial.geometry.crs;
 
-import org.jproj.CRSFactory;
-import org.jproj.CoordinateReferenceSystem;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.crs.SpatialReferenceSystem;
 import org.gdms.data.values.GeometryValue;
 import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.BasicFunctionSignature;
 import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
+import org.geotools.referencing.CRS;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.TransformException;
 
 /**
  * Re-project a geometry from a CRS to new CRS. Only authority codes are allowed, like "EPSG:4326"
@@ -57,22 +64,30 @@ public final class ST_Transform extends AbstractScalarSpatialFunction {
         @Override
         public Value evaluate(DataSourceFactory dsf, Value... values) throws FunctionException {
                 GeometryValue geomVal = (GeometryValue) values[0];
+                try {
                 if (spatialReferenceSystem == null) {
                         CoordinateReferenceSystem inputCRS;
-                        CoordinateReferenceSystem targetCRS;
-                        
-                        final CRSFactory crsFactory = dsf.getCrsFactory();
+                        CoordinateReferenceSystem targetCRS;                       
                         if (values.length == 3) {
-                                inputCRS = crsFactory.createFromName(values[1].getAsString());
-                                targetCRS = crsFactory.createFromName(values[2].getAsString());
+                                inputCRS = CRS.decode(values[1].getAsString());
+                                targetCRS = CRS.decode(values[2].getAsString());
                         } else {
                                 inputCRS = geomVal.getCRS();
-                                targetCRS = crsFactory.createFromName(values[1].getAsString());
+                                targetCRS = CRS.decode(values[1].getAsString());
                         }
                         
                         spatialReferenceSystem = new SpatialReferenceSystem(inputCRS, targetCRS);
+                }                
+                        return spatialReferenceSystem.transform(geomVal);
+                } catch (NoSuchAuthorityCodeException ex) {
+                        throw  new FunctionException("No such authority code", ex);
+                } catch (FactoryException ex) {
+                       throw  new FunctionException("Cannot find a factory", ex);
+                } catch (MismatchedDimensionException ex) {
+                       throw  new FunctionException("Cannot transform the geometry", ex);
+                } catch (TransformException ex) {
+                        throw  new FunctionException("Cannot transform the geometry", ex);
                 }
-                return spatialReferenceSystem.transform(geomVal);
         }
 
         @Override

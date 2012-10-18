@@ -1,11 +1,10 @@
 /**
- * The GDMS library (Generic Datasource Management System)
- * is a middleware dedicated to the management of various kinds of
- * data-sources such as spatial vectorial data or alphanumeric. Based
- * on the JTS library and conform to the OGC simple feature access
- * specifications, it provides a complete and robust API to manipulate
- * in a SQL way remote DBMS (PostgreSQL, H2...) or flat files (.shp,
- * .csv...).
+ * The GDMS library (Generic Datasource Management System) is a middleware
+ * dedicated to the management of various kinds of data-sources such as spatial
+ * vectorial data or alphanumeric. Based on the JTS library and conform to the
+ * OGC simple feature access specifications, it provides a complete and robust
+ * API to manipulate in a SQL way remote DBMS (PostgreSQL, H2...) or flat files
+ * (.shp, .csv...).
  *
  * Gdms is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
@@ -28,37 +27,39 @@
  *
  * For more information, please consult: <http://www.orbisgis.org/>
  *
- * or contact directly:
- * info@orbisgis.org
+ * or contact directly: info@orbisgis.org
  */
 package org.gdms.data.crs;
 
-
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.CoordinateSequence;
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.geom.impl.CoordinateArraySequence;
-import com.vividsolutions.jts.geom.util.GeometryTransformer;
-import org.jproj.BasicCoordinateTransform;
-import org.jproj.CoordinateReferenceSystem;
-import org.jproj.CoordinateTransform;
-import org.jproj.ProjCoordinate;
-
-import org.gdms.data.DataSourceFactory;
+import java.io.*;
 import org.gdms.data.values.GeometryValue;
 import org.gdms.data.values.ValueFactory;
+import org.geotools.geometry.jts.JTS;
+import org.geotools.referencing.CRS;
+import org.opengis.geometry.MismatchedDimensionException;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
+import org.opengis.referencing.operation.TransformException;
 
 /**
- * 
+ *
  * Transform a geometry from crs code to another one.
  *
  */
 public class SpatialReferenceSystem {
 
-        private CoordinateTransform coordTransform;
+        private MathTransform mathTransform;
+        private CoordinateReferenceSystem targetCRS;
 
-        public SpatialReferenceSystem(DataSourceFactory dsf, int sourceCRS, int targetCRS) {
-                init(dsf.getCrsFactory().createFromName("EPSG:" + sourceCRS), dsf.getCrsFactory().createFromName("EPSG:" + targetCRS));
+        public SpatialReferenceSystem(String sourceCRS, String targetCRS) throws NoSuchAuthorityCodeException, FactoryException {
+                init(CRS.decode(sourceCRS), CRS.decode(targetCRS));
+        }
+
+        public SpatialReferenceSystem(int sourceCRS, int targetCRS) throws NoSuchAuthorityCodeException, FactoryException {
+                init(CRS.decode("EPSG:" + sourceCRS), CRS.decode("EPSG:" + targetCRS));
         }
 
         public SpatialReferenceSystem(CoordinateReferenceSystem sourceCRS, CoordinateReferenceSystem targetCRS) {
@@ -66,45 +67,82 @@ public class SpatialReferenceSystem {
         }
 
         private void init(CoordinateReferenceSystem sourceCRS, CoordinateReferenceSystem targetCRS) {
+                this.targetCRS = targetCRS;
                 if ((sourceCRS != null) && (targetCRS != null)) {
-                        coordTransform = new BasicCoordinateTransform(sourceCRS, targetCRS);
+                        try {
+                                mathTransform = CRS.findMathTransform(sourceCRS, targetCRS,
+                                        true);
+                        } catch (FactoryException ex) {
+                                throw new IllegalArgumentException("Cannot find transformation.", ex);
+                        }
                 } else {
                         throw new IllegalArgumentException("Source and target CRS cannot be null.");
                 }
 
         }
 
-        public CoordinateTransform getCoordinateTransform() {
-                return coordTransform;
+        public MathTransform getMathTransform() {
+                return mathTransform;
         }
 
-        public GeometryValue transform(GeometryValue geom) {
-                Geometry g = getGeometryTransformer().transform(geom.getAsGeometry());
-                
-                return ValueFactory.createValue(g, coordTransform.getTargetCRS());
+        public GeometryValue transform(GeometryValue geom) throws MismatchedDimensionException, TransformException {
+                Geometry g = JTS.transform(geom.getAsGeometry(), mathTransform);
+                return ValueFactory.createValue(g, targetCRS);
         }
 
-        public GeometryTransformer getGeometryTransformer() {
-                GeometryTransformer gt = new GeometryTransformer() {
+        /**
+         * Creates a {@link CoordinateReferenceSystem} defined by an OGC WKT
+         * String (PRJ).
+         *
+         * @param stream
+         * @return a {@link CoordinateReferenceSystem}
+         * @throws UnsupportedParameterException if a PROJ.4 parameter is not
+         * supported
+         * @throws IOException
+         * @throws InvalidValueException if a parameter value is invalid
+         */
+        public static CoordinateReferenceSystem createFromPrj(InputStream stream) throws IOException, FactoryException {
+                BufferedReader r = new BufferedReader(new InputStreamReader(stream));
+                StringBuilder b = new StringBuilder();
+                while (r.ready()) {
+                        b.append(r.readLine());
+                }
+                return CRS.parseWKT(b.toString());
+        }
 
-                        @Override
-                        protected CoordinateSequence transformCoordinates(
-                                CoordinateSequence cs, Geometry geom) {
-                                Coordinate[] cc = geom.getCoordinates();
-                                CoordinateSequence newcs = new CoordinateArraySequence(cc);
-                                for (int i = 0; i < cc.length; i++) {
-                                        Coordinate c = cc[i];
-                                        ProjCoordinate co = new ProjCoordinate(c.x, c.y, c.z);
-                                        ProjCoordinate tg = new ProjCoordinate();
-                                        coordTransform.transform(co, tg);
-                                        newcs.setOrdinate(i, 0, tg.x);
-                                        newcs.setOrdinate(i, 1, tg.y);
-                                        newcs.setOrdinate(i, 2, tg.z);
-                                }
-                                return newcs;
+        /**
+         * Creates a {@link CoordinateReferenceSystem} defined by an OGC WKT
+         * String (PRJ).
+         *
+         * @param file
+         * @return a {@link CoordinateReferenceSystem}
+         * @throws UnsupportedParameterException if a PROJ.4 parameter is not
+         * supported
+         * @throws IOException if there is a problem reading the file
+         * @throws InvalidValueException if a parameter value is invalid
+         */
+        public static CoordinateReferenceSystem createFromPrj(File file) throws IOException, FactoryException {
+                InputStream i = null;
+                CoordinateReferenceSystem crs;
+                try {
+                        i = new FileInputStream(file);
+                        crs = createFromPrj(i);
+                } finally {
+                        if (i != null) {
+                                i.close();
                         }
-                };
+                }
 
-                return gt;
+                return crs;
+        }
+        
+        /**
+         * 
+         * @param wkt
+         * @return
+         * @throws FactoryException 
+         */
+        public static CoordinateReferenceSystem parse(String wkt) throws FactoryException{
+                return CRS.parseWKT(wkt);               
         }
 }

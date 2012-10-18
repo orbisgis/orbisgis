@@ -33,15 +33,12 @@
  */
 package org.gdms.driver;
 
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.Iterator;
-
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
-import org.jproj.CoordinateReferenceSystem;
-
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.IndexQuery;
 import org.gdms.data.schema.MetadataUtilities;
@@ -49,6 +46,7 @@ import org.gdms.data.types.CRSConstraint;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.values.Value;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 /**
  * Abstract implementation of DataSet that implements the getRow method.

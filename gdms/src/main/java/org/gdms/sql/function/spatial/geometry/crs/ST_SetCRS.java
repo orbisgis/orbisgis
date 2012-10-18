@@ -33,8 +33,6 @@
  */
 package org.gdms.sql.function.spatial.geometry.crs;
 
-import org.jproj.CoordinateReferenceSystem;
-
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
@@ -43,6 +41,11 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
+import org.geotools.referencing.CRS;
+import org.opengis.referencing.FactoryException;
+import org.opengis.referencing.NoSuchAuthorityCodeException;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+
 
 /**
  * Sets the internal CRS of a geometry.
@@ -58,7 +61,14 @@ public class ST_SetCRS extends AbstractScalarSpatialFunction {
         @Override
         public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 if (crs == null) {
-                        crs = dsf.getCrsFactory().createFromName(args[1].getAsString());
+                        String epsgCode = null;
+                        try {
+                                epsgCode = args[1].getAsString();
+                                crs = CRS.decode(epsgCode);
+                        } catch (NoSuchAuthorityCodeException ex) {
+                                throw new FunctionException("Cannot find an authority for " + epsgCode, ex);
+                        } catch (FactoryException ex) {
+                                throw new FunctionException("Cannot find a factory for "+ epsgCode, ex);                        }
                 }
 
                 return ValueFactory.createValue(args[0].getAsGeometry(), crs);

@@ -49,7 +49,6 @@ import com.vividsolutions.jts.operation.union.CascadedPolygonUnion;
 import ij.process.ImageProcessor;
 import org.apache.log4j.Logger;
 import org.grap.model.GeoRaster;
-import org.jproj.CoordinateReferenceSystem;
 import org.orbisgis.progress.ProgressMonitor;
 
 import org.gdms.data.DataSourceFactory;
@@ -70,6 +69,7 @@ import org.gdms.sql.function.table.AbstractTableFunction;
 import org.gdms.sql.function.table.TableArgument;
 import org.gdms.sql.function.table.TableDefinition;
 import org.gdms.sql.function.table.TableFunctionSignature;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
 public final class ST_RasterToPolygons extends AbstractTableFunction {
 
