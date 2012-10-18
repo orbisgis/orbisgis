@@ -36,6 +36,7 @@ import javax.swing.tree.TreeNode;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.utils.CollectionUtils;
 import org.orbisgis.view.components.resourceTree.EnumIterator;
 import org.xnap.commons.i18n.I18n;
@@ -82,7 +83,10 @@ public class TocTreeNodeLayer implements MutableTreeNode {
                 if(layer.acceptsChilds()) {
                         return new TocTreeNodeLayer(layer.getLayer(i));
                 } else {
-                        return new TocTreeNodeStyle(layer.getStyle(i));
+                        //We don't want the style drawn on the top of the map to
+                        //be displayed as the last style in the tree...
+                        int s = layer.getStyles().size();
+                        return new TocTreeNodeStyle(layer.getStyle(s-i-1));
                 }
         }
 
@@ -109,7 +113,11 @@ public class TocTreeNodeLayer implements MutableTreeNode {
                 if(tn instanceof TocTreeNodeLayer) {
                         return CollectionUtils.indexOf(layer.getChildren(), ((TocTreeNodeLayer)tn).getLayer());
                 } else {
-                        return layer.indexOf(((TocTreeNodeStyle)tn).getStyle());
+                        //We don't want the style drawn on the top of the map to
+                        //be displayed as the last style in the tree...
+                        List<Style> s = layer.getStyles();
+                        int ind = s.size();
+                        return ind - 1 - s.indexOf(((TocTreeNodeStyle)tn).getStyle());
                 }
         }
 

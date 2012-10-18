@@ -70,7 +70,6 @@ import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.classification.ClassificationMethodException;
-import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.SeExceptions;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.progress.ProgressMonitor;
@@ -846,7 +845,7 @@ public class Toc extends JPanel implements EditorDockable {
                         if (UIFactory.showDialog(inputXMLPanel)) {
                                 String seFile = inputXMLPanel.getSelectedFile().getAbsolutePath();
                                 try {
-                                        layer.addStyle(0, new Style(layer, seFile));
+                                        layer.addStyle(new Style(layer, seFile));
                                 } catch (SeExceptions.InvalidStyle ex) {
                                         LOGGER.error(I18N.tr(ex.getLocalizedMessage()));
                                         String msg = ex.getMessage().replace("<", "\n    - ").replace(',', ' ').replace(": ", "\n - ");
@@ -867,6 +866,7 @@ public class Toc extends JPanel implements EditorDockable {
                         if(styles.length == 1){
                                 Style style = styles[0];
                                 ILayer layer = style.getLayer();
+                                int index = layer.indexOf(style);
                                 // Obtain MapTransform
                                 MapEditor editor = mapElement.getMapEditor();
                                 MapTransform mt = editor.getMapControl().getMapTransform();
@@ -877,7 +877,7 @@ public class Toc extends JPanel implements EditorDockable {
                                 LegendUIController controller = new LegendUIController(style);
 
                                 if (UIFactory.showDialog((UIPanel)controller.getMainPanel())) {
-                                        layer.setStyle(0,controller.getEditedFeatureTypeStyle());
+                                        layer.setStyle(index,controller.getEditedFeatureTypeStyle());
                                 }
                         }
 		} catch (SeExceptions.InvalidStyle ex) {
@@ -891,6 +891,7 @@ public class Toc extends JPanel implements EditorDockable {
                         try {
                                 Style style = ((TocTreeNodeStyle) selObjs.getLastPathComponent()).getStyle();
                                 Layer layer = (Layer) style.getLayer();
+                                int index = layer.indexOf(style);
                                 Type typ = layer.getDataSource().getMetadata().getFieldType(
                                         layer.getDataSource().getSpatialFieldIndex());
                                 //In order to be able to cancel all of our modifications,
@@ -904,7 +905,7 @@ public class Toc extends JPanel implements EditorDockable {
                                 pan.init(mt, typ, copy, legends, layer);
                                 if (UIFactory.showDialog(pan)) {
                                         try {
-                                                layer.setStyle(0, pan.getStyleWrapper().getStyle());
+                                                layer.setStyle(index, pan.getStyleWrapper().getStyle());
                                         } catch (ClassificationMethodException e) {
                                                 LOGGER.error(e.getMessage());
                                         }
