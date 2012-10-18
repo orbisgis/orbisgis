@@ -41,8 +41,7 @@ import java.text.ParseException;
 import java.util.Locale;
 import javax.swing.*;
 import org.apache.log4j.Logger;
-import org.jproj.CRSFactory;
-import org.jproj.CoordinateReferenceSystem;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.core.events.OGVetoableChangeSupport;
 import org.orbisgis.view.components.button.CustomButton;
 import org.orbisgis.view.components.statusbar.StatusBar;
@@ -108,7 +107,8 @@ public class MapStatusBar extends StatusBar {
                 addComponentOnTheRigthToolBar(scaleField,false);
                 //Set initial value
                 setScaleDenominator(1);
-                setProjection(new CRSFactory().createFromName("EPSG:4326"));
+                //TODO : manage projection
+                setProjection(null);
                 setCursorCoordinates(new Point2D.Double());
         }
 
@@ -140,7 +140,7 @@ public class MapStatusBar extends StatusBar {
          * @param projection 
          */
         public final void setProjection(CoordinateReferenceSystem projection) {
-                String projectLabel = projection.toString();
+                String projectLabel = "Unknown CRS";//projection.toString();
                 //projectLabel = "TODO"; //TODO read map context project                        
                 projectionLabel.setText(I18N.tr("Projection : {0}",projectLabel));
         }
