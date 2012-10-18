@@ -31,6 +31,9 @@ package org.orbisgis.view.background;
 import java.util.ArrayList;
 import org.orbisgis.progress.DefaultProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.view.map.MapStatusBar;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 public class Job implements BackgroundJob, ProgressMonitor {
 
@@ -41,6 +44,8 @@ public class Job implements BackgroundJob, ProgressMonitor {
 	private ArrayList<ProgressListener> listeners = new ArrayList<ProgressListener>();
 	private Thread currentThread = null;
 	private boolean isBlocking;
+        private static final I18n I18N = I18nFactory.getI18n(Job.class);
+       
 
 	public Job(JobId processId, BackgroundJob lp, BackgroundManager jobQueue,
 			boolean isBlocking) {
@@ -115,15 +120,18 @@ public class Job implements BackgroundJob, ProgressMonitor {
 		}
 	}
 
+        @Override
 	public void init(String taskName, long end) {
 		pm.init(taskName, end);
 		fireProgressTo();
 	}
 
+        @Override
 	public boolean isCancelled() {
 		return pm.isCancelled();
 	}
 
+        @Override
 	public void progressTo(long progress) {
 		pm.progressTo(progress);
 		fireProgressTo();
@@ -135,10 +143,12 @@ public class Job implements BackgroundJob, ProgressMonitor {
 		}
 	}
 
+        @Override
 	public void setCancelled(boolean cancelled) {
 		pm.setCancelled(cancelled);
 	}
 
+        @Override
 	public void startTask(String taskName, long end) {
 		pm.startTask(taskName, end);
 		fireSubTaskStarted();
@@ -148,14 +158,17 @@ public class Job implements BackgroundJob, ProgressMonitor {
 		return isBlocking;
 	}
 
+        @Override
 	public String getCurrentTaskName() {
 		return pm.getCurrentTaskName();
 	}
 
+        @Override
 	public int getOverallProgress() {
 		return pm.getOverallProgress();
 	}
 
+        @Override
 	public int getCurrentProgress() {
 		return pm.getCurrentProgress();
 	}
@@ -173,7 +186,7 @@ public class Job implements BackgroundJob, ProgressMonitor {
 
                         @Override
 			public String getTaskName() {
-				return "iddle";
+				return I18N.tr("Progressing...");
 			}
 
 		};
