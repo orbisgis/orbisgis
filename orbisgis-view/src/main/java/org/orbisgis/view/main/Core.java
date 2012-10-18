@@ -57,6 +57,7 @@ import org.orbisgis.view.joblist.JobsPanel;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.output.OutputManager;
+import org.orbisgis.view.sql.MapContext_AddLayer;
 import org.orbisgis.view.sqlconsole.SQLConsoleFactory;
 import org.orbisgis.view.table.TableEditorFactory;
 import org.orbisgis.view.toc.TocEditorFactory;
@@ -99,7 +100,8 @@ public class Core {
         this.viewWorkspace = new ViewWorkspace(this.mainContext.getCoreWorkspace());
         
         Services.registerService(ViewWorkspace.class, I18N.tr("Contains view folders path"),
-                        viewWorkspace);
+                        viewWorkspace);        
+        addSQLFunctions();
         initSwingJobs();
         initSIF();
     }
@@ -297,7 +299,14 @@ public class Core {
                                 }
                         }
                 }
-        }       
+        }
+
+    /**
+     * Add SQL functions to interact with OrbisGIS ui
+     */
+        private void addSQLFunctions() {               
+                mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_AddLayer.class);
+        }
     
     /**
      * Change the state of the main frame in the swing thread

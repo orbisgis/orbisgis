@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.map.jobs;
 
-import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
@@ -48,6 +47,9 @@ public class ReadMapContextJob implements BackgroundJob {
 
         public ReadMapContextJob(MapElement editableMap) {
                 this.editableMap = editableMap;
+                Services.registerService(MapElement.class,
+                        I18N.tr("Access to the MapElement"),
+                        editableMap);
         }
         
 
