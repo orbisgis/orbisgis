@@ -212,7 +212,7 @@ public class LayerModelTest extends AbstractTest {
 		assertTrue(listener.la == 0);
 		assertTrue(listener.lr == 0);
 		assertTrue(listener.lring == 0);
-		assertTrue(listener.lm == 1);
+		assertTrue(listener.lm == 2);
 	}
 
         @Test

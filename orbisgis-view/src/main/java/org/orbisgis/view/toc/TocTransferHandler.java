@@ -29,12 +29,20 @@
 package org.orbisgis.view.toc;
 
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.JComponent;
+import javax.swing.JTree;
+import javax.swing.tree.TreePath;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.view.edition.TransferableEditableElement;
 import org.orbisgis.view.map.MapTransferHandler;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 
 /**
@@ -46,8 +54,9 @@ import org.orbisgis.view.map.MapTransferHandler;
  * Export EditableLayer
  */
 public class TocTransferHandler extends MapTransferHandler {
-
-    Toc toc;
+    private static final Logger LOGGER = Logger.getLogger(TocTransferHandler.class);
+    private static final I18n I18N = I18nFactory.getI18n(TocTransferHandler.class);
+    private Toc toc;
 
     public TocTransferHandler(Toc toc) {
         this.toc = toc;
@@ -80,5 +89,61 @@ public class TocTransferHandler extends MapTransferHandler {
         return new TransferableLayer(toc.getMapElement(),selectedEditableLayer );
     }
 
+    @Override
+    public boolean canImport(TransferSupport ts) {
+        if(!ts.isDataFlavorSupported(TransferableEditableElement.editableElementFlavor)){
+                return false;
+        }
+        JTree.DropLocation dl = (JTree.DropLocation) ts.getDropLocation();
+        TreePath tp = dl.getPath();
+        if(tp == null){
+                //dropping on the root ! :-)
+                return true;
+        }
+        Object last = tp.getLastPathComponent();
+        try {
+                Object t = ts.getTransferable().getTransferData(TransferableLayer.LAYER_FLAVOR);
+                if(t instanceof EditableLayer[]){
+                        EditableLayer[] editables = (EditableLayer[]) t;
+                        if(last instanceof TocTreeNodeLayer){
+                                ILayer l = ((TocTreeNodeLayer) last).getLayer();
+                                //For each editable, we check we don't have a forbidden
+                                //relationship.
+                                for(EditableLayer e : editables){
+                                        if(!canMoveIn(e, l)){
+                                                return false;
+                                        }
+                                }
+                        }
+
+                }
+        } catch (UnsupportedFlavorException ex) {
+                LOGGER.error(I18N.tr("Can't recognize this flavour"), ex);
+                return false;
+        } catch (IOException ex) {
+                LOGGER.error(I18N.tr("Problem during the transfer"), ex);
+                return false;
+        }
+        return true;
+    }
+
+    /**
+     * Returns true if the ILayer in {@code e} is not a parent of the ILayer
+     * {@code lc}. Returns false otherwise.
+     * @param e
+     * @param lc
+     * @return
+     */
+    private boolean canMoveIn(EditableLayer e, ILayer lc){
+            final ILayer l = e.getLayer();
+            ILayer tmp = lc;
+            while(tmp.getParent() != null){
+                    if(l == tmp){
+                            return false;
+                    }
+                    tmp = tmp.getParent();
+            }
+            return true;
+    }
 
 }
