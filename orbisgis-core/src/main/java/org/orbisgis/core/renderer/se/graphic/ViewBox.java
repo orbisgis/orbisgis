@@ -204,7 +204,8 @@ public final class ViewBox extends  AbstractSymbolizerNode {
                 dy = Uom.toPixel(dy, ((UomNode)getParent()).getUom(), dpi, scale, height);
 
                 if (dx <= 0.00021 || dy <= 0.00021) {
-                        throw new ParameterException("View-box is too small: (" + dx + ";" + dy + ")");
+                        dx=0;
+                        dy=0;
                 }
 
                 return new Point2D.Double(dx, dy);
