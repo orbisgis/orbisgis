@@ -135,11 +135,11 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
         private ImageIcon getServerIcon() {
                 switch(serverStatus) {
                         case DISCONNECTED:
-                                return OrbisGISIcon.getIcon("worldmap");
+                                return OrbisGISIcon.getIcon("world_disconnected");
                         case CONNECTED:
-                                return OrbisGISIcon.getIcon("worldmap");
+                                return OrbisGISIcon.getIcon("world_connected");
                         default:
-                                return OrbisGISIcon.getIcon("worldmap");
+                                return OrbisGISIcon.getIcon("connection_error");
                 }
         }
         /**
