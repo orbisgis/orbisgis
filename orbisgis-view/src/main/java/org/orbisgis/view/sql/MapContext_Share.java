@@ -28,6 +28,10 @@
  */
 package org.orbisgis.view.sql;
 
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
@@ -36,12 +40,10 @@ import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.executor.AbstractExecutorFunction;
 import org.gdms.sql.function.executor.ExecutorFunctionSignature;
-import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.layerModel.ILayer;
-import org.orbisgis.core.layerModel.LayerException;
-import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.layerModel.mapcatalog.ConnectionProperties;
+import org.orbisgis.core.layerModel.mapcatalog.RemoteMapCatalog;
+import org.orbisgis.core.layerModel.mapcatalog.Workspace;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorManager;
@@ -50,12 +52,12 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * A function to add a table into the current mapcontext.
+ * A function to share a mapcontext on a mapcatalog service.
  * @author ebocher
  */
-public class MapContext_AddLayer extends AbstractExecutorFunction {
+public class MapContext_Share extends AbstractExecutorFunction {
 
-        protected final static I18n I18N = I18nFactory.getI18n(MapContext_AddLayer.class);
+        protected final static I18n I18N = I18nFactory.getI18n(MapContext_Share.class);
 
         @Override
         public void evaluate(DataSourceFactory dsf, DataSet[] tables, Value[] values, ProgressMonitor pm) throws FunctionException {
@@ -65,44 +67,62 @@ public class MapContext_AddLayer extends AbstractExecutorFunction {
                         if (editable instanceof MapElement) {
                                 MapElement mapElement = (MapElement) editable;
                                 try {
-                                        DataManager dataManager = (DataManager) Services.getService(DataManager.class);
-                                        ILayer layer = dataManager.createLayer(values[0].getAsString());
-                                        if (values.length == 2) {
-                                                String seFile = values[1].getAsString();
-                                                if (!seFile.isEmpty()) {
-                                                        Style style = new Style(layer, seFile);
-                                                        layer.addStyle(0, style);
+                                        URL apiUrl;
+                                        try {
+                                                apiUrl = new URL(values[0].getAsString());
+                                        } catch (MalformedURLException ex) {
+                                                throw new FunctionException(I18N.tr("The URL is not valid."), ex);
+                                        }
+
+                                        RemoteMapCatalog remoteMapCatalog = new RemoteMapCatalog(new ConnectionProperties(apiUrl));
+                                        Iterator<Workspace> workspaces = remoteMapCatalog.getWorkspaces().iterator();
+                                        String workspaceName = values[1].getAsString();
+                                        boolean canBeShared = false;
+                                        Workspace targetWorkspace = null;
+                                        while (workspaces.hasNext() && !canBeShared) {
+                                                Workspace workspace = workspaces.next();
+                                                if (workspace.getWorkspaceName().equalsIgnoreCase(workspaceName)) {
+                                                        canBeShared = true;
+                                                        targetWorkspace = workspace;
                                                 }
                                         }
-                                        mapElement.getMapContext().getLayerModel().addLayer(layer);
-                                } catch (InvalidStyle ex) {
-                                        throw new FunctionException(I18N.tr("Cannot import the style"), ex);
-                                } catch (LayerException ex) {
-                                        throw new FunctionException(I18N.tr("Cannot add the layer to the mapcontext"), ex);
+
+                                        if (targetWorkspace != null) {
+                                                targetWorkspace.publishMapContext(mapElement.getMapContext(), null);
+                                        } else {
+                                                throw new FunctionException(I18N.tr("The workspace doesn't exist. Please contact"
+                                                        + "the administrator of the service."));
+                                        }
+
+
+                                } catch (IOException ex) {
+                                        throw new FunctionException(I18N.tr("The URL is not valid or the service not available."), ex);
                                 }
+
+
                         }
                 }
         }
 
         @Override
         public String getName() {
-                return "Map_AddLayer";
+                return "Map_Share";
         }
 
         @Override
         public String getDescription() {
-                return I18N.tr("A function to add a layer based on a table name\n"
-                        + "The second argument is optional. It permits to set a style to the layer.");
+                return I18N.tr("A function to share the current mapcontext in the mapcatalog service\n"
+                        + "The second permits to set the workspace name. If the workspace doesn't exist a message appears.");
         }
 
         @Override
         public String getSqlOrder() {
-                return "EXECUTE Map_AddLayer('tableName'[,'myStyle.se'])";
+                return "EXECUTE Map_Share('http://services.orbisgis.org/','myMaps')";
         }
 
         @Override
         public FunctionSignature[] getFunctionSignatures() {
-                return new FunctionSignature[]{new ExecutorFunctionSignature(ScalarArgument.STRING),
+                return new FunctionSignature[]{
                                 new ExecutorFunctionSignature(ScalarArgument.STRING, ScalarArgument.STRING)};
         }
 }

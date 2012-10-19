@@ -59,6 +59,7 @@ import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.output.OutputManager;
 import org.orbisgis.view.sql.MapContext_AddLayer;
 import org.orbisgis.view.sql.MapContext_BBox;
+import org.orbisgis.view.sql.MapContext_Share;
 import org.orbisgis.view.sql.MapContext_ZoomTo;
 import org.orbisgis.view.sqlconsole.SQLConsoleFactory;
 import org.orbisgis.view.table.TableEditorFactory;
@@ -310,6 +311,7 @@ public class Core {
                 mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_AddLayer.class);
                 mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_BBox.class);
                 mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_ZoomTo.class);
+                mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_Share.class);
         }
     
     /**
