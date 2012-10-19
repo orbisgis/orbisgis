@@ -58,6 +58,8 @@ import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.output.OutputManager;
 import org.orbisgis.view.sql.MapContext_AddLayer;
+import org.orbisgis.view.sql.MapContext_BBox;
+import org.orbisgis.view.sql.MapContext_ZoomTo;
 import org.orbisgis.view.sqlconsole.SQLConsoleFactory;
 import org.orbisgis.view.table.TableEditorFactory;
 import org.orbisgis.view.toc.TocEditorFactory;
@@ -302,10 +304,12 @@ public class Core {
         }
 
     /**
-     * Add SQL functions to interact with OrbisGIS ui
+     * Add SQL functions to interact with OrbisGIS UI
      */
         private void addSQLFunctions() {               
                 mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_AddLayer.class);
+                mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_BBox.class);
+                mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_ZoomTo.class);
         }
     
     /**
