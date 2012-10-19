@@ -32,6 +32,7 @@ import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.io.IOException;
@@ -119,6 +120,7 @@ public class TableExportPanel extends JDialog {
                 if (connectionToolBar == null) {
                         connectionToolBar = new ConnectionToolBar();
                         connectionToolBar.addVetoableChangeListener(ConnectionToolBar.PROP_CONNECTED, EventHandler.create(VetoableChangeListener.class, this, "onUserConnect", ""));
+                        connectionToolBar.addPropertyChangeListener(ConnectionToolBar.PROP_CONNECTED, EventHandler.create(PropertyChangeListener.class, this, "onUserConnected","newValue"));
                         connectionToolBar.getMessagesEvents().addListener(this, EventHandler.create(Listener.class, this, "onMessagePanel", "message"));
                 }
                 return connectionToolBar;
@@ -204,13 +206,6 @@ public class TableExportPanel extends JDialog {
                                 }
                         }
                 }
-        }
-
-       /**
-        * Refresh the table model 
-        */
-        public void onDisconnect() {
-                onUserSelectionChange();
         }
 
         /**
@@ -318,7 +313,12 @@ public class TableExportPanel extends JDialog {
                         return I18N.tr("Saving the source in a database.");
                 }
         }
-
+        /**
+         * The connection or disconnection is done
+         */
+        public void onUserConnected(boolean newConnectionState) {
+                onUserSelectionChange();
+        }
         /**
          * Connect to the database
          */
@@ -327,8 +327,6 @@ public class TableExportPanel extends JDialog {
                         if (!onConnect()) {
                                 throw new PropertyVetoException(I18N.tr("Cannot connect to the database."), evt);
                         }
-                } else {
-                        onDisconnect();
                 }
         }
 
