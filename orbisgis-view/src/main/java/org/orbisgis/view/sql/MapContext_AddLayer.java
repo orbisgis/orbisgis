@@ -71,59 +71,66 @@ import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.map.MapElement;
-import org.orbisgis.view.sqlconsole.actions.ExecuteScriptProcess;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- *
+ * A function to add a table into the current mapcontext.
  * @author ebocher
  */
 public class MapContext_AddLayer extends AbstractExecutorFunction {
 
         protected final static I18n I18N = I18nFactory.getI18n(MapContext_AddLayer.class);
+
         @Override
         public void evaluate(DataSourceFactory dsf, DataSet[] tables, Value[] values, ProgressMonitor pm) throws FunctionException {
-                MapElement mapElement = Services.getService(MapElement.class);
-                try {
-                        DataManager dataManager = (DataManager) Services.getService(DataManager.class);
-                        ILayer layer = dataManager.createLayer(values[0].getAsString());
-                        if(values.length==2){
-                                String seFile = values[1].getAsString();
-                                if(!seFile.isEmpty()){
-                                Style style = new Style(layer, seFile);
-                                layer.addStyle(0, style);
+                EditorManager editorManager = Services.getService(EditorManager.class);
+
+                for (EditableElement editable : editorManager.getEditableElements()) {
+                        if (editable instanceof MapElement) {
+                                MapElement mapElement = (MapElement) editable;
+                                try {
+                                        DataManager dataManager = (DataManager) Services.getService(DataManager.class);
+                                        ILayer layer = dataManager.createLayer(values[0].getAsString());
+                                        if (values.length == 2) {
+                                                String seFile = values[1].getAsString();
+                                                if (!seFile.isEmpty()) {
+                                                        Style style = new Style(layer, seFile);
+                                                        layer.addStyle(0, style);
+                                                }
+                                        }
+                                        mapElement.getMapContext().getLayerModel().addLayer(layer);
+                                } catch (InvalidStyle ex) {
+                                        throw new FunctionException(I18N.tr("Cannot import the style"), ex);
+                                } catch (LayerException ex) {
+                                        throw new FunctionException(I18N.tr("Cannot add the layer to the mapcontext"), ex);
                                 }
                         }
-                        mapElement.getMapContext().getLayerModel().addLayer(layer);
-                } catch (InvalidStyle ex) {
-                        throw new FunctionException(I18N.tr("Cannot import the style"), ex);
-                } catch (LayerException ex) {
-                        throw new FunctionException(I18N.tr("Cannot add the layer to the mapcontext"), ex);
                 }
-
         }
 
         @Override
         public String getName() {
-                return "AddLayer";
+                return "Map_AddLayer";
         }
 
         @Override
         public String getDescription() {
-                return "A function to add a layer based on a table name\n"+
-                        "The second argument is optional. It permits to set a style to the layer.";
+                return "A function to add a layer based on a table name\n"
+                        + "The second argument is optional. It permits to set a style to the layer.";
         }
 
         @Override
         public String getSqlOrder() {
-                return "EXECUTE AddLayer('tableName'[,'myStyle.se'])";
+                return "EXECUTE Map_AddLayer('tableName'[,'myStyle.se'])";
         }
 
         @Override
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{new ExecutorFunctionSignature(ScalarArgument.STRING),
-                new ExecutorFunctionSignature(ScalarArgument.STRING,ScalarArgument.STRING )};
+                                new ExecutorFunctionSignature(ScalarArgument.STRING, ScalarArgument.STRING)};
         }
 }
