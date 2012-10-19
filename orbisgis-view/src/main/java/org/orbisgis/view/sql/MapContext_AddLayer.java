@@ -92,8 +92,8 @@ public class MapContext_AddLayer extends AbstractExecutorFunction {
 
         @Override
         public String getDescription() {
-                return "A function to add a layer based on a table name\n"
-                        + "The second argument is optional. It permits to set a style to the layer.";
+                return I18N.tr("A function to add a layer based on a table name\n"
+                        + "The second argument is optional. It permits to set a style to the layer.");
         }
 
         @Override
