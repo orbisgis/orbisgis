@@ -31,6 +31,7 @@ package org.orbisgis.core.layerModel;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
@@ -40,12 +41,14 @@ import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
 import org.grap.model.GeoRaster;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 import org.junit.Before;
 import org.junit.Test;
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.common.Description;
 
 @Deprecated
 public class LayerModelTest extends AbstractTest {
@@ -239,6 +242,18 @@ public class LayerModelTest extends AbstractTest {
 		assertTrue(lc.getLayerByName("secondlevelbis") == l3);
 		assertTrue(lc.getLayerByName(dummy.getName()) == vl1);
 	}
+
+        @Test
+        public void testInternationalizedTitle() throws Exception {
+                Layer bl = new Layer("youhou", dummy);
+                Description desc = new Description();
+                desc.addTitle(Locale.FRENCH, "youhou title");
+                bl.setDescription(desc);
+                Locale l = Locale.getDefault();
+                Locale.setDefault(new Locale("en","EN"));
+                assertNotNull(bl.getDescription());
+                Locale.setDefault(l);
+        }
 
 	private class TestLayerListener implements LayerListener {
 

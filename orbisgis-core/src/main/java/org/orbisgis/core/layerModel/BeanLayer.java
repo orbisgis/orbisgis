@@ -224,7 +224,8 @@ public abstract class BeanLayer extends AbstractLayer {
 	 */
         @Override
 	public String getName() {
-		return description.getTitle(Locale.getDefault());
+                String ret = description.getTitle(Locale.getDefault());
+		return ret == null ? description.getDefaultTitle() : ret;
 	}
 
 	/**

@@ -607,11 +607,23 @@ public class Toc extends JPanel implements EditorDockable {
                 // Fetch selected layers for Row selection
                 TreePath[] selectedItems = tree.getSelectionPaths();
                 boolean hasLayerWithRowSelection = false;
+                boolean hasLayerGroup = false;
                 for (TreePath path : selectedItems) {
                         Object treeNode = path.getLastPathComponent();
                         if (treeNode instanceof TocTreeNodeLayer) {
-                                if (!(((TocTreeNodeLayer) treeNode).getLayer().getSelection().isEmpty())) {
+                                //We must distinct layers and layer collections.
+                                //We check only once if the selected object contains
+                                //at least on layer with selected rows or at least a
+                                //layer collection. This will be useful to choose which
+                                //manu entries to show.
+                                ILayer l = ((TocTreeNodeLayer) treeNode).getLayer();
+                                if (!l.getSelection().isEmpty()) {
                                         hasLayerWithRowSelection = true;
+                                }
+                                if(l instanceof LayerCollection){
+                                        hasLayerGroup=true;
+                                }
+                                if(hasLayerGroup && hasLayerWithRowSelection){
                                         break;
                                 }
                         }
@@ -648,24 +660,26 @@ public class Toc extends JPanel implements EditorDockable {
                                 this, "clearLayerRowSelection"));
                         popup.add(clearLayerSelection);
                 }
-                if (tree.getSelectionCount() == 1) {
-                        //display the menu to add a style from a file
-                        JMenuItem importStyle = new JMenuItem(I18N.tr("Import style"), OrbisGISIcon.getIcon("add"));
-                        importStyle.setToolTipText(I18N.tr("Import a style from a file."));
-                        importStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onImportStyle"));
-                        popup.add(importStyle);
-                        //display the menu to add a new style
-                        JMenuItem addStyle = new JMenuItem(I18N.tr("Add style"), OrbisGISIcon.getIcon("add"));
-                        addStyle.setToolTipText(I18N.tr("Add a new style."));
-                        addStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onAddStyle"));
-                        popup.add(addStyle);
+                if(!hasLayerGroup){
+                        if (tree.getSelectionCount() == 1) {
+                                //display the menu to add a style from a file
+                                JMenuItem importStyle = new JMenuItem(I18N.tr("Import style"), OrbisGISIcon.getIcon("add"));
+                                importStyle.setToolTipText(I18N.tr("Import a style from a file."));
+                                importStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onImportStyle"));
+                                popup.add(importStyle);
+                                //display the menu to add a new style
+                                JMenuItem addStyle = new JMenuItem(I18N.tr("Add style"), OrbisGISIcon.getIcon("add"));
+                                addStyle.setToolTipText(I18N.tr("Add a new style."));
+                                addStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onAddStyle"));
+                                popup.add(addStyle);
+                        }
+                        //Popup:Open attributes
+                        JMenuItem openTableMenu = new JMenuItem(I18N.tr("Open the attributes"),
+                                OrbisGISIcon.getIcon("openattributes"));
+                        openTableMenu.addActionListener(EventHandler.create(ActionListener.class,
+                                this, "onMenuShowTable"));
+                        popup.add(openTableMenu);
                 }
-                //Popup:Open attributes
-                JMenuItem openTableMenu = new JMenuItem(I18N.tr("Open the attributes"),
-                        OrbisGISIcon.getIcon("openattributes"));
-                openTableMenu.addActionListener(EventHandler.create(ActionListener.class,
-                        this, "onMenuShowTable"));
-                popup.add(openTableMenu);
         }
 
         /**
