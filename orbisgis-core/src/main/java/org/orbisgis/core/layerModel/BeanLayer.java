@@ -110,8 +110,10 @@ public abstract class BeanLayer extends AbstractLayer {
                 description.initJAXBType(layerType);
                 layerType.setHidden(!visible);
                 ILayer[] childrens = getChildren();
-                for(ILayer children : childrens) {
-                        layerType.getLayer().add(children.getJAXBElement());
+                for(ILayer child : childrens) {
+                        if(child.isSerializable()){
+                                layerType.getLayer().add(child.getJAXBElement());
+                        }
                 }
                 // If not a Layer Collection
                 if(styleList!=null) {

@@ -384,8 +384,8 @@ public class MapContextTest extends AbstractTest {
 		FileUtils.copyFile(new File("src/test/resources/data/bv_sap.shx"), shx);
 		MapContext mc = new OwsMapContext();
 		mc.open(null);
-		mc.getLayerModel().addLayer(getDataManager().createLayer(shp));
-		mc.getLayerModel().addLayer(getDataManager().createLayer(originalShp));
+		mc.getLayerModel().addLayer(getDataManager().createLayer("youhou",shp));
+		mc.getLayerModel().addLayer(getDataManager().createLayer("yaha",originalShp));
 		mc.close(null);
 		shp.delete();
 		dbf.delete();

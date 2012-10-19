@@ -405,7 +405,9 @@ public final class OwsMapContext extends BeanMapContext {
                         List<LayerType> rootLayerList = rs.getLayer();
                         ILayer[] rootLayers = layerModel.getChildren();
                         for (ILayer layer : rootLayers) {
-                                rootLayerList.add(layer.getJAXBElement());
+                                if(layer.isSerializable()){
+                                        rootLayerList.add(layer.getJAXBElement());
+                                }
                         }
                 }
                 return mapContextSerialisation;

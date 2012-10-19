@@ -86,6 +86,10 @@ public class LayerCollection extends BeanLayer {
 		return layerCollection.get(index);
 	}
 
+        @Override
+        public boolean isSerializable(){
+                return true;
+        }
 
         @Override
 	public void addLayer(final ILayer layer) throws LayerException {

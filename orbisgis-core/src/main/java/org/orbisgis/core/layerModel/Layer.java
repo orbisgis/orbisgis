@@ -145,6 +145,12 @@ public class Layer extends BeanLayer {
 		return dataSource.isVectorial();
 	}
 
+        @Override
+        public boolean isSerializable() {
+                return dataSource != null && dataSource.getSource().isWellKnownName();
+        }
+
+
     @Override
 	public GeoRaster getRaster() throws DriverException {
 		if (!isRaster()) {
