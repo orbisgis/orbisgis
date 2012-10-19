@@ -194,7 +194,7 @@ public class PnlRule extends JPanel implements ISELegendPanel {
                 panel.add(max, gbc);
                 this.add(panel);
                 this.setPreferredSize(new Dimension(200, 100));
-                this.setBorder(BorderFactory.createTitledBorder(I18N.tr("Scale")));
+                this.setBorder(BorderFactory.createTitledBorder(I18N.tr("Rule Configuration")));
                 return this;
         }
 
