@@ -47,9 +47,6 @@ public class ReadMapContextJob implements BackgroundJob {
 
         public ReadMapContextJob(MapElement editableMap) {
                 this.editableMap = editableMap;
-                Services.registerService(MapElement.class,
-                        I18N.tr("Access to the MapElement"),
-                        editableMap);
         }
         
 

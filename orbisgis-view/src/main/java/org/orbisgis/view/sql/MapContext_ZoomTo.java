@@ -3,8 +3,8 @@
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
  *
- * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
- * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier
+ * SIG" team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
  *
  * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
  *
@@ -22,9 +22,8 @@
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
  *
- * For more information, please consult: <http://www.orbisgis.org/>
- * or contact directly:
- * info_at_ orbisgis.org
+ * For more information, please consult: <http://www.orbisgis.org/> or contact
+ * directly: info_at_ orbisgis.org
  */
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
@@ -68,6 +67,8 @@ import org.gdms.sql.function.table.TableArgument;
 import org.gdms.sql.function.table.TableDefinition;
 import org.orbisgis.core.Services;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.map.MapEditor;
 import org.orbisgis.view.map.MapElement;
 import org.xnap.commons.i18n.I18n;
@@ -75,19 +76,25 @@ import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * This function offers a way to zoom on the table or a SQL instruction
+ *
  * @author ebocher
  */
 public class MapContext_ZoomTo extends AbstractExecutorFunction {
 
         protected final static I18n I18N = I18nFactory.getI18n(MapContext_ZoomTo.class);
+
         @Override
         public void evaluate(DataSourceFactory dsf, DataSet[] tables, Value[] values, ProgressMonitor pm) throws FunctionException {
                 try {
-                        MapElement mapElement = Services.getService(MapElement.class);
-                        MapEditor editor = mapElement.getMapEditor();
-                        Envelope extend = tables[0].getFullExtent();
-                        editor.getMapControl().getMapTransform().setExtent(extend);
-
+                        EditorManager editorManager = Services.getService(EditorManager.class);
+                        for (EditableElement editable : editorManager.getEditableElements()) {
+                                if (editable instanceof MapElement) {
+                                        MapElement mapElement = (MapElement) editable;
+                                        MapEditor editor = mapElement.getMapEditor();
+                                        Envelope extend = tables[0].getFullExtent();
+                                        editor.getMapControl().getMapTransform().setExtent(extend);
+                                }
+                        }
                 } catch (DriverException ex) {
                         throw new FunctionException(I18N.tr("Cannot compute the full extent"), ex);
                 }
