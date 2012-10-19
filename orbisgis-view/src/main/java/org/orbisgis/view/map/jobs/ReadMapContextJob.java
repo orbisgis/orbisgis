@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.map.jobs;
 
-import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
