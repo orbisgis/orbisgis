@@ -374,8 +374,10 @@ public class TreeNodeFolder extends AbstractTreeNodeContainer implements PopupTr
                         // If the file exists found a new one
                         fileName = getUniqueFileName(fileName);
                         FileWriter writer = new FileWriter(fileName);
-                        while (br.ready()) {
-                                writer.write(br.read());
+                        String res = br.readLine();
+                        while (res != null) {
+                                writer.write(res+"\n");
+                                res = br.readLine();
                         }
                         writer.close();
                         return true;
