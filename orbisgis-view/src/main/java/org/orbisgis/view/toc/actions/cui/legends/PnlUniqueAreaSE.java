@@ -131,7 +131,8 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
 
         @Override
         public boolean acceptsGeometryType(int geometryType) {
-                return geometryType == SimpleGeometryType.POLYGON;
+                return geometryType == SimpleGeometryType.POLYGON||
+                        geometryType == SimpleGeometryType.ALL;
         }
 
         @Override
