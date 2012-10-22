@@ -187,14 +187,6 @@ public abstract class Symbolizer extends AbstractSymbolizerNode implements Symbo
         s.setDescription(null);
         s.setName(name);
         s.setVersion(VersionType.VALUE_1);
-
-        ExtensionType exts = of.createExtensionType();
-        ExtensionParameterType param = of.createExtensionParameterType();
-        param.setName("level");
-        param.setContent("" + level);
-        exts.getExtensionParameter().add(param);
-
-        s.setExtension(exts);
     }
     
     /**
