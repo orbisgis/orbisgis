@@ -29,6 +29,7 @@
 package org.orbisgis.view.table;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -274,6 +275,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                 table.setFillsViewportHeight(true);       
                 table.setUpdateSelectionOnSort(true);
                 table.setDragEnabled(true);
+                table.setBackground(this.getBackground());
                 return table;
         }
         

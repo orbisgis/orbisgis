@@ -48,6 +48,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.AbstractButton;
 import javax.swing.ButtonGroup;
@@ -83,6 +84,7 @@ import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.map.jobs.CreateSourceFromSelection;
 import org.orbisgis.view.map.jobs.ReadMapContextJob;
 import org.orbisgis.view.map.jobs.ZoomToSelection;
 import org.orbisgis.view.map.mapsManager.MapsManager;
@@ -105,7 +107,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private static final long serialVersionUID = 1L; 
     private MapControl mapControl = new MapControl();
     private MapContext mapContext = null;
-    private MapElement mapEditable;
+    private MapElement mapElement;
     private DockingPanelParameters dockingPanelParameters;
     private MapTransferHandler dragDropHandler;
     private MapStatusBar mapStatusBar = new MapStatusBar();
@@ -151,13 +153,13 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         this.setTransferHandler(dragDropHandler);
     }
     private void updateMapLabel() {
-                if (mapEditable == null) {
+                if (mapElement == null) {
                         dockingPanelParameters.setTitle(I18N.tr("Map"));
                 } else {
-                        if (mapEditable.isModified()) {
-                                dockingPanelParameters.setTitle(I18N.tr("Map Editor \"{0}\" [Modified]",mapEditable.getMapContext().getTitle()));
+                        if (mapElement.isModified()) {
+                                dockingPanelParameters.setTitle(I18N.tr("Map Editor \"{0}\" [Modified]",mapElement.getMapContext().getTitle()));
                         } else {
-                                dockingPanelParameters.setTitle(I18N.tr("Map Editor \"{0}\"",mapEditable.getMapContext().getTitle()));
+                                dockingPanelParameters.setTitle(I18N.tr("Map Editor \"{0}\"",mapElement.getMapContext().getTitle()));
                         }
                 }
         }
@@ -287,7 +289,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private void loadMap(MapElement element) {
         try {      
             removeListeners();    
-            mapEditable = element;
+            mapElement = element;
             mapContext = (MapContext) element.getObject();
             //We (unfortunately) need a cross reference here : this way, we'll
             //be able to retrieve the MapTransform from the Toc..
@@ -309,7 +311,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             mapsManager.setLoadedMap(element.getMapContextFile());
             // Update the editor label with the new editable name
             updateMapLabel();
-            mapEditable.addPropertyChangeListener(MapElement.PROP_MODIFIED, modificationListener);
+            mapElement.addPropertyChangeListener(MapElement.PROP_MODIFIED, modificationListener);
             repaint();
         } catch (IllegalStateException ex) {
             GUILOGGER.error(ex);
@@ -336,6 +338,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         CursorCoordinateLookupTimer=null;
                 }
                 removeListeners();
+        }
+
+        
+        public MapContext getMapContext() {
+                return mapContext;
         }
     
     
@@ -390,6 +397,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 I18N.tr("Zoom to selection"),
                 I18N.tr("Zoom to visible selected geometries"),
                 useButtonText,"onZoomToSelection"));
+        //Create a datasource from selection
+        toolBar.add(addButton(OrbisGISIcon.getIcon("table_go"),
+                I18N.tr("Create a datasource"),
+                I18N.tr("Create a datasource from a selection"),
+                useButtonText,"onCreateDataSourceFromSelection"));        
         toolBar.addSeparator();
 
         //Mesure Tools
@@ -528,6 +540,23 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             BackgroundManager bm = Services.getService(BackgroundManager.class);
             bm.backgroundOperation(new ZoomToSelection(mapContext, mapContext.getLayers()));
     }
+    
+    
+         /**
+         * The user can export the selected features into a new datasource
+         */
+        public void onCreateDataSourceFromSelection() {                
+                ILayer[] layers = mapContext.getSelectedLayers();
+                if(layers!=null|| layers.length>0){
+                for (ILayer layer : layers) {
+                        Set<Integer> selection = layer.getSelection();
+                        if(!selection.isEmpty()){
+                        BackgroundManager bm = Services.getService(BackgroundManager.class);
+                        bm.backgroundOperation(new CreateSourceFromSelection(layer.getDataSource(), layer.getSelection()));
+                }       }
+                }
+        }
+        
     /**
      * Give information on the behaviour of this panel related to the current
      * docking system
@@ -581,7 +610,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
 
         @Override
         public EditableElement getEditableElement() {
-                return mapEditable;
+                return mapElement;
         }
 
         @Override
@@ -621,8 +650,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
      * Remove the listeners on the current loaded document
      */
     private void removeListeners() {
-            if(mapEditable!=null) {
-                    mapEditable.removePropertyChangeListener(modificationListener);
+            if(mapElement!=null) {
+                    mapElement.removePropertyChangeListener(modificationListener);
             }
     }
     
