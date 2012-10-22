@@ -133,7 +133,8 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
         @Override
         public boolean acceptsGeometryType(int geometryType) {
                 return geometryType == SimpleGeometryType.LINE ||
-                        geometryType == SimpleGeometryType.POLYGON;
+                        geometryType == SimpleGeometryType.POLYGON||
+                        geometryType == SimpleGeometryType.ALL;
         }
 
         @Override
