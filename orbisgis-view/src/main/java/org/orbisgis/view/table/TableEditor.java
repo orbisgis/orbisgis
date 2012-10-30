@@ -29,7 +29,6 @@
 package org.orbisgis.view.table;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -81,6 +80,7 @@ import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
+import org.orbisgis.view.docking.DockingLocation;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditableElementException;
@@ -139,6 +139,8 @@ public class TableEditor extends JPanel implements EditorDockable {
                 this.tableEditableElement = element;
                 dockingPanelParameters = new DockingPanelParameters();
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("openattributes"));
+                dockingPanelParameters.setDefaultDockingLocation(
+                        new DockingLocation(DockingLocation.Location.STACKED_ON, "map_editor"));
                 tableScrollPane = new JScrollPane(makeTable());
                 add(tableScrollPane,BorderLayout.CENTER);
                 updateTitle();
@@ -376,7 +378,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                                 for(ILayer layer : mapContext.getLayers()) {
                                         if(layer.isVisible()) {
                                                 DataSource source = layer.getDataSource();
-                                                if(source.getName().equals(tableEditableElement.getSourceName())) {
+                                                if(source !=null && source.getName().equals(tableEditableElement.getSourceName())) {
                                                         return true;
                                                 }
                                         }

@@ -32,6 +32,7 @@ import bibliothek.extension.gui.dock.preference.PreferenceTreeDialog;
 import bibliothek.extension.gui.dock.preference.PreferenceTreeModel;
 import bibliothek.gui.DockStation;
 import bibliothek.gui.dock.common.CControl;
+import bibliothek.gui.dock.common.CLocation;
 import bibliothek.gui.dock.common.MultipleCDockableFactory;
 import bibliothek.gui.dock.common.SingleCDockable;
 import bibliothek.gui.dock.common.event.CControlListener;
@@ -273,7 +274,6 @@ public final class DockingManager {
                 //DEFAULT property of a view
 		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, I18N.tr("Docked Window") );
 		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_ICON, OrbisGISIcon.getIcon("mini_orbisgis") );
-				
                 //StackDockStation will contain all instances of ReservedDockStation
 		//stackOfReservedDockStations = new StackDockStation();
                 

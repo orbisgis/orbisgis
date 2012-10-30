@@ -33,6 +33,7 @@ import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import javax.swing.Icon;
 import javax.swing.JToolBar;
+import org.orbisgis.view.docking.DockingLocation.Location;
 
 
 /**
@@ -51,7 +52,7 @@ import javax.swing.JToolBar;
  */
 public class DockingPanelParameters implements Serializable {
 
-        private static final long serialVersionUID = 9L; /*
+        private static final long serialVersionUID = 12L; /*
          * <! Update this integer while adding properties (1 for each new property)
          */
         // Static property name
@@ -66,6 +67,9 @@ public class DockingPanelParameters implements Serializable {
         public static final String PROP_TITLE = "title";
         public static final String PROP_TITLEICON = "titleIcon";
         public static final String PROP_DOCKINGAREA = "dockingArea";
+        public static final String PROP_LAYOUT = "layout";
+        public static final String PROP_DEFAULTDOCKINGLOCATION = "defaultDockingLocation";
+        
         // Property Change Support
         private PropertyChangeSupport propertySupport;
         // Private property
@@ -79,8 +83,29 @@ public class DockingPanelParameters implements Serializable {
         private JToolBar toolBar = null;
         private boolean visible = true;
         private String name = "";
-        private DockingPanelLayout layout = null;
-        public static final String PROP_LAYOUT = "layout";
+        private DockingPanelLayout layout = null;        
+        private DockingLocation defaultDockingLocation = new DockingLocation(Location.TOP_OF, "");
+        
+
+        /**
+         * Get the value of defaultDockingLocation
+         *
+         * @return the value of defaultDockingLocation
+         */
+        public DockingLocation getDefaultDockingLocation() {
+                return defaultDockingLocation;
+        }
+
+        /**
+         * Set the value of defaultDockingLocation
+         * This location is read on the panel creation and when this property is changed
+         * @param defaultDockingLocation new value of defaultDockingLocation
+         */
+        public void setDefaultDockingLocation(DockingLocation defaultDockingLocation) {
+                DockingLocation oldDefaultDockingLocation = this.defaultDockingLocation;
+                this.defaultDockingLocation = defaultDockingLocation;
+                propertySupport.firePropertyChange(PROP_DEFAULTDOCKINGLOCATION, oldDefaultDockingLocation, defaultDockingLocation);
+        }
 
         /**
          * Get the value of layout
