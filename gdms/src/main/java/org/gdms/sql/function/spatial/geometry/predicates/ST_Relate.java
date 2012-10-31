@@ -34,7 +34,6 @@
 package org.gdms.sql.function.spatial.geometry.predicates;
 
 import com.vividsolutions.jts.geom.Geometry;
-
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
@@ -47,8 +46,11 @@ import org.gdms.sql.function.SpatialIndexedFunction;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
 
 /**
- * Return a 9-character String representation of the 2 geometries
- * IntersectionMatrix
+ * This function is used to compute the relation between two geometries, as
+ * described in the SFS specification. It can be used in two ways. First, if it is given two geometries,it returns a
+ * 9-character String representation of the 2 geometries IntersectionMatrix. If it is given two geometries and a
+ * IntersectionMatrix representation, it will return a boolean : true it the two geometries' IntersectionMatrix match
+ * the given one, false otherwise.
  */
 public final class ST_Relate extends AbstractScalarSpatialFunction implements SpatialIndexedFunction {
 
@@ -57,10 +59,13 @@ public final class ST_Relate extends AbstractScalarSpatialFunction implements Sp
                 if (args[0].isNull() || args[1].isNull()) {
                         return ValueFactory.createNullValue();
                 }
-
                 final Geometry geom1 = args[0].getAsGeometry();
                 final Geometry geom2 = args[1].getAsGeometry();
-                return ValueFactory.createValue(geom1.relate(geom2).matches(args[2].getAsString()));
+                if(args.length == 2){
+                        return ValueFactory.createValue(geom1.relate(geom2).toString());
+                } else {
+                        return ValueFactory.createValue(geom1.relate(geom2).matches(args[2].getAsString()));
+                }
         }
 
         @Override
@@ -81,14 +86,22 @@ public final class ST_Relate extends AbstractScalarSpatialFunction implements Sp
 
         @Override
         public int getType(int[] types) {
-                return Type.BOOLEAN;
+                if(types.length == 2 && (types[0]&Type.GEOMETRY) != 0 && (types[1]&Type.GEOMETRY) != 0){
+                        return Type.STRING;
+                } else {
+                        return Type.BOOLEAN;
+                }
         }
 
         @Override
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
-                                new BasicFunctionSignature(getType(null),
-                                ScalarArgument.GEOMETRY, ScalarArgument.GEOMETRY)
-                        };
+                        new BasicFunctionSignature(
+                                getType(new int[]{Type.GEOMETRY, Type.GEOMETRY}),
+                        ScalarArgument.GEOMETRY, ScalarArgument.GEOMETRY),
+                        new BasicFunctionSignature(
+                                getType(new int[]{Type.GEOMETRY, Type.GEOMETRY, Type.STRING}),
+                        ScalarArgument.GEOMETRY, ScalarArgument.GEOMETRY, ScalarArgument.STRING)
+                };
         }
 }
