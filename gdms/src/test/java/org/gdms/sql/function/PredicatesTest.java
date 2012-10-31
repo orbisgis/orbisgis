@@ -33,13 +33,16 @@
  */
 package org.gdms.sql.function;
 
-import org.junit.Test;
+import com.vividsolutions.jts.geom.Geometry;
+import org.gdms.data.types.IncompatibleTypesException;
 import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
+import org.gdms.driver.sql.SqlStatementDriver;
 import org.gdms.sql.ColumnValue;
 import org.gdms.sql.FunctionTest;
-import org.gdms.sql.function.ScalarFunction;
+import org.gdms.sql.engine.Engine;
+import org.gdms.sql.engine.SQLStatement;
 import org.gdms.sql.function.spatial.geometry.predicates.ST_Contains;
 import org.gdms.sql.function.spatial.geometry.predicates.ST_Crosses;
 import org.gdms.sql.function.spatial.geometry.predicates.ST_Disjoint;
@@ -50,11 +53,8 @@ import org.gdms.sql.function.spatial.geometry.predicates.ST_IsWithinDistance;
 import org.gdms.sql.function.spatial.geometry.predicates.ST_Overlaps;
 import org.gdms.sql.function.spatial.geometry.predicates.ST_Relate;
 import org.gdms.sql.function.spatial.geometry.predicates.ST_Touches;
-import org.gdms.data.types.IncompatibleTypesException;
-
-import com.vividsolutions.jts.geom.Geometry;
-
 import static org.junit.Assert.*;
+import org.junit.Test;
 
 public class PredicatesTest extends FunctionTest {
 
@@ -140,10 +140,53 @@ public class PredicatesTest extends FunctionTest {
                 Value val = function.evaluate(dsf, values);
                 assertTrue(val.getAsBoolean());
 
-                pattern = ValueFactory.createValue("F1FFFF2F2");
+                Value pattern2 = ValueFactory.createValue("F1FFFF2F2");
 
-                values = new Value[]{geomA, geomB, pattern};
+                values = new Value[]{geomA, geomB, pattern2};
                 val = function.evaluate(dsf, values);
                 assertFalse(val.getAsBoolean());
+                values = new Value[]{geomA, geomB};
+                val = function.evaluate(dsf, values);
+                assertTrue(val.equals(pattern).getAsBoolean());
+        }
+
+        /**
+         * Test that the signature of ST_Relate that needs two geometries and a String is well used and returns the
+         * expected value.
+         * @throws Exception
+         */
+        @Test
+        public void testRelateSignature() throws Exception {
+                StringBuilder sb = new StringBuilder("SELECT ST_RELATE(");
+                sb.append("ST_GEOMFROMTEXT('");
+                sb.append(JTSMultiPolygon2D.toString());
+                sb.append("'),ST_GEOMFROMTEXT('");
+                sb.append(JTSMultiLineString2D);
+                sb.append("'),");
+                sb.append("'FF21FFFF2'");
+                sb.append(");");
+                SqlStatementDriver ssd = new SqlStatementDriver(Engine.parse(sb.toString(), dsf.getProperties()),dsf);
+                ssd.open();
+                assertTrue(ssd.getFieldValue(0,0).getAsBoolean());
+                ssd.close();
+        }
+
+        /**
+         * Test that the signature of ST_Relate that needs two geometries is well used and returns the
+         * expected value.
+         * @throws Exception
+         */
+        @Test
+        public void testRelateSignature2() throws Exception {
+                StringBuilder sb = new StringBuilder("SELECT ST_RELATE(");
+                sb.append("ST_GEOMFROMTEXT('");
+                sb.append(JTSMultiPolygon2D.toString());
+                sb.append("'),ST_GEOMFROMTEXT('");
+                sb.append(JTSMultiLineString2D);
+                sb.append("'));");
+                SqlStatementDriver ssd = new SqlStatementDriver(Engine.parse(sb.toString(), dsf.getProperties()),dsf);
+                ssd.open();
+                assertTrue(ssd.getFieldValue(0,0).getAsString().equals("FF21FFFF2"));
+                ssd.close();
         }
 }
