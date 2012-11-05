@@ -552,7 +552,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         Set<Integer> selection = layer.getSelection();
                         if(!selection.isEmpty()){
                         BackgroundManager bm = Services.getService(BackgroundManager.class);
-                        bm.backgroundOperation(new CreateSourceFromSelection(layer.getDataSource(), layer.getSelection()));
+                        bm.backgroundOperation(new CreateSourceFromSelection(layer.getDataSource(), selection));
                 }       }
                 }
         }
