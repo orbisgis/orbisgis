@@ -76,9 +76,8 @@ public class DefaultActiveFilter extends ActiveFilter {
          * @param currentFilterValue new value of currentFilterValue
          */
         public void setCurrentFilterValue(String currentFilterValue) {
-                String oldV = this.currentFilterValue;
                 this.currentFilterValue = currentFilterValue;
                 //Do not send older value to execute again the filter even if the field is the same
-                propertySupport.firePropertyChange(PROP_CURRENTFILTERVALUE, oldV, currentFilterValue);
+                propertySupport.firePropertyChange(PROP_CURRENTFILTERVALUE, null, currentFilterValue);
         }
 }
