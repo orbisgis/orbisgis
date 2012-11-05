@@ -39,6 +39,7 @@ import org.gdms.source.SourceManager;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.view.docking.DummyViewPanel;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.geocatalog.SourceListModel;
@@ -63,8 +64,8 @@ public class CoreTest {
     public static void setUp() throws InterruptedException, InvocationTargetException {
         System.out.println("startup");
         if(!GraphicsEnvironment.isHeadless()) {
-            instance = new Core(true);
-            instance.startup();
+            instance = new Core(true,new NullProgressMonitor());
+            instance.startup(new NullProgressMonitor());
             try {
                     SwingUtilities.invokeAndWait(new DummyThread());
             } catch (InterruptedException ex) {

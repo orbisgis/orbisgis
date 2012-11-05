@@ -28,6 +28,9 @@
  */
 package org.orbisgis.view.main;
 
+import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
@@ -36,6 +39,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -43,6 +47,7 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
@@ -86,7 +91,7 @@ public class Core {
     private OutputManager loggerCollection;    /*!< Loggings panels */     
     private BackgroundManager backgroundManager;
              
-    private static final Rectangle MAIN_VIEW_POSITION_AND_SIZE = new Rectangle(20,20,800,600);/*!< Bounds of mainView, x,y and width height*/
+    public static final Dimension MAIN_VIEW_SIZE = new Dimension(800,600);/*!< Bounds of mainView, x,y and width height*/
     private DockingManager dockManager = null; /*!< The DockStation manager */
     
     
@@ -98,15 +103,20 @@ public class Core {
      * @param debugMode Show additional information for debugging purposes
      * @note Call startup() to init Swing
      */
-    public Core(boolean debugMode) {
+    public Core(boolean debugMode,ProgressMonitor progressInfo) {
+        progressInfo.init(I18N.tr("Loading GDMS.."),100);
         this.mainContext = new MainContext(debugMode);
-        this.viewWorkspace = new ViewWorkspace(this.mainContext.getCoreWorkspace());
-        
+        progressInfo.progressTo(10);
+        this.viewWorkspace = new ViewWorkspace(this.mainContext.getCoreWorkspace());        
         Services.registerService(ViewWorkspace.class, I18N.tr("Contains view folders path"),
                         viewWorkspace);        
+        progressInfo.init(I18N.tr("Register GUI Sql functions.."),100);
         addSQLFunctions();
+        progressInfo.progressTo(15);
         initSwingJobs();
+        progressInfo.progressTo(18);
         initSIF();
+        progressInfo.progressTo(20);
     }
     /**
      * For UnitTest purpose
@@ -226,43 +236,63 @@ public class Core {
     * Starts the application. This method creates the {@link MainFrame},
     * and manage the Look And Feel declarations
     */
-    public void startup(){
+    public void startup(ProgressMonitor progress) throws InterruptedException, InvocationTargetException{
         // Show the application when Swing will be ready
-        SwingUtilities.invokeLater( new ShowSwingApplication());
+        initialize(progress);
+        SwingUtilities.invokeLater(new ShowSwingApplication(progress));
     }
-    private void initialize() {
+    private void initialize(ProgressMonitor progress) {
             
         if(mainFrame!=null) {
             return;//This method can't be called twice
         }
-        initI18n();
-                
-        makeMainFrame();
         
+        progress.init(I18N.tr("Loading the main window"), 100);
+        makeMainFrame();
+        progress.progressTo(30);
+        
+        progress.init(I18N.tr("Loading docking system and frames"), 100);
         //Initiate the docking management system
         dockManager = new DockingManager(mainFrame);
         mainFrame.setDockingManager(dockManager);
+        progress.progressTo(35);
         
         //Set the main frame position and size
-	mainFrame.setBounds(MAIN_VIEW_POSITION_AND_SIZE);
+	mainFrame.setSize(MAIN_VIEW_SIZE);
         
+        // Try to set the frame at the center of the default screen
+        try {
+                GraphicsDevice device = GraphicsEnvironment.
+                        getLocalGraphicsEnvironment().getDefaultScreenDevice();                        
+                Rectangle screenBounds = device.getDefaultConfiguration().getBounds();
+                mainFrame.setLocation(screenBounds.x+screenBounds.width/2-MAIN_VIEW_SIZE.width/2,
+                screenBounds.y+screenBounds.height/2-MAIN_VIEW_SIZE.height/2);
+        } catch(Throwable ex) {
+                LOGGER.error(ex.getLocalizedMessage(),ex);
+        }
         //Load the log panels
         makeLoggingPanels();
+        progress.progressTo(40);
         
         //Load the Job Panel
         makeJobsPanel();
+        progress.progressTo(45);
         
         //Load the editor factories manager
         makeEditorManager(dockManager);
+        progress.progressTo(50);
         
         //Load the GeoCatalog
         makeGeoCatalogPanel();
+        progress.progressTo(55);
         
         //Load the Map And view panels
         //makeTocAndMap();
         //Load Built-ins Editors
         loadEditorFactories();
+        progress.progressTo(60);
         
+        progress.init(I18N.tr("Restore the former layout.."), 100);
         //Load the docking layout and editors opened in last OrbisGis instance
         File savedDockingLayout = new File(viewWorkspace.getDockingLayoutPath());
         if(!savedDockingLayout.exists()) {
@@ -271,7 +301,7 @@ public class Core {
                 copyDefaultDockingLayout(savedDockingLayout);
         }
         dockManager.setDockingLayoutPersistanceFilePath(viewWorkspace.getDockingLayoutPath());
-        
+        progress.progressTo(70);        
     }
     /**
      * Copy the default docking layout to the specified file path.
@@ -318,13 +348,23 @@ public class Core {
      * Change the state of the main frame in the swing thread
      */
     private class ShowSwingApplication implements Runnable {
+        ProgressMonitor progress;
+
+        public ShowSwingApplication(ProgressMonitor progress) {
+                this.progress = progress;
+        }
+
         /**
         * Change the state of the main frame in the swing thread
         */
         @Override
         public void run(){
-                initialize();
-                mainFrame.setVisible( true );
+                try {
+                        initialize(progress);
+                        mainFrame.setVisible( true );
+                } finally {
+                        progress.setCancelled(true);
+                }
         }
     }
 
@@ -335,12 +375,7 @@ public class Core {
     public DockingManager getDockManager() {
         return dockManager;
     }
-    /**
-     * Add the properties of OrbisGis view to I18n translation manager
-     */
-    private void initI18n() {
-        // Init I18n
-    }
+    
     /**
      * Free all resources allocated by this object
      */
