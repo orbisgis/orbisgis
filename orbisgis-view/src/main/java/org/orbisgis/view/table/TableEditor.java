@@ -29,7 +29,6 @@
 package org.orbisgis.view.table;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Point;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -88,6 +87,7 @@ import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
+import org.orbisgis.view.map.jobs.CreateSourceFromSelection;
 import org.orbisgis.view.table.filters.FieldsContainsFilterFactory;
 import org.orbisgis.view.table.filters.TableSelectionFilter;
 import org.orbisgis.view.table.filters.WhereSQLFilterFactory;
@@ -341,6 +341,17 @@ public class TableEditor extends JPanel implements EditorDockable {
                                 EventHandler.create(ActionListener.class,
                                 this,"onMenuReverseSelection"));
                         pop.add(inverseSelection);
+                        
+                        JMenuItem createDataSourceSelection = new JMenuItem(
+                                I18N.tr("Create a datasource"),
+                                OrbisGISIcon.getIcon("table_go"));
+                        createDataSourceSelection.setToolTipText(I18N.tr("Create a datasource from a selection"));
+                        createDataSourceSelection.addActionListener(
+                                EventHandler.create(ActionListener.class,
+                                this,"onCreateDataSourceFromSelection"));
+                        pop.add(createDataSourceSelection);
+                        
+                        
                         if(isDataOnShownMapContext()) {
                                 JMenuItem zoomToSelection = new JMenuItem(
                                         I18N.tr("Zoom to selection"),
@@ -431,6 +442,18 @@ public class TableEditor extends JPanel implements EditorDockable {
                         }
                 }                
                 setViewRowSelection(invertedSelection);
+        }
+        
+        /**
+         * The user can export the selected rows into a new datasource
+         */
+        public void onCreateDataSourceFromSelection() {
+                Set<Integer> selection = getTableModelSelection();
+                if (!selection.isEmpty()) {
+                        BackgroundManager bm = Services.getService(BackgroundManager.class);
+                        bm.backgroundOperation(new CreateSourceFromSelection(tableModel.getDataSource(), selection));
+                }
+
         }
         
         /**
