@@ -30,7 +30,11 @@ package org.orbisgis.core.context.main;
 
 import java.io.File;
 import java.io.IOException;
-import org.apache.log4j.*;
+import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
+import org.apache.log4j.PatternLayout;
+import org.apache.log4j.RollingFileAppender;
 import org.apache.log4j.spi.Filter;
 import org.apache.log4j.varia.LevelRangeFilter;
 import org.gdms.data.DataSourceFactory;

@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.main;
 
-import bibliothek.gui.dock.common.intern.ui.WorkingAreaAcceptance;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import javax.swing.SwingUtilities;
@@ -38,20 +37,17 @@ import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.view.main.frames.LoadingFrame;
 
 /**
- *
+ * Hold an instance of Core and is able to re-launch this interface.
+ * Listen to workspace folder update.
  * @author Nicolas Fortin
  */
 public class CoreLauncher {
-            // Listening to workspace change
+        // Listening to workspace change
         private static final Logger LOGGER = Logger.getLogger(CoreLauncher.class);
         private boolean debugMode;
         private CoreWorkspace coreWorkspace = new CoreWorkspace();
         private PropertyChangeListener workspaceChangeListener = EventHandler.create(PropertyChangeListener.class, this, "onWorkspaceChange");
         private Core viewCore;
-
-        public CoreLauncher() {
-                
-        }
 
         private static LoadingFrame showLoadingFrame() {
                 final LoadingFrame loadingFrame = new LoadingFrame();

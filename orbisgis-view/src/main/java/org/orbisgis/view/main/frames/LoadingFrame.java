@@ -50,7 +50,10 @@ public class LoadingFrame extends JFrame implements ProgressMonitor {
         private JProgressBar progressBar = new JProgressBar();
         private JPanel bottomPanel;
         private static final Logger LOGGER = Logger.getLogger(LoadingFrame.class);
-        
+        /**
+         * Constructor of LoadingFrame
+         * @throws HeadlessException 
+         */
         public LoadingFrame() throws HeadlessException {
                 setUndecorated(true);
                 JPanel mainPanel = new JPanel(new BorderLayout());
