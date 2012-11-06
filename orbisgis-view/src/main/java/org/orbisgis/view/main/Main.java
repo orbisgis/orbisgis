@@ -29,17 +29,13 @@
 package org.orbisgis.view.main;
 
 import java.util.Stack;
-import javax.swing.SwingUtilities;
-import org.apache.log4j.Logger;
 import org.orbisgis.core.workspace.CoreWorkspace;
-import org.orbisgis.view.main.frames.LoadingFrame;
 
 /**
  * Entry point of User Interface.
  */
 final class Main 
 {
-    private static final Logger LOGGER = Logger.getLogger(Main.class);
     private static boolean DEBUG_MODE=false;
     /**
      * Utility class
@@ -61,37 +57,16 @@ final class Main
             }
         }
     }
-    private static LoadingFrame showLoadingFrame() {
-        final LoadingFrame loadingFrame = new LoadingFrame();
-        SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                            loadingFrame.setVisible(true);
-                    }
-            });
-        return loadingFrame;
-    }
+    
     /**
     * Entry point of User Interface
     */
     public static void main( String[] args )
     {
         parseCommandLine(args);
-        // Load splash screen
-        final LoadingFrame loadingFrame = showLoadingFrame();
-        try {
-                CoreWorkspace coreWorkspace = new CoreWorkspace();
-                Core viewCore = new Core(coreWorkspace,DEBUG_MODE,loadingFrame);
-                viewCore.startup(loadingFrame);
-        } catch(Throwable ex) {
-                LOGGER.error(ex.getLocalizedMessage(),ex);
-                // Close the splash screen
-                SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                                loadingFrame.dispose();
-                        }
-                });
-        }
-    }
+        // Listen to future workspace change
+        CoreLauncher coreLauncher = new CoreLauncher();
+        coreLauncher.init(DEBUG_MODE);
+        coreLauncher.launch();
+    }    
 }

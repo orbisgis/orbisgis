@@ -57,6 +57,7 @@ public class WorkspaceSelectionDialog implements MIPValidation {
          */
         public static File showWorkspaceFolderSelection(CoreWorkspace coreWorkspace) {                
                 MultiInputPanel panel = new MultiInputPanel(I18N.tr("Workspace folder"));
+                panel.addValidation(new WorkspaceSelectionDialog());
                 DirectoryComboBoxChoice comboDir = new DirectoryComboBoxChoice(coreWorkspace.readKnownWorkspacesPath(),
                         I18N.tr("Select an existing workspace or an empty folder."));
                 panel.addInput(FOLDER_COMBO_FIELD, I18N.tr("Workspace folder"),comboDir );
@@ -72,7 +73,12 @@ public class WorkspaceSelectionDialog implements MIPValidation {
                                 }
                                 // Save workspace list
                                 List<File> workspaces = comboDir.getValues();
-                                coreWorkspace.readKnownWorkspacesPath();
+                                coreWorkspace.writeKnownWorkspaces(workspaces);
+                                // Initialize the workspace if empty or not exists
+                                File wkFile = new File(workspacePath);
+                                if(!wkFile.exists() || wkFile.listFiles().length==0) {
+                                        ViewWorkspace.initWorkspaceFolder(wkFile);
+                                }
                         } catch (IOException ex) {
                                 LOGGER.error(ex.getLocalizedMessage(),ex);
                         }
@@ -87,7 +93,12 @@ public class WorkspaceSelectionDialog implements MIPValidation {
          */
         @Override
         public String validate(MultiInputPanel mid) {
-                throw new UnsupportedOperationException("Not supported yet.");
+                String workspacePath = mid.getInput(FOLDER_COMBO_FIELD);
+                if(!ViewWorkspace.isWorkspaceValid(new File(workspacePath))) {
+                        return I18N.tr("The workspace folder version is invalid (!=OrbisGIS {0}), or the folder is not empty",ViewWorkspace.MAJOR_VERSION);
+                } else {
+                        return null;
+                }
         }
         
 }

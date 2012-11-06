@@ -36,12 +36,15 @@ import java.awt.event.ComponentListener;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
+import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListDataListener;
+import org.orbisgis.core.Services;
+import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.statusbar.StatusBar;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -49,6 +52,7 @@ import org.orbisgis.view.joblist.JobListCellRenderer;
 import org.orbisgis.view.joblist.JobListItem;
 import org.orbisgis.view.joblist.JobListModel;
 import org.orbisgis.view.joblist.JobListPanel;
+import org.orbisgis.view.workspace.WorkspaceSelectionDialog;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -108,7 +112,14 @@ public class MainFrameStatusBar extends StatusBar {
          * The user click on change workspace button
          */
         public void onChangeWorkspace() {
-                
+                CoreWorkspace coreWK = Services.getService(CoreWorkspace.class);
+                if(coreWK!=null) {
+                        File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(coreWK);
+                        if(newWorkspace!= null) {
+                                // Switching workspace..
+                                coreWK.setWorkspaceFolder(newWorkspace.getAbsolutePath());
+                        }
+                }
         }
         /**
          * The user click on the Job label The JobList component must be shown

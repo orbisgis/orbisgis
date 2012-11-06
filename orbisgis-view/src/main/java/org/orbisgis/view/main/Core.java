@@ -34,6 +34,7 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -60,6 +61,7 @@ import org.orbisgis.view.edition.dialogs.SaveDocuments;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.joblist.JobsPanel;
+import org.orbisgis.view.main.frames.LoadingFrame;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.output.OutputManager;
@@ -96,7 +98,7 @@ public class Core {
     public static final Dimension MAIN_VIEW_SIZE = new Dimension(800,600);/*!< Bounds of mainView, x,y and width height*/
     private DockingManager dockManager = null; /*!< The DockStation manager */
     
-    
+   
     /////////////////////
     //base package :
     private MainContext mainContext; /*!< The larger surrounding part of OrbisGis base */
@@ -121,6 +123,7 @@ public class Core {
         initSIF();
         progressInfo.progressTo(20);
     }
+    
     /**
      * Find the workspace folder or show a dialog to select one
      */
@@ -129,7 +132,7 @@ public class Core {
         if(!debugMode && (defaultWorkspace==null || !ViewWorkspace.isWorkspaceValid(defaultWorkspace))) {
                 SwingUtilities.invokeAndWait(new promptUserForSelectingWorkspace(coreWorkspace ));
         }
-        this.mainContext = new MainContext(debugMode,coreWorkspace,true);            
+        this.mainContext = new MainContext(debugMode,coreWorkspace,true);
     }
     
     private class promptUserForSelectingWorkspace implements Runnable {
@@ -246,7 +249,7 @@ public class Core {
      * Then the application has to be closed
      */
     public void onMainWindowClosing() {
-        this.shutdown();
+        this.shutdown(true);
     }
     
     /**
@@ -421,7 +424,7 @@ public class Core {
                 }
         }
         //Remove all listeners created by this object
-
+        
         //Free UI resources
         editors.dispose();
         geoCatalog.dispose();
@@ -460,13 +463,14 @@ public class Core {
          * This method is called through the MainFrame.MAIN_FRAME_CLOSING event
          * listener.
          */
-        public void shutdown() {
+        public boolean shutdown(boolean stopVM) {
                 if (!isShutdownVetoed()) {
                         try {
                                 mainContext.saveStatus(); //Save the services status
                                 this.dispose();
                         } finally {
                                 //While Plugins are not implemented do not close the VM in finally clause
+                                // if(stopVM) {
                                 //SwingUtilities.invokeLater( new Runnable(){
                                 //   /** If an error occuring while unload resources, java machine
                                 //    * may continue to run. In this case, the following command
@@ -475,8 +479,12 @@ public class Core {
                                 //    public void run(){
                                 //            System.exit(0);
                                 //    }
-                                //} );
+                                //   } );
+                                // }
                         }
-                }
+                        return true;
+                } else {
+                        return false;
+                }                
         }
 }

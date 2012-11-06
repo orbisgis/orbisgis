@@ -31,10 +31,12 @@ package org.orbisgis.view.workspace;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
-import org.apache.commons.io.FileUtils;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.workspace.CoreWorkspace;
 
 /**
@@ -76,6 +78,15 @@ public class ViewWorkspace {
                 return mapContextPath;
         }
 
+        /**
+         * 
+         * @return The core workspace
+         */
+        public CoreWorkspace getCoreWorkspace() {
+                return coreWorkspace;
+        }
+
+        
         /**
          * Set the value of mapContextPath
          *
@@ -154,6 +165,7 @@ public class ViewWorkspace {
     public void addPropertyChangeListener(String prop,PropertyChangeListener listener) {
         propertySupport.addPropertyChangeListener(prop, listener);
     }
+    
     /**
      * Remove the specified listener from the list
      * @param listener The listener instance
@@ -169,6 +181,42 @@ public class ViewWorkspace {
      */
     public void removePropertyChangeListener(String prop,PropertyChangeListener listener) {
         propertySupport.removePropertyChangeListener(prop,listener);
+    }
+    private static void writeVersionFile(File versionFile) throws IOException {
+        BufferedWriter writer = null;
+        try {
+                writer = new BufferedWriter(new FileWriter(versionFile));
+                writer.write(Integer.toString(ViewWorkspace.MAJOR_VERSION));
+                writer.newLine();
+                writer.write(Integer.toString(ViewWorkspace.MINOR_VERSION));
+                writer.newLine();
+                writer.write(Integer.toString(ViewWorkspace.REVISION_VERSION));
+                writer.newLine();
+                writer.write(ViewWorkspace.CITY_VERSION);
+                writer.newLine();
+        } finally {
+                if (writer != null) {
+                        writer.close();
+                }
+        }                  
+    }
+    /**
+     * Create minimal resource inside an empty workspace folder
+     * @param workspaceFolder
+     * @throws IOException Error while writing files or the folder is not empty
+     */
+    public static void initWorkspaceFolder(File workspaceFolder) throws IOException {
+        if(!workspaceFolder.exists()) {
+                workspaceFolder.mkdirs();
+        }
+        if(workspaceFolder.listFiles().length!=0) {
+                // This method must be called with empty folder only
+                throw new IOException("Workspace folder must be empty");
+        }
+        File versionFile = new File(workspaceFolder,VERSION_FILE);
+        if(!versionFile.exists()) {
+                writeVersionFile(versionFile);
+        }                            
     }
     /**
      * Check if the provided folder can be loaded has the workspace
