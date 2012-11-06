@@ -29,7 +29,7 @@
 package org.orbisgis.view.components.menubar;
 
 import javax.swing.JMenuItem;
-import org.orbisgis.view.components.ContainerItemProperties;
+import org.orbisgis.sif.common.ContainerItemProperties;
 
 /**
  * The Menu Item beans is used in persistant menu (not popup).

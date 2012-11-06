@@ -29,7 +29,13 @@
 package org.orbisgis.view.components.statusbar;
 
 import java.awt.BorderLayout;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JComponent;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.SwingConstants;
 
 /**
  * Root class for all status bar in OrbisGIS.

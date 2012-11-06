@@ -31,6 +31,7 @@ package org.orbisgis.core.context.main;
 import java.io.File;
 import java.io.IOException;
 import org.apache.log4j.*;
+import org.apache.log4j.spi.Filter;
 import org.apache.log4j.varia.LevelRangeFilter;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.DataSourceFinalizationException;
@@ -56,7 +57,7 @@ public class MainContext {
     private CoreWorkspace coreWorkspace;
     private DataManager dataManager;
     private boolean debugMode;
-    private LevelRangeFilter consoleFilter;
+    private static String CONSOLE_LOGGER = "ConsoleLogger";
     
     /**
      * Single parameter constructor
@@ -83,7 +84,6 @@ public class MainContext {
         }
         //Redirect root logging to console
         if (initLogger) {
-                initConsoleLogger();
                 initFileLogger(coreWorkspace);
         }
         dataSourceFactory = new DataSourceFactory(coreWorkspace.getSourceFolder(), coreWorkspace.getTempFolder(), coreWorkspace.getPluginFolder());
@@ -166,14 +166,12 @@ public class MainContext {
      */
     public void setDebugMode(boolean debugMode) {
         this.debugMode = debugMode;
-        if(consoleFilter!=null) {
-            setFilterLevel();
-        }
+        setFilterLevel((LevelRangeFilter)Logger.getRootLogger().getAppender(CONSOLE_LOGGER).getFilter(),debugMode);
     }
     /**
      * Set the output filter corresponding to the verbose mode
      */
-    private void setFilterLevel() {
+    private static void setFilterLevel(LevelRangeFilter consoleFilter,boolean debugMode) {
         if(debugMode) {
             consoleFilter.setLevelMin(Level.DEBUG);
         }else{
@@ -183,15 +181,17 @@ public class MainContext {
     /**
      * Console output to info level min
      */
-    private void initConsoleLogger() {
+    public static Filter initConsoleLogger(boolean debugMode) {
         Logger root = Logger.getRootLogger();
         ConsoleAppender appender = new ConsoleAppender(
         new PatternLayout(PatternLayout.TTCC_CONVERSION_PATTERN));
-        consoleFilter = new LevelRangeFilter();
-        setFilterLevel();
+        appender.setName(CONSOLE_LOGGER);
+        LevelRangeFilter consoleFilter = new LevelRangeFilter();
+        setFilterLevel(consoleFilter,debugMode);
         consoleFilter.setLevelMax(Level.FATAL);
         appender.addFilter(consoleFilter);
         root.addAppender(appender);
+        return consoleFilter;
     }
     /**
      * Initiate the logging system, called by MainContext constructor

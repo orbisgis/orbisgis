@@ -31,6 +31,7 @@ package org.orbisgis.view.main;
 import java.util.Stack;
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
+import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.view.main.frames.LoadingFrame;
 
 /**
@@ -79,7 +80,8 @@ final class Main
         // Load splash screen
         final LoadingFrame loadingFrame = showLoadingFrame();
         try {
-                Core viewCore = new Core(DEBUG_MODE,loadingFrame);
+                CoreWorkspace coreWorkspace = new CoreWorkspace();
+                Core viewCore = new Core(coreWorkspace,DEBUG_MODE,loadingFrame);
                 viewCore.startup(loadingFrame);
         } catch(Throwable ex) {
                 LOGGER.error(ex.getLocalizedMessage(),ex);

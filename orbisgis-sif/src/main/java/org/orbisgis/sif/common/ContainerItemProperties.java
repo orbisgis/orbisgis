@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components;
+package org.orbisgis.sif.common;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;

@@ -31,17 +31,18 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentListener;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import java.io.IOException;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListDataListener;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.workspace.CoreWorkspace;
-import org.orbisgis.sif.UIFactory;
-import org.orbisgis.view.components.button.CustomButton;
+import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.statusbar.StatusBar;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.joblist.JobListCellRenderer;
@@ -91,7 +92,7 @@ public class MainFrameStatusBar extends StatusBar {
                 JPanel workspaceBar = new JPanel(new BorderLayout());
                 JButton btnChangeWorkspace = new CustomButton(OrbisGISIcon.getIcon("application_go"));
                 btnChangeWorkspace.setToolTipText(I18N.tr("Switch to another workspace"));
-
+                btnChangeWorkspace.addActionListener(EventHandler.create(ActionListener.class,this,"onChangeWorkspace"));
                 workspaceBar.add(btnChangeWorkspace);
                 addComponent(workspaceBar, SwingConstants.LEFT);
         }
@@ -103,7 +104,12 @@ public class MainFrameStatusBar extends StatusBar {
                 clearJobTitle();
                 runningJobs.dispose();
         }
-       
+        /**
+         * The user click on change workspace button
+         */
+        public void onChangeWorkspace() {
+                
+        }
         /**
          * The user click on the Job label The JobList component must be shown
          * and the focus set on it

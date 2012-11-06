@@ -47,6 +47,7 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
+import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundManager;
@@ -70,6 +71,7 @@ import org.orbisgis.view.sqlconsole.SQLConsoleFactory;
 import org.orbisgis.view.table.TableEditorFactory;
 import org.orbisgis.view.toc.TocEditorFactory;
 import org.orbisgis.view.workspace.ViewWorkspace;
+import org.orbisgis.view.workspace.WorkspaceSelectionDialog;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -103,9 +105,10 @@ public class Core {
      * @param debugMode Show additional information for debugging purposes
      * @note Call startup() to init Swing
      */
-    public Core(boolean debugMode,ProgressMonitor progressInfo) {
+    public Core(CoreWorkspace coreWorkspace,boolean debugMode,ProgressMonitor progressInfo) throws InvocationTargetException, InterruptedException {
+        MainContext.initConsoleLogger(debugMode);
         progressInfo.init(I18N.tr("Loading GDMS.."),100);
-        this.mainContext = new MainContext(debugMode);
+        initMainContext(debugMode,coreWorkspace);
         progressInfo.progressTo(10);
         this.viewWorkspace = new ViewWorkspace(this.mainContext.getCoreWorkspace());        
         Services.registerService(ViewWorkspace.class, I18N.tr("Contains view folders path"),
@@ -117,6 +120,34 @@ public class Core {
         progressInfo.progressTo(18);
         initSIF();
         progressInfo.progressTo(20);
+    }
+    /**
+     * Find the workspace folder or show a dialog to select one
+     */
+    private void initMainContext(boolean debugMode,CoreWorkspace coreWorkspace) throws InterruptedException, InvocationTargetException {
+        File defaultWorkspace = coreWorkspace.readDefaultWorkspacePath();
+        if(!debugMode && (defaultWorkspace==null || !ViewWorkspace.isWorkspaceValid(defaultWorkspace))) {
+                SwingUtilities.invokeAndWait(new promptUserForSelectingWorkspace(coreWorkspace ));
+        }
+        this.mainContext = new MainContext(debugMode,coreWorkspace,true);            
+    }
+    
+    private class promptUserForSelectingWorkspace implements Runnable {
+            CoreWorkspace coreWorkspace;
+
+                public promptUserForSelectingWorkspace(CoreWorkspace coreWorkspace) {
+                        this.coreWorkspace = coreWorkspace;
+                }
+            
+                @Override
+                public void run() {
+                        // Ask the user to select a workspace folder
+                        File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(coreWorkspace);
+                        if(newWorkspace==null) {
+                                throw new RuntimeException(I18N.tr("Invalid workspace"));
+                        }
+                        coreWorkspace.setWorkspaceFolder(newWorkspace.getAbsolutePath());
+                }            
     }
     /**
      * For UnitTest purpose

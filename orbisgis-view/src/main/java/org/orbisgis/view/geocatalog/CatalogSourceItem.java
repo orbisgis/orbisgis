@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.geocatalog;
 
-import org.orbisgis.view.components.ContainerItemProperties;
+import org.orbisgis.sif.common.ContainerItemProperties;
 
 /**
  * Store view properties of data source.

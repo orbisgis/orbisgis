@@ -31,12 +31,12 @@ package org.orbisgis.core.workspace;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Core Worskpace Folder information
  * 
- * This class is created thanks to the NetBeans user interface.
- * Use the "Add property" NetBeans function to add properties easily.
  * See documentation related to java.beans management systems
  * 
  */
@@ -67,7 +67,7 @@ public class CoreWorkspace implements Serializable {
     public CoreWorkspace() {
         propertySupport = new PropertyChangeSupport(this);
         
-        //Read current defined workspace
+        //Read default workspace
         loadCurrentWorkSpace();
     }
     private String logFile = "orbisgis.log";
@@ -99,22 +99,41 @@ public class CoreWorkspace implements Serializable {
         propertySupport.firePropertyChange(PROP_LOGFILE, oldLogFile, logFile);
     }
 
+    public void writeKnownWorkspaces(List<File> paths) throws IOException {
+                File currentWK = new File(applicationFolder + File.separator + ALL_WORKSPACE_FILENAME);
+                BufferedWriter writer = null;
+                try {
+                        writer = new BufferedWriter(new FileWriter(currentWK));
+                        for(File path : paths) {
+                                writer.write(path.getAbsolutePath());
+                                writer.newLine();
+                        }
+                } finally {
+                        if (writer != null) {
+                                writer.close();
+                        }
+                }            
+    }
     /**
-     * At startup, load application configuration
+     * Read the workspace path list
+     * @return 
      */
-    private void loadCurrentWorkSpace() {
-        //Read text file 
-        
-        File currentWK = new File(applicationFolder + File.separator + CURRENT_WORKSPACE_FILENAME);
+    public List<File> readKnownWorkspacesPath() {
+            List<File> knownPath = new ArrayList<File>();            
+                  
+        File currentWK = new File(applicationFolder + File.separator + ALL_WORKSPACE_FILENAME);
         if(currentWK.exists()) {
-            BufferedReader fileReader=null;
+                BufferedReader fileReader=null;
             try {
                     fileReader = new BufferedReader(new FileReader(
                                    currentWK));
-                    String currentDir = fileReader.readLine();
-                    workspaceFolder = currentDir;
-            } catch (FileNotFoundException e) {
-                    throw new RuntimeException("Cannot find the workspace location", e);
+                    String line;
+                    while((line = fileReader.readLine())!=null){
+                        File currentDir = new File(line);
+                        if(currentDir.exists()) {
+                                knownPath.add(currentDir);
+                        }
+                    }
             } catch (IOException e) {
                     throw new RuntimeException("Cannot read the workspace location", e);
             } finally{
@@ -126,6 +145,70 @@ public class CoreWorkspace implements Serializable {
                     throw new RuntimeException("Cannot read the workspace location", e);
                 }
             }
+        }
+        return knownPath;
+    }
+    /**
+     * Clear or set the default workspace path
+     * @param path The path or null to clear it
+     * @throws IOException 
+     */
+    public void setDefaultWorkspace(File path) throws IOException {
+                File currentWK = new File(applicationFolder + File.separator + CURRENT_WORKSPACE_FILENAME);
+                if(path==null) {
+                        if(currentWK.exists()) {
+                                currentWK.delete();
+                        }
+                        return;
+                }
+                BufferedWriter writer = null;
+                try {
+                        writer = new BufferedWriter(new FileWriter(currentWK));
+                        writer.write(path.getAbsolutePath());
+                } finally {
+                        if (writer != null) {
+                                writer.close();
+                        }
+                }
+        }
+    /**
+     * 
+     * @return The default workspace folder or null if there is no default workspace
+     */
+    public File readDefaultWorkspacePath() {
+            
+        File currentWK = new File(applicationFolder + File.separator + CURRENT_WORKSPACE_FILENAME);
+        if(currentWK.exists()) {
+            String currentDir;
+                BufferedReader fileReader=null;
+            try {
+                    fileReader = new BufferedReader(new FileReader(
+                                   currentWK));
+                    currentDir = fileReader.readLine();
+            } catch (IOException e) {
+                    throw new RuntimeException("Cannot read the workspace location", e);
+            } finally{
+                try {
+                    if(fileReader!=null) {
+                        fileReader.close();
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException("Cannot read the workspace location", e);
+                }
+            }
+            return new File(currentDir);
+        } else {
+                return null;
+        }
+    }
+    /**
+     * At startup, load application configuration
+     */
+    private void loadCurrentWorkSpace() {
+        //Read text file
+        File defaultWorkspace = readDefaultWorkspacePath();
+        if(defaultWorkspace!=null) {
+            workspaceFolder = defaultWorkspace.getAbsolutePath();
         } else {
             //Load Default workspace Folder
             workspaceFolder = new File(System.getProperty("user.home")).getAbsolutePath() + File.separator + "OrbisGIS";

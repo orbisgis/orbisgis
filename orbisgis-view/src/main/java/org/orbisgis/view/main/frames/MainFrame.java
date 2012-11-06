@@ -41,6 +41,7 @@ import org.orbisgis.view.components.menubar.MenuItemProperties;
 import org.orbisgis.view.components.menubar.MenuProperties;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -68,7 +69,8 @@ public class MainFrame extends JFrame {
 	 */
 	public MainFrame(){
                 getContentPane().setLayout(new BorderLayout());
-		setTitle( I18N.tr("OrbisGIS version {0} La Rochelle {1}", Package.getPackage("org.orbisgis.core").getImplementationVersion(),Locale.getDefault().getCountry()));
+		setTitle( I18N.tr("OrbisGIS version {0} {1} {2}",
+                        getVersion(),ViewWorkspace.CITY_VERSION,Locale.getDefault().getCountry()));
                 setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
 		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis")); 
                 createMenu();
@@ -76,6 +78,13 @@ public class MainFrame extends JFrame {
                 getContentPane().add(new MainFrameStatusBar(),BorderLayout.SOUTH);
 	}
 
+        public static String getVersion() {
+                if(ViewWorkspace.REVISION_VERSION!=0) {
+                        return ViewWorkspace.MAJOR_VERSION+"."+ViewWorkspace.MINOR_VERSION;
+                } else {
+                        return ViewWorkspace.MAJOR_VERSION+"."+ViewWorkspace.MINOR_VERSION+"."+ViewWorkspace.REVISION_VERSION;
+                }
+        }
         public void setDockingManager(DockingManager dockingManager) {
             this.dockingManager = dockingManager;
             //Add Look And Feel menu

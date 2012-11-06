@@ -29,16 +29,14 @@
 package org.orbisgis.sif.multiInputPanel;
 
 import java.awt.Component;
-import java.util.HashMap;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.plaf.basic.BasicComboBoxRenderer;
+import org.orbisgis.sif.common.ContainerItemProperties;
 
 public class ComboBoxChoice implements InputType {
 
-	private HashMap<String, String> idText = new HashMap<String, String>();
-	private JComboBox comp;
+        private DefaultComboBoxModel comboModel = new DefaultComboBoxModel();
+	protected JComboBox comp = new JComboBox(comboModel);
 
 	public ComboBoxChoice(String... choices) {
 		this(choices, choices);
@@ -50,22 +48,9 @@ public class ComboBoxChoice implements InputType {
 
 	private void setChoices(String[] ids, String[] texts) {
 		for (int i = 0; i < texts.length; i++) {
-			idText.put(ids[i], texts[i]);
+                        comboModel.addElement(new ContainerItemProperties(ids[i], texts[i]));
 		}
-		comp = new JComboBox(ids);
-		comp.setRenderer(new BasicComboBoxRenderer() {
-			@Override
-			public Component getListCellRendererComponent(JList list,
-					Object value, int index, boolean isSelected,
-					boolean cellHasFocus) {
-				JLabel ret = (JLabel) super.getListCellRendererComponent(list,
-						value, index, isSelected, cellHasFocus);
-				ret.setText(idText.get(value));
-
-				return ret;
-			}
-		});
-		if (ids.length > 0) {
+		if (comp.getItemCount()>0) {
 			comp.setSelectedIndex(0);
 		}
 	}
@@ -78,12 +63,36 @@ public class ComboBoxChoice implements InputType {
 
         @Override
 	public String getValue() {
-		return (String) comp.getSelectedItem();
+                if(comp.getSelectedIndex()!=-1) {
+                        return ((ContainerItemProperties) comp.getSelectedItem()).getKey();
+                } else {
+                        return "";
+                }
 	}
+        /**
+         * Find the key in combo items
+         * @param key Combo Item key
+         * @return Index in the combo or -1 if not found
+         */
+        private int getIndexByKey(String key) {
+                for(int id=0;id<comboModel.getSize();id++) {
+                        ContainerItemProperties item =
+                                (ContainerItemProperties) comboModel.getElementAt(id);
+                        if(item.getKey().equals(key)) {
+                                return id;
+                        }
+                }
+                return -1;
+        }
 
         @Override
 	public void setValue(String value) {
-		comp.setSelectedItem(value);
+                int valueIndex = getIndexByKey(value);
+                if(valueIndex>=0) {
+                        comp.setSelectedIndex(valueIndex);
+                } else {
+                        comp.addItem(new ContainerItemProperties(value,value));
+                        comp.setSelectedIndex(comp.getItemCount()-1);
+                }
 	}
-
 }

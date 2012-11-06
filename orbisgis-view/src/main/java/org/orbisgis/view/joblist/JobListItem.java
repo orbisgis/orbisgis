@@ -36,7 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.Timer;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.ProgressListener;
-import org.orbisgis.view.components.ContainerItemProperties;
+import org.orbisgis.sif.common.ContainerItemProperties;
 
 /**
  * This list item is linked with a Job
