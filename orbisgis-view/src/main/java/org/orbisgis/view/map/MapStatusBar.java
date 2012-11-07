@@ -43,7 +43,7 @@ import javax.swing.*;
 import org.apache.log4j.Logger;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.orbisgis.core.events.OGVetoableChangeSupport;
-import org.orbisgis.view.components.button.CustomButton;
+import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.statusbar.StatusBar;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;

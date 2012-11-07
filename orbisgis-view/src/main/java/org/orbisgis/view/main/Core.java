@@ -28,6 +28,9 @@
  */
 package org.orbisgis.view.main;
 
+import java.awt.Dimension;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
@@ -36,6 +39,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -43,6 +47,8 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
+import org.orbisgis.core.workspace.CoreWorkspace;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
@@ -65,6 +71,7 @@ import org.orbisgis.view.sqlconsole.SQLConsoleFactory;
 import org.orbisgis.view.table.TableEditorFactory;
 import org.orbisgis.view.toc.TocEditorFactory;
 import org.orbisgis.view.workspace.ViewWorkspace;
+import org.orbisgis.view.workspace.WorkspaceSelectionDialog;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -80,16 +87,16 @@ public class Core {
     /////////////////////
     //view package
     private EditorManager editors;         /*!< Management of editors */
-    private MainFrame mainFrame = null;     /*!< The main window */
+    private MainFrame mainFrame = new MainFrame();     /*!< The main window */
     private Catalog geoCatalog= null;      /*!< The GeoCatalog frame */
     private ViewWorkspace viewWorkspace;
     private OutputManager loggerCollection;    /*!< Loggings panels */     
     private BackgroundManager backgroundManager;
              
-    private static final Rectangle MAIN_VIEW_POSITION_AND_SIZE = new Rectangle(20,20,800,600);/*!< Bounds of mainView, x,y and width height*/
+    public static final Dimension MAIN_VIEW_SIZE = new Dimension(800,600);/*!< Bounds of mainView, x,y and width height*/
     private DockingManager dockManager = null; /*!< The DockStation manager */
     
-    
+   
     /////////////////////
     //base package :
     private MainContext mainContext; /*!< The larger surrounding part of OrbisGis base */
@@ -98,15 +105,74 @@ public class Core {
      * @param debugMode Show additional information for debugging purposes
      * @note Call startup() to init Swing
      */
-    public Core(boolean debugMode) {
-        this.mainContext = new MainContext(debugMode);
-        this.viewWorkspace = new ViewWorkspace(this.mainContext.getCoreWorkspace());
-        
+    public Core(CoreWorkspace coreWorkspace,boolean debugMode,ProgressMonitor progressInfo) throws InvocationTargetException, InterruptedException {            
+        MainContext.initConsoleLogger(debugMode);
+        // Declare empty main frame
+        //Set the main frame position and size
+        mainFrame.setSize(MAIN_VIEW_SIZE);
+        // Try to set the frame at the center of the default screen
+        try {
+                GraphicsDevice device = GraphicsEnvironment.
+                        getLocalGraphicsEnvironment().getDefaultScreenDevice();
+                Rectangle screenBounds = device.getDefaultConfiguration().getBounds();
+                mainFrame.setLocation(screenBounds.x + screenBounds.width / 2 - MAIN_VIEW_SIZE.width / 2,
+                        screenBounds.y + screenBounds.height / 2 - MAIN_VIEW_SIZE.height / 2);
+        } catch (Throwable ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+        }
+        UIFactory.setMainFrame(mainFrame);
+        progressInfo.init(I18N.tr("Loading GDMS.."),100);
+        initMainContext(debugMode,coreWorkspace);
+        progressInfo.progressTo(10);
+        this.viewWorkspace = new ViewWorkspace(this.mainContext.getCoreWorkspace());        
         Services.registerService(ViewWorkspace.class, I18N.tr("Contains view folders path"),
                         viewWorkspace);        
+        progressInfo.init(I18N.tr("Register GUI Sql functions.."),100);
         addSQLFunctions();
+        progressInfo.progressTo(15);
         initSwingJobs();
+        progressInfo.progressTo(18);
         initSIF();
+        progressInfo.progressTo(20);
+    }
+    
+    /**
+     * Find the workspace folder or show a dialog to select one
+     */
+    private void initMainContext(boolean debugMode,CoreWorkspace coreWorkspace) throws InterruptedException, InvocationTargetException, RuntimeException {
+        String workspaceFolder = coreWorkspace.getWorkspaceFolder();
+        if(workspaceFolder==null) {
+                File defaultWorkspace = coreWorkspace.readDefaultWorkspacePath();
+                if(defaultWorkspace==null || !ViewWorkspace.isWorkspaceValid(defaultWorkspace)) {
+                        try {
+                                SwingUtilities.invokeAndWait(new PromptUserForSelectingWorkspace(coreWorkspace ));
+                        } catch(InvocationTargetException ex) {
+                                mainFrame.dispose();
+                                throw ex;
+                        }
+                } else {
+                        coreWorkspace.setWorkspaceFolder(workspaceFolder);
+                }                
+        }        
+        this.mainContext = new MainContext(debugMode,coreWorkspace,true);
+    }
+    
+    private class PromptUserForSelectingWorkspace implements Runnable {
+                private CoreWorkspace coreWorkspace;
+
+                public PromptUserForSelectingWorkspace(CoreWorkspace coreWorkspace) {
+                        this.coreWorkspace = coreWorkspace;
+                }
+            
+                @Override
+                public void run() {
+                        // Ask the user to select a workspace folder
+                        File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(coreWorkspace,false);
+                        if(newWorkspace==null) {
+                                throw new RuntimeException(I18N.tr("Invalid workspace"));
+                        }
+                        coreWorkspace.setWorkspaceFolder(newWorkspace.getAbsolutePath());
+                }            
     }
     /**
      * For UnitTest purpose
@@ -142,7 +208,7 @@ public class Core {
      * Create the Instance of the main frame
      */
     private void makeMainFrame() {
-        mainFrame = new MainFrame();
+        mainFrame.init();
         //When the user ask to close OrbisGis it call
         //the shutdown method here, 
         // Link the Swing Events with the MainFrame event
@@ -153,7 +219,6 @@ public class Core {
                 "onMainWindowClosing",//The event target method to call
                 null,                 //the event parameter to pass(none)
                 "windowClosing"));    //The listener method to use
-        UIFactory.setMainFrame(mainFrame);
     }
     
     /**
@@ -205,7 +270,7 @@ public class Core {
      * Then the application has to be closed
      */
     public void onMainWindowClosing() {
-        this.shutdown();
+        this.shutdown(true);
     }
     
     /**
@@ -226,43 +291,51 @@ public class Core {
     * Starts the application. This method creates the {@link MainFrame},
     * and manage the Look And Feel declarations
     */
-    public void startup(){
+    public void startup(ProgressMonitor progress) throws Exception{
         // Show the application when Swing will be ready
-        SwingUtilities.invokeLater( new ShowSwingApplication());
-    }
-    private void initialize() {
-            
-        if(mainFrame!=null) {
-            return;//This method can't be called twice
+        try {
+                initialize(progress);
+        } catch (Exception ex) {
+                mainFrame.dispose();
+                throw ex;
         }
-        initI18n();
-                
+        SwingUtilities.invokeLater(new ShowSwingApplication(progress));
+    }
+    private void initialize(ProgressMonitor progress) {
+            
+        progress.init(I18N.tr("Loading the main window"), 100);
         makeMainFrame();
+        progress.progressTo(30);
         
+        progress.init(I18N.tr("Loading docking system and frames"), 100);
         //Initiate the docking management system
         dockManager = new DockingManager(mainFrame);
         mainFrame.setDockingManager(dockManager);
-        
-        //Set the main frame position and size
-	mainFrame.setBounds(MAIN_VIEW_POSITION_AND_SIZE);
+        progress.progressTo(35);
         
         //Load the log panels
         makeLoggingPanels();
+        progress.progressTo(40);
         
         //Load the Job Panel
         makeJobsPanel();
+        progress.progressTo(45);
         
         //Load the editor factories manager
         makeEditorManager(dockManager);
+        progress.progressTo(50);
         
         //Load the GeoCatalog
         makeGeoCatalogPanel();
+        progress.progressTo(55);
         
         //Load the Map And view panels
         //makeTocAndMap();
         //Load Built-ins Editors
         loadEditorFactories();
+        progress.progressTo(60);
         
+        progress.init(I18N.tr("Restore the former layout.."), 100);
         //Load the docking layout and editors opened in last OrbisGis instance
         File savedDockingLayout = new File(viewWorkspace.getDockingLayoutPath());
         if(!savedDockingLayout.exists()) {
@@ -271,7 +344,7 @@ public class Core {
                 copyDefaultDockingLayout(savedDockingLayout);
         }
         dockManager.setDockingLayoutPersistanceFilePath(viewWorkspace.getDockingLayoutPath());
-        
+        progress.progressTo(70);        
     }
     /**
      * Copy the default docking layout to the specified file path.
@@ -318,13 +391,22 @@ public class Core {
      * Change the state of the main frame in the swing thread
      */
     private class ShowSwingApplication implements Runnable {
+        ProgressMonitor progress;
+
+        public ShowSwingApplication(ProgressMonitor progress) {
+                this.progress = progress;
+        }
+
         /**
         * Change the state of the main frame in the swing thread
         */
         @Override
         public void run(){
-                initialize();
-                mainFrame.setVisible( true );
+                try {
+                        mainFrame.setVisible( true );
+                } finally {
+                        progress.setCancelled(true);
+                }
         }
     }
 
@@ -335,12 +417,7 @@ public class Core {
     public DockingManager getDockManager() {
         return dockManager;
     }
-    /**
-     * Add the properties of OrbisGis view to I18n translation manager
-     */
-    private void initI18n() {
-        // Init I18n
-    }
+    
     /**
      * Free all resources allocated by this object
      */
@@ -350,12 +427,12 @@ public class Core {
                 try {
                         job.cancel();
                 } catch (Throwable ex) {
-                        LOGGER.error(ex);
+                        LOGGER.error(ex.getLocalizedMessage(),ex);
                         //Cancel the next job
                 }
         }
         //Remove all listeners created by this object
-
+        
         //Free UI resources
         editors.dispose();
         geoCatalog.dispose();
@@ -366,6 +443,7 @@ public class Core {
         //Free libraries resources
         mainContext.dispose();
         
+        UIFactory.setMainFrame(null);
     }
     /**
      * Save or discard editable element modification.
@@ -394,13 +472,14 @@ public class Core {
          * This method is called through the MainFrame.MAIN_FRAME_CLOSING event
          * listener.
          */
-        public void shutdown() {
+        public boolean shutdown(boolean stopVM) {
                 if (!isShutdownVetoed()) {
                         try {
                                 mainContext.saveStatus(); //Save the services status
                                 this.dispose();
                         } finally {
                                 //While Plugins are not implemented do not close the VM in finally clause
+                                // if(stopVM) {
                                 //SwingUtilities.invokeLater( new Runnable(){
                                 //   /** If an error occuring while unload resources, java machine
                                 //    * may continue to run. In this case, the following command
@@ -409,8 +488,12 @@ public class Core {
                                 //    public void run(){
                                 //            System.exit(0);
                                 //    }
-                                //} );
+                                //   } );
+                                // }
                         }
-                }
+                        return true;
+                } else {
+                        return false;
+                }                
         }
 }

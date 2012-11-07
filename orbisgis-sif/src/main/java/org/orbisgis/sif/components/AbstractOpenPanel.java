@@ -96,7 +96,13 @@ public abstract class AbstractOpenPanel implements UIPanel {
 		}
 		return fileChooser;
 	}
-
+        /**
+         * Set the file dialog to allow single selection.
+         * @param singleSelection True for single, false for multiple
+         */
+        public void setSingleSelection(boolean singleSelection) {
+		getFileChooser().setMultiSelectionEnabled(!singleSelection);
+        }
 	/**
 	 * To be set by inheriting classes. True if you want to show the folders only.
 	 * @return

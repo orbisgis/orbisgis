@@ -29,17 +29,18 @@
 package org.orbisgis.view.docking.internals;
 
 import bibliothek.gui.dock.common.CControl;
-import bibliothek.gui.dock.common.DefaultSingleCDockable;
+import bibliothek.gui.dock.common.CLocation;
+import bibliothek.gui.dock.common.MultipleCDockable;
 import bibliothek.gui.dock.common.SingleCDockable;
 import bibliothek.gui.dock.common.action.CAction;
 import bibliothek.gui.dock.common.event.CDockableStateListener;
-import bibliothek.gui.dock.common.intern.CDockable;
+import bibliothek.gui.dock.common.intern.AbstractCDockable;
 import bibliothek.gui.dock.common.intern.DefaultCDockable;
-import bibliothek.gui.dock.common.mode.ExtendedMode;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import javax.swing.JToolBar;
+import org.orbisgis.view.docking.DockingLocation;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 /**
@@ -65,15 +66,50 @@ public class OrbisGISView {
     }
     public static SingleCDockable createSingle(DockingPanel dockingPanel, CControl ccontrol) {
         CustomSingleCDockable dockItem = new CustomSingleCDockable(dockingPanel,dockingPanel.getDockingParameters().getName(),dockingPanel.getComponent());
+        applyDefaultLocation(dockItem,dockingPanel,ccontrol);
         return dockItem;
     }
     public static CustomMultipleCDockable createMultiple(DockingPanel dockingPanel,InternalCommonFactory factory, CControl ccontrol) {
         if(dockingPanel!=null) {
                 CustomMultipleCDockable dockItem = new CustomMultipleCDockable(dockingPanel,factory);
+                applyDefaultLocation(dockItem,dockingPanel,ccontrol);
                 return dockItem;
         } else {
                 return null;
         }
+    }
+    /**
+     * Fetch the ccontrol panel list to find the provided panelName
+     * @param ccontrol
+     * @param panelName 
+     * @return The panel location
+     */
+    private static CLocation getPanelLocation(CControl ccontrol, String panelName) {
+            SingleCDockable dockable = ccontrol.getSingleDockable(panelName);
+            if(dockable!=null) {
+                    return dockable.getBaseLocation();
+            }
+            MultipleCDockable mDockable = ccontrol.getMultipleDockable(panelName);
+            if(mDockable!=null) {
+                    return mDockable.getBaseLocation();
+            }
+            return CLocation.base();
+    }
+    /**
+     * Read the docking panel location preference and apply it in DockingFrame
+     * @param dockItem
+     * @param dockingPanel
+     * @param ccontrol 
+     */
+    private static void applyDefaultLocation(AbstractCDockable dockItem,DockingPanel dockingPanel, CControl ccontrol) {
+            DockingLocation dockingLocation = dockingPanel.getDockingParameters().getDefaultDockingLocation();
+            CLocation referenceLocation = getPanelLocation(ccontrol, dockingLocation.getReferenceName());
+            switch(dockingLocation.getPosition()) {
+                    case STACKED_ON:
+                            dockItem.setLocation(referenceLocation);
+                            break;
+            }
+            
     }
     
     public static void setListeners(DockingPanel dockingPanel,DefaultCDockable dockItem) {

@@ -43,7 +43,7 @@ import org.orbisgis.core.Services;
 import org.orbisgis.view.background.BackgroundListener;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
-import org.orbisgis.view.components.ContainerItemProperties;
+import org.orbisgis.sif.common.ContainerItemProperties;
 
 /**
  * JList model of the Job list

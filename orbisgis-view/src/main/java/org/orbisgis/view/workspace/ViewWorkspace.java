@@ -30,7 +30,13 @@ package org.orbisgis.view.workspace;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.workspace.CoreWorkspace;
 
 /**
@@ -41,6 +47,15 @@ import org.orbisgis.core.workspace.CoreWorkspace;
 
 public class ViewWorkspace {
     private static final long serialVersionUID = 1L;
+    public static final String PROP_DOCKINGLAYOUTFILE = "dockingLayoutFile";
+    public static final String PROP_SIFPATH = "SIFPath";
+    public static final String PROP_MAPCONTEXTPATH = "mapContextPath";
+    public static final int MAJOR_VERSION = 4; // Load a workspace only if the major version is equal
+    public static final int MINOR_VERSION = 0; // increment on new features
+    public static final int REVISION_VERSION = 1; // increment on fix
+    public static final String CITY_VERSION = "La Rochelle";
+    private static final String VERSION_FILE = "org.orbisgis.version.txt";
+    
     private PropertyChangeSupport propertySupport;
     private CoreWorkspace coreWorkspace;
     public ViewWorkspace(CoreWorkspace coreWorkspace) {
@@ -50,11 +65,8 @@ public class ViewWorkspace {
         mapContextPath = coreWorkspace.getWorkspaceFolder() + File.separator + "maps";
     }
         private String dockingLayoutFile = "docking_layout.xml";
-        public static final String PROP_DOCKINGLAYOUTFILE = "dockingLayoutFile";
         private String SIFPath = "";
-        public static final String PROP_SIFPATH = "SIFPath";
         private String mapContextPath;
-        public static final String PROP_MAPCONTEXTPATH = "mapContextPath";
         
         /**
          * Get the value of mapContextPath
@@ -66,6 +78,15 @@ public class ViewWorkspace {
                 return mapContextPath;
         }
 
+        /**
+         * 
+         * @return The core workspace
+         */
+        public CoreWorkspace getCoreWorkspace() {
+                return coreWorkspace;
+        }
+
+        
         /**
          * Set the value of mapContextPath
          *
@@ -144,6 +165,7 @@ public class ViewWorkspace {
     public void addPropertyChangeListener(String prop,PropertyChangeListener listener) {
         propertySupport.addPropertyChangeListener(prop, listener);
     }
+    
     /**
      * Remove the specified listener from the list
      * @param listener The listener instance
@@ -159,5 +181,84 @@ public class ViewWorkspace {
      */
     public void removePropertyChangeListener(String prop,PropertyChangeListener listener) {
         propertySupport.removePropertyChangeListener(prop,listener);
+    }
+    private static void writeVersionFile(File versionFile) throws IOException {
+        BufferedWriter writer = null;
+        try {
+                writer = new BufferedWriter(new FileWriter(versionFile));
+                writer.write(Integer.toString(ViewWorkspace.MAJOR_VERSION));
+                writer.newLine();
+                writer.write(Integer.toString(ViewWorkspace.MINOR_VERSION));
+                writer.newLine();
+                writer.write(Integer.toString(ViewWorkspace.REVISION_VERSION));
+                writer.newLine();
+                writer.write(ViewWorkspace.CITY_VERSION);
+                writer.newLine();
+        } finally {
+                if (writer != null) {
+                        writer.close();
+                }
+        }                  
+    }
+    /**
+     * Create minimal resource inside an empty workspace folder
+     * @param workspaceFolder
+     * @throws IOException Error while writing files or the folder is not empty
+     */
+    public static void initWorkspaceFolder(File workspaceFolder) throws IOException {
+        if(!workspaceFolder.exists()) {
+                workspaceFolder.mkdirs();
+        }
+        if(workspaceFolder.listFiles().length!=0) {
+                // This method must be called with empty folder only
+                throw new IOException("Workspace folder must be empty");
+        }
+        File versionFile = new File(workspaceFolder,VERSION_FILE);
+        if(!versionFile.exists()) {
+                writeVersionFile(versionFile);
+        }                            
+    }
+    /**
+     * Check if the provided folder can be loaded has the workspace
+     * @param workspaceFolder
+     * @return True if valid
+     */
+    public static boolean isWorkspaceValid(File workspaceFolder) {
+        // not exist or empty
+        // contain the version file with same major version
+        if(!workspaceFolder.exists()) {
+                return true;
+        }
+        if(!workspaceFolder.isDirectory()) {
+                return false;
+        }
+        if(workspaceFolder.listFiles().length==0) {
+                return true;
+        }
+        File versionFile = new File(workspaceFolder,VERSION_FILE);
+        if(!versionFile.exists()) {
+                return false;
+        }       
+        // Read the version file of the workspace folder
+        BufferedReader fileReader=null;
+        try {
+                fileReader = new BufferedReader(new FileReader(
+                               versionFile));
+                String line = fileReader.readLine();
+                if(line!=null) {
+                        return Integer.valueOf(line).equals(MAJOR_VERSION);
+                }
+        } catch (IOException e) {
+                throw new RuntimeException("Cannot read the workspace location", e);
+        } finally{
+            try {
+                if(fileReader!=null) {
+                    fileReader.close();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException("Cannot read the workspace location", e);
+            }
+        }
+        return false;            
     }
 }

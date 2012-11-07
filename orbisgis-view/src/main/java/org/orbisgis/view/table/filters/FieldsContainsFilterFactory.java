@@ -47,7 +47,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.view.components.button.CustomButton;
+import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactory;
 import org.orbisgis.view.icons.OrbisGISIcon;

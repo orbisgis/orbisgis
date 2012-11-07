@@ -29,13 +29,15 @@
 package org.orbisgis.sif.multiInputPanel;
 
 /**
- *
+ * Validation of input values
  * @author Erwan Bocher
  */
 public interface MIPValidation {
         
        /**
         * This method is used to validate the MultiInputPanel UI.
+        * @param mid The dialog instance
+        * @return The error message, or Null if the input panel is valid
         */
        String validate(MultiInputPanel mid);
         

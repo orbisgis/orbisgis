@@ -56,13 +56,16 @@ final class Main
             }
         }
     }
+    
     /**
     * Entry point of User Interface
     */
     public static void main( String[] args )
     {
         parseCommandLine(args);
-        Core viewCore = new Core(DEBUG_MODE);
-        viewCore.startup();
-    }
+        // Listen to future workspace change
+        CoreLauncher coreLauncher = new CoreLauncher();
+        coreLauncher.init(DEBUG_MODE);
+        coreLauncher.launch();
+    }    
 }
