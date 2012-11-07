@@ -183,13 +183,26 @@ public abstract class AbstractOpenPanel implements UIPanel {
 			}
 		}
 	}
-
+        /**
+         * Set the selected file in the directory
+         * @param file 
+         */
 	public void setSelectedFile(File file) {
 		fileChooser.setSelectedFile(file);
 	}
 
+        /**
+         * Set the directory shown to the user
+         * @param dir 
+         */
 	public void setCurrentDirectory(File dir) {
 		fileChooser.setCurrentDirectory(dir);
 	}
 
+        /**
+         * Get the directory browsed by the user
+         */
+        public File getCurrentDirectory() {
+                return fileChooser.getCurrentDirectory();
+        }
 }
