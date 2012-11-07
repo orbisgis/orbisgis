@@ -135,14 +135,14 @@ public class CoreWorkspace implements Serializable {
                         }
                     }
             } catch (IOException e) {
-                    throw new RuntimeException("Cannot read the workspace location", e);
+                    throw new RuntimeException("Cannot read the workspace location "+currentWK+" .", e);
             } finally{
                 try {
                     if(fileReader!=null) {
                         fileReader.close();
                     }
                 } catch (IOException e) {
-                    throw new RuntimeException("Cannot read the workspace location", e);
+                    throw new RuntimeException("Cannot close the file at location"+currentWK+" .", e);
                 }
             }
         }
@@ -192,14 +192,14 @@ public class CoreWorkspace implements Serializable {
                                    currentWK));
                     currentDir = fileReader.readLine();
             } catch (IOException e) {
-                    throw new RuntimeException("Cannot read the workspace location", e);
+                    throw new RuntimeException("Cannot read the workspace location"+currentWK+" .", e);
             } finally{
                 try {
                     if(fileReader!=null) {
                         fileReader.close();
                     }
                 } catch (IOException e) {
-                    throw new RuntimeException("Cannot read the workspace location", e);
+                    throw new RuntimeException("Cannot close the file at location"+currentWK+" .", e);
                 }
             }
             return new File(currentDir);
