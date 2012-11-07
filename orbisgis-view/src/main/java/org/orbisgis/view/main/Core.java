@@ -151,7 +151,7 @@ public class Core {
                                 throw ex;
                         }
                 } else {
-                        coreWorkspace.setWorkspaceFolder(workspaceFolder);
+                        coreWorkspace.setWorkspaceFolder(defaultWorkspace.getAbsolutePath());
                 }                
         }        
         this.mainContext = new MainContext(debugMode,coreWorkspace,true);
