@@ -40,6 +40,7 @@ import java.io.File;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.event.ListDataListener;
@@ -97,7 +98,12 @@ public class MainFrameStatusBar extends StatusBar {
                 JButton btnChangeWorkspace = new CustomButton(OrbisGISIcon.getIcon("application_go"));
                 btnChangeWorkspace.setToolTipText(I18N.tr("Switch to another workspace"));
                 btnChangeWorkspace.addActionListener(EventHandler.create(ActionListener.class,this,"onChangeWorkspace"));
-                workspaceBar.add(btnChangeWorkspace);
+                workspaceBar.add(btnChangeWorkspace,BorderLayout.WEST);
+                CoreWorkspace coreWorkspace = Services.getService(CoreWorkspace.class);
+                if(coreWorkspace!=null) {
+                        JLabel workspacePath = new JLabel(coreWorkspace.getWorkspaceFolder());
+                        workspaceBar.add(workspacePath,BorderLayout.CENTER);
+                }
                 addComponent(workspaceBar, SwingConstants.LEFT);
         }
 
@@ -114,7 +120,7 @@ public class MainFrameStatusBar extends StatusBar {
         public void onChangeWorkspace() {
                 CoreWorkspace coreWK = Services.getService(CoreWorkspace.class);
                 if(coreWK!=null) {
-                        File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(coreWK);
+                        File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(coreWK,true);
                         if(newWorkspace!= null) {
                                 // Switching workspace..
                                 coreWK.setWorkspaceFolder(newWorkspace.getAbsolutePath());

@@ -29,7 +29,6 @@
 package org.orbisgis.view.main;
 
 import java.util.Stack;
-import org.orbisgis.core.workspace.CoreWorkspace;
 
 /**
  * Entry point of User Interface.

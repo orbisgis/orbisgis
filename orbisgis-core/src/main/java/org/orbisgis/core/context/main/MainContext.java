@@ -132,6 +132,8 @@ public class MainContext {
         } catch (DataSourceFinalizationException ex) {
             LOGGER.error("Unable to free gdms resources, continue..", ex);
         }
+        // Unlink loggers
+        Logger.getRootLogger().removeAllAppenders();
     }
 
     /**

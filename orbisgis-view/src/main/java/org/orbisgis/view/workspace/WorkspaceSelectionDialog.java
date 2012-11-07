@@ -55,8 +55,8 @@ public class WorkspaceSelectionDialog implements MIPValidation {
          * Show a dialog to choose the workspace folder
          * @return The user selected workspace folder
          */
-        public static File showWorkspaceFolderSelection(CoreWorkspace coreWorkspace) {                
-                File defaultWorkspace = coreWorkspace.readDefaultWorkspacePath();
+        public static File showWorkspaceFolderSelection(CoreWorkspace coreWorkspace, boolean showCancelButton) {                
+                String defaultWorkspace = coreWorkspace.getWorkspaceFolder();
                 MultiInputPanel panel = new MultiInputPanel(I18N.tr("Workspace folder"));
                 panel.addValidation(new WorkspaceSelectionDialog());
                 DirectoryComboBoxChoice comboDir = new DirectoryComboBoxChoice(coreWorkspace.readKnownWorkspacesPath(),
@@ -66,9 +66,9 @@ public class WorkspaceSelectionDialog implements MIPValidation {
                         new CheckBoxChoice(defaultWorkspace!=null));
                 // Select default workspace on the combo box
                 if(defaultWorkspace!=null) {
-                        comboDir.setValue(defaultWorkspace.getAbsolutePath());
+                        comboDir.setValue(defaultWorkspace);
                 }
-                if(UIFactory.showDialog(panel, true, true)) {
+                if(UIFactory.showDialog(panel, showCancelButton, true)) {
                         String workspacePath = panel.getInput(FOLDER_COMBO_FIELD);
                         boolean isDefault = Boolean.valueOf(panel.getInput(DEFAULT_WORKSPACE_FIELD));
                         try {

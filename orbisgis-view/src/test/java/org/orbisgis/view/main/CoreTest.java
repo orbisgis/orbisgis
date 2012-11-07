@@ -174,8 +174,9 @@ public class CoreTest {
      * Test of shutdown method, of class Core.
      */
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws Exception {
         if(!GraphicsEnvironment.isHeadless()) {
+            SwingUtilities.invokeAndWait(new DummyThread());
             System.out.println("dispose");
             instance.dispose();
             instance = null;

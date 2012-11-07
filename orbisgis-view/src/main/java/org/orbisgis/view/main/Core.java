@@ -34,7 +34,6 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.awt.event.WindowListener;
 import java.beans.EventHandler;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -61,7 +60,6 @@ import org.orbisgis.view.edition.dialogs.SaveDocuments;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.joblist.JobsPanel;
-import org.orbisgis.view.main.frames.LoadingFrame;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.output.OutputManager;
@@ -89,7 +87,7 @@ public class Core {
     /////////////////////
     //view package
     private EditorManager editors;         /*!< Management of editors */
-    private MainFrame mainFrame = null;     /*!< The main window */
+    private MainFrame mainFrame = new MainFrame();     /*!< The main window */
     private Catalog geoCatalog= null;      /*!< The GeoCatalog frame */
     private ViewWorkspace viewWorkspace;
     private OutputManager loggerCollection;    /*!< Loggings panels */     
@@ -107,8 +105,22 @@ public class Core {
      * @param debugMode Show additional information for debugging purposes
      * @note Call startup() to init Swing
      */
-    public Core(CoreWorkspace coreWorkspace,boolean debugMode,ProgressMonitor progressInfo) throws InvocationTargetException, InterruptedException {
+    public Core(CoreWorkspace coreWorkspace,boolean debugMode,ProgressMonitor progressInfo) throws InvocationTargetException, InterruptedException {            
         MainContext.initConsoleLogger(debugMode);
+        // Declare empty main frame
+        //Set the main frame position and size
+        mainFrame.setSize(MAIN_VIEW_SIZE);
+        // Try to set the frame at the center of the default screen
+        try {
+                GraphicsDevice device = GraphicsEnvironment.
+                        getLocalGraphicsEnvironment().getDefaultScreenDevice();
+                Rectangle screenBounds = device.getDefaultConfiguration().getBounds();
+                mainFrame.setLocation(screenBounds.x + screenBounds.width / 2 - MAIN_VIEW_SIZE.width / 2,
+                        screenBounds.y + screenBounds.height / 2 - MAIN_VIEW_SIZE.height / 2);
+        } catch (Throwable ex) {
+                LOGGER.error(ex.getLocalizedMessage(), ex);
+        }
+        UIFactory.setMainFrame(mainFrame);
         progressInfo.init(I18N.tr("Loading GDMS.."),100);
         initMainContext(debugMode,coreWorkspace);
         progressInfo.progressTo(10);
@@ -127,25 +139,35 @@ public class Core {
     /**
      * Find the workspace folder or show a dialog to select one
      */
-    private void initMainContext(boolean debugMode,CoreWorkspace coreWorkspace) throws InterruptedException, InvocationTargetException {
-        File defaultWorkspace = coreWorkspace.readDefaultWorkspacePath();
-        if(!debugMode && (defaultWorkspace==null || !ViewWorkspace.isWorkspaceValid(defaultWorkspace))) {
-                SwingUtilities.invokeAndWait(new promptUserForSelectingWorkspace(coreWorkspace ));
-        }
+    private void initMainContext(boolean debugMode,CoreWorkspace coreWorkspace) throws InterruptedException, InvocationTargetException, RuntimeException {
+        String workspaceFolder = coreWorkspace.getWorkspaceFolder();
+        if(workspaceFolder==null) {
+                File defaultWorkspace = coreWorkspace.readDefaultWorkspacePath();
+                if(defaultWorkspace==null || !ViewWorkspace.isWorkspaceValid(defaultWorkspace)) {
+                        try {
+                                SwingUtilities.invokeAndWait(new PromptUserForSelectingWorkspace(coreWorkspace ));
+                        } catch(InvocationTargetException ex) {
+                                mainFrame.dispose();
+                                throw ex;
+                        }
+                } else {
+                        coreWorkspace.setWorkspaceFolder(workspaceFolder);
+                }                
+        }        
         this.mainContext = new MainContext(debugMode,coreWorkspace,true);
     }
     
-    private class promptUserForSelectingWorkspace implements Runnable {
-            CoreWorkspace coreWorkspace;
+    private class PromptUserForSelectingWorkspace implements Runnable {
+                private CoreWorkspace coreWorkspace;
 
-                public promptUserForSelectingWorkspace(CoreWorkspace coreWorkspace) {
+                public PromptUserForSelectingWorkspace(CoreWorkspace coreWorkspace) {
                         this.coreWorkspace = coreWorkspace;
                 }
             
                 @Override
                 public void run() {
                         // Ask the user to select a workspace folder
-                        File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(coreWorkspace);
+                        File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(coreWorkspace,false);
                         if(newWorkspace==null) {
                                 throw new RuntimeException(I18N.tr("Invalid workspace"));
                         }
@@ -186,7 +208,7 @@ public class Core {
      * Create the Instance of the main frame
      */
     private void makeMainFrame() {
-        mainFrame = new MainFrame();
+        mainFrame.init();
         //When the user ask to close OrbisGis it call
         //the shutdown method here, 
         // Link the Swing Events with the MainFrame event
@@ -197,7 +219,6 @@ public class Core {
                 "onMainWindowClosing",//The event target method to call
                 null,                 //the event parameter to pass(none)
                 "windowClosing"));    //The listener method to use
-        UIFactory.setMainFrame(mainFrame);
     }
     
     /**
@@ -270,17 +291,18 @@ public class Core {
     * Starts the application. This method creates the {@link MainFrame},
     * and manage the Look And Feel declarations
     */
-    public void startup(ProgressMonitor progress) throws InterruptedException, InvocationTargetException{
+    public void startup(ProgressMonitor progress) throws Exception{
         // Show the application when Swing will be ready
-        initialize(progress);
+        try {
+                initialize(progress);
+        } catch (Exception ex) {
+                mainFrame.dispose();
+                throw ex;
+        }
         SwingUtilities.invokeLater(new ShowSwingApplication(progress));
     }
     private void initialize(ProgressMonitor progress) {
             
-        if(mainFrame!=null) {
-            return;//This method can't be called twice
-        }
-        
         progress.init(I18N.tr("Loading the main window"), 100);
         makeMainFrame();
         progress.progressTo(30);
@@ -291,19 +313,6 @@ public class Core {
         mainFrame.setDockingManager(dockManager);
         progress.progressTo(35);
         
-        //Set the main frame position and size
-	mainFrame.setSize(MAIN_VIEW_SIZE);
-        
-        // Try to set the frame at the center of the default screen
-        try {
-                GraphicsDevice device = GraphicsEnvironment.
-                        getLocalGraphicsEnvironment().getDefaultScreenDevice();                        
-                Rectangle screenBounds = device.getDefaultConfiguration().getBounds();
-                mainFrame.setLocation(screenBounds.x+screenBounds.width/2-MAIN_VIEW_SIZE.width/2,
-                screenBounds.y+screenBounds.height/2-MAIN_VIEW_SIZE.height/2);
-        } catch(Throwable ex) {
-                LOGGER.error(ex.getLocalizedMessage(),ex);
-        }
         //Load the log panels
         makeLoggingPanels();
         progress.progressTo(40);
@@ -394,7 +403,6 @@ public class Core {
         @Override
         public void run(){
                 try {
-                        initialize(progress);
                         mainFrame.setVisible( true );
                 } finally {
                         progress.setCancelled(true);
@@ -419,7 +427,7 @@ public class Core {
                 try {
                         job.cancel();
                 } catch (Throwable ex) {
-                        LOGGER.error(ex);
+                        LOGGER.error(ex.getLocalizedMessage(),ex);
                         //Cancel the next job
                 }
         }
@@ -435,6 +443,7 @@ public class Core {
         //Free libraries resources
         mainContext.dispose();
         
+        UIFactory.setMainFrame(null);
     }
     /**
      * Save or discard editable element modification.

@@ -226,11 +226,11 @@ public class ViewWorkspace {
     public static boolean isWorkspaceValid(File workspaceFolder) {
         // not exist or empty
         // contain the version file with same major version
-        if(!workspaceFolder.isDirectory()) {
-                return false;
-        }
         if(!workspaceFolder.exists()) {
                 return true;
+        }
+        if(!workspaceFolder.isDirectory()) {
+                return false;
         }
         if(workspaceFolder.listFiles().length==0) {
                 return true;

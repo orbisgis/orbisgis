@@ -101,6 +101,11 @@ public class UIFactory {
          * @return
          */
         public static boolean showDialog(UIPanel[] panels, boolean okCancel, boolean onTop) {
+                if(mainFrame==null) {
+                        //No way mainframe must be used,
+                        //resources can not be freed otherwise
+                        throw new RuntimeException("Main Frame is not set");
+                }
                 AbstractOutsideFrame dlg;
                 if (panels.length == 0) {
                         throw new IllegalArgumentException(
@@ -119,7 +124,6 @@ public class UIFactory {
                 dlg.setLocationRelativeTo(mainFrame);
                 dlg.setAlwaysOnTop(onTop);
                 dlg.setVisible(true);
-
                 return dlg.isAccepted();
         }
 

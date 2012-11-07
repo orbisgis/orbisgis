@@ -30,6 +30,7 @@ package org.orbisgis.view.main;
 
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import org.apache.log4j.Logger;
@@ -48,6 +49,7 @@ public class CoreLauncher {
         private CoreWorkspace coreWorkspace = new CoreWorkspace();
         private PropertyChangeListener workspaceChangeListener = EventHandler.create(PropertyChangeListener.class, this, "onWorkspaceChange");
         private Core viewCore;
+        private AtomicBoolean restartingOrbisGIS = new AtomicBoolean(false);
 
         private static LoadingFrame showLoadingFrame() {
                 final LoadingFrame loadingFrame = new LoadingFrame();
@@ -64,16 +66,22 @@ public class CoreLauncher {
          * The property workspace folder of CoreWorkspace has been changed
          */
         public void onWorkspaceChange() {
-                SwingWorker worker = new SwingWorker() {
-                        @Override
-                        protected Object doInBackground() throws Exception {
-                                if (viewCore.shutdown(false)) {
-                                        launch();
+                if(restartingOrbisGIS.getAndSet(true)) {
+                        SwingWorker worker = new SwingWorker() {
+                                @Override
+                                protected Object doInBackground() throws Exception {
+                                        try {
+                                                if (viewCore.shutdown(false)) {
+                                                        launch();
+                                                }
+                                        } finally {
+                                                restartingOrbisGIS.set(false);
+                                        }
+                                        return null;
                                 }
-                                return null;
-                        }
-                };
-                worker.execute();
+                        };
+                        worker.execute();
+                }
         }
 
         public void init(boolean debugMode) {

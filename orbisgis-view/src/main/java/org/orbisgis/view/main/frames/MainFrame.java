@@ -73,10 +73,13 @@ public class MainFrame extends JFrame {
                         getVersion(),ViewWorkspace.CITY_VERSION,Locale.getDefault().getCountry()));
                 setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
 		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis")); 
+	}
+        
+        public void init() {
                 createMenu();
                 this.setJMenuBar(menuBar.getRootBar());
-                getContentPane().add(new MainFrameStatusBar(),BorderLayout.SOUTH);
-	}
+                getContentPane().add(new MainFrameStatusBar(),BorderLayout.SOUTH);                
+        }
 
         public static String getVersion() {
                 if(ViewWorkspace.REVISION_VERSION!=0) {

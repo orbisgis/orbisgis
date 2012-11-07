@@ -146,6 +146,12 @@ public class CoreWorkspace implements Serializable {
                 }
             }
         }
+        if(knownPath.isEmpty() && workspaceFolder!=null) {
+                knownPath.add(new File(workspaceFolder));
+        }
+        if(knownPath.isEmpty()) {
+                knownPath.add(new File(System.getProperty("user.home"),"OrbisGIS"+File.separator));
+        }
         return knownPath;
     }
     /**
@@ -205,14 +211,6 @@ public class CoreWorkspace implements Serializable {
      * At startup, load application configuration
      */
     private void loadCurrentWorkSpace() {
-        //Read text file
-        File defaultWorkspace = readDefaultWorkspacePath();
-        if(defaultWorkspace!=null) {
-            workspaceFolder = defaultWorkspace.getAbsolutePath();
-        } else {
-            //Load Default workspace Folder
-            workspaceFolder = new File(System.getProperty("user.home")).getAbsolutePath() + File.separator + "OrbisGIS";
-        }
         resultsFolder = "results";
         sourceFolder = "sources";
         tempFolder = "temp";
