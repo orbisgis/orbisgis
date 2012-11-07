@@ -31,23 +31,29 @@ import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentListener;
 import java.awt.event.FocusListener;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
-import java.io.IOException;
-import javax.swing.*;
+import java.io.File;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingConstants;
 import javax.swing.event.ListDataListener;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.workspace.CoreWorkspace;
-import org.orbisgis.sif.UIFactory;
-import org.orbisgis.view.components.button.CustomButton;
+import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.statusbar.StatusBar;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.joblist.JobListCellRenderer;
 import org.orbisgis.view.joblist.JobListItem;
 import org.orbisgis.view.joblist.JobListModel;
 import org.orbisgis.view.joblist.JobListPanel;
+import org.orbisgis.view.workspace.WorkspaceSelectionDialog;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -91,8 +97,13 @@ public class MainFrameStatusBar extends StatusBar {
                 JPanel workspaceBar = new JPanel(new BorderLayout());
                 JButton btnChangeWorkspace = new CustomButton(OrbisGISIcon.getIcon("application_go"));
                 btnChangeWorkspace.setToolTipText(I18N.tr("Switch to another workspace"));
-
-                workspaceBar.add(btnChangeWorkspace);
+                btnChangeWorkspace.addActionListener(EventHandler.create(ActionListener.class,this,"onChangeWorkspace"));
+                workspaceBar.add(btnChangeWorkspace,BorderLayout.WEST);
+                CoreWorkspace coreWorkspace = Services.getService(CoreWorkspace.class);
+                if(coreWorkspace!=null) {
+                        JLabel workspacePath = new JLabel(coreWorkspace.getWorkspaceFolder());
+                        workspaceBar.add(workspacePath,BorderLayout.CENTER);
+                }
                 addComponent(workspaceBar, SwingConstants.LEFT);
         }
 
@@ -103,7 +114,19 @@ public class MainFrameStatusBar extends StatusBar {
                 clearJobTitle();
                 runningJobs.dispose();
         }
-       
+        /**
+         * The user click on change workspace button
+         */
+        public void onChangeWorkspace() {
+                CoreWorkspace coreWK = Services.getService(CoreWorkspace.class);
+                if(coreWK!=null) {
+                        File newWorkspace = WorkspaceSelectionDialog.showWorkspaceFolderSelection(coreWK,true);
+                        if(newWorkspace!= null) {
+                                // Switching workspace..
+                                coreWK.setWorkspaceFolder(newWorkspace.getAbsolutePath());
+                        }
+                }
+        }
         /**
          * The user click on the Job label The JobList component must be shown
          * and the focus set on it

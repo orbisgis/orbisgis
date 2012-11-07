@@ -101,6 +101,11 @@ public class UIFactory {
          * @return
          */
         public static boolean showDialog(UIPanel[] panels, boolean okCancel, boolean onTop) {
+                if(mainFrame==null) {
+                        //No way mainframe must be used,
+                        //resources can not be freed otherwise
+                        throw new RuntimeException("Main Frame is not set");
+                }
                 AbstractOutsideFrame dlg;
                 if (panels.length == 0) {
                         throw new IllegalArgumentException(
@@ -117,20 +122,41 @@ public class UIFactory {
                 dlg.setModal(true);
                 dlg.pack();
                 dlg.setLocationRelativeTo(mainFrame);
-                dlg.setVisible(true);
                 dlg.setAlwaysOnTop(onTop);
-
+                dlg.setVisible(true);
                 return dlg.isAccepted();
         }
 
+        /**
+         * Create a dialog and specify if the dialog shows the ok cancel buttons
+         * and if its on top of all swing GUI.
+         *
+         * @param panel
+         * @param okCancel
+         * @param onTop
+         * @return
+         */
         public static boolean showDialog(UIPanel panel, boolean okCancel, boolean onTop) {
                 return showDialog(new UIPanel[]{panel}, okCancel, onTop);
         }
 
+        /**
+         * Create a dialog and specify if the dialog shows the ok cancel buttons
+         * and on top of all swing GUI.
+         *
+         * @param panel
+         * @return
+         */
         public static boolean showDialog(UIPanel panel) {
                 return showDialog(new UIPanel[]{panel}, true);
         }
 
+        /**
+         * Create a dialog with ok button on top of all swing GUI.
+         *
+         * @param panel
+         * @return
+         */
         public static void showOkDialog(UIPanel panel) {
                 showDialog(new UIPanel[]{panel}, false);
         }

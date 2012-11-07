@@ -30,6 +30,8 @@ package org.orbisgis.view.main;
 
 import bibliothek.gui.dock.common.intern.CDockable;
 import java.awt.GraphicsEnvironment;
+import java.io.File;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import javax.swing.SwingUtilities;
@@ -39,6 +41,8 @@ import org.gdms.source.SourceManager;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.orbisgis.core.workspace.CoreWorkspace;
+import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.view.docking.DummyViewPanel;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.geocatalog.SourceListModel;
@@ -60,16 +64,14 @@ public class CoreTest {
      * @throws InvocationTargetException  
      */
     @BeforeClass
-    public static void setUp() throws InterruptedException, InvocationTargetException {
+    public static void setUp() throws Exception {
         System.out.println("startup");
         if(!GraphicsEnvironment.isHeadless()) {
-            instance = new Core(true);
-            instance.startup();
-            try {
-                    SwingUtilities.invokeAndWait(new DummyThread());
-            } catch (InterruptedException ex) {
-            } catch (InvocationTargetException ex) {
-            }
+            CoreWorkspace coreWorkspace = new CoreWorkspace();
+            coreWorkspace.setWorkspaceFolder("target/workspace/");
+            instance = new Core(coreWorkspace,true,new NullProgressMonitor());
+            instance.startup(new NullProgressMonitor());
+            SwingUtilities.invokeAndWait(new DummyThread());
         }
     }
     
@@ -172,8 +174,9 @@ public class CoreTest {
      * Test of shutdown method, of class Core.
      */
     @AfterClass
-    public static void tearDown() {
+    public static void tearDown() throws Exception {
         if(!GraphicsEnvironment.isHeadless()) {
+            SwingUtilities.invokeAndWait(new DummyThread());
             System.out.println("dispose");
             instance.dispose();
             instance = null;
