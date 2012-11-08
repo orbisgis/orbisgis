@@ -36,7 +36,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import org.apache.log4j.Logger;
 import org.orbisgis.core.workspace.CoreWorkspace;
 
 /**

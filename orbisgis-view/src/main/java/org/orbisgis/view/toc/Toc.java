@@ -821,7 +821,7 @@ public class Toc extends JPanel implements EditorDockable {
                                         "Choose a location");
 
                         outputXMLPanel.addFilter("se", "Symbology Encoding FeatureTypeStyle");
-
+                        outputXMLPanel.loadState();
                         if (UIFactory.showDialog(outputXMLPanel)) {
                                 String seFile = outputXMLPanel.getSelectedFile().getAbsolutePath();
                                 style.export(seFile);
