@@ -186,7 +186,12 @@ public class Core {
      * Init the SIF ui factory
      */
     private void initSIF() {
-        UIFactory.setDefaultImageIcon(OrbisGISIcon.getIcon("mini_orbisgis"));
+        UIFactory.setDefaultImageIcon(OrbisGISIcon.getIcon("mini_orbisgis"));        // Load SIF properties
+        try {
+                UIFactory.loadState(new File(viewWorkspace.getSIFPath()));
+        } catch(IOException ex) {
+                LOGGER.error(I18N.tr("Error while loading dialogs informations."),ex);
+        }
     }
     
     /**
@@ -466,6 +471,14 @@ public class Core {
                 }
         }
 
+        private void saveSIFState() {
+                // Load SIF properties
+                try {
+                        UIFactory.saveState(new File(viewWorkspace.getSIFPath()));
+                } catch (IOException ex) {
+                        LOGGER.error(I18N.tr("Error while saving dialogs informations."), ex);
+                }
+        }
         /**
          * Stops this application, closes the {@link MainFrame} and saves all
          * properties if the application is not in a {@link #isSecure() secure environment}.
@@ -476,6 +489,8 @@ public class Core {
                 if (!isShutdownVetoed()) {
                         try {
                                 mainContext.saveStatus(); //Save the services status
+                                // Save dialogs status
+                                saveSIFState();
                                 this.dispose();
                         } finally {
                                 //While Plugins are not implemented do not close the VM in finally clause

@@ -31,44 +31,78 @@ package org.orbisgis.sif.components;
 
 import java.awt.Component;
 import java.io.File;
+import java.util.Arrays;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
+import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.sif.UIPersistence;
 
 /**
  * Contains utility methods by both OpenFilePanel and OpenFolderPanel.
  * @author Alexis Guéganno
  */
-public abstract class AbstractOpenPanel implements UIPanel {
+public abstract class AbstractOpenPanel implements UIPanel,UIPersistence {
 
 	private JFileChooser fileChooser;
-
+        private final String id;
 	private String title;
 
 
+        /**
+         * Constructor
+         * @param id Identifier of this dialog, used to recover the old state of this dialog
+         * @param title Localised title of this dialog
+         */
 	public AbstractOpenPanel(String id, String title) {
+                this.id = id;
 		this.title = title;
+                
 	}
-
+        /**
+         * Recover the dialog state on the last save state, using the dialog identifier.
+         * The following properties may be overwritten
+         *  - Current directory
+         *  - Current filter
+         */
+        @Override
+        public void loadState() {
+                // Load persistence data
+                String currentFolder = UIFactory.getFileDialogPersistence().getProperty(id+":folder");
+                if(currentFolder!=null) {
+                        setCurrentDirectory(new File(currentFolder));
+                }
+                String currentFilter = UIFactory.getFileDialogPersistence().getProperty(id+":filter");
+                if(currentFilter!=null && !setCurrentFilter(Integer.valueOf(currentFilter))) {
+                        // If the filter is not found, do not use filter, if allowed
+                        if(getFileChooser().isAcceptAllFileFilterUsed()) {
+                                getFileChooser().setFileFilter(getFileChooser().getAcceptAllFileFilter());
+                        }
+                }
+        }
+        /**
+         * Save the current state of the dialog.
+         */
+        @Override
+        public void saveState() {
+                UIFactory.getFileDialogPersistence().setProperty(id+":folder",getCurrentDirectory().getAbsolutePath());
+                UIFactory.getFileDialogPersistence().setProperty(id+":filter",Integer.toString(getCurrentFilterId()));
+        }
+        
 	public void addFilter(String extension, String description) {
 		addFilter(new String[] { extension }, description);
 	}
 
-	public void addAllFilter(final String description) {
-		getFileChooser().addChoosableFileFilter(new FileFilter() {
-
-			@Override
-			public String getDescription() {
-				return description;
-			}
-
-			@Override
-			public boolean accept(File f) {
-				return true;
-			}
-
-		});
-	}
+        /**
+         * Determines whether the AcceptAll FileFilter is used as an available
+         * choice in the choosable filter list. If false, the AcceptAll file
+         * filter is removed from the list of available file filters. If true,
+         * the AcceptAll file filter will become the the actively used file filter.
+         * @param enableAllFiles 
+         */
+        public void setAcceptAllFileFilterUsed(boolean enableAllFiles) {
+                getFileChooser().setAcceptAllFileFilterUsed(enableAllFiles);
+        }
 
 	public void addFilter(String[] extensions, String description) {
 		getFileChooser().addChoosableFileFilter(
@@ -150,6 +184,26 @@ public abstract class AbstractOpenPanel implements UIPanel {
 			return description;
 		}
 
+                @Override
+                public int hashCode() {
+                        int hash = 5;
+                        hash = 71 * hash + Arrays.deepHashCode(this.extensions);
+                        return hash;
+                }
+
+                @Override
+                public boolean equals(Object obj) {
+                        if (!(obj instanceof FormatFilter)) {
+                                return false;
+                        }
+                        final FormatFilter other = (FormatFilter) obj;
+                        if (!Arrays.deepEquals(this.extensions, other.extensions)) {
+                                return false;
+                        }
+                        return true;
+                }                
+                
+
 		@Override
 		public boolean accept(File f) {
 			if (f == null) {
@@ -183,13 +237,49 @@ public abstract class AbstractOpenPanel implements UIPanel {
 			}
 		}
 	}
-
+        /**
+         * Set the selected file in the directory
+         * @param file 
+         */
 	public void setSelectedFile(File file) {
 		fileChooser.setSelectedFile(file);
 	}
 
+        /**
+         * Set the directory shown to the user
+         * @param dir 
+         */
 	public void setCurrentDirectory(File dir) {
 		fileChooser.setCurrentDirectory(dir);
 	}
 
+        /**
+         * Get the directory browsed by the user
+         */
+        public File getCurrentDirectory() {
+                return fileChooser.getCurrentDirectory();
+        }
+        
+        /**
+         * Return the identifier of the current filter
+         * @return The filter identifier, given by FileFilter.hashCode()
+         * @see setCurrentFilter
+         */
+        public int getCurrentFilterId() {
+                return fileChooser.getFileFilter().hashCode();
+        }
+        /**
+         * Set the selected file filter
+         * @return True if the filter has been found and set
+         * @see getCurrentFilterId
+         */
+        public boolean setCurrentFilter(int filterIdentifier) {
+                for(FileFilter filter : fileChooser.getChoosableFileFilters()) {
+                        if(filter.hashCode()==filterIdentifier) {
+                                fileChooser.setFileFilter(filter);
+                                return true;
+                        }
+                }
+                return false;
+        }
 }

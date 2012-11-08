@@ -29,7 +29,12 @@
 package org.orbisgis.sif;
 
 import java.awt.Window;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
+import java.util.Properties;
 import javax.swing.ImageIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -45,6 +50,8 @@ public class UIFactory {
         private static ImageIcon defaultIcon;
         private static String okMessage;
         private static Window mainFrame = null;
+        private static Properties fileDialogPersistence = new Properties();
+        private static final String OPEN_DIALOG_PROPERTIES_FILENAME = "opendialog.ini";
 
         private UIFactory(){}
 
@@ -52,6 +59,51 @@ public class UIFactory {
                 return getSimpleDialog(panel, mainFrame);
         }
 
+        /**
+         * Sif load persistence information, like current folder in dialogs
+         * @param sifWorkspaceFolder Folder where to load SIF persistence data
+         */
+        public static void loadState(File sifWorkspaceFolder) throws IOException {
+                File iniFile = new File(sifWorkspaceFolder,OPEN_DIALOG_PROPERTIES_FILENAME);
+                if(iniFile.exists()) {
+                        FileReader iniReader=null;
+                        try {
+                               iniReader = new FileReader(iniFile);
+                               fileDialogPersistence.load(iniReader);
+                        } finally {
+                                if(iniReader!=null) {
+                                        iniReader.close();
+                                }
+                        }
+                }
+        }
+        /**
+         * Sif load persistence information, like current folder in dialogs
+         * @param sifWorkspaceFolder Folder where to save SIF persistence data
+         */
+        public static void saveState(File sifWorkspaceFolder) throws IOException {
+                File iniFile = new File(sifWorkspaceFolder,OPEN_DIALOG_PROPERTIES_FILENAME);
+                if(!sifWorkspaceFolder.exists()) {
+                        sifWorkspaceFolder.mkdir();
+                }
+                FileWriter iniWriter=null;
+                try {
+                        iniWriter = new FileWriter(iniFile);
+                        fileDialogPersistence.store(iniWriter, "File Dialogs properties");
+                } finally {
+                        if(iniWriter!=null) {
+                                iniWriter.close();
+                        }
+                }
+        }
+
+        /**
+         * @return Stored properties of the dialogs
+         */
+        public static Properties getFileDialogPersistence() {
+                return fileDialogPersistence;
+        }
+        
         public static SIFDialog getSimpleDialog(UIPanel panel, Window owner) {
                 return getSimpleDialog(panel, owner, true);
         }
@@ -123,7 +175,16 @@ public class UIFactory {
                 dlg.pack();
                 dlg.setLocationRelativeTo(mainFrame);
                 dlg.setAlwaysOnTop(onTop);
+                // Show the dialog, block until the user click on a button
                 dlg.setVisible(true);
+                // Save the state
+                if(dlg.isAccepted()) {
+                        for(UIPanel panel : panels) {
+                                if(panel instanceof UIPersistence) {
+                                        ((UIPersistence)panel).saveState();
+                                }
+                        }
+                }
                 return dlg.isAccepted();
         }
 
