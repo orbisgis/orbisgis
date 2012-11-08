@@ -73,12 +73,10 @@ public abstract class AbstractOpenPanel implements UIPanel,UIPersistence {
                         setCurrentDirectory(new File(currentFolder));
                 }
                 String currentFilter = UIFactory.getFileDialogPersistence().getProperty(id+":filter");
-                if(currentFilter!=null) {
-                        if(!setCurrentFilter(Integer.valueOf(currentFilter))) {
-                                // If the filter is not found, do not use filter, if allowed
-                                if(getFileChooser().isAcceptAllFileFilterUsed()) {
-                                        getFileChooser().setFileFilter(getFileChooser().getAcceptAllFileFilter());
-                                }
+                if(currentFilter!=null && !setCurrentFilter(Integer.valueOf(currentFilter))) {
+                        // If the filter is not found, do not use filter, if allowed
+                        if(getFileChooser().isAcceptAllFileFilterUsed()) {
+                                getFileChooser().setFileFilter(getFileChooser().getAcceptAllFileFilter());
                         }
                 }
         }
