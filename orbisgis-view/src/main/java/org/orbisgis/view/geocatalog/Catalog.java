@@ -278,7 +278,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 //Create the SIF panel
                 OpenGdmsFilePanel openDialog = new OpenGdmsFilePanel(I18N.tr("Select the file to add"),
                         sourceManager.getDriverManager());
-
+                openDialog.loadState();
                 //Ask SIF to open the dialog
                 if (UIFactory.showDialog(openDialog, true, true)) {
                         // We can retrieve the files that have been selected by the user
@@ -351,7 +351,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 DriverManager driverManager = sm.getDriverManager();
                 for (String source : res) {
                         final SaveFilePanel outfilePanel = new SaveFilePanel(
-                                "org.orbisgis.core.ui.plugins.views.geocatalog.SaveInFile",
+                                "Geocatalog.SaveInFile",
                                 I18N.tr("Save the source : " + source));
                         int type = sm.getSource(source).getType();
                         DriverFilter filter;
@@ -380,7 +380,7 @@ public class Catalog extends JPanel implements DockingPanel {
                                 String[] extensions = fileDriver.getFileExtensions();
                                 outfilePanel.addFilter(extensions, fileDriver.getTypeDescription());
                         }
-
+                        outfilePanel.loadState();
                         if (UIFactory.showDialog(outfilePanel, true, true)) {
                                 final File savedFile = outfilePanel.getSelectedFile().getAbsoluteFile();
                                 BackgroundManager bm = Services.getService(BackgroundManager.class);
@@ -408,6 +408,7 @@ public class Catalog extends JPanel implements DockingPanel {
          */
         public void onMenuAddFilesFromFolder() {
                 final OpenGdmsFolderPanel folderPanel = new OpenGdmsFolderPanel(I18N.tr("Add files from a folder"));
+                folderPanel.loadState();
                 if (UIFactory.showDialog(folderPanel, true, true)) {
                         File[] files = folderPanel.getSelectedFiles();
                         for (final File file : files) {
@@ -440,7 +441,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 SourceManager sm = dm.getSourceManager();
                 SRSPanel srsPanel = new SRSPanel();
                 LayerConfigurationPanel layerConfiguration = new LayerConfigurationPanel(srsPanel);
-                WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration);      
+                WMSConnectionPanel wmsConnection = new WMSConnectionPanel(layerConfiguration);
                 if (UIFactory.showDialog(new UIPanel[]{wmsConnection,
                                 layerConfiguration, srsPanel})) {
                         WMSClient client = wmsConnection.getWMSClient();

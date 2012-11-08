@@ -42,6 +42,7 @@ public class SaveFilePanel extends OpenFilePanel {
         public SaveFilePanel(String id, String title) {
                 super(id, title);
                 getFileChooser().setDialogType(JFileChooser.SAVE_DIALOG);
+                setAcceptAllFileFilterUsed(false);
         }
 
         @Override

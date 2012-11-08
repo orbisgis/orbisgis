@@ -321,6 +321,7 @@ public class SQLConsolePanel extends JPanel {
                 final SaveFilePanel outfilePanel = new SaveFilePanel(
                         "sqlConsoleOutFile", I18N.tr("Save script"));
                 outfilePanel.addFilter("sql", I18N.tr("SQL script (*.sql)"));
+                outfilePanel.loadState();
                 if (UIFactory.showDialog(outfilePanel)) {
                         try {
                         FileUtils.write(outfilePanel.getSelectedFile(), scriptPanel.getText());
@@ -343,6 +344,7 @@ public class SQLConsolePanel extends JPanel {
                 final OpenFilePanel inFilePanel = new OpenFilePanel("sqlConsoleInFile",
                         I18N.tr("Open script"));
                 inFilePanel.addFilter("sql", I18N.tr("SQL script (*.sql)"));
+                inFilePanel.loadState();
                 if (UIFactory.showDialog(inFilePanel)) {
                         int answer = JOptionPane.NO_OPTION;
                         if (scriptPanel.getDocument().getLength() > 0) {
