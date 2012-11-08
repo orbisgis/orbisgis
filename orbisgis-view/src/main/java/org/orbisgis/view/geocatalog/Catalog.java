@@ -102,7 +102,7 @@ public class Catalog extends JPanel implements DockingPanel {
         private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*
          * !< GeoCatalog docked panel properties
          */
-        private CatalogPersistance catalogPersistance = new CatalogPersistance();
+        private CatalogPersistence catalogPersistance = new CatalogPersistence();
         private JList sourceList;
         private SourceListModel sourceListContent;
         //The factory shown when the user click on new factory button
@@ -279,12 +279,10 @@ public class Catalog extends JPanel implements DockingPanel {
                 //Create the SIF panel
                 OpenGdmsFilePanel openDialog = new OpenGdmsFilePanel(I18N.tr("Select the file to add"),
                         sourceManager.getDriverManager());
-                if(!catalogPersistance.getLastFolderOpenFile().isEmpty()) {
-                        openDialog.setCurrentDirectory(new File(catalogPersistance.getLastFolderOpenFile()));
-                }
+                catalogPersistance.getReadDialog().loadState(openDialog);
                 //Ask SIF to open the dialog
                 if (UIFactory.showDialog(openDialog, true, true)) {
-                        catalogPersistance.setLastFolderOpenFile(openDialog.getCurrentDirectory().getAbsolutePath());
+                        catalogPersistance.getReadDialog().saveState(openDialog);
                         // We can retrieve the files that have been selected by the user
                         File[] files = openDialog.getSelectedFiles();
                         for (int i = 0; i < files.length; i++) {
@@ -357,9 +355,7 @@ public class Catalog extends JPanel implements DockingPanel {
                         final SaveFilePanel outfilePanel = new SaveFilePanel(
                                 "org.orbisgis.core.ui.plugins.views.geocatalog.SaveInFile",
                                 I18N.tr("Save the source : " + source));
-                        if(!catalogPersistance.getLastFolderExportFile().isEmpty()) {
-                                outfilePanel.setCurrentDirectory(new File(catalogPersistance.getLastFolderExportFile()));
-                        }
+                        catalogPersistance.getExportDialog().loadState(outfilePanel);
                         int type = sm.getSource(source).getType();
                         DriverFilter filter;
                         if ((type & SourceManager.VECTORIAL) == SourceManager.VECTORIAL) {
@@ -389,7 +385,7 @@ public class Catalog extends JPanel implements DockingPanel {
                         }
 
                         if (UIFactory.showDialog(outfilePanel, true, true)) {
-                                catalogPersistance.setLastFolderExportFile(outfilePanel.getCurrentDirectory().getAbsolutePath());
+                                catalogPersistance.getExportDialog().saveState(outfilePanel);
                                 final File savedFile = outfilePanel.getSelectedFile().getAbsoluteFile();
                                 BackgroundManager bm = Services.getService(BackgroundManager.class);
                                 bm.backgroundOperation(new ExportInFileOperation(dsf, source,
@@ -416,11 +412,9 @@ public class Catalog extends JPanel implements DockingPanel {
          */
         public void onMenuAddFilesFromFolder() {
                 final OpenGdmsFolderPanel folderPanel = new OpenGdmsFolderPanel(I18N.tr("Add files from a folder"));
-                if(!catalogPersistance.getLastFolderOpenFile().isEmpty()) {
-                        folderPanel.setCurrentDirectory(new File(catalogPersistance.getLastFolderOpenFile()));
-                }
+                catalogPersistance.getReadDialog().loadState(folderPanel);
                 if (UIFactory.showDialog(folderPanel, true, true)) {
-                        catalogPersistance.setLastFolderOpenFile(folderPanel.getCurrentDirectory().getAbsolutePath());
+                        catalogPersistance.getReadDialog().saveState(folderPanel);
                         File[] files = folderPanel.getSelectedFiles();
                         for (final File file : files) {
                                 // for each folder, we apply the method processFolder.

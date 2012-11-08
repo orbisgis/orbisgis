@@ -31,6 +31,7 @@ package org.orbisgis.sif.components;
 
 import java.awt.Component;
 import java.io.File;
+import java.util.Arrays;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileFilter;
 import org.orbisgis.sif.UIPanel;
@@ -150,6 +151,26 @@ public abstract class AbstractOpenPanel implements UIPanel {
 			return description;
 		}
 
+                @Override
+                public int hashCode() {
+                        int hash = 5;
+                        hash = 71 * hash + Arrays.deepHashCode(this.extensions);
+                        return hash;
+                }
+
+                @Override
+                public boolean equals(Object obj) {
+                        if (!(obj instanceof FormatFilter)) {
+                                return false;
+                        }
+                        final FormatFilter other = (FormatFilter) obj;
+                        if (!Arrays.deepEquals(this.extensions, other.extensions)) {
+                                return false;
+                        }
+                        return true;
+                }                
+                
+
 		@Override
 		public boolean accept(File f) {
 			if (f == null) {
@@ -204,5 +225,28 @@ public abstract class AbstractOpenPanel implements UIPanel {
          */
         public File getCurrentDirectory() {
                 return fileChooser.getCurrentDirectory();
+        }
+        
+        /**
+         * Return the identifier of the current filter
+         * @return The filter identifier, given by FileFilter.hashCode()
+         * @see setCurrentFilter
+         */
+        public int getCurrentFilterId() {
+                return fileChooser.getFileFilter().hashCode();
+        }
+        /**
+         * Set the selected file filter
+         * @return True if the filter has been found and set
+         * @see getCurrentFilterId
+         */
+        public boolean setCurrentFilter(int filterIdentifier) {
+                for(FileFilter filter : fileChooser.getChoosableFileFilters()) {
+                        if(filter.hashCode()==filterIdentifier) {
+                                fileChooser.setFileFilter(filter);
+                                return true;
+                        }
+                }
+                return false;
         }
 }
