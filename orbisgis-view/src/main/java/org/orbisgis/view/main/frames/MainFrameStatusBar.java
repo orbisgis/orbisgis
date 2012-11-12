@@ -37,6 +37,7 @@ import java.awt.event.FocusListener;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.io.File;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -72,15 +73,29 @@ public class MainFrameStatusBar extends StatusBar {
         //private JobListPanel jobList;  //Popup Panel
         private JobListModel runningJobs;
         private JobListItem firstJob;  //Job[0] listener & simplified panel
-        JFrame jobPopup;               //The floating frame
+        private JFrame jobPopup;               //The job floating frame
+        private PopupMessageDialog messagePopup;
+        private JFrame owner;
+        //
+        private AtomicBoolean listenToLogger = new AtomicBoolean(false);
 
-        public MainFrameStatusBar() {
+        public MainFrameStatusBar(JFrame frame) {
                 super(OUTER_BAR_BORDER, HORIZONTAL_EMPTY_BORDER);
+                this.owner = frame;
                 setPreferredSize(new Dimension(-1, STATUS_BAR_HEIGHT));
                 setMinimumSize(new Dimension(1, STATUS_BAR_HEIGHT));
                 //Add the JobList
                 makeJobList();
                 makeWorkspaceManager();
+        }
+
+        @Override
+        public void addNotify() {
+                super.addNotify();
+                if(!listenToLogger.getAndSet(true)) {
+                        messagePopup = new PopupMessageDialog(this, owner);
+                        messagePopup.init();
+                }
         }
 
         private void makeJobList() {
@@ -113,6 +128,7 @@ public class MainFrameStatusBar extends StatusBar {
                 closeJobPopup();
                 clearJobTitle();
                 runningJobs.dispose();
+                messagePopup.dispose();
         }
         /**
          * The user click on change workspace button
