@@ -35,7 +35,9 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
@@ -69,9 +71,9 @@ public class PopupMessageDialog extends JDialog {
         private long startingAnimation = 0;
         // Parameters
         private static final int CHECK_LOGGING_INTERVAL = 500; // ms , check when hidden or visible
-        private static final int DIALOG_ANIMATION_DURATION = 2500; //ms time to appear and disappear
+        private static final int DIALOG_ANIMATION_DURATION = 1000; //ms time to appear and disappear
         private static final int MAX_ROW_COLS = 40; //Character max by row in the dialog
-        
+        private static final Pattern WRAP_PATTERN = Pattern.compile("(.{1,"+MAX_ROW_COLS+"})( +|$?\\n)|(.{1,"+MAX_ROW_COLS+"})/gm");
         //Components
         private JComponent refComponent; //Where to appear
         private Queue<LoggingEvent> eventToDisplay = new LinkedList<LoggingEvent>();
@@ -91,6 +93,7 @@ public class PopupMessageDialog extends JDialog {
         PopupMessageDialog(JComponent refComponent, JFrame owner) {
                 super(owner);
                 content = new JPanel(new BorderLayout());
+                content.setBorder(BorderFactory.createEtchedBorder());
                 setContentPane(content);
                 content.add(message,BorderLayout.CENTER);
                 this.refComponent = refComponent;
@@ -104,6 +107,7 @@ public class PopupMessageDialog extends JDialog {
                 LevelRangeFilter filter = new LevelRangeFilter();
                 filter.setLevelMax(Level.FATAL);
                 filter.setLevelMin(Level.WARN);
+                filter.setAcceptOnMatch(true);
                 rootLoggerTarget.addFilter(filter);
                 rootLoggerTarget.addFilter(new DenyAllFilter());
                 ROOT_LOGGER.addAppender(rootLoggerTarget);
@@ -118,17 +122,33 @@ public class PopupMessageDialog extends JDialog {
         @Override
         public void dispose() {
                 super.dispose();
+                currentState = STATE.HIDDEN;
+                if(checkMessagesTimer.isRunning()) {
+                        checkMessagesTimer.stop();
+                }
                 ROOT_LOGGER.removeAppender(rootLoggerTarget);
                 GUI_LOGGER.removeAppender(guiLoggerTarget);
         }
-        private void pollAndShowMessage() {
+        private void pollAndShowMessage(boolean doResize) {
                 LoggingEvent evt = eventToDisplay.poll();
                 if(!evt.getLevel().equals(lastLevel)) {
                         lastLevel = evt.getLevel();
                         message.setForeground(PanelAppender.getLevelColor(evt.getLevel()));
                 }
-                String strMessage = formatMessage(evt.getMessage().toString());
-                message.setText(strMessage);
+                StringBuilder strMessage = new StringBuilder("<html>"+formatMessage(evt.getMessage().toString()));
+                if(evt.getThrowableInformation()!=null) {
+                        // Add error information, without stack
+                        Throwable tr = evt.getThrowableInformation().getThrowable();
+                        strMessage.append("<br/>");
+                        strMessage.append(tr.getLocalizedMessage());
+                }
+                strMessage.append("</html>");
+                message.setText(strMessage.toString());
+                
+                // Resize of the dialog
+                if(doResize) {                        
+                        SwingUtilities.invokeLater(new DoResize());
+                }
         }
         /**
          * Set the position and size of the dialog during animation
@@ -168,7 +188,7 @@ public class PopupMessageDialog extends JDialog {
                 switch(currentState) {
                         case HIDDEN:
                                 if(!isQueueEmpty) {
-                                        pollAndShowMessage();
+                                        pollAndShowMessage(false);
                                         startingAnimation = System.currentTimeMillis();
                                         setSize(message.getPreferredSize().width,1);
                                         setVisible(true);
@@ -189,12 +209,12 @@ public class PopupMessageDialog extends JDialog {
                         case VISIBLE:
                                 // Keep showing this message for a while
                                 int shownTextLength = (int)Math.min(5,Math.log(message.getText().length()+1)) * 1000;
-                                if(startingAnimation + shownTextLength > System.currentTimeMillis()) {
+                                if(startingAnimation + shownTextLength < System.currentTimeMillis()) {
                                         // The message has been sufficiently displayed
                                         // show next message or hide the dialog
                                         if(!isQueueEmpty) {
                                                 startingAnimation = System.currentTimeMillis();
-                                                pollAndShowMessage();
+                                                pollAndShowMessage(true);
                                                 checkMessagesTimer.start();
                                         } else {
                                                 currentState = STATE.DISAPPEAR;
@@ -212,7 +232,7 @@ public class PopupMessageDialog extends JDialog {
                                         checkMessagesTimer.setDelay(CHECK_LOGGING_INTERVAL);  
                                         //Stop timer
                                 } else {
-                                        checkMessagesTimer.start();
+                                        SwingUtilities.invokeLater(new Refresh());
                                 }
                                 break;
                                 
@@ -223,29 +243,9 @@ public class PopupMessageDialog extends JDialog {
          * @param message
          * @return 
          */
-        private static String formatMessageAlg(String message) {
-                StringBuilder str = new StringBuilder();
-                String inputMessage = message.replace("\n", "<br/>");
-                int cursor = 0;
-                int lastRowLength = 0;
-                str.append("<html>");
-                while(cursor < inputMessage.length() - 1) {
-                        int nextSpecChar = inputMessage.indexOf(" ",cursor+1);
-                        if(nextSpecChar==-1) {
-                                nextSpecChar = inputMessage.length();
-                        }
-                        int nextBreak = inputMessage.indexOf("<br/>",cursor+1);
-                        if(lastRowLength + (nextSpecChar-cursor) > MAX_ROW_COLS) {
-                                str.append("<br/>");
-                                lastRowLength = 0;
-                        } else {
-                                lastRowLength+=nextSpecChar-cursor;
-                        }
-                        str.append(inputMessage.substring(cursor, nextSpecChar));                        
-                        cursor = nextSpecChar;
-                }
-                str.append("</html>");
-                return str.toString();
+        private static String formatMessage(String message) {
+                Matcher matcher = WRAP_PATTERN.matcher(message);  
+                return matcher.replaceAll("$1 !ret!");
         }
         
         private class LoggerTarget extends AppenderSkeleton {
@@ -286,5 +286,25 @@ public class PopupMessageDialog extends JDialog {
                         onCheckQueue();
                 }
                 
+        }
+        // Resize the component
+        private class DoResize implements Runnable {
+                @Override
+                public void run() {
+                        if (refComponent.isShowing()) {
+                                Dimension fullSize = message.getPreferredSize();
+                                Dimension newSize = new Dimension(fullSize.width, fullSize.height);
+                                if (!getSize().equals(newSize)) {
+                                        setSize(newSize);
+                                }
+                                Point refLocation = refComponent.getLocationOnScreen();
+                                int leftPosition = (refLocation.x + (refComponent.getWidth() / 2))
+                                        - (fullSize.width / 2);
+                                Point newLocation = new Point(leftPosition, refLocation.y - fullSize.height);
+                                if (!newLocation.equals(getLocation())) {
+                                        setLocation(newLocation);
+                                }
+                        }
+                }
         }
 }
