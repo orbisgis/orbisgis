@@ -35,8 +35,6 @@ import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -70,10 +68,9 @@ public class PopupMessageDialog extends JDialog {
         private STATE currentState = STATE.HIDDEN;
         private long startingAnimation = 0;
         // Parameters
+        private static final int DIALOG_WIDTH = 400;
         private static final int CHECK_LOGGING_INTERVAL = 500; // ms , check when hidden or visible
         private static final int DIALOG_ANIMATION_DURATION = 1000; //ms time to appear and disappear
-        private static final int MAX_ROW_COLS = 40; //Character max by row in the dialog
-        private static final Pattern WRAP_PATTERN = Pattern.compile("(.{1,"+MAX_ROW_COLS+"})( +|$?\\n)|(.{1,"+MAX_ROW_COLS+"})/gm");
         //Components
         private JComponent refComponent; //Where to appear
         private Queue<LoggingEvent> eventToDisplay = new LinkedList<LoggingEvent>();
@@ -135,7 +132,7 @@ public class PopupMessageDialog extends JDialog {
                         lastLevel = evt.getLevel();
                         message.setForeground(PanelAppender.getLevelColor(evt.getLevel()));
                 }
-                StringBuilder strMessage = new StringBuilder("<html>"+formatMessage(evt.getMessage().toString()));
+                StringBuilder strMessage = new StringBuilder("<html>"+evt.getMessage().toString().replace("\n", "<br/>"));
                 if(evt.getThrowableInformation()!=null) {
                         // Add error information, without stack
                         Throwable tr = evt.getThrowableInformation().getThrowable();
@@ -150,6 +147,12 @@ public class PopupMessageDialog extends JDialog {
                         SwingUtilities.invokeLater(new DoResize());
                 }
         }
+        
+        private Dimension getMessagePreferedSize() {
+                Dimension fullSize = message.getPreferredSize();
+                fullSize.width = Math.min(refComponent.getWidth(),DIALOG_WIDTH);
+                return fullSize;
+        }
         /**
          * Set the position and size of the dialog during animation
          * @return True if the animation is done
@@ -158,7 +161,7 @@ public class PopupMessageDialog extends JDialog {
                 if(!refComponent.isShowing()) {
                         return false;
                 }
-                Dimension fullSize = message.getPreferredSize();
+                Dimension fullSize =getMessagePreferedSize();
                 if(fullSize.height <= 0) {
                         return true;
                 }
@@ -190,7 +193,7 @@ public class PopupMessageDialog extends JDialog {
                                 if(!isQueueEmpty) {
                                         pollAndShowMessage(false);
                                         startingAnimation = System.currentTimeMillis();
-                                        setSize(message.getPreferredSize().width,1);
+                                        setSize(getMessagePreferedSize().width,1);
                                         setVisible(true);
                                         currentState = STATE.APPEAR;
                                         SwingUtilities.invokeLater(new Refresh());
@@ -212,8 +215,8 @@ public class PopupMessageDialog extends JDialog {
                                 if(startingAnimation + shownTextLength < System.currentTimeMillis()) {
                                         // The message has been sufficiently displayed
                                         // show next message or hide the dialog
+                                        startingAnimation = System.currentTimeMillis();
                                         if(!isQueueEmpty) {
-                                                startingAnimation = System.currentTimeMillis();
                                                 pollAndShowMessage(true);
                                                 checkMessagesTimer.start();
                                         } else {
@@ -225,6 +228,13 @@ public class PopupMessageDialog extends JDialog {
                                 }
                                 break;
                         case DISAPPEAR:
+                                if(!isQueueEmpty) {
+                                        // A message queued while hiding
+                                        pollAndShowMessage(true);
+                                        currentState = STATE.APPEAR;
+                                        SwingUtilities.invokeLater(new Refresh());
+                                        return;
+                                }
                                 if(updateAnimation()) {
                                         setVisible(false);
                                         // Animation is done, now the dialog is fully hidden
@@ -232,20 +242,12 @@ public class PopupMessageDialog extends JDialog {
                                         checkMessagesTimer.setDelay(CHECK_LOGGING_INTERVAL);  
                                         //Stop timer
                                 } else {
+                                        //Animation is still running
                                         SwingUtilities.invokeLater(new Refresh());
                                 }
                                 break;
                                 
                 }
-        }
-        /**
-         * Format the message to be well fitted in a popup dialog
-         * @param message
-         * @return 
-         */
-        private static String formatMessage(String message) {
-                Matcher matcher = WRAP_PATTERN.matcher(message);  
-                return matcher.replaceAll("$1 !ret!");
         }
         
         private class LoggerTarget extends AppenderSkeleton {
@@ -292,7 +294,7 @@ public class PopupMessageDialog extends JDialog {
                 @Override
                 public void run() {
                         if (refComponent.isShowing()) {
-                                Dimension fullSize = message.getPreferredSize();
+                                Dimension fullSize = getMessagePreferedSize();
                                 Dimension newSize = new Dimension(fullSize.width, fullSize.height);
                                 if (!getSize().equals(newSize)) {
                                         setSize(newSize);
