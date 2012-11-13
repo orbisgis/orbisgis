@@ -38,9 +38,12 @@ import java.beans.EventHandler;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.Timer;
+import javax.swing.event.CaretListener;
 import javax.swing.text.BadLocationException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -71,14 +74,22 @@ import org.xnap.commons.i18n.I18nFactory;
 public class BshConsolePanel extends JPanel {
         private static final I18n I18N = I18nFactory.getI18n(BshConsolePanel.class);
         private static final Logger LOGGER = Logger.getLogger("gui."+BshConsolePanel.class);
+        private static final int MESSAGE_CLEAR_INTERVAL = 10;
+        private static final String MESSAGEBASE = "%d | %d | %s";
         private final BeanShellLog infoLogger = new BeanShellLog(LOGGER,Level.INFO);
         private final BeanShellLog errorLogger = new BeanShellLog(LOGGER,Level.ERROR);
         
         private RTextScrollPane centerPanel;
         private RSyntaxTextArea scriptPanel;
+        private JLabel statusMessage=new JLabel();
         private FindReplaceDialog findReplaceDialog;
         private Interpreter interpreter = new Interpreter();
         private ActionCommands actions = new ActionCommands();
+        private JavaLanguageSupport jls;
+        private Timer messageClearTimer;
+        private int line = 0;
+        private int character = 0;
+        private String currentStatusMessage = "";
         
         /**
          * Creates a console for sql.
@@ -99,6 +110,13 @@ public class BshConsolePanel extends JPanel {
                 }
                 setLayout(new BorderLayout());
                 add(getCenterPanel(), BorderLayout.CENTER);
+                add(statusMessage,BorderLayout.SOUTH);
+        }
+        /**
+         * Clear the message shown
+         */
+        public void onClearMessage() {
+                setStatusMessage("");
         }
         /**
          * @return ToolBar to command this editor
@@ -120,11 +138,19 @@ public class BshConsolePanel extends JPanel {
                         KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK)));
         }
 
+        /**
+         * Update the row:column label
+         */
+        public void onScriptPanelCaretUpdate() {
+                line = scriptPanel.getCaretLineNumber() + 1;
+                character = scriptPanel.getCaretOffsetFromLineStart();
+                setStatusMessage(currentStatusMessage);
+        }
         private RTextScrollPane getCenterPanel() {
                 if (centerPanel == null) {
                         initActions();
                         LanguageSupportFactory lsf = LanguageSupportFactory.get();
-                        JavaLanguageSupport jls = (JavaLanguageSupport) lsf.getSupportFor(SyntaxConstants.SYNTAX_STYLE_JAVA);
+                        jls = (JavaLanguageSupport) lsf.getSupportFor(SyntaxConstants.SYNTAX_STYLE_JAVA);
                         try {
                                 setCurrentLibraryInfos(jls.getJarManager());
                                 
@@ -135,6 +161,7 @@ public class BshConsolePanel extends JPanel {
                         scriptPanel.setLineWrap(true);
                         lsf.register(scriptPanel);
                         scriptPanel.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_JAVA);
+                        scriptPanel.addCaretListener(EventHandler.create(CaretListener.class,this,"onScriptPanelCaretUpdate"));
                         scriptPanel.clearParsers();
                         actions.setAccelerators(scriptPanel);
                         actions.feedPopupMenu(scriptPanel.getPopupMenu());
@@ -142,7 +169,29 @@ public class BshConsolePanel extends JPanel {
                 }
                 return centerPanel;
         }
+
+        private void setStatusMessage(String message) {
+                currentStatusMessage = message;
+                if(messageClearTimer==null) {
+                        messageClearTimer = new Timer(MESSAGE_CLEAR_INTERVAL,EventHandler.create(ActionListener.class, this, "onClearMessage"));
+                        messageClearTimer.setRepeats(false);
+                }
+                if (!message.isEmpty()) {
+                        messageClearTimer.restart();
+                }
+                statusMessage.setText(String.format(MESSAGEBASE, line, character, message));
+        }
+
         
+
+        public void freeResources() {
+                if (jls != null) {
+                        jls.uninstall(scriptPanel);
+                }
+                if(messageClearTimer!=null) {
+                        messageClearTimer.stop();
+                }
+        }
         private void setCurrentLibraryInfos(JarManager jls) throws IOException {
                 // current JRE
                 jls.addCurrentJreClassFileSource();                

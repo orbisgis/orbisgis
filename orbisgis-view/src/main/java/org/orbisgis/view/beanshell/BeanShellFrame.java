@@ -54,7 +54,9 @@ public class BeanShellFrame implements EditorDockable {
                 parameters.setTitleIcon(OrbisGISIcon.getIcon("page_white_cup"));
                 parameters.setToolBar(panel.getButtonToolBar());
         }
-        
+        public void dispose() {
+                panel.freeResources();
+        }
         @Override
         public DockingPanelParameters getDockingParameters() {
                 return parameters;

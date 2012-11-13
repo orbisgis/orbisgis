@@ -82,7 +82,7 @@ public class SQLConsolePanel extends JPanel {
         private RSyntaxTextArea scriptPanel;
         private CodeReformator codeReformator;
         private JLabel statusMessage;
-        private Timer timer;
+        private Timer messageCleanTimer;
         private int lastSQLStatementToReformatStart;
         private int lastSQLStatementToReformatEnd;
         private static final String MESSAGEBASE = "%d | %d | %s";
@@ -350,14 +350,14 @@ public class SQLConsolePanel extends JPanel {
                         infoToolBar.add(statusMessage);
                         infoToolBar.setFloatable(false);
 
-                        timer = new Timer(5000, new ActionListener() {
+                        messageCleanTimer = new Timer(5000, new ActionListener() {
 
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
                                         setStatusMessage("");
                                 }
                         });
-                        timer.setRepeats(false);
+                        messageCleanTimer.setRepeats(false);
                 }
 
                 return infoToolBar;
@@ -366,7 +366,7 @@ public class SQLConsolePanel extends JPanel {
         public final void setStatusMessage(String message) {
                 this.message = message;
                 if (!message.isEmpty()) {
-                        timer.restart();
+                        messageCleanTimer.restart();
                 }
                 statusMessage.setText(String.format(MESSAGEBASE, line, character, message));
         }
@@ -505,8 +505,8 @@ public class SQLConsolePanel extends JPanel {
                 if (lang != null) {
                         lang.uninstall(scriptPanel);
                 }
-                if(timer!=null) {
-                        timer.stop();
+                if(messageCleanTimer!=null) {
+                        messageCleanTimer.stop();
                 }
         }
 

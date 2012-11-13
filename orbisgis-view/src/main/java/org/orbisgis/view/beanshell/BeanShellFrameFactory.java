@@ -37,12 +37,18 @@ import org.orbisgis.view.edition.SingleEditorFactory;
  */
 public class BeanShellFrameFactory implements SingleEditorFactory {
         private static final String factoryId = "BeanShellFrameFactory";
-
+        private BeanShellFrame panel;
         @Override
         public EditorDockable[] getSinglePanels() {
-                return new EditorDockable[]{new BeanShellFrame()};
+                return new EditorDockable[]{getBeanShellFrame()};
         }
 
+        private BeanShellFrame getBeanShellFrame() {
+                if(panel==null) {
+                        panel = new BeanShellFrame();
+                }
+                return panel;
+        }
         @Override
         public String getId() {
                 return factoryId;
@@ -50,5 +56,8 @@ public class BeanShellFrameFactory implements SingleEditorFactory {
 
         @Override
         public void dispose() {
+                if(panel!=null) {
+                        panel.dispose();
+                }
         }
 }
