@@ -39,12 +39,13 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
 import javax.swing.event.CaretListener;
-import javax.swing.text.BadLocationException;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.fife.rsta.ac.LanguageSupportFactory;
@@ -60,6 +61,8 @@ import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.components.OpenFilePanel;
+import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.components.findReplace.FindReplaceDialog;
@@ -74,7 +77,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class BshConsolePanel extends JPanel {
         private static final I18n I18N = I18nFactory.getI18n(BshConsolePanel.class);
         private static final Logger LOGGER = Logger.getLogger("gui."+BshConsolePanel.class);
-        private static final int MESSAGE_CLEAR_INTERVAL = 10;
+        private static final int MESSAGE_CLEAR_INTERVAL = 10000; //ms Clear message interval
         private static final String MESSAGEBASE = "%d | %d | %s";
         private final BeanShellLog infoLogger = new BeanShellLog(LOGGER,Level.INFO);
         private final BeanShellLog errorLogger = new BeanShellLog(LOGGER,Level.ERROR);
@@ -124,6 +127,20 @@ public class BshConsolePanel extends JPanel {
         public JToolBar getButtonToolBar() {
                 return actions.getEditorToolBar(true);
         }
+        
+        /**
+         * Clear the content of the console
+         */
+        public void onClear() {
+                if(scriptPanel.getDocument().getLength()!=0) {
+                        int answer = JOptionPane.showConfirmDialog(this,
+                                I18N.tr("Do you want to clear the contents of the console?"),
+                                I18N.tr("Clear script"), JOptionPane.YES_NO_OPTION);
+                        if (answer == JOptionPane.YES_OPTION) {
+                                scriptPanel.setText("");
+                        }
+                }
+        }
         /**
          * Create actions instances
          * 
@@ -131,13 +148,102 @@ public class BshConsolePanel extends JPanel {
          * Their shortcuts is registered also in the editor
          */
         private void initActions() {
+                //Execute action
                 actions.addAction(new DefaultAction(I18N.tr("Execute"),
                         I18N.tr("Execute the java script"),
                         OrbisGISIcon.getIcon("execute"),
                         EventHandler.create(ActionListener.class, this, "onExecute"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK)));
+                //Clear action
+                actions.addAction(new DefaultAction(
+                        I18N.tr("Clear"),
+                        I18N.tr("Erase the content of the editor"),
+                        OrbisGISIcon.getIcon("erase"),
+                        EventHandler.create(ActionListener.class,this,"onClear"),
+                        null
+                       ));
+                //Open action
+                actions.addAction(new DefaultAction(
+                        I18N.tr("Open"),
+                        I18N.tr("Load a file in this editor"),
+                        OrbisGISIcon.getIcon("open"),
+                        EventHandler.create(ActionListener.class,this,"onOpenFile"),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)
+                       ));
+                //Save
+                actions.addAction(new DefaultAction(
+                        I18N.tr("Save"),
+                        I18N.tr("Save the editor content into a file"),
+                        OrbisGISIcon.getIcon("save"),
+                        EventHandler.create(ActionListener.class,this,"onSaveFile"),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)
+                       ));
+                //Find action                
+                actions.addAction(new DefaultAction(
+                        I18N.tr("Search.."),
+                        I18N.tr("Search text in the document"),
+                        OrbisGISIcon.getIcon("find"),
+                        EventHandler.create(ActionListener.class,this,"openFindReplaceDialog"),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK)
+                       ).addStroke(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK)));
+                                
         }
 
+        /**
+         * Open a dialog that let the user to select a file and save the content
+         * of the sql editor into this file.
+         */
+        public void onSaveFile() {
+                final SaveFilePanel outfilePanel = new SaveFilePanel(
+                        "bshConsoleOutFile", I18N.tr("Save script"));
+                outfilePanel.addFilter("bsh", I18N.tr("BeanShell Script (*.bsh)"));
+                outfilePanel.loadState();
+                if (UIFactory.showDialog(outfilePanel)) {
+                        try {
+                        FileUtils.write(outfilePanel.getSelectedFile(), scriptPanel.getText());
+                        } catch (IOException e1) {
+                                LOGGER.error(I18N.tr("IO error."), e1);
+                                return;
+                        }
+                        setStatusMessage(I18N.tr("The file has been saved."));
+                } else {
+                        setStatusMessage("");
+                }
+        }
+        /**
+         * Open a dialog that let the user to select a file
+         * and add or replace the content of the sql editor.
+         */
+        public void onOpenFile() {
+                final OpenFilePanel inFilePanel = new OpenFilePanel("bshConsoleInFile",
+                        I18N.tr("Open script"));
+                inFilePanel.addFilter("bsh", I18N.tr("BeanShell Script (*.bsh)"));
+                inFilePanel.loadState();
+                if (UIFactory.showDialog(inFilePanel)) {
+                        int answer = JOptionPane.NO_OPTION;
+                        if (scriptPanel.getDocument().getLength() > 0) {
+                                answer = JOptionPane.showConfirmDialog(
+                                        this,
+                                        I18N.tr("Do you want to clear all before loading the file ?"),
+                                        I18N.tr("Open file"),
+                                        JOptionPane.YES_NO_CANCEL_OPTION);
+                        }
+
+                        String text;
+                        try {
+                                text = FileUtils.readFileToString(inFilePanel.getSelectedFile());
+                        } catch (IOException e1) {
+                                LOGGER.error(I18N.tr("IO error."), e1);
+                                return;
+                        }
+                        
+                        if (answer == JOptionPane.YES_OPTION) {
+                                scriptPanel.setText(text);
+                        } else if (answer == JOptionPane.NO_OPTION) {
+                                scriptPanel.append(text);
+                        }
+                }
+        }
         /**
          * Update the row:column label
          */
@@ -237,27 +343,21 @@ public class BshConsolePanel extends JPanel {
                                 errorLogger.flush();
                         }
                 } catch (IOException e) {
+                        setStatusMessage(e.getLocalizedMessage());
                         LOGGER.error(
                                 e.getLocalizedMessage(),
                                 e);
                 } catch (IllegalArgumentException e) {
+                        setStatusMessage(e.getLocalizedMessage());
                         LOGGER.error(
                                 I18N.tr("Cannot execute the script"),
                                 e);
                 } catch (EvalError e) {
+                        setStatusMessage(e.getLocalizedMessage());
                         LOGGER.error(
                                 I18N.tr("The script is not valid"),
                                 e);
                 }
-        }
-
-        public void insertString(String string) throws BadLocationException {
-                scriptPanel.getDocument().insertString(
-                        scriptPanel.getDocument().getLength(), string, null);
-        }
-
-        public RSyntaxTextArea getTextComponent() {
-                return scriptPanel;
         }
 
         /**
@@ -274,7 +374,7 @@ public class BshConsolePanel extends JPanel {
          */
         public void openFindReplaceDialog() {
                 if (findReplaceDialog == null) {
-                        findReplaceDialog = new FindReplaceDialog(getTextComponent(),UIFactory.getMainFrame());
+                        findReplaceDialog = new FindReplaceDialog(scriptPanel,UIFactory.getMainFrame());
                 }
                 findReplaceDialog.setAlwaysOnTop(true);
                 findReplaceDialog.setVisible(true);
