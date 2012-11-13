@@ -28,36 +28,27 @@
  */
 package org.orbisgis.view.beanshell;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.orbisgis.view.edition.EditorDockable;
+import org.orbisgis.view.edition.SingleEditorFactory;
 
 /**
- * Link between the BeanShell interpreter output and the Log4J output
+ * Create instance of BeanShellFrame
  * @author Nicolas Fortin
  */
-public class BeanShellLog extends OutputStream {
-        private Logger logger;
-        private Level level;
-        private ByteArrayOutputStream buffer = new ByteArrayOutputStream();        
-        public BeanShellLog(Logger logger, Level level) {
-                this.logger = logger;
-                this.level = level;
-        }
+public class BeanShellFrameFactory implements SingleEditorFactory {
+        private static final String factoryId = "BeanShellFrameFactory";
+
         @Override
-        public void write(int i) throws IOException {
-                buffer.write(i);
+        public EditorDockable[] getSinglePanels() {
+                return new EditorDockable[]{new BeanShellFrame()};
         }
+
         @Override
-        public void flush() throws IOException {
-                super.flush();
-                // Fetch lines in the byte array
-                String messages = buffer.toString();
-                if(!messages.isEmpty()) {
-                        logger.log(level, messages);
-                }
-                buffer.reset();
-        }        
+        public String getId() {
+                return factoryId;
+        }
+
+        @Override
+        public void dispose() {
+        }
 }

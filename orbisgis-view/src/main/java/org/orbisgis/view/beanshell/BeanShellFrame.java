@@ -29,16 +29,31 @@
 package org.orbisgis.view.beanshell;
 
 import javax.swing.JComponent;
-import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
+import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.view.edition.EditorDockable;
+import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.map.MapElement;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * The beanshell docking panel
  * @author Nicolas Fortin
  */
-public class BeanShellFrame implements DockingPanel {
+public class BeanShellFrame implements EditorDockable {
+        public static final String EDITOR_NAME = "BeanShell";
+        private final static I18n I18N = I18nFactory.getI18n(BeanShellFrame.class);
         private DockingPanelParameters parameters = new DockingPanelParameters();
         private BshConsolePanel panel = new BshConsolePanel();
+        private MapElement mapElement;
+
+        public BeanShellFrame() {
+                parameters.setName(EDITOR_NAME);
+                parameters.setTitle(I18N.tr("BeanShell"));
+                parameters.setTitleIcon(OrbisGISIcon.getIcon("page_white_cup"));
+                parameters.setToolBar(panel.getButtonToolBar());
+        }
         
         @Override
         public DockingPanelParameters getDockingParameters() {
@@ -49,5 +64,24 @@ public class BeanShellFrame implements DockingPanel {
         public JComponent getComponent() {
                 return panel;
         }
+
+        @Override
+        public boolean match(EditableElement editableElement) {
+                return editableElement instanceof MapElement;
+        }
+
+        @Override
+        public EditableElement getEditableElement() {
+                return mapElement;
+        }
+
+        @Override
+        public void setEditableElement(EditableElement editableElement) {
+                if(editableElement instanceof MapElement) {
+                        mapElement = (MapElement) editableElement;
+                        // Update the interpreter object
+                        panel.setMapContext(mapElement.getMapContext());
+                }
+        }   
         
 }

@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components;
+package org.orbisgis.view.components.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;

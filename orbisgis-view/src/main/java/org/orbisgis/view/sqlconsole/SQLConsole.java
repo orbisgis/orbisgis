@@ -52,7 +52,7 @@ public class SQLConsole implements EditorDockable {
         public SQLConsole() {
                 dockingPanelParameters.setTitle(I18N.tr("SQL Console"));
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("script_code"));
-                dockingPanelParameters.setToolBar(sqlPanel.getEditorToolBar(true));
+                dockingPanelParameters.setToolBar(sqlPanel.getEditorToolBar());
         }
 
         /**

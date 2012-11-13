@@ -31,19 +31,16 @@ package org.orbisgis.view.beanshell;
 import bsh.EvalError;
 import bsh.Interpreter;
 import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
+import java.beans.EventHandler;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.swing.AbstractButton;
-import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
-import javax.swing.Timer;
+import javax.swing.KeyStroke;
 import javax.swing.text.BadLocationException;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -60,11 +57,10 @@ import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.view.components.DefaultAction;
+import org.orbisgis.view.components.actions.ActionCommands;
+import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.components.findReplace.FindReplaceDialog;
-import org.orbisgis.view.edition.EditableElement;
-import org.orbisgis.view.edition.EditorManager;
-import org.orbisgis.view.map.MapElement;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -74,33 +70,23 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class BshConsolePanel extends JPanel {
         private static final I18n I18N = I18nFactory.getI18n(BshConsolePanel.class);
-        private static final Logger LOGGER = Logger.getLogger(BshConsolePanel.class);
+        private static final Logger LOGGER = Logger.getLogger("gui."+BshConsolePanel.class);
+        private final BeanShellLog infoLogger = new BeanShellLog(LOGGER,Level.INFO);
+        private final BeanShellLog errorLogger = new BeanShellLog(LOGGER,Level.ERROR);
         
-        private JButton btExecute = null;
-        private JButton btClear = null;
-        private JButton btOpen = null;
-        private JButton btSave = null;
-        private JButton btFindReplace = null;
         private RTextScrollPane centerPanel;
         private RSyntaxTextArea scriptPanel;
-        private JToolBar toolBar;
-        private JLabel statusMessage;
-        private Timer timer;
         private FindReplaceDialog findReplaceDialog;
         private Interpreter interpreter = new Interpreter();
-        //Actions
-        private List<DefaultAction> actions = new ArrayList<DefaultAction>();
-        //Keep buttons reference to enable/disable them
-        private Map<DefaultAction,ArrayList<AbstractButton>> actionButtons = new HashMap<DefaultAction,ArrayList<AbstractButton>>();
+        private ActionCommands actions = new ActionCommands();
         
         /**
          * Creates a console for sql.
          */
         public BshConsolePanel() {
-
                 try {
-                        interpreter.setOut(new PrintStream(new BeanShellLog(LOGGER,Level.INFO),true));
-                        interpreter.setErr(new PrintStream(new BeanShellLog(LOGGER,Level.ERROR),true));
+                        interpreter.setOut(new PrintStream(infoLogger));
+                        interpreter.setErr(new PrintStream(errorLogger));
                         DataManager dm = Services.getService(DataManager.class);
                         interpreter.setClassLoader(dm.getDataSourceFactory().getClass().getClassLoader());
                         interpreter.set("dsf", dm.getDataSourceFactory());
@@ -111,34 +97,32 @@ public class BshConsolePanel extends JPanel {
                 } catch (EvalError e) {
                         LOGGER.error(I18N.tr("Cannot initialize beanshell"),e);
                 }
-
                 setLayout(new BorderLayout());
                 add(getCenterPanel(), BorderLayout.CENTER);
         }
-
         /**
-         * Register action button, to enable/disable them later
-         * @param button A button with a registered action instance of DefaultAction
+         * @return ToolBar to command this editor
          */
-        private void registerActionButton(AbstractButton button) {
-                DefaultAction action = (DefaultAction) button.getAction();
-                if(!actionButtons.containsKey(action)) {
-                        actionButtons.put(action, new ArrayList<AbstractButton>());
-                }
-                actionButtons.get(action).add(button);
+        public JToolBar getButtonToolBar() {
+                return actions.getEditorToolBar(true);
         }
         /**
-         * Create a new toolbar.
-         * @return The toolbar of this panel
-         */ 
-        public JToolBar getButtonToolBar() {
-                final JToolBar northPanel = new JToolBar();
-
-                return northPanel;
+         * Create actions instances
+         * 
+         * Each action is put in the Popup menu and the tool bar
+         * Their shortcuts is registered also in the editor
+         */
+        private void initActions() {
+                actions.addAction(new DefaultAction(I18N.tr("Execute"),
+                        I18N.tr("Execute the java script"),
+                        OrbisGISIcon.getIcon("execute"),
+                        EventHandler.create(ActionListener.class, this, "onExecute"),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK)));
         }
 
         private RTextScrollPane getCenterPanel() {
                 if (centerPanel == null) {
+                        initActions();
                         LanguageSupportFactory lsf = LanguageSupportFactory.get();
                         JavaLanguageSupport jls = (JavaLanguageSupport) lsf.getSupportFor(SyntaxConstants.SYNTAX_STYLE_JAVA);
                         try {
@@ -152,6 +136,8 @@ public class BshConsolePanel extends JPanel {
                         lsf.register(scriptPanel);
                         scriptPanel.setSyntaxEditingStyle(RSyntaxTextArea.SYNTAX_STYLE_JAVA);
                         scriptPanel.clearParsers();
+                        actions.setAccelerators(scriptPanel);
+                        actions.feedPopupMenu(scriptPanel.getPopupMenu());
                         centerPanel = new RTextScrollPane(scriptPanel);
                 }
                 return centerPanel;
@@ -159,12 +145,9 @@ public class BshConsolePanel extends JPanel {
         
         private void setCurrentLibraryInfos(JarManager jls) throws IOException {
                 // current JRE
-                jls.addCurrentJreClassFileSource();
-                
+                jls.addCurrentJreClassFileSource();                
                 String cp = System.getProperty("java.class.path");
                 String ps = System.getProperty("path.separator");
-                System.out.println("\"" + cp + "\"");
-                
                 String[] paths = cp.split(ps);
                 for (int i = 0; i < paths.length; i++) {
                         File p = new File(paths[i]);
@@ -183,16 +166,31 @@ public class BshConsolePanel extends JPanel {
         }
 
         /**
+         * Expose the map context in the beanshell interpreter
+         * @param mc MapContext instance
+         */
+        public void setMapContext(MapContext mc) {
+                try {
+                        interpreter.set("mc", mc);
+                } catch(EvalError ex) {
+                        LOGGER.error(ex.getLocalizedMessage(),ex);
+                }
+        }
+        /**
          * User click on execute script button
          */
         public void onExecute() {
                 try {
-                        // Set the current loaded map context
-                        MapContext mc = MapElement.fetchMapContext();
-                        if (mc != null) {
-                                interpreter.set("mc", mc);
+                        String text = scriptPanel.getText().trim();
+                        if(!text.isEmpty()) {
+                                interpreter.eval(text);
+                                infoLogger.flush();
+                                errorLogger.flush();
                         }
-                        interpreter.eval(scriptPanel.getText());
+                } catch (IOException e) {
+                        LOGGER.error(
+                                e.getLocalizedMessage(),
+                                e);
                 } catch (IllegalArgumentException e) {
                         LOGGER.error(
                                 I18N.tr("Cannot execute the script"),
