@@ -26,50 +26,45 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.sqlconsole;
+package org.orbisgis.view.beanshell;
 
 import javax.swing.JComponent;
-import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
-import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- *
+ * The beanshell docking panel
  * @author Nicolas Fortin
  */
-public class SQLConsole implements EditorDockable {
-        private DockingPanelParameters dockingPanelParameters = new DockingPanelParameters();
-        private SQLConsolePanel sqlPanel = new SQLConsolePanel();
+public class BeanShellFrame implements EditorDockable {
+        public static final String EDITOR_NAME = "BeanShell";
+        private final static I18n I18N = I18nFactory.getI18n(BeanShellFrame.class);
+        private DockingPanelParameters parameters = new DockingPanelParameters();
+        private BshConsolePanel panel = new BshConsolePanel();
         private MapElement mapElement;
-        protected final static I18n I18N = I18nFactory.getI18n(SQLConsole.class);
-        
-        public SQLConsole() {
-                dockingPanelParameters.setTitle(I18N.tr("SQL Console"));
-                dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("script_code"));
-                dockingPanelParameters.setToolBar(sqlPanel.getEditorToolBar());
-        }
 
-        /**
-         * Free sql console resources
-         */
-        public void dispose() {
-                sqlPanel.freeResources();
+        public BeanShellFrame() {
+                parameters.setName(EDITOR_NAME);
+                parameters.setTitle(I18N.tr("BeanShell"));
+                parameters.setTitleIcon(OrbisGISIcon.getIcon("page_white_cup"));
+                parameters.setToolBar(panel.getButtonToolBar());
         }
-        
+        public void dispose() {
+                panel.freeResources();
+        }
         @Override
         public DockingPanelParameters getDockingParameters() {
-                return dockingPanelParameters;
+                return parameters;
         }
 
         @Override
         public JComponent getComponent() {
-                return sqlPanel;
+                return panel;
         }
 
         @Override
@@ -86,8 +81,9 @@ public class SQLConsole implements EditorDockable {
         public void setEditableElement(EditableElement editableElement) {
                 if(editableElement instanceof MapElement) {
                         mapElement = (MapElement) editableElement;
-                        sqlPanel.setMapContext((MapContext)mapElement.getObject());
+                        // Update the interpreter object
+                        panel.setMapContext(mapElement.getMapContext());
                 }
-        }
+        }   
         
 }

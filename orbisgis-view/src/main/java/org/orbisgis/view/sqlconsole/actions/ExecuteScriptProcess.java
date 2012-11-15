@@ -51,6 +51,9 @@ import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
+/**
+ * Execute SQL script in a background process
+ */
 public class ExecuteScriptProcess implements BackgroundJob {
 
         private String script;
@@ -95,7 +98,6 @@ public class ExecuteScriptProcess implements BackgroundJob {
 
                 long t1 = System.currentTimeMillis();
                 try {
-                        LOGGER.debug("Preparing script: " + script);
                         try {
                                 statements = Engine.parseScript(script, dsf.getProperties()).getStatements();
                         } catch (ParseException e) {

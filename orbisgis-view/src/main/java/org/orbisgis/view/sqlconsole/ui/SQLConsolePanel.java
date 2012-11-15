@@ -35,22 +35,10 @@ import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.EventHandler;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import javax.swing.AbstractButton;
-import javax.swing.ActionMap;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.Timer;
@@ -66,6 +54,8 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.components.actions.ActionCommands;
+import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.components.findReplace.FindReplaceDialog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.sqlconsole.actions.ExecuteScriptProcess;
@@ -87,13 +77,12 @@ public class SQLConsolePanel extends JPanel {
         
         // Components
         private JToolBar infoToolBar;
-        private JToolBar commandToolBar;
         
         private RTextScrollPane centerPanel;
         private RSyntaxTextArea scriptPanel;
         private CodeReformator codeReformator;
         private JLabel statusMessage;
-        private Timer timer;
+        private Timer messageCleanTimer;
         private int lastSQLStatementToReformatStart;
         private int lastSQLStatementToReformatEnd;
         private static final String MESSAGEBASE = "%d | %d | %s";
@@ -105,11 +94,7 @@ public class SQLConsolePanel extends JPanel {
                 new CommentSpec("/*", "*/"), new CommentSpec("--", "\n")};
         private FindReplaceDialog findReplaceDialog;
         private MapContext mapContext;
-        
-        //Actions
-        private List<SQLConsoleAction> actions = new ArrayList<SQLConsoleAction>();
-        //Keep buttons reference to enable/disable them
-        private Map<SQLConsoleAction,ArrayList<AbstractButton>> actionButtons = new HashMap<SQLConsoleAction,ArrayList<AbstractButton>>();
+        private ActionCommands actions = new ActionCommands();
         private SQLFunctionsPanel sqlFunctionsPanel;
         
         
@@ -126,29 +111,24 @@ public class SQLConsolePanel extends JPanel {
                 split.add(getCenterPanel(), BorderLayout.CENTER);
                 add(split, BorderLayout.CENTER);
                 add(getStatusToolBar(), BorderLayout.SOUTH);
+        }       
+
+        /**
+         * @return ToolBar to command this editor
+         */
+        public JToolBar getEditorToolBar() {
+                return actions.getEditorToolBar(true);
         }
         
-        /**
-         * Register action button, to enable/disable them later
-         * @param button A button with a registered action instance of SQLConsoleAction
-         */
-        private void registerActionButton(AbstractButton button) {
-                SQLConsoleAction action = (SQLConsoleAction) button.getAction();
-                if(!actionButtons.containsKey(action)) {
-                        actionButtons.put(action, new ArrayList<AbstractButton>());
-                }
-                actionButtons.get(action).add(button);
-        }
-
         /**
          * Create actions instances
          * 
          * Each action is put in the Popup menu and the tool bar
-         * Their shortcuts is registered also in the editor
+         * Their shortcuts are registered also in the editor
          */
         private void initActions() {
                 //Execute Action
-                actions.add(new SQLConsoleAction(
+                actions.addAction(new DefaultAction(
                         I18N.tr("Execute"),
                         I18N.tr("Run SQL statements"),
                         OrbisGISIcon.getIcon("execute"),
@@ -156,7 +136,7 @@ public class SQLConsolePanel extends JPanel {
                         KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK)
                         ));
                 //Clear action
-                actions.add(new SQLConsoleAction(
+                actions.addAction(new DefaultAction(
                         I18N.tr("Clear"),
                         I18N.tr("Erase the content of the editor"),
                         OrbisGISIcon.getIcon("erase"),
@@ -164,7 +144,7 @@ public class SQLConsolePanel extends JPanel {
                         null
                        ));
                 //Open action
-                actions.add(new SQLConsoleAction(
+                actions.addAction(new DefaultAction(
                         I18N.tr("Open"),
                         I18N.tr("Load a file in this editor"),
                         OrbisGISIcon.getIcon("open"),
@@ -172,7 +152,7 @@ public class SQLConsolePanel extends JPanel {
                         KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)
                        ));
                 //Find action                
-                actions.add(new SQLConsoleAction(
+                actions.addAction(new DefaultAction(
                         I18N.tr("Search.."),
                         I18N.tr("Search text in the document"),
                         OrbisGISIcon.getIcon("find"),
@@ -181,7 +161,7 @@ public class SQLConsolePanel extends JPanel {
                        ).addStroke(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK)));
                 
                 //Quote
-                actions.add(new SQLConsoleAction(
+                actions.addAction(new DefaultAction(
                         I18N.tr("Quote"),
                         I18N.tr("Quote selected text"),
                         null,
@@ -189,7 +169,7 @@ public class SQLConsolePanel extends JPanel {
                         KeyStroke.getKeyStroke(KeyEvent.VK_SLASH, InputEvent.SHIFT_DOWN_MASK)
                        ));
                 //unQuote
-                actions.add(new SQLConsoleAction(
+                actions.addAction(new DefaultAction(
                         I18N.tr("Un Quote"),
                         I18N.tr("Un Quote selected text"),
                         null,
@@ -198,7 +178,7 @@ public class SQLConsolePanel extends JPanel {
                        ));
                 
                 //Format SQL
-                actions.add(new SQLConsoleAction(
+                actions.addAction(new DefaultAction(
                         I18N.tr("Format"),
                         I18N.tr("Format editor content"),
                         null,
@@ -207,7 +187,7 @@ public class SQLConsolePanel extends JPanel {
                        ));
                 
                 //Save
-                actions.add(new SQLConsoleAction(
+                actions.addAction(new DefaultAction(
                         I18N.tr("Save"),
                         I18N.tr("Save the editor content into a file"),
                         OrbisGISIcon.getIcon("save"),
@@ -215,35 +195,12 @@ public class SQLConsolePanel extends JPanel {
                         KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)
                        ));
                 //ShowHide function list
-                actions.add(new SQLConsoleAction(
+                actions.addAction(new DefaultAction(
                         I18N.tr("SQL list"),
                         I18N.tr("Show/Hide SQL function list"),
                         OrbisGISIcon.getIcon("builtinfunctionmap"),
                         EventHandler.create(ActionListener.class,sqlFunctionsPanel,"switchPanelVisibilityState"),
                         null));
-        }
-        /**
-         * Return a set of button to control the sql panel features
-         * 
-         * @param setButtonText If true, a text is set on the buttons
-         * @return Instance of JToolBar
-         */
-        public JToolBar getEditorToolBar(boolean setButtonText) {
-                if(commandToolBar==null) {
-                        commandToolBar = new JToolBar();
-                        //Add all registered actions
-                        for(SQLConsoleAction action : actions) {
-                                if(action.getIcon()!=null) {
-                                        JButton newButton = new JButton(action);
-                                        registerActionButton(newButton);
-                                        commandToolBar.add(newButton);
-                                }
-                        }
-                        
-                        //Final separator
-                        commandToolBar.add(new JSeparator());
-                }
-                return commandToolBar;
         }
         
         /**
@@ -253,35 +210,7 @@ public class SQLConsolePanel extends JPanel {
         public void setMapContext(MapContext mapContext) {
                 this.mapContext = mapContext;
         }
-        private void feedPopupMenu(JPopupMenu areaMenu) {
-                int customMenuCounter=0;
-                for(SQLConsoleAction action : actions) {
-                        JMenuItem actionItem = new JMenuItem(action);
-                        registerActionButton(actionItem);
-                        areaMenu.insert(actionItem, customMenuCounter++);                        
-                }
-                
-                //Separator at the end
-                areaMenu.insert(new JSeparator(),customMenuCounter++);                
-        }
         
-        /**
-         * Text key shortcuts, Accelerators
-         */
-        private void setAccelerators(JComponent component) {
-                InputMap im = component.getInputMap(WHEN_FOCUSED);                
-                ActionMap actionMap = component.getActionMap();
-                for(SQLConsoleAction action : actions) {
-                        if(action.getKeyStroke()!=null) {
-                                im.put(action.getKeyStroke(), action);
-                                actionMap.put(action, action);
-                                //Additionnal strokes
-                                for(KeyStroke stroke : action.getAdditionnalKeyStrokes()) {                                        
-                                        im.put(stroke, action);
-                                }
-                        }
-                }
-        }
         private RTextScrollPane getCenterPanel() {
                 if (centerPanel == null) {
                         scriptPanel = new RSyntaxTextArea();
@@ -290,7 +219,7 @@ public class SQLConsolePanel extends JPanel {
                         scriptPanel.setLineWrap(true);
                         scriptPanel.setClearWhitespaceLinesEnabled(true);
                         scriptPanel.setMarkOccurrences(false);
-                        setAccelerators(scriptPanel);
+                        actions.setAccelerators(scriptPanel);
                         lang = new SQLLanguageSupport();
                         lang.install(scriptPanel);
 
@@ -298,7 +227,7 @@ public class SQLConsolePanel extends JPanel {
                                 COMMENT_SPECS);
                         scriptPanel.addCaretListener(EventHandler.create(CaretListener.class,this,"onScriptPanelCaretUpdate"));
                         //Add custom actions
-                        feedPopupMenu(scriptPanel.getPopupMenu());
+                        actions.feedPopupMenu(scriptPanel.getPopupMenu());
                         centerPanel = new RTextScrollPane(scriptPanel);
                 }
                 return centerPanel;
@@ -421,14 +350,14 @@ public class SQLConsolePanel extends JPanel {
                         infoToolBar.add(statusMessage);
                         infoToolBar.setFloatable(false);
 
-                        timer = new Timer(5000, new ActionListener() {
+                        messageCleanTimer = new Timer(5000, new ActionListener() {
 
                                 @Override
                                 public void actionPerformed(ActionEvent e) {
                                         setStatusMessage("");
                                 }
                         });
-                        timer.setRepeats(false);
+                        messageCleanTimer.setRepeats(false);
                 }
 
                 return infoToolBar;
@@ -437,7 +366,7 @@ public class SQLConsolePanel extends JPanel {
         public final void setStatusMessage(String message) {
                 this.message = message;
                 if (!message.isEmpty()) {
-                        timer.restart();
+                        messageCleanTimer.restart();
                 }
                 statusMessage.setText(String.format(MESSAGEBASE, line, character, message));
         }
@@ -576,8 +505,8 @@ public class SQLConsolePanel extends JPanel {
                 if (lang != null) {
                         lang.uninstall(scriptPanel);
                 }
-                if(timer!=null) {
-                        timer.stop();
+                if(messageCleanTimer!=null) {
+                        messageCleanTimer.stop();
                 }
         }
 

@@ -37,6 +37,7 @@ import javax.swing.JOptionPane;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerCollectionEvent;
 import org.orbisgis.core.layerModel.LayerException;
@@ -48,6 +49,7 @@ import org.orbisgis.core.layerModel.SelectionEvent;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.toc.Toc;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -76,6 +78,20 @@ public final class MapElement extends EditableElement {
                 mapId = String.valueOf(mapContext.getIdTime());
 	}
 
+        /**
+         * Open editable elements loaded in editors, and return the first found MapContext
+         * @return The map context or null if not found
+         */
+        public static MapContext fetchMapContext() {
+                EditorManager editorManager = Services.getService(EditorManager.class);
+                for (EditableElement editable : editorManager.getEditableElements()) {
+                        if (editable instanceof MapElement) {
+                                return ((MapElement)editable).getMapContext();
+                        }
+                }
+                return null;
+        }
+        
         public File getMapContextFile() {
                 return mapContextFile;
         }       
