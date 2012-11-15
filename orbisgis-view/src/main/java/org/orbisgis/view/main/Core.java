@@ -53,6 +53,7 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.JobQueue;
+import org.orbisgis.view.beanshell.BeanShellFrameFactory;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorManager;
@@ -259,6 +260,7 @@ public class Core {
             editors.addEditorFactory(new MapEditorFactory());
             editors.addEditorFactory(new SQLConsoleFactory());
             editors.addEditorFactory(new TableEditorFactory());
+            editors.addEditorFactory(new BeanShellFrameFactory());
     }
     /**
      * Initialisation of the BackGroundManager Service

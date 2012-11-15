@@ -177,7 +177,7 @@ public final class FindReplaceDialog extends JDialog {
                         c.setWholeWord(wholeWord);
                         c.setRegularExpression(regex);
                         c.setSearchForward(forward);
-                        boolean found = SearchEngine.find(rSyntaxTextArea, c);
+                        boolean found = SearchEngine.replace(rSyntaxTextArea, c);
                         if (!found) {
                                 LOGGER.info(I18N.tr("Text not found !"));
                         }
@@ -203,7 +203,7 @@ public final class FindReplaceDialog extends JDialog {
                         c.setWholeWord(wholeWord);
                         c.setRegularExpression(regex);
                         c.setReplaceWith(textReplace);
-                        SearchEngine.find(rSyntaxTextArea, c);
+                        SearchEngine.replaceAll(rSyntaxTextArea, c);
                 }
         }
         

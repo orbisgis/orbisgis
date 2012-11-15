@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.sqlconsole.ui;
+package org.orbisgis.view.components.actions;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -37,10 +37,10 @@ import javax.swing.Icon;
 import javax.swing.KeyStroke;
 
 /**
- * Action implementation for SQL Editor.
+ * Action implementation, linked with an action listener.
  * @author Nicolas Fortin
  */
-public class SQLConsoleAction extends AbstractAction {
+public class DefaultAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
         private ActionListener actionListener;
         private KeyStroke keyStroke;
@@ -53,7 +53,7 @@ public class SQLConsoleAction extends AbstractAction {
          * @param actionListener Fire the event to this listener
          * @param keyStroke ShortCut for this action
          */
-        public SQLConsoleAction(String actionLabel,String actionToolTip, Icon icon,ActionListener actionListener,KeyStroke keyStroke) {
+        public DefaultAction(String actionLabel,String actionToolTip, Icon icon,ActionListener actionListener,KeyStroke keyStroke) {
                 super(actionLabel, icon);
                 this.actionListener = actionListener;
                 this.keyStroke = keyStroke;
@@ -100,7 +100,7 @@ public class SQLConsoleAction extends AbstractAction {
          * @param keyStroke
          * @return this
          */
-        public SQLConsoleAction addStroke(KeyStroke keyStroke) {
+        public DefaultAction addStroke(KeyStroke keyStroke) {
                 additionnalKeyStrokes.add(keyStroke);
                 return this;
         }
