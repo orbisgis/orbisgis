@@ -124,7 +124,7 @@ public class SQLConsolePanel extends JPanel {
          * Create actions instances
          * 
          * Each action is put in the Popup menu and the tool bar
-         * Their shortcuts is registered also in the editor
+         * Their shortcuts are registered also in the editor
          */
         private void initActions() {
                 //Execute Action

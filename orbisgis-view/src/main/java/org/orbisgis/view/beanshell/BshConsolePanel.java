@@ -95,7 +95,7 @@ public class BshConsolePanel extends JPanel {
         private String currentStatusMessage = "";
         
         /**
-         * Creates a console for sql.
+         * Creates a console for beanshell.
          */
         public BshConsolePanel() {
                 try {
@@ -145,7 +145,7 @@ public class BshConsolePanel extends JPanel {
          * Create actions instances
          * 
          * Each action is put in the Popup menu and the tool bar
-         * Their shortcuts is registered also in the editor
+         * Their shortcuts are registered also in the editor
          */
         private void initActions() {
                 //Execute action
@@ -190,7 +190,7 @@ public class BshConsolePanel extends JPanel {
         }
 
         /**
-         * Open a dialog that let the user to select a file and save the content
+         * Open a dialog that let the user select a file and save the content
          * of the sql editor into this file.
          */
         public void onSaveFile() {
@@ -211,7 +211,7 @@ public class BshConsolePanel extends JPanel {
                 }
         }
         /**
-         * Open a dialog that let the user to select a file
+         * Open a dialog that let the user select a file
          * and add or replace the content of the sql editor.
          */
         public void onOpenFile() {
