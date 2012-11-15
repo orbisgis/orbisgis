@@ -78,7 +78,7 @@ public class MainFrame extends JFrame {
         public void init() {
                 createMenu();
                 this.setJMenuBar(menuBar.getRootBar());
-                getContentPane().add(new MainFrameStatusBar(),BorderLayout.SOUTH);                
+                getContentPane().add(new MainFrameStatusBar(this),BorderLayout.SOUTH);                
         }
 
         public static String getVersion() {

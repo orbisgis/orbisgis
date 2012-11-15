@@ -95,7 +95,7 @@ public class MapStatusBar extends StatusBar {
                 JButton changeProjection = new CustomButton(OrbisGISIcon.getIcon("world"));
                 changeProjection.setToolTipText(I18N.tr("Change coordinate reference system"));
                 //changeProjection.setContentAreaFilled(false);
-                addComponentOnTheRigthToolBar(changeProjection,false);
+                addComponent(changeProjection,SwingConstants.RIGHT,false);
                 // Scale
                 scaleLabel = new JLabel(I18N.tr("Scale :"));
                 scaleField = new JTextField();
@@ -104,7 +104,7 @@ public class MapStatusBar extends StatusBar {
                 //scaleField.setEditable(false);
                 //scaleField.setColumns(SCALE_FIELD_COLUMNS);
                 addComponent(scaleLabel, SwingConstants.RIGHT);
-                addComponentOnTheRigthToolBar(scaleField,false);
+                addComponent(scaleField, SwingConstants.RIGHT, false);
                 //Set initial value
                 setScaleDenominator(1);
                 //TODO : manage projection

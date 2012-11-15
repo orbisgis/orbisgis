@@ -61,6 +61,7 @@ public class LoadingFrame extends JFrame implements ProgressMonitor {
                 mainPanel.add(new JLabel(OrbisGISIcon.getIcon("logo_orbisgis")),
                         BorderLayout.CENTER);
                 bottomPanel = new JPanel(new BorderLayout());
+                progressBar.setIndeterminate(true);
                 bottomPanel.add(progressBar,BorderLayout.WEST);
                 bottomPanel.add(messageLabel, BorderLayout.CENTER);
                 mainPanel.add(bottomPanel,BorderLayout.SOUTH);
@@ -100,6 +101,7 @@ public class LoadingFrame extends JFrame implements ProgressMonitor {
 
         @Override
         public void progressTo(long l) {
+                progressBar.setIndeterminate(l == 0);
                 progressBar.setValue((int)l);
         }
 

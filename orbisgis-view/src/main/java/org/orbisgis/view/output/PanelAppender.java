@@ -48,11 +48,11 @@ public class PanelAppender extends AppenderSkeleton {
             
     }
     //New duplicata message is ignored if the time interval is lower than this constant value.
-    private static final int SAME_MESSAGE_IGNORE_INTERVAL = 500; //ms
-    private static final Color COLOR_ERROR = Color.RED;
-    private static final Color COLOR_WARNING = Color.ORANGE.darker();
-    private static final Color COLOR_DEBUG = Color.BLUE;
-    private static final Color COLOR_INFO = Color.BLACK;
+    public static final int SAME_MESSAGE_IGNORE_INTERVAL = 500; //ms
+    public static final Color COLOR_ERROR = Color.RED;
+    public static final Color COLOR_WARNING = Color.ORANGE.darker();
+    public static final Color COLOR_DEBUG = Color.BLUE;
+    public static final Color COLOR_INFO = Color.BLACK;
     private Level lastLevel = Level.INFO;
     private Color lastLevelColor = getLevelColor(lastLevel);
     private OutputPanel guiPanel;
@@ -82,7 +82,7 @@ public class PanelAppender extends AppenderSkeleton {
      * @param level
      * @return The color associated
      */
-    private static Color getLevelColor(Level level) {
+    public static Color getLevelColor(Level level) {
         switch(level.toInt()) {
             case Level.INFO_INT:
                 return COLOR_INFO;
@@ -115,6 +115,7 @@ public class PanelAppender extends AppenderSkeleton {
         }
     }
 
+    @Override
     public void close() {
         //Nothing to close
     }
@@ -122,6 +123,7 @@ public class PanelAppender extends AppenderSkeleton {
      * This appender need a layout
      * @return 
      */
+    @Override
     public boolean requiresLayout() {
         return true;
     }
@@ -145,6 +147,7 @@ public class PanelAppender extends AppenderSkeleton {
        /**
         * Push awaiting messages to the gui
         */
+        @Override
         public void run(){
             try {
                 while(!leQueue.isEmpty()) {

@@ -42,18 +42,25 @@ import javax.swing.SwingConstants;
  */
 public class StatusBar extends JPanel {
         protected JPanel rightToolbar;
+        protected JPanel centerToolBar;
         protected JPanel leftToolbar;
         private final int horizontalEmptyBorder;
 
         public StatusBar(int outerBarBorder, int horizontalEmptyBorder) {
                 super(new BorderLayout());
                 this.horizontalEmptyBorder = horizontalEmptyBorder;
+                // Right
                 rightToolbar = new JPanel();
                 rightToolbar.setLayout(
                         new BoxLayout(rightToolbar, BoxLayout.X_AXIS));
+                // Left
                 leftToolbar = new JPanel();
                 leftToolbar.setLayout(
                         new BoxLayout(leftToolbar, BoxLayout.X_AXIS));
+                // Center
+                centerToolBar = new JPanel();
+                centerToolBar.setLayout(new BoxLayout(centerToolBar, BoxLayout.X_AXIS));
+                
                 setBorder(
                         BorderFactory.createCompoundBorder(
                         BorderFactory.createEtchedBorder(),
@@ -61,48 +68,46 @@ public class StatusBar extends JPanel {
                         outerBarBorder, outerBarBorder, outerBarBorder)));
                 add(rightToolbar, BorderLayout.EAST);
                 add(leftToolbar, BorderLayout.WEST);
+                add(centerToolBar,BorderLayout.CENTER);
         }
                
+        /**
+         * Append a component on the right or the left the status bar
+         * @param component 
+         * @param position SwingConstants.LEFT, CENTER OR RIGHT
+         */
+        public void addComponent(JComponent component, int position) {
+                addComponent(component,position,true);
+        }
 
         /**
          * Append a component on the right or the left the status bar
          * @param component 
+         * @param position SwingConstants.LEFT, CENTER OR RIGHT
+         * @param addSeparator Add a separator at the left of the component
          */
-        public void addComponent(JComponent component, int position) {
+        public void addComponent(JComponent component, int position,boolean addSeparator) {
                 if (position == SwingConstants.LEFT) {
-                        addComponentOnTheLeftToolBar(component, true);
+                        addComponent(leftToolbar,component, addSeparator);
                 } else if (position == SwingConstants.RIGHT) {
-                        addComponentOnTheRigthToolBar(component, true);
+                        addComponent(rightToolbar,component, addSeparator);
+                } else if(position == SwingConstants.CENTER) {
+                        addComponent(centerToolBar,component,addSeparator);
                 }
-        }
+        }     
+        
         /**
          * Append a component on the right status bar
          * @param component 
          * @param addSeparator Add a separator at the left of the component
          */
-        public void addComponentOnTheRigthToolBar(JComponent component,boolean addSeparator) {
-                if(addSeparator && rightToolbar.getComponentCount()!=0) {
+        private void addComponent(JPanel panel, JComponent component,boolean addSeparator) {
+                if(addSeparator && panel.getComponentCount()!=0) {
                         JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
-                        rightToolbar.add(Box.createHorizontalStrut(horizontalEmptyBorder));
-                        rightToolbar.add(separator);
-                        rightToolbar.add(Box.createHorizontalStrut(horizontalEmptyBorder));
+                        panel.add(Box.createHorizontalStrut(horizontalEmptyBorder));
+                        panel.add(separator);
+                        panel.add(Box.createHorizontalStrut(horizontalEmptyBorder));
                 }
-                rightToolbar.add(component);
-        }       
-        
-        
-        /**
-         * Append a component on the left status bar
-         * @param component 
-         * @param addSeparator Add a separator at the left of the component
-         */
-        public void addComponentOnTheLeftToolBar(JComponent component,boolean addSeparator) {
-                if(addSeparator && leftToolbar.getComponentCount()!=0) {
-                        JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
-                        leftToolbar.add(Box.createHorizontalStrut(horizontalEmptyBorder));
-                        leftToolbar.add(separator);
-                        leftToolbar.add(Box.createHorizontalStrut(horizontalEmptyBorder));
-                }
-                leftToolbar.add(component);
-        } 
+                panel.add(component);                
+        }
 }
