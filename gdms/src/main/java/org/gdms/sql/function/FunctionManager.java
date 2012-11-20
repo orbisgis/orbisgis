@@ -400,8 +400,9 @@ public final class FunctionManager {
          *             If the class is not a valid function implementation with an
          *             empty constructor or there is already a function or custom
          *             query with that name (when replace if false)
+         * @return the function name identifier
          */
-        public void addFunction(Class<? extends Function> functionClass, boolean replace) {
+        public String addFunction(Class<? extends Function> functionClass, boolean replace) {
                 LOG.trace("Adding function " + functionClass.getName());
                 Function function;
                 try {
@@ -413,8 +414,7 @@ public final class FunctionManager {
                         throw new IllegalArgumentException("Cannot instantiate function: "
                                 + functionClass, e);
                 }
-                String functionName = function.getName().toLowerCase();
-                addFunction(functionName, functionClass, replace);
+                return addFunction(function.getName(), functionClass, replace);
         }
 
         /**
@@ -425,30 +425,31 @@ public final class FunctionManager {
          * @param replace true if any function with the same name must be silently replaced
          * @throws IllegalArgumentException if there is already a function or custom
          *         query with that name (when replace if false)
-         * 
+         * @return the function name identifier
          */
-        public void addFunction(String functionName, Class<? extends Function> functionClass, boolean replace) {
+        public String addFunction(String functionName, Class<? extends Function> functionClass, boolean replace) {
                 String lowerFunctionName = functionName.toLowerCase();
                 if (!replace && nameFunction.containsKey(lowerFunctionName)) {
                         throw new IllegalArgumentException("Function " + lowerFunctionName
                                 + " already exists");
                 }
                 nameFunction.put(lowerFunctionName, functionClass);
-
                 fireFunctionAdded(lowerFunctionName);
+                return lowerFunctionName;
         }
 
         /**
          * Registers a new function with its default name.
          * 
          * @param functionClass
+         * @return the function name identifier
          * @throws IllegalArgumentException
          *             If the class is not a valid function implementation with an
          *             empty constructor or there is already a function or custom
          *             query with that name
          */
-        public void addFunction(Class<? extends Function> functionClass) {
-                addFunction(functionClass, false);
+        public String addFunction(Class<? extends Function> functionClass) {
+                return addFunction(functionClass, false);
         }
 
         /**
@@ -456,13 +457,14 @@ public final class FunctionManager {
          *
          * @param name 
          * @param functionClass
+         * @return the function name identifier
          * @throws IllegalArgumentException
          *             If the class is not a valid function implementation with an
          *             empty constructor or there is already a function or custom
          *             query with that name
          */
-        public void addFunction(String name, Class<? extends Function> functionClass) {
-                addFunction(name, functionClass, false);
+        public String addFunction(String name, Class<? extends Function> functionClass) {
+                return addFunction(name, functionClass, false);
         }
 
         private void fireFunctionAdded(String functionName) {
