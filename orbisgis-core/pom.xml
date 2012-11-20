@@ -131,6 +131,11 @@
                         <artifactId>commons-lang</artifactId>
                         <version>2.3</version>
                 </dependency>
+                <dependency>
+                  <groupId>org.apache.felix</groupId>
+                  <artifactId>org.apache.felix.framework</artifactId>
+                  <version>4.0.2</version>
+                </dependency>
         </dependencies>
         <pluginRepositories>
                 <pluginRepository>

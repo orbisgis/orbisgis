@@ -62,7 +62,7 @@ public abstract class AbstractTest {
         }
         
         @After
-        public void tearDown() {
+        public void tearDown() throws Exception {
             Logger.getRootLogger().removeAppender(failErrorManager);
             Logger.getRootLogger().removeAppender(consoleAppender);
         }
