@@ -428,13 +428,14 @@ public final class FunctionManager {
          * 
          */
         public void addFunction(String functionName, Class<? extends Function> functionClass, boolean replace) {
-                if (!replace && nameFunction.containsKey(functionName)) {
-                        throw new IllegalArgumentException("Function " + functionName
+                String lowerFunctionName = functionName.toLowerCase();
+                if (!replace && nameFunction.containsKey(lowerFunctionName)) {
+                        throw new IllegalArgumentException("Function " + lowerFunctionName
                                 + " already exists");
                 }
-                nameFunction.put(functionName, functionClass);
+                nameFunction.put(lowerFunctionName, functionClass);
 
-                fireFunctionAdded(functionName);
+                fireFunctionAdded(lowerFunctionName);
         }
 
         /**
@@ -532,11 +533,12 @@ public final class FunctionManager {
          * @return the function Class if found, null if not found
          */
         public Class<? extends Function> remove(String functionName) {
+                String LowerFunctionName = functionName.toLowerCase();
                 LOG.trace("Removing function");
                 if (functionName != null) {
-                        Class<? extends Function> ret = nameFunction.remove(functionName.toLowerCase());
+                        Class<? extends Function> ret = nameFunction.remove(LowerFunctionName);
                         if (ret != null) {
-                                fireFunctionRemoved(functionName);
+                                fireFunctionRemoved(LowerFunctionName);
                         }
                         return ret;
                 } else {
