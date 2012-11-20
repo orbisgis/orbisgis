@@ -29,47 +29,84 @@
 package org.orbisgis.core.plugin;
 
 import java.io.File;
+import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.DataManager;
-import org.orbisgis.core.plugin.gdms.Activator;
 import org.orbisgis.core.plugin.gdms.DummyScalarFunction;
+import org.osgi.framework.Bundle;
 
 /**
  * Unit test of plugin-system
  * @author Nicolas Fortin
  */
 public class PluginHostTest extends AbstractTest {
+    
     @Override
     public void setUp() throws Exception {
         super.setUp();
         registerDataManager();
     }
+    private PluginHost startHost() {
+        PluginHost host = new PluginHost(new File("target"+File.separator+"plugins"));
+        host.start();
+        return host;
+    }
+    /**
+     * Unit test of gdms function tracker
+     * @throws Exception 
+     */
+    @Test
+    public void installGDMSFunctionService() throws Exception {
+        PluginHost host = startHost();
+        
+        // Register dummy sql function service
+        host.getHostBundleContext().registerService(Function.class.getName(),
+                new DummyScalarFunction(),
+                null);
+        
+        // check if the function is registered        
+        DataManager dataManager = getDataManager();
+        assertNotNull(dataManager);
+        FunctionManager manager = dataManager.getDataSourceFactory().getFunctionManager();  
+        assertTrue(manager.contains("dummy"));        
+        //end plugin host
+        host.stop();
+        
+        //test if the function has been successfully removed
+        assertFalse(manager.contains("dummy"));
+    }
     
+    /**
+     * Unit test of the entire plugin system
+     * @throws Exception 
+     */
     @Test
     public void installGDMSFunctionBundle() throws Exception {
         DataManager dataManager = getDataManager();
         assertNotNull(dataManager);
         FunctionManager manager = dataManager.getDataSourceFactory().getFunctionManager();        
-        PluginHost host = new PluginHost(new File("target"+File.separator+"plugins"));
-        host.start();
-        
-        Activator gdmsPlugin = new Activator();
-        gdmsPlugin.start(host.getHostBundleContext());
+        PluginHost host = startHost();
+        File bundlePath = new File("../plugin-test/target/plugin-4.0-SNAPSHOT.jar");
+        System.out.println("Install plugin :"+bundlePath.getAbsolutePath());
+        assertTrue(bundlePath.exists());
+        // Install the external package
+        Bundle plugin = host.getHostBundleContext().installBundle("file:"+bundlePath.getAbsolutePath());
+        // start it
+        plugin.start();
         // test if function exists
-        assertTrue(manager.contains(DummyScalarFunction.class));
+        assertTrue(manager.contains("dummy"));
         
         host.getHostBundleContext().getBundle().stop();
         //end plugin host
-        host.dispose();
+        host.stop();
         
         //test if the function has been successfully removed
-        assertFalse(getDataManager().getDataSourceFactory().getFunctionManager().contains(DummyScalarFunction.class));
+        assertFalse(manager.contains("dummy"));
     }
 
     @Override

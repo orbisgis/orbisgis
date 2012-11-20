@@ -57,7 +57,11 @@ public class PluginHost {
         Map<String, String> frameworkConfig = new HashMap<String,String>();
         // Define service interface exported by Framework orbisgis-core
         frameworkConfig.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,
-        "org.gdms.sql.function.Function version=1.0.0");
+        "org.gdms.data,"
+                + "org.gdms.data.types,"
+                + "org.gdms.data.values,"
+                + "org.gdms.sql.function,"
+                + "org.osgi.framework version=1.6");
         // Persistance data
         frameworkConfig.put(Constants.FRAMEWORK_STORAGE, pluginCacheFolder.getAbsolutePath());
         framework = createEmbeddedFramework(frameworkConfig);
@@ -86,7 +90,7 @@ public class PluginHost {
      * @throws BundleException
      * @throws InterruptedException 
      */
-    public void dispose() throws BundleException, InterruptedException {
+    public void stop() throws BundleException, InterruptedException {
         functionTracker.close();
         framework.stop();
         framework.waitForStop(STOP_TIMEOUT);

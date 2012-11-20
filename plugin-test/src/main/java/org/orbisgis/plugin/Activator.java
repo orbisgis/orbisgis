@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.plugin.gdms;
+package org.orbisgis.plugin;
 
 import org.gdms.sql.function.Function;
 import org.osgi.framework.BundleActivator;
@@ -39,6 +39,7 @@ import org.osgi.framework.BundleContext;
 public class Activator implements BundleActivator {    
     @Override
     public void start(BundleContext context) throws Exception {
+        System.out.println("Activator of org.orbisgis.plugin starting..");
         // Register dummy sql function service
         context.registerService(Function.class.getName(),
                 new DummyScalarFunction(),
@@ -47,5 +48,6 @@ public class Activator implements BundleActivator {
     
     @Override
     public void stop(BundleContext context) throws Exception {
+        System.out.println("Activator of org.orbisgis.plugin stopping..");
     }    
 }
