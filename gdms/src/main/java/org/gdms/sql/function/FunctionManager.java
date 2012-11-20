@@ -479,7 +479,7 @@ public final class FunctionManager {
          * @return true if registered
          */
         public boolean contains(String name) {
-                return nameFunction.containsKey(name);
+                return nameFunction.containsKey(name.toLowerCase());
         }
 
         /**
@@ -535,12 +535,11 @@ public final class FunctionManager {
          * @return the function Class if found, null if not found
          */
         public Class<? extends Function> remove(String functionName) {
-                String LowerFunctionName = functionName.toLowerCase();
                 LOG.trace("Removing function");
                 if (functionName != null) {
-                        Class<? extends Function> ret = nameFunction.remove(LowerFunctionName);
+                        Class<? extends Function> ret = nameFunction.remove(functionName.toLowerCase());
                         if (ret != null) {
-                                fireFunctionRemoved(LowerFunctionName);
+                                fireFunctionRemoved(functionName);
                         }
                         return ret;
                 } else {
