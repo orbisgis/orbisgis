@@ -43,6 +43,7 @@ import org.gdms.driver.DriverException;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.DefaultDataManager;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.plugin.PluginHost;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -62,6 +63,7 @@ public class MainContext {
     private DataManager dataManager;
     private boolean debugMode;
     private static String CONSOLE_LOGGER = "ConsoleLogger";
+    private PluginHost pluginHost;
     
     /**
      * Single parameter constructor

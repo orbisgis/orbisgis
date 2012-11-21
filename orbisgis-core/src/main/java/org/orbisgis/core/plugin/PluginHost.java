@@ -34,7 +34,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.ServiceLoader;
 import org.apache.log4j.Logger;
-import org.gdms.sql.function.FunctionManager;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.osgi.framework.BundleContext;
@@ -51,20 +50,26 @@ public class PluginHost {
     private Framework framework;
     private final static int STOP_TIMEOUT = 15000;
     private static final Logger LOGGER = Logger.getLogger(PluginHost.class);
-    private FunctionTracker functionTracker;
     
     public PluginHost(File pluginCacheFolder) {
         Map<String, String> frameworkConfig = new HashMap<String,String>();
         // Define service interface exported by Framework orbisgis-core
-        frameworkConfig.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,
-        "org.gdms.data,"
-                + "org.gdms.data.types,"
-                + "org.gdms.data.values,"
-                + "org.gdms.sql.function,"
-                + "org.osgi.framework version=1.6");
+        frameworkConfig.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,getExtraPackage());
         // Persistance data
         frameworkConfig.put(Constants.FRAMEWORK_STORAGE, pluginCacheFolder.getAbsolutePath());
         framework = createEmbeddedFramework(frameworkConfig);
+    }
+    
+    private String getExtraPackage() {
+        StringBuilder sb = new StringBuilder();   
+        // Export GDMS Function service
+        sb.append( "org.gdms.data,"
+                + "org.gdms.sql.function,"
+                +"org.gdms.data.types,"
+                + "org.gdms.data.values,");
+        // Core export framework
+        sb.append("org.osgi.framework version=1.6");
+        return sb.toString();
     }
     /**
      * Start the Framework
@@ -73,17 +78,12 @@ public class PluginHost {
         try {
             framework.init();
             framework.start();  
-            // trackers for local services exported
-            registerCoreTrackers();
+            // Start the host activator
+            Activator hostActivator = new Activator();
+            hostActivator.start(getHostBundleContext());
         } catch(BundleException ex) {
             LOGGER.error(ex.getLocalizedMessage(),ex);
         }
-    }
-
-    private void registerCoreTrackers() {        
-            functionTracker = new FunctionTracker(getHostBundleContext(),
-                Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager());
-            functionTracker.open();
     }
     /**
      * Stop the host Framework, and wait that all bundles are stopped
@@ -91,7 +91,6 @@ public class PluginHost {
      * @throws InterruptedException 
      */
     public void stop() throws BundleException, InterruptedException {
-        functionTracker.close();
         framework.stop();
         framework.waitForStop(STOP_TIMEOUT);
     }
