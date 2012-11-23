@@ -29,10 +29,15 @@
 package org.orbisgis.core.plugin;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.ServiceLoader;
+import java.util.Set;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
@@ -50,31 +55,71 @@ public class PluginHost {
     private Framework framework;
     private final static int STOP_TIMEOUT = 15000;
     private static final Logger LOGGER = Logger.getLogger(PluginHost.class);
-    
+    private File pluginCacheFolder;
+    private List<PackageDeclaration> packageList = new ArrayList<PackageDeclaration>();
+    /**
+     * 
+     * @param pluginCacheFolder Cache folder
+     */
     public PluginHost(File pluginCacheFolder) {
-        Map<String, String> frameworkConfig = new HashMap<String,String>();
-        // Define service interface exported by Framework orbisgis-core
-        frameworkConfig.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,getExtraPackage());
-        // Persistance data
-        frameworkConfig.put(Constants.FRAMEWORK_STORAGE, pluginCacheFolder.getAbsolutePath());
-        framework = createEmbeddedFramework(frameworkConfig);
+        this.pluginCacheFolder = pluginCacheFolder;
+        packageList.add(new PackageDeclaration("org.osgi.framework", 1,6,0));
     }
-    
+    /**
+     * The host will automatically export all packages, but without version information.
+     * This method give the ability to introduce a package constraint on export, like version number.
+     * @param packageName
+     * @param version Version of the package in the form ()
+     */
+    public void exportCorePackage(PackageDeclaration packageInfo) throws IllegalStateException {
+        if(framework!=null) {
+            throw new IllegalStateException("The OSGI framework has been already initialised");
+        }
+        packageList.add(packageInfo);
+    }
     private String getExtraPackage() {
-        StringBuilder sb = new StringBuilder();   
-        // Export GDMS Function service
-        sb.append( "org.gdms.data,"
-                + "org.gdms.sql.function,"
-                +"org.gdms.data.types,"
-                + "org.gdms.data.values,");
-        // Core export framework
-        sb.append("org.osgi.framework version=1.6");
+        //Build a set of packages to skip programatically defined packages
+        Set<String> packagesName = new HashSet<String>();
+        List<String> sortedPackagesExport = new ArrayList<String>();
+        for(PackageDeclaration packInfo : packageList) {
+            packagesName.add(packInfo.getPackageName());
+            if(!packInfo.isVersionDefined()) {
+                sortedPackagesExport.add(packInfo.getPackageName());
+            } else {
+                sortedPackagesExport.add(packInfo.getPackageName()+
+                        "; version="+packInfo.getMajorVersion()+
+                        "."+packInfo.getMinorVersion()+
+                        "."+packInfo.getRevisionVersion());                
+            }
+        }
+        // Export Host provided packages, by classpaths
+        List<String> classPathExtensions = BundleTools.getAvailablePackages();
+        for(String ext : classPathExtensions) {
+            if(!packagesName.contains(ext)) {                
+                sortedPackagesExport.add(ext);
+            }            
+        }
+        // Sort export package
+        Collections.sort(sortedPackagesExport);
+        StringBuilder sb = new StringBuilder();        
+        for(String ext : sortedPackagesExport) {
+            if(sb.length()!=0) {
+                sb.append(",");
+            }
+            sb.append(ext);
+        }
         return sb.toString();
     }
     /**
      * Start the Framework
      */
     public void start() {
+        Map<String, String> frameworkConfig = new HashMap<String,String>();
+        // Define service interface exported by Framework orbisgis-core
+        frameworkConfig.put(Constants.FRAMEWORK_SYSTEMPACKAGES_EXTRA,getExtraPackage());
+        // Persistance data
+        frameworkConfig.put(Constants.FRAMEWORK_STORAGE, pluginCacheFolder.getAbsolutePath());
+        framework = createEmbeddedFramework(frameworkConfig);
         try {
             framework.init();
             framework.start();  
