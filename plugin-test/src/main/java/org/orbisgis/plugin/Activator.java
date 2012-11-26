@@ -41,7 +41,7 @@ public class Activator implements BundleActivator {
     public void start(BundleContext context) throws Exception {
         System.out.println("Activator of org.orbisgis.plugin starting..");
         // Register dummy sql function service
-        context.registerService(Function.class.getName(),
+        context.registerService(Function.class,
                 new DummyScalarFunction(),
                 null);
     }

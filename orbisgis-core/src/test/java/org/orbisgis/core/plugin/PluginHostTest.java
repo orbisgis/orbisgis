@@ -39,6 +39,7 @@ import org.orbisgis.core.AbstractTest;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.plugin.gdms.DummyScalarFunction;
 import org.osgi.framework.Bundle;
+import org.osgi.framework.ServiceRegistration;
 
 /**
  * Unit test of plugin-system
@@ -65,15 +66,16 @@ public class PluginHostTest extends AbstractTest {
         PluginHost host = startHost();
         
         // Register dummy sql function service
-        host.getHostBundleContext().registerService(Function.class.getName(),
-                new DummyScalarFunction(),
-                null);
+        ServiceRegistration<Function> serv = host.getHostBundleContext()
+               .registerService(Function.class, new DummyScalarFunction(),null);
         
         // check if the function is registered        
         DataManager dataManager = getDataManager();
         assertNotNull(dataManager);
         FunctionManager manager = dataManager.getDataSourceFactory().getFunctionManager();  
-        assertTrue(manager.contains("dummy"));        
+        assertTrue(manager.contains("dummy"));
+        //The bundle normally unregister the service, but there is no bundle in this unit test
+        serv.unregister();
         //end plugin host
         host.stop();
         
