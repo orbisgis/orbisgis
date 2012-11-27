@@ -29,14 +29,30 @@
 package org.orbisgis.view.plugins;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.io.PrintStream;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
+import javax.swing.text.AttributeSet;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import javax.swing.text.JTextComponent;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
+import org.apache.felix.shell.Command;
 import org.apache.felix.shell.ShellService;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.orbisgis.view.components.Log4JOutputStream;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.osgi.framework.Bundle;
@@ -59,19 +75,15 @@ public class PluginShell extends JPanel implements DockingPanel {
         private final BundleContext hostBundle;
         private JTextField commandField = new JTextField();
         private JTextPane outputField = new JTextPane();
-        private ServiceTracker tracker;
-        private ShellService shellEngine = new EmptyEngine();
+        private Log4JOutputStream info = new Log4JOutputStream(LOGGER, Level.INFO);
 
         public PluginShell(final BundleContext hostBundle) {
                 super(new BorderLayout());
                 this.hostBundle = hostBundle;
-                tracker = new ShellServiceTracker(hostBundle);
-                tracker.open();
                 parameters.setName("plugin-shell");
                 parameters.setTitle(I18N.tr("Plugin Shell"));
                 outputField.setEditable(false);
-                outputField.setText(I18N.tr("Awaiting plugin shell.."));
-                commandField.setEditable(false);
+                outputField.setText(I18N.tr("Plugin shell, type \"help\" for command list."));
                 // Initialising components
                 // The shell is composed by a logging part and a command line part
                 add(outputField, BorderLayout.CENTER);
@@ -82,19 +94,53 @@ public class PluginShell extends JPanel implements DockingPanel {
                                 try {
                                         Bundle shellBundle = hostBundle.installBundle("osgi-shell.jar", getClass().getResourceAsStream("org.apache.felix.shell.jar"));
                                         shellBundle.start();
+                                        for(ServiceReference<? extends Object> service : shellBundle.getRegisteredServices()) {
+                                                Object servObj = hostBundle.getService(service);
+                                                LOGGER.info("Shell services : "+servObj+" is shell ? "+(servObj instanceof ShellService)+" "+(servObj instanceof Command));                                                
+                                        }
                                 } catch(BundleException ex) {
                                         LOGGER.error("Cannot install shell bundle",ex);
                                 }
                         }
                 });
+                commandField.addActionListener(EventHandler.create(ActionListener.class,this,"onValidateCommand"));
         }
         
         /**
-         * shellEngine is properly set, initialise some components
+         * User type enter on command input
          */
-        private void onEngineReady() {
-                commandField.setEditable(true);    
-                outputField.setText(I18N.tr("Plugin shell, type \"help\" for command list."));
+        public void onValidateCommand() {
+                executeCommand(commandField.getText());
+        }
+        private void executeCommand(String command) {
+                // Get shell service.
+                ServiceReference ref = hostBundle.getServiceReference(
+                    org.apache.felix.shell.ShellService.class.getName());
+                if (ref == null)
+                {
+                    LOGGER.error(I18N.tr("No shell service is available."));
+                    return;
+                }
+                ShellService shell = (ShellService) hostBundle.getService(ref);
+                try {
+                        // Print the command line in the output window.
+                        try {
+                                outputField.getDocument().insertString(outputField.getDocument().getLength(), "-> "+command+"\n", null);
+                        } catch(BadLocationException ex) {
+                                LOGGER.debug(ex.getLocalizedMessage(), ex);
+                                //ignore
+                        }
+
+                        try {
+                            shell.executeCommand(command,
+                                    new PrintStream(new TextDocumentOutputStream(outputField, Color.BLACK)),
+                                    new PrintStream(new TextDocumentOutputStream(outputField, Color.RED.darker())));
+                        } catch (Exception ex) {
+                            LOGGER.error(ex.getLocalizedMessage(),ex);
+                        }
+                } finally {
+                        hostBundle.ungetService(ref);
+                }
         }
 
         @Override
@@ -106,67 +152,44 @@ public class PluginShell extends JPanel implements DockingPanel {
         public JComponent getComponent() {
                 return this;
         }
-        
-        private class ShellServiceTracker extends ServiceTracker<ShellService, Integer> {
 
-                private int trackedServiceCount = 0;
+        private class TextDocumentOutputStream extends OutputStream {
 
-                public ShellServiceTracker(BundleContext context) {
-                        super(context, ShellService.class, null);
+                private JTextComponent textComponent;
+                private ByteArrayOutputStream buffer = new ByteArrayOutputStream(); 
+                private AttributeSet textProps;
+                //Current text Attribute for insertion, change whith style update        
+                private AttributeSet aset;
+                
+                public TextDocumentOutputStream(JTextComponent textComponent, Color textColor) {
+                        this.textComponent = textComponent;
+                        changeAttribute(textColor);
                 }
 
                 @Override
-                public Integer addingService(ServiceReference<ShellService> reference) {
-                        if (trackedServiceCount == 0) {
-                                shellEngine = hostBundle.getService(reference);
-                                onEngineReady();
+                public void write(int i) throws IOException {
+                        buffer.write(i);
+                }
+
+                @Override
+                public void flush() throws IOException {
+                        super.flush();
+                        // Fetch lines in the byte array
+                        String messages = buffer.toString();
+                        if (!messages.isEmpty()) {
+                                Document doc = textComponent.getDocument();
+                                try {
+                                        doc.insertString(doc.getLength(), messages, aset);
+                                }catch(BadLocationException ex) {
+                                        LOGGER.error(I18N.tr("Cannot show the log message"), ex);                                       
+                                }
                         }
-                        return ++trackedServiceCount;
+                        buffer.reset();
                 }
-
-                @Override
-                public void modifiedService(ServiceReference<ShellService> reference, Integer service) {
-                        if (service == 1) {
-                                shellEngine = hostBundle.getService(reference);
-                        }
-                }
-
-                @Override
-                public void removedService(ServiceReference<ShellService> reference, Integer service) {
-                        if (service == 1) {
-                                shellEngine = new EmptyEngine();
-                        }
-                        trackedServiceCount--;
-                }
-        }
-        
-        /**
-         * Use this empty engine when the OSGI engine is not available
-         */
-        private class EmptyEngine implements ShellService {
-
-                @Override
-                public String[] getCommands() {
-                        return new String[0];
-                }
-
-                @Override
-                public String getCommandUsage(String string) {
-                        return "";
-                }
-
-                @Override
-                public String getCommandDescription(String string) {
-                        return "";
-                }
-
-                @Override
-                public ServiceReference getCommandReference(String string) {
-                        return null;
-                }
-
-                @Override
-                public void executeCommand(String string, PrintStream stream, PrintStream stream1) throws Exception {
+                private void changeAttribute(Color color) {
+                    StyleContext sc = StyleContext.getDefaultStyleContext();
+                    aset = sc.addAttribute(SimpleAttributeSet.EMPTY,
+                                    StyleConstants.Foreground, color);            
                 }
         }
 }

@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.beanshell;
 
+import org.orbisgis.view.components.Log4JOutputStream;
 import bsh.EvalError;
 import bsh.Interpreter;
 import java.awt.BorderLayout;
@@ -79,8 +80,8 @@ public class BshConsolePanel extends JPanel {
         private static final Logger LOGGER = Logger.getLogger("gui."+BshConsolePanel.class);
         private static final int MESSAGE_CLEAR_INTERVAL = 10000; //ms Clear message interval
         private static final String MESSAGEBASE = "%d | %d | %s";
-        private final BeanShellLog infoLogger = new BeanShellLog(LOGGER,Level.INFO);
-        private final BeanShellLog errorLogger = new BeanShellLog(LOGGER,Level.ERROR);
+        private final Log4JOutputStream infoLogger = new Log4JOutputStream(LOGGER,Level.INFO);
+        private final Log4JOutputStream errorLogger = new Log4JOutputStream(LOGGER,Level.ERROR);
         
         private RTextScrollPane centerPanel;
         private RSyntaxTextArea scriptPanel;

@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.beanshell;
+package org.orbisgis.view.components;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -35,14 +35,14 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 
 /**
- * Link between the BeanShell interpreter output and the Log4J output
+ * Define an outputstream to Log4J, can be used with PrintStream.
  * @author Nicolas Fortin
  */
-public class BeanShellLog extends OutputStream {
+public class Log4JOutputStream extends OutputStream {
         private Logger logger;
         private Level level;
         private ByteArrayOutputStream buffer = new ByteArrayOutputStream();        
-        public BeanShellLog(Logger logger, Level level) {
+        public Log4JOutputStream(Logger logger, Level level) {
                 this.logger = logger;
                 this.level = level;
         }
