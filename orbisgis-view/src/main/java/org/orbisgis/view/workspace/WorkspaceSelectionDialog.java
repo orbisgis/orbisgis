@@ -101,7 +101,7 @@ public class WorkspaceSelectionDialog implements MIPValidation {
         public String validate(MultiInputPanel mid) {
                 String workspacePath = mid.getInput(FOLDER_COMBO_FIELD);
                 if(!ViewWorkspace.isWorkspaceValid(new File(workspacePath))) {
-                        return I18N.tr("The workspace folder version is invalid (!=OrbisGIS {0}), or the folder is not empty",ViewWorkspace.MAJOR_VERSION);
+                        return I18N.tr("The workspace folder version is invalid (!=OrbisGIS {0}), or the folder is not empty",CoreWorkspace.MAJOR_VERSION);
                 } else {
                         return null;
                 }

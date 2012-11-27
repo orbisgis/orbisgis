@@ -39,8 +39,6 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 import org.apache.log4j.Logger;
-import org.orbisgis.core.DataManager;
-import org.orbisgis.core.Services;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -68,8 +66,8 @@ public class PluginHost {
     /**
      * The host will automatically export all packages, but without version information.
      * This method give the ability to introduce a package constraint on export, like version number.
-     * @param packageName
-     * @param version Version of the package in the form ()
+     * @param packageInfo Extanded package information, providing a new version
+     * to packages help to identify incompatibilities between bundles.
      */
     public void exportCorePackage(PackageDeclaration packageInfo) throws IllegalStateException {
         if(framework!=null) {
@@ -77,6 +75,12 @@ public class PluginHost {
         }
         packageList.add(packageInfo);
     }
+    
+    /**
+     * Parse classpath to find all packages name available. Write them all without version information,
+     * Except for defined packages through exportCorePackage(), 
+     * @return 
+     */
     private String getExtraPackage() {
         //Build a set of packages to skip programatically defined packages
         Set<String> packagesName = new HashSet<String>();

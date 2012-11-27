@@ -49,9 +49,6 @@ public class ViewWorkspace {
     public static final String PROP_DOCKINGLAYOUTFILE = "dockingLayoutFile";
     public static final String PROP_SIFPATH = "SIFPath";
     public static final String PROP_MAPCONTEXTPATH = "mapContextPath";
-    public static final int MAJOR_VERSION = 4; // Load a workspace only if the major version is equal
-    public static final int MINOR_VERSION = 0; // increment on new features
-    public static final int REVISION_VERSION = 1; // increment on fix
     public static final String CITY_VERSION = "La Rochelle";
     private static final String VERSION_FILE = "org.orbisgis.version.txt";
     
@@ -185,11 +182,11 @@ public class ViewWorkspace {
         BufferedWriter writer = null;
         try {
                 writer = new BufferedWriter(new FileWriter(versionFile));
-                writer.write(Integer.toString(ViewWorkspace.MAJOR_VERSION));
+                writer.write(Integer.toString(CoreWorkspace.MAJOR_VERSION));
                 writer.newLine();
-                writer.write(Integer.toString(ViewWorkspace.MINOR_VERSION));
+                writer.write(Integer.toString(CoreWorkspace.MINOR_VERSION));
                 writer.newLine();
-                writer.write(Integer.toString(ViewWorkspace.REVISION_VERSION));
+                writer.write(Integer.toString(CoreWorkspace.REVISION_VERSION));
                 writer.newLine();
                 writer.write(ViewWorkspace.CITY_VERSION);
                 writer.newLine();
@@ -245,7 +242,7 @@ public class ViewWorkspace {
                                versionFile));
                 String line = fileReader.readLine();
                 if(line!=null) {
-                        return Integer.valueOf(line).equals(MAJOR_VERSION);
+                        return Integer.valueOf(line).equals(CoreWorkspace.MAJOR_VERSION);
                 }
         } catch (IOException e) {
                 throw new RuntimeException("Cannot read the workspace location", e);

@@ -47,6 +47,7 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
+import org.orbisgis.core.plugin.PluginHost;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
@@ -64,6 +65,7 @@ import org.orbisgis.view.joblist.JobsPanel;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.output.OutputManager;
+import org.orbisgis.view.plugins.PluginShell;
 import org.orbisgis.view.sql.MapContext_AddLayer;
 import org.orbisgis.view.sql.MapContext_BBox;
 import org.orbisgis.view.sql.MapContext_Share;
@@ -73,6 +75,7 @@ import org.orbisgis.view.table.TableEditorFactory;
 import org.orbisgis.view.toc.TocEditorFactory;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.orbisgis.view.workspace.WorkspaceSelectionDialog;
+import org.osgi.framework.BundleException;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -101,6 +104,10 @@ public class Core {
     /////////////////////
     //base package :
     private MainContext mainContext; /*!< The larger surrounding part of OrbisGis base */
+    
+    ////////////////////
+    // Plugins
+    private PluginHost pluginFramework;
     /**
      * Core constructor, init Model instances
      * @param debugMode Show additional information for debugging purposes
@@ -130,9 +137,14 @@ public class Core {
                         viewWorkspace);        
         progressInfo.init(I18N.tr("Register GUI Sql functions.."),100);
         addSQLFunctions();
-        progressInfo.progressTo(15);
-        initSwingJobs();
+        progressInfo.progressTo(11);
+        //Load plugin host        
+        progressInfo.init(I18N.tr("Load the plugin framework.."), 100);
+        pluginFramework = new PluginHost(new File(mainContext.getCoreWorkspace().getPluginCache()));
+        pluginFramework.start();
         progressInfo.progressTo(18);
+        // Init jobqueue
+        initSwingJobs();
         initSIF();
         progressInfo.progressTo(20);
     }
@@ -326,6 +338,8 @@ public class Core {
         
         //Load the Job Panel
         makeJobsPanel();
+        //Load the Plugin Shell Panel
+        dockManager.show(new PluginShell(pluginFramework.getHostBundleContext()));
         progress.progressTo(45);
         
         //Load the editor factories manager
@@ -336,8 +350,6 @@ public class Core {
         makeGeoCatalogPanel();
         progress.progressTo(55);
         
-        //Load the Map And view panels
-        //makeTocAndMap();
         //Load Built-ins Editors
         loadEditorFactories();
         progress.progressTo(60);
@@ -438,7 +450,6 @@ public class Core {
                         //Cancel the next job
                 }
         }
-        //Remove all listeners created by this object
         
         //Free UI resources
         editors.dispose();
@@ -451,6 +462,15 @@ public class Core {
         mainContext.dispose();
         
         UIFactory.setMainFrame(null);
+        
+        // Shutdown the plugin framwork
+        try {
+            pluginFramework.stop();
+        }catch(InterruptedException ex) {
+            LOGGER.error(ex.getLocalizedMessage(),ex);
+        }catch(BundleException ex) {
+            LOGGER.error(ex.getLocalizedMessage(),ex);
+        }
     }
     /**
      * Save or discard editable element modification.

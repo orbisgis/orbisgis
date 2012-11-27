@@ -33,6 +33,7 @@ import java.beans.PropertyChangeSupport;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.log4j.Logger;
 
 /**
  * Core Worskpace Folder information
@@ -42,10 +43,18 @@ import java.util.List;
  */
 
 public class CoreWorkspace implements Serializable {
+    private static final Logger LOGGER = Logger.getLogger(CoreWorkspace.class);
     private static final long serialVersionUID = 6L; /*<! Update this integer while adding properties (1 for each new property)*/
+    public static final int MAJOR_VERSION = 4; // Load a workspace only if the major version is equal
+    public static final int MINOR_VERSION = 0; // increment on new features
+    public static final int REVISION_VERSION = 1; // increment on fix
+    
+    
     private PropertyChangeSupport propertySupport;
     
-    private String applicationFolder = new File(System.getProperty("user.home")).getAbsolutePath() + File.separator + ".OrbisGIS";
+    private String applicationFolder = new File(System.getProperty("user.home"))
+            .getAbsolutePath() + File.separator + ".OrbisGIS" + File.separator
+            + MAJOR_VERSION + "." + MINOR_VERSION;
     public static final String PROP_APPLICATIONFOLDER = "applicationFolder";
     
     private String workspaceFolder;
@@ -54,10 +63,14 @@ public class CoreWorkspace implements Serializable {
     public static final String PROP_RESULTSFOLDER = "resultsFolder";
     private String sourceFolder;
     public static final String PROP_SOURCEFOLDER = "sourceFolder";
-    private String pluginFolder = new File("lib" + File.separator + "ext").getAbsolutePath();
+    private String pluginFolder = applicationFolder + File.separator + "plugins";
     public static final String PROP_PLUGINFOLDER = "pluginFolder";
-    private String tempFolder;
+    private String tempFolder;    
+    private String pluginCache = applicationFolder + File.separator + "cache";
+    public static final String PROP_PLUGINCACHE = "pluginCache";
 
+    private String logFile = "orbisgis.log";
+    public static final String PROP_LOGFILE = "logFile";
     
     private static final String CURRENT_WORKSPACE_FILENAME = "currentWorkspace.txt";
     private static final String ALL_WORKSPACE_FILENAME = "workspaces.txt";
@@ -70,8 +83,26 @@ public class CoreWorkspace implements Serializable {
         //Read default workspace
         loadCurrentWorkSpace();
     }
-    private String logFile = "orbisgis.log";
-    public static final String PROP_LOGFILE = "logFile";
+
+    /**
+     * Get the value of pluginCache
+     *
+     * @return the value of pluginCache
+     */
+    public String getPluginCache() {
+        return pluginCache;
+    }
+
+    /**
+     * Set the value of pluginCache
+     *
+     * @param pluginCache new value of pluginCache
+     */
+    public void setPluginCache(String pluginCache) {
+        String oldPluginCache = this.pluginCache;
+        this.pluginCache = pluginCache;
+        propertySupport.firePropertyChange(PROP_PLUGINCACHE, oldPluginCache, pluginCache);
+    }
 
     /**
      * Get the value of logFile
@@ -119,38 +150,38 @@ public class CoreWorkspace implements Serializable {
      * @return 
      */
     public List<File> readKnownWorkspacesPath() {
-            List<File> knownPath = new ArrayList<File>();            
-                  
+        List<File> knownPath = new ArrayList<File>();
+
         File currentWK = new File(applicationFolder + File.separator + ALL_WORKSPACE_FILENAME);
-        if(currentWK.exists()) {
-                BufferedReader fileReader=null;
+        if (currentWK.exists()) {
+            BufferedReader fileReader = null;
             try {
-                    fileReader = new BufferedReader(new FileReader(
-                                   currentWK));
-                    String line;
-                    while((line = fileReader.readLine())!=null){
-                        File currentDir = new File(line);
-                        if(currentDir.exists()) {
-                                knownPath.add(currentDir);
-                        }
+                fileReader = new BufferedReader(new FileReader(
+                        currentWK));
+                String line;
+                while ((line = fileReader.readLine()) != null) {
+                    File currentDir = new File(line);
+                    if (currentDir.exists()) {
+                        knownPath.add(currentDir);
                     }
+                }
             } catch (IOException e) {
-                    throw new RuntimeException("Cannot read the workspace location "+currentWK+" .", e);
-            } finally{
+                LOGGER.warn("Cannot read the workspace location " + currentWK + " .", e);
+            } finally {
                 try {
-                    if(fileReader!=null) {
+                    if (fileReader != null) {
                         fileReader.close();
                     }
                 } catch (IOException e) {
-                    throw new RuntimeException("Cannot close the file at location"+currentWK+" .", e);
+                    LOGGER.warn("Cannot close the file at location" + currentWK + " .", e);
                 }
             }
         }
-        if(knownPath.isEmpty() && workspaceFolder!=null) {
-                knownPath.add(new File(workspaceFolder));
+        if (knownPath.isEmpty() && workspaceFolder != null) {
+            knownPath.add(new File(workspaceFolder));
         }
-        if(knownPath.isEmpty()) {
-                knownPath.add(new File(System.getProperty("user.home"),"OrbisGIS"+File.separator));
+        if (knownPath.isEmpty()) {
+            knownPath.add(new File(System.getProperty("user.home"), "OrbisGIS" + File.separator));
         }
         return knownPath;
     }

@@ -50,8 +50,8 @@ public class BundleTools {
     }
 
     /**
-     * 
-     * @return 
+     * Read the class path, open all Jars and folders, retrieve the package list.
+     * @return List of package name
      */
     public static List<String> getAvailablePackages() {
         List<String> packages = new ArrayList<String>(getAllPackages());

@@ -49,7 +49,7 @@ public class FunctionTracker extends ServiceTracker<Function, String> {
      * @param functionManager GDMS Sql function manager 
      */
     public FunctionTracker(BundleContext context, FunctionManager functionManager) {        
-        super(context, Function.class.getName(), null);
+        super(context, Function.class, null);
         this.functionManager = functionManager;
         this.bundleContext = context;
     }
