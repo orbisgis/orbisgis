@@ -38,6 +38,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.SwingUtilities;
@@ -48,18 +49,15 @@ import javax.swing.text.JTextComponent;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
-import org.apache.felix.shell.Command;
 import org.apache.felix.shell.ShellService;
-import org.apache.log4j.Level;
+import org.apache.felix.shell.impl.Activator;
 import org.apache.log4j.Logger;
-import org.orbisgis.view.components.Log4JOutputStream;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
-import org.osgi.util.tracker.ServiceTracker;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -70,12 +68,14 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class PluginShell extends JPanel implements DockingPanel {
         private static final Logger LOGGER = Logger.getLogger("gui."+PluginShell.class);
+        private static final String SHELL_SERVICE_REFERENCE = "org.apache.felix.shell.ShellService";
         private DockingPanelParameters parameters = new DockingPanelParameters();
         private static final I18n I18N = I18nFactory.getI18n(PluginShell.class);
         private final BundleContext hostBundle;
         private JTextField commandField = new JTextField();
         private JTextPane outputField = new JTextPane();
-        private Log4JOutputStream info = new Log4JOutputStream(LOGGER, Level.INFO);
+        private TextDocumentOutputStream info = new TextDocumentOutputStream(outputField, Color.BLACK);
+        private TextDocumentOutputStream error = new TextDocumentOutputStream(outputField, Color.RED.darker());
 
         public PluginShell(final BundleContext hostBundle) {
                 super(new BorderLayout());
@@ -83,39 +83,54 @@ public class PluginShell extends JPanel implements DockingPanel {
                 parameters.setName("plugin-shell");
                 parameters.setTitle(I18N.tr("Plugin Shell"));
                 outputField.setEditable(false);
-                outputField.setText(I18N.tr("Plugin shell, type \"help\" for command list."));
+                outputField.setText(I18N.tr("Plugin shell, type \"help\" for command list.\n"));
                 // Initialising components
                 // The shell is composed by a logging part and a command line part
-                add(outputField, BorderLayout.CENTER);
+                add(new JScrollPane(outputField), BorderLayout.CENTER);
                 add(commandField, BorderLayout.SOUTH);
+                commandField.addActionListener(EventHandler.create(ActionListener.class,this,"onValidateCommand"));
+                // Start the jar in ressource if the service is not available
+                ServiceReference ref = hostBundle
+                        .getServiceReference(SHELL_SERVICE_REFERENCE);
+                if (ref == null)
+                {
+                        startInternalShell();
+                }
+        }
+                
+        private void startExternalShell() {
                 SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
                                 try {
                                         Bundle shellBundle = hostBundle.installBundle("osgi-shell.jar", getClass().getResourceAsStream("org.apache.felix.shell.jar"));
                                         shellBundle.start();
-                                        for(ServiceReference<? extends Object> service : shellBundle.getRegisteredServices()) {
-                                                Object servObj = hostBundle.getService(service);
-                                                LOGGER.info("Shell services : "+servObj+" is shell ? "+(servObj instanceof ShellService)+" "+(servObj instanceof Command));                                                
-                                        }
                                 } catch(BundleException ex) {
-                                        LOGGER.error("Cannot install shell bundle",ex);
+                                        LOGGER.error(ex.getLocalizedMessage(),ex);
                                 }
                         }
-                });
-                commandField.addActionListener(EventHandler.create(ActionListener.class,this,"onValidateCommand"));
+                });        
         }
-        
+        private void startInternalShell() {
+                SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                                Activator shellActivator = new Activator();
+                                shellActivator.start(hostBundle);
+                        }
+                });                
+        }
         /**
          * User type enter on command input
          */
         public void onValidateCommand() {
                 executeCommand(commandField.getText());
+                commandField.setText("");
         }
         private void executeCommand(String command) {
                 // Get shell service.
                 ServiceReference ref = hostBundle.getServiceReference(
-                    org.apache.felix.shell.ShellService.class.getName());
+                    SHELL_SERVICE_REFERENCE);
                 if (ref == null)
                 {
                     LOGGER.error(I18N.tr("No shell service is available."));
@@ -133,10 +148,19 @@ public class PluginShell extends JPanel implements DockingPanel {
 
                         try {
                             shell.executeCommand(command,
-                                    new PrintStream(new TextDocumentOutputStream(outputField, Color.BLACK)),
-                                    new PrintStream(new TextDocumentOutputStream(outputField, Color.RED.darker())));
+                                    new PrintStream(info),
+                                    new PrintStream(error));
                         } catch (Exception ex) {
                             LOGGER.error(ex.getLocalizedMessage(),ex);
+                        } finally {
+                                try {
+                                        // Send messages to the window
+                                        info.flush();
+                                        error.flush();
+                                        outputField.setCaretPosition(outputField.getDocument().getLength());
+                                } catch(IOException ex) {
+                                        LOGGER.error(ex.getLocalizedMessage(),ex);                                        
+                                }
                         }
                 } finally {
                         hostBundle.ungetService(ref);
