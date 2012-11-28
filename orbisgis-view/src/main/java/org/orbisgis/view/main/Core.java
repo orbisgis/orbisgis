@@ -324,6 +324,15 @@ public class Core {
         }
         SwingUtilities.invokeLater(new ShowSwingApplication(progress));
     }
+    /**
+     * For unit test purpose, expose the plugin framework
+     * @return 
+     */
+    public PluginHost getPluginFramework() {
+        return pluginFramework;
+    }
+    
+    
     private void initialize(ProgressMonitor progress) {
             
         progress.init(I18N.tr("Loading the main window"), 100);
