@@ -41,6 +41,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
+import javax.swing.SwingUtilities;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -91,7 +92,12 @@ public class PluginShell extends JPanel implements DockingPanel {
          * User type enter on command input
          */
         public void onValidateCommand() {
-                executeCommand(commandField.getText());
+                final String command = commandField.getText();
+                SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                                executeCommand(command);
+                        }
+                });
                 commandField.setText("");
         }
         private void executeCommand(String command) {

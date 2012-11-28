@@ -51,18 +51,19 @@ public class DockingPanelTracker extends ServiceTracker<DockingPanel, String> {
 
         @Override
         public String addingService(ServiceReference<DockingPanel> reference) {
-                return processOperation(new dockingPanelOperation(reference));
+                return processOperation(new DockingPanelOperation(reference));
         }
 
         @Override
         public void modifiedService(ServiceReference<DockingPanel> reference, String dockId) {
-                processOperation(new dockingPanelOperation(reference, dockId, DP_EVT.MODIFIED));
+                processOperation(new DockingPanelOperation(reference, dockId, DP_EVT.MODIFIED));
         }
 
         @Override
-        public void removedService(ServiceReference<DockingPanel> reference, String service) {
+        public void removedService(ServiceReference<DockingPanel> reference, String dockId) {
+                processOperation(new DockingPanelOperation(reference, dockId, DP_EVT.REMOVED));
         }
-        private String processOperation(dockingPanelOperation operation) {
+        private String processOperation(DockingPanelOperation operation) {
                 if(SwingUtilities.isEventDispatchThread()) {
                         operation.run();
                 } else {
@@ -74,17 +75,17 @@ public class DockingPanelTracker extends ServiceTracker<DockingPanel, String> {
                 }
                 return operation.getDockId();
         }
-        private class dockingPanelOperation implements Runnable {
+        private class DockingPanelOperation implements Runnable {
                 private ServiceReference<DockingPanel> reference;
                 private String dockId;
                 private DP_EVT operation;
 
-                public dockingPanelOperation(ServiceReference<DockingPanel> reference, String dockId, DP_EVT operation) {
+                public DockingPanelOperation(ServiceReference<DockingPanel> reference, String dockId, DP_EVT operation) {
                         this.reference = reference;
                         this.dockId = dockId;
                         this.operation = operation;
                 }
-                public dockingPanelOperation(ServiceReference<DockingPanel> reference) {
+                public DockingPanelOperation(ServiceReference<DockingPanel> reference) {
                         this.reference = reference;
                         this.dockId = null;
                         this.operation = DP_EVT.ADDED;
