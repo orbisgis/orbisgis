@@ -65,7 +65,6 @@ import org.orbisgis.view.joblist.JobsPanel;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.output.OutputManager;
-import org.orbisgis.view.plugins.PluginShell;
 import org.orbisgis.view.sql.MapContext_AddLayer;
 import org.orbisgis.view.sql.MapContext_BBox;
 import org.orbisgis.view.sql.MapContext_Share;
@@ -338,8 +337,6 @@ public class Core {
         
         //Load the Job Panel
         makeJobsPanel();
-        //Load the Plugin Shell Panel
-        dockManager.show(new PluginShell(pluginFramework.getHostBundleContext()));
         progress.progressTo(45);
         
         //Load the editor factories manager

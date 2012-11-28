@@ -26,12 +26,23 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.plugins;
+package org.orbisgis.oshell;
+
+import org.orbisgis.view.docking.DockingPanel;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 
 /**
- *
+ * Register Docking Panel service instance
  * @author Nicolas Fortin
  */
-public class PluginsDialog {
-    
+public class Activator implements BundleActivator {
+        public void start(BundleContext bc) throws Exception {
+                bc.registerService(DockingPanel.class.getName(),
+                        new PluginShell(bc),
+                        null);
+        }
+
+        public void stop(BundleContext bc) throws Exception {
+        }        
 }

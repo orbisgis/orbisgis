@@ -39,9 +39,11 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import org.apache.log4j.Logger;
+import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 
 /**
- * Functions used by Bundle Host
+ * Functions used by Bundle Host.
  * @author Nicolas Fortin
  */
 public class BundleTools {
@@ -49,6 +51,16 @@ public class BundleTools {
     private BundleTools() {        
     }
 
+    public static void installBundles(BundleContext hostBundle,BundleReference[] bundleToInstall) {
+            for(BundleReference bundleRef : bundleToInstall) {
+                    try {
+                    hostBundle.installBundle(bundleRef.getBundleUri(),
+                            bundleRef.getBundleJarContent());
+                    } catch(BundleException ex) {
+                            LOGGER.error(ex.getLocalizedMessage(), ex);
+                    }
+            }
+    }
     /**
      * Read the class path, open all Jars and folders, retrieve the package list.
      * @return List of package name
@@ -83,8 +95,9 @@ public class BundleTools {
     private static void parseDirectory(File rootPath, File path, Set<String> packages) throws SecurityException {
         File[] files = path.listFiles();
         for (File file : files) {
-            //TODO Java7 check for non-symlink, infinite loop 
-            //@link http://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html#isSymbolicLink(java.nio.file.Path)
+            // TODO Java7 check for non-symlink,
+            // without this check it might generate an infinite loop 
+            // @link http://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html#isSymbolicLink(java.nio.file.Path)
             if (!file.isDirectory()) {
                 if (file.getName().endsWith(".class")) {
                     String parentPath = file.getParent().substring(rootPath.getAbsolutePath().length()+1);

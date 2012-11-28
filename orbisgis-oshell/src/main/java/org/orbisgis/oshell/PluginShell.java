@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.plugins;
+package org.orbisgis.oshell;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -89,36 +89,8 @@ public class PluginShell extends JPanel implements DockingPanel {
                 add(new JScrollPane(outputField), BorderLayout.CENTER);
                 add(commandField, BorderLayout.SOUTH);
                 commandField.addActionListener(EventHandler.create(ActionListener.class,this,"onValidateCommand"));
-                // Start the jar in ressource if the service is not available
-                ServiceReference ref = hostBundle
-                        .getServiceReference(SHELL_SERVICE_REFERENCE);
-                if (ref == null) {
-                        startInternalShell();
-                }
         }
-                
-        private void startExternalShell() {
-                SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                                try {
-                                        Bundle shellBundle = hostBundle.installBundle("osgi-shell.jar", getClass().getResourceAsStream("org.apache.felix.shell.jar"));
-                                        shellBundle.start();
-                                } catch(BundleException ex) {
-                                        LOGGER.error(ex.getLocalizedMessage(),ex);
-                                }
-                        }
-                });        
-        }
-        private void startInternalShell() {
-                SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                                Activator shellActivator = new Activator();
-                                shellActivator.start(hostBundle);
-                        }
-                });                
-        }
+        
         /**
          * User type enter on command input
          */
