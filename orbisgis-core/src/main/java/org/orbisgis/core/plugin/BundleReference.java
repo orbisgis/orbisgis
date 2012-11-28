@@ -40,7 +40,7 @@ public class BundleReference {
         private String artifactId;
         private String bundleUri;
         private InputStream bundleJarContent;
-        private boolean autoStart = false;
+        private boolean autoStart = true;
 
         public BundleReference(String artifactId) {
                 this.artifactId = artifactId;

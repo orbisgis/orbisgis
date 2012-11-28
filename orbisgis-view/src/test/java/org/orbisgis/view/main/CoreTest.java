@@ -69,6 +69,7 @@ public class CoreTest {
         if(!GraphicsEnvironment.isHeadless()) {
             CoreWorkspace coreWorkspace = new CoreWorkspace();
             coreWorkspace.setWorkspaceFolder("target/workspace/");
+            coreWorkspace.setWorkspaceFolder("target/app_folder/");
             instance = new Core(coreWorkspace,true,new NullProgressMonitor());
             instance.startup(new NullProgressMonitor());
             SwingUtilities.invokeAndWait(new DummyThread());
