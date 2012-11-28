@@ -121,10 +121,9 @@
                         <version>0.8-1</version>
                 </dependency>
                 <dependency>
-                        <groupId>org.apache.felix</groupId>
-                        <artifactId>org.osgi.core</artifactId>
-                        <version>1.5.0-SNAPSHOT</version>
-                        <scope>provided</scope>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.apache.felix.framework</artifactId>
+                    <version>4.0.2</version>
                 </dependency>
         </dependencies>
         <pluginRepositories>

@@ -40,7 +40,7 @@ import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.view.components.menubar.MenuBarManager;
 import org.orbisgis.view.components.menubar.MenuItemProperties;
 import org.orbisgis.view.components.menubar.MenuProperties;
-import org.orbisgis.view.docking.DockingManager;
+import org.orbisgis.view.docking.DockingManagerImpl;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
@@ -60,8 +60,8 @@ public class MainFrame extends JFrame {
         public static final String MENU_LOOKANDFEEL = "lookAndFeel";
         public static final String MENU_WINDOWS = "windows";
         
-        //The main frame show panels state,theme, and properties
-        private DockingManager dockingManager=null;
+        //The main frame addDockingPanel panels state,theme, and properties
+        private DockingManagerImpl dockingManager=null;
         private MenuBarManager menuBar = new MenuBarManager();
         /**
 	 * Creates a new frame. The content of the frame is not created by
@@ -89,7 +89,7 @@ public class MainFrame extends JFrame {
                         return CoreWorkspace.MAJOR_VERSION+"."+CoreWorkspace.MINOR_VERSION+"."+CoreWorkspace.REVISION_VERSION;
                 }
         }
-        public void setDockingManager(DockingManager dockingManager) {
+        public void setDockingManager(DockingManagerImpl dockingManager) {
             this.dockingManager = dockingManager;
             //Add Look And Feel menu
             menuBar.addMenu(MENU_TOOLS, new MenuProperties(MENU_LOOKANDFEEL, dockingManager.getLookAndFeelMenu()));      

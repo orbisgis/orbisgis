@@ -41,6 +41,8 @@ import java.util.jar.JarFile;
 import org.apache.log4j.Logger;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Functions used by Bundle Host.
@@ -48,16 +50,21 @@ import org.osgi.framework.BundleException;
  */
 public class BundleTools {
     private final static Logger LOGGER = Logger.getLogger(BundleTools.class);
+    private final static I18n I18N = I18nFactory.getI18n(BundleTools.class);
     private BundleTools() {        
     }
 
     public static void installBundles(BundleContext hostBundle,BundleReference[] bundleToInstall) {
             for(BundleReference bundleRef : bundleToInstall) {
-                    try {
-                    hostBundle.installBundle(bundleRef.getBundleUri(),
-                            bundleRef.getBundleJarContent());
-                    } catch(BundleException ex) {
-                            LOGGER.error(ex.getLocalizedMessage(), ex);
+                    if(bundleRef.getBundleJarContent()==null) {
+                            LOGGER.warn(I18N.tr("OrbisGIS package does not contain the {0} bundle plugin",bundleRef.getArtifactId()));
+                    } else {
+                        try {
+                                 hostBundle.installBundle(bundleRef.getBundleUri(),
+                                bundleRef.getBundleJarContent());
+                        } catch(BundleException ex) {
+                                LOGGER.error(ex.getLocalizedMessage(), ex);
+                        }
                     }
             }
     }

@@ -33,7 +33,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.orbisgis.view.docking.DockingManager;
+import org.orbisgis.view.docking.DockingManagerImpl;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelLayout;
 import org.orbisgis.view.edition.dialogs.SaveDocuments;
@@ -46,9 +46,9 @@ import org.orbisgis.view.edition.dialogs.SaveDocuments;
 
 public class EditorManager {
     private List<EditorFactory> factories = new ArrayList<EditorFactory>();
-    private DockingManager dockingManager;
+    private DockingManagerImpl dockingManager;
 
-        public EditorManager(DockingManager dockingManager) {
+        public EditorManager(DockingManagerImpl dockingManager) {
                 this.dockingManager = dockingManager;
         }
     
@@ -65,7 +65,7 @@ public class EditorManager {
                                 new EditorPanelFactoryDecorator((MultipleEditorFactory)editorFactory));
                 } else {
                         for(EditorDockable dockPanel : ((SingleEditorFactory)editorFactory).getSinglePanels()) {
-                                dockingManager.show(dockPanel);
+                                dockingManager.addDockingPanel(dockPanel);
                         }
                 }
         }

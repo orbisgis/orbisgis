@@ -40,8 +40,8 @@ import org.osgi.framework.BundleContext;
  */
 public class BundleFromResources {
         private static final BundleReference[] PROVIDED_BUNDLES = {
-                new BundleReference("org.felix.shell"),
-                new BundleReference("org.orbisgis.oshell"),
+                new BundleReference("org.apache.felix.shell"),
+                new BundleReference("orbisgis-oshell"),
         };
         private BundleFromResources() {                
         }
@@ -55,10 +55,12 @@ public class BundleFromResources {
                 // Close input streams
                 for(BundleReference bundleRef : PROVIDED_BUNDLES) {
                         InputStream jarContent = bundleRef.getBundleJarContent();
-                        try {
-                                jarContent.close();
-                        } catch(IOException ex) {
-                                //ignore
+                        if(jarContent!=null) {
+                                try {
+                                        jarContent.close();
+                                } catch(IOException ex) {
+                                        //ignore
+                                }
                         }
                 }
         }

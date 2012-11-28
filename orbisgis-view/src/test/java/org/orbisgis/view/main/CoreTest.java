@@ -157,7 +157,7 @@ public class CoreTest {
         DummyViewPanel dummyPanel = new DummyViewPanel();
 
         //Show the panel has a new docking item
-        instance.getDockManager().show(dummyPanel);
+        instance.getDockManager().addDockingPanel(dummyPanel);
         //Retrieve the DockingFrame dock instance for the dummy instance
         CDockable dockedDummy = instance.getDockManager().getDockable(dummyPanel);
 

@@ -55,13 +55,14 @@ import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.JobQueue;
 import org.orbisgis.view.beanshell.BeanShellFrameFactory;
-import org.orbisgis.view.docking.DockingManager;
+import org.orbisgis.view.docking.DockingManagerImpl;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.edition.dialogs.SaveDocuments;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.joblist.JobsPanel;
+import org.orbisgis.view.main.bundles.BundleFromResources;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.output.OutputManager;
@@ -97,7 +98,7 @@ public class Core {
     private BackgroundManager backgroundManager;
              
     public static final Dimension MAIN_VIEW_SIZE = new Dimension(800,600);/*!< Bounds of mainView, x,y and width height*/
-    private DockingManager dockManager = null; /*!< The DockStation manager */
+    private DockingManagerImpl dockManager = null; /*!< The DockStation manager */
     
    
     /////////////////////
@@ -139,17 +140,21 @@ public class Core {
         progressInfo.progressTo(11);
         //Load plugin host        
         progressInfo.init(I18N.tr("Load the plugin framework.."), 100);
-        pluginFramework = new PluginHost(new File(mainContext.getCoreWorkspace().getPluginCache()));
-        pluginFramework.start();
+        startPluginHost();
         progressInfo.progressTo(18);
         // Init jobqueue
         initSwingJobs();
         initSIF();
         progressInfo.progressTo(20);
     }
-    
+    private void startPluginHost() {
+        pluginFramework = new PluginHost(new File(mainContext.getCoreWorkspace().getPluginCache()));
+        pluginFramework.start();
+        // Install built-in bundles
+        BundleFromResources.installResourceBundles(pluginFramework.getHostBundleContext());
+    }
     /**
-     * Find the workspace folder or show a dialog to select one
+     * Find the workspace folder or addDockingPanel a dialog to select one
      */
     private void initMainContext(boolean debugMode,CoreWorkspace coreWorkspace) throws InterruptedException, InvocationTargetException, RuntimeException {
         String workspaceFolder = coreWorkspace.getWorkspaceFolder();
@@ -245,7 +250,7 @@ public class Core {
     private void makeLoggingPanels() {
         loggerCollection = new OutputManager(mainContext.isDebugMode());
         //Show Panel
-        dockManager.show(loggerCollection.getPanel());
+        dockManager.addDockingPanel(loggerCollection.getPanel());
     }
     /**
      * Create the GeoCatalog view
@@ -254,14 +259,14 @@ public class Core {
         //The geocatalog view content is read from the SourceContext
         geoCatalog = new Catalog();
         //Add the view as a new Docking Panel
-        dockManager.show(geoCatalog);
+        dockManager.addDockingPanel(geoCatalog);
     }
     
     /**
      * Create the Job processing information and control panel
      */
     private void makeJobsPanel() {
-            dockManager.show(new JobsPanel());
+            dockManager.addDockingPanel(new JobsPanel());
     }
     /**
      * Load the built-ins editors factories
@@ -294,10 +299,10 @@ public class Core {
     /**
      * Create the central place for editor factories.
      * This manager will retrieve panel editors and
-     * use the docking manager to show them
+     * use the docking manager to addDockingPanel them
      * @param dm Instance of docking manager
      */
-    private void makeEditorManager(DockingManager dm) {
+    private void makeEditorManager(DockingManagerImpl dm) {
         editors = new EditorManager(dm);
         Services.registerService(EditorManager.class,
                                  I18N.tr("Use this instance to open an editable element (map,data source..)"),
@@ -327,7 +332,7 @@ public class Core {
         
         progress.init(I18N.tr("Loading docking system and frames"), 100);
         //Initiate the docking management system
-        dockManager = new DockingManager(mainFrame);
+        dockManager = new DockingManagerImpl(mainFrame,pluginFramework.getHostBundleContext());
         mainFrame.setDockingManager(dockManager);
         progress.progressTo(35);
         
@@ -367,7 +372,7 @@ public class Core {
      * @param savedDockingLayout 
      */
     private void copyDefaultDockingLayout(File savedDockingLayout) {
-                InputStream xmlFileStream = DockingManager.class.getResourceAsStream("default_docking_layout.xml");
+                InputStream xmlFileStream = DockingManagerImpl.class.getResourceAsStream("default_docking_layout.xml");
                 if (xmlFileStream != null) {
                         try {
                                 FileOutputStream writer = new FileOutputStream(savedDockingLayout);
@@ -430,7 +435,7 @@ public class Core {
      * Return the docking manager. This function is used by Unit Tests.
      * @return The Docking Manager
      */
-    public DockingManager getDockManager() {
+    public DockingManagerImpl getDockManager() {
         return dockManager;
     }
     
