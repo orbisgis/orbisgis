@@ -92,8 +92,7 @@ public class PluginShell extends JPanel implements DockingPanel {
                 // Start the jar in ressource if the service is not available
                 ServiceReference ref = hostBundle
                         .getServiceReference(SHELL_SERVICE_REFERENCE);
-                if (ref == null)
-                {
+                if (ref == null) {
                         startInternalShell();
                 }
         }
@@ -130,11 +129,11 @@ public class PluginShell extends JPanel implements DockingPanel {
         private void executeCommand(String command) {
                 // Get shell service.
                 ServiceReference ref = hostBundle.getServiceReference(
-                    SHELL_SERVICE_REFERENCE);
+                        SHELL_SERVICE_REFERENCE);
                 if (ref == null)
                 {
-                    LOGGER.error(I18N.tr("No shell service is available."));
-                    return;
+                        LOGGER.error(I18N.tr("No shell service is available."));
+                        return;
                 }
                 ShellService shell = (ShellService) hostBundle.getService(ref);
                 try {
