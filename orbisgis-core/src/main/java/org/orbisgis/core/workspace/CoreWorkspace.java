@@ -198,6 +198,10 @@ public class CoreWorkspace implements Serializable {
                         }
                         return;
                 }
+                File fApp = new File(applicationFolder);
+                if(!fApp.exists()) {
+                        fApp.mkdirs();
+                }
                 BufferedWriter writer = null;
                 try {
                         writer = new BufferedWriter(new FileWriter(currentWK));
