@@ -66,7 +66,7 @@ public class CoreTest {
         }
 
         /**
-         * Test adding custom filter factory to the GeoCatalog
+         * Validate integration of built-in bundles.
          */
         @Test
         public void testBuiltInBundleActivation() throws Exception {
@@ -75,29 +75,29 @@ public class CoreTest {
                 }
                 BundleContext hostBundle = instance.getPluginFramework().getHostBundleContext();
                 System.out.println("Built-In bundle list :");
-                System.out.println("ID\tBundle name\t\tState");
+                System.out.println("ID\tState\tBundle name");
                 for (Bundle bundle : hostBundle.getBundles()) {
                         System.out.println(
-                                "[" + bundle.getBundleId() + "]\t"
-                                + bundle.getSymbolicName() + "\t\t"
-                                + getStateString(bundle.getState()));
+                                "[" + bundle.getBundleId() + "]\t"                                
+                                + getStateString(bundle.getState())
+                                + bundle.getSymbolicName());
                 }
         }
 
         private String getStateString(int i) {
                 switch (i) {
                         case Bundle.ACTIVE:
-                                return "Active";
+                                return "Active   ";
                         case Bundle.INSTALLED:
                                 return "Installed";
                         case Bundle.RESOLVED:
-                                return "Resolved";
+                                return "Resolved ";
                         case Bundle.STARTING:
-                                return "Starting";
+                                return "Starting ";
                         case Bundle.STOPPING:
-                                return "Stopping";
+                                return "Stopping ";
                         default:
-                                return "Unknown";
+                                return "Unknown  ";
                 }
         }
 

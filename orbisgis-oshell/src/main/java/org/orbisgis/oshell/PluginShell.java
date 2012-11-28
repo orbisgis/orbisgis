@@ -41,7 +41,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.JTextPane;
-import javax.swing.SwingUtilities;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
@@ -50,13 +49,10 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import org.apache.felix.shell.ShellService;
-import org.apache.felix.shell.impl.Activator;
 import org.apache.log4j.Logger;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.BundleException;
 import org.osgi.framework.ServiceReference;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -151,8 +147,7 @@ public class PluginShell extends JPanel implements DockingPanel {
         private class TextDocumentOutputStream extends OutputStream {
 
                 private JTextComponent textComponent;
-                private ByteArrayOutputStream buffer = new ByteArrayOutputStream(); 
-                private AttributeSet textProps;
+                private ByteArrayOutputStream buffer = new ByteArrayOutputStream();
                 //Current text Attribute for insertion, change whith style update        
                 private AttributeSet aset;
                 

@@ -40,6 +40,7 @@ public class BundleReference {
         private String artifactId;
         private String bundleUri;
         private InputStream bundleJarContent;
+        private boolean autoStart = false;
 
         public BundleReference(String artifactId) {
                 this.artifactId = artifactId;
@@ -50,6 +51,25 @@ public class BundleReference {
                 this.bundleUri = bundleUri;
         }
 
+        /**
+         * If true, this bundle will be started automatically
+         * @return 
+         */
+        public boolean isAutoStart() {
+                return autoStart;
+        }
+        
+        /**
+         * If set to true, this bundle will be started automatically
+         * @param autoStart
+         * @return this
+         */
+        public BundleReference setAutoStart(boolean autoStart) {
+                this.autoStart = autoStart;
+                return this;
+        }
+
+        
         /**
          * @return Bundle, uri, used on refresh bundle
          */

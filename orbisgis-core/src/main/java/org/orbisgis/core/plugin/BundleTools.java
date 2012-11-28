@@ -39,8 +39,10 @@ import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import org.apache.log4j.Logger;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.wiring.BundleRevision;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -60,8 +62,16 @@ public class BundleTools {
                             LOGGER.warn(I18N.tr("OrbisGIS package does not contain the {0} bundle plugin",bundleRef.getArtifactId()));
                     } else {
                         try {
-                                 hostBundle.installBundle(bundleRef.getBundleUri(),
+                                Bundle builtInBundle = hostBundle.installBundle(bundleRef.getBundleUri(),
                                 bundleRef.getBundleJarContent());
+                                //Do not start if bundle is a fragment bundle (no Activator in fragment)
+                                if(bundleRef.isAutoStart() && ((
+                                        builtInBundle.adapt(BundleRevision.class).getTypes() &
+                                        BundleRevision.TYPE_FRAGMENT) == 0)) {
+                                        LOGGER.debug("Starting "+bundleRef.getArtifactId()+"..");
+                                        builtInBundle.start();
+                                        LOGGER.debug("Started");
+                                }
                         } catch(BundleException ex) {
                                 LOGGER.error(ex.getLocalizedMessage(), ex);
                         }
