@@ -71,7 +71,8 @@ public class BundleReference {
 
         
         /**
-         * @return Bundle, uri, used on refresh bundle
+         * A URI String can be set to download the Jar on update package.
+         * @return Uri as String, or ArtifactId if not set. 
          */
         public String getBundleUri() {
                 if (bundleUri == null) {
@@ -84,7 +85,7 @@ public class BundleReference {
         /**
          * @return Resource name in this package
          */
-        public String getResourceUrl() {
+        public String getResourcePath() {
                 return artifactId + ".jar";
         }
 

@@ -49,7 +49,7 @@ public class BundleFromResources {
                 // Set resource input stream
                 for(BundleReference bundleRef : PROVIDED_BUNDLES) {
                         bundleRef.setBundleJarContent(BundleFromResources.class
-                                .getResourceAsStream(bundleRef.getResourceUrl()));
+                                .getResourceAsStream(bundleRef.getResourcePath()));
                 }
                 BundleTools.installBundles(hostBundle,PROVIDED_BUNDLES);
                 // Close input streams

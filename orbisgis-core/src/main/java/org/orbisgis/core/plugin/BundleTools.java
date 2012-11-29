@@ -56,6 +56,11 @@ public class BundleTools {
     private BundleTools() {        
     }
 
+    /**
+     * Register in the host bundle the provided list of bundle reference
+     * @param hostBundle Host BundleContext
+     * @param bundleToInstall Bundle Reference array
+     */
     public static void installBundles(BundleContext hostBundle,BundleReference[] bundleToInstall) {
             for(BundleReference bundleRef : bundleToInstall) {
                     if(bundleRef.getBundleJarContent()==null) {
