@@ -35,6 +35,9 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
+ * Show DockingPanel registered services.
+ * When a bundle register the Service DockingPanel, this tracker catch the event
+ * and register the provided DockingPanel instance to the DockingManager.
  * @author Nicolas Fortin
  */
 public class DockingPanelTracker extends ServiceTracker<DockingPanel, String> {

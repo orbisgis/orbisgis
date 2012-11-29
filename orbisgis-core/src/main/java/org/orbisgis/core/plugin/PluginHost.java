@@ -39,6 +39,8 @@ import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.Set;
 import org.apache.log4j.Logger;
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
@@ -50,6 +52,7 @@ import org.osgi.framework.launch.FrameworkFactory;
  * @author Nicolas Fortin
  */
 public class PluginHost {
+    private FunctionTracker functionTracker; // Track Gdms Function Services
     private Framework framework;
     private final static int STOP_TIMEOUT = 15000;
     private static final Logger LOGGER = Logger.getLogger(PluginHost.class);
@@ -127,12 +130,19 @@ public class PluginHost {
         try {
             framework.init();
             framework.start();  
-            // Start the host activator
-            Activator hostActivator = new Activator();
-            hostActivator.start(getHostBundleContext());
+            openTrackers();
         } catch(BundleException ex) {
             LOGGER.error(ex.getLocalizedMessage(),ex);
         }
+    }
+    private void openTrackers() {
+            //Track GDMS Function services
+            functionTracker =  new FunctionTracker(framework.getBundleContext(),
+            Services.getService(DataManager.class).getDataSourceFactory().getFunctionManager());
+            functionTracker.open();            
+    }
+    private void closeTrackers() {
+            functionTracker.close();
     }
     /**
      * Stop the host Framework, and wait that all bundles are stopped
@@ -141,6 +151,7 @@ public class PluginHost {
      */
     public void stop() throws BundleException, InterruptedException {
         framework.stop();
+        closeTrackers();
         framework.waitForStop(STOP_TIMEOUT);
     }
     /**
