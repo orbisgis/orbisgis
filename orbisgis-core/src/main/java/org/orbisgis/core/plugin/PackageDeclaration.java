@@ -29,7 +29,7 @@
 package org.orbisgis.core.plugin;
 
 /**
- * Declaration of an host package, with version number
+ * Declaration of an host package, with version number.
  * @author Nicolas Fortin
  */
 public class PackageDeclaration {
@@ -40,6 +40,13 @@ public class PackageDeclaration {
     private int revisionVersion=0;
     private boolean versionDefined = false;
 
+    /**
+     * Full information on a package
+     * @param packageName Package identifier
+     * @param majorVersion 
+     * @param minorVersion
+     * @param revisionVersion 
+     */
     public PackageDeclaration(String packageName, int majorVersion, int minorVersion, int revisionVersion) {
         this.packageName = packageName;
         this.majorVersion = majorVersion;
@@ -48,10 +55,17 @@ public class PackageDeclaration {
         versionDefined = true;
     }
 
+    /**
+     * Declaration of a package without a version number, not recommended.
+     * @param packageName Package identifier
+     */
     public PackageDeclaration(String packageName) {
         this.packageName = packageName;
     }
 
+    /**
+     * @return If revisionVersion has been set
+     */
     public boolean isVersionDefined() {
         return versionDefined;
     }   
