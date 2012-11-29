@@ -36,6 +36,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -79,6 +80,7 @@ public class PluginShell extends JPanel implements DockingPanel {
                 this.hostBundle = hostBundle;
                 parameters.setName("plugin-shell");
                 parameters.setTitle(I18N.tr("Plugin Shell"));
+                parameters.setTitleIcon(new ImageIcon(PluginShell.class.getResource("panel_icon.png")));
                 outputField.setEditable(false);
                 outputField.setText(I18N.tr("Plugin shell, type \"help\" for command list.\n"));
                 // Initialising components
@@ -113,7 +115,7 @@ public class PluginShell extends JPanel implements DockingPanel {
                 try {
                         // Print the command line in the output window.
                         try {
-                                outputField.getDocument().insertString(outputField.getDocument().getLength(), "-> "+command+"\n", null);
+                                outputField.getDocument().insertString(outputField.getDocument().getLength(), "osgi> "+command+"\n", null);
                         } catch(BadLocationException ex) {
                                 LOGGER.debug(ex.getLocalizedMessage(), ex);
                                 //ignore
