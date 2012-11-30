@@ -95,12 +95,10 @@ public final class DockingManagerImpl implements DockingManager {
 	 */
 	public DockingManagerImpl( JFrame owner,BundleContext context){
                 this.owner = owner;
-		//this.frontend = new DockFrontend();
                 commonControl = new CControl(owner);
                 commonControl.addControlListener(new DockingListener());
                 dockableMenuTracker = new SingleCDockableListMenuPiece( commonControl);
                 //Retrieve the Docking Frames Preferencies
-                //preferences = new MergedPreferenceModel
                 preferences = new OrbisGISPreferenceTreeModel( commonControl,PathCombiner.APPEND);
                 commonControl.setPreferenceModel(preferences);
 
@@ -108,7 +106,6 @@ public final class DockingManagerImpl implements DockingManager {
 		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, I18N.tr("Docked Window") );
 		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_ICON, OrbisGISIcon.getIcon("mini_orbisgis") );
                 //StackDockStation will contain all instances of ReservedDockStation
-		//stackOfReservedDockStations = new StackDockStation();  
                 owner.add(commonControl.getContentArea());
                 singleFrameTracker = new DockingPanelTracker(context, this);
                 singleFrameTracker.open();
@@ -349,7 +346,11 @@ public final class DockingManagerImpl implements DockingManager {
             commonControl.addDockable(dockItem);
             return dockItem.getUniqueId();
 	}
-        
+        /**
+         * When a dockable is added, this listener
+         * read the OrbisGIS DockingPanelParameters of the panel
+         * and apply to the DockingFrames panel instance
+         */
         private class DockingListener implements CControlListener {
 
                 @Override

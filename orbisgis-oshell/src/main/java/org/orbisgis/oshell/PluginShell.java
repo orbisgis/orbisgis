@@ -106,8 +106,7 @@ public class PluginShell extends JPanel implements DockingPanel {
                 // Get shell service.
                 ServiceReference ref = hostBundle.getServiceReference(
                         SHELL_SERVICE_REFERENCE);
-                if (ref == null)
-                {
+                if (ref == null) {
                         LOGGER.error(I18N.tr("No shell service is available."));
                         return;
                 }
