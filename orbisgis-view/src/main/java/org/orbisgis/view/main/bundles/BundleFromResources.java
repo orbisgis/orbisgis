@@ -41,10 +41,15 @@ import org.osgi.framework.BundleContext;
 public class BundleFromResources {
         private static final BundleReference[] PROVIDED_BUNDLES = {
                 new BundleReference("org.apache.felix.shell"),
-                new BundleReference("orbisgis-oshell"),
+                new BundleReference("org.apache.felix.bundlerepository"),
+                new BundleReference("orbisgis-oshell"), // Dev shell
         };
         private BundleFromResources() {                
         }
+        /**
+         * Install and configure built-ins bundles into the current framework.
+         * @param hostBundle Host bundle context
+         */
         public static void installResourceBundles(BundleContext hostBundle) {
                 // Set resource input stream
                 for(BundleReference bundleRef : PROVIDED_BUNDLES) {

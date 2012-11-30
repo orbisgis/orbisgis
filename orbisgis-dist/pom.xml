@@ -114,7 +114,7 @@
                 <dependency>
                   <groupId>org.apache.felix</groupId>
                   <artifactId>org.apache.felix.shell</artifactId>
-                  <version>1.5.0-SNAPSHOT</version>
+                  <version>1.4.3</version>
 		  <scope>provided</scope>
                 </dependency>
                 <dependency>
@@ -123,6 +123,12 @@
                         <version>1.0</version>
                         <scope>provided</scope>
                 </dependency>
+                <dependency>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>org.apache.felix.bundlerepository</artifactId>
+                        <version>1.6.6</version>
+                        <scope>provided</scope>
+                </dependency>            
                 <dependency>
                         <groupId>junit</groupId>
                         <artifactId>junit</artifactId>
