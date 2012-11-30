@@ -30,8 +30,6 @@ package org.orbisgis.view.main;
 
 import bibliothek.gui.dock.common.intern.CDockable;
 import java.awt.GraphicsEnvironment;
-import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import javax.swing.SwingUtilities;
@@ -43,6 +41,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.view.docking.DockingManagerImpl;
 import org.orbisgis.view.docking.DummyViewPanel;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.geocatalog.SourceListModel;
@@ -69,6 +68,7 @@ public class CoreTest {
         if(!GraphicsEnvironment.isHeadless()) {
             CoreWorkspace coreWorkspace = new CoreWorkspace();
             coreWorkspace.setWorkspaceFolder("target/workspace/");
+            coreWorkspace.setWorkspaceFolder("target/app_folder/");
             instance = new Core(coreWorkspace,true,new NullProgressMonitor());
             instance.startup(new NullProgressMonitor());
             SwingUtilities.invokeAndWait(new DummyThread());
@@ -157,9 +157,9 @@ public class CoreTest {
         DummyViewPanel dummyPanel = new DummyViewPanel();
 
         //Show the panel has a new docking item
-        instance.getDockManager().show(dummyPanel);
+        instance.getDockManager().addDockingPanel(dummyPanel);
         //Retrieve the DockingFrame dock instance for the dummy instance
-        CDockable dockedDummy = instance.getDockManager().getDockable(dummyPanel);
+        CDockable dockedDummy = ((DockingManagerImpl)(instance.getDockManager())).getDockable(dummyPanel);
 
         //Test if the original title is shown
         org.junit.Assert.assertTrue(dockedDummy.intern().getTitleText().equals(DummyViewPanel.OLD_TITLE));

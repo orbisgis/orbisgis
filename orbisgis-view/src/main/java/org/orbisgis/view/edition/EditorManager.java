@@ -65,7 +65,7 @@ public class EditorManager {
                                 new EditorPanelFactoryDecorator((MultipleEditorFactory)editorFactory));
                 } else {
                         for(EditorDockable dockPanel : ((SingleEditorFactory)editorFactory).getSinglePanels()) {
-                                dockingManager.show(dockPanel);
+                                dockingManager.addDockingPanel(dockPanel);
                         }
                 }
         }

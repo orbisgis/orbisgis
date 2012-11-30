@@ -26,38 +26,28 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.beanshell;
+package org.orbisgis.plugin;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
+import org.gdms.sql.function.Function;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 
 /**
- * Link between the BeanShell interpreter output and the Log4J output
+ * Activator for a single SQL function
  * @author Nicolas Fortin
  */
-public class BeanShellLog extends OutputStream {
-        private Logger logger;
-        private Level level;
-        private ByteArrayOutputStream buffer = new ByteArrayOutputStream();        
-        public BeanShellLog(Logger logger, Level level) {
-                this.logger = logger;
-                this.level = level;
-        }
-        @Override
-        public void write(int i) throws IOException {
-                buffer.write(i);
-        }
-        @Override
-        public void flush() throws IOException {
-                super.flush();
-                // Fetch lines in the byte array
-                String messages = buffer.toString();
-                if(!messages.isEmpty()) {
-                        logger.log(level, messages);
-                }
-                buffer.reset();
-        }        
+public class Activator implements BundleActivator {    
+    @Override
+    public void start(BundleContext context) throws Exception {
+        System.out.println("Activator of org.orbisgis.plugin starting..");
+        // Register dummy sql function service
+        context.registerService(Function.class,
+                new DummyScalarFunction(),
+                null);
+    }
+    
+    @Override
+    public void stop(BundleContext context) throws Exception {
+        System.out.println("Activator of org.orbisgis.plugin stopping..");
+    }    
 }

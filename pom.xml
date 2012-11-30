@@ -12,10 +12,14 @@
         </organization>
         <url>http://www.orbisgis.org</url>
         <modules>
+                <!-- TODO GDMS here -->
+                <module>plugin-test</module>
                 <module>orbisgis-core</module>
                 <module>legend</module>
                 <module>orbisgis-sif</module>
                 <module>orbisgis-view</module>
+                <module>orbisgis-oshell</module>
+                <module>orbisgis-dist</module>
         </modules>
         <properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

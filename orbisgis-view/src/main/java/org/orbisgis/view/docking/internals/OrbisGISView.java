@@ -64,11 +64,24 @@ public class OrbisGISView {
         this.dockableParameters = dockingPanel.getDockingParameters();
         this.internalDock = internalDock;
     }
+    /**
+     * Create a DockingFrame single dockable from the DockingPanel instance
+     * @param dockingPanel
+     * @param ccontrol
+     * @return 
+     */
     public static SingleCDockable createSingle(DockingPanel dockingPanel, CControl ccontrol) {
         CustomSingleCDockable dockItem = new CustomSingleCDockable(dockingPanel,dockingPanel.getDockingParameters().getName(),dockingPanel.getComponent());
         applyDefaultLocation(dockItem,dockingPanel,ccontrol);
         return dockItem;
     }
+    /**
+     * Create a DockingFrame multiple dockable from the DockingPanel
+     * @param dockingPanel
+     * @param factory
+     * @param ccontrol
+     * @return 
+     */
     public static CustomMultipleCDockable createMultiple(DockingPanel dockingPanel,InternalCommonFactory factory, CControl ccontrol) {
         if(dockingPanel!=null) {
                 CustomMultipleCDockable dockItem = new CustomMultipleCDockable(dockingPanel,factory);
@@ -111,7 +124,12 @@ public class OrbisGISView {
             }
             
     }
-    
+    /**
+     * read the OrbisGIS DockingPanelParameters of the panel
+     * and apply to the DockingFrames panel instance
+     * @param dockingPanel
+     * @param dockItem 
+     */
     public static void setListeners(DockingPanel dockingPanel,DefaultCDockable dockItem) {
         new OrbisGISView(dockingPanel,dockItem).init(dockItem);
     }
@@ -162,6 +180,11 @@ public class OrbisGISView {
             internalDock.addAction(action);
         }
     }
+    /**
+     * The toolBar has been updated, translate JToolBar
+     * into a ActionToolBar automatically
+     * @param toolbar 
+     */
     public final void onSetToolBar(JToolBar toolbar) {
         if(toolbar !=null) {
             clearCustomActions();
@@ -229,6 +252,9 @@ public class OrbisGISView {
                 EventHandler.create(CDockableStateListener.class,this,"visibilityChanged"));
     }
 
+    /**
+     * Propagate property change
+     */
         public void visibilityChanged() {
                 if(internalDock.isVisible()!=dockableParameters.isVisible()) {
                         dockableParameters.setVisible(internalDock.isVisible());

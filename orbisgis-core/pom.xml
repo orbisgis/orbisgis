@@ -24,6 +24,27 @@
                 </pluginManagement>
                 <plugins>
                         <plugin>
+                                <groupId>org.apache.maven.plugins</groupId>
+                                <artifactId>maven-dependency-plugin</artifactId>
+                                <version>2.5.1</version>
+                                <executions>
+                                        <execution>
+                                                <id>copy-dependencies</id>
+                                                <goals>
+                                                        <goal>copy-dependencies</goal>
+                                                </goals>
+                                                <configuration>
+                                                        <outputDirectory>${project.build.directory}/bundle</outputDirectory>
+                                                        <overWriteReleases>false</overWriteReleases>
+                                                        <overWriteSnapshots>false</overWriteSnapshots>
+                                                        <overWriteIfNewer>true</overWriteIfNewer>
+                                                        <excludeTransitive>true</excludeTransitive>
+                                                        <includeArtifactIds>plugin</includeArtifactIds>
+                                                </configuration>
+                                        </execution>
+                                </executions>
+                        </plugin>
+                        <plugin>
                                 <groupId>org.xnap.commons</groupId>
                                 <executions>
                                         <execution>
@@ -130,6 +151,17 @@
                         <groupId>commons-lang</groupId>
                         <artifactId>commons-lang</artifactId>
                         <version>2.3</version>
+                </dependency>
+                <dependency>
+                        <groupId>org.apache.felix</groupId>
+                        <artifactId>org.apache.felix.framework</artifactId>
+                        <version>4.0.2</version>
+                </dependency>
+                <dependency>
+                        <groupId>${project.groupId}</groupId>
+                        <artifactId>plugin</artifactId>
+                        <version>${project.version}</version>
+                        <scope>test</scope>
                 </dependency>
         </dependencies>
         <pluginRepositories>
