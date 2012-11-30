@@ -80,6 +80,9 @@ public class DockingPanelTracker extends ServiceTracker<DockingPanel, String> {
                 }
                 return operation.getDockId();
         }
+        /**
+         * Guaranty that the Add/Remove panel operation is done on swing thread.
+         */
         private class DockingPanelOperation implements Runnable {
                 private ServiceReference<DockingPanel> reference;
                 private String dockId;

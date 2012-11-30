@@ -28,8 +28,14 @@
  */
 package org.orbisgis.view.docking;
 
+import java.util.List;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+
 /**
- *
+ * 
+ * Docking system manager. Its implementation uncouple 
+ * OrbisGIS and DockingFrame library.
  * @author Nicolas Fortin
  */
 public interface DockingManager {
@@ -46,5 +52,65 @@ public interface DockingManager {
          * Remove docking panel id
          * @param dockId 
          */
-        public void removeDockingPanel( String dockId);
+        public void removeDockingPanel( String dockId);     
+        
+        /**
+         * @return the managed frame
+         */
+        public JFrame getOwner();
+
+        /**
+         * 
+         * @return The look and feel menu
+         */
+        public JMenu getLookAndFeelMenu();
+        /**
+         * 
+         * @return The menu that shows items declared in the docking
+         */
+        public JMenu getCloseableDockableMenu();
+        
+        /**
+         * Save the docking layout
+         */
+        public void saveLayout();
+        /**
+         * Show the preference dialog, on the owner,
+         * with at least the preference model of DockingFrames
+         */
+        public void showPreferenceDialog();
+        /**
+         * The multiple instances panels can be shown at the next start of application
+         * if their factory is registered 
+         * before loading the layout {@link setDockingStateFile}
+         * @param factoryName
+         * @param factory  
+         */
+        public void registerPanelFactory(String factoryName,DockingPanelFactory factory);
+        
+        /**
+         * Free docking resources and save the layout
+         */
+        public void dispose();
+        
+        /**
+         * Get the current opened panels
+         * @return 
+         */
+        public List<DockingPanel> getPanels();
+        
+        
+        /**
+         * DockingManagerImpl will load and save the panels layout
+         * in the specified file. Load the layout if the file exists.
+         * @param dockingStateFilePath Destination of the default persistence file
+         */
+        public void setDockingLayoutPersistanceFilePath(String dockingStateFilePath);
+        
+        /**
+         * Create a new dockable corresponding to this layout
+         * @param factoryId The factory id registerPanelFactory:factoryName
+         * @param panelLayout 
+         */
+        public void show(String factoryId, DockingPanelLayout panelLayout);
 }

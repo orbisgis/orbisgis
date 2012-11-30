@@ -114,6 +114,7 @@ public final class DockingManagerImpl implements DockingManager {
         /**
          * @return the managed frame
          */
+        @Override
         public JFrame getOwner() {
                 return owner;
         }
@@ -127,6 +128,7 @@ public final class DockingManagerImpl implements DockingManager {
          * 
          * @return The look and feel menu
          */
+        @Override
         public JMenu getLookAndFeelMenu() {
             RootMenuPiece laf = new RootMenuPiece(I18N.tr("&Look And Feel"), false, new CLookAndFeelMenuPiece( commonControl ));
             return laf.getMenu();
@@ -135,6 +137,7 @@ public final class DockingManagerImpl implements DockingManager {
          * 
          * @return The menu that shows items declared in the docking
          */
+        @Override
         public JMenu getCloseableDockableMenu() {
             RootMenuPiece laf = new RootMenuPiece(I18N.tr("&Windows"), false,dockableMenuTracker);
             return laf.getMenu();
@@ -200,6 +203,7 @@ public final class DockingManagerImpl implements DockingManager {
         /**
          * Save the docking layout
          */
+        @Override
         public void saveLayout() {
             if(dockingState!=null) {
                 try {
@@ -215,6 +219,7 @@ public final class DockingManagerImpl implements DockingManager {
          * Show the preference dialog, on the owner,
          * with at least the preference model of DockingFrames
          */
+        @Override
         public void showPreferenceDialog() {
             PreferenceTreeDialog dialog = new PreferenceTreeDialog( preferences, true );
             //Add custom editors
@@ -229,6 +234,7 @@ public final class DockingManagerImpl implements DockingManager {
          * @param factoryName
          * @param factory  
          */
+        @Override
         public void registerPanelFactory(String factoryName,DockingPanelFactory factory) {
             InternalCommonFactory dockingFramesFactory = new InternalCommonFactory(factory,commonControl);
             commonControl.addMultipleDockableFactory(factoryName, dockingFramesFactory);
@@ -237,6 +243,7 @@ public final class DockingManagerImpl implements DockingManager {
         /**
          * Free docking resources and save the layout
          */
+        @Override
         public void dispose() {
             saveLayout();
             singleFrameTracker.close();
@@ -275,6 +282,7 @@ public final class DockingManagerImpl implements DockingManager {
          * Get the current opened panels
          * @return 
          */
+        @Override
         public List<DockingPanel> getPanels() {
                 List<DockingPanel> activePanel = new ArrayList<DockingPanel>();
                 for(CustomPanelHolder holder : getPanelDecorator()) {
@@ -289,6 +297,7 @@ public final class DockingManagerImpl implements DockingManager {
          * in the specified file. Load the layout if the file exists.
          * @param dockingStateFilePath Destination of the default persistence file
          */
+        @Override
         public void setDockingLayoutPersistanceFilePath(String dockingStateFilePath) {
             this.dockingState = new File(dockingStateFilePath);
             loadLayout();
@@ -299,6 +308,7 @@ public final class DockingManagerImpl implements DockingManager {
          * @param factoryId The factory id registerPanelFactory:factoryName
          * @param panelLayout 
          */
+        @Override
         public void show(String factoryId, DockingPanelLayout panelLayout) {
                 MultipleCDockableFactory<?, ?> factory = commonControl.getMultipleDockableFactory(factoryId);
                 if (factory != null && factory instanceof InternalCommonFactory) {

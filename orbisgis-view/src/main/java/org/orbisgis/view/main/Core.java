@@ -55,6 +55,7 @@ import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.JobQueue;
 import org.orbisgis.view.beanshell.BeanShellFrameFactory;
+import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.docking.DockingManagerImpl;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorManager;
@@ -98,7 +99,7 @@ public class Core {
     private BackgroundManager backgroundManager;
              
     public static final Dimension MAIN_VIEW_SIZE = new Dimension(800,600);/*!< Bounds of mainView, x,y and width height*/
-    private DockingManagerImpl dockManager = null; /*!< The DockStation manager */
+    private DockingManager dockManager = null; /*!< The DockStation manager */
     
    
     /////////////////////
@@ -302,7 +303,7 @@ public class Core {
      * use the docking manager to addDockingPanel them
      * @param dm Instance of docking manager
      */
-    private void makeEditorManager(DockingManagerImpl dm) {
+    private void makeEditorManager(DockingManager dm) {
         editors = new EditorManager(dm);
         Services.registerService(EditorManager.class,
                                  I18N.tr("Use this instance to open an editable element (map,data source..)"),
@@ -381,7 +382,7 @@ public class Core {
      * @param savedDockingLayout 
      */
     private void copyDefaultDockingLayout(File savedDockingLayout) {
-                InputStream xmlFileStream = DockingManagerImpl.class.getResourceAsStream("default_docking_layout.xml");
+                InputStream xmlFileStream = DockingManager.class.getResourceAsStream("default_docking_layout.xml");
                 if (xmlFileStream != null) {
                         try {
                                 FileOutputStream writer = new FileOutputStream(savedDockingLayout);
@@ -444,7 +445,7 @@ public class Core {
      * Return the docking manager. This function is used by Unit Tests.
      * @return The Docking Manager
      */
-    public DockingManagerImpl getDockManager() {
+    public DockingManager getDockManager() {
         return dockManager;
     }
     
