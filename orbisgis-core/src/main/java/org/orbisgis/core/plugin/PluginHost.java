@@ -172,7 +172,7 @@ public class PluginHost {
      * @return Framework instance
      * @throws IllegalStateException If the Framework cannot be created
      */
-    private static Framework createEmbeddedFramework(Map<String, String> frameworkConfig)
+    private Framework createEmbeddedFramework(Map<String, String> frameworkConfig)
     {
         ServiceLoader<FrameworkFactory> factoryLoader = ServiceLoader.load(FrameworkFactory.class);
         Iterator<FrameworkFactory> it = factoryLoader.iterator();
