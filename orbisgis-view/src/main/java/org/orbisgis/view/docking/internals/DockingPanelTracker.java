@@ -26,10 +26,12 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.docking;
+package org.orbisgis.view.docking.internals;
 
 import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
+import org.orbisgis.view.docking.DockingManager;
+import org.orbisgis.view.docking.DockingPanel;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;

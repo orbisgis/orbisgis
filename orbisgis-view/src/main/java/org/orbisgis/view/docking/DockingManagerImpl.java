@@ -61,6 +61,7 @@ import org.orbisgis.view.docking.internals.CustomMultipleCDockable;
 import org.orbisgis.view.docking.internals.CustomPanelHolder;
 import org.orbisgis.view.docking.internals.CustomSingleCDockable;
 import org.orbisgis.view.docking.internals.DockingArea;
+import org.orbisgis.view.docking.internals.DockingPanelTracker;
 import org.orbisgis.view.docking.internals.InternalCommonFactory;
 import org.orbisgis.view.docking.internals.OrbisGISView;
 import org.orbisgis.view.docking.preferences.OrbisGISPreferenceTreeModel;
