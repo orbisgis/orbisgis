@@ -47,7 +47,7 @@ import org.orbisgis.core.Services;
 public class FunctionListModel extends AbstractListModel implements ListModel {
     private static final long serialVersionUID = 1L;
     private List<FunctionElement> functionsList;
-    private FunctionManagerListener functionListener = EventHandler.create(FunctionManagerListener.class,this,"");
+    private FunctionManagerListener functionListener = EventHandler.create(FunctionManagerListener.class,this,"refreshFunctionList");
     private List<FunctionFilter> filters = new ArrayList<FunctionFilter>();
     
     public FunctionListModel() {

@@ -36,10 +36,12 @@ import java.util.Locale;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
+import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.view.components.menubar.MenuBarManager;
 import org.orbisgis.view.components.menubar.MenuItemProperties;
 import org.orbisgis.view.components.menubar.MenuProperties;
 import org.orbisgis.view.docking.DockingManager;
+import org.orbisgis.view.docking.DockingManagerImpl;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
@@ -59,7 +61,7 @@ public class MainFrame extends JFrame {
         public static final String MENU_LOOKANDFEEL = "lookAndFeel";
         public static final String MENU_WINDOWS = "windows";
         
-        //The main frame show panels state,theme, and properties
+        //The main frame addDockingPanel panels state,theme, and properties
         private DockingManager dockingManager=null;
         private MenuBarManager menuBar = new MenuBarManager();
         /**
@@ -82,10 +84,10 @@ public class MainFrame extends JFrame {
         }
 
         public static String getVersion() {
-                if(ViewWorkspace.REVISION_VERSION!=0) {
-                        return ViewWorkspace.MAJOR_VERSION+"."+ViewWorkspace.MINOR_VERSION;
+                if(CoreWorkspace.REVISION_VERSION!=0) {
+                        return CoreWorkspace.MAJOR_VERSION+"."+CoreWorkspace.MINOR_VERSION;
                 } else {
-                        return ViewWorkspace.MAJOR_VERSION+"."+ViewWorkspace.MINOR_VERSION+"."+ViewWorkspace.REVISION_VERSION;
+                        return CoreWorkspace.MAJOR_VERSION+"."+CoreWorkspace.MINOR_VERSION+"."+CoreWorkspace.REVISION_VERSION;
                 }
         }
         public void setDockingManager(DockingManager dockingManager) {

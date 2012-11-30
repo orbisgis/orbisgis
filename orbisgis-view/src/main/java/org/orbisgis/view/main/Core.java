@@ -47,6 +47,7 @@ import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.context.main.MainContext;
+import org.orbisgis.core.plugin.PluginHost;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
@@ -55,12 +56,14 @@ import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.JobQueue;
 import org.orbisgis.view.beanshell.BeanShellFrameFactory;
 import org.orbisgis.view.docking.DockingManager;
+import org.orbisgis.view.docking.DockingManagerImpl;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.edition.dialogs.SaveDocuments;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.joblist.JobsPanel;
+import org.orbisgis.view.main.bundles.BundleFromResources;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.output.OutputManager;
@@ -73,6 +76,7 @@ import org.orbisgis.view.table.TableEditorFactory;
 import org.orbisgis.view.toc.TocEditorFactory;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.orbisgis.view.workspace.WorkspaceSelectionDialog;
+import org.osgi.framework.BundleException;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -101,6 +105,10 @@ public class Core {
     /////////////////////
     //base package :
     private MainContext mainContext; /*!< The larger surrounding part of OrbisGis base */
+    
+    ////////////////////
+    // Plugins
+    private PluginHost pluginFramework;
     /**
      * Core constructor, init Model instances
      * @param debugMode Show additional information for debugging purposes
@@ -130,15 +138,24 @@ public class Core {
                         viewWorkspace);        
         progressInfo.init(I18N.tr("Register GUI Sql functions.."),100);
         addSQLFunctions();
-        progressInfo.progressTo(15);
-        initSwingJobs();
+        progressInfo.progressTo(11);
+        //Load plugin host        
+        progressInfo.init(I18N.tr("Load the plugin framework.."), 100);
+        startPluginHost();
         progressInfo.progressTo(18);
+        // Init jobqueue
+        initSwingJobs();
         initSIF();
         progressInfo.progressTo(20);
     }
-    
+    private void startPluginHost() {
+        pluginFramework = new PluginHost(new File(mainContext.getCoreWorkspace().getPluginCache()));
+        pluginFramework.start();
+        // Install built-in bundles
+        BundleFromResources.installResourceBundles(pluginFramework.getHostBundleContext());
+    }
     /**
-     * Find the workspace folder or show a dialog to select one
+     * Find the workspace folder or addDockingPanel a dialog to select one
      */
     private void initMainContext(boolean debugMode,CoreWorkspace coreWorkspace) throws InterruptedException, InvocationTargetException, RuntimeException {
         String workspaceFolder = coreWorkspace.getWorkspaceFolder();
@@ -234,7 +251,7 @@ public class Core {
     private void makeLoggingPanels() {
         loggerCollection = new OutputManager(mainContext.isDebugMode());
         //Show Panel
-        dockManager.show(loggerCollection.getPanel());
+        dockManager.addDockingPanel(loggerCollection.getPanel());
     }
     /**
      * Create the GeoCatalog view
@@ -243,14 +260,14 @@ public class Core {
         //The geocatalog view content is read from the SourceContext
         geoCatalog = new Catalog();
         //Add the view as a new Docking Panel
-        dockManager.show(geoCatalog);
+        dockManager.addDockingPanel(geoCatalog);
     }
     
     /**
      * Create the Job processing information and control panel
      */
     private void makeJobsPanel() {
-            dockManager.show(new JobsPanel());
+            dockManager.addDockingPanel(new JobsPanel());
     }
     /**
      * Load the built-ins editors factories
@@ -283,7 +300,7 @@ public class Core {
     /**
      * Create the central place for editor factories.
      * This manager will retrieve panel editors and
-     * use the docking manager to show them
+     * use the docking manager to addDockingPanel them
      * @param dm Instance of docking manager
      */
     private void makeEditorManager(DockingManager dm) {
@@ -308,6 +325,15 @@ public class Core {
         }
         SwingUtilities.invokeLater(new ShowSwingApplication(progress));
     }
+    /**
+     * For unit test purpose, expose the plugin framework
+     * @return 
+     */
+    public PluginHost getPluginFramework() {
+        return pluginFramework;
+    }
+    
+    
     private void initialize(ProgressMonitor progress) {
             
         progress.init(I18N.tr("Loading the main window"), 100);
@@ -316,7 +342,7 @@ public class Core {
         
         progress.init(I18N.tr("Loading docking system and frames"), 100);
         //Initiate the docking management system
-        dockManager = new DockingManager(mainFrame);
+        dockManager = new DockingManagerImpl(mainFrame,pluginFramework.getHostBundleContext());
         mainFrame.setDockingManager(dockManager);
         progress.progressTo(35);
         
@@ -336,8 +362,6 @@ public class Core {
         makeGeoCatalogPanel();
         progress.progressTo(55);
         
-        //Load the Map And view panels
-        //makeTocAndMap();
         //Load Built-ins Editors
         loadEditorFactories();
         progress.progressTo(60);
@@ -438,7 +462,6 @@ public class Core {
                         //Cancel the next job
                 }
         }
-        //Remove all listeners created by this object
         
         //Free UI resources
         editors.dispose();
@@ -451,6 +474,15 @@ public class Core {
         mainContext.dispose();
         
         UIFactory.setMainFrame(null);
+        
+        // Shutdown the plugin framwork
+        try {
+            pluginFramework.stop();
+        }catch(InterruptedException ex) {
+            LOGGER.error(ex.getLocalizedMessage(),ex);
+        }catch(BundleException ex) {
+            LOGGER.error(ex.getLocalizedMessage(),ex);
+        }
     }
     /**
      * Save or discard editable element modification.
