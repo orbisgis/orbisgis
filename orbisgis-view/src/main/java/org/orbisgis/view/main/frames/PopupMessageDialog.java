@@ -100,6 +100,7 @@ public class PopupMessageDialog extends JDialog {
                 this.refComponent = refComponent;
                 setUndecorated(true);
                 setAlwaysOnTop(true);
+                setFocusable(false);
         }
         public void init() {
                 // Configure appenders
