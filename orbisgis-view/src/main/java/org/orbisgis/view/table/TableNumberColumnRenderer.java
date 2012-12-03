@@ -56,10 +56,10 @@ public class TableNumberColumnRenderer extends TableDefaultColumnRenderer {
         @Override
         public Component getTableCellRendererComponent(JTable jtable, Object o, boolean bln, boolean bln1, int i, int i1) {
                 Component lafComp = super.getTableCellRendererComponent(jtable, o, bln, bln1, i, i1);
-                if(lafComp instanceof JLabel) {
+                if(lafComp instanceof JLabel && o!=null) {
                         JLabel lafTF = (JLabel)lafComp;
                         formatedField.setValue(o);
-                        lafTF.setText(formatedField.getText());
+                        lafTF.setText(formatedField.getText());                        
                 }                
                 return lafComp;
         }
