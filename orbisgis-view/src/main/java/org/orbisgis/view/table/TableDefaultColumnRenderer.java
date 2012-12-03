@@ -43,6 +43,9 @@ import org.orbisgis.view.components.renderers.TableLaFCellRenderer;
 public class TableDefaultColumnRenderer extends TableLaFCellRenderer {
         private Point popupCellAdress;
         private final static Color NULL_COLOR_FOREGROUND = Color.RED.darker();
+        private Color originalForeground;
+        private boolean doResetForeground = false;
+        
         public TableDefaultColumnRenderer(JTable table,Class<?> type, Point popupCellAdress) {
                 super(table, type);
                 this.popupCellAdress = popupCellAdress;
@@ -57,9 +60,21 @@ public class TableDefaultColumnRenderer extends TableLaFCellRenderer {
                         if(popupCellAdress.x == column && popupCellAdress.y == row) {
                                 lafTF.setBorder(UIManager.getBorder("Table.focusCellHighlightBorder"));
                         }
+                        // If value is null, shown null and color text
+                        
                         if(value == null) {
                                 lafTF.setText("null");
+                                if(!doResetForeground) {
+                                        originalForeground = lafTF.getForeground();
+                                }
                                 lafTF.setForeground(NULL_COLOR_FOREGROUND);
+                                doResetForeground = true;
+                        } else {
+                                // Restore the original color
+                                if(doResetForeground) {
+                                        lafTF.setForeground(originalForeground);
+                                        doResetForeground = false;
+                                }
                         }
                 }
 
