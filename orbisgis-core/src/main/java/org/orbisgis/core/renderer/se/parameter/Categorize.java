@@ -329,10 +329,19 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         fireNewThresoldsOrder();
     }
 
+    /**
+     * Retrieves the value associated to the input data corresponding to the
+     * lookupValue in {@code sds} at line {@code fid}.
+     * @param map
+     * @return
+     */
     protected ToType getParameter(DataSet sds, long fid) {
         try {
             if (getNumClasses() > 1) {
-                double value = lookupValue.getValue(sds, fid);
+                Double value = lookupValue.getValue(sds, fid);
+                if(value == null){
+                        return fallbackValue;
+                }
                 Iterator<ToType> cIt = classValues.iterator();
                 Iterator<RealLiteral> tIt = thresholds.iterator();
                 ToType classValue = this.firstClass;
@@ -355,10 +364,19 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         return fallbackValue;
     }
 
+    /**
+     * Retrieves the value associated to the input data corresponding to the
+     * lookupValue in {@code map}.
+     * @param map
+     * @return
+     */
     protected ToType getParameter(Map<String, Value> map) {
         try {
             if (getNumClasses() > 1) {
-                double value = lookupValue.getValue(map);
+                Double value = lookupValue.getValue(map);
+                if(value == null){
+                        return fallbackValue;
+                }
                 Iterator<ToType> cIt = classValues.iterator();
                 Iterator<RealLiteral> tIt = thresholds.iterator();
                 ToType classValue = this.firstClass;

@@ -30,6 +30,7 @@ package org.orbisgis.core.renderer.se.parameter.color;
 
 import java.awt.Color;
 import java.io.FileInputStream;
+import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.bind.JAXBElement;
@@ -38,12 +39,15 @@ import net.opengis.se._2_0.core.AreaSymbolizerType;
 import net.opengis.se._2_0.core.CategorizeType;
 import net.opengis.se._2_0.core.SolidFillType;
 import net.opengis.se._2_0.core.StyleType;
+import org.gdms.data.values.Value;
+import org.gdms.data.values.ValueFactory;
+import static org.junit.Assert.*;
 import org.junit.Before;
-import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.junit.Test;
 import org.orbisgis.core.Services;
-import static org.junit.Assert.*;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 
 /**
  *
@@ -99,8 +103,6 @@ public class Categorize2ColorTest {
     public void testAddClasses(){
         try {
             categorize.addClass(t1, class2);
-            System.out.println ("Num Classes:" + categorize.getNumClasses());
-
             assertTrue(categorize.getNumClasses() == 2);
             assertTrue(categorize.getClassValue(0).getColor(null, -1) == class1.getColor(null, -1));
             assertTrue(categorize.getClassValue(1).getColor(null, -1) == class2.getColor(null, -1));
@@ -178,6 +180,17 @@ public class Categorize2ColorTest {
         } catch (ParameterException ex) {
             Logger.getLogger(Categorize2ColorTest.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    @Test
+    public void testNullGivesFallback() throws Exception {
+            String fname = "youhou";
+            categorize.setLookupValue(new RealAttribute(fname));
+            categorize.addClass(t1, class2);
+            HashMap<String, Value> hm = new HashMap<String, Value>();
+            hm.put(fname, ValueFactory.createNullValue());
+            Color cpm = categorize.getColor(hm);
+            assertTrue(cpm == categorize.getFallbackValue().getColor(null, -1));
     }
 
     /**
