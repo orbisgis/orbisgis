@@ -40,7 +40,7 @@ import javax.swing.KeyStroke;
  * Action implementation, linked with an action listener.
  * @author Nicolas Fortin
  */
-public class DefaultAction extends AbstractAction {
+public class DefaultAction extends AbstractAction {        
         private static final long serialVersionUID = 1L;
         private ActionListener actionListener;
         private KeyStroke keyStroke;
@@ -63,7 +63,6 @@ public class DefaultAction extends AbstractAction {
                 }
         }
         /**
-         * 
          * @return The listener set
          */
         public ActionListener getActionListener() {
@@ -102,6 +101,7 @@ public class DefaultAction extends AbstractAction {
          */
         public DefaultAction addStroke(KeyStroke keyStroke) {
                 additionnalKeyStrokes.add(keyStroke);
+                putValue(ActionTools.ADDITIONAL_ACCELERATOR_KEY,additionnalKeyStrokes);
                 return this;
         }
         /**
@@ -111,6 +111,10 @@ public class DefaultAction extends AbstractAction {
         public List<KeyStroke> getAdditionnalKeyStrokes() {
                 return additionnalKeyStrokes;
         }
-        
-        
+        /**
+         * @param isGroup If true, this action will create a JMenu instance instead of a JMenuItem.
+         */
+        public void setMenuGroup(boolean isGroup) {
+                putValue(ActionTools.MENU_GROUP, isGroup);
+        }
 }

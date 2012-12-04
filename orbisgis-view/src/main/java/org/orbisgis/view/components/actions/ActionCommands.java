@@ -29,10 +29,8 @@
 package org.orbisgis.view.components.actions;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import javax.swing.AbstractButton;
+import javax.swing.Action;
 import javax.swing.ActionMap;
 import javax.swing.InputMap;
 import javax.swing.JButton;
@@ -42,6 +40,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import org.orbisgis.view.components.actions.intern.RemoveActionControls;
 
 /**
  * Provide a way to expose actions through multiple controls.
@@ -51,9 +50,7 @@ import javax.swing.KeyStroke;
  */
 public class ActionCommands {
         //Actions
-        private List<DefaultAction> actions = new ArrayList<DefaultAction>();
-        //Keep buttons reference to enable/disable them
-        private Map<DefaultAction,ArrayList<AbstractButton>> actionButtons = new HashMap<DefaultAction,ArrayList<AbstractButton>>();
+        private List<Action> actions = new ArrayList<Action>();
         
         /**
          * @param action 
@@ -61,19 +58,10 @@ public class ActionCommands {
         public void addAction(DefaultAction action) {
                 actions.add(action);
         }
-        /**
-         * Register action button, to enable/disable them later
-         * @param button A button with a registered action instance of DefaultAction
-         */
-        public void registerActionButton(AbstractButton button) {
-                if(!(button.getAction() instanceof DefaultAction)) {
-                        return;
-                }
-                DefaultAction action = (DefaultAction) button.getAction();
-                if(!actionButtons.containsKey(action)) {
-                        actionButtons.put(action, new ArrayList<AbstractButton>());
-                }
-                actionButtons.get(action).add(button);
+        
+        public void removeAction(DefaultAction action) {
+                action.putValue(RemoveActionControls.DELETED_PROPERTY, true);
+                actions.remove(action);
         }
         
         /**
@@ -81,17 +69,15 @@ public class ActionCommands {
          * @param areaMenu 
          */
         public void feedPopupMenu(JPopupMenu areaMenu) {
-                int customMenuCounter=0;
-                for(DefaultAction action : actions) {
+                int customMenuCounter=0; // default position of components
+                for(Action action : actions) {
                         JMenuItem actionItem = new JMenuItem(action);
-                        registerActionButton(actionItem);
-                        areaMenu.insert(actionItem, customMenuCounter++);                        
+                        areaMenu.insert(actionItem, customMenuCounter++);
                 }
                 
                 //Separator at the end
                 areaMenu.insert(new JSeparator(),customMenuCounter++);                
         }
-        
         
         /**
          * Apply to the component the actions
@@ -100,13 +86,17 @@ public class ActionCommands {
         public void setAccelerators(JComponent component) {
                 InputMap im = component.getInputMap(JComponent.WHEN_FOCUSED);                
                 ActionMap actionMap = component.getActionMap();
-                for(DefaultAction action : actions) {
-                        if(action.getKeyStroke()!=null) {
-                                im.put(action.getKeyStroke(), action);
+                for(Action action : actions) {
+                        KeyStroke actionStroke = ActionTools.getKeyStroke(action);
+                        if(actionStroke!=null) {
+                                im.put(actionStroke, action);
                                 actionMap.put(action, action);
                                 //Additionnal strokes
-                                for(KeyStroke stroke : action.getAdditionnalKeyStrokes()) {                                        
-                                        im.put(stroke, action);
+                                List<KeyStroke> strokes = ActionTools.getAdditionnalKeyStroke(action);
+                                if(strokes!=null) {
+                                        for(KeyStroke stroke : strokes) {                                        
+                                                im.put(stroke, action);
+                                        }
                                 }
                         }
                 }
@@ -120,10 +110,11 @@ public class ActionCommands {
         public JToolBar getEditorToolBar(boolean setButtonText) {
                 JToolBar commandToolBar = new JToolBar();
                 //Add all registered actions
-                for(DefaultAction action : actions) {
-                        if(action.getIcon()!=null) {
+                for(Action action : actions) {
+                        if(ActionTools.getIcon(action)!=null) {
                                 JButton newButton = new JButton(action);
-                                registerActionButton(newButton);
+                                // Remove this button when action is removed.
+                                action.addPropertyChangeListener(new RemoveActionControls(commandToolBar, newButton));
                                 commandToolBar.add(newButton);
                         }
                 }

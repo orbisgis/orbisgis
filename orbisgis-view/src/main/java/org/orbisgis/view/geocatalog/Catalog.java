@@ -52,8 +52,6 @@ import org.gvsig.remoteClient.wms.WMSClient;
 import org.gvsig.remoteClient.wms.WMSLayer;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.events.EventException;
-import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.SaveFilePanel;
@@ -61,6 +59,7 @@ import org.orbisgis.utils.CollectionUtils;
 import org.orbisgis.utils.FileUtils;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.docking.DockingPanel;
@@ -68,6 +67,7 @@ import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.dialogs.OpenGdmsFilePanel;
 import org.orbisgis.view.geocatalog.dialogs.OpenGdmsFolderPanel;
+import org.orbisgis.view.geocatalog.ext.GeoCatalogExt;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.factories.NameContains;
 import org.orbisgis.view.geocatalog.filters.factories.NameNotContains;
@@ -93,7 +93,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * eventSourceListPopupMenuCreating listener container to add more items in the
  * source list pop-up menu.
  */
-public class Catalog extends JPanel implements DockingPanel {
+public class Catalog extends JPanel implements DockingPanel,GeoCatalogExt {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
 
         private static final long serialVersionUID = 1L;
@@ -107,10 +107,8 @@ public class Catalog extends JPanel implements DockingPanel {
         private SourceListModel sourceListContent;
         //The factory shown when the user click on new factory button
         private static final String DEFAULT_FILTER_FACTORY = "name_contains";
-        //The popup menu event listener manager
-        private ListenerContainer<MenuPopupEventData> eventSourceListPopupMenuCreating = new ListenerContainer<MenuPopupEventData>();
         private FilterFactoryManager<IFilter,DefaultActiveFilter> filterFactoryManager;
-
+        private ActionCommands additionalDataSourceActions = new ActionCommands();
         /**
          * For the Unit test purpose
          *
@@ -118,17 +116,6 @@ public class Catalog extends JPanel implements DockingPanel {
          */
         public JList getSourceList() {
                 return sourceList;
-        }
-
-        /**
-         * The popup menu event listener manager The popup menu is being
-         * created, all listeners are able to feed the menu with custom
-         * functions
-         *
-         * @return
-         */
-        public ListenerContainer<MenuPopupEventData> getEventSourceListPopupMenuCreating() {
-                return eventSourceListPopupMenuCreating;
         }
 
         /**
@@ -600,13 +587,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 //////////////////////////////
                 //Plugins
                 //Add additionnal extern data source functions
-                try {
-                        eventSourceListPopupMenuCreating.callListeners(new MenuPopupEventData(rootMenu, this));
-                } catch (EventException ex) {
-                        //A listener cancel the creation of the popup menu
-                        LOGGER.warn(I18N.tr("An external code stop the creation of the PopUp menu"), ex);
-                        return null;
-                }
+                additionalDataSourceActions.feedPopupMenu(rootMenu);
                 return rootMenu;
         }
 
@@ -648,11 +629,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 sourceListContent.dispose();
         }
 
-        /**
-         * Return the names of the selected sources in the geocatalog.
-         *
-         * @return
-         */
+        @Override
         public String[] getSelectedSources() {
                 Object[] selectedValues = getSourceList().getSelectedValues();
                 String[] sources = new String[selectedValues.length];
@@ -661,7 +638,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 }
                 return sources;
         }
-
+        
         /**
          * Give information on the behaviour of this panel related to the
          * current docking system
