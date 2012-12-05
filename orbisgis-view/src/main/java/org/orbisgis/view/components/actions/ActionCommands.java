@@ -97,7 +97,7 @@ public class ActionCommands {
          * Add an action and show it in all registered controls.
          * @param action
          */
-        public void addAction(DefaultAction action) {
+        public void addAction(Action action) {
                 if (!actions.contains(action)) {
                         actions.add(action);
                         applyActionsOnAllControls(new Action[]{action});
@@ -109,7 +109,7 @@ public class ActionCommands {
          * PropertyChange listeners of action will remove all related menu items.
          * @param action
          */
-        public void removeAction(DefaultAction action) {
+        public void removeAction(Action action) {
                 action.putValue(RemoveActionControls.DELETED_PROPERTY, true);
                 actions.remove(action);
         }
@@ -187,8 +187,15 @@ public class ActionCommands {
          */
         private int getInsertPosition(JComponent parent, Action action) {
                 final String newElMenuId = ActionTools.getMenuId(action);
+                Component[] components;
+                if(parent instanceof JMenu) {
+                        // Special case, JMenu use an internal JPopupMenu
+                        components = ((JMenu)parent).getMenuComponents();
+                } else {
+                        components = parent.getComponents();
+                }
                 if(newElMenuId.isEmpty()) {
-                        return parent.getComponentCount();
+                        return components.length;
                 }
                 final String insertAfter = ActionTools.getInsertAfterMenuId(action);
                 final String insertBefore= ActionTools.getInsertBeforeMenuId(action);
@@ -214,7 +221,7 @@ public class ActionCommands {
                                 }
                         }
                 }
-                return parent.getComponentCount();
+                return components.length;
         }
         private void insertMenu(MenuElement parent, JComponent child, Action action) {
                 if(parent instanceof JComponent) {

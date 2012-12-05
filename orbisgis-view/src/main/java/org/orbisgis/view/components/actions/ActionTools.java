@@ -34,7 +34,7 @@ import javax.swing.Icon;
 import javax.swing.KeyStroke;
 
 /**
- * Read properties of Action and cast the values.
+ * Additional properties of Actions related to ActionCommands features.
  * @author Nicolas Fortin
  */
 public class ActionTools {
@@ -123,6 +123,7 @@ public class ActionTools {
                 }
                 return (String)val;
         }
+
         /**
          * @return The other Menu id that should be after this action,
          * empty if none.
