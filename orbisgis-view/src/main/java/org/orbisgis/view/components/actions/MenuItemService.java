@@ -39,7 +39,8 @@ import javax.swing.Action;
 public interface MenuItemService<TargetComponent> {        
         /**
          * @param target
-         * @return 
+         * @return Action instance, additional properties can be set.
+         * @see org.orbisgis.view.components.actions.ActionTools
          */
         Action getAction(TargetComponent target);
 }

@@ -37,7 +37,6 @@ import bibliothek.gui.dock.common.action.CRadioGroup;
 import bibliothek.gui.dock.common.action.CSeparator;
 import java.awt.Component;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentListener;
 import java.awt.event.ItemListener;
 import java.beans.EventHandler;
 import java.util.ArrayList;
@@ -66,11 +65,11 @@ public class ToolBarActions {
     private List<CAction> customActions = new ArrayList<CAction>();
     //Map with key the hashCode of ButtonGroup and value the corresponding CRadioGroup
     private Map<Integer,CRadioGroup> radioGroups = new HashMap<Integer,CRadioGroup>();
-    
+
     /**
      * Copy action listener to docking frames button
      * @param from
-     * @param to 
+     * @param to
      */
     private void transferActionsListeners(AbstractButton from , CButton to) {
         ActionListener[] listeners = from.getActionListeners();
@@ -79,17 +78,18 @@ public class ToolBarActions {
         }
     }
     /**
-     * 
+     *
      * @return The CAction created during the execution of convertToolBarToActions
      */
     public List<CAction> getCustomActions() {
         return customActions;
     }
-    
+
     /**
      * Docking Frames does't provide the "Container" interface,
      * this method help to add item into multiple CAction container
-     * @param citem 
+     * @param container
+     * @param item
      */
     private boolean addSubItem(CAction container,CAction item) {
         if(container instanceof CDropDownButton) {
@@ -101,13 +101,7 @@ public class ToolBarActions {
         }
         return true;
     }
-    /**
-     * Copy Swing Menu Item into Docking Frames menu item
-     * and select the selected item
-     * @param jitem Java menu
-     * @param citem Dockings Frames Menu
-     */
-    
+
     /**
      * Copy Swing Menu Item into Docking Frames menu item
      * and select the selected item
@@ -115,7 +109,7 @@ public class ToolBarActions {
      * @param citem Destination of copy
      * @param dbutton The docking frames dropdownbutton
      * @param selectedItem The item to select in destination
-     * @param radio The button group to disable when an action is done in a menu, can be null
+     * @param buttonGroup The button group to disable when an action is done in a menu, can be null
      */
     private void CopyJMenuIntoCMenu(MenuElement me,CAction citem,CDropDownButton dbutton,JMenuItem selectedItem,CRadioGroup buttonGroup) {
         if(me instanceof JMenuItem) {
@@ -145,7 +139,7 @@ public class ToolBarActions {
             }
         }
     }
-    
+
     /**
      * Retrieve the swing button group
      * @param dropButton Can be null
@@ -166,7 +160,7 @@ public class ToolBarActions {
     /**
      * Retrieve swing button group and apply to DockingFrames button group
      * @param button
-     * @param dbutton 
+     * @param dbutton
      */
     private void applyButtonGroup(JToggleButton button,CRadioButton dbutton) {
         if(button.getModel() instanceof DefaultButtonModel) {
@@ -178,11 +172,11 @@ public class ToolBarActions {
                 radioGroups.put(bgroup.hashCode(), radio);
             }
             radio.add(dbutton);
-        }        
+        }
     }
     /**
      * Convert the swing toolbar into docking frames CAction
-     * @param viewToolBar 
+     * @param viewToolBar
      */
     public void convertToolBarToActions(JToolBar viewToolBar) {
         if(viewToolBar!=null) {

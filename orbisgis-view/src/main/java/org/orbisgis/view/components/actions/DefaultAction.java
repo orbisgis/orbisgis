@@ -44,7 +44,7 @@ public class DefaultAction extends AbstractAction {
         private static final long serialVersionUID = 1L;
         private ActionListener actionListener;
         private KeyStroke keyStroke;
-        private List<KeyStroke> additionnalKeyStrokes = new ArrayList<KeyStroke>();
+        private List<KeyStroke> additionalKeyStrokes = new ArrayList<KeyStroke>();
         /**
          * 
          * @param actionLabel I18N label short label
@@ -95,21 +95,19 @@ public class DefaultAction extends AbstractAction {
         
         /**
          * Add a new Accelerator for this action (not used in menu and toolbars)
-         * @see getAdditionnalKeyStrokes
          * @param keyStroke
          * @return this
          */
         public DefaultAction addStroke(KeyStroke keyStroke) {
-                additionnalKeyStrokes.add(keyStroke);
-                putValue(ActionTools.ADDITIONAL_ACCELERATOR_KEY,additionnalKeyStrokes);
+                additionalKeyStrokes.add(keyStroke);
+                putValue(ActionTools.ADDITIONAL_ACCELERATOR_KEY, additionalKeyStrokes);
                 return this;
         }
-        /**
-        * @see addStroke
+       /**
         * @return Accelerator for this action (not used in menu and toolbars)
         */
-        public List<KeyStroke> getAdditionnalKeyStrokes() {
-                return additionnalKeyStrokes;
+        public List<KeyStroke> getAdditionalKeyStrokes() {
+                return additionalKeyStrokes;
         }
         /**
          * @param isGroup If true, this action will create a JMenu instance instead of a JMenuItem.

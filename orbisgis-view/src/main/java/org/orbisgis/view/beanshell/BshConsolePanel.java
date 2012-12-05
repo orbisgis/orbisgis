@@ -271,7 +271,8 @@ public class BshConsolePanel extends JPanel {
                         scriptPanel.addCaretListener(EventHandler.create(CaretListener.class,this,"onScriptPanelCaretUpdate"));
                         scriptPanel.clearParsers();
                         actions.setAccelerators(scriptPanel);
-                        actions.feedPopupMenu(scriptPanel.getPopupMenu());
+                        // Actions will be set on the scriptPanel PopupMenu
+                        actions.registerContainer(scriptPanel.getPopupMenu());
                         centerPanel = new RTextScrollPane(scriptPanel);
                 }
                 return centerPanel;
