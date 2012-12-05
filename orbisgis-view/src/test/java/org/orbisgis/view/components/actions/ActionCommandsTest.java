@@ -28,14 +28,14 @@
  */
 package org.orbisgis.view.components.actions;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
+import javax.swing.Action;
+import javax.swing.JMenu;
+import javax.swing.JPopupMenu;
+import java.awt.Container;
 import java.awt.event.ActionEvent;
-
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
@@ -55,6 +55,7 @@ public class ActionCommandsTest {
                 ac.addAction(new UnitTestAction("B").after("A"));
                 ac.addAction(new UnitTestAction("C").after("B"));
                 ac.addAction(new UnitTestAction("AB").parent("A"));
+                ac.addAction(new UnitTestActionGroup("AC").parent("A"));
 
                 ac.registerContainer(menu);
                 // Check action order
@@ -65,14 +66,12 @@ public class ActionCommandsTest {
                 // A should be a Menu
                 assertTrue(menu.getComponents()[0] instanceof JMenu);
                 // Menu A should contain 2 MenuItem
-                assertEquals(2,((JMenu)menu.getComponents()[0]).getMenuComponentCount());
+                assertEquals(3,((JMenu)menu.getComponents()[0]).getMenuComponentCount());
                 assertEquals("AA",getActionMenuId((Container)menu.getComponents()[0],0));
                 assertEquals("AB",getActionMenuId((Container)menu.getComponents()[0],1));
+                assertEquals("AC",getActionMenuId((Container)menu.getComponents()[0],2));
         }
 
-        private void registerUtActions(ActionCommands ac) {
-
-        }
         @Test
         public void testBeforeActions() throws Exception {
                 JPopupMenu menu = new JPopupMenu();
@@ -89,6 +88,30 @@ public class ActionCommandsTest {
                 assertEquals("B",getActionMenuId(menu,1));
                 assertEquals("C",getActionMenuId(menu,2));
                 assertEquals("D",getActionMenuId(menu,3));
+        }
+
+        @Test
+        public void testRemoveActions() throws Exception {
+                JPopupMenu menu = new JPopupMenu();
+                ActionCommands ac = new ActionCommands();
+                ac.registerContainer(menu);
+
+                //Register actions
+                UnitTestAction A = new UnitTestAction("A");
+                ac.addAction(A);
+                ac.addAction(new UnitTestAction("B"));
+
+                //Check
+                assertEquals("A",getActionMenuId(menu,0));
+                assertEquals("B",getActionMenuId(menu,1));
+                assertEquals(2,menu.getComponentCount());
+
+                //Remove A
+                ac.removeAction(A);
+
+                //Check
+                assertEquals("B",getActionMenuId(menu,0));
+                assertEquals(1,menu.getComponentCount());
         }
         private String getActionMenuId(Container comp,int actionIndex) {
                 return ActionTools.getMenuId(getAction(comp,actionIndex));

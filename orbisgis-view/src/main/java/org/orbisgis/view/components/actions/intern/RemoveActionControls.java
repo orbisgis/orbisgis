@@ -39,7 +39,7 @@ import java.beans.PropertyChangeListener;
  */
 public class RemoveActionControls implements PropertyChangeListener {
         // If set this action property will remove all component associated
-        public final static String DELETED_PROPERTY = "DelectedAction";
+        public final static String DELETED_PROPERTY = "DeletedAction";
         private Container container;
         private Component menuItem;
         /**

@@ -60,10 +60,10 @@ public class CoreWorkspace implements Serializable {
         public static final String PROP_RESULTSFOLDER = "resultsFolder";
         private String sourceFolder;
         public static final String PROP_SOURCEFOLDER = "sourceFolder";
-        private String pluginFolder = applicationFolder + File.separator + "plugins";
+        private String pluginFolder = "plugins";
         public static final String PROP_PLUGINFOLDER = "pluginFolder";
         private String tempFolder;
-        private String pluginCache = applicationFolder + File.separator + "cache";
+        private String pluginCache = "cache";
         public static final String PROP_PLUGINCACHE = "pluginCache";
         private String logFile = "orbisgis.log";
         public static final String PROP_LOGFILE = "logFile";
@@ -86,7 +86,7 @@ public class CoreWorkspace implements Serializable {
          * @return the value of pluginCache
          */
         public String getPluginCache() {
-                return pluginCache;
+                return applicationFolder + File.separator + pluginCache;
         }
 
         /**
@@ -299,7 +299,7 @@ public class CoreWorkspace implements Serializable {
          * @return the value of pluginFolder
          */
         public String getPluginFolder() {
-                return pluginFolder;
+                return applicationFolder + File.separator + pluginFolder;
         }
 
         /**
