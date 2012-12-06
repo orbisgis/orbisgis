@@ -29,11 +29,9 @@
 package org.orbisgis.view.components.actions;
 
 import org.junit.Test;
-import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
-import javax.swing.Action;
-import javax.swing.JMenu;
-import javax.swing.JPopupMenu;
+import org.orbisgis.view.components.button.DropDownButton;
+
+import javax.swing.*;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import static junit.framework.Assert.assertEquals;
@@ -88,6 +86,24 @@ public class ActionCommandsTest {
                 assertEquals("B",getActionMenuId(menu,1));
                 assertEquals("C",getActionMenuId(menu,2));
                 assertEquals("D",getActionMenuId(menu,3));
+        }
+
+        @Test
+        public void testJToolBar() throws Exception {
+                JToolBar toolBar = new JToolBar();
+                ActionCommands ac = new ActionCommands();
+                ac.registerContainer(toolBar);
+
+                //Register actions
+                ac.addAction(new UnitTestActionGroup("A"));
+                ac.addAction(new UnitTestAction("AA").parent("A"));
+                ac.addAction(new UnitTestAction("AB").parent("A"));
+                ac.addAction(new UnitTestAction("B"));
+
+                //Check
+                assertEquals("A", getActionMenuId(toolBar, 0));
+                assertTrue(toolBar.getComponentAtIndex(0).getClass().getName(),toolBar.getComponentAtIndex(0) instanceof DropDownButton);
+                assertTrue(toolBar.getComponentAtIndex(1).getClass().getName(),toolBar.getComponentAtIndex(1) instanceof JButton);
         }
 
         @Test

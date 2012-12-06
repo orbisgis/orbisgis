@@ -158,7 +158,9 @@ public class DropDownButton extends JToggleButton implements
 
         @Override
         public void setIcon(Icon icon) {
-            if(icon instanceof ImageIcon) {
+            if(icon == null) {
+                    super.setIcon(null);
+            } else if(icon instanceof ImageIcon) {
                 super.setIcon(mergeIcons((ImageIcon)icon));
             }else{
                 throw new IllegalArgumentException("DropDown button accept only ImageIcon");

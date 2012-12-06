@@ -29,7 +29,9 @@
 package org.orbisgis.view.components.actions;
 
 import org.apache.log4j.Logger;
+import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.actions.intern.RemoveActionControls;
+import org.orbisgis.view.components.button.DropDownButton;
 
 import javax.swing.AbstractButton;
 import javax.swing.Action;
@@ -44,8 +46,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import java.awt.Component;
-import java.awt.Container;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -143,7 +144,13 @@ public class ActionCommands {
                                         }
                                 }
                         }
-                        if(menuEl instanceof Container) {
+                        if(menuEl instanceof DropDownButton) {
+                                DropDownButton button = (DropDownButton)menuEl;
+                                if(button.getComponentPopupMenu()==null) {
+                                        button.setComponentPopupMenu(new JPopupMenu());
+                                }
+                                feedMap(button.getComponentPopupMenu(),subContainers);
+                        } else if(menuEl instanceof Container) {
                                 feedMap((Container)menuEl,subContainers);
                         }
                 }
@@ -152,13 +159,14 @@ public class ActionCommands {
         private void applyActionsOnMenuContainer(JComponent rootMenu, Action[] actionsAr) {
                 // Map of Parent->Menu
                 Map<String,Container> subContainers = new HashMap<String,Container>();
+                subContainers.put("",rootMenu);
                 // Add existing menu in map
-                feedMap(rootMenu,subContainers);
+                feedMap(rootMenu, subContainers);
                 // Insert new menu groups in map
                 for(Action action : actionsAr) {
                         if(ActionTools.isMenu(action)) {
                                 subContainers.put(ActionTools.getMenuId(action),
-                                        createMenu(action));
+                                        new TemporaryContainer(action));
                          }
                 }
                 // Insert
@@ -172,20 +180,57 @@ public class ActionCommands {
                                 parent = subContainers.get(parentId);
                                 if(parent==null) { //Orphan action
                                         LOGGER.warn("Menu action ("+action+") parent '"+parentId+"' does not exists.");
+                                } else {
+                                        if(parent instanceof TemporaryContainer) {
+                                                parent = convertContainer((TemporaryContainer)parent,subContainers);
+                                        }
                                 }
                         }
                         if(parent!=null) {
                                 Component child;
                                 if(ActionTools.isMenu(action)) {
                                         child = subContainers.get(ActionTools.getMenuId(action));
+                                        if(child instanceof TemporaryContainer) {
+                                                child = convertContainer((TemporaryContainer)child,subContainers);
+                                        }
                                 } else {
-                                        child = new JMenuItem(action);
+                                        if(!(parent instanceof JToolBar)) {
+                                                child = new JMenuItem(action);
+                                        } else {
+                                                child = new CustomButton(action);
+                                        }
                                 }
-                                insertMenu(parent,child,action);
+                                insertMenu(parent, child, action);
                         }
                 }
         }
 
+        /***
+         * TemporaryContainer is temporary because the parent container
+         * need to be known before creating the child container.
+         * @param current Current container
+         * @param subContainers Action, Container map
+         * @return Final instance of the container
+         */
+        private Container convertContainer(TemporaryContainer current,Map<String,Container> subContainers) {
+                //Get parent container
+                Action action = current.getAction();
+                Container parent = subContainers.get(ActionTools.getParentMenuId(action));
+                if(parent instanceof TemporaryContainer) {
+                        parent = convertContainer((TemporaryContainer)parent,subContainers);
+                }
+                Container child;
+                if(parent instanceof JToolBar) {
+                        DropDownButton button = new DropDownButton(action);
+                        button.setComponentPopupMenu(new JPopupMenu());
+                        child = button;
+                } else {
+                        child = new JMenu(action);
+                }
+                // Update link between action and control
+                subContainers.put(ActionTools.getMenuId(action),child);
+                return child;
+        }
         /**
          * Find the most appropriate action insertion index.
          * This is sorting by insertion. But it doesn't guaranty to solve complex order issues.
@@ -199,6 +244,8 @@ public class ActionCommands {
                 if(parent instanceof JMenu) {
                         // Special case, JMenu use an internal JPopupMenu
                         components = ((JMenu)parent).getMenuComponents();
+                } else if(parent instanceof DropDownButton) {
+                        components = ((DropDownButton) parent).getComponentPopupMenu().getComponents();
                 } else {
                         components = parent.getComponents();
                 }
@@ -302,4 +349,21 @@ public class ActionCommands {
                 commandToolBar.add(new JSeparator());
                 return commandToolBar;
         }
+
+        /**
+         * Postpone the creation of the action control
+         */
+        private class TemporaryContainer extends Container {
+                private Action action;
+
+                private TemporaryContainer(Action action) {
+                        this.action = action;
+                }
+
+                public Action getAction() {
+                        return action;
+                }
+        }
+
+
 }
