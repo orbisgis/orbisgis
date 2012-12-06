@@ -28,11 +28,9 @@
  */
 package org.orbisgis.view.components.actions;
 
-import java.awt.Component;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.apache.log4j.Logger;
+import org.orbisgis.view.components.actions.intern.RemoveActionControls;
+
 import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.ActionMap;
@@ -46,10 +44,12 @@ import javax.swing.JPopupMenu;
 import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import javax.swing.MenuElement;
-
-import org.apache.log4j.Logger;
-import org.orbisgis.view.components.actions.intern.RemoveActionControls;
+import java.awt.Component;
+import java.awt.Container;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Provide a way to expose actions through multiple controls.
@@ -66,11 +66,12 @@ public class ActionCommands {
 
         /**
          * Actions will be inserted in the registered tool bar.
-         * @param toolBar
+         * @param toolBar JToolBar instance
          */
         public void registerContainer(JToolBar toolBar) {
                 containers.add(toolBar);
-                // TODO insert existing actions
+                applyActionsOnMenuContainer(toolBar,
+                        actions.toArray(new Action[actions.size()]));
         }
 
         public void registerContainer(JPopupMenu menu) {
@@ -79,6 +80,10 @@ public class ActionCommands {
                         actions.toArray(new Action[actions.size()]));
         }
 
+        /**
+         *
+         * @param menuBar JMenuBar instance
+         */
         public void registerContainer(JMenuBar menuBar) {
                 containers.add(menuBar);
                 applyActionsOnMenuContainer(menuBar,
@@ -87,7 +92,7 @@ public class ActionCommands {
         /**
          * Remove a linked container.
          * @param component
-         * @return
+         * @return true is found and removed
          */
         public boolean unregisterContainer(JComponent component) {
                 return containers.remove(component);
@@ -116,19 +121,20 @@ public class ActionCommands {
 
         private void applyActionsOnAllControls(Action[] actionsAr) {
                 for(JComponent component : containers) {
-                        applyActions(component, actionsAr);
-                }
-        }
-        private void applyActions(JComponent component, Action[] actionsAr) {
-                if(component instanceof MenuElement) {
-                        applyActionsOnMenuContainer((MenuElement) component, actionsAr);
+                        applyActionsOnMenuContainer(component, actionsAr);
                 }
         }
 
-        private void feedMap(MenuElement[] subElements, Map<String,JMenu> subContainers) {
-                for(MenuElement menuEl : subElements) {
-                        if(menuEl instanceof JMenu) {
-                                JMenu menu = (JMenu)menuEl;
+        private void feedMap(Container container, Map<String,Container> subContainers) {
+                Component[] subElements;
+                if(container instanceof JMenu) {
+                        subElements = ((JMenu)container).getMenuComponents();
+                } else {
+                        subElements = container.getComponents();
+                }
+                for(Component menuEl : subElements) {
+                        if(menuEl instanceof AbstractButton) {
+                                AbstractButton menu = (AbstractButton)menuEl;
                                 Action menuAction = menu.getAction();
                                 if(menuAction!=null) {
                                         String menuId = ActionTools.getMenuId(menuAction);
@@ -137,15 +143,17 @@ public class ActionCommands {
                                         }
                                 }
                         }
-                        feedMap(menuEl.getSubElements(),subContainers);
+                        if(menuEl instanceof Container) {
+                                feedMap((Container)menuEl,subContainers);
+                        }
                 }
         }
 
-        private void applyActionsOnMenuContainer(MenuElement rootMenu, Action[] actionsAr) {
+        private void applyActionsOnMenuContainer(JComponent rootMenu, Action[] actionsAr) {
                 // Map of Parent->Menu
-                Map<String,JMenu> subContainers = new HashMap<String,JMenu>();
+                Map<String,Container> subContainers = new HashMap<String,Container>();
                 // Add existing menu in map
-                feedMap(rootMenu.getSubElements(),subContainers);
+                feedMap(rootMenu,subContainers);
                 // Insert new menu groups in map
                 for(Action action : actionsAr) {
                         if(ActionTools.isMenu(action)) {
@@ -157,7 +165,7 @@ public class ActionCommands {
                 for(Action action : actionsAr) {
                         // Fetch parent menu of this action
                         String parentId = ActionTools.getParentMenuId(action);
-                        MenuElement parent;
+                        Container parent;
                         if(parentId.isEmpty()) {
                                 parent = rootMenu;
                         } else {
@@ -167,7 +175,7 @@ public class ActionCommands {
                                 }
                         }
                         if(parent!=null) {
-                                JComponent child;
+                                Component child;
                                 if(ActionTools.isMenu(action)) {
                                         child = subContainers.get(ActionTools.getMenuId(action));
                                 } else {
@@ -185,7 +193,7 @@ public class ActionCommands {
          * @param action Action to insert
          * @return Advised insertion id [0-parent.getComponentCount()]
          */
-        private int getInsertPosition(JComponent parent, Action action) {
+        private int getInsertPosition(Container parent, Action action) {
                 final String newElMenuId = ActionTools.getMenuId(action);
                 Component[] components;
                 if(parent instanceof JMenu) {
@@ -223,19 +231,15 @@ public class ActionCommands {
                 }
                 return components.length;
         }
-        private void insertMenu(MenuElement parent, JComponent child, Action action) {
-                if(parent instanceof JComponent) {
-                        JComponent parentComponent = (JComponent)parent;
-                        // Insert the action at is right place
-                        parentComponent.add(child, getInsertPosition(parentComponent, action));
-                        // Remove child from parentComponent when action is removed
-                        action.addPropertyChangeListener(new RemoveActionControls(parentComponent,child));
-                }
+        private void insertMenu(Container parent, Component child, Action action) {
+                // Insert the action at is right place
+                parent.add(child, getInsertPosition(parent, action));
+                // Remove child from parentComponent when action is removed
+                action.addPropertyChangeListener(new RemoveActionControls(parent,child));
         }
 
         private JMenu createMenu(Action action) {
-                JMenu menu = new JMenu(action);
-                return menu;
+                return new JMenu(action);
         }
         /**
          * @deprecated Use register instead
@@ -280,6 +284,7 @@ public class ActionCommands {
          *
          * @param setButtonText If true, a text is set on the buttons
          * @return Instance of JToolBar
+         * @deprecated Use register instead
          */
         public JToolBar getEditorToolBar(boolean setButtonText) {
                 JToolBar commandToolBar = new JToolBar();

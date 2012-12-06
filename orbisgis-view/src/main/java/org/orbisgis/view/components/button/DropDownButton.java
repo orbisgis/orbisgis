@@ -60,6 +60,14 @@ public class DropDownButton extends JToggleButton implements
         }
 
         /**
+         * Initialise this control by using action
+         * @param action
+         */
+        public DropDownButton(Action action) {
+                super(action);
+        }
+
+        /**
          * Does this button will be replaced by the selected menu item
          * @return 
          */
