@@ -59,5 +59,12 @@ public class RemoveActionControls implements PropertyChangeListener {
                         container.validate();
                 }
         }
-        
+
+        /**
+         * The linked container
+         * @return Container instance
+         */
+        public Container getContainer() {
+                return container;
+        }
 }

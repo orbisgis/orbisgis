@@ -32,10 +32,13 @@ import org.apache.log4j.Logger;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.actions.intern.RemoveActionControls;
 import org.orbisgis.view.components.button.DropDownButton;
-
+import javax.swing.AbstractAction;
 import javax.swing.AbstractButton;
 import javax.swing.Action;
 import javax.swing.ActionMap;
+import javax.swing.ButtonGroup;
+import javax.swing.ButtonModel;
+import javax.swing.DefaultButtonModel;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -43,11 +46,16 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
+import javax.swing.JRadioButton;
+import javax.swing.JRadioButtonMenuItem;
 import javax.swing.JSeparator;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,13 +100,47 @@ public class ActionCommands {
         }
         /**
          * Remove a linked container.
-         * @param component
+         * @param component JMenuBar,JPopupMenu or JToolBar instance.
          * @return true is found and removed
          */
         public boolean unregisterContainer(JComponent component) {
+                //Remove property change
+                removePropertyChangeListeners(component);
                 return containers.remove(component);
         }
 
+        /**
+         * Remove the reference of Action to the container. Removed action  will not remove components in container.
+         * @param container JMenuBar,JPopupMenu or JToolBar instance.
+         */
+        private void removePropertyChangeListeners(Container container) {
+                Component[] components = getSubElements(container);
+                for(Component component : components) {
+                        Action action = getAction(component);
+                        if(action instanceof AbstractAction) {
+                                AbstractAction act = (AbstractAction)action;
+                                List<PropertyChangeListener> copyOfListenerList = Arrays.asList(act.getPropertyChangeListeners());
+                                for(PropertyChangeListener listener : copyOfListenerList) {
+                                        if(listener instanceof RemoveActionControls) {
+                                                RemoveActionControls removeListener = (RemoveActionControls)listener;
+                                                if(removeListener.getContainer().equals(container)) {
+                                                        action.removePropertyChangeListener(listener);
+                                                }
+                                        }
+                                }
+                        }
+                        if(component instanceof Container) {
+                                removePropertyChangeListeners((Container)component);
+                        }
+                }
+        }
+        private Action getAction(Component component) {
+                if(component instanceof AbstractButton) {
+                        return ((AbstractButton) component).getAction();
+                }
+                // Action cannot be retrieved from this container
+                throw new IllegalArgumentException("Container is not an abstract button");
+        }
         /**
          * Add an action and show it in all registered controls.
          * @param action
@@ -126,13 +168,20 @@ public class ActionCommands {
                 }
         }
 
-        private void feedMap(Container container, Map<String,Container> subContainers) {
-                Component[] subElements;
+        /**
+         * Extract sub elements that should contains actions.
+         * @param container
+         * @return
+         */
+        private Component[] getSubElements(Container container) {
                 if(container instanceof JMenu) {
-                        subElements = ((JMenu)container).getMenuComponents();
+                        return ((JMenu)container).getMenuComponents();
                 } else {
-                        subElements = container.getComponents();
+                        return container.getComponents();
                 }
+        }
+        private void feedMap(Container container, Map<String,Container> subContainers,Map<String,ButtonGroup> buttonGroups) {
+                Component[] subElements = getSubElements(container);
                 for(Component menuEl : subElements) {
                         if(menuEl instanceof AbstractButton) {
                                 AbstractButton menu = (AbstractButton)menuEl;
@@ -142,6 +191,14 @@ public class ActionCommands {
                                         if(!menuId.isEmpty()) {
                                                 subContainers.put(menuId, menu);
                                         }
+                                        String buttonGroup = ActionTools.getToggleGroup(menuAction);
+                                        if(!buttonGroup.isEmpty() && !buttonGroups.containsKey(buttonGroup)) {
+                                                //New button group
+                                                ButtonModel bm = menu.getModel();
+                                                if(bm instanceof DefaultButtonModel) {
+                                                        buttonGroups.put(buttonGroup,((DefaultButtonModel) bm).getGroup());
+                                                }
+                                        }
                                 }
                         }
                         if(menuEl instanceof DropDownButton) {
@@ -149,9 +206,9 @@ public class ActionCommands {
                                 if(button.getComponentPopupMenu()==null) {
                                         button.setComponentPopupMenu(new JPopupMenu());
                                 }
-                                feedMap(button.getComponentPopupMenu(),subContainers);
+                                feedMap(button.getComponentPopupMenu(),subContainers,buttonGroups);
                         } else if(menuEl instanceof Container) {
-                                feedMap((Container)menuEl,subContainers);
+                                feedMap((Container)menuEl,subContainers,buttonGroups);
                         }
                 }
         }
@@ -159,9 +216,11 @@ public class ActionCommands {
         private void applyActionsOnMenuContainer(JComponent rootMenu, Action[] actionsAr) {
                 // Map of Parent->Menu
                 Map<String,Container> subContainers = new HashMap<String,Container>();
+                // Map of TOGGLE_GROUP -> ButtonGroup instance
+                Map<String,ButtonGroup> buttonGroups = new HashMap<String, ButtonGroup>();
                 subContainers.put("",rootMenu);
                 // Add existing menu in map
-                feedMap(rootMenu, subContainers);
+                feedMap(rootMenu, subContainers,buttonGroups);
                 // Insert new menu groups in map
                 for(Action action : actionsAr) {
                         if(ActionTools.isMenu(action)) {
@@ -188,23 +247,48 @@ public class ActionCommands {
                         }
                         if(parent!=null) {
                                 Component child;
+                                // Creation of Child items
+                                // Child item class depends on action properties and parent class.
                                 if(ActionTools.isMenu(action)) {
                                         child = subContainers.get(ActionTools.getMenuId(action));
                                         if(child instanceof TemporaryContainer) {
                                                 child = convertContainer((TemporaryContainer)child,subContainers);
                                         }
                                 } else {
+                                        String buttonGroup = ActionTools.getToggleGroup(action);
                                         if(!(parent instanceof JToolBar)) {
-                                                child = new JMenuItem(action);
+                                                if(buttonGroup.isEmpty()) {
+                                                        child = new JMenuItem(action);
+                                                } else {
+                                                        JRadioButtonMenuItem radioMenu = new JRadioButtonMenuItem(action);
+                                                        ButtonGroup bGroup = getOrPutButtonGroup(buttonGroups,action);
+                                                        bGroup.add(radioMenu);
+                                                        child = radioMenu;
+                                                }
                                         } else {
-                                                child = new CustomButton(action);
+                                                if(buttonGroup.isEmpty()) {
+                                                        child = new CustomButton(action);
+                                                } else {
+                                                        JRadioButton button = new JRadioButton(action);
+                                                        ButtonGroup bGroup = getOrPutButtonGroup(buttonGroups,action);
+                                                        bGroup.add(button);
+                                                        child = button;
+                                                }
                                         }
                                 }
                                 insertMenu(parent, child, action);
                         }
                 }
         }
-
+        private ButtonGroup getOrPutButtonGroup(Map<String,ButtonGroup> existingGroups,Action action) {
+                String actionGroup = ActionTools.getToggleGroup(action);
+                ButtonGroup actionBGroup = existingGroups.get(actionGroup);
+                if(actionBGroup==null) {
+                        actionBGroup = new ButtonGroup();
+                        existingGroups.put(actionGroup,actionBGroup);
+                }
+                return actionBGroup;
+        }
         /***
          * TemporaryContainer is temporary because the parent container
          * need to be known before creating the child container.

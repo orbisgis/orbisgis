@@ -32,7 +32,7 @@ import org.junit.Test;
 import org.orbisgis.view.components.button.DropDownButton;
 
 import javax.swing.*;
-import java.awt.Container;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
@@ -102,10 +102,49 @@ public class ActionCommandsTest {
 
                 //Check
                 assertEquals("A", getActionMenuId(toolBar, 0));
-                assertTrue(toolBar.getComponentAtIndex(0).getClass().getName(),toolBar.getComponentAtIndex(0) instanceof DropDownButton);
-                assertTrue(toolBar.getComponentAtIndex(1).getClass().getName(),toolBar.getComponentAtIndex(1) instanceof JButton);
+                assertTrue(toolBar.getComponent(0).getClass().getName(),toolBar.getComponent(0) instanceof DropDownButton);
+                assertTrue(toolBar.getComponent(1).getClass().getName(),toolBar.getComponent(1) instanceof JButton);
         }
+        @Test
+        public void testRadioAction() throws Exception {
+                // Create action controls
+                JPopupMenu menu = new JPopupMenu();
+                JToolBar toolBar = new JToolBar();
+                // Action Component builder
+                ActionCommands ac = new ActionCommands();
+                ac.registerContainer(toolBar);
+                ac.registerContainer(menu);
 
+
+                //Register actions, A AA AB and B
+                Action a,aa,ab,b;
+                ac.addAction(a=new UnitTestActionGroup("A"));
+                ac.addAction(aa=new UnitTestAction("AA").parent("A").setGroup("group1"));
+                ac.addAction(ab=new UnitTestAction("AB").parent("A").setGroup("group1"));
+                ac.addAction(b=new UnitTestAction("B").setGroup("group1").setActivatedState());
+
+                //Check, components class
+                assertTrue(getSubComponent(menu,0,0) instanceof JRadioButtonMenuItem);
+                assertTrue(getSubComponent(menu,0,1) instanceof JRadioButtonMenuItem);
+                assertTrue(getSubComponent(menu,1) instanceof JRadioButtonMenuItem);
+                assertTrue(getSubComponent(toolBar,0,0) instanceof JRadioButtonMenuItem);
+                assertTrue(getSubComponent(toolBar,0,1) instanceof JRadioButtonMenuItem);
+                assertTrue(getSubComponent(toolBar,1) instanceof JRadioButton);
+
+                //Extract Swing components
+                JRadioButtonMenuItem radioAA = (JRadioButtonMenuItem)getSubComponent(menu,0,0);
+                JRadioButtonMenuItem radioAB = (JRadioButtonMenuItem)getSubComponent(menu,0,1);
+                JRadioButtonMenuItem radioB = (JRadioButtonMenuItem)getSubComponent(menu,1);
+
+                // Check state of b
+                assertEquals(radioB.isSelected(),true);
+
+                // Activate AA radio menu
+                radioAA.setSelected(true);
+
+                //Check state of action
+                assertTrue(aa.getValue(Action.SELECTED_KEY) != null);
+        }
         @Test
         public void testRemoveActions() throws Exception {
                 JPopupMenu menu = new JPopupMenu();
@@ -132,12 +171,19 @@ public class ActionCommandsTest {
         private String getActionMenuId(Container comp,int actionIndex) {
                 return ActionTools.getMenuId(getAction(comp,actionIndex));
         }
-        private Action getAction(Container comp,int actionIndex) {
-                if(comp instanceof JMenu) {
-                        return ((AbstractButton)((JMenu)comp).getMenuComponent(actionIndex)).getAction();
-                } else {
-                        return ((AbstractButton)comp.getComponent(actionIndex)).getAction();
+        private Component getSubComponent(Container parent,int... childsId) {
+                Component current = parent;
+                for(int childId : childsId) {
+                        if(current instanceof JMenu) {
+                                current = ((JMenu)current).getMenuComponent(childId);
+                        } else if(current instanceof Container){
+                                current = ((Container)current).getComponent(childId);
+                        }
                 }
+                return current;
+        }
+        private Action getAction(Container comp,int actionIndex) {
+                return ((AbstractButton)getSubComponent(comp,actionIndex)).getAction();
         }
         private class UnitTestAction extends AbstractAction {
                 public UnitTestAction(String menuID) {
@@ -149,6 +195,14 @@ public class ActionCommandsTest {
                 }
                 public UnitTestAction before(String otherMenuID) {
                         putValue(ActionTools.INSERT_BEFORE_MENUID, otherMenuID);
+                        return this;
+                }
+                public UnitTestAction setGroup(String buttonGroup) {
+                        putValue(ActionTools.TOGGLE_GROUP,buttonGroup);
+                        return this;
+                }
+                public UnitTestAction setActivatedState() {
+                        putValue(Action.SELECTED_KEY,Boolean.TRUE);
                         return this;
                 }
                 public UnitTestAction parent(String parentMenuID) {

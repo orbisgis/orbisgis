@@ -51,10 +51,14 @@ public class ActionTools {
         public static final String INSERT_BEFORE_MENUID = "insertBeforeMenuId";
         // If set, the action will try to be inserted just after the provided menu id.
         public static final String INSERT_AFTER_MENUID = "insertAfterMenuId";
-
+        /** If set, other actions with the same actionGroup will be unSet if this action is set active.
+         * ButtonGroup will be created by ActionCommands.
+         * Setting a value will create a JRadioButton or a JRadioButtonMenu instead of JButton and JMenuItem.
+         * @see Action#SELECTED_KEY
+         */
+        public static final String TOGGLE_GROUP = "toggleGroupName";
         private ActionTools() {
         };
-
 
         /**
          * Return the icon.
@@ -141,6 +145,16 @@ public class ActionTools {
          */
         public static String getInsertAfterMenuId(Action action) {
                 Object val = action.getValue(INSERT_AFTER_MENUID);
+                if(val==null) {
+                        return "";
+                }
+                return (String)val;
+        }
+        /**
+         * @return The ButtonGroup name to create
+         */
+        public static String getToggleGroup(Action action) {
+                Object val = action.getValue(TOGGLE_GROUP);
                 if(val==null) {
                         return "";
                 }

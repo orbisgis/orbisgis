@@ -28,8 +28,7 @@
  */
 package org.orbisgis.view.components.button;
 
-import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -65,6 +64,51 @@ public class DropDownButton extends JToggleButton implements
          */
         public DropDownButton(Action action) {
                 super(action);
+        }
+
+        @Override
+        public Component add(Component component, int i) {
+                if(getComponentPopupMenu()==null) {
+                        return super.add(component, i);
+                } else {
+                        return getComponentPopupMenu().add(component,i);
+                }
+        }
+
+        @Override
+        public Component add(Component component) {
+                if(getComponentPopupMenu()==null) {
+                        return super.add(component);
+                } else {
+                        return getComponentPopupMenu().add(component);
+                }
+        }
+
+        @Override
+        public void remove(Component component) {
+                if(getComponentPopupMenu()==null) {
+                        super.remove(component);
+                } else {
+                        getComponentPopupMenu().remove(component);
+                }
+        }
+
+        @Override
+        public Component getComponent(int i) {
+                if(getComponentPopupMenu()==null) {
+                        return super.getComponent(i);
+                } else {
+                        return getComponentPopupMenu().getComponent(i);
+                }
+        }
+
+        @Override
+        public Component[] getComponents() {
+                if(getComponentPopupMenu()==null) {
+                        return super.getComponents();
+                } else {
+                        return getComponentPopupMenu().getComponents();
+                }
         }
 
         /**
