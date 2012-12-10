@@ -117,10 +117,10 @@ public class ActionCommandsTest {
 
 
                 //Register actions, A AA AB and B
-                Action a,aa,ab,b;
-                ac.addAction(a=new UnitTestActionGroup("A"));
+                Action aa,b;
+                ac.addAction(new UnitTestActionGroup("A"));
                 ac.addAction(aa=new UnitTestAction("AA").parent("A").setGroup("group1"));
-                ac.addAction(ab=new UnitTestAction("AB").parent("A").setGroup("group1"));
+                ac.addAction(new UnitTestAction("AB").parent("A").setGroup("group1"));
                 ac.addAction(b=new UnitTestAction("B").setGroup("group1").setActivatedState());
 
                 //Check, components class
@@ -133,7 +133,6 @@ public class ActionCommandsTest {
 
                 //Extract Swing components
                 JRadioButtonMenuItem radioAA = (JRadioButtonMenuItem)getSubComponent(menu,0,0);
-                JRadioButtonMenuItem radioAB = (JRadioButtonMenuItem)getSubComponent(menu,0,1);
                 JRadioButtonMenuItem radioB = (JRadioButtonMenuItem)getSubComponent(menu,1);
 
                 // Check state of b
@@ -142,8 +141,18 @@ public class ActionCommandsTest {
                 // Activate AA radio menu
                 radioAA.setSelected(true);
 
-                //Check state of action
-                assertTrue(aa.getValue(Action.SELECTED_KEY) != null);
+                //Check state of actions
+                assertEquals(Boolean.TRUE,aa.getValue(Action.SELECTED_KEY));
+                assertEquals(Boolean.FALSE,b.getValue(Action.SELECTED_KEY));
+
+                // Activate B
+                radioB.setSelected(true);
+
+                //Check state of actions
+                assertEquals(Boolean.FALSE,aa.getValue(Action.SELECTED_KEY));
+                assertEquals(Boolean.TRUE,b.getValue(Action.SELECTED_KEY));
+
+
         }
         @Test
         public void testRemoveActions() throws Exception {
@@ -199,6 +208,9 @@ public class ActionCommandsTest {
                 }
                 public UnitTestAction setGroup(String buttonGroup) {
                         putValue(ActionTools.TOGGLE_GROUP,buttonGroup);
+                        if(getValue(Action.SELECTED_KEY)==null) {
+                            putValue(Action.SELECTED_KEY,Boolean.FALSE);
+                        }
                         return this;
                 }
                 public UnitTestAction setActivatedState() {
