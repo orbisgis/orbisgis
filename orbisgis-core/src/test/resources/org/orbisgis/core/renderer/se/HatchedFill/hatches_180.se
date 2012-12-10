@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.1" xmlns:ns4="http://www.opengis.net/se/2.0/thematic" xmlns:ns5="http://www.w3.org/1999/xlink" xmlns:ns6="http://www.opengis.net/wms/2.0" xmlns:ns7="http://www.opengis.net/sld/2.0" xmlns:ns8="http://www.opengis.net/ows/1.1" xmlns:ns9="http://www.opengis.net/se/2.0/raster">
+    <Rule>
+        <!--<WhereClause>the_string = 'a'</WhereClause>-->
+        <AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+            <Name>Area symbolizer</Name>
+            <Extension>
+                <ExtensionParameter name="level">1</ExtensionParameter>
+            </Extension>
+            <HatchedFill>
+                <GraphicStroke>
+                    <Extension>
+                        <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+                        <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+                    </Extension>
+                    <MarkGraphic uom="urn:ogc:def:uom:se::mm">
+                        <WellKnownName>TRIANGLE</WellKnownName>
+                        <ViewBox>
+                            <Width>1.0</Width>
+                            <Height>3.0</Height>
+                        </ViewBox>
+                        <SolidFill>
+                            <Color>#EF05F4</Color>
+                        </SolidFill>
+                    </MarkGraphic>
+                    <Length>5.0</Length>
+                    <RelativeOrientation>line</RelativeOrientation>
+                </GraphicStroke>
+                <Angle>180</Angle>
+                <Distance>3.0</Distance>
+            </HatchedFill>
+            <PenStroke>
+                <Extension>
+                    <ExtensionParameter name="linearRapport">off</ExtensionParameter>
+                    <ExtensionParameter name="offsetRapport">off</ExtensionParameter>
+                </Extension>
+                <SolidFill>
+                    <Color>#000000</Color>
+                </SolidFill>
+                <Width>0.1</Width>
+            </PenStroke>
+        </AreaSymbolizer>
+    </Rule>
+</Style>

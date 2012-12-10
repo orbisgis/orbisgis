@@ -28,34 +28,34 @@
  */
 package org.orbisgis.core.layerModel;
 
+import com.vividsolutions.jts.geom.Envelope;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
+import net.opengis.ows_context.LayerType;
+import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
-import org.orbisgis.core.layerModel.persistence.LayerCollectionType;
-import org.orbisgis.core.layerModel.persistence.LayerType;
-import org.orbisgis.core.renderer.legend.Legend;
-import org.orbisgis.core.renderer.legend.RasterLegend;
-import org.orbisgis.core.renderer.legend.WMSLegend;
-import org.orbisgis.utils.I18N;
+import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.Style;
 
-import com.vividsolutions.jts.geom.Envelope;
-import org.gdms.data.DataSource;
-
-public class LayerCollection extends AbstractLayer {
+public class LayerCollection extends BeanLayer {
 	private List<ILayer> layerCollection;
 
+        public LayerCollection(String layerName) {
+                super(layerName);
+                layerCollection = new ArrayList<ILayer>();
+        }
         /**
          * Create a new LayerCollection with the name name.
-         * @param name
+         * @param layerType 
          */
-	public LayerCollection(String name) {
-		super(name);
+	public LayerCollection(LayerType layerType) {
+		super(layerType);
 		layerCollection = new ArrayList<ILayer>();
 	}
-
+        
         /**
          * Retrieve the layer collection as a list of layers.
          * @return
@@ -70,6 +70,7 @@ public class LayerCollection extends AbstractLayer {
          * @param layer
          * @return
          */
+        @Override
 	public int getIndex(ILayer layer) {
 		return layerCollection.indexOf(layer);
 	}
@@ -79,13 +80,18 @@ public class LayerCollection extends AbstractLayer {
          * @param index
          * @return
          */
+        @Override
 	public ILayer getLayer(final int index) {
             //TODO : get will throw a IndexOutOfBoundsException which is nor catch neither managed here...
 		return layerCollection.get(index);
 	}
 
+        @Override
+        public boolean isSerializable(){
+                return true;
+        }
 
-
+        @Override
 	public void addLayer(final ILayer layer) throws LayerException {
 		addLayer(layer, false);
 	}
@@ -96,6 +102,7 @@ public class LayerCollection extends AbstractLayer {
          * @param index
          * @throws LayerException
          */
+        @Override
 	public void insertLayer(final ILayer layer, int index)
 			throws LayerException {
 		insertLayer(layer, index, false);
@@ -109,6 +116,7 @@ public class LayerCollection extends AbstractLayer {
 	 * @throws LayerException
 	 * 
 	 */
+        @Override
 	public ILayer remove(final String layerName) throws LayerException {
 		for (int i = 0; i < size(); i++) {
 			if (layerName.equals(layerCollection.get(i).getName())) {
@@ -122,6 +130,7 @@ public class LayerCollection extends AbstractLayer {
          * Retrieve the children of this node as an array.
          * @return
          */
+        @Override
 	public ILayer[] getChildren() {
 		if (null != layerCollection) {
 			ILayer[] result = new ILayer[size()];
@@ -144,6 +153,7 @@ public class LayerCollection extends AbstractLayer {
          * false otherwise.
 	 * @see org.orbisgis.core.layerModel.ILayer#isVisible()
 	 */
+        @Override
 	public boolean isVisible() {
 		for (ILayer layer : getChildren()) {
 			if (layer.isVisible()) {
@@ -157,26 +167,40 @@ public class LayerCollection extends AbstractLayer {
 	 * Set the visible attribute. We don't see this object (which is a collection,
          * not a layer) but its leaves. Consequently, whe using this method, we set
          * the visible attribute to isVisible for all the leaves of this collection.
-	 * @throws LayerException
+         * @param isVisible 
+         * @throws LayerException
 	 * @see org.orbisgis.core.layerModel.ILayer#setVisible(boolean)
 	 */
+        @Override
 	public void setVisible(boolean isVisible) throws LayerException {
+                super.setVisible(isVisible);
 		for (ILayer layer : getChildren()) {
 			layer.setVisible(isVisible);
 		}
-		fireVisibilityChanged();
+	}
+
+    @Override
+    public void setStyle(int i, Style fts) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+	@Override
+	public ArrayList<Rule> getRenderingRule() throws DriverException {
+		throw new UnsupportedOperationException("A layer collection doesn't have any rule !");
 	}
 
         /**
          *
          * @return
          */
+        @Override
 	public Envelope getEnvelope() {
 		final GetEnvelopeLayerAction tmp = new GetEnvelopeLayerAction();
 		processLayersLeaves(this, tmp);
 		return tmp.getGlobalEnvelope();
 	}
 
+        @Override
 	public ILayer remove(ILayer layer) throws LayerException {
 		return remove(layer, false);
 	}
@@ -185,6 +209,7 @@ public class LayerCollection extends AbstractLayer {
          * Inform if children can be added to this layer. It is a collection, so they are.
          * @return true.
          */
+        @Override
 	public boolean acceptsChilds() {
 		return true;
 	}
@@ -193,6 +218,7 @@ public class LayerCollection extends AbstractLayer {
          *
          * @param listener
          */
+        @Override
 	public void addLayerListenerRecursively(LayerListener listener) {
 		this.addLayerListener(listener);
 		for (ILayer layer : layerCollection) {
@@ -204,6 +230,7 @@ public class LayerCollection extends AbstractLayer {
          * Remove the LayerListener listener of this' listeners, and of its children's listeners
          * @param listener
          */
+        @Override
 	public void removeLayerListenerRecursively(LayerListener listener) {
 		this.removeLayerListener(listener);
 		for (ILayer layer : layerCollection) {
@@ -215,6 +242,7 @@ public class LayerCollection extends AbstractLayer {
          * Close this layer and all its children.
          * @throws LayerException
          */
+        @Override
 	public void close() throws LayerException {
 		for (ILayer layer : layerCollection) {
 			layer.close();
@@ -224,33 +252,28 @@ public class LayerCollection extends AbstractLayer {
          * Open the layer and all its children.
          * @throws LayerException
          */
+        @Override
 	public void open() throws LayerException {
 		for (ILayer layer : layerCollection) {
 			layer.open();
 		}
 	}
+
         /**
          * Add a new layer to this collection.
          * @param layer
          * @param isMoving
+         * if {@code false}, {@code fireLayerAddedEvent} is called. It is not
+         * called if {@code isMoving} is true.
          * @throws LayerException
          */
-
+        @Override
 	public void addLayer(ILayer layer, boolean isMoving) throws LayerException {
-		if (null != layer) {
-			if (isMoving) {
-				layerCollection.add(layer);
-				layer.setParent(this);
-			} else {
-				setNamesRecursively(layer, getRoot().getAllLayersNames());
-				layerCollection.add(layer);
-				layer.setParent(this);
-				fireLayerAddedEvent(new ILayer[] { layer });
-			}
-		}
+                insertLayer(layer, layerCollection.size(),isMoving);
 	}
 
 
+        @Override
 	public ILayer remove(ILayer layer, boolean isMoving) throws LayerException {
 		if (layerCollection.contains(layer)) {
 			if (isMoving) {
@@ -277,40 +300,27 @@ public class LayerCollection extends AbstractLayer {
 		}
 	}
 
+        @Override
 	public void insertLayer(ILayer layer, int index, boolean isMoving)
 			throws LayerException {
 		if (null != layer) {
-			if (isMoving) {
-				layerCollection.add(index, layer);
-				layer.setParent(this);
-			} else {
-				setNamesRecursively(layer, getRoot().getAllLayersNames());
-				layerCollection.add(index, layer);
-				layer.setParent(this);
-				fireLayerAddedEvent(new ILayer[] { layer });
-			}
+                        int i = Math.min(index, this.layerCollection.size());
+                        setNamesRecursively(layer, getRoot().getAllLayersNames());
+                        layerCollection.add(i, layer);
+                        layer.setParent(this);
+                        if(!isMoving){
+                                fireLayerAddedEvent(new ILayer[] { layer });
+                        }
 		}
 
 	}
 
+        @Override
 	public int getLayerCount() {
 		return layerCollection.size();
 	}
 
-	public LayerType saveLayer() {
-		LayerCollectionType xmlLayer = new LayerCollectionType();
-		xmlLayer.setName(getName());
-		for (ILayer child : layerCollection) {
-			LayerType xmlChild = child.saveLayer();
-			xmlLayer.getLayer().add(xmlChild);
-		}
-
-		return xmlLayer;
-	}
-
-	public void restoreLayer(LayerType layer) throws LayerException {
-	}
-
+        @Override
 	public ILayer getLayerByName(String layerName) {
 		for (ILayer layer : layerCollection) {
 			if (layer.getName().equals(layerName)) {
@@ -329,6 +339,7 @@ public class LayerCollection extends AbstractLayer {
          * @return
          * @throws DriverException
          */
+        @Override
 	public ILayer[] getRasterLayers() throws DriverException {
 		ILayer[] allLayers = getLayersRecursively();
 
@@ -349,6 +360,7 @@ public class LayerCollection extends AbstractLayer {
          * @return
          * @throws DriverException
          */
+        @Override
 	public ILayer[] getVectorLayers() throws DriverException {
 		ILayer[] allLayers = getLayersRecursively();
 
@@ -368,6 +380,7 @@ public class LayerCollection extends AbstractLayer {
          * Used to determine if this layer is a raster layer. It is not, it is a layer collection.
          * @return false
          */
+        @Override
 	public boolean isRaster() {
 		return false;
 	}
@@ -376,6 +389,7 @@ public class LayerCollection extends AbstractLayer {
          * Used to determine if this layer is a vector layer. It is not, it is a layer collection.
          * @return false
          */
+        @Override
 	public boolean isVectorial() {
 		return false;
 	}
@@ -394,64 +408,56 @@ public class LayerCollection extends AbstractLayer {
          * so it is null. 
          * @return
          */
+        @Override
 	public DataSource getDataSource() {
 		return null;
 	}
 
+        @Override
+        public Set<String> getAllLayersNames() {
+                final Set<String> result = new HashSet<String>();
+                final LayerCollection lc = this;
+                if (null != lc.getLayerCollection()) {
+                        for (ILayer layer : lc.getChildren()) {
+                                if (layer instanceof LayerCollection) {
+                                        result.addAll(layer.getAllLayersNames());
+                                } else {
+                                        result.add(layer.getName());
+                                }
+                        }
+                }
+                result.addAll(super.getAllLayersNames());
+                return result;
+        }
+
         //////////////////Unsupported methods////////////////////////
 
-	public RasterLegend[] getRasterLegend() throws DriverException,
-			UnsupportedOperationException {
-		throw new UnsupportedOperationException(I18N.getString("orbisgis-core.org.orbisgis.layerModel.LayerCollection.cannotSet") //$NON-NLS-1$
-				+ I18N.getString("orbisgis-core.org.orbisgis.layerModel.LayerCollection.aLegendOnLayerCollection")); //$NON-NLS-1$
-	}
-
-	public RasterLegend[] getRasterLegend(String fieldName)
-			throws IllegalArgumentException {
-		throw new UnsupportedOperationException(I18N.getString("orbisgis-core.org.orbisgis.layerModel.LayerCollection.cannotSet") //$NON-NLS-1$
-				+ I18N.getString("orbisgis-core.org.orbisgis.layerModel.LayerCollection.aLegendOnLayerCollection")); //$NON-NLS-1$
-	}
-
-	public Legend[] getVectorLegend() throws DriverException,
-			UnsupportedOperationException {
-		throw new UnsupportedOperationException(I18N.getString("orbisgis-core.org.orbisgis.layerModel.LayerCollection.cannotSet") //$NON-NLS-1$
-				+ I18N.getString("orbisgis-core.org.orbisgis.layerModel.LayerCollection.aLegendOnLayerCollection")); //$NON-NLS-1$
-	}
-
-	public Legend[] getVectorLegend(String fieldName)
-			throws IllegalArgumentException {
-		throw new UnsupportedOperationException(I18N.getString("orbisgis-core.org.orbisgis.layerModel.LayerCollection.cannotSet") //$NON-NLS-1$
-				+ I18N.getString("orbisgis-core.org.orbisgis.layerModel.LayerCollection.aLegendOnLayerCollection")); //$NON-NLS-1$
-	}
-
-	public void setLegend(String fieldName, Legend... legends)
-			throws DriverException {
-		throw new UnsupportedOperationException(I18N.getString("orbisgis-core.org.orbisgis.layerModel.LayerCollection.cannotSet") //$NON-NLS-1$
-				+ I18N.getString("orbisgis-core.org.orbisgis.layerModel.LayerCollection.aLegendOnLayerCollection")); //$NON-NLS-1$
-	}
-
-	public void setLegend(Legend... l) throws DriverException {
-		throw new UnsupportedOperationException(I18N.getString("orbisgis-core.org.orbisgis.layerModel.LayerCollection.cannotSet") //$NON-NLS-1$
-				+ I18N.getString("orbisgis-core.org.orbisgis.layerModel.LayerCollection.aLegendOnLayerCollection")); //$NON-NLS-1$
-	}
-
+        @Override
 	public GeoRaster getRaster() throws DriverException {
-		throw new UnsupportedOperationException(I18N.getString("orbisgis-core.org.orbisgis.layerModel.LayerCollection.cannotdoThis") //$NON-NLS-1$
-				+ I18N.getString("orbisgis-core.org.orbisgis.layerModel.LayerCollection.operationOnLayerCollection")); //$NON-NLS-1$
+		throw new UnsupportedOperationException(I18N.tr("Cannot do this operation on a layer collection"));
 	}
 
-	public int[] getSelection() {
-		return new int[0];
-	}
-
-	public void setSelection(int[] newSelection) {
-	}
-
-	public Legend[] getRenderingLegend() throws DriverException {
-		throw new UnsupportedOperationException(
-				I18N.getString("orbisgis-core.org.orbisgis.layerModel.LayerCollection.cannotDrawLayerCollection")); //$NON-NLS-1$
-	}
-       
+        @Override
+	public void setSelection(Set<Integer> newSelection) {
+		throw new UnsupportedOperationException(I18N.tr("No row selection in a layer collection"));
+        }
+    
+        @Override
+        public Style getStyle(int i){
+                throw new UnsupportedOperationException("Cannot set "
+                                        + "a legend on a layer collection");
+        }
+        @Override
+        public List<Style> getStyles(){
+                throw new UnsupportedOperationException("Cannot set "
+                                        + "a legend on a layer collection");
+        }
+        @Override
+        public void setStyles(List<Style> s){
+                throw new UnsupportedOperationException("Cannot set "
+                                        + "a legend on a layer collection");
+        }
+        
         ///////////Static methods///////////////////////////////
 
         /**
@@ -461,7 +467,7 @@ public class LayerCollection extends AbstractLayer {
          */
         public static void processLayersLeaves(ILayer root, ILayerAction action) {
 		if (root instanceof LayerCollection) {
-			ILayer lc = (ILayer) root;
+			ILayer lc = root;
 			ILayer[] layers = lc.getChildren();
 			for (ILayer layer : layers) {
 				processLayersLeaves(layer, action);
@@ -478,7 +484,7 @@ public class LayerCollection extends AbstractLayer {
          */
 	public static void processLayersNodes(ILayer root, ILayerAction action) {
 		if (root instanceof LayerCollection) {
-			ILayer lc = (ILayer) root;
+			ILayer lc = root;
 			ILayer[] layers = lc.getChildren();
 			for (ILayer layer : layers) {
 				processLayersNodes(layer, action);
@@ -517,30 +523,27 @@ public class LayerCollection extends AbstractLayer {
 		}
 	}
 
-        /*
-         * Check that name is not already contained in allLayersNames.
-         * If it is in, a new String is created and returned, with the form name_i
-         * where i is as small as possible.
-         */
-	private String provideNewLayerName(final String name,
-			final Set<String> allLayersNames) {
-		String tmpName = name;
-		if (allLayersNames.contains(tmpName)) {
-			int i = 1;
-			while (allLayersNames.contains(tmpName + "_" + i)) { //$NON-NLS-1$
-				i++;
-			}
-			tmpName += "_" + i; //$NON-NLS-1$
-		}
-		allLayersNames.add(tmpName);
-		return tmpName;
-	}
+        @Override
+        public void addStyle(Style style) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public void addStyle(int i, Style style) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
+
+        @Override
+        public int indexOf(Style s) {
+                throw new UnsupportedOperationException("Not supported yet.");
+        }
         
         //////////Private classes//////////////////////////
 
 	private class GetEnvelopeLayerAction implements ILayerAction {
 		private Envelope globalEnvelope;
 
+                @Override
 		public void action(ILayer layer) {
 			if (null == globalEnvelope) {
 				globalEnvelope = new Envelope(layer.getEnvelope());
@@ -557,6 +560,7 @@ public class LayerCollection extends AbstractLayer {
 	private static class CountLeavesAction implements ILayerAction {
 		private int numberOfLeaves = 0;
 
+                @Override
 		public void action(ILayer layer) {
 			numberOfLeaves++;
 		}

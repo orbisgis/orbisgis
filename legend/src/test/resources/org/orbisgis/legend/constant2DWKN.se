@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:fes="http://www.opengis.net/fes/2.1" xmlns:ns4="http://www.w3.org/1999/xlink">
+	<Rule>
+		<Name>densité de population</Name>
+		<PointSymbolizer>
+			<MarkGraphic uom="urn:ogc:def:uom:se::px">
+				<WellKnownName>Circle</WellKnownName>
+				<ViewBox>
+					<Width>5</Width>
+					<Height>5</Height>
+				</ViewBox>
+				<PenStroke />
+				<SolidFill />
+			</MarkGraphic>
+		</PointSymbolizer>
+	</Rule>
+</Style>	

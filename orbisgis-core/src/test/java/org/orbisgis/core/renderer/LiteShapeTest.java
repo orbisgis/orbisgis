@@ -28,9 +28,11 @@
  */
 package org.orbisgis.core.renderer;
 
+import org.junit.Before;
 import java.awt.Shape;
 import java.awt.geom.PathIterator;
 
+import junit.framework.TestCase;
 
 import org.orbisgis.core.map.MapTransform;
 
@@ -42,126 +44,121 @@ import com.vividsolutions.jts.geom.LinearRing;
 import com.vividsolutions.jts.geom.MultiLineString;
 import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
-
-import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
-public class LiteShapeTest {
+public class LiteShapeTest extends TestCase {
 
-        private MultiLineString multiLineString;
-        private Polygon polygon;
-        private Geometry multiPolygon;
-        private LineString lineString;
-        private Geometry multiPoint;
-        private Geometry point;
+	private MultiLineString multiLineString;
+	private Polygon polygon;
+	private Geometry multiPolygon;
+	private LineString lineString;
+	private Geometry multiPoint;
+	private Geometry point;
 
-        @Test
-        public void testLinearRingLiteShape() throws Exception {
-                doTest(polygon.getExteriorRing());
-        }
-
-        @Test
-        public void testPointLiteShape() throws Exception {
-                doTest(point);
-        }
-
-        @Test
-        public void testMultiPointLiteShape() throws Exception {
-                doTest(multiPoint);
-        }
-
-        @Test
-        public void testLineStringLiteShape() throws Exception {
-                doTest(lineString);
-        }
-
-        @Test
-        public void testMultiLineStringShape() throws Exception {
-                doTest(multiLineString);
-        }
-
-        @Test
-        public void testPolygonLiteShape() throws Exception {
-                doTest(polygon);
-        }
-
-        @Test
-        public void testMultiPolygonLiteShape() throws Exception {
-                doTest(multiPolygon);
-        }
-
-        @Test
-        public void testEmptyPolygonLiteShape() throws Exception {
-                GeometryFactory gf = new GeometryFactory();
-                Polygon polygon = gf.createPolygon(gf.createLinearRing(new Coordinate[0]), null);
-                doTest(polygon);
-        }
-
-        @Test
-        public void testEmptyMultiPolygonLiteShape() throws Exception {
-                GeometryFactory gf = new GeometryFactory();
-                Polygon emptyPolygon = gf.createPolygon(gf.createLinearRing(new Coordinate[0]), null);
-                MultiPolygon mp = gf.createMultiPolygon(new Polygon[]{polygon,
-                                emptyPolygon});
-                doTest(mp);
-        }
-
-        @Test
-        public void testEmptyLineStringLiteShape() throws Exception {
-                GeometryFactory gf = new GeometryFactory();
-                LineString g = gf.createLineString(new Coordinate[0]);
-                doTest(g);
-        }
-
-        private void doTest(Geometry geometry) {
-                MapTransform mt = new MapTransform();
-                Shape ls = mt.getShapeWriter().toShape(geometry);
-                PathIterator pi = ls.getPathIterator(null);
-
-                iterate(pi);
-        }
-
-        private void iterate(PathIterator pi) {
-                float coords[] = new float[6];
-                while (!pi.isDone()) {
-                        switch (pi.currentSegment(coords)) {
-                                case PathIterator.SEG_MOVETO:
-                                        break;
-                                case PathIterator.SEG_LINETO:
-                                        break;
-                                case PathIterator.SEG_QUADTO:
-                                        break;
-                                case PathIterator.SEG_CUBICTO:
-                                        break;
-                                case PathIterator.SEG_CLOSE:
-                                        break;
-                        }
-                        pi.next();
-                }
-        }
-
+	@Override
         @Before
-        public void setUp() throws Exception {
-                GeometryFactory gf = new GeometryFactory();
+	public void setUp() throws Exception {
+		GeometryFactory gf = new GeometryFactory();
 
-                point = gf.createPoint(new Coordinate(1238, 3844));
+		point = gf.createPoint(new Coordinate(1238, 3844));
 
-                multiPoint = gf.createMultiPoint(new Coordinate[]{
-                                new Coordinate(239587, 23453), new Coordinate(239587, 23453),
-                                new Coordinate(239587, 23453),});
+		multiPoint = gf.createMultiPoint(new Coordinate[] {
+				new Coordinate(239587, 23453), new Coordinate(239587, 23453),
+				new Coordinate(239587, 23453), });
 
-                lineString = gf.createLinearRing(new Coordinate[]{
-                                new Coordinate(0, 0), new Coordinate(10, 0),
-                                new Coordinate(110, 0), new Coordinate(10, 240),
-                                new Coordinate(0, 0)});
+		lineString = gf.createLinearRing(new Coordinate[] {
+				new Coordinate(0, 0), new Coordinate(10, 0),
+				new Coordinate(110, 0), new Coordinate(10, 240),
+				new Coordinate(0, 0) });
 
-                multiLineString = gf.createMultiLineString(new LineString[]{gf.createLineString(new Coordinate[]{new Coordinate(0, 0),
-                                        new Coordinate(10, 0), new Coordinate(110, 0),
-                                        new Coordinate(10, 240), new Coordinate(0, 0)})});
+		multiLineString = gf.createMultiLineString(new LineString[] { gf
+				.createLineString(new Coordinate[] { new Coordinate(0, 0),
+						new Coordinate(10, 0), new Coordinate(110, 0),
+						new Coordinate(10, 240), new Coordinate(0, 0) }) });
 
-                polygon = gf.createPolygon((LinearRing) lineString, null);
+		polygon = gf.createPolygon((LinearRing) lineString, null);
 
-                multiPolygon = gf.createMultiPolygon(new Polygon[]{polygon});
+		multiPolygon = gf.createMultiPolygon(new Polygon[] { polygon });
 
-        }
+	}
+
+        @Test
+	public void testLinearRingLiteShape() throws Exception {
+		doTest(polygon.getExteriorRing());
+	}
+
+	public void testPointLiteShape() throws Exception {
+		doTest(point);
+	}
+
+	public void testMultiPointLiteShape() throws Exception {
+		doTest(multiPoint);
+	}
+
+	public void testLineStringLiteShape() throws Exception {
+		doTest(lineString);
+	}
+
+	public void testMultiLineStringShape() throws Exception {
+		doTest(multiLineString);
+	}
+
+	public void testPolygonLiteShape() throws Exception {
+		doTest(polygon);
+	}
+
+	public void testMultiPolygonLiteShape() throws Exception {
+		doTest(multiPolygon);
+	}
+
+	public void testEmptyPolygonLiteShape() throws Exception {
+		GeometryFactory gf = new GeometryFactory();
+		Polygon polygon = gf.createPolygon(gf
+				.createLinearRing(new Coordinate[0]), null);
+		doTest(polygon);
+	}
+
+	public void testEmptyMultiPolygonLiteShape() throws Exception {
+		GeometryFactory gf = new GeometryFactory();
+		Polygon emptyPolygon = gf.createPolygon(gf
+				.createLinearRing(new Coordinate[0]), null);
+		MultiPolygon mp = gf.createMultiPolygon(new Polygon[] { polygon,
+				emptyPolygon });
+		doTest(mp);
+	}
+
+	public void testEmptyLineStringLiteShape() throws Exception {
+		GeometryFactory gf = new GeometryFactory();
+		LineString g = gf.createLineString(new Coordinate[0]);
+		doTest(g);
+	}
+
+	private void doTest(Geometry geometry) {
+		MapTransform mt = new MapTransform();
+		Shape ls = mt.getShape(geometry,false);
+		PathIterator pi = ls.getPathIterator(null);
+
+		iterate(pi);
+                assertTrue(true);
+	}
+
+	private void iterate(PathIterator pi) {
+		float coords[] = new float[6];
+		while (!pi.isDone()) {
+			switch (pi.currentSegment(coords)) {
+			case PathIterator.SEG_MOVETO:
+				break;
+			case PathIterator.SEG_LINETO:
+				break;
+			case PathIterator.SEG_QUADTO:
+				break;
+			case PathIterator.SEG_CUBICTO:
+				break;
+			case PathIterator.SEG_CLOSE:
+				break;
+			}
+			pi.next();
+		}
+	}
 }

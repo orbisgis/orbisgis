@@ -28,12 +28,15 @@
  */
 package org.orbisgis.core.layerModel;
 
-import java.awt.image.BufferedImage;
-import org.gdms.data.DataSource;
-
-import org.orbisgis.progress.ProgressMonitor;
-
 import com.vividsolutions.jts.geom.Envelope;
+import java.beans.PropertyChangeListener;
+import java.io.InputStream;
+import java.io.OutputStream;
+import org.gdms.data.DataSource;
+import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.common.Description;
+import org.orbisgis.progress.ProgressMonitor;
 
 /**
  * This interface provides information to the tool system and receives
@@ -41,7 +44,81 @@ import com.vividsolutions.jts.geom.Envelope;
  * to notify it about certain events during edition
  */
 public interface MapContext {
+        //Properties index
+        public static final String PROP_BOUNDINGBOX = "boundingBox";
+        public static final String PROP_SELECTEDLAYERS = "selectedLayers";
+        public static final String PROP_SELECTEDSTYLES = "selectedStyles";
+        public static final String PROP_ACTIVELAYER = "activeLayer";
+        public static final String PROP_LAYERMODEL = "layerModel";
+        public static final String PROP_COORDINATEREFERENCESYSTEM = "coordinateReferenceSystem";
+        public static final String PROP_DESCRIPTION = "description";
 
+        /**
+         * Get the value of description
+         *
+         * @return the value of description
+         */
+        public Description getDescription();
+
+        /**
+         * Set the value of description
+         *
+         * @param description new value of description
+         */
+        public void setDescription(Description description);
+        
+        /**
+         * Use the description and return the most appropriate Title
+         * for the default Locale.
+         * @return 
+         */
+        public String getTitle();
+
+        /**
+        * Add a property-change listener for all properties.
+        * The listener is called for all properties.
+        * @param listener The PropertyChangeListener instance
+        * @note Use EventHandler.create to build the PropertyChangeListener instance
+        */
+        void addPropertyChangeListener(PropertyChangeListener listener);
+        /**
+        * Add a property-change listener for a specific property.
+        * The listener is called only when there is a change to 
+        * the specified property.
+        * @param prop The static property name PROP_..
+        * @param listener The PropertyChangeListener instance
+        * @note Use EventHandler.create to build the PropertyChangeListener instance
+        */
+        void addPropertyChangeListener(String prop,PropertyChangeListener listener);
+        /**
+        * Remove the specified listener from the list
+        * @param listener The listener instance
+        */
+        void removePropertyChangeListener(PropertyChangeListener listener);
+
+        /**
+        * Remove the specified listener for a specified property from the list
+        * @param prop The static property name PROP_..
+        * @param listener The listener instance
+        */
+        public void removePropertyChangeListener(String prop,PropertyChangeListener listener);
+
+        /**
+         * Return a new layer corresponding to the provided data source
+         * @param sds Spatial data source
+         * @return A new layer linked with this data source
+         * @throws LayerException The creation of the layer fail
+         */
+        public ILayer createLayer(DataSource sds) throws LayerException;
+
+        /**
+         * Return a new layer group
+         * @param layerName Internal layer index
+         * @return A layer group
+         * @throws LayerException The creation of the layer fail
+         */
+	ILayer createLayerCollection(String layerName) throws LayerException;    
+    
 	/**
 	 * Gets the root layer of the layer collection in this edition context
 	 * 
@@ -70,6 +147,16 @@ public interface MapContext {
 	public ILayer[] getSelectedLayers() throws IllegalStateException;
 
 	/**
+	 * Gets the selected rules
+	 *
+	 * @return
+	 * @throws IllegalStateException
+	 *             If the map is closed
+	 */
+	public Style[] getSelectedStyles() throws IllegalStateException;
+
+
+	/**
 	 * Adds a listener for map context events
 	 * 
 	 * @param listener
@@ -92,7 +179,7 @@ public interface MapContext {
 	public Envelope getBoundingBox();
 
 	/**
-	 * Set the mapcontext boundingbox (visible layers)
+	 * Set the mapcontext bounding-box (visible layers)
 	 * 
 	 * @param extent
 	 */
@@ -106,6 +193,17 @@ public interface MapContext {
 	public void removeMapContextListener(MapContextListener listener);
 
 	/**
+	 * Sets the selected styles. If the specified layers are not in the map
+	 * context they are removed from selection.
+	 *
+	 * @param selectedLayers
+	 * @throws IllegalStateException
+	 *             If the map is closed
+	 */
+	public void setSelectedStyles(Style[] selectedStyles)
+			throws IllegalStateException;
+
+	/**
 	 * Sets the selected layers. If the specified layers are not in the map
 	 * context they are removed from selection.
 	 * 
@@ -116,23 +214,19 @@ public interface MapContext {
 	public void setSelectedLayers(ILayer[] selectedLayers)
 			throws IllegalStateException;
 
-	/**
-	 * Returns a JAXB object containing all the persistent information of this
-	 * MapContext
-	 * 
-	 * @return
-	 */
-	Object getJAXBObject();
-
-	/**
-	 * Populates the content of this MapContext with the information stored in
-	 * the specified JAXB Object. The map must be closed.
-	 * 
-	 * @param jaxbObject
-	 * @throws IllegalStateException
-	 *             If the map is open
-	 */
-	void setJAXBObject(Object jaxbObject) throws IllegalStateException;
+        /**
+         * (re)-Initialise this map context with the provided data stream
+         * @param in 
+         * @throws IllegalArgumentException If the provided stream
+         * doesn't comply with this context serialisation
+         */
+        public void read(InputStream in) throws IllegalArgumentException;
+        
+        /**
+         * Serialisation of this map context into an output stream
+         * @param out 
+         */
+        public void write(OutputStream out);
 
 	/**
 	 * Opens all the layers in the map. All layers added to an open map are
@@ -164,20 +258,25 @@ public interface MapContext {
 	 */
 	boolean isOpen();
 
-	/**
-	 * Draws an image of the layers in the specified image.
-	 * 
-	 * @param inProcessImage
-	 *            Image where the drawing will take place
-	 * @param extent
-	 *            Extent of the data to take into account. It must have the same
-	 *            proportions than the image
-	 * @param pm
-	 *            Object to report process and check the cancelation condition
-	 * @throws IllegalStateException
+        /**
+         * Draws an image of the layers in the specified MapTransform.
+         * @param mt Contain the extent and the image to draw on
+         * @param pm Object to report process and check the cancelled condition
+         * @throws IllegalStateException
 	 *             If the map is closed
-	 */
-	void draw(BufferedImage inProcessImage, Envelope extent, ProgressMonitor pm)
+         */
+	void draw(MapTransform mt, ProgressMonitor pm)
+			throws IllegalStateException;
+        
+        /**
+         * Draws an image of the specified layer in the specified MapTransform.
+         * @param mt Contain the extent and the image to draw on
+         * @param pm Object to report process and check the cancelled condition
+         * @param layer Draw recursively this layer
+         * @throws IllegalStateException
+	 *             If the map is closed
+         */
+	void draw(MapTransform mt, ProgressMonitor pm,ILayer layer)
 			throws IllegalStateException;
 
 	/**
@@ -199,17 +298,12 @@ public interface MapContext {
 	void setActiveLayer(ILayer activeLayer) throws IllegalStateException;
 
         /**
-         * @return the selectionInducedRefresh
+         * Returns true if the inner layer model contains actual layers (ie not
+         * only layer collections).
+         * @return
          */
-        boolean isSelectionInducedRefresh();
-
-        /**
-         * @param selectionInducedRefresh the selectionInducedRefresh to set
-         */
-        void setSelectionInducedRefresh(boolean selectionInducedRefresh);
-
-        void checkSelectionRefresh(final int[] selectedRows, final int[] oldSelectedRows, final DataSource dataSource);
-
+        boolean isLayerModelSpatial();
+        
 	/**
 	 * get the mapcontext {@link CoordinateReferenceSystem}
 	 * 

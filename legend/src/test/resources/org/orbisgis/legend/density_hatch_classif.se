@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:tse="http://www.opengis.net/se/2.0/thematic" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.1" xmlns:ns4="http://www.w3.org/1999/xlink" version="2.0.0">
+	<Rule>
+		<AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+			<Name>Area symbolizer</Name>
+			<Extension>
+				<ExtensionParameter name="level">0</ExtensionParameter>
+			</Extension>
+			<tse:DensityFill>
+				<PenStroke>
+					<SolidFill>
+						<Color>
+							<Categorize thresholdsBelongTo="succeeding" fallbackValue="#000000">
+								<LookupValue>
+									<ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
+								</LookupValue>
+								<Value>#cc0000</Value>
+								<Threshold>50.0</Threshold>
+								<Value>#00cc00</Value>
+								<Extension>
+									<ExtensionParameter name="method">MANUAL</ExtensionParameter>
+								</Extension>
+						</Categorize></Color>
+					</SolidFill>
+
+					<Width>1</Width>
+				</PenStroke>
+				<tse:Percentage>
+					<Categorize thresholdsBelongTo="succeeding" fallbackValue="0">
+						<LookupValue>
+							<ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
+						</LookupValue>
+						<Value>0.3</Value>
+						<Threshold>30.0</Threshold>
+						<Value>0.4</Value>
+						<Threshold>40.0</Threshold>
+						<Value>0.45</Value>
+						<Threshold>45.0</Threshold>
+						<Value>0.5</Value>
+						<Threshold>50.0</Threshold>
+						<Value>0.55</Value>
+						<Threshold>55.0</Threshold>
+						<Value>0.6</Value>
+						<Threshold>60.0</Threshold>
+						<Value>0.7</Value>
+						<Threshold>70.0</Threshold>
+						<Value>0.8</Value>
+						<Extension>
+							<ExtensionParameter name="method">MANUAL</ExtensionParameter>
+						</Extension>
+					</Categorize>
+				</tse:Percentage>
+				<tse:Orientation>
+					<Categorize thresholdsBelongTo="succeeding" fallbackValue="0">
+						<LookupValue>
+							<ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
+						</LookupValue>
+						<Value>45</Value>
+						<Threshold>50.0</Threshold>
+						<Value>-45.0</Value>
+						<Extension>
+							<ExtensionParameter name="method">MANUAL</ExtensionParameter>
+						</Extension>
+					</Categorize>
+				</tse:Orientation>
+			</tse:DensityFill>
+			<PenStroke>
+				<SolidFill>
+					<Color>#000000</Color>
+					<Opacity>0.65</Opacity>
+				</SolidFill>
+				<Width>0.1</Width>
+			</PenStroke>
+		</AreaSymbolizer>
+	</Rule>
+</Style>

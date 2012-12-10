@@ -29,7 +29,6 @@
 package org.orbisgis.core;
 
 import java.io.File;
-
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.indexes.IndexManager;
@@ -112,5 +111,5 @@ public interface DataManager {
 	 *             If the layer could not be created
 	 */
 	ILayer createLayer(File file) throws LayerException;
-       
+
 }
