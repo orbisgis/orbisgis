@@ -51,6 +51,10 @@ public class ActionTools {
         public static final String INSERT_BEFORE_MENUID = "insertBeforeMenuId";
         // If set, the action will try to be inserted just after the provided menu id.
         public static final String INSERT_AFTER_MENUID = "insertAfterMenuId";
+        // if set, the action will be inserted first instead of last (default)
+        public static final String INSERT_FIRST = "insertFirst";
+        // Using logical group on actions will automatically create JSeparator between such groups
+        public static final String LOGICAL_GROUP = "logicalGroup";
         /** If set, other actions with the same actionGroup will be unSet if this action is set active.
          * ButtonGroup will be created by ActionCommands.
          * Setting a value will create a JRadioButton or a JRadioButtonMenu instead of JButton and JMenuItem.
@@ -159,5 +163,23 @@ public class ActionTools {
                         return "";
                 }
                 return (String)val;
+        }
+        /**
+         * Using logical group on actions will automatically create JSeparator between such groups
+         * @return logical group name
+         */
+        public static String getLogicalGroup(Action action) {
+                Object val = action.getValue(LOGICAL_GROUP);
+                if(val==null) {
+                    return "";
+                }
+                return (String)val;
+        }
+        /**
+         * @param action
+         * @return True if this action should be inserted at 0 index in the menu container.
+         */
+        public static boolean isFirstInsertion(Action action) {
+            return action.getValue(INSERT_FIRST)!=null;
         }
 }

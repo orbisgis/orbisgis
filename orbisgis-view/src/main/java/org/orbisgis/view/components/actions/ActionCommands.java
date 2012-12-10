@@ -139,7 +139,7 @@ public class ActionCommands {
                         return ((AbstractButton) component).getAction();
                 }
                 // Action cannot be retrieved from this container
-                throw new IllegalArgumentException("Container is not an abstract button");
+                return null;
         }
         /**
          * Add an action and show it in all registered controls.
@@ -323,6 +323,9 @@ public class ActionCommands {
          * @return Advised insertion id [0-parent.getComponentCount()]
          */
         private int getInsertPosition(Container parent, Action action) {
+                if(ActionTools.isFirstInsertion(action)) {
+                    return 0;
+                }
                 final String newElMenuId = ActionTools.getMenuId(action);
                 Component[] components;
                 if(parent instanceof JMenu) {
@@ -362,9 +365,36 @@ public class ActionCommands {
                 }
                 return components.length;
         }
+
+    /**
+     * Insert a separator at insertPosition if action and otherComp are not in the same logical group.
+     * @param parent
+     * @param otherComp
+     * @param action
+     * @param insertPosition
+     */
+        private void insertSeparator(Container parent,Component otherComp,Action action,int insertPosition) {
+            String logicalGroup = ActionTools.getLogicalGroup(action);
+            Action bAction = getAction(otherComp);
+            if(bAction!=null) {
+                // 2 consecutive actions with != logical action group
+                if(!logicalGroup.equals(ActionTools.getLogicalGroup(bAction))) {
+                    parent.add(new JSeparator(),insertPosition);
+                }
+            }
+        }
         private void insertMenu(Container parent, Component child, Action action) {
+                // Get insertion index
+                int insertPosition = getInsertPosition(parent, action);
                 // Insert the action at is right place
-                parent.add(child, getInsertPosition(parent, action));
+                parent.add(child, insertPosition);
+                // Insert Separator
+                if(insertPosition>0) {
+                    insertSeparator(parent,getSubElements(parent)[insertPosition-1],action,insertPosition);
+                }
+                if(insertPosition<getSubElements(parent).length) {
+                    insertSeparator(parent,getSubElements(parent)[insertPosition],action,insertPosition+1);
+                }
                 // Remove child from parentComponent when action is removed
                 action.addPropertyChangeListener(new RemoveActionControls(parent,child));
         }
