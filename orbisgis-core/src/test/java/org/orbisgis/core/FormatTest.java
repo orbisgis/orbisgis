@@ -33,39 +33,45 @@ import java.io.File;
 import org.gdms.source.SourceManager;
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class FormatTest extends AbstractTest {
 
-        private SourceManager sourceManager;
+	private SourceManager sourceManager;
 
-        @Override
+	@Override
         @Before
-        public void setUp() throws Exception {
-                super.setUp();
-                registerDataManager();
-                sourceManager = ((DataManager) Services.getService(DataManager.class)).getDataSourceFactory().getSourceManager();
-                sourceManager.removeAll();
-
-        }
-
-        @Test
-        public void testTiff() throws Exception {
-                File file = new File("src/test/resources/data/ace.tiff");
-                sourceManager.register("tiff", file);
-                getDataManager().createLayer("tiff");
-        }
+	public void setUp() throws Exception {
+		super.setUp();
+		super.registerDataManager();
+		sourceManager = Services.getService(DataManager.class)
+				.getDataSourceFactory().getSourceManager();
+		sourceManager.removeAll();
+		
+	}
 
         @Test
-        public void testAsc() throws Exception {
-                File file = new File("src/test/resources/data/3x3.asc");
-                sourceManager.register("asc", file);
-                getDataManager().createLayer("asc");
-        }
+	public void testTiff() throws Exception {
+		File file = new File("src/test/resources/data/ace.tiff");
+		sourceManager.register("tiff", file);
+		getDataManager().createLayer("tiff");
+                assertTrue(true);
+	}
 
         @Test
-        public void testShapefile() throws Exception {
-                File file = new File("src/test/resources/data/bv_sap.shp");
-                sourceManager.register("shp", file);
-                getDataManager().createLayer("shp");
-        }
+	public void testAsc() throws Exception {
+		File file = new File("src/test/resources/data/3x3.asc");
+		sourceManager.register("asc", file);
+		getDataManager().createLayer("asc");
+                assertTrue(true);
+	}
+
+        @Test
+	public void testShapefile() throws Exception {
+		File file = new File("src/test/resources/data/bv_sap.shp");
+		sourceManager.register("shp", file);
+		getDataManager().createLayer("shp");
+                assertTrue(true);
+	}
+
 }

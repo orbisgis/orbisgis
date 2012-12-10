@@ -28,21 +28,57 @@
  */
 package org.orbisgis.core.layerModel;
 
+import com.vividsolutions.jts.geom.Envelope;
+import java.beans.PropertyChangeListener;
+import java.util.List;
 import java.util.Set;
-
+import net.opengis.ows_context.LayerType;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
-import org.orbisgis.core.layerModel.persistence.LayerType;
-import org.orbisgis.core.renderer.legend.Legend;
-import org.orbisgis.core.renderer.legend.RasterLegend;
-import org.orbisgis.core.renderer.legend.WMSLegend;
-
-import com.vividsolutions.jts.geom.Envelope;
+import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.common.Description;
 
 public interface ILayer {
 
+        //Properties index
+        public static final String PROP_DESCRIPTION = "description";
+        public static final String PROP_VISIBLE = "visible";
+        public static final String PROP_STYLES = "styles";
+        public static final String PROP_SELECTION = "selection";
+        
+        
+        /**
+        * Add a property-change listener for all properties.
+        * The listener is called for all properties.
+        * @param listener The PropertyChangeListener instance
+        * @note Use EventHandler.create to build the PropertyChangeListener instance
+        */
+        void addPropertyChangeListener(PropertyChangeListener listener);
+        /**
+        * Add a property-change listener for a specific property.
+        * The listener is called only when there is a change to 
+        * the specified property.
+        * @param prop The static property name PROP_..
+        * @param listener The PropertyChangeListener instance
+        * @note Use EventHandler.create to build the PropertyChangeListener instance
+        */
+        void addPropertyChangeListener(String prop,PropertyChangeListener listener);
+        /**
+        * Remove the specified listener from the list
+        * @param listener The listener instance
+        */
+        void removePropertyChangeListener(PropertyChangeListener listener);
+
+        /**
+        * Remove the specified listener for a specified property from the list
+        * @param prop The static property name PROP_..
+        * @param listener The listener instance
+        */
+        public void removePropertyChangeListener(String prop,PropertyChangeListener listener);
+                
 	void addLayerListener(LayerListener listener);
 
 	void removeLayerListener(LayerListener listener);
@@ -51,8 +87,35 @@ public interface ILayer {
 
 	void removeLayerListenerRecursively(LayerListener listener);
 
+        
+        
+        /**
+         * Get the value of description
+         *
+         * @return the value of description
+         */
+        public Description getDescription();
+
+        /**
+         * Set the value of description
+         *
+         * @param description new value of description
+         */
+        public void setDescription(Description description);
+        
+        /**
+         * Get the internal identifier of this layer
+         * This is not the displayable layer label.
+         * Use the localised description title
+         * @return 
+         */
 	String getName();
 
+        /**
+         * Set the internal name of the layer
+         * @param name
+         * @throws LayerException 
+         */
 	void setName(final String name) throws LayerException;
 
 	void setParent(final ILayer parent) throws LayerException;
@@ -65,6 +128,18 @@ public interface ILayer {
 
 	ILayer getParent();
 
+        /**
+         * Create a jaxb instance of this layer for serialisation
+         * @return The layer serialisation object
+         */
+        LayerType getJAXBElement();
+
+        /**
+         * Returns true if and only if we can serialize this layer in a map context.
+         * @return
+         */
+        boolean isSerializable();
+                
 	/**
 	 * Removes the specified child layer.
 	 * 
@@ -99,8 +174,20 @@ public interface ILayer {
 	 */
 	ILayer remove(String layerName) throws LayerException;
 
+        /**
+         * Adds a child to this {@code ILayer}.
+         * @param layer
+         * @throws LayerException If this can't accept a child.
+         */
 	void addLayer(ILayer layer) throws LayerException;
 
+        /**
+         * Adds a child to this {@code ILayer}. This method may behave differently
+         * if {@code layer} is a layer being moved or not.
+         * @param layer
+         * @param isMoving
+         * @throws LayerException
+         */
 	void addLayer(ILayer layer, boolean isMoving) throws LayerException;
 
 	/**
@@ -127,6 +214,12 @@ public interface ILayer {
 
 	ILayer[] getLayerPath();
 
+        /**
+         * Inserts this in {@code layer} at index {@code index}.
+         * @param layer
+         * @param index
+         * @throws LayerException
+         */
 	void moveTo(ILayer layer, int index) throws LayerException;
 
 	void moveTo(ILayer layer) throws LayerException;
@@ -139,22 +232,6 @@ public interface ILayer {
 			throws LayerException;
 
 	int getLayerCount();
-
-	/**
-	 * Gets the status of this object as a xml object
-	 * 
-	 * @return
-	 */
-	LayerType saveLayer();
-
-	/**
-	 * Sets the status of the layer from a xml object
-	 * 
-	 * @param layer
-	 * @throws LayerException
-	 *             If the status cannot be set
-	 */
-	void restoreLayer(LayerType layer) throws LayerException;
 
 	/**
 	 * Gets the specified child layer
@@ -171,8 +248,6 @@ public interface ILayer {
 	 * @throws DriverException
 	 */
 	ILayer[] getRasterLayers() throws DriverException;
-
-	//WMSLegend getWMSLegend();
 
 	/**
 	 * Gets all the vectorial layers in the tree under this layer
@@ -202,93 +277,73 @@ public interface ILayer {
 	 */
 	boolean isVectorial() throws DriverException;
 
-       
-        /**
-	 * Returns true if this layer represents a stream source
+	/**
+	 * Returns true if this layer represents a Stream source.
 	 * 
-	 * @return
+         * @return
+         * @throws DriverException  
 	 */
-	boolean isStream() throws DriverException ;
+	boolean isStream() throws DriverException;
 
 	/**
 	 * Returns a {@link DataSource} to access the source of this layer
 	 * 
-	 * @return A SpatialDataSourceDecorator or null if this layer is not backed
-	 *         up by a SpatialDataSourceDecorator (Layer collections and WMS
+	 * @return A DataSource or null if this layer is not backed
+	 *         up by a DataSource (Layer collections and WMS
 	 *         layers, for example)
 	 */
 	DataSource getDataSource();
 
-	/**
-	 * Gets the legend used to draw the default spatial field in this layer if
-	 * it is of type raster.
-	 * 
-	 * @return
-	 * @throws DriverException
-	 *             If there is some problem accessing the default spatial field
-	 * @throws UnsupportedOperationException
-	 *             If the spatial field is not raster but vector
-	 */
-	RasterLegend[] getRasterLegend() throws DriverException,
-			UnsupportedOperationException;
+        /**
+         * Gets the {@code List} of SE styles that are used to define the
+         * symbologies associated to the current {@code ILayer}.
+         * @return
+         */
+        List<Style> getStyles();
 
-	/**
-	 * Gets the legends used to draw the default spatial field in this layer if
-	 * it is of type vector.
-	 * 
-	 * @return
-	 * @throws DriverException
-	 *             If there is some problem accessing the default spatial field
-	 * @throws UnsupportedOperationException
-	 *             If the spatial field is not vector but raster
-	 */
-	Legend[] getVectorLegend() throws DriverException,
-			UnsupportedOperationException;
+        /**
+         *Sets the {@code List} of SE styles that are used to define the
+         * symbologies associated to the current {@code ILayer}.
+         * @param fts
+         */
+        void setStyles(List<Style> fts);
 
-	/**
-	 * Sets the legend used to draw the default spatial field in this layer
-	 * 
-	 * @param legends
-	 * @throws DriverException
-	 *             If there is some problem accessing the contents of the layer
-	 */
-	void setLegend(Legend... legends) throws DriverException;
+        /**
+         * Gets the {@code i}th {@code Style} that is used to define the
+         * symbology associated to the current {@code ILayer}.
+         * @return
+         */
+        Style getStyle(int i);
 
-	/**
-	 * Gets the legend used to draw the specified vector field in this layer
-	 * 
-	 * @return
-	 * @throws IllegalArgumentException
-	 *             If the specified name does not exist or it's not of type
-	 *             vector
-	 * @throws DriverException
-	 */
-	Legend[] getVectorLegend(String fieldName) throws IllegalArgumentException,
-			DriverException;
+        /**
+         * Sets the {@code i}th {@code Style} that is used to define the
+         * symbology associated to the current {@code ILayer}.
+         * @param i
+         * @param s
+         */
+        void setStyle(int i, Style s);
 
-	/**
-	 * Gets the legend used to draw the specified raster field in this layer
-	 * 
-	 * @return
-	 * @throws IllegalArgumentException
-	 *             If the specified name does not exist or it's not of type
-	 *             raster
-	 * @throws DriverException
-	 */
-	RasterLegend[] getRasterLegend(String fieldName)
-			throws IllegalArgumentException, DriverException;
+        /**
+         * Adds a {@code Style} instance at the end of the list of associated
+         * {@code Style}s.
+         * @param style
+         */
+        public void addStyle(Style style);
 
-	/**
-	 * Sets the legend used to draw the specified spatial field in this layer
-	 * 
-	 * @param legends
-	 * @throws IllegalArgumentException
-	 *             If the specified name does not exist
-	 * @throws DriverException
-	 *             If there is some problem accessing the contents of the layer
-	 */
-	void setLegend(String fieldName, Legend... legends)
-			throws IllegalArgumentException, DriverException;
+        /**
+         * Adds a {@code Style} instance at the ith position of the list of
+         * associated {@code Style}s.
+         * @param style
+         */
+        public void addStyle(int i, Style style);
+
+        /**
+         * Gets the index of {@code s} in this {@code ILayer}, or {@code -1} if
+         * {@code s} is not associated to this.
+         * @param s
+         * @return
+         */
+        public int indexOf(Style s);
 
 	/**
 	 * If isRaster is true returns the first raster in the layer DataSource.
@@ -308,7 +363,7 @@ public interface ILayer {
 	 * @throws UnsupportedOperationException
 	 *             If this layer doesn't support selection
 	 */
-	int[] getSelection() throws UnsupportedOperationException;
+	Set<Integer> getSelection() throws UnsupportedOperationException;
 
 	/**
 	 * Sets the array of the selected rows
@@ -317,15 +372,19 @@ public interface ILayer {
 	 * @throws UnsupportedOperationException
 	 *             If this layer doesn't support selection
 	 */
-	void setSelection(int[] newSelection) throws UnsupportedOperationException;
+	void setSelection(Set<Integer> newSelection) throws UnsupportedOperationException;
 
-	/**
-	 * Gets the legend to perform the rendering. The actual class of the
-	 * returned legends may not be the same of those set by setLegend methods
-	 * 
-	 * @return
-	 * @throws DriverException
-	 */
-	Legend[] getRenderingLegend() throws DriverException;
+        /**
+         * Gets the list of all the {@code Rule} embedded in the {@code Style}
+         * associated to this {@code ILayer}.
+         * @return
+         * @throws DriverException
+         */
+	List<Rule> getRenderingRule() throws DriverException;
+
+        /**
+         * Removes s from the styles associated to this layer.
+         */
+        void removeStyle(Style s);
 
 }

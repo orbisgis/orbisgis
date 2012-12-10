@@ -28,469 +28,187 @@
  */
 package org.orbisgis.core.layerModel;
 
-import java.awt.Color;
-import java.io.IOException;
+import com.vividsolutions.jts.geom.Envelope;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Random;
-
+import java.util.Set;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.data.schema.Metadata;
-import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.grap.model.GeoRaster;
-import org.orbisgis.core.Services;
-import org.orbisgis.core.errorManager.ErrorManager;
-import org.orbisgis.core.layerModel.persistence.LayerType;
-import org.orbisgis.core.layerModel.persistence.Legends;
-import org.orbisgis.core.layerModel.persistence.SimpleLegend;
-import org.orbisgis.core.renderer.legend.Legend;
-import org.orbisgis.core.renderer.legend.RasterLegend;
-import org.orbisgis.core.renderer.legend.RenderException;
-import org.orbisgis.core.renderer.legend.WMSLegend;
-import org.orbisgis.core.renderer.legend.carto.LegendFactory;
-import org.orbisgis.core.renderer.legend.carto.LegendManager;
-import org.orbisgis.core.renderer.legend.carto.UniqueSymbolLegend;
-import org.orbisgis.core.renderer.symbol.Symbol;
-import org.orbisgis.core.renderer.symbol.SymbolFactory;
-import org.orbisgis.utils.I18N;
+import org.orbisgis.core.common.IntegerUnion;
+import org.orbisgis.core.renderer.se.Rule;
+import org.orbisgis.core.renderer.se.Style;
 
-import com.vividsolutions.jts.geom.Envelope;
+public class Layer extends BeanLayer {        
+	private DataSource dataSource;
+	private RefreshSelectionEditionListener editionListener;
 
-public class Layer extends GdmsLayer {
-
-    private DataSource dataSource;
-    private HashMap<String, LegendDecorator[]> fieldLegend = new HashMap<String, LegendDecorator[]>();
-    private RefreshSelectionEditionListener editionListener;
-    private int[] selection = new int[0];
-
-    public Layer(String name, DataSource ds) {
-        super(name);
-        this.dataSource = ds;
-        editionListener = new RefreshSelectionEditionListener();
-    }
-
-    private UniqueSymbolLegend getDefaultVectorialLegend(Type fieldType) {
-
-        final Random r = new Random();
-        final Color cFill = new Color(r.nextInt(256), r.nextInt(256), r.nextInt(256), 255 - 40);
-        final Color cOutline = cFill.darker();
-
-        UniqueSymbolLegend legend = LegendFactory.createUniqueSymbolLegend();
-        Symbol polSym = SymbolFactory.createPolygonSymbol(cOutline, cFill);
-        Symbol pointSym = SymbolFactory.createPointSquareSymbol(Color.black,
-                Color.red, 5);
-        Symbol lineSym = SymbolFactory.createLineSymbol(cOutline, 1);
-        Symbol composite = SymbolFactory.createSymbolComposite(polSym,
-                pointSym, lineSym);
-
-        switch (fieldType.getTypeCode()) {
-            case Type.POINT:
-            case Type.MULTIPOINT:
-                legend.setSymbol(pointSym);
-                break;
-            case Type.LINESTRING:
-            case Type.MULTILINESTRING:
-                legend.setSymbol(lineSym);
-                break;
-            case Type.POLYGON:
-            case Type.MULTIPOLYGON:
-                legend.setSymbol(polSym);
-                break;
-            case Type.GEOMETRYCOLLECTION:
-            case Type.GEOMETRY:
-                legend.setSymbol(composite);
-                break;
-        }
-
-        return legend;
-    }
+	public Layer(String name, DataSource ds) {
+		super(name);
+		this.dataSource = ds;
+		editionListener = new RefreshSelectionEditionListener();
+	}
 
     @Override
-    public DataSource getDataSource() {
-        return dataSource;
-    }
+	public DataSource getDataSource() {
+		return dataSource;
+	}
 
     @Override
-    public Envelope getEnvelope() {
-        Envelope result = new Envelope();
+	public Envelope getEnvelope() {
+		Envelope result = new Envelope();
 
-        if (null != dataSource) {
-            try {
-                result = dataSource.getFullExtent();
-            } catch (DriverException e) {
-                Services.getErrorManager().error(
-                        I18N.getString("org.orbisgis.layerModel.layer.cannotGetTheExtentOfLayer") //$NON-NLS-1$
-                        + dataSource.getName(), e);
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public void close() throws LayerException {
-        super.close();
-        try {
-            if (dataSource.isEditable()) {
-                    dataSource.removeEditionListener(editionListener);
-            }
-            dataSource.close();
-        } catch (AlreadyClosedException e) {
-            throw new LayerException(I18N.getString("org.orbisgis.layerModel.layer.bug"), e); //$NON-NLS-1$
-        } catch (DriverException e) {
-            throw new LayerException(e);
-        }
-    }
+		if (null != dataSource) {
+			try {
+				result = dataSource.getFullExtent();
+			} catch (DriverException e) {
+				LOGGER.error(
+						I18N.tr("Cannot get the extent of the layer {0}",dataSource.getName())
+								 , e);
+			}
+		}
+		return result;
+	}
 
     @Override
-    public void open() throws LayerException {
-        super.open();
-        try {
-            dataSource.open();
-            // Create a legend for each spatial field
-            Metadata metadata = dataSource.getMetadata();
-            for (int i = 0; i < metadata.getFieldCount(); i++) {
-                Type fieldType = metadata.getFieldType(i);
-                int fieldTypeCode = fieldType.getTypeCode();
-                if ((fieldTypeCode & Type.GEOMETRY) != 0) {
-                    UniqueSymbolLegend legend = getDefaultVectorialLegend(fieldType);
-
-                    try {
-                        setLegend(metadata.getFieldName(i), legend);
-                    } catch (DriverException e) {
-                        // Should never reach here with UniqueSymbolLegend
-                    }
-
-                } else if (fieldTypeCode == Type.RASTER) {
-                    GeoRaster gr = dataSource.getFieldValue(0, i).getAsRaster();
-                    RasterLegend rasterLegend;
-                    rasterLegend = new RasterLegend(gr.getDefaultColorModel(),
-                            1f);
-                    setLegend(metadata.getFieldName(i), rasterLegend);
-                }
-            }
-
-            // Listen modifications to update selection
-            if (dataSource.isEditable()) {
-                    dataSource.addEditionListener(editionListener);
-            }
-        } catch (IOException e) {
-            throw new LayerException(I18N.getString("org.orbisgis.layerModel.layer.cannotSetLegend"), e); //$NON-NLS-1$
-        } catch (DriverException e) {
-            throw new LayerException(I18N.getString("org.orbisgis.layerModel.layer.cannotOpenLayer"), e); //$NON-NLS-1$
-        }
-    }
-
-    /**
-     * Sets the legend used to draw this layer
-     *
-     * @param legends
-     * @throws DriverException If there is some problem accessing the contents
-     * of the layer
-     */
-    @Override
-    public void setLegend(Legend... legends) throws DriverException {
-        String defaultFieldName = dataSource.getMetadata().getFieldName(
-                dataSource.getSpatialFieldIndex());
-        setLegend(defaultFieldName, legends);
-    }
-
-    @Override
-    public Legend[] getRenderingLegend() throws DriverException {
-        int sfi = dataSource.getSpatialFieldIndex();
-        String defaultFieldName = dataSource.getMetadata().getFieldName(sfi);
-        LegendDecorator[] legendDecorators = fieldLegend.get(defaultFieldName);
-        ArrayList<Legend> ret = new ArrayList<Legend>();
-        for (LegendDecorator legendDecorator : legendDecorators) {
-            if (legendDecorator.isValid()) {
-                ret.add(legendDecorator);
-            }
-        }
-        return ret.toArray(new Legend[ret.size()]);
-    }
-
-    @Override
-    public Legend[] getVectorLegend() throws DriverException {
-        int sfi = dataSource.getSpatialFieldIndex();
-        Metadata metadata = dataSource.getMetadata();
-        if (metadata.getFieldType(sfi).getTypeCode() == Type.RASTER) {
-            throw new UnsupportedOperationException(I18N.getString("org.orbisgis.layerModel.layer.the") //$NON-NLS-1$
-                    + I18N.getString("org.orbisgis.layerModel.layer.fieldIsRaster")); //$NON-NLS-1$
-        }
-        String defaultFieldName = metadata.getFieldName(sfi);
-        return getVectorLegend(defaultFieldName);
-    }
-
-    @Override
-    public RasterLegend[] getRasterLegend() throws DriverException {
-        int sfi = dataSource.getSpatialFieldIndex();
-        Metadata metadata = dataSource.getMetadata();
-        if ((metadata.getFieldType(sfi).getTypeCode() & Type.GEOMETRY) != 0) {
-            throw new UnsupportedOperationException(I18N.getString("org.orbisgis.layerModel.layer.the") //$NON-NLS-1$
-                    + I18N.getString("org.orbisgis.layerModel.layer.fieldIsVector")); //$NON-NLS-1$
-        }
-        String defaultFieldName = metadata.getFieldName(sfi);
-        return getRasterLegend(defaultFieldName);
-    }
-
-    @Override
-    public Legend[] getVectorLegend(String fieldName) throws DriverException {
-        int sfi = getFieldIndexForLegend(fieldName);
-        validateVectorType(sfi, Type.GEOMETRY, I18N.getString("org.orbisgis.layerModel.layer.vector")); //$NON-NLS-1$
-        LegendDecorator[] legends = fieldLegend.get(fieldName);
-        Legend[] ret = new Legend[legends.length];
-        for (int i = 0; i < ret.length; i++) {
-            ret[i] = legends[i].getLegend();
-        }
-
-        return ret;
-    }
-
-    /**
-     * Validate fieldType against the type referenced in the metadata of the
-     * associated datasource, at field index sfi (which is supposed to be the
-     * spatial field index).
-     *
-     * @param sfi The index of the spatial field in the metadata
-     * @param fieldType The fieldType we want to validate.
-     * @param type Used for the (eventual) thrown exception
-     */
-    private void validateVectorType(int sfi, int fieldType, String type) throws DriverException {
-        Metadata metadata = dataSource.getMetadata();
-        if (fieldType == Type.NULL || (fieldType & metadata.getFieldType(sfi).getTypeCode()) == 0) {
-            throw new IllegalArgumentException(I18N.getString("org.orbisgis.layerModel.layer.the")
-                    + I18N.getString("org.orbisgis.layerModel.layer.fieldIsNot") + type); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-
-    }
-
-    private void validateType(int sfi, int fieldType, String type)
-            throws DriverException {
-        Metadata metadata = dataSource.getMetadata();
-        if (metadata.getFieldType(sfi).getTypeCode() != fieldType) {
-            throw new IllegalArgumentException(I18N.getString("org.orbisgis.layerModel.layer.the")
-                    + I18N.getString("org.orbisgis.layerModel.layer.fieldIsNot") + type); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-    }
-
-    private int getFieldIndexForLegend(String fieldName) throws DriverException {
-        int sfi = dataSource.getFieldIndexByName(fieldName);
-        if (sfi == -1) {
-            throw new IllegalArgumentException(I18N.getString("org.orbisgis.layerModel.layer.fieldIsNotFound") + fieldName); //$NON-NLS-1$
-        }
-        return sfi;
-    }
-
-    @Override
-    public RasterLegend[] getRasterLegend(String fieldName)
-            throws DriverException {
-        int sfi = getFieldIndexForLegend(fieldName);
-        validateType(sfi, Type.RASTER, I18N.getString("org.orbisgis.layerModel.layer.raster")); //$NON-NLS-1$
-        LegendDecorator[] legends = fieldLegend.get(fieldName);
-        RasterLegend[] ret = new RasterLegend[legends.length];
-        for (int i = 0; i < ret.length; i++) {
-            ret[i] = (RasterLegend) legends[i].getLegend();
-        }
-
-        return ret;
-    }
-
-    @Override
-    public void setLegend(String fieldName, Legend... legends)
-            throws DriverException {
-        if (dataSource.getFieldIndexByName(fieldName) == -1) {
-            throw new IllegalArgumentException(I18N.getString("org.orbisgis.layerModel.layer.fieldIsNotFound") + fieldName); //$NON-NLS-1$
-        } else {
-            // Remove previous decorator listeners
-            LegendDecorator[] oldDecorators = fieldLegend.get(fieldName);
-            if (oldDecorators != null) {
-                for (LegendDecorator legendDecorator : oldDecorators) {
-                    dataSource.removeEditionListener(legendDecorator);
-                }
-            }
-            LegendDecorator[] decorated = decorate(fieldName, legends);
-            for (LegendDecorator legendDecorator : decorated) {
-                dataSource.addEditionListener(legendDecorator);
-            }
-            fieldLegend.put(fieldName, decorated);
-            fireStyleChanged();
-        }
-    }
-
-    private LegendDecorator[] decorate(String fieldName, Legend... legends) {
-        LegendDecorator[] decorated = new LegendDecorator[legends.length];
-        for (int i = 0; i < decorated.length; i++) {
-            LegendDecorator decorator = new LegendDecorator(legends[i]);
-            try {
-                decorator.initialize(dataSource);
-            } catch (RenderException e) {
-                Services.getService(ErrorManager.class).warning(
-                        I18N.getString("org.orbisgis.layerModel.layer.cannotInitializeLegend"), e); //$NON-NLS-1$
-            }
-            decorated[i] = decorator;
-        }
-
-        return decorated;
-    }
-
-    @Override
-    public boolean isRaster() throws DriverException {
-        return dataSource.isRaster();
-    }
-
-    @Override
-    public boolean isVectorial() throws DriverException {
-        return dataSource.isVectorial();
-    }
-
-    /**
-     * Check if the source is a stream
-     * @return
-     * @throws DriverException 
-     */
-    @Override
-    public boolean isStream() throws DriverException {
-        return dataSource.isStream();
-    }
-
-    @Override
-    public GeoRaster getRaster() throws DriverException {
-        if (!isRaster()) {
-            throw new UnsupportedOperationException(
-                    I18N.getString("org.orbisgis.layerModel.layer.isNotARasterLayer")); //$NON-NLS-1$
-        }
-        return getDataSource().getRaster(0);
-    }
-
-    private class RefreshSelectionEditionListener implements EditionListener {
+	public void close() throws LayerException {
+		try {
+                        if (dataSource.isEditable()) {                                
+                                try {
+                                        dataSource.removeEditionListener(editionListener);
+                                } catch(UnsupportedOperationException ex) {
+                                        //Ignore
+                                }
+                        }
+			dataSource.close();
+		} catch (AlreadyClosedException e) {
+			throw new LayerException(I18N.tr("Cannot close the data source"), e);
+		} catch (DriverException e) {
+			throw new LayerException(I18N.tr("Cannot close the data source"),e);
+		}
+	}
 
         @Override
-        public void multipleModification(MultipleEditionEvent e) {
-            EditionEvent[] events = e.getEvents();
-            int[] selection = getSelection();
-            for (int i = 0; i < events.length; i++) {
-                int[] newSel = getNewSelection(events[i].getRowIndex(),
-                        selection);
-                selection = newSel;
-            }
-            setSelection(selection);
-        }
+	public void open() throws LayerException {
+		try {
+			dataSource.open();
+                        if (getStyles().isEmpty()) {
+                                // special case: no style were ever set
+                                // let's go for a default style
+                                // add style in the list directly
+                                // do not fire style change event
+                                Style defStyle = new Style(this, true);
+                                styleList.add(defStyle);
+                                addStyleListener(defStyle);
+                        }
+			// Listen modifications to update selection
+                        if (dataSource.isEditable()) {
+                                try {
+                                        dataSource.addEditionListener(editionListener);
+                                } catch (UnsupportedOperationException ex) {
+                                        LOGGER.warn(I18N.tr("The layer cannot listen to source modifications"),ex);
+                                }
+                        }
+		} catch (DriverException e) {
+			throw new LayerException(I18N.tr("Cannot open the layer"), e);
+		}
+	}
+
+	private void validateType(int sfi, int fieldType, String type)
+			throws DriverException {
+		Metadata metadata = dataSource.getMetadata();
+		if ((metadata.getFieldType(sfi).getTypeCode() & fieldType) ==0) {
+			throw new IllegalArgumentException(I18N.tr("The field is not {0}",type));
+		}
+	}
+
+	private int getFieldIndexForLegend(String fieldName) throws DriverException {
+		int sfi = dataSource.getFieldIndexByName(fieldName);
+		if (sfi == -1) {
+			throw new IllegalArgumentException(I18N.tr("The field {0} is not found",fieldName));
+		}
+		return sfi;
+	}
+
+    @Override
+	public boolean isRaster() throws DriverException {
+		return dataSource.isRaster();
+	}
+
+    @Override
+	public boolean isVectorial() throws DriverException {
+		return dataSource.isVectorial();
+	}
 
         @Override
-        public void singleModification(EditionEvent e) {
-            if (e.getType() == EditionEvent.DELETE) {
-                int[] selection = getSelection();
-                int[] newSel = getNewSelection(e.getRowIndex(), selection);
-                setSelection(newSel);
-            } else if (e.getType() == EditionEvent.RESYNC) {
-                setSelection(new int[0]);
-            }
-
+        public boolean isSerializable() {
+                return dataSource != null && dataSource.getSource().isWellKnownName();
         }
 
-        private int[] getNewSelection(long rowIndex, int[] selection) {
-            int[] newSelection = new int[selection.length];
-            int newSelectionIndex = 0;
-            for (int i = 0; i < selection.length; i++) {
-                if (selection[i] != rowIndex) {
-                    newSelection[newSelectionIndex] = selection[i];
-                    newSelectionIndex++;
+
+    @Override
+	public GeoRaster getRaster() throws DriverException {
+		if (!isRaster()) {
+			throw new UnsupportedOperationException(
+					I18N.tr("This layer is not a raster"));
+		}
+		return getDataSource().getRaster(0);
+	}
+
+	@Override
+	public List<Rule> getRenderingRule() throws DriverException {
+                List<Style> styles = getStyles();
+                ArrayList<Rule> ret = new ArrayList<Rule>();
+                for(Style s : styles){
+                        if(s!=null){
+                                ret.addAll(s.getRules());
+                        }
                 }
-            }
+		return ret;
+	}
 
-            if (newSelectionIndex < selection.length) {
-                selection = new int[newSelectionIndex];
-                System.arraycopy(newSelection, 0, selection, 0,
-                        newSelectionIndex);
-            }
-            return selection;
-        }
-    }
+	private class RefreshSelectionEditionListener implements EditionListener {
 
-    @Override
-    public LayerType saveLayer() {
-        LayerType ret = new LayerType();
-        ret.setName(getName());
-        ret.setSourceName(getMainName());
-        ret.setVisible(isVisible());
+                @Override
+		public void multipleModification(MultipleEditionEvent e) {
+			EditionEvent[] events = e.getEvents();
+                        for(EditionEvent event : events) {
+                                selection.remove((int)event.getRowIndex());
+                        }
+                        fireSelectionChanged();
+		}
 
-        Iterator<String> it = fieldLegend.keySet().iterator();
-        while (it.hasNext()) {
-            String fieldName = it.next();
-            Legends legends = new Legends();
-            legends.setFieldName(fieldName);
-            LegendDecorator[] legendDecorators = fieldLegend.get(fieldName);
-            for (int i = 0; i < legendDecorators.length; i++) {
-                LegendDecorator legendDecorator = legendDecorators[i];
-                Legend legend = legendDecorator.getLegend();
-                String legendTypeId = legend.getLegendTypeId();
-                Object legendJAXBObject = legend.getJAXBObject();
-                SimpleLegend simpleLegend = new SimpleLegend();
-                simpleLegend.setLegendId(legendTypeId);
-                simpleLegend.setAny(legendJAXBObject);
-                legends.getSimpleLegend().add(simpleLegend);
-            }
-            ret.getLegends().add(legends);
-        }
+                @Override
+		public void singleModification(EditionEvent e) {
+			if (e.getType() == EditionEvent.DELETE) {
+				selection.remove((int)e.getRowIndex());
+                                fireSelectionChanged();
+			} else if (e.getType() == EditionEvent.RESYNC) {
+				setSelection(new IntegerUnion());
+			}
 
-        return ret;
-    }
+		}
+	}
 
-    @Override
-    public void restoreLayer(LayerType lyr) throws LayerException {
-        LayerType layer = (LayerType) lyr;
-        this.setName(layer.getName());
-        this.setVisible(layer.isVisible());
+	private void fireSelectionChanged() {
+		for (LayerListener listener : listeners) {
+			listener.selectionChanged(new SelectionEvent(this));
+		}
+	}
 
-        List<Legends> legendsCollection = layer.getLegends();
-        for (Legends legends : legendsCollection) {
-            String fieldName = legends.getFieldName();
-            List<SimpleLegend> legendCollection = legends.getSimpleLegend();
-            ArrayList<Legend> fieldLegends = new ArrayList<Legend>();
-            LegendManager lm = (LegendManager) Services.getService(LegendManager.class);
-            for (SimpleLegend simpleLegend : legendCollection) {
-                String legendId = simpleLegend.getLegendId();
+	@Override
+	public void setSelection(Set<Integer> newSelection) {
+		super.setSelection(newSelection);
+		fireSelectionChanged();
+	}
 
-                Legend legend = lm.getNewLegend(legendId);
-                if (legend == null) {
-                    throw new LayerException(I18N.getString("org.orbisgis.layerModel.layer.unsupportedLegend") + legendId); //$NON-NLS-1$
-                }
-                try {
-                    legend.setJAXBObject(simpleLegend.getAny());
-                } catch (Exception e) {
-                    Services.getErrorManager().error(
-                            I18N.getString("org.orbisgis.layerModel.layer.cannotRecoverLegendLost"), e); //$NON-NLS-1$
-                }
-                fieldLegends.add(legend);
-            }
-            try {
-                setLegend(fieldName, fieldLegends.toArray(new Legend[fieldLegends.size()]));
-            } catch (DriverException e) {
-                throw new LayerException(I18N.getString("org.orbisgis.layerModel.layer.cannotRestoreLegends"), e); //$NON-NLS-1$
-            }
-        }
-    }
-
-    private void fireSelectionChanged() {
-        for (LayerListener listener : listeners) {
-            listener.selectionChanged(new SelectionEvent());
-        }
-    }
-
-    @Override
-    public int[] getSelection() {
-        return selection;
-    }
-
-    @Override
-    public void setSelection(int[] newSelection) {
-        this.selection = newSelection;
-        fireSelectionChanged();
-    }
+	@Override
+	public boolean isStream() throws DriverException {
+		return dataSource.isStream();
+	}
 }

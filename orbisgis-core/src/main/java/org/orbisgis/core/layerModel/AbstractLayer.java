@@ -28,24 +28,29 @@
  */
 package org.orbisgis.core.layerModel;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
-
+import java.util.*;
+import org.apache.log4j.Logger;
+import org.gdms.driver.DriverException;
+import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.utils.CollectionUtils;
-import org.orbisgis.utils.I18N;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 public abstract class AbstractLayer implements ILayer {
-	private String name;
+        
+        
+        protected static final I18n I18N = I18nFactory.getI18n(BeanLayer.class);
+        protected static final Logger LOGGER = Logger.getLogger(BeanLayer.class);
+
+	public AbstractLayer() {
+		listeners = new ArrayList<LayerListener>();
+        }
+        
+        
 
 	private ILayer parent;
 
 	protected ArrayList<LayerListener> listeners = new ArrayList<LayerListener>();
-
-	public AbstractLayer(final String name) {
-		this.name = name;
-		listeners = new ArrayList<LayerListener>();
-	}
 
 	/* getters and setters */
 	/**
@@ -64,46 +69,18 @@ public abstract class AbstractLayer implements ILayer {
 		this.parent = parent;
 	}
 
-	/**
-	 * 
-	 * @see org.orbisgis.core.layerModel.ILayer#getName()
-	 */
-	public String getName() {
-		return name;
-	}
-
-	/**
-	 * 
-	 * @throws LayerException
-	 * @see org.orbisgis.core.layerModel.ILayer#setName(java.lang.String)
-	 */
-	public void setName(final String name) throws LayerException {
-		final Set<String> allLayersNames = getRoot().getAllLayersNames();
-		allLayersNames.remove(getName());
-		this.name = provideNewLayerName(name, allLayersNames);
-		fireNameChanged();
-	}
-
-	public Set<String> getAllLayersNames() {
+        public Set<String> getAllLayersNames() {
 		final Set<String> result = new HashSet<String>();
-
 		result.add(getName());
-		if (this instanceof LayerCollection) {
-			final LayerCollection lc = (LayerCollection) this;
-			if (null != lc.getLayerCollection()) {
-				for (ILayer layer : lc.getChildren()) {
-					if (layer instanceof LayerCollection) {
-						result.addAll(layer.getAllLayersNames());
-					} else {
-						result.add(layer.getName());
-					}
-				}
-			}
-		}
 		return result;
 	}
 
-	private String provideNewLayerName(final String name,
+        /*
+         * Check that name is not already contained in allLayersNames.
+         * If it is in, a new String is created and returned, with the form name_i
+         * where i is as small as possible.
+         */
+	protected String provideNewLayerName(final String name,
 			final Set<String> allLayersNames) {
 		String tmpName = name;
 		if (allLayersNames.contains(tmpName)) {
@@ -126,7 +103,9 @@ public abstract class AbstractLayer implements ILayer {
 	}
 
 	public void addLayerListener(LayerListener listener) {
-		listeners.add(listener);
+                if(!listeners.contains(listener)){
+                        listeners.add(listener);
+                }
 	}
 
 	public void removeLayerListener(LayerListener listener) {
@@ -139,14 +118,16 @@ public abstract class AbstractLayer implements ILayer {
 		for (ILayer layer : children) {
 			ret.add(layer);
 			ILayer[] layersRecursively = layer.getLayersRecursively();
-			for (ILayer layer2 : layersRecursively) {
-				ret.add(layer2);
-			}
+                        ret.addAll(Arrays.asList(layersRecursively));
 		}
 
 		return ret.toArray(new ILayer[ret.size()]);
 	}
 
+        @Override
+        public void setStyles(List<Style> fts) {
+                this.fireStyleChanged();
+        }
 	public ILayer[] getLayerPath() {
 		ArrayList<ILayer> path = new ArrayList<ILayer>();
 		ILayer current = this;
@@ -165,6 +146,7 @@ public abstract class AbstractLayer implements ILayer {
 		return path2.toArray(new ILayer[path2.size()]);
 	}
 
+        @Override
 	public void moveTo(ILayer layer, int index) throws LayerException {
 		ILayer oldParent = getParent();
 		oldParent.remove(this, true);
@@ -174,7 +156,7 @@ public abstract class AbstractLayer implements ILayer {
 
 	public void moveTo(ILayer layer) throws LayerException {
 		if (CollectionUtils.contains(getLayersRecursively(), layer)) {
-			throw new LayerException(I18N.getString("orbisgis-core.org.orbisgis.layerModel.abstractLayer.cannotMoveLayerToItsChild")); //$NON-NLS-1$
+			throw new LayerException(I18N.tr("Cannot move a layer to its child"));
 		}
 		ILayer oldParent = getParent();
 		oldParent.remove(this, true);
@@ -182,7 +164,7 @@ public abstract class AbstractLayer implements ILayer {
 		fireLayerMovedEvent(oldParent, this);
 	}
 
-	private void fireNameChanged() {
+	protected void fireNameChanged() {
 		if (null != listeners) {
 			for (LayerListener listener : listeners) {
 				listener.nameChanged(new LayerListenerEvent(this));
@@ -202,14 +184,17 @@ public abstract class AbstractLayer implements ILayer {
 	}
 
 	private void fireLayerMovedEvent(ILayer parent, ILayer layer) {
+                LayerCollectionEvent evt = new LayerCollectionEvent(parent,
+					new ILayer[] { layer });
+                LayerCollectionEvent ev2 = new LayerCollectionEvent(layer.getParent(),
+					new ILayer[] { layer });
 		for (LayerListener listener : listeners) {
-			listener.layerMoved(new LayerCollectionEvent(parent,
-					new ILayer[] { layer }));
+			listener.layerMoved(evt);
+			listener.layerMoved(ev2);
 		}
 
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void fireStyleChanged() {
 		ArrayList<LayerListener> l = (ArrayList<LayerListener>) listeners
 				.clone();
@@ -218,7 +203,6 @@ public abstract class AbstractLayer implements ILayer {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void fireLayerAddedEvent(ILayer[] added) {
 		ArrayList<LayerListener> l = (ArrayList<LayerListener>) listeners
 				.clone();
@@ -227,7 +211,6 @@ public abstract class AbstractLayer implements ILayer {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	protected void fireLayerRemovedEvent(ILayer[] removed) {
 		ArrayList<LayerListener> l = (ArrayList<LayerListener>) listeners
 				.clone();
@@ -236,7 +219,6 @@ public abstract class AbstractLayer implements ILayer {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	protected boolean fireLayerRemovingEvent(ILayer[] toRemove) {
 		ArrayList<LayerListener> l = (ArrayList<LayerListener>) listeners
 				.clone();
@@ -249,4 +231,91 @@ public abstract class AbstractLayer implements ILayer {
 
 		return true;
 	}
+        
+    @Override
+    public void addLayer(ILayer layer)  throws LayerException  {
+        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
+    }
+
+    @Override
+    public ILayer remove(ILayer layer)  throws LayerException {
+        throw new IllegalArgumentException(I18N.tr("This layer does not have children")); //$NON-NLS-1$
+    }
+
+    @Override
+    public ILayer remove(String layerName)  throws LayerException {
+        throw new IllegalArgumentException(I18N.tr("This layer does not have children")); //$NON-NLS-1$
+    }
+
+    @Override
+    public boolean acceptsChilds() {
+        return false;
+    }
+
+    @Override
+    public ILayer[] getChildren() {
+        return new ILayer[0];
+    }
+
+    @Override
+    public int getIndex(ILayer targetLayer) {
+        return -1;
+    }
+
+    @Override
+    public void insertLayer(ILayer layer, int index) throws LayerException {
+        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
+    }
+
+    @Override
+    public void addLayerListenerRecursively(LayerListener listener) {
+        addLayerListener(listener);
+    }
+
+    @Override
+    public void removeLayerListenerRecursively(LayerListener listener) {
+        removeLayerListener(listener);
+    }
+
+    @Override
+    public void addLayer(ILayer layer, boolean isMoving) throws LayerException {
+        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
+    }
+
+    @Override
+    public ILayer remove(ILayer layer, boolean isMoving) throws LayerException {
+        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
+    }
+
+    @Override
+    public void insertLayer(ILayer layer, int index, boolean isMoving)
+            throws LayerException {
+        throw new IllegalArgumentException(I18N.tr("This layer cannot have children")); //$NON-NLS-1$
+    }
+
+    @Override
+    public int getLayerCount() {
+        return 0;
+    }
+
+    @Override
+    public ILayer getLayer(final int index) {
+        throw new ArrayIndexOutOfBoundsException(
+                I18N.tr("This layer doesn't contain any child")); //$NON-NLS-1$
+    }
+
+    @Override
+    public ILayer getLayerByName(String layerName) {
+        return null;
+    }
+
+    @Override
+    public ILayer[] getRasterLayers() throws DriverException {
+        return new ILayer[0];
+    }
+
+    @Override
+    public ILayer[] getVectorLayers() throws DriverException {
+        return new ILayer[0];
+    }
 }

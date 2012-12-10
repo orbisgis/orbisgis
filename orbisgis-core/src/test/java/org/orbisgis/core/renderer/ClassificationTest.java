@@ -28,184 +28,195 @@
  */
 package org.orbisgis.core.renderer;
 
-import org.junit.Test;
 import java.io.File;
 
+import junit.framework.TestCase;
 
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.orbisgis.core.renderer.classification.ProportionalMethod;
 import org.orbisgis.core.renderer.classification.Range;
 import org.orbisgis.core.renderer.classification.RangeMethod;
-
+import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class ClassificationTest {
 
-        private DataSourceFactory dsf = new DataSourceFactory();
-        // Data to test
-        File landcover = new File("src/test/resources/data//landcover2000.shp");
+	private DataSourceFactory dsf = new DataSourceFactory();
+
+	// Data to test
+	File landcover = new File("src/test/resources/data//landcover2000.shp");
 
         @Test
-        public void testStandard() throws Exception {
+	public void testStandard() throws Exception {
 
-                DataSource ds = dsf.getDataSource(landcover);
-                ds.open();
+		DataSource ds = dsf.getDataSource(landcover);
+		ds.open();
 
-                RangeMethod rm = new RangeMethod(ds, "runoff_win", 3);
+		RangeMethod rm = new RangeMethod(ds, new RealAttribute("runoff_win"), 3);
 
-                rm.disecStandard();
+		rm.disecStandard();
 
-                Range[] ranges = rm.getRanges();
-                assertTrue(checkRange(ranges[0], 0.05, 0.2));
-                assertTrue(checkRange(ranges[1], 0.2, 0.4));
-                assertTrue(checkRange(ranges[2], 0.4, 1));
-                ds.close();
+		Range[] ranges = rm.getRanges();
 
-        }
+		System.out.println ("Ranges");
+		System.out.println ("  " + ranges[0].getMinRange() + " " + ranges[0].getMaxRange());
+		System.out.println ("  " + ranges[1].getMinRange() + " " + ranges[1].getMaxRange());
+		System.out.println ("  " + ranges[2].getMinRange() + " " + ranges[2].getMaxRange());
 
-        private boolean checkRange(Range range, double min, double max) {
+		assertTrue(checkRange(ranges[0], 0.05, 0.2));
+		assertTrue(checkRange(ranges[1], 0.2, 0.4));
+		assertTrue(checkRange(ranges[2], 0.4, 1));
+		ds.close();
 
-                if ((range.getMinRange() == min) && (range.getMaxRange() == max)) {
-                        return true;
-                }
-                return false;
-        }
+	}
 
-        @Test
-        public void testInvalidStandardIntervals() throws Exception {
-                DataSource ds = dsf.getDataSource(landcover);
-                ds.open();
+	private boolean checkRange(Range range, double min, double max) {
 
-                RangeMethod rm = new RangeMethod(ds, "runoff_win", 2);
-
-                try {
-                        rm.disecStandard();
-                        fail();
-                } catch (IllegalArgumentException e) {
-                }
-
-                rm = new RangeMethod(ds, "runoff_win", 4);
-
-                try {
-                        rm.disecStandard();
-                        fail();
-                } catch (IllegalArgumentException e) {
-                }
-                ds.close();
-        }
+		if ((range.getMinRange() == min) && (range.getMaxRange() == max)) {
+			return true;
+		}
+		return false;
+	}
 
         @Test
-        public void testInvalidMeanIntervals() throws Exception {
-                DataSource ds = dsf.getDataSource(landcover);
-                ds.open();
+	public void testInvalidStandardIntervals() throws Exception {
+		DataSource ds = dsf.getDataSource(landcover);
+		ds.open();
 
-                RangeMethod rm = new RangeMethod(ds, "runoff_win", 1);
+		RangeMethod rm = new RangeMethod(ds, new RealAttribute("runoff_win"), 2);
 
-                try {
-                        rm.disecMean();
-                        fail();
-                } catch (IllegalArgumentException e) {
-                }
+		try {
+			rm.disecStandard();
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
 
-                rm = new RangeMethod(ds, "runoff_win", 3);
+		rm = new RangeMethod(ds, new RealAttribute("runoff_win"), 4);
 
-                try {
-                        rm.disecMean();
-                        fail();
-                } catch (IllegalArgumentException e) {
-                }
-
-                rm = new RangeMethod(ds, "runoff_win", 5);
-
-                try {
-                        rm.disecMean();
-                        fail();
-                } catch (IllegalArgumentException e) {
-                }
-                ds.close();
-        }
+		try {
+			rm.disecStandard();
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
+		ds.close();
+	}
 
         @Test
-        public void testEquivalences() throws Exception {
+	public void testInvalidMeanIntervals() throws Exception {
+		DataSource ds = dsf.getDataSource(landcover);
+		ds.open();
 
-                DataSource ds = dsf.getDataSource(landcover);
-                ds.open();
+		RangeMethod rm = new RangeMethod(ds, new RealAttribute("runoff_win"), 1);
 
-                RangeMethod rm = new RangeMethod(ds, "runoff_win", 4);
+		try {
+			rm.disecMean();
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
 
-                rm.disecEquivalences();
+		rm = new RangeMethod(ds, new RealAttribute("runoff_win"), 3);
 
-                Range[] ranges = rm.getRanges();
-                assertTrue(checkRange(ranges[0], 0.05, 0.4));
-                assertTrue(checkRange(ranges[1], 0.4, 1));
-                assertTrue(checkRange(ranges[2], 1, 1));
-                assertTrue(checkRange(ranges[3], 1, 1));
-                ds.close();
-        }
+		try {
+			rm.disecMean();
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
 
-        @Test
-        public void testMoyennes() throws Exception {
+		rm = new RangeMethod(ds, new RealAttribute("runoff_win"), 5);
 
-                DataSource ds = dsf.getDataSource(landcover);
-                ds.open();
-
-                RangeMethod rm = new RangeMethod(ds, "gid", 4);
-
-                rm.disecMean();
-
-                Range[] ranges = rm.getRanges();
-                assertTrue(checkRange(ranges[0], 1, 310));
-                assertTrue(checkRange(ranges[1], 310, 619));
-                assertTrue(checkRange(ranges[2], 619, 929));
-                assertTrue(checkRange(ranges[3], 929, 1237));
-                ds.close();
-        }
+		try {
+			rm.disecMean();
+			assertTrue(false);
+		} catch (IllegalArgumentException e) {
+		}
+		ds.close();
+	}
 
         @Test
-        public void testQuantiles() throws Exception {
+	public void testEquivalences() throws Exception {
 
-                DataSource ds = dsf.getDataSource(landcover);
-                ds.open();
+		DataSource ds = dsf.getDataSource(landcover);
+		ds.open();
 
-                RangeMethod rm = new RangeMethod(ds, "gid", 4);
+		RangeMethod rm = new RangeMethod(ds, new RealAttribute("runoff_win"), 4);
 
-                rm.disecQuantiles();
+		rm.disecEquivalences();
 
-                Range[] ranges = rm.getRanges();
-                assertTrue(checkRange(ranges[0], 1, 310));
-                assertTrue(checkRange(ranges[1], 310, 620));
-                assertTrue(checkRange(ranges[2], 620, 930));
-                assertTrue(checkRange(ranges[3], 930, 1237));
-                ds.close();
-        }
+		Range[] ranges = rm.getRanges();
+		assertTrue(checkRange(ranges[0], 0.05, 0.4));
+		assertTrue(checkRange(ranges[1], 0.4, 1));
+		assertTrue(checkRange(ranges[2], 1, 1));
+		assertTrue(checkRange(ranges[3], 1, 1));
+		ds.close();
+	}
+
 
         @Test
-        public void testProportionalMethods() throws Exception {
-                DataSource ds = dsf.getDataSource(landcover);
-                ds.open();
+	public void testMoyennes() throws Exception {
 
-                ProportionalMethod pm = new ProportionalMethod(ds, "gid");
+		DataSource ds = dsf.getDataSource(landcover);
+		ds.open();
 
-                pm.build(3000);
+		RangeMethod rm = new RangeMethod(ds, new RealAttribute("gid"), 4);
 
-                int coefType = 1;
-                assertEquals(pm.getLinearSize(1, coefType), 1.5573125286997695, 0);
-                assertEquals(pm.getLinearSize(10, coefType), 4.92465461940761, 0);
-                assertEquals(pm.getLinearSize(100, coefType), 15.573125286997696, 0);
-                assertEquals(pm.getLinearSize(300, coefType), 26.973444229715664, 0);
+		rm.disecMean();
 
+		Range[] ranges = rm.getRanges();
+		assertTrue(checkRange(ranges[0], 1, 310));
+		assertTrue(checkRange(ranges[1], 310, 619));
+		assertTrue(checkRange(ranges[2], 619, 929));
+		assertTrue(checkRange(ranges[3], 929, 1237));
+		ds.close();
+	}
 
-                int sqrtFactor = 2;
-                assertEquals(pm.getSquareSize(1, sqrtFactor, coefType), 9.235665655783968, 0);
-                assertEquals(pm.getSquareSize(10, sqrtFactor, coefType), 16.423594073684257, 0);
-                assertEquals(pm.getSquareSize(100, sqrtFactor, coefType), 29.205739180069987, 0);
-                assertEquals(pm.getSquareSize(300, sqrtFactor, coefType), 38.43691436395855, 0);
+        @Test
+	public void testQuantiles() throws Exception {
 
-                assertEquals(pm.getLogarithmicSize(1, coefType), 0.0, 0);
-                assertEquals(pm.getLogarithmicSize(10, coefType), 31.146906757706503, 0);
-                assertEquals(pm.getLogarithmicSize(100, coefType), 44.048377962718746, 0);
-                assertEquals(pm.getLogarithmicSize(300, coefType), 49.02172119415002, 0);
+		DataSource ds = dsf.getDataSource(landcover);
+		ds.open();
 
-        }
+		RangeMethod rm = new RangeMethod(ds, new RealAttribute("gid"), 4);
+
+		rm.disecQuantiles();
+
+		Range[] ranges = rm.getRanges();
+		assertTrue(checkRange(ranges[0], 1, 310));
+		assertTrue(checkRange(ranges[1], 310, 620));
+		assertTrue(checkRange(ranges[2], 620, 930));
+		assertTrue(checkRange(ranges[3], 930, 1237));
+		ds.close();
+	}
+
+        @Test
+	public void testProportionalMethods() throws Exception {
+		DataSource ds = dsf.getDataSource(landcover);
+		ds.open();
+
+		ProportionalMethod pm = new ProportionalMethod(ds, new RealAttribute("gid"));
+
+		pm.build(3000);
+
+		int coefType = 1;
+		assertTrue(pm.getLinearSize(1, coefType) == 1.5573125286997695);
+		assertTrue(pm.getLinearSize(10, coefType) == 4.92465461940761);
+		assertTrue(pm.getLinearSize(100, coefType) == 15.573125286997696);
+		assertTrue(pm.getLinearSize(300, coefType) == 26.973444229715664);
+		
+
+		int sqrtFactor = 2;
+		assertTrue(pm.getSquareSize(1, sqrtFactor, coefType) == 9.235665655783968);
+		assertTrue(pm.getSquareSize(10, sqrtFactor, coefType) == 16.423594073684257);
+		assertTrue(pm.getSquareSize(100, sqrtFactor, coefType) == 29.205739180069987);
+		assertTrue(pm.getSquareSize(300, sqrtFactor, coefType) == 38.43691436395855);
+
+		assertTrue(pm.getLogarithmicSize(1, coefType) == 0.0);
+		assertTrue(pm.getLogarithmicSize(10, coefType) == 31.146906757706503);
+		assertTrue(pm.getLogarithmicSize(100, coefType) == 44.048377962718746);
+		assertTrue(pm.getLogarithmicSize(300, coefType) == 49.02172119415002);
+
+	}
+	
+
 }

@@ -28,326 +28,451 @@
  */
 package org.orbisgis.core.map;
 
-import java.awt.GraphicsConfiguration;
-import java.awt.GraphicsEnvironment;
-import java.awt.Point;
-import java.awt.Shape;
-import java.awt.Toolkit;
+import com.vividsolutions.jts.awt.PointTransformation;
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.renderable.RenderContext;
 import java.util.ArrayList;
-
+import javax.media.jai.ImageLayout;
+import javax.media.jai.JAI;
+import org.apache.log4j.Logger;
 import org.orbisgis.core.ui.editors.map.tool.Rectangle2DDouble;
-
-import com.vividsolutions.jts.awt.PointTransformation;
-import com.vividsolutions.jts.awt.ShapeWriter;
-import com.vividsolutions.jts.geom.Coordinate;
-import com.vividsolutions.jts.geom.Envelope;
-import com.vividsolutions.jts.geom.Geometry;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 public class MapTransform implements PointTransformation {
+        private static final Logger LOGGER = Logger.getLogger(MapTransform.class);
+        private static final I18n I18N = I18nFactory.getI18n(MapTransform.class);
+        private boolean adjustExtent;
+        private BufferedImage image = null;
+        private Envelope adjustedExtent;
+        private AffineTransform trans = new AffineTransform();
+        private AffineTransform transInv = new AffineTransform();
+        private Envelope extent;
+        private ArrayList<TransformListener> listeners = new ArrayList<TransformListener>();
+        private ShapeWriter converter;
+        private RenderContext currentRenderContext = screenContext;
+        private static RenderContext draftContext;
+        private static RenderContext screenContext;
+        private double dpi;
+        private static final double DEFAULT_DPI = 96.0;
 
-	private BufferedImage image = null;
+        static {
+                ImageLayout layout = new ImageLayout();
+                layout.setColorModel(ColorModel.getRGBdefault());
 
-	private Envelope adjustedExtent;
+                RenderingHints screenHints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout);
+                screenHints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+                screenHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+                screenHints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+                screenHints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+                screenHints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+                screenHints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+                screenHints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_NORMALIZE);
+                screenHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_GASP);
 
-	private AffineTransform trans = new AffineTransform();
+                screenContext = new RenderContext(AffineTransform.getTranslateInstance(0.0, 0.0), screenHints);
 
-	private Envelope extent;
+                RenderingHints draftHints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, layout);
 
-	private ArrayList<TransformListener> listeners = new ArrayList<TransformListener>();
+                draftHints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+                draftHints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+                draftHints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED);
+                draftHints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_SPEED);
+                draftHints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_DISABLE);
+                draftHints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+                draftHints.put(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
+                draftHints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
 
-	private ShapeWriter converter;
+                draftContext = new RenderContext(AffineTransform.getTranslateInstance(0.0, 0.0), draftHints);
+        }
+        private double MAXPIXEL_DISPLAY = 0;
 
-	/**
-	 * Sets the painted image
-	 * 
-	 * @param newImage
-	 */
-	public void setImage(BufferedImage newImage) {
-		image = newImage;
-		calculateAffineTransform();
-	}
-
-	/**
-	 * Gets the painted image
-	 * 
-	 * @return
-	 */
-	public BufferedImage getImage() {
-		return image;
-	}
-
-	/**
-	 * Gets the extent used to calculate the transformation. This extent is the
-	 * same as the setted one but adjusted to have the same ratio than the image
-	 * 
-	 * @return
-	 */
-	public Envelope getAdjustedExtent() {
-		return adjustedExtent;
-	}
-
-	/**
-	 * 
-	 * @throws RuntimeException
-	 */
-	private void calculateAffineTransform() {
-		if (extent == null) {
-			return;
-		} else if ((image == null) || (getWidth() == 0) || (getHeight() == 0)) {
-			return;
-		}
-
-		AffineTransform escalado = new AffineTransform();
-		AffineTransform translacion = new AffineTransform();
-
-		double escalaX;
-		double escalaY;
-
-		escalaX = getWidth() / extent.getWidth();
-		escalaY = getHeight() / extent.getHeight();
-
-		double xCenter = extent.getMinX() + extent.getWidth() / 2.0;
-		double yCenter = extent.getMinY() + extent.getHeight() / 2.0;
-		double newHeight;
-		double newWidth;
-
-		adjustedExtent = new Envelope();
-
-		double scale;
-		if (escalaX < escalaY) {
-			scale = escalaX;
-			newHeight = getHeight() / scale;
-			double newX = xCenter - (extent.getWidth() / 2.0);
-			double newY = yCenter - (newHeight / 2.0);
-			adjustedExtent = new Envelope(newX, newX + extent.getWidth(), newY,
-					newY + newHeight);
-		} else {
-			scale = escalaY;
-			newWidth = getWidth() / scale;
-			double newX = xCenter - (newWidth / 2.0);
-			double newY = yCenter - (extent.getHeight() / 2.0);
-			adjustedExtent = new Envelope(newX, newX + newWidth, newY, newY
-					+ extent.getHeight());
-		}
-
-		translacion.setToTranslation(-adjustedExtent.getMinX(), -adjustedExtent
-				.getMinY()
-				- adjustedExtent.getHeight());
-		escalado.setToScale(scale, -scale);
-
-		trans.setToIdentity();
-		trans.concatenate(escalado);
-
-		trans.concatenate(translacion);
-
-	}
-
-	/**
-	 * Gets the height of the drawn image
-	 * 
-	 * @return
-	 */
-	public int getHeight() {
-		if (image == null) {
-			return 0;
-		} else {
-			return image.getHeight();
-		}
-	}
-
-	/**
-	 * Gets the width of the drawn image
-	 * 
-	 * @return
-	 */
-	public int getWidth() {
-		if (image == null) {
-			return 0;
-		} else {
-			return image.getWidth();
-		}
-	}
-
-	/**
-	 * Sets the extent of the transformation. This extent is not used directly
-	 * to calculate the transformation but is adjusted to obtain an extent with
-	 * the same ration than the image
-	 * 
-	 * @param newExtent
-	 */
-	public void setExtent(Envelope newExtent) {
-		if ((newExtent != null)
-				&& ((newExtent.getWidth() == 0) || (newExtent.getHeight() == 0))) {
-			newExtent.expandBy(10);
-		}
-		Envelope oldExtent = this.extent;
-		boolean modified = true;
-		/* Set extent when Envelope is modified */
-		if (extent != null) {
-			if (extent.equals(newExtent))
-				modified = false;
-		}
-		if (modified) {
-			this.extent = newExtent;
-			calculateAffineTransform();
-			for (TransformListener listener : listeners) {
-				listener.extentChanged(oldExtent, this);
-			}
-		}
-	}
-
-	/**
-	 * Creates new image with the specified size
-	 * 
-	 * @param width
-	 * @param height
-	 */
-	public void resizeImage(int width, int height) {
-		int oldWidth = getWidth();
-		int oldHeight = getHeight();
-                // if there is no graphic device, we build a image by hand
-                // with transparency...
-                if (GraphicsEnvironment.isHeadless()) {
-                        image = new BufferedImage(width, height,
-                        BufferedImage.TYPE_INT_ARGB);
-                } else {
-		GraphicsConfiguration configuration = GraphicsEnvironment
-				.getLocalGraphicsEnvironment().getDefaultScreenDevice()
-				.getDefaultConfiguration();
-                        image = configuration.createCompatibleImage(width, height,
-                                BufferedImage.TYPE_INT_ARGB);
+        public MapTransform() {
+                adjustExtent = true;
+                try {
+                        this.dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+                } catch (HeadlessException e) {
+                        LOGGER.warn(I18N.tr("Could not retrieve current DPI. Use 96.0!"), e);
+                        this.dpi = DEFAULT_DPI;
                 }
-		calculateAffineTransform();
-		for (TransformListener listener : listeners) {
-			listener.imageSizeChanged(oldWidth, oldHeight, this);
-		}
-	}
+        }
 
-	/**
-	 * Gets this transformation
-	 * 
-	 * @return
-	 */
-	public AffineTransform getAffineTransform() {
-		return trans;
-	}
+        /**
+         * When true, the rendered map will always respects the CRS aspect ratio
+         * When false, the Map extent will be bound to the output extent and may re-scale the map
+         * 
+         * @return
+         */
+        public boolean isAdjustExtent() {
+                return adjustExtent;
+        }
 
-	/**
-	 * Gets the extent
-	 * 
-	 * @return
-	 */
-	public Envelope getExtent() {
-		return extent;
-	}
+        public void setAdjustExtent(boolean adjustExtent) {
+                this.adjustExtent = adjustExtent;
+        }
 
-	/**
-	 * Transforms an envelope in map units to image units
-	 * 
-	 * @param geographic
-	 *            envelope
-	 * @return Rectangle2DDouble
-	 */
-	public Rectangle2DDouble toPixel(Envelope geographicEnvelope) {
-		final Point2D lowerRight = new Point2D.Double(geographicEnvelope
-				.getMaxX(), geographicEnvelope.getMinY());
-		final Point2D upperLeft = new Point2D.Double(geographicEnvelope
-				.getMinX(), geographicEnvelope.getMaxY());
+        /**
+         * Sets the painted image
+         *
+         * @param newImage
+         */
+        public void setImage(BufferedImage newImage) {
+                image = newImage;
+                calculateAffineTransform();
+        }
 
-		final Point2D ul = trans.transform(upperLeft, null);
-		final Point2D lr = trans.transform(lowerRight, null);
+        public void switchToDraft() {
+                this.currentRenderContext = MapTransform.draftContext;
+                LOGGER.debug("Switch to draft!");
+        }
 
-		return new Rectangle2DDouble(ul.getX(), ul.getY(), lr.getX()
-				- ul.getX(), lr.getY() - ul.getY());
-	}
+        public void switchToScreen() {
+                this.currentRenderContext = MapTransform.screenContext;
+                LOGGER.debug("Switch to Hign-Quality!");
+        }
 
-	/**
-	 * Transforms an image coordinate in pixels into a map coordinate
-	 * 
-	 * @param i
-	 * @param j
-	 * @return
-	 */
-	public Point2D toMapPoint(int i, int j) {
-		try {
-			return trans.createInverse().transform(new Point2D.Double(i, j),
-					null);
-		} catch (NoninvertibleTransformException e) {
-			throw new RuntimeException(e);
-		}
-	}
+        public RenderContext getCurrentRenderContext() {
+                return this.currentRenderContext;
+        }
 
-	/**
-	 * Transforms the specified map point to an image pixel
-	 * 
-	 * @param point
-	 * @return
-	 */
-	public Point fromMapPoint(Point2D point) {
-		Point2D ret = trans.transform(point, null);
-		return new Point((int) ret.getX(), (int) ret.getY());
-	}
+        public RenderingHints getRenderingHints() {
+                return this.currentRenderContext.getRenderingHints();
+        }
 
-	/**
-	 * Gets the scale denominator. If the scale is 1:1000 this method returns
-	 * 1000. The scale is not absolutely precise and errors of 2% have been
-	 * measured.
-	 * 
-	 * @return
-	 */
-	public double getScaleDenominator() {
-		if (adjustedExtent == null) {
-			return 0;
-		} else {
-                        int dpi;
-                        // if there is no graphic display
-                        // we use the default Gnome & Windows DPI of 96
-                        if (GraphicsEnvironment.isHeadless()) {
-                                dpi = 96;
+        /**
+         * Gets the painted image
+         *
+         * @return
+         */
+        public BufferedImage getImage() {
+                return image;
+        }
+
+        public double getDpi() {
+                return dpi;
+        }
+
+        public void setDpi(double dpi) {
+                this.dpi = dpi;
+        }
+
+        /**
+         * Gets the extent used to calculate the transformation. This extent is the
+         * same as the setted one but adjusted to have the same ratio than the image
+         *
+         * @return
+         */
+        public Envelope getAdjustedExtent() {
+                return adjustedExtent;
+        }
+
+        /**
+         *
+         * @throws RuntimeException
+         */
+        private void calculateAffineTransform() {
+                if (extent == null) {
+                        return;
+                } else if (image == null || getWidth() == 0 || getHeight() == 0) {
+                        return;
+                }
+
+                if (adjustExtent) {
+                        double escalaX = getWidth() / extent.getWidth();
+                        double escalaY = getHeight() / extent.getHeight();
+
+                        double xCenter = extent.getMinX() + extent.getWidth() / 2.0;
+                        double yCenter = extent.getMinY() + extent.getHeight() / 2.0;
+                        adjustedExtent = new Envelope();
+
+                        double scale;
+                        if (escalaX < escalaY) {
+                                scale = escalaX;
+                                double newHeight = getHeight() / scale;
+                                double newX = xCenter - (extent.getWidth() / 2.0);
+                                double newY = yCenter - (newHeight / 2.0);
+                                adjustedExtent = new Envelope(newX, newX + extent.getWidth(), newY,
+                                        newY + newHeight);
                         } else {
-                                dpi = Toolkit.getDefaultToolkit().getScreenResolution();
+                                scale = escalaY;
+                                double newWidth = getWidth() / scale;
+                                double newX = xCenter - (newWidth / 2.0);
+                                double newY = yCenter - (extent.getHeight() / 2.0);
+                                adjustedExtent = new Envelope(newX, newX + newWidth, newY, newY
+                                        + extent.getHeight());
                         }
-			double metersByPixel = 0.0254 / dpi;
-			double imageMeters = getWidth() * metersByPixel;
 
-			return adjustedExtent.getWidth() / imageMeters;
-		}
-	}
+                        trans.setToIdentity();
+                        trans.concatenate(AffineTransform.getScaleInstance(scale, -scale));
+                        trans.concatenate(AffineTransform.getTranslateInstance(-adjustedExtent.getMinX(),
+                                -adjustedExtent.getMinY() - adjustedExtent.getHeight()));
+                } else {
+                        adjustedExtent = new Envelope(extent);
+                        trans.setToIdentity();
+                        double scaleX = getWidth() / extent.getWidth();
+                        double scaleY = getHeight() / extent.getHeight();
 
-	public void addTransformListener(TransformListener listener) {
-		listeners.add(listener);
-	}
+                        /**
+                         * Map Y axis grows downward but CRS grows upward => -1
+                         */
+                        trans.concatenate(AffineTransform.getScaleInstance(scaleX, -scaleY));
+                        trans.concatenate(AffineTransform.getTranslateInstance(-extent.getMinX(), -extent.getMinY() - extent.getHeight()));
+                }
+                try {
+                        transInv = trans.createInverse();
+                } catch (NoninvertibleTransformException ex) {
+                        transInv = null;
+                        throw new RuntimeException(ex);
+                }
+        }
 
-	public void removeTransformListener(TransformListener listener) {
-		listeners.remove(listener);
-	}
+        /**
+         * Gets the height of the drawn image
+         *
+         * @return
+         */
+        public int getHeight() {
+                if (image == null) {
+                        return 0;
+                } else {
+                        return image.getHeight();
+                }
+        }
 
-	@Override
-	public void transform(Coordinate src, Point2D dest) {
-		dest.setLocation(src.x, src.y);
-		trans.transform(dest, dest);
-	}
+        /**
+         * Gets the width of the drawn image
+         *
+         * @return
+         */
+        public int getWidth() {
+                if (image == null) {
+                        return 0;
+                } else {
+                        return image.getWidth();
+                }
+        }
 
-	public ShapeWriter getShapeWriter() {
-		if (converter == null)
-			converter = new ShapeWriter(this);
-		return converter;
-	}
+        /**
+         * Sets the extent of the transformation. This extent is not used directly
+         * to calculate the transformation but is adjusted to obtain an extent with
+         * the same ratio than the image
+         *
+         * @param newExtent
+         */
+        public void setExtent(Envelope newExtent) {
+                if ((newExtent != null)
+                        && ((newExtent.getWidth() == 0) || (newExtent.getHeight() == 0))) {
+                        newExtent.expandBy(10);
+                }
+                Envelope oldExtent = this.extent;
+                boolean modified = true;
+                /* Set extent when Envelope is modified */
+                if (extent != null) {
+                        if (extent.equals(newExtent)) {
+                                modified = false;
+                        }
+                }
+                if (modified) {
+                        this.extent = newExtent;
+                        calculateAffineTransform();
+                        for (TransformListener listener : listeners) {
+                                listener.extentChanged(oldExtent, this);
+                        }
+                }
+        }
 
-	public Shape getShape(Geometry geom) {
+        /**
+         * Creates new image with the specified size
+         *
+         * @param width
+         * @param height
+         */
+        public void resizeImage(int width, int height) {
+                int oldWidth = getWidth();
+                int oldHeight = getHeight();
+                // image = new BufferedImage(width, height,
+                // BufferedImage.TYPE_INT_ARGB);
+                GraphicsConfiguration configuration = GraphicsEnvironment.getLocalGraphicsEnvironment().
+                        getDefaultScreenDevice().getDefaultConfiguration();
+                image = configuration.createCompatibleImage(width, height,
+                        BufferedImage.TYPE_INT_ARGB);
+                calculateAffineTransform();
+                for (TransformListener listener : listeners) {
+                        listener.imageSizeChanged(oldWidth, oldHeight, this);
+                }
+        }
 
-		Rectangle2DDouble rectangle2dDouble = toPixel(geom
-				.getEnvelopeInternal());
+        /**
+         * Gets this transformation
+         *
+         * @return
+         */
+        public AffineTransform getAffineTransform() {
+                return trans;
+        }
 
-		if ((rectangle2dDouble.getHeight() <= 1)
-				&& (rectangle2dDouble.getWidth() <= 1)) {
-			return rectangle2dDouble;
-		}
-		return getShapeWriter().toShape(geom);
-	}
+        /**
+         * Gets the extent
+         *
+         * @return
+         */
+        public Envelope getExtent() {
+                return extent;
+        }
 
+        /**
+         * Transforms an envelope in map units to image units
+         *
+         * @param geographic
+         *            envelope
+         * @return Rectangle2DDouble
+         */
+        public Rectangle2DDouble toPixel(Envelope geographicEnvelope) {
+                final Point2D lowerRight = new Point2D.Double(geographicEnvelope.getMaxX(), geographicEnvelope.getMinY());
+                final Point2D upperLeft = new Point2D.Double(geographicEnvelope.getMinX(), geographicEnvelope.getMaxY());
+
+                final Point2D ul = trans.transform(upperLeft, null);
+                final Point2D lr = trans.transform(lowerRight, null);
+
+                return new Rectangle2DDouble(ul.getX(), ul.getY(), lr.getX()
+                        - ul.getX(), lr.getY() - ul.getY());
+        }
+
+        /**
+         * Transforms an image coordinate in pixels into a map coordinate
+         *
+         * @param i
+         * @param j
+         * @return
+         */
+        public Point2D toMapPoint(int i, int j) {
+                if (transInv != null) {
+                        return transInv.transform(new Point2D.Double(i, j), null);
+                } else {
+                        throw new RuntimeException("NonInvertibleMatrix");
+                }
+        }
+
+        public Shape fromMapToWorld(Polygon p) {
+                if (transInv != null) {
+                        return transInv.createTransformedShape(p);
+                } else {
+                        throw new RuntimeException("NonInvertibleMatrix");
+                }
+        }
+
+        /**
+         * Transforms the specified map point to an image pixel
+         *
+         * @param point
+         * @return
+         */
+        public Point fromMapPoint(Point2D point) {
+                Point2D ret = trans.transform(point, null);
+                return new Point((int) ret.getX(), (int) ret.getY());
+        }
+
+        /**
+         * Sets the scale denominator, the Map extent is updated
+         * @param denominator
+         */
+        public void setScaleDenominator(double denominator) {
+                if (adjustedExtent != null) {
+                        double currentScale = getScaleDenominator();
+                        Coordinate center = getExtent().centre();
+                        double expandFactor = (denominator/currentScale);
+                        Envelope nextScaleEnvelope = new Envelope(center);
+                        nextScaleEnvelope.expandBy(expandFactor*getExtent().getWidth()/2.,expandFactor*getExtent().getHeight()/2.);
+                        setExtent(nextScaleEnvelope);
+                }
+        }
+        /**
+         * 
+         * @return The Image width in meter
+         */
+        private double getImageMeters() {
+                double metersByPixel = 0.0254 / dpi;
+                return getWidth() * metersByPixel;
+        }
+        /**
+         * Gets the scale denominator. If the scale is 1:1000 this method returns
+         * 1000. The scale is not absolutely precise and errors of 2% have been
+         * measured.
+         *
+         * @return
+         */
+        public double getScaleDenominator() {
+                if (adjustedExtent == null) {
+                        return 0;
+                } else {
+                        return adjustedExtent.getWidth() / getImageMeters();
+                }
+        }
+
+        public void addTransformListener(TransformListener listener) {
+                listeners.add(listener);
+        }
+
+        public void removeTransformListener(TransformListener listener) {
+                listeners.remove(listener);
+        }
+
+        @Override
+        public void transform(Coordinate src, Point2D dest) {
+                dest.setLocation(src.x, src.y);
+                trans.transform(dest, dest);
+        }
+        
+        
+
+        public ShapeWriter getShapeWriter() {
+                if (converter == null) {
+                        converter = new ShapeWriter(this);
+                        converter.setRemoveDuplicatePoints(true);
+                        MAXPIXEL_DISPLAY = 0.5 / (25.4 / getDpi());
+                }
+                /**
+                * Choose a fairly conservative decimation distance to avoid visual artifacts
+                * TODO : decimation must be activate in relation with the crs to prevent rendering bug
+                */
+                // Double dec = adjustedExtent == null ? 0 : MAXPIXEL_DISPLAY / getScaleDenominator();
+                //converter.setDecimation(dec);
+                return converter;
+        }
+
+        /**
+         * @param geom
+         * @return
+         */
+        public Shape getShape(Geometry geom, boolean generalize) {                
+                if (generalize) {                        
+                        Rectangle2DDouble rectangle2dDouble = toPixel(geom.getEnvelopeInternal());
+                        if ((rectangle2dDouble.getHeight() <= MAXPIXEL_DISPLAY)
+                                && (rectangle2dDouble.getWidth() <= MAXPIXEL_DISPLAY)) {
+                                if(geom.getDimension()==1){
+                                     Coordinate[] coords = geom.getCoordinates();
+                                     return getShapeWriter().toShape(geom.getFactory().createLineString(
+                                             new Coordinate[]{coords[0], coords[coords.length-1]})); 
+                                }
+                                else{
+                                return rectangle2dDouble;
+                                }
+                        }
+                }
+                return getShapeWriter().toShape(geom);
+        }
+
+        public void redraw() {
+                for (TransformListener listener : listeners) {
+                        listener.extentChanged(this.adjustedExtent, this);
+                }
+        }
 }

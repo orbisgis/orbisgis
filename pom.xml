@@ -2,19 +2,25 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
         <modelVersion>4.0.0</modelVersion>
         <groupId>org.orbisgis</groupId>
-        <artifactId>orbisgis</artifactId>
+        <artifactId>orbisgis-monomap</artifactId>
         <packaging>pom</packaging>
         <version>4.0-SNAPSHOT</version>
-        <name>orbisgis-parent</name>
+        <name>platform-monomap</name>
         <organization>
                 <name>IRSTV CNRS-FR-2488</name>
                 <url>http://www.irstv.fr/</url>
         </organization>
         <url>http://www.orbisgis.org</url>
         <modules>
+                <!-- TODO GDMS here -->
                 <module>gdms</module>
+                <module>plugin-test</module>
                 <module>orbisgis-core</module>
-                <module>orbisgis-ui</module>
+                <module>legend</module>
+                <module>orbisgis-sif</module>
+                <module>orbisgis-view</module>
+                <module>orbisgis-oshell</module>
+                <module>orbisgis-dist</module>
         </modules>
         <properties>
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -37,13 +43,11 @@
                 </repository>
         </repositories>
         <pluginRepositories>
-
                 <pluginRepository>
                         <id>IRSTV</id>
                         <name>IRSTV repository</name>
                         <url>http://repo.orbisgis.org</url>
                 </pluginRepository>
-
         </pluginRepositories>
         <distributionManagement>
                 <repository>
@@ -55,7 +59,6 @@
         <build>
                 <plugins>
                         <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
                                 <artifactId>maven-compiler-plugin</artifactId>
                                 <version>2.3.2</version>
                                 <configuration>
@@ -73,42 +76,19 @@
                                                         <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                                                 </manifest>
                                                 <manifestEntries>
-                                                        <Specification-Vendor-URL>${pom.organization.url}</Specification-Vendor-URL>
-                                                        <Specification-URL>${pom.url}</Specification-URL>
+                                                        <Specification-Vendor-URL>${project.organization.url}</Specification-Vendor-URL>
+                                                        <Specification-URL>${project.url}</Specification-URL>
                                                 </manifestEntries>
                                         </archive>
-                                </configuration>
-                        </plugin>
-                        <plugin>
-                                <groupId>org.apache.maven.plugins</groupId>
-                                <artifactId>maven-javadoc-plugin</artifactId>
-                                <version>2.8.1</version>
-                                <configuration>
-                                        <detectOfflineLinks>false</detectOfflineLinks>
-                                        <linksource>true</linksource>
-                                        <offlineLinks>
-                                                <offlineLink>
-                                                        <url>http://javadoc.orbisgis.org/latest/gdms-2.0-SNAPSHOT</url>
-                                                        <location>${basedir}/../gdms/target/site/apidocs/</location>
-                                                </offlineLink>
-                                                <offlineLink>
-                                                        <url>http://javadoc.orbisgis.org/latest/orbisgis-core-4.0-SNAPSHOT</url>
-                                                        <location>${basedir}/../orbisgis-core/target/site/apidocs/</location>
-                                                </offlineLink>
-                                        </offlineLinks>
-                                        <links>
-                                               <link>http://javadoc.orbisgis.org/latest/commons-1.4-SNAPSHOT/</link> 
-                                               <link>http://javadoc.orbisgis.org/latest/grap-1.4.3-SNAPSHOT/</link> 
-                                        </links>
                                 </configuration>
                         </plugin>
                 </plugins>
                 <extensions>
                         <extension>
-                                <groupId>org.apache.maven.wagon</groupId> 
-                                <artifactId>wagon-ssh</artifactId> 
-                                <version>2.2</version> 
-                        </extension> 
+                                <groupId>org.apache.maven.wagon</groupId>
+                                <artifactId>wagon-ssh</artifactId>
+                                <version>2.2</version>
+                        </extension>
                 </extensions>
         </build>
 </project>

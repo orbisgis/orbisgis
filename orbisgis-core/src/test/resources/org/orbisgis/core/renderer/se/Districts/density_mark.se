@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:tse="http://www.opengis.net/se/2.0/thematic" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.1" xmlns:ns4="http://www.w3.org/1999/xlink" version="2.0.0">
+
+    <Rule>
+        <WhereClause>OUI_EEE92 &lt; 50</WhereClause>
+
+        <AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+            <Name>Area symbolizer</Name>
+            <Extension>
+                <ExtensionParameter name="level">0</ExtensionParameter>
+            </Extension>
+            <tse:DensityFill>
+	        <MarkGraphic>
+		    <WellKnownName>X</WellKnownName>
+		    <SolidFill>
+		       <Color>#cc0000</Color>
+		    </SolidFill>
+		    <PenStroke />
+		</MarkGraphic>
+		<tse:Percentage>
+		    <ns3:Function name="div">
+                        <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
+			<ns3:Literal>100</ns3:Literal>
+		    </ns3:Function>
+		</tse:Percentage>
+            </tse:DensityFill>
+            <PenStroke>
+                <SolidFill>
+                    <Color>#000000</Color>
+                    <Opacity>0.65</Opacity>
+                </SolidFill>
+                <Width>0.1</Width>
+            </PenStroke>
+        </AreaSymbolizer>
+    </Rule>
+
+    <Rule>
+        <WhereClause>OUI_EEE92 &gt;= 50</WhereClause>
+
+        <AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+            <Name>Area symbolizer</Name>
+            <Extension>
+                <ExtensionParameter name="level">0</ExtensionParameter>
+            </Extension>
+            <tse:DensityFill>
+	        <MarkGraphic>
+		    <WellKnownName>Circle</WellKnownName>
+		    <SolidFill>
+		       <Color>#00cc00</Color>
+		    </SolidFill>
+		    <PenStroke />
+		</MarkGraphic>
+		<tse:Percentage>
+		    <ns3:Function name="div">
+                        <ns3:ValueReference>OUI_EEE92</ns3:ValueReference>
+			<ns3:Literal>100</ns3:Literal>
+		    </ns3:Function>
+		</tse:Percentage>
+            </tse:DensityFill>
+            <PenStroke>
+                <SolidFill>
+                    <Color>#000000</Color>
+                    <Opacity>0.65</Opacity>
+                </SolidFill>
+                <Width>0.1</Width>
+            </PenStroke>
+        </AreaSymbolizer>
+    </Rule>
+</Style>

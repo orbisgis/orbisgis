@@ -28,15 +28,16 @@
  */
 package org.orbisgis.core.beanshell;
 
+import java.awt.GraphicsEnvironment;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 import static org.junit.Assert.assertTrue;
-import org.junit.Ignore;
+import static org.junit.Assume.assumeTrue;
 import org.junit.Test;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public class BeanShellScriptTest {
 
@@ -82,8 +83,9 @@ public class BeanShellScriptTest {
                 assertTrue(true);
         }
 
-        @Ignore
+        @Test
         public void testMapDisplayScript() throws Exception {
+                assumeTrue(!GraphicsEnvironment.isHeadless());
                 BeanshellScript.main(new String[]{"src/test/resources/beanshell/mapDisplayDatasource.bsh"});
                 Thread.sleep(3000);
                 assertTrue(true);

@@ -28,30 +28,23 @@
  */
 package org.orbisgis.core.map.export;
 
-import java.awt.geom.AffineTransform;
+import com.vividsolutions.jts.geom.Envelope;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
-import java.io.Writer;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
-
 import org.apache.batik.dom.GenericDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.map.MapTransform;
+import org.orbisgis.core.renderer.ImageRenderer;
 import org.orbisgis.core.renderer.Renderer;
-import org.orbisgis.core.renderer.legend.Legend;
-import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.progress.ProgressMonitor;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
-
-import com.vividsolutions.jts.geom.Envelope;
 
 public class DefaultMapExportManager implements MapExportManager {
 
@@ -75,7 +68,7 @@ public class DefaultMapExportManager implements MapExportManager {
 		}
 
 		pm.startTask("Drawing map", 100);
-		Renderer r = new Renderer();
+		Renderer r = new ImageRenderer();
 		DOMImplementation domImpl = GenericDOMImplementation
 				.getDOMImplementation();
 
@@ -89,8 +82,8 @@ public class DefaultMapExportManager implements MapExportManager {
 		BufferedImage bi = new BufferedImage(pixelWidth, pixelHeight,
 				BufferedImage.TYPE_INT_ARGB);
 		mt.setImage(bi);
-		r.draw(bi.createGraphics(), pixelWidth, pixelHeight, mt
-				.getAdjustedExtent(), mapContext.getLayerModel(), pm);
+		r.draw( mt, mapContext
+				.getLayerModel(), pm);
 
 		double batikDefaultDPcm = 0.01 * 90 / 0.0254;
 		int svgWidth = (int) (width * batikDefaultDPcm);
@@ -103,27 +96,27 @@ public class DefaultMapExportManager implements MapExportManager {
 
 		svgg.translate(0, svgHeight + 50);
 		int maxHeight = 0;
-		for (int i = 0; i < layers.length; i++) {
-			svgg.translate(0, maxHeight + 30);
-			maxHeight = 0;
-			AffineTransform original = svgg.getTransform();
-			if (layers[i].isVisible()) {
-				Legend[] legends = layers[i].getRenderingLegend();
-				java.awt.Font font = new java.awt.Font("arial", 0, 12);
-				svgg.setFont(font);
-				svgg.drawString(layers[i].getName(), 0, 0);
-				for (int j = 0; j < legends.length; j++) {
-					Legend vectorLegend = legends[j];
-					vectorLegend.drawImage(svgg);
-					int[] size = vectorLegend.getImageSize(svgg);
-					if (size[1] > maxHeight) {
-						maxHeight = size[1];
-					}
-					svgg.translate(size[0] + 30, 0);
-				}
-			}
-			svgg.setTransform(original);
-		}
+//		for (int i = 0; i < layers.length; i++) {
+//			svgg.translate(0, maxHeight + 30);
+//			maxHeight = 0;
+//			AffineTransform original = svgg.getTransform();
+//			if (layers[i].isVisible()) {
+//				Legend[] legends = layers[i].getRenderingLegend();
+//				java.awt.Font font = new java.awt.Font("arial", 0, 12);
+//				svgg.setFont(font);
+//				svgg.drawString(layers[i].getName(), 0, 0);
+//				for (int j = 0; j < legends.length; j++) {
+//					Legend vectorLegend = legends[j];
+//					vectorLegend.drawImage(svgg);
+//					int[] size = vectorLegend.getImageSize(svgg);
+//					if (size[1] > maxHeight) {
+//						maxHeight = size[1];
+//					}
+//					svgg.translate(size[0] + 30, 0);
+//				}
+//			}
+//			svgg.setTransform(original);
+//		}
 
 		// draw scale
 		if (scale != null) {
@@ -131,7 +124,7 @@ public class DefaultMapExportManager implements MapExportManager {
 		}
 		pm.endTask();
 
-		pm.startTask("writting result", 1);
+		pm.startTask("writting result", 100);
 		Writer out = new OutputStreamWriter(outStream, "UTF-8");
 		svgg.stream(out);
 		pm.endTask();

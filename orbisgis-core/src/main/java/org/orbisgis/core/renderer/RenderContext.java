@@ -36,9 +36,6 @@ import com.vividsolutions.jts.geom.Geometry;
  * drawing of a symbol will return an envelope that will keep other symbols to
  * draw there. The other symbols will know where to draw by asking to this
  * interface.
- * 
- * 
- * 
  */
 public interface RenderContext {
 
@@ -49,6 +46,13 @@ public interface RenderContext {
 	 * @return
 	 */
 	boolean canDraw(Envelope env);
+
+    /**
+     * Reserve area
+     * @param area
+     */
+    void addUsedArea(Envelope area);
+
 
 	/**
 	 * Returns a geometry that doesn't overlap any of the forbidden envelopes
