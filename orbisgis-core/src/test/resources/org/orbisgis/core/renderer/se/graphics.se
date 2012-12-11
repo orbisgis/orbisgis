@@ -1,0 +1,1130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.1" xmlns:ns4="http://www.w3.org/1999/xlink">
+    <Rule>
+        <PointSymbolizer uom="urn:ogc:def:uom:se::mm">
+            <CompositeGraphic>
+        <!-- Background: draughtboard -->
+                <MarkGraphic>
+                    <WellKnownName>SQUARE</WellKnownName>
+                    <ViewBox>
+                        <Width>270</Width>
+                        <Height>160</Height>
+                    </ViewBox>
+                    <GraphicFill>
+                        <CompositeGraphic>
+                            <MarkGraphic>
+                                <WellKnownName>SQUARE</WellKnownName>
+                                <ViewBox>
+                                    <Width>4</Width>
+                                </ViewBox>
+                                <SolidFill>
+                                    <Color>#888888</Color>
+                                    <Opacity>100</Opacity>
+                                </SolidFill>
+                            </MarkGraphic>
+                            <MarkGraphic>
+                                <WellKnownName>SQUARE</WellKnownName>
+                                <ViewBox>
+                                    <Width>2</Width>
+                                </ViewBox>
+                                <SolidFill>
+                                    <Color>#BBBBBB</Color>
+                                    <Opacity>100</Opacity>
+                                </SolidFill>
+                                <Transform>
+                                    <Translate>
+                                        <X>1</X>
+                                        <Y>1</Y>
+                                    </Translate>
+                                </Transform>
+                            </MarkGraphic>
+                            <MarkGraphic>
+                                <WellKnownName>SQUARE</WellKnownName>
+                                <ViewBox>
+                                    <Width>2</Width>
+                                </ViewBox>
+                                <SolidFill>
+                                    <Color>#BBBBBB</Color>
+                                    <Opacity>100</Opacity>
+                                </SolidFill>
+                                <Transform>
+                                    <Translate>
+                                        <X>-1</X>
+                                        <Y>-1</Y>
+                                    </Translate>
+                                </Transform>
+                            </MarkGraphic>
+                        </CompositeGraphic>
+                    </GraphicFill>
+                </MarkGraphic>
+
+                <ExternalGraphic>
+                    <OnlineResource ns4:href="https://www.yoplait.ca/ResourceDocs/fr/logo_yop.jpg"/>
+                    <ViewBox>
+                        <Width>10.0</Width>
+                    </ViewBox>
+
+                    <Transform>
+                        <Translate>
+                            <X>-125</X>
+                            <Y>-70</Y>
+                        </Translate>
+                    </Transform>
+                </ExternalGraphic>
+
+                <PointTextGraphic>
+                    <PointLabel>
+                        <StyledText>
+                            <LabelText>ExtGr</LabelText>
+                        </StyledText>
+                    </PointLabel>
+                        <!--<Transform>
+                            <Translate>
+                           <X>-125</X>
+                           <Y>-60</Y>
+                        </Translate>
+                    </Transform>-->
+                </PointTextGraphic>
+
+
+
+                <ExternalGraphic>
+                    <OnlineResource ns4:href="https://www.yoplait.ca/ResourceDocs/fr/logo_yop.jpg"/>
+                    <ViewBox>
+                        <Width>20.0</Width>
+                    </ViewBox>
+
+                    <Transform>
+                        <Scale>
+                            <XY>0.5</XY>
+                        </Scale>
+                        <Translate>
+                            <X>-110</X>
+                            <Y>-70</Y>
+                        </Translate>
+                    </Transform>
+                </ExternalGraphic>
+                <PointTextGraphic>
+                    <PointLabel>
+                        <StyledText>
+                            <LabelText>ExtGr(VBScale></LabelText>
+                        </StyledText>
+                    </PointLabel>
+                        <!--<Transform>
+                            <Translate>
+                           <X>-110</X>
+                           <Y>-55</Y>
+                        </Translate>
+                    </Transform>-->
+                </PointTextGraphic>
+
+
+
+                <ExternalGraphic>
+                    <OnlineResource ns4:href="https://www.yoplait.ca/ResourceDocs/fr/logo_yop.jpg"/>
+                    <ViewBox>
+                        <Width>10.0</Width>
+                    </ViewBox>
+
+                    <Transform>
+                        <Translate>
+                            <X>-95</X>
+                            <Y>-70</Y>
+                        </Translate>
+                    </Transform>
+                    <Opacity>50.0</Opacity>
+                </ExternalGraphic>
+                <PointTextGraphic>
+                    <PointLabel>
+                        <StyledText>
+                            <LabelText>ExtGr(Opa)></LabelText>
+                        </StyledText>
+                    </PointLabel>
+                        <!--<Transform>
+                            <Translate>
+                           <X>-95</X>
+                           <Y>-60</Y>
+                        </Translate>
+                    </Transform>-->
+                </PointTextGraphic>
+
+                <ExternalGraphic>
+                    <OnlineResource ns4:href="https://www.yoplait.ca/ResourceDocs/fr/logo_yop.jpg"/>
+                    <ViewBox>
+                        <Width>10.0</Width>
+                    </ViewBox>
+
+                    <Transform>
+                        <Translate>
+                            <X>-80</X>
+                            <Y>-70</Y>
+                        </Translate>
+                    </Transform>
+                    <Halo>
+                        <Radius>4</Radius>
+                        <SolidFill>
+                            <Color>#ffffff</Color>
+                        </SolidFill>
+                    </Halo>
+                </ExternalGraphic>
+		
+                <PointTextGraphic>
+                    <PointLabel>
+                        <StyledText>
+                            <LabelText>ExtGr(Opa)></LabelText>
+                        </StyledText>
+                    </PointLabel>
+                        <!--<Transform>
+                            <Translate>
+                           <X>-80</X>
+                           <Y>-55</Y>
+                        </Translate>
+                    </Transform>-->
+                </PointTextGraphic>
+
+
+                <MarkGraphic>
+                    <SolidFill />
+                    <PenStroke />
+                    <Transform>
+                        <Translate>
+                            <X>-125</X>
+                            <Y>-45</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <PointTextGraphic>
+                    <PointLabel>
+                        <StyledText>
+                            <LabelText>DefMark></LabelText>
+                        </StyledText>
+                    </PointLabel>
+                        <!--<Transform>
+                            <Translate>
+                           <X>-125</X>
+                           <Y>-35</Y>
+                        </Translate>
+                    </Transform>-->
+                </PointTextGraphic>
+
+                <MarkGraphic>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#00ff00</Color>
+                        <Opacity>60.0</Opacity>
+                    </SolidFill>
+                    <PenStroke />
+                    <Transform>
+                        <Translate>
+                            <X>-110</X>
+                            <Y>-45</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <PointTextGraphic>
+                    <PointLabel>
+                        <StyledText>
+                            <LabelText>Greeen-60%</LabelText>
+                        </StyledText>
+                    </PointLabel>
+                        <!--<Transform>
+                            <Translate>
+                           <X>-110</X>
+                           <Y>-35</Y>
+                        </Translate>
+                    </Transform>-->
+                </PointTextGraphic>
+
+                <MarkGraphic>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <GraphicFill>
+                        <MarkGraphic>
+                            <WellKnownName>X</WellKnownName>
+                            <ViewBox>
+                                <Height>4</Height>
+                            </ViewBox>
+                            <SolidFill>
+                                <Color>#ff0000</Color>
+                            </SolidFill>
+                        </MarkGraphic>
+                    </GraphicFill>
+                    <PenStroke />
+                    <Transform>
+                        <Translate>
+                            <X>-95</X>
+                            <Y>-45</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>STAR</WellKnownName>
+                    <ViewBox>
+                        <Height>15</Height>
+                    </ViewBox>
+                    <GraphicFill>
+                        <MarkGraphic>
+                            <WellKnownName>X</WellKnownName>
+                            <ViewBox>
+                                <Height>4</Height>
+                            </ViewBox>
+                            <SolidFill>
+                                <Color>#ff0000</Color>
+                            </SolidFill>
+                        </MarkGraphic>
+                    </GraphicFill>
+                    <PenStroke />
+
+                    <Transform>
+                        <Translate>
+                            <X>-90</X>
+                            <Y>-45</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <PointTextGraphic>
+                    <PointLabel>
+                        <StyledText>
+                            <LabelText>ShareGFill</LabelText>
+                        </StyledText>
+                    </PointLabel>
+                        <!--<Transform>
+                            <Translate>
+                           <X>-95</X>
+                           <Y>-35</Y>
+                        </Translate>
+                    </Transform>-->
+                </PointTextGraphic>
+
+
+                <PointTextGraphic>
+                    <PointLabel>
+                        <StyledText>
+                            <LabelText>Circle</LabelText>
+                        </StyledText>
+                    </PointLabel>
+                        <!--<Transform>
+                            <Translate>
+			   <X>10</X>
+                           <Y>-75</Y>
+                        </Translate>
+                    </Transform>-->
+                </PointTextGraphic>
+
+                <PointTextGraphic>
+                    <PointLabel>
+                        <StyledText>
+                            <LabelText>Square</LabelText>
+                        </StyledText>
+                    </PointLabel>
+                        <!--<Transform>
+                            <Translate>
+			   <X>30</X>
+                           <Y>-75</Y>
+                        </Translate>
+                    </Transform>-->
+                </PointTextGraphic>
+
+                <PointTextGraphic>
+                    <PointLabel>
+                        <StyledText>
+                            <LabelText>triangle</LabelText>
+                        </StyledText>
+                    </PointLabel>
+                        <!--<Transform>
+                            <Translate>
+			   <X>50</X>
+                           <Y>-75</Y>
+                        </Translate>
+                    </Transform>-->
+                </PointTextGraphic>
+
+                <PointTextGraphic>
+                    <PointLabel>
+                        <StyledText>
+                            <LabelText>CROSS</LabelText>
+                        </StyledText>
+                    </PointLabel>
+                        <!--<Transform>
+                            <Translate>
+			   <X>70</X>
+                           <Y>-75</Y>
+                        </Translate>
+                    </Transform>-->
+                </PointTextGraphic>
+
+                <PointTextGraphic>
+                    <PointLabel>
+                        <StyledText>
+                            <LabelText>X</LabelText>
+                        </StyledText>
+                    </PointLabel>
+                        <!--<Transform>
+                            <Translate>
+			   <X>90</X>
+                           <Y>-75</Y>
+                        </Translate>
+                    </Transform>-->
+                </PointTextGraphic>
+
+                <PointTextGraphic>
+                    <PointLabel>
+                        <StyledText>
+                            <LabelText>Star</LabelText>
+                        </StyledText>
+                    </PointLabel>
+                        <!--<Transform>
+                            <Translate>
+			   <X>110</X>
+                           <Y>-75</Y>
+                        </Translate>
+                    </Transform>-->
+                </PointTextGraphic>
+
+                <MarkGraphic>
+                    <WellKnownName>Circle</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <Transform>
+                        <Translate>
+                            <X>10</X>
+                            <Y>-65</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+
+                <MarkGraphic>
+                    <WellKnownName>Square</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <Transform>
+                        <Translate>
+                            <X>30</X>
+                            <Y>-65</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>TriAnGlE</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <Transform>
+                        <Translate>
+                            <X>50</X>
+                            <Y>-65</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>CRosS</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <Transform>
+                        <Translate>
+                            <X>70</X>
+                            <Y>-65</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>x</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <Transform>
+                        <Translate>
+                            <X>90</X>
+                            <Y>-65</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>star</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <Transform>
+                        <Translate>
+                            <X>110</X>
+                            <Y>-65</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+
+
+
+
+
+                <MarkGraphic>
+                    <WellKnownName>Circle</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>2</PerpendicularOffset>
+                    <Transform>
+                        <Translate>
+                            <X>10</X>
+                            <Y>-45</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+
+                <MarkGraphic>
+                    <WellKnownName>Square</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>2</PerpendicularOffset>
+                    <Transform>
+                        <Translate>
+                            <X>30</X>
+                            <Y>-45</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>TriAnGlE</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>2</PerpendicularOffset>
+                    <Transform>
+                        <Translate>
+                            <X>50</X>
+                            <Y>-45</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>CRosS</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>2</PerpendicularOffset>
+                    <Transform>
+                        <Translate>
+                            <X>70</X>
+                            <Y>-45</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>x</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>2</PerpendicularOffset>
+                    <Transform>
+                        <Translate>
+                            <X>90</X>
+                            <Y>-45</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>star</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>2</PerpendicularOffset>
+                    <Transform>
+                        <Translate>
+                            <X>110</X>
+                            <Y>-45</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+
+
+
+
+                <MarkGraphic>
+                    <WellKnownName>Circle</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>-1</PerpendicularOffset>
+                    <Transform>
+                        <Translate>
+                            <X>10</X>
+                            <Y>-25</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+
+                <MarkGraphic>
+                    <WellKnownName>Square</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>-1</PerpendicularOffset>
+                    <Transform>
+                        <Translate>
+                            <X>30</X>
+                            <Y>-25</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>TriAnGlE</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>-1</PerpendicularOffset>
+                    <Transform>
+                        <Translate>
+                            <X>50</X>
+                            <Y>-25</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>CRosS</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>-1</PerpendicularOffset>
+                    <Transform>
+                        <Translate>
+                            <X>70</X>
+                            <Y>-25</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>x</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>-1</PerpendicularOffset>
+                    <Transform>
+                        <Translate>
+                            <X>90</X>
+                            <Y>-25</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>star</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>-1</PerpendicularOffset>
+                    <Transform>
+                        <Translate>
+                            <X>110</X>
+                            <Y>-25</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+
+
+
+                <MarkGraphic>
+                    <WellKnownName>Circle</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                        <Opacity>50.0</Opacity>
+                    </SolidFill>
+                    <PenStroke />
+                    <Halo>
+                        <Radius>4</Radius>
+                        <SolidFill>
+                            <Color>#ffffff</Color>
+                        </SolidFill>
+                    </Halo>
+                    <Transform>
+                        <Translate>
+                            <X>10</X>
+                            <Y>-5</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+
+                <MarkGraphic>
+                    <WellKnownName>Square</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                        <Opacity>50.0</Opacity>
+                    </SolidFill>
+                    <PenStroke />
+                    <Halo>
+                        <Radius>4</Radius>
+                        <SolidFill>
+                            <Color>#ffffff</Color>
+                        </SolidFill>
+                    </Halo>
+                    <Transform>
+                        <Translate>
+                            <X>30</X>
+                            <Y>-5</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>TriAnGlE</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                        <Opacity>50.0</Opacity>
+                    </SolidFill>
+                    <PenStroke />
+                    <Halo>
+                        <Radius>4</Radius>
+                        <SolidFill>
+                            <Color>#ffffff</Color>
+                        </SolidFill>
+                    </Halo>
+                    <Transform>
+                        <Translate>
+                            <X>50</X>
+                            <Y>-5</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>CRosS</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                        <Opacity>50.0</Opacity>
+                    </SolidFill>
+                    <PenStroke />
+                    <Halo>
+                        <Radius>4</Radius>
+                        <SolidFill>
+                            <Color>#ffffff</Color>
+                        </SolidFill>
+                    </Halo>
+                    <Transform>
+                        <Translate>
+                            <X>70</X>
+                            <Y>-5</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>x</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                        <Opacity>50.0</Opacity>
+                    </SolidFill>
+                    <PenStroke />
+                    <Halo>
+                        <Radius>4</Radius>
+                        <SolidFill>
+                            <Color>#ffffff</Color>
+                        </SolidFill>
+                    </Halo>
+                    <Transform>
+                        <Translate>
+                            <X>90</X>
+                            <Y>-5</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>star</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                        <Opacity>50.0</Opacity>
+                    </SolidFill>
+                    <PenStroke />
+                    <Halo>
+                        <Radius>4</Radius>
+                        <SolidFill>
+                            <Color>#ffffff</Color>
+                        </SolidFill>
+                    </Halo>
+                    <Transform>
+                        <Translate>
+                            <X>110</X>
+                            <Y>-5</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+
+
+                <MarkGraphic>
+                    <WellKnownName>Circle</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>2</PerpendicularOffset>
+                    <Transform>
+                        <Scale>
+                            <Y>-1</Y>
+                        </Scale>
+                        <Translate>
+                            <X>10</X>
+                            <Y>15</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+
+                <MarkGraphic>
+                    <WellKnownName>Square</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>2</PerpendicularOffset>
+                    <Transform>
+                        <Scale>
+                            <Y>-1</Y>
+                        </Scale>
+                        <Translate>
+                            <X>30</X>
+                            <Y>15</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>TriAnGlE</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>2</PerpendicularOffset>
+                    <Transform>
+                        <Scale>
+                            <Y>-1</Y>
+                        </Scale>
+                        <Translate>
+                            <X>50</X>
+                            <Y>15</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>CRosS</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>2</PerpendicularOffset>
+                    <Transform>
+                        <Scale>
+                            <Y>-1</Y>
+                        </Scale>
+                        <Translate>
+                            <X>70</X>
+                            <Y>15</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>x</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>2</PerpendicularOffset>
+                    <Transform>
+                        <Scale>
+                            <Y>-1</Y>
+                        </Scale>
+                        <Translate>
+                            <X>90</X>
+                            <Y>15</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+                <MarkGraphic>
+                    <WellKnownName>star</WellKnownName>
+                    <ViewBox>
+                        <Height>10</Height>
+                    </ViewBox>
+                    <SolidFill>
+                        <Color>#bb0000</Color>
+                    </SolidFill>
+                    <PenStroke />
+                    <PerpendicularOffset>2</PerpendicularOffset>
+                    <Transform>
+                        <Scale>
+                            <Y>-1</Y>
+                        </Scale>
+                        <Translate>
+                            <X>110</X>
+                            <Y>15</Y>
+                        </Translate>
+                    </Transform>
+                </MarkGraphic>
+
+                <PointTextGraphic>
+                    <PointLabel>
+                        <StyledText>
+                            <LabelText>abcdefghijklmnopqrstuvwxyz</LabelText>
+                            <Font uom="urn:ogc:def:uom:se::pt">
+                                <FontSize>12</FontSize>
+                            </Font>
+                            <Halo>
+                                <Radius>1</Radius>
+                                <SolidFill>
+                                    <Color>#ff0000</Color>
+                                </SolidFill>
+                            </Halo>
+                        </StyledText>
+                    </PointLabel>
+          <!--<Transform>
+            <Translate>
+             <X>10</X>
+             <Y>50</Y>
+            </Translate>
+          </Transform>-->
+                </PointTextGraphic>
+
+                <PointTextGraphic>
+                    <PointLabel>
+                        <StyledText>
+                            <LabelText>abcdefghijklmnopqrstuvwxyz</LabelText>
+                            <Font uom="urn:ogc:def:uom:se::pt">
+                                <FontSize>24</FontSize>
+                                <FontStyle>Italic</FontStyle>
+                            </Font>
+                            <Halo>
+                                <Radius>0.5</Radius>
+                                <SolidFill>
+                                    <Color>#ff0000</Color>
+                                </SolidFill>
+                            </Halo>
+                        </StyledText>
+                    </PointLabel>
+          <!--<Transform>
+            <Translate>
+             <X>10</X>
+             <Y>60</Y>
+            </Translate>
+          </Transform>-->
+                </PointTextGraphic>
+
+
+
+
+
+
+                <PointTextGraphic>
+                    <PointLabel>
+                        <StyledText>
+                            <LabelText>abcdefghijklmnopqrstuvwxyz</LabelText>
+                            <Font uom="urn:ogc:def:uom:se::pt">
+                                <FontSize>12</FontSize>
+                            </Font>
+                            <Halo>
+                                <Radius>1</Radius>
+                                <SolidFill>
+                                    <Color>#ff0000</Color>
+                                </SolidFill>
+                            </Halo>
+                        </StyledText>
+                    </PointLabel>
+          <!--<Transform>
+            <Translate>
+             <X>10</X>
+             <Y>50</Y>
+            </Translate>
+          </Transform>-->
+                </PointTextGraphic>
+
+
+<!--   SVG -->
+                <ExternalGraphic>
+                    <OnlineResource ns4:href="file:///home/maxence/ellipses.svg"/>
+                    <Format>image/svg+xml</Format>
+
+                    <ViewBox>
+                        <Width>20.0</Width>
+                    </ViewBox>
+                    <Transform>
+                        <Translate>
+                            <X>-100</X>
+                            <Y>-10</Y>
+                        </Translate>
+                    </Transform>
+                </ExternalGraphic>
+
+                <ExternalGraphic>
+                    <OnlineResource ns4:href="file:///home/maxence/stars.svg"/>
+                    <Format>image/svg+xml</Format>
+                    <ViewBox>
+                        <Width>20.0</Width>
+                    </ViewBox>
+
+                    <Transform>
+                        <Scale>
+                            <XY>0.5</XY>
+                        </Scale>
+                        <Translate>
+                            <X>-80</X>
+                            <Y>-10</Y>
+                        </Translate>
+                    </Transform>
+                </ExternalGraphic>
+
+                <ExternalGraphic>
+                    <OnlineResource ns4:href="file:///home/maxence/stars.svg"/>
+                    <Format>image/svg+xml</Format>
+                    <ViewBox>
+                        <Width>10.0</Width>
+                    </ViewBox>
+
+                    <Transform>
+                        <Translate>
+                            <X>-60</X>
+                            <Y>-10</Y>
+                        </Translate>
+                    </Transform>
+                    <Opacity>50.0</Opacity>
+                </ExternalGraphic>
+
+                <ExternalGraphic>
+                    <OnlineResource ns4:href="file:///home/maxence/stars.svg"/>
+                    <Format>image/svg+xml</Format>
+                    <ViewBox>
+                        <Width>10.0</Width>
+                    </ViewBox>
+
+                    <Transform>
+                        <Translate>
+                            <X>-40</X>
+                            <Y>-10</Y>
+                        </Translate>
+                    </Transform>
+                    <Halo>
+                        <Radius>4</Radius>
+                        <SolidFill>
+                            <Color>#ffffff</Color>
+                        </SolidFill>
+                    </Halo>
+                </ExternalGraphic>
+
+
+                <ExternalGraphic>
+                    <OnlineResource ns4:href="file:///home/maxence/stars.svg"/>
+                    <Format>image/svg+xml</Format>
+                    <!--<ViewBox>
+                        <Width>10.0</Width>
+                    </ViewBox>-->
+
+                    <Halo>
+                        <Radius>4</Radius>
+                        <SolidFill>
+                            <Color>#ffffff</Color>
+                        </SolidFill>
+                    </Halo>
+                </ExternalGraphic>
+            </CompositeGraphic>
+        </PointSymbolizer>
+    </Rule>
+</Style>

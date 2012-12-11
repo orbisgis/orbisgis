@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:fes="http://www.opengis.net/fes/2.1" xmlns:ns4="http://www.w3.org/1999/xlink">
+	<Rule>
+		<Name>Fond</Name>
+		<LineSymbolizer uom="urn:fes:def:uom:se::mm">
+			<PenStroke>
+				<Width>
+					<Interpolate fallbackValue="0" mode="linear" method="numeric">
+						<LookupValue>
+							<fes:ValueReference>LARGEUR</fes:ValueReference>
+						</LookupValue>
+						<InterpolationPoint>
+							<Data>0</Data>
+							<Value>0</Value>
+						</InterpolationPoint>
+						<InterpolationPoint>
+							<Data>10</Data>
+							<Value>2</Value>
+						</InterpolationPoint>
+					</Interpolate>
+				</Width>
+			</PenStroke>
+		</LineSymbolizer>
+	</Rule>
+</Style>

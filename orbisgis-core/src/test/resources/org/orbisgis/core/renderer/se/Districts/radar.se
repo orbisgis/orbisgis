@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Style xmlns="http://www.opengis.net/se/2.0/core"  xmlns:tse="http://www.opengis.net/se/2.0/thematic" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:ns3="http://www.opengis.net/fes/2.1" xmlns:ns4="http://www.w3.org/1999/xlink" version="2.0.0">
+  <Rule>
+    <CompositeSymbolizer>
+      <AreaSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+        <SolidFill>
+          <Color>#DDDDDD</Color>
+        </SolidFill>
+        <PenStroke>
+          <SolidFill>
+            <Color>#888888</Color>
+          </SolidFill>
+          <Width>0.15</Width>
+        </PenStroke>
+      </AreaSymbolizer>
+
+    
+        <PointSymbolizer uom="urn:ogc:def:uom:se::mm" version="2.0.0">
+          <CompositeGraphic>
+            <tse:AxisChart>
+              <tse:AxisChartSubtype>polar</tse:AxisChartSubtype>
+              <tse:AxisScale>
+                <tse:AxisLength>5</tse:AxisLength>
+                <Value>100</Value>
+              </tse:AxisScale>
+	      <tse:CategoryGap>2</tse:CategoryGap>
+	      <tse:CategoryWidth>3</tse:CategoryWidth>
+
+	      <PenStroke />	
+
+	      <SolidFill>
+		   <Color>#E16868</Color>
+		   <Opacity>80</Opacity>
+              </SolidFill>
+    
+              <tse:Category>
+                <Value><ns3:ValueReference>NON_ONU_86</ns3:ValueReference></Value>
+              </tse:Category>
+
+              <tse:Category>
+                <Value><ns3:ValueReference>ONU_2002</ns3:ValueReference></Value>
+              </tse:Category>
+
+              <tse:Category>
+                <Value><ns3:ValueReference>DEC01</ns3:ValueReference></Value>
+              </tse:Category>
+
+              <tse:Category>
+                <Value><ns3:ValueReference>ARMEMENTSO</ns3:ValueReference></Value>
+              </tse:Category>
+
+              <tse:Category>
+                <Value><ns3:ValueReference>UEMARS2001</ns3:ValueReference></Value>
+              </tse:Category>
+
+              <tse:Category>
+                <Value><ns3:ValueReference>NOV2000</ns3:ValueReference></Value>
+              </tse:Category>
+
+              <tse:Category>
+                <Value><ns3:ValueReference>2000</ns3:ValueReference></Value>
+              </tse:Category>
+
+              <tse:Category>
+                <Value><ns3:ValueReference>OUI_EEE92</ns3:ValueReference></Value>
+              </tse:Category>
+            </tse:AxisChart>
+
+          </CompositeGraphic>
+        </PointSymbolizer>
+
+   </CompositeSymbolizer>
+  </Rule>
+</Style>

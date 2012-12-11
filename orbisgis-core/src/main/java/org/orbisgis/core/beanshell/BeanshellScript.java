@@ -40,7 +40,7 @@ import org.orbisgis.core.Services;
 
 /**
  *
- * @author ebocher
+ * @author Erwan Bocher
  */
 public final class BeanshellScript {
 
@@ -91,7 +91,7 @@ public final class BeanshellScript {
                             printHelp();    
                         }
                         else if (!file.exists()) {
-                                System.out.println("The script file doesn't exist.");
+                                System.out.println("The file doesn't exist.");
                         } else {
                                 servicesRegister();
                                 Interpreter interpreter = new Interpreter();
@@ -120,7 +120,7 @@ public final class BeanshellScript {
          * Get the help associated to this executable.
          */
         public static String getHelp() {
-                return "Usage : orbisshell <beanshell-script-file> [<argument-1> <argument-2> ...].\n";
+                return "Beanshell script arguments. The first argument must be  a path to the script file.\n";
         }
 
         private BeanshellScript() {

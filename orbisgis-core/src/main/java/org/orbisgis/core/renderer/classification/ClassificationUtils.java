@@ -29,32 +29,58 @@
 package org.orbisgis.core.renderer.classification;
 
 import java.util.Arrays;
-
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.ui.editorViews.toc.actions.cui.legends.GeometryProperties;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
+/**
+ * Some methods used for classification...
+ * @author Maxence Laurent
+ * @author Alexis Guéganno
+ */
 public class ClassificationUtils {
 
-	public static double[] getSortedValues(DataSource ds, String fieldName)
-			throws DriverException {
+        private ClassificationUtils(){};
 
-		double[] values = new double[(int) ds.getRowCount()];
-		if (GeometryProperties.isFieldName(fieldName)) {
-			for (int i = 0; i < values.length; i++) {
-				values[i] = GeometryProperties.getPropertyValue(fieldName,
-						ds.getGeometry(i))
-						.getAsDouble();
-			}
-		} else {
-			int fieldIndex = ds.getFieldIndexByName(fieldName);
-			for (int i = 0; i < values.length; i++) {
-				values[i] = ds.getFieldValue(i, fieldIndex).getAsDouble();
-			}
+        /**
+         * Retrieves the double values in {@code sds} from {@code value} in
+         * ascending order.
+         * @param sds
+         * @param value
+         * @return
+         * @throws DriverException
+         * @throws ParameterException
+         */
+	public static double[] getSortedValues(DataSource sds, RealParameter value)
+			throws DriverException, ParameterException {
+
+		double[] values = new double[(int) sds.getRowCount()];
+		for (long i = 0; i < values.length; i++) {
+			values[(int)i] = value.getValue(sds, i);
 		}
 		Arrays.sort(values);
 		return values;
-
 	}
 
+        /**
+         * Gets the minimum and maximum values of {@code sds} from {@code value}.
+         * @param sds
+         * @param value
+         * @return
+         * A double array of length two that contains[min, max].
+         * @throws DriverException
+         * @throws ParameterException
+         */
+        public static double[] getMinAndMax(DataSource sds, RealParameter value)
+                throws DriverException, ParameterException{
+                double[] minAndMax = new double[]{Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY};
+                long rows =  sds.getRowCount();
+                for(long i = 0; i<rows; i++){
+                        double tmp = value.getValue(sds, i);
+                        minAndMax[0] = Math.min(tmp,minAndMax[0]);
+                        minAndMax[1] = Math.max(tmp,minAndMax[1]);
+                }
+                return minAndMax;
+        }
 }

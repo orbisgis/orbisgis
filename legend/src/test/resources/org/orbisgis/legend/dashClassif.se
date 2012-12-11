@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:fes="http://www.opengis.net/fes/2.1" xmlns:ns4="http://www.w3.org/1999/xlink">
+	<Rule>
+		<Name>Fond</Name>
+		<LineSymbolizer uom="urn:fes:def:uom:se::mm">
+			<PenStroke>
+				<Width>0.5</Width>
+				<DashArray>
+					<Categorize fallbackValue="1 1">
+						<LookupValue>
+							<fes:ValueReference>LARGEUR</fes:ValueReference>
+						</LookupValue>
+						<Value>1 2 1</Value>
+						<Threshold>2</Threshold>
+						<Value>1 3 1 2 5</Value>
+						<Threshold>5</Threshold>
+						<Value>1 6 8 1</Value>
+						<Threshold>7</Threshold>
+						<Value>5 5</Value>
+					</Categorize>
+				</DashArray>
+			</PenStroke>
+		</LineSymbolizer>
+	</Rule>
+</Style>

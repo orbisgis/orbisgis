@@ -30,125 +30,146 @@ package org.orbisgis.core.renderer.classification;
 
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
-import org.orbisgis.utils.I18N;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Adapted from SCAP3 : http://w3.geoprdc.univ-tlse2.fr/scap/java/
  * 
  */
 public class ProportionalMethod {
-
-	int LINEAR = 1;
-	int LOGARITHMIC = 2;
-	int SQUARE = 3;
+    protected final static I18n I18N = I18nFactory.getI18n(ProportionalMethod.class);
+    int LINEAR = 1;
 
 	private DataSource ds;
-	private String fieldName;
 	private double maxValue;
+	private RealParameter value;
 
-	private final static int MIN_SURFACE = 10;
+    int LOGARITHMIC = 2;
 
-	// The surface reference must be greater or equals than 10.
-	private double minSymbolArea;
-	private double minValue;
-	private int method;
 
-	public ProportionalMethod(DataSource ds, String fieldName) {
-		this.ds = ds;
-		this.fieldName = fieldName;
+    private static final int MIN_SURFACE = 10;
 
-	}
+    // The surface reference must be greater or equals than 10.
 
-	// TODO what the surfRef parameter is used to
-	public void build(double minSymbolArea) throws DriverException,
-			ClassificationMethodException {
+    private double minSymbolArea;
 
-		double[] valeurs = ClassificationUtils.getSortedValues(ds, fieldName);
-		maxValue = valeurs[valeurs.length - 1];
-		minValue = valeurs[0];
 
-		if ((method == LOGARITHMIC) && (minValue <= 0)) {
-			throw new ClassificationMethodException(
-					I18N
-							.getString("orbisgis.org.orbisgis.core.renderer.legend.carto.defaultProportionalLegend.symbolSize.logarithmic"));
+    private double minValue;
 
-		}
-		if (minSymbolArea >= 10) {
-			this.minSymbolArea = minSymbolArea;
-		} else {
-			this.minSymbolArea = MIN_SURFACE;
-		}
 
-	}
+    private int method;
 
-	public double getSymbolCoef() {
-		return minSymbolArea / maxValue;
-	}
 
-	public double getMaxValue() {
-		return maxValue;
-	}
+    public ProportionalMethod(DataSource ds, RealParameter value) {
+        this.ds = ds;
+        this.value = value;
+    }
 
-	/**
-	 * Compute the symbol size using a linear method Adpated from SCAP3 :
-	 * http://w3.geoprdc.univ-tlse2.fr/scap/java/
-	 * 
-	 * @param value
-	 * @param coefType
-	 * @return
-	 */
-	public double getLinearSize(double value, int coefType) {
-		double coefSymb = Math.abs(getSymbolCoef());
+    // TODO what the surfRef parameter is used to
 
-		double surface = Math.abs(value) * coefSymb;
+    public void build(double minSymbolArea) throws DriverException,
+            ClassificationMethodException,
+            ParameterException {
 
-		return Math.sqrt(surface / coefType);
-	}
+        double[] valeurs = ClassificationUtils.getSortedValues(ds, value);
 
-	/**
-	 * Compute the symbol size using a squareroot method Adpated from SCAP3 :
-	 * http://w3.geoprdc.univ-tlse2.fr/scap/java/
-	 * 
-	 * @param value
-	 * @param sqrtFactor
-	 * @param coefType
-	 * @return
-	 */
-	public double getSquareSize(double value, double sqrtFactor, int coefType) {
-		double coefSymb = Math.abs(minSymbolArea
-				/ (Math.pow(getMaxValue(), (1 / sqrtFactor))));
-		double surface = Math.pow(Math.abs(value), (1 / sqrtFactor)) * coefSymb;
+        maxValue = valeurs[valeurs.length - 1];
+        minValue = valeurs[0];
 
-		return Math.sqrt(surface / coefType);
-	}
+        if ((method == LOGARITHMIC) && (minValue <= 0)) {
+            throw new ClassificationMethodException(
+                    I18N.tr("The parameter of the logarithmic function must be"
+                    + " greater than 0"));
 
-	/**
-	 * Compute the symbol size using a logarithm method Adpated from SCAP3 :
-	 * http://w3.geoprdc.univ-tlse2.fr/scap/java/
-	 * 
-	 * @param value
-	 * @param coefType
-	 * @return
-	 */
-	public double getLogarithmicSize(double value, int coefType) {
-		double coefSymb = Math.abs(minSymbolArea
-				/ Math.log(Math.abs(getMaxValue())));
+        }
+        if (minSymbolArea >= 10) {
+            this.minSymbolArea = minSymbolArea;
+        } else {
+            this.minSymbolArea = MIN_SURFACE;
+        }
 
-		double surface = Math.abs(Math.log(Math.abs(value))) * coefSymb;
+    }
 
-		return Math.sqrt(surface / coefType);
-	}
 
-	public double getMinValue() {
-		return minValue;
-	}
+    public double getSymbolCoef() {
+        return minSymbolArea / maxValue;
+    }
 
-	public void setMethod(int method) {
-		this.method = method;
-	}
 
-	public int getMethod() {
-		return method;
-	}
+    public double getMaxValue() {
+        return maxValue;
+    }
+
+
+    /**
+     * Compute the symbol size using a linear method Adpated from SCAP3 :
+     * http://w3.geoprdc.univ-tlse2.fr/scap/java/
+     * 
+     * @param value
+     * @param coefType
+     * @return
+     */
+    public double getLinearSize(double value, int coefType) {
+        double coefSymb = Math.abs(getSymbolCoef());
+
+        double surface = Math.abs(value) * coefSymb;
+
+        return Math.sqrt(surface / coefType);
+    }
+
+
+    /**
+     * Compute the symbol size using a squareroot method Adpated from SCAP3 :
+     * http://w3.geoprdc.univ-tlse2.fr/scap/java/
+     * 
+     * @param value
+     * @param sqrtFactor
+     * @param coefType
+     * @return
+     */
+    public double getSquareSize(double value, double sqrtFactor, int coefType) {
+        double coefSymb = Math.abs(minSymbolArea
+                / (Math.pow(getMaxValue(), (1 / sqrtFactor))));
+        double surface = Math.pow(Math.abs(value), (1 / sqrtFactor)) * coefSymb;
+
+        return Math.sqrt(surface / coefType);
+    }
+
+
+    /**
+     * Compute the symbol size using a logarithm method Adpated from SCAP3 :
+     * http://w3.geoprdc.univ-tlse2.fr/scap/java/
+     * 
+     * @param value
+     * @param coefType
+     * @return
+     */
+    public double getLogarithmicSize(double value, int coefType) {
+        double coefSymb = Math.abs(minSymbolArea
+                / Math.log(Math.abs(getMaxValue())));
+
+        double surface = Math.abs(Math.log(Math.abs(value))) * coefSymb;
+
+        return Math.sqrt(surface / coefType);
+    }
+
+
+    public double getMinValue() {
+        return minValue;
+    }
+
+
+    public void setMethod(int method) {
+        this.method = method;
+    }
+
+
+    public int getMethod() {
+        return method;
+    }
+
 
 }

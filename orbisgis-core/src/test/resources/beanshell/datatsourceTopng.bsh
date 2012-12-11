@@ -6,6 +6,7 @@ import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.renderer.Renderer;
+import org.orbisgis.core.renderer.ImageRenderer;
 import javax.imageio.ImageIO;
 
 dataFile = "src/test/resources/beanshell/orbisgis.shp";
@@ -13,8 +14,8 @@ DataManager dm = Services.getService(DataManager.class);
 
 ILayer layer = dm.createLayer(pathToFile(dataFile));
 layer.open();
-Renderer r = new Renderer();
+Renderer r = new ImageRenderer();
 BufferedImage img = new BufferedImage(200, 200,BufferedImage.TYPE_INT_ARGB);
 r.draw(img, layer.getEnvelope(), layer);
 
-ImageIO.write(img, "png", new File(System.getProperty("user.home")+ File.separator+"myImage.png"));
+ImageIO.write(img, "png", new File("target"+ File.separator+"myImage.png"));

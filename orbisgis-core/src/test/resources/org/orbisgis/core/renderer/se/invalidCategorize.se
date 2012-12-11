@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Style xmlns="http://www.opengis.net/se/2.0/core" xmlns:ns2="http://www.opengis.net/ows/2.0" xmlns:fes="http://www.opengis.net/fes/2.1" xmlns:ns4="http://www.w3.org/1999/xlink">
+	<Rule>
+		<AreaSymbolizer>
+			<Name>Fond</Name>
+			<SolidFill>
+				<Color>
+					<Categorize fallbackValue="#111111">
+						<LookupValue>
+							<fes:ValueReference>IRMOY98</fes:ValueReference>
+						</LookupValue>
+						<FirstValue>#113355</FirstValue>
+						<Threshold>70000</Threshold>
+						<Value>#dd66ee</Value>
+						<Threshold>100000</Threshold>
+						<Value>#ffaa99</Value>
+					</Categorize>
+				</Color>
+				<PenStroke>
+					<SolidFill>
+						<Color>#888888</Color>
+					</SolidFill>
+					<Width>0.15</Width>
+				</PenStroke>
+			</SolidFill>
+		</AreaSymbolizer>
+	</Rule>
+</Style>
