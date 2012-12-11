@@ -48,7 +48,7 @@ import org.orbisgis.view.docking.DockingLocation.Location;
  * Using parameter beans instead of implementing docking frame panels
  * help to extends/update functionality of application without breaking codes
  * 
- * @warning New properties must be linked with the current docking system {@link OrbisGISView} 
+ * @warning New properties must be linked with the current docking system {@link org.orbisgis.view.docking.internals.OrbisGISView}
  */
 public class DockingPanelParameters implements Serializable {
 
@@ -158,8 +158,9 @@ public class DockingPanelParameters implements Serializable {
         }
 
         /**
-         * Set the value of toolBar
-         *
+         * Set the value of toolBar.
+         * Only controls created thanks to javax.swing.Action are passed into the Action toolbar.
+         * Theses actions must be used instead of using swing buttons.
          * @param toolBar new value of toolBar
          */
         public void setToolBar(JToolBar toolBar) {

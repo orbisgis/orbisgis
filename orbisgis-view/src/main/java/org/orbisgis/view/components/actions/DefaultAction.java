@@ -129,7 +129,9 @@ public class DefaultAction extends AbstractAction {
         }
         @Override
         public void actionPerformed(ActionEvent ae) {
-                actionListener.actionPerformed(ae);
+                if(actionListener!=null) {
+                    actionListener.actionPerformed(ae);
+                }
         }
         /**
          * Add a new Accelerator for this action (not used in menu and toolbars)

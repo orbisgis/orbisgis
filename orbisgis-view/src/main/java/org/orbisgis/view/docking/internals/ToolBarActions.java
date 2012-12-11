@@ -43,18 +43,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
-import javax.swing.DefaultButtonModel;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JSeparator;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
-import javax.swing.MenuElement;
+import javax.swing.*;
+
 import org.apache.log4j.Logger;
 import org.orbisgis.view.components.button.DropDownButton;
+import org.orbisgis.view.docking.actions.CDropDownButtonExt;
 import org.orbisgis.view.docking.actions.CToggleButton;
 
 /**
@@ -148,12 +141,14 @@ public class ToolBarActions {
         if(dropButton.getModel() instanceof DefaultButtonModel) {
             ButtonGroup bgroup = ((DefaultButtonModel)dropButton.getModel()).getGroup();
             //Find if there is an existing Docking Frames button group
-            CRadioGroup radio = radioGroups.get(bgroup.hashCode());
-            if(radio==null) {
-                radio = new CRadioGroup();
-                radioGroups.put(bgroup.hashCode(), radio);
+            if(bgroup!=null) {
+                CRadioGroup radio = radioGroups.get(bgroup.hashCode());
+                if(radio==null) {
+                    radio = new CRadioGroup();
+                    radioGroups.put(bgroup.hashCode(), radio);
+                }
+                return radio;
             }
-            return radio;
         }
         return null;
     }
@@ -187,19 +182,12 @@ public class ToolBarActions {
                 CAction action=null;
                 if(component instanceof DropDownButton) {
                     final DropDownButton button = (DropDownButton) component;
-                    CDropDownButton dbutton = new CDropDownButton();
-                    dbutton.setText(button.getName());
-                    CopyJMenuIntoCMenu(button.getComponentPopupMenu(),dbutton,dbutton,button.getSelectedItem(),getButtonGroup(button));
-                    action = dbutton;
+                    CDropDownButton dButton = new CDropDownButtonExt(button.getAction());
+                    CopyJMenuIntoCMenu(button.getComponentPopupMenu(),dButton,dButton,button.getSelectedItem(),getButtonGroup(button));
+                    action = dButton;
                 } else if(component instanceof JToggleButton) {
                     final JToggleButton button = (JToggleButton) component;
-                    CToggleButton dbutton = new CToggleButton(button.getText(), button.getIcon());
-                    dbutton.setSelected(button.isSelected());
-                    dbutton.setTooltip(button.getToolTipText());
-                    ItemListener[] listeners = button.getItemListeners();
-                    for(ItemListener listener : listeners) {
-                        dbutton.getStateChanged().addListener(listener, EventHandler.create(CToggleButton.StateListener.class, listener, "itemStateChanged",""));
-                    }
+                    CToggleButton dbutton = new CToggleButton(button.getAction());
                     //Retrieve and apply button group
                     applyButtonGroup(button,dbutton);
                     action = dbutton;

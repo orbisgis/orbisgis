@@ -71,6 +71,7 @@ public class DropDownButton extends JToggleButton implements
                 if(getComponentPopupMenu()==null) {
                         return super.add(component, i);
                 } else {
+                        setSelectedIfNone(component);
                         return getComponentPopupMenu().add(component,i);
                 }
         }
@@ -80,10 +81,15 @@ public class DropDownButton extends JToggleButton implements
                 if(getComponentPopupMenu()==null) {
                         return super.add(component);
                 } else {
+                        setSelectedIfNone(component);
                         return getComponentPopupMenu().add(component);
                 }
         }
-
+        private void setSelectedIfNone(Component component) {
+            if(selectedItem==null && component instanceof JMenuItem) {
+                setSelectedItem((JMenuItem)component);
+            }
+        }
         @Override
         public void remove(Component component) {
                 if(getComponentPopupMenu()==null) {
@@ -167,8 +173,9 @@ public class DropDownButton extends JToggleButton implements
         public void setSelectedItem(JMenuItem menu) {
             selectedItem = menu;     
             if(buttonAsMenuItem) {
-                this.setIcon(menu.getIcon());
-                this.setToolTipText(menu.getToolTipText());        
+                setIcon(menu.getIcon());
+                setText(menu.getText());
+                setToolTipText(menu.getToolTipText());
             }
         }
         

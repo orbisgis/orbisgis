@@ -273,6 +273,7 @@ public class BshConsolePanel extends JPanel {
                         scriptPanel.clearParsers();
                         actions.setAccelerators(scriptPanel);
                         // Actions will be set on the scriptPanel PopupMenu
+                        scriptPanel.getPopupMenu().addSeparator();
                         actions.registerContainer(scriptPanel.getPopupMenu());
                         centerPanel = new RTextScrollPane(scriptPanel);
                 }

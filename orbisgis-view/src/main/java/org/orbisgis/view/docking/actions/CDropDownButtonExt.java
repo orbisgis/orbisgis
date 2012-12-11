@@ -28,20 +28,20 @@
  */
 package org.orbisgis.view.docking.actions;
 
-import bibliothek.gui.dock.common.action.CRadioButton;
+import bibliothek.gui.dock.common.action.CDropDownButton;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import javax.swing.Action;
 
 /**
- * Implementation of listener on CRadioButton.
+ * @author Nicolas Fortin
  */
-public class CToggleButton extends CRadioButton {
+public class CDropDownButtonExt extends CDropDownButton {
     private Action action;
-
-    public CToggleButton(Action action) {
+    public CDropDownButtonExt(Action action) {
         this.action = action;
         // Read properties from the action
         onActionPropertyChange(new PropertyChangeEvent(action,null,null,null));
@@ -50,15 +50,9 @@ public class CToggleButton extends CRadioButton {
                 EventHandler.create(PropertyChangeListener.class, this, "onActionPropertyChange", ""));
     }
 
-    @Override
-    protected void changed() {
-        action.putValue(Action.SELECTED_KEY,isSelected());
-        action.actionPerformed(new ActionEvent(this,ActionEvent.ACTION_PERFORMED,Action.SELECTED_KEY));
-    }
-
     /**
      * Used by PropertyChangeListener, update CRadioButton properties
-     * @param propertyChangeEvent Property edition information
+     * @param propertyChangeEvent
      */
     public void onActionPropertyChange(PropertyChangeEvent propertyChangeEvent) {
         CommonFunctions.onActionPropertyChange(this,action,propertyChangeEvent);

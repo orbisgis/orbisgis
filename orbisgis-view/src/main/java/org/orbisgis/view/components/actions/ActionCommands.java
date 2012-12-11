@@ -32,25 +32,8 @@ import org.apache.log4j.Logger;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.actions.intern.RemoveActionControls;
 import org.orbisgis.view.components.button.DropDownButton;
-import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.ButtonGroup;
-import javax.swing.ButtonModel;
-import javax.swing.DefaultButtonModel;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButton;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSeparator;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
+
+import javax.swing.*;
 import java.awt.Component;
 import java.awt.Container;
 import java.beans.PropertyChangeListener;
@@ -269,7 +252,7 @@ public class ActionCommands {
                                                 if(buttonGroup.isEmpty()) {
                                                         child = new CustomButton(action);
                                                 } else {
-                                                        JRadioButton button = new JRadioButton(action);
+                                                        JToggleButton button = new JToggleButton(action);
                                                         ButtonGroup bGroup = getOrPutButtonGroup(buttonGroups,action);
                                                         bGroup.add(button);
                                                         child = button;
@@ -306,6 +289,9 @@ public class ActionCommands {
                 Container child;
                 if(parent instanceof JToolBar) {
                         DropDownButton button = new DropDownButton(action);
+                        if(ActionTools.getIcon(action)==null) { //Get icon from selected menu
+                            button.setButtonAsMenuItem(true);
+                        }
                         button.setComponentPopupMenu(new JPopupMenu());
                         child = button;
                 } else {

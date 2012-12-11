@@ -50,19 +50,7 @@ import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JLayeredPane;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
-import javax.swing.SwingUtilities;
-import javax.swing.Timer;
+import javax.swing.*;
 import javax.swing.event.TreeExpansionListener;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.DataManager;
@@ -77,6 +65,9 @@ import org.orbisgis.core.map.TransformListener;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.components.actions.ActionCommands;
+import org.orbisgis.view.components.actions.ActionTools;
+import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.components.button.DropDownButton;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
@@ -84,6 +75,7 @@ import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.map.ext.MapEditorAction;
 import org.orbisgis.view.map.jobs.CreateSourceFromSelection;
 import org.orbisgis.view.map.jobs.ReadMapContextJob;
 import org.orbisgis.view.map.jobs.ZoomToSelection;
@@ -123,7 +115,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private JLayeredPane layeredPane = new JLayeredPane();
     private ComponentListener sizeListener = EventHandler.create(ComponentListener.class,this,"updateMapControlSize",null,"componentResized");
     private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified");
-    
+    private ActionCommands actions = new ActionCommands();
     /**
      * Constructor
      */
@@ -144,10 +136,9 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         add(mapStatusBar, BorderLayout.PAGE_END);
         mapControl.setDefaultTool(new ZoomInTool());
         //Declare Tools of Map Editors
-        //For debug purpose, also add the toolbar in the frame
-        //add(createToolBar(false), BorderLayout.SOUTH);
         //Add the tools in the docking Panel title
-        dockingPanelParameters.setToolBar(createToolBar(true));      
+        dockingPanelParameters.setToolBar(createToolBar());
+        //add(createToolBar(),BorderLayout.NORTH);
         //Set the Drop target
         dragDropHandler = new MapTransferHandler();        
         this.setTransferHandler(dragDropHandler);
@@ -366,12 +357,67 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 }
             }
     }
-    
+
+    /**
+     * MapEditor tools declaration
+     */
+    private void createActions() {
+        // Navigation tools
+        actions.addAction(new AutomatonAction(MapEditorAction.A_ZOOM_IN,new ZoomInTool()).setLogicalGroup("navigation"));
+        actions.addAction(new AutomatonAction(MapEditorAction.A_ZOOM_OUT,new ZoomOutTool()).setLogicalGroup("navigation"));
+        actions.addAction(new AutomatonAction(MapEditorAction.A_PAN,new PanTool()).setLogicalGroup("navigation"));
+        actions.addAction(new DefaultAction(MapEditorAction.A_FULL_EXTENT,I18N.tr("Full extent"),
+                OrbisGISIcon.getIcon("world"),EventHandler.create(ActionListener.class,this,"onFullExtent"))
+                .setToolTipText(I18N.tr("Zoom to show all geometries")).setLogicalGroup("navigation"));
+
+        // Selection tools
+        actions.addAction(new AutomatonAction(MapEditorAction.A_SELECTION,new SelectionTool()).setLogicalGroup("selection"));
+        actions.addAction(new DefaultAction(MapEditorAction.A_CLEAR_SELECTION, I18N.tr("Clear selection"),
+                OrbisGISIcon.getIcon("edit-clear"),EventHandler.create(ActionListener.class,this,"onClearSelection"))
+                .setToolTipText(I18N.tr("Clear all selected geometries of all layers")).setLogicalGroup("selection"));
+        actions.addAction(new DefaultAction(MapEditorAction.A_ZOOM_SELECTION, I18N.tr("Zoom to selection"),
+                OrbisGISIcon.getIcon("zoom_selected"),EventHandler.create(ActionListener.class,this,"onZoomToSelection"))
+                .setToolTipText(I18N.tr("Zoom to visible selected geometries")).setLogicalGroup("selection"));
+        actions.addAction(new DefaultAction(MapEditorAction.A_DATA_SOURCE_FROM_SELECTION, I18N.tr("Create a datasource"),
+                OrbisGISIcon.getIcon("table_go"),
+                EventHandler.create(ActionListener.class,this,"onCreateDataSourceFromSelection"))
+                .setToolTipText(I18N.tr("Create a datasource from a selection")).setLogicalGroup("selection"));
+
+        // Measure tools
+        actions.addAction(new DefaultAction(MapEditorAction.A_MEASURE_GROUP,I18N.tr("Mesure tools")).setMenuGroup(true));
+        actions.addAction(new AutomatonAction(MapEditorAction.A_MEASURE_LINE,new MesureLineTool())
+                .setParent(MapEditorAction.A_MEASURE_GROUP));
+        actions.addAction(new AutomatonAction(MapEditorAction.A_MEASURE_POLYGON,new MesurePolygonTool())
+                .setParent(MapEditorAction.A_MEASURE_GROUP));
+        actions.addAction(new AutomatonAction(MapEditorAction.A_COMPASS,new CompassTool())
+                .setParent(MapEditorAction.A_MEASURE_GROUP));
+
+        // Drawing tools
+        actions.addAction(new DefaultAction(MapEditorAction.A_DRAWING_GROUP,I18N.tr("Graphic tools")).setMenuGroup(true));
+        actions.addAction(new AutomatonAction(MapEditorAction.A_FENCE,new FencePolygonTool())
+                .setParent(MapEditorAction.A_DRAWING_GROUP));
+        actions.addAction(new AutomatonAction(MapEditorAction.A_PICK_COORDINATES, new PickCoordinatesPointTool())
+                .setParent(MapEditorAction.A_DRAWING_GROUP));
+
+        // Maps manager
+        actions.addAction(new DefaultAction(MapEditorAction.A_MAP_TREE, I18N.tr("Maps tree"),
+                OrbisGISIcon.getIcon("map"),
+                EventHandler.create(ActionListener.class,this,"onShowHideMapsTree"))
+                .setToolTipText(I18N.tr("Show/Hide maps tree")));
+    }
+
+
+    private JToolBar createToolBar() {
+        JToolBar toolBar = new JToolBar();
+        actions.registerContainer(toolBar);
+        createActions();
+        return toolBar;
+    }
     /**
      * Create a toolbar corresponding to the current state of the Editor
      * @return 
      */
-    private JToolBar createToolBar(boolean useButtonText) {
+    private JToolBar createToolBarOld(boolean useButtonText) {
         JToolBar toolBar = new JToolBar();
         ButtonGroup autoSelection = new ButtonGroup();
         //Navigation Tools
@@ -494,7 +540,6 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     /**
      * Add the automaton on the toolBar
      * @param toolBar
-     * @param text
      * @param automaton
      * @param useButtonText Show a text inside the ToolBar button.
      * With DockingFrames, this text appear only on popup menu list
@@ -641,6 +686,23 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
          * Used with Menu Item
          * @param ae 
          */
+        @Override
+        public void actionPerformed(ActionEvent ae) {
+            onToolSelected(automaton);
+        }
+    }
+    private class AutomatonAction extends DefaultAction {
+        private Automaton automaton;
+
+        private AutomatonAction(String actionId, Automaton automaton) {
+            super(actionId, automaton.getName());
+            this.automaton = automaton;
+            putValue(Action.SMALL_ICON,automaton.getImageIcon());
+            putValue(Action.LARGE_ICON_KEY,automaton.getImageIcon());
+            putValue(Action.SHORT_DESCRIPTION,automaton.getTooltip());
+            putValue(ActionTools.TOGGLE_GROUP,"automatons"); //radio group
+        }
+
         @Override
         public void actionPerformed(ActionEvent ae) {
             onToolSelected(automaton);
