@@ -409,89 +409,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
 
     private JToolBar createToolBar() {
         JToolBar toolBar = new JToolBar();
-        actions.registerContainer(toolBar);
         createActions();
-        return toolBar;
-    }
-    /**
-     * Create a toolbar corresponding to the current state of the Editor
-     * @return 
-     */
-    private JToolBar createToolBarOld(boolean useButtonText) {
-        JToolBar toolBar = new JToolBar();
-        ButtonGroup autoSelection = new ButtonGroup();
-        //Navigation Tools
-        autoSelection.add(addButton(toolBar,new ZoomInTool(),useButtonText));
-        autoSelection.add(addButton(toolBar,new ZoomOutTool(),useButtonText));
-        autoSelection.add(addButton(toolBar,new PanTool(),useButtonText));
-        //Full extent button
-        toolBar.add(addButton(OrbisGISIcon.getIcon("world"),
-                I18N.tr("Full extent"),
-                I18N.tr("Zoom to show all geometries"),
-                useButtonText,"onFullExtent"));
-        toolBar.addSeparator();
-        //Selection button
-        autoSelection.add(addButton(toolBar, new SelectionTool(), useButtonText));
-        //Clear selection
-        toolBar.add(addButton(OrbisGISIcon.getIcon("edit-clear"),
-                I18N.tr("Clear selection"),
-                I18N.tr("Clear all selected geometries of all layers"),
-                useButtonText,"onClearSelection"));
-        
-        //Zoom to visible selected geometries
-        toolBar.add(addButton(OrbisGISIcon.getIcon("zoom_selected"),
-                I18N.tr("Zoom to selection"),
-                I18N.tr("Zoom to visible selected geometries"),
-                useButtonText,"onZoomToSelection"));
-        //Create a datasource from selection
-        toolBar.add(addButton(OrbisGISIcon.getIcon("table_go"),
-                I18N.tr("Create a datasource"),
-                I18N.tr("Create a datasource from a selection"),
-                useButtonText,"onCreateDataSourceFromSelection"));        
-        toolBar.addSeparator();
-
-        //Mesure Tools
-        JPopupMenu mesureMenu = new JPopupMenu();
-        JMenuItem defaultMenu = createMenuItem(new MesureLineTool());
-        mesureMenu.add(createMenuItem(new MesurePolygonTool()));
-        mesureMenu.add(defaultMenu);
-        mesureMenu.add(createMenuItem(new CompassTool()));
-        //Create the Mesure Tools Popup Button
-        DropDownButton mesureButton = new DropDownButton();
-        if(useButtonText) {
-            mesureButton.setName(I18N.tr("Mesure tools"));
-        }
-        mesureButton.setButtonAsMenuItem(true);
-        //Add Menu to the Popup Button
-        mesureButton.setComponentPopupMenu(mesureMenu);
-        autoSelection.add(mesureButton);
-        toolBar.add(mesureButton);
-        mesureButton.setSelectedItem(defaultMenu);
-        
-        //Drawing Tools
-        JPopupMenu graphicToolsMenu = new JPopupMenu();
-        defaultMenu = createMenuItem(new FencePolygonTool());
-        graphicToolsMenu.add(defaultMenu);
-        graphicToolsMenu.add(createMenuItem(new PickCoordinatesPointTool() ));
-        
-         //Create the Mesure Tools Popup Button
-        DropDownButton graphicToolsButton = new DropDownButton();
-        if(useButtonText) {
-            graphicToolsButton.setName(I18N.tr("Graphic tools"));
-        }
-        graphicToolsButton.setButtonAsMenuItem(true);
-        //Add Menu to the Popup Button
-        graphicToolsButton.setComponentPopupMenu(graphicToolsMenu);
-        autoSelection.add(graphicToolsButton);
-        toolBar.add(graphicToolsButton);
-        graphicToolsButton.setSelectedItem(defaultMenu);
-        
-        // Show/Hide maps manager
-        toolBar.add(addButton(OrbisGISIcon.getIcon("map"),
-                I18N.tr("Maps tree"),
-                I18N.tr("Show/Hide maps tree"),
-                useButtonText,"onShowHideMapsTree"));
-        toolBar.addSeparator();
+        actions.registerContainer(toolBar);
         return toolBar;
     }
 
@@ -506,60 +425,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                     mapsManager.setVisible(false);
             }
     }
-    /**
-     * Add the automaton tool to a Menu
-     * @param automaton
-     * @return 
-     */
-    private JMenuItem createMenuItem(Automaton automaton) {
-        JMenuItem automatonMenuItem = new JMenuItem(automaton.getName(), automaton.getImageIcon());
-        automatonMenuItem.setToolTipText(automaton.getTooltip());
-        automatonMenuItem.addActionListener(new AutomatonItemListener(automaton));        
-        return automatonMenuItem;
-    }
-    
-    /**
-     * Create a simple button
-     * @param icon
-     * @param buttonText
-     * @param buttonToolTip
-     * @param useButtonText
-     * @param localMethodName The name of the method to call on this
-     * @return The button
-     */
-    private AbstractButton addButton(ImageIcon icon, String buttonText,String buttonToolTip,boolean useButtonText,String localMethodName) {
-        String text="";
-        if(useButtonText) {
-           text = buttonText;
-        }
-        JButton newButton = new JButton(text,icon);
-        newButton.setToolTipText(buttonToolTip);
-        newButton.addActionListener(EventHandler.create(ActionListener.class,this,localMethodName));
-        return newButton;
-    }
-    /**
-     * Add the automaton on the toolBar
-     * @param toolBar
-     * @param automaton
-     * @param useButtonText Show a text inside the ToolBar button.
-     * With DockingFrames, this text appear only on popup menu list
-     * @return 
-     */
-    private AbstractButton addButton(JToolBar toolBar,Automaton automaton,boolean useButtonText) {
-        String text="";
-        if(useButtonText) {
-           text = automaton.getName();
-        }
-        JToggleButton button = new JToggleButton(text,automaton.getImageIcon());
-        //Select it, if this is the currently used tool
-        if(mapControl.getTool().getClass().equals(automaton.getClass()) ) {
-            button.setSelected(true);
-        }
-        button.setToolTipText(automaton.getTooltip());
-        button.addItemListener(new AutomatonItemListener(automaton));
-        toolBar.add(button);
-        return button;
-    }
+
     /**
      * The user click on the button Full Extent
      */
@@ -587,20 +453,20 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     }
     
     
-         /**
-         * The user can export the selected features into a new datasource
-         */
-        public void onCreateDataSourceFromSelection() {                
-                ILayer[] layers = mapContext.getSelectedLayers();
-                if(layers!=null|| layers.length>0){
-                for (ILayer layer : layers) {
-                        Set<Integer> selection = layer.getSelection();
-                        if(!selection.isEmpty()){
-                        BackgroundManager bm = Services.getService(BackgroundManager.class);
-                        bm.backgroundOperation(new CreateSourceFromSelection(layer.getDataSource(), selection));
-                }       }
-                }
-        }
+     /**
+     * The user can export the selected features into a new datasource
+     */
+    public void onCreateDataSourceFromSelection() {
+            ILayer[] layers = mapContext.getSelectedLayers();
+            if(layers!=null|| layers.length>0){
+            for (ILayer layer : layers) {
+                    Set<Integer> selection = layer.getSelection();
+                    if(!selection.isEmpty()){
+                    BackgroundManager bm = Services.getService(BackgroundManager.class);
+                    bm.backgroundOperation(new CreateSourceFromSelection(layer.getDataSource(), selection));
+            }       }
+            }
+    }
         
     /**
      * Give information on the behaviour of this panel related to the current
@@ -664,33 +530,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         loadMap((MapElement)editableElement);
                 }
         }
-        
-    /**
-     * Internal Listener that store an automaton
-     */
-    private class AutomatonItemListener implements ItemListener,ActionListener {
-        private Automaton automaton;
-        AutomatonItemListener(Automaton automaton) {
-            this.automaton = automaton;
-        }
-        /**
-         * Used with Toggle Button (new state can be DESELECTED)
-         */
-        @Override
-        public void itemStateChanged(ItemEvent ie) {
-            if(ie.getStateChange() == ItemEvent.SELECTED) {
-                onToolSelected(automaton);
-            }
-        }
-        /**
-         * Used with Menu Item
-         * @param ae 
-         */
-        @Override
-        public void actionPerformed(ActionEvent ae) {
-            onToolSelected(automaton);
-        }
-    }
+
     private class AutomatonAction extends DefaultAction {
         private Automaton automaton;
 

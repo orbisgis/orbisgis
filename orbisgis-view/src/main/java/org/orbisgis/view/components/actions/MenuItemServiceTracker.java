@@ -12,8 +12,8 @@ import javax.swing.SwingUtilities;
  * Register action to an ActionCommands
  * @author Nicolas Fortin
  */
-public class MenuItemServiceTracker<TargetComponent> extends ServiceTracker<MenuItemService<TargetComponent>,Action> {
-        private static enum ACTION_EVT { ADDED, MODIFIED, REMOVED};
+public class MenuItemServiceTracker<TargetComponent> extends ServiceTracker<ActionFactoryService<TargetComponent>,MenuTrackerAction<TargetComponent>> {
+        private static enum ACTION_EVT { ADDED, MODIFIED, REMOVED}
         private ActionCommands ac;
         private BundleContext bc;
         private TargetComponent targetInstance;
@@ -24,7 +24,7 @@ public class MenuItemServiceTracker<TargetComponent> extends ServiceTracker<Menu
          * @param serviceInterface The interface.class of the tracked service
          * @param actionCommands Where to put Tracked actions.
          */
-        public MenuItemServiceTracker(BundleContext context,Class<MenuItemService<TargetComponent>> serviceInterface,ActionCommands actionCommands, TargetComponent targetInstance) {
+        public MenuItemServiceTracker(BundleContext context,Class<ActionFactoryService<TargetComponent>> serviceInterface,ActionCommands actionCommands, TargetComponent targetInstance) {
                 super(context,serviceInterface,null);
                 ac = actionCommands;
                 bc = context;
@@ -32,22 +32,22 @@ public class MenuItemServiceTracker<TargetComponent> extends ServiceTracker<Menu
         }
 
         @Override
-        public Action addingService(ServiceReference<MenuItemService<TargetComponent>> reference) {
+        public MenuTrackerAction<TargetComponent> addingService(ServiceReference<ActionFactoryService<TargetComponent>> reference) {
                 return processOperation(new SwingOperation(reference));
         }
 
         @Override
-        public void modifiedService(ServiceReference<MenuItemService<TargetComponent>> reference, Action service) {
+        public void modifiedService(ServiceReference<ActionFactoryService<TargetComponent>> reference, MenuTrackerAction<TargetComponent> service) {
                 processOperation(new SwingOperation(reference,service,ACTION_EVT.MODIFIED));
         }
 
         @Override
-        public void removedService(ServiceReference<MenuItemService<TargetComponent>> reference, Action service) {
+        public void removedService(ServiceReference<ActionFactoryService<TargetComponent>> reference, MenuTrackerAction<TargetComponent> service) {
                 processOperation(new SwingOperation(reference, service, ACTION_EVT.REMOVED));
         }
 
 
-        private Action processOperation(SwingOperation operation) {
+        private MenuTrackerAction<TargetComponent> processOperation(SwingOperation operation) {
                 if(SwingUtilities.isEventDispatchThread()) {
                         operation.run();
                 } else {
@@ -57,46 +57,50 @@ public class MenuItemServiceTracker<TargetComponent> extends ServiceTracker<Menu
                                 LOGGER.error(ex.getLocalizedMessage(),ex);
                         }
                 }
-                return operation.getAction();
+                return operation.getService();
         }
         /**
          * Guaranty that the Add/Update/Remove actions operations are done on swing thread.
          */
         private class SwingOperation implements Runnable {
-                private ServiceReference<MenuItemService<TargetComponent>> reference;
-                private Action action;
+                private ServiceReference<ActionFactoryService<TargetComponent>> reference;
+                private MenuTrackerAction<TargetComponent> generatedActions;
                 private ACTION_EVT operation;
 
-                private SwingOperation(ServiceReference<MenuItemService<TargetComponent>> reference, Action action, ACTION_EVT operation) {
+                private SwingOperation(ServiceReference<ActionFactoryService<TargetComponent>> reference, MenuTrackerAction<TargetComponent> action, ACTION_EVT operation) {
                         this.reference = reference;
-                        this.action = action;
+                        this.generatedActions = action;
                         this.operation = operation;
                 }
 
-                private SwingOperation(ServiceReference<MenuItemService<TargetComponent>> reference) {
+                private SwingOperation(ServiceReference<ActionFactoryService<TargetComponent>> reference) {
                         this.reference = reference;
                         this.operation = ACTION_EVT.ADDED;
                 }
 
-                /**
-                 * @return Action
-                 */
-                public Action getAction() {
-                        return action;
+                public MenuTrackerAction<TargetComponent> getService() {
+                        return generatedActions;
                 }
-
                 @Override
                 public void run() {
                         switch(operation) {
                                 case REMOVED:
-                                        ac.removeAction(action);
+                                        for(Action action : generatedActions.getActions()) {
+                                                ac.removeAction(action);
+                                        }
+                                        generatedActions.getActionFactory().disposeAction(targetInstance,generatedActions.getActions());
                                         break;
                                 case MODIFIED: //Remove then Add
-                                        ac.removeAction(action);
+                                        for(Action action : generatedActions.getActions()) {
+                                                ac.removeAction(action);
+                                        };
+                                        generatedActions.getActionFactory().disposeAction(targetInstance,generatedActions.getActions());
                                 case ADDED:
-                                        MenuItemService<TargetComponent> service = bc.getService(reference);
-                                        action = service.getAction(targetInstance);
-                                        ac.addAction(action);
+                                        ActionFactoryService<TargetComponent> service = bc.getService(reference);
+                                        generatedActions = new MenuTrackerAction<TargetComponent>(service,service.createActions(targetInstance));
+                                        for(Action action : generatedActions.getActions()) {
+                                                ac.addAction(action);
+                                        }
                                         break;
                         }
                 }

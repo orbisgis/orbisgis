@@ -29,6 +29,7 @@
 package org.orbisgis.view.components.actions;
 
 import javax.swing.Action;
+import java.util.List;
 
 /**
  * Root extension point to all menu related services.
@@ -36,11 +37,22 @@ import javax.swing.Action;
  * Or use an instance of DefaultAction.
  * @author Nicolas Fortin
  */
-public interface MenuItemService<TargetComponent> {        
+public interface ActionFactoryService<TargetComponent> {
         /**
+         * Each instance of TargetComponent call createAction once.
+         * Do not make a reference to created actions in the ActionFactoryService instance.
          * @param target
-         * @return Action instance, additional properties can be set.
+         * @return Action list instance, linked with target.
          * @see org.orbisgis.view.components.actions.ActionTools
          */
-        Action getAction(TargetComponent target);
+        List<Action> createActions(TargetComponent target);
+
+        /**
+         * Before the target component unload theses resources,
+         * it call this method with all action obtained though createActions.
+         * If you register some listeners on target component, this is the time to remove the listeners.
+         * @param target The target being unloaded.
+         * @param actions The action created by this factory.
+         */
+        void disposeAction(TargetComponent target, List<Action> actions);
 }

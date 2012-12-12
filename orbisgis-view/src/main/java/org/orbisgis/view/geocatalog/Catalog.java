@@ -109,6 +109,7 @@ public class Catalog extends JPanel implements DockingPanel,GeoCatalogExt {
         private static final String DEFAULT_FILTER_FACTORY = "name_contains";
         private FilterFactoryManager<IFilter,DefaultActiveFilter> filterFactoryManager;
         private ActionCommands additionalDataSourceActions = new ActionCommands();
+
         /**
          * For the Unit test purpose
          *

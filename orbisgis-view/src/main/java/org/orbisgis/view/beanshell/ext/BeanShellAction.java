@@ -29,12 +29,12 @@
 package org.orbisgis.view.beanshell.ext;
 
 import org.orbisgis.view.beanshell.BeanShellFrame;
-import org.orbisgis.view.components.actions.MenuItemService;
+import org.orbisgis.view.components.actions.ActionFactoryService;
 
 /**
  * @author Nicolas Fortin
  */
-public interface BeanShellAction extends MenuItemService<BeanShellFrame> {
+public interface BeanShellAction extends ActionFactoryService<BeanShellFrame> {
     // Action, MENU IDs
     public static final String A_EXECUTE = "M_EXECUTE";
     public static final String A_CLEAR = "M_CLEAR";

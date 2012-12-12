@@ -63,15 +63,34 @@ public class ActionCommands {
         public void registerContainer(JToolBar toolBar) {
                 containers.add(toolBar);
                 applyActionsOnMenuContainer(toolBar,
-                        actions.toArray(new Action[actions.size()]));
+                        actions.toArray(new Action[actions.size()]),true);
         }
 
         public void registerContainer(JPopupMenu menu) {
                 containers.add(menu);
                 applyActionsOnMenuContainer(menu,
-                        actions.toArray(new Action[actions.size()]));
+                        actions.toArray(new Action[actions.size()]),true);
         }
 
+        /**
+         * Copy only enabled actions to the provided popup menu.
+         * Removed actions are not removed from this menu.
+         * This function is useful for temporary Popup menu.
+         * @param menu
+         */
+        public void copyEnabledActions(JPopupMenu menu) {
+                applyActionsOnMenuContainer(menu,
+                        getEnabledActions(),false);
+        }
+        private Action[] getEnabledActions() {
+                List<Action> enabledActions = new ArrayList<Action>(actions.size());
+                for(Action action : actions) {
+                        if(action.isEnabled()) {
+                                enabledActions.add(action);
+                        }
+                }
+                return enabledActions.toArray(new Action[enabledActions.size()]);
+        }
         /**
          *
          * @param menuBar JMenuBar instance
@@ -79,7 +98,7 @@ public class ActionCommands {
         public void registerContainer(JMenuBar menuBar) {
                 containers.add(menuBar);
                 applyActionsOnMenuContainer(menuBar,
-                        actions.toArray(new Action[actions.size()]));
+                        actions.toArray(new Action[actions.size()]),true);
         }
         /**
          * Remove a linked container.
@@ -147,7 +166,7 @@ public class ActionCommands {
 
         private void applyActionsOnAllControls(Action[] actionsAr) {
                 for(JComponent component : containers) {
-                        applyActionsOnMenuContainer(component, actionsAr);
+                        applyActionsOnMenuContainer(component, actionsAr,true);
                 }
         }
 
@@ -196,7 +215,16 @@ public class ActionCommands {
                 }
         }
 
-        private void applyActionsOnMenuContainer(JComponent rootMenu, Action[] actionsAr) {
+        /**
+         * Add provided actions to rootMenu.
+         * Convert Actions in swing controls.
+         * @param rootMenu JPopupMenu, JToolBar or JMenuBar
+         * @param actionsAr Action items to convert.
+         * @param addRemoveListener If true, a listener is inserted in action that
+         *                          contain a reference to container is inserted.
+         *                          This listener remove the swing component if the Action is set as removed.
+         */
+        private void applyActionsOnMenuContainer(JComponent rootMenu, Action[] actionsAr,boolean addRemoveListener) {
                 // Map of Parent->Menu
                 Map<String,Container> subContainers = new HashMap<String,Container>();
                 // Map of TOGGLE_GROUP -> ButtonGroup instance
@@ -259,7 +287,7 @@ public class ActionCommands {
                                                 }
                                         }
                                 }
-                                insertMenu(parent, child, action);
+                                insertMenu(parent, child, action,addRemoveListener);
                         }
                 }
         }
@@ -369,7 +397,7 @@ public class ActionCommands {
                 }
             }
         }
-        private void insertMenu(Container parent, Component child, Action action) {
+        private void insertMenu(Container parent, Component child, Action action,boolean addRemoveListener) {
                 // Get insertion index
                 int insertPosition = getInsertPosition(parent, action);
                 // Insert the action at is right place
@@ -381,8 +409,10 @@ public class ActionCommands {
                 if(insertPosition<getSubElements(parent).length) {
                     insertSeparator(parent,getSubElements(parent)[insertPosition],action,insertPosition+1);
                 }
-                // Remove child from parentComponent when action is removed
-                action.addPropertyChangeListener(new RemoveActionControls(parent,child));
+                if(addRemoveListener) {
+                        // Remove child from parentComponent when action is removed
+                        action.addPropertyChangeListener(new RemoveActionControls(parent,child));
+                }
         }
 
         private JMenu createMenu(Action action) {

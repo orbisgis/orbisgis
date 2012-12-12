@@ -28,13 +28,13 @@
  */
 package org.orbisgis.view.map.ext;
 
-import org.orbisgis.view.components.actions.MenuItemService;
+import org.orbisgis.view.components.actions.ActionFactoryService;
 import org.orbisgis.view.map.MapEditor;
 
 /**
  * @author Nicolas Fortin
  */
-public interface MapEditorAction extends MenuItemService<MapEditor> {
+public interface MapEditorAction extends ActionFactoryService<MapEditor> {
     // Map editor Actions
     // Group
     public static final String A_MEASURE_GROUP = "A_MEASURE_GROUP";

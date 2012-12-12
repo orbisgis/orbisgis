@@ -28,11 +28,11 @@
  */
 package org.orbisgis.view.geocatalog.ext;
 
-import org.orbisgis.view.components.actions.MenuItemService;
+import org.orbisgis.view.components.actions.ActionFactoryService;
 
 /**
  * Menu extension of GeoCatalog
  * @author Nicolas Fortin
  */
-public interface GeoCatalogMenu extends MenuItemService<GeoCatalogExt> {        
+public interface GeoCatalogMenu extends ActionFactoryService<GeoCatalogExt> {
 }

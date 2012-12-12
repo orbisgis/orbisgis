@@ -1,12 +1,12 @@
 package org.orbisgis.view.sqlconsole.ui.ext;
 
-import org.orbisgis.view.components.actions.MenuItemService;
+import org.orbisgis.view.components.actions.ActionFactoryService;
 import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
 
 /**
  * @author Nicolas Fortin
  */
-public interface SQLAction extends MenuItemService<SQLConsolePanel> {
+public interface SQLAction extends ActionFactoryService<SQLConsolePanel> {
     // Action, MENU IDs
     public static final String A_EXECUTE = "M_EXECUTE";
     public static final String A_CLEAR = "M_CLEAR";
