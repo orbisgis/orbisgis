@@ -85,7 +85,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * This is the main UIContext
  */
 public class Core {
-    private static final I18n I18N = I18nFactory.getI18n(Core.class);        
+    private static final I18n I18N = I18nFactory.getI18n(Core.class);
     private static final Logger LOGGER = Logger.getLogger(Core.class);
     /** Buffer to copy resource to file */
     private static final int BUFFER_LENGTH = 4096;
@@ -95,17 +95,17 @@ public class Core {
     private MainFrame mainFrame = new MainFrame();     /*!< The main window */
     private Catalog geoCatalog= null;      /*!< The GeoCatalog frame */
     private ViewWorkspace viewWorkspace;
-    private OutputManager loggerCollection;    /*!< Loggings panels */     
+    private OutputManager loggerCollection;    /*!< Loggings panels */
     private BackgroundManager backgroundManager;
-             
+
     public static final Dimension MAIN_VIEW_SIZE = new Dimension(800,600);/*!< Bounds of mainView, x,y and width height*/
     private DockingManager dockManager = null; /*!< The DockStation manager */
-    
-   
+
+
     /////////////////////
     //base package :
     private MainContext mainContext; /*!< The larger surrounding part of OrbisGis base */
-    
+
     ////////////////////
     // Plugins
     private PluginHost pluginFramework;
@@ -114,7 +114,7 @@ public class Core {
      * @param debugMode Show additional information for debugging purposes
      * @note Call startup() to init Swing
      */
-    public Core(CoreWorkspace coreWorkspace,boolean debugMode,ProgressMonitor progressInfo) throws InvocationTargetException, InterruptedException {            
+    public Core(CoreWorkspace coreWorkspace,boolean debugMode,ProgressMonitor progressInfo) throws InvocationTargetException, InterruptedException {
         MainContext.initConsoleLogger(debugMode);
         // Declare empty main frame
         //Set the main frame position and size
@@ -133,13 +133,13 @@ public class Core {
         progressInfo.init(I18N.tr("Loading GDMS.."),100);
         initMainContext(debugMode,coreWorkspace);
         progressInfo.progressTo(10);
-        this.viewWorkspace = new ViewWorkspace(this.mainContext.getCoreWorkspace());        
+        this.viewWorkspace = new ViewWorkspace(this.mainContext.getCoreWorkspace());
         Services.registerService(ViewWorkspace.class, I18N.tr("Contains view folders path"),
-                        viewWorkspace);        
+                        viewWorkspace);
         progressInfo.init(I18N.tr("Register GUI Sql functions.."),100);
         addSQLFunctions();
         progressInfo.progressTo(11);
-        //Load plugin host        
+        //Load plugin host
         progressInfo.init(I18N.tr("Load the plugin framework.."), 100);
         startPluginHost();
         progressInfo.progressTo(18);
@@ -170,18 +170,18 @@ public class Core {
                         }
                 } else {
                         coreWorkspace.setWorkspaceFolder(defaultWorkspace.getAbsolutePath());
-                }                
-        }        
+                }
+        }
         this.mainContext = new MainContext(debugMode,coreWorkspace,true);
     }
-    
+
     private class PromptUserForSelectingWorkspace implements Runnable {
                 private CoreWorkspace coreWorkspace;
 
                 public PromptUserForSelectingWorkspace(CoreWorkspace coreWorkspace) {
                         this.coreWorkspace = coreWorkspace;
                 }
-            
+
                 @Override
                 public void run() {
                         // Ask the user to select a workspace folder
@@ -190,7 +190,7 @@ public class Core {
                                 throw new RuntimeException(I18N.tr("Invalid workspace"));
                         }
                         coreWorkspace.setWorkspaceFolder(newWorkspace.getAbsolutePath());
-                }            
+                }
     }
     /**
      * For UnitTest purpose
@@ -199,7 +199,7 @@ public class Core {
     public Catalog getGeoCatalog() {
         return geoCatalog;
     }
-    
+
     /**
      * Init the SIF ui factory
      */
@@ -211,9 +211,9 @@ public class Core {
                 LOGGER.error(I18N.tr("Error while loading dialogs informations."),ex);
         }
     }
-    
+
     /**
-     * 
+     *
      * @return Instance of main context
      */
     public MainContext getMainContext() {
@@ -226,14 +226,14 @@ public class Core {
     public MainFrame getMainFrame() {
         return mainFrame;
     }
-    
+
     /**
      * Create the Instance of the main frame
      */
     private void makeMainFrame() {
         mainFrame.init();
         //When the user ask to close OrbisGis it call
-        //the shutdown method here, 
+        //the shutdown method here,
         // Link the Swing Events with the MainFrame event
         //Thanks to EventHandler we don't have to build a listener class
         mainFrame.addWindowListener(EventHandler.create(
@@ -243,7 +243,7 @@ public class Core {
                 null,                 //the event parameter to pass(none)
                 "windowClosing"));    //The listener method to use
     }
-    
+
     /**
      * Create the logging panels
      * All,Info,Warning,Error
@@ -262,7 +262,7 @@ public class Core {
         //Add the view as a new Docking Panel
         dockManager.addDockingPanel(geoCatalog);
     }
-    
+
     /**
      * Create the Job processing information and control panel
      */
@@ -274,7 +274,7 @@ public class Core {
      */
     private void loadEditorFactories() {
             editors.addEditorFactory(new TocEditorFactory());
-            editors.addEditorFactory(new MapEditorFactory());
+            editors.addEditorFactory(new MapEditorFactory(pluginFramework.getHostBundleContext()));
             editors.addEditorFactory(new SQLConsoleFactory());
             editors.addEditorFactory(new TableEditorFactory());
             editors.addEditorFactory(new BeanShellFrameFactory());
@@ -282,7 +282,7 @@ public class Core {
     /**
      * Initialisation of the BackGroundManager Service
      */
-    private void initSwingJobs() {   
+    private void initSwingJobs() {
         backgroundManager = new JobQueue();
         Services.registerService(
                 BackgroundManager.class,
@@ -296,7 +296,7 @@ public class Core {
     public void onMainWindowClosing() {
         this.shutdown(true);
     }
-    
+
     /**
      * Create the central place for editor factories.
      * This manager will retrieve panel editors and
@@ -308,9 +308,9 @@ public class Core {
         Services.registerService(EditorManager.class,
                                  I18N.tr("Use this instance to open an editable element (map,data source..)"),
                                  editors);
-        
+
     }
-    
+
     /**
     * Starts the application. This method creates the {@link MainFrame},
     * and manage the Look And Feel declarations
@@ -327,45 +327,45 @@ public class Core {
     }
     /**
      * For unit test purpose, expose the plugin framework
-     * @return 
+     * @return
      */
     public PluginHost getPluginFramework() {
         return pluginFramework;
     }
-    
-    
+
+
     private void initialize(ProgressMonitor progress) {
-            
+
         progress.init(I18N.tr("Loading the main window"), 100);
         makeMainFrame();
         progress.progressTo(30);
-        
+
         progress.init(I18N.tr("Loading docking system and frames"), 100);
         //Initiate the docking management system
         dockManager = new DockingManagerImpl(mainFrame,pluginFramework.getHostBundleContext());
         mainFrame.setDockingManager(dockManager);
         progress.progressTo(35);
-        
+
         //Load the log panels
         makeLoggingPanels();
         progress.progressTo(40);
-        
+
         //Load the Job Panel
         makeJobsPanel();
         progress.progressTo(45);
-        
+
         //Load the editor factories manager
         makeEditorManager(dockManager);
         progress.progressTo(50);
-        
+
         //Load the GeoCatalog
         makeGeoCatalogPanel();
         progress.progressTo(55);
-        
+
         //Load Built-ins Editors
         loadEditorFactories();
         progress.progressTo(60);
-        
+
         progress.init(I18N.tr("Restore the former layout.."), 100);
         //Load the docking layout and editors opened in last OrbisGis instance
         File savedDockingLayout = new File(viewWorkspace.getDockingLayoutPath());
@@ -375,11 +375,11 @@ public class Core {
                 copyDefaultDockingLayout(savedDockingLayout);
         }
         dockManager.setDockingLayoutPersistanceFilePath(viewWorkspace.getDockingLayoutPath());
-        progress.progressTo(70);        
+        progress.progressTo(70);
     }
     /**
      * Copy the default docking layout to the specified file path.
-     * @param savedDockingLayout 
+     * @param savedDockingLayout
      */
     private void copyDefaultDockingLayout(File savedDockingLayout) {
                 InputStream xmlFileStream = DockingManager.class.getResourceAsStream("default_docking_layout.xml");
@@ -411,13 +411,13 @@ public class Core {
     /**
      * Add SQL functions to interact with OrbisGIS UI
      */
-        private void addSQLFunctions() {               
+        private void addSQLFunctions() {
                 mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_AddLayer.class);
                 mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_BBox.class);
                 mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_ZoomTo.class);
                 mainContext.getDataSourceFactory().getFunctionManager().addFunction(MapContext_Share.class);
         }
-    
+
     /**
      * Change the state of the main frame in the swing thread
      */
@@ -448,7 +448,7 @@ public class Core {
     public DockingManager getDockManager() {
         return dockManager;
     }
-    
+
     /**
      * Free all resources allocated by this object
      */
@@ -462,19 +462,19 @@ public class Core {
                         //Cancel the next job
                 }
         }
-        
+
         //Free UI resources
         editors.dispose();
         geoCatalog.dispose();
         mainFrame.dispose();
         dockManager.dispose();
         loggerCollection.dispose();
-        
+
         //Free libraries resources
         mainContext.dispose();
-        
+
         UIFactory.setMainFrame(null);
-        
+
         // Shutdown the plugin framwork
         try {
             pluginFramework.stop();
@@ -543,6 +543,6 @@ public class Core {
                         return true;
                 } else {
                         return false;
-                }                
+                }
         }
 }

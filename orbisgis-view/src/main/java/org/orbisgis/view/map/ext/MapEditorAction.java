@@ -33,7 +33,7 @@ import org.orbisgis.view.components.actions.ActionFactoryService;
 /**
  * @author Nicolas Fortin
  */
-public interface MapEditorAction extends ActionFactoryService<MapEditorExtension> {
+public abstract class MapEditorAction implements ActionFactoryService<MapEditorExtension> {
     // Map editor Actions
     // Group
     public static final String A_MEASURE_GROUP = "A_MEASURE_GROUP";

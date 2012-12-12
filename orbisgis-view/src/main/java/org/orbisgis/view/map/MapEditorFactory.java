@@ -28,8 +28,12 @@
  */
 package org.orbisgis.view.map;
 
+import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.edition.SingleEditorFactory;
+import org.orbisgis.view.map.ext.MapEditorAction;
+import org.orbisgis.view.map.ext.MapEditorExtension;
+import org.osgi.framework.BundleContext;
 
 /**
  * MapEditor cannot be opened twice, the the factory is a SingleEditorFactory.
@@ -37,6 +41,12 @@ import org.orbisgis.view.edition.SingleEditorFactory;
 public class MapEditorFactory implements SingleEditorFactory {
         public static final String FACTORY_ID = "MapFactory";
         private MapEditor mapPanel = null;
+        private MenuItemServiceTracker<MapEditorExtension,MapEditorAction> mapEditorExt;
+        private BundleContext hostBundle;
+
+        public MapEditorFactory(BundleContext bc) {
+            hostBundle = bc;
+        }
 
         @Override
         public void dispose() {
@@ -46,6 +56,7 @@ public class MapEditorFactory implements SingleEditorFactory {
         public EditorDockable[] getSinglePanels() {
                 if(mapPanel==null) {
                         mapPanel = new MapEditor();
+                        mapEditorExt = new MenuItemServiceTracker<MapEditorExtension,MapEditorAction>(hostBundle,MapEditorAction.class,mapPanel.getActionCommands(),mapPanel);
                 }
                 return new EditorDockable[] {mapPanel};
         }

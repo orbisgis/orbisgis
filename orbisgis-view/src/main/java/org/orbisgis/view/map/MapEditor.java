@@ -35,8 +35,6 @@ import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.beans.EventHandler;
@@ -68,14 +66,13 @@ import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionTools;
 import org.orbisgis.view.components.actions.DefaultAction;
-import org.orbisgis.view.components.button.DropDownButton;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
-import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.ext.MapEditorAction;
+import org.orbisgis.view.map.ext.MapEditorExtension;
 import org.orbisgis.view.map.jobs.CreateSourceFromSelection;
 import org.orbisgis.view.map.jobs.ReadMapContextJob;
 import org.orbisgis.view.map.jobs.ZoomToSelection;
@@ -100,11 +97,11 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * The Map Editor Panel
  */
-public class MapEditor extends JPanel implements EditorDockable, TransformListener   {
+public class MapEditor extends JPanel implements TransformListener, MapEditorExtension   {
     private static final I18n I18N = I18nFactory.getI18n(MapEditor.class);
     private static final Logger GUILOGGER = Logger.getLogger("gui."+MapEditor.class);
     //The UID must be incremented when the serialization is not compatible with the new version of this class
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
     private MapControl mapControl = new MapControl();
     private MapContext mapContext = null;
     private MapElement mapElement;
@@ -148,7 +145,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         dockingPanelParameters.setToolBar(createToolBar());
         //add(createToolBar(),BorderLayout.NORTH);
         //Set the Drop target
-        dragDropHandler = new MapTransferHandler();        
+        dragDropHandler = new MapTransferHandler();
         this.setTransferHandler(dragDropHandler);
     }
     private void updateMapLabel() {
@@ -193,14 +190,14 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         // When the tree is expanded update the manager size
                         mapsManager.getTree().addComponentListener(sizeListener);
                         mapsManager.getTree().addTreeExpansionListener(EventHandler.create(TreeExpansionListener.class,this,"updateMapControlSize"));
-                        
+
                 }
         }
 
         private void initMapContext() {
                 BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
                 ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
-                
+
                 File serialisedMapContextPath = new File(viewWorkspace.getMapContextPath() + File.separator, getMapEditorPersistance().getDefaultMapContext());
                 if(!serialisedMapContextPath.exists()) {
                         createDefaultMapContext();
@@ -224,8 +221,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
                 ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
 
-                MapContext defaultMapContext = new OwsMapContext();             
-                
+                MapContext defaultMapContext = new OwsMapContext();
+
 
                 //Load the map context
                 File mapContextFolder = new File(viewWorkspace.getMapContextPath());
@@ -233,11 +230,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         mapContextFolder.mkdir();
                 }
                 File mapContextFile = new File(mapContextFolder, I18N.tr("MyMap.ows"));
-                
+
                 if (!mapContextFile.exists()) {
                         //Create an empty map context
                         TreeLeafMapContextFile.createEmptyMapContext(mapContextFile);
-                }                
+                }
                 try {
                         defaultMapContext.read(new FileInputStream(mapContextFile));
                 } catch (FileNotFoundException ex) {
@@ -248,7 +245,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 MapElement editableMap = new MapElement(defaultMapContext, mapContextFile);
                 backgroundManager.backgroundOperation(new ReadMapContextJob(editableMap));
         }
-        
+
         /**
          * Compute the appropriate components bounds for MapControl
          * and MapsManager and apply theses bounds
@@ -269,7 +266,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         int hPos = layeredPane.getWidth() - Math.min(mapsManagerPreferredSize.width,layeredPane.getWidth());
                         mapsManager.setBounds(hPos,0,Math.min(mapsManagerPreferredSize.width,layeredPane.getWidth()),Math.min(mapsManagerPreferredSize.height,layeredPane.getHeight()));
                         mapsManager.revalidate();
-                }                
+                }
         }
     /**
      * The user Drop a list of Editable
@@ -280,14 +277,14 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         //Load the layers in the background
         bm.nonBlockingBackgroundOperation(new DropDataSourceProcess(editableList));
     }
-    
+
     /**
      * Load a new map context
-     * @param element 
+     * @param element
      */
     private void loadMap(MapElement element) {
-        try {      
-            removeListeners();    
+        try {
+            removeListeners();
             mapElement = element;
             mapContext = (MapContext) element.getObject();
             //We (unfortunately) need a cross reference here : this way, we'll
@@ -316,7 +313,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             GUILOGGER.error(ex);
         } catch (TransitionException ex) {
             GUILOGGER.error(ex);
-        }        
+        }
     }
     private MapEditorPersistance getMapEditorPersistance() {
             return ((MapEditorPersistance)dockingPanelParameters.getLayout());
@@ -339,13 +336,13 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 removeListeners();
         }
 
-        
+
         public MapContext getMapContext() {
                 return mapContext;
         }
-    
-    
-    
+
+
+
     /**
      * This method is called by the timer called CursorCoordinateLookupTimer
      * This function fetch the cursor coordinates (pixel)
@@ -358,7 +355,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         lastTranslatedCursorPosition=lastCursorPosition;
                         Point2D mapCoordinate = mapControl.getMapTransform().toMapPoint(lastCursorPosition.x, lastCursorPosition.y);
                         mapStatusBar.setCursorCoordinates(mapCoordinate);
-                }                
+                }
             } finally {
                 if(CursorCoordinateLookupTimer!=null) {
                         CursorCoordinateLookupTimer.start();
@@ -414,7 +411,12 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 .setToolTipText(I18N.tr("Show/Hide maps tree")));
     }
 
-
+    /**
+     * @return The manager of docking actions.
+     */
+    public ActionCommands getActionCommands() {
+        return actions;
+    }
     private JToolBar createToolBar() {
         JToolBar toolBar = new JToolBar();
         createActions();
@@ -440,7 +442,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     public void onFullExtent() {
         mapControl.getMapTransform().setExtent(mapContext.getLayerModel().getEnvelope());
     }
-    
+
     /**
      * The user click on the button clear selection
      */
@@ -451,7 +453,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                     }
             }
     }
-    
+
     /**
      * The user click on the button Zoom to selection
      */
@@ -459,8 +461,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             BackgroundManager bm = Services.getService(BackgroundManager.class);
             bm.backgroundOperation(new ZoomToSelection(mapContext, mapContext.getLayers()));
     }
-    
-    
+
+
      /**
      * The user can export the selected features into a new datasource
      */
@@ -475,7 +477,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             }       }
             }
     }
-        
+
     /**
      * Give information on the behaviour of this panel related to the current
      * docking system
@@ -490,11 +492,9 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     public JComponent getComponent() {
         return this;
     }
-    /**
-     * The user click on a Map Tool
-     * @param automaton 
-     */
-    public void onToolSelected(Automaton automaton) {
+
+    @Override
+    public void setTool(Automaton automaton) {
         GUILOGGER.debug("Choose the tool named "+automaton.getName());
         try {
             mapControl.setTool(automaton);
@@ -561,7 +561,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
 
             @Override
         public void actionPerformed(ActionEvent ae) {
-            onToolSelected(automaton);
+            setTool(automaton);
         }
     }
     /**
@@ -572,7 +572,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                     mapElement.removePropertyChangeListener(modificationListener);
             }
     }
-    
+
     /**
      * The editable modified state is switching
      */
@@ -595,7 +595,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         public DropDataSourceProcess(EditableElement[] editableList) {
             this.editableList = editableList;
         }
-        
+
         @Override
         public void run(org.orbisgis.progress.ProgressMonitor pm) {
             DataManager dataManager = Services.getService(DataManager.class);
@@ -616,11 +616,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         mapElement.open(pm);
                         SwingUtilities.invokeLater(new Runnable() {
                                                 @Override
-                                                public void run() {                                                        
-                                                        EditorManager em = Services.getService(EditorManager.class);                        
-                                                        em.openEditable(mapElement);  
+                                                public void run() {
+                                                        EditorManager em = Services.getService(EditorManager.class);
+                                                        em.openEditable(mapElement);
                                                 }
-                                        });                              
+                                        });
                         return;
                 }
             }
@@ -629,7 +629,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         @Override
         public String getTaskName() {
             return I18N.tr("Load the data source droped into the map editor.");
-        }    
-        
+        }
+
     }
 }

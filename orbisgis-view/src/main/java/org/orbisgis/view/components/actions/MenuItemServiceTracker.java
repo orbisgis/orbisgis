@@ -1,18 +1,18 @@
 package org.orbisgis.view.components.actions;
 
+import javax.swing.Action;
+import javax.swing.SwingUtilities;
 import org.apache.log4j.Logger;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
-import javax.swing.Action;
-import javax.swing.SwingUtilities;
-
 /**
  * Register action to an ActionCommands
  * @author Nicolas Fortin
  */
-public class MenuItemServiceTracker<TargetComponent> extends ServiceTracker<ActionFactoryService<TargetComponent>,MenuTrackerAction<TargetComponent>> {
+//MenuItemServiceTracker<TargetComponent,ActionService extends MenuTrackerAction<TargetComponent>> extends ServiceTracker<ActionService,ActionService> {
+public class MenuItemServiceTracker<TargetComponent,ActionService extends ActionFactoryService<TargetComponent>> extends ServiceTracker<ActionService,MenuTrackerAction<TargetComponent>> {
         private static enum ACTION_EVT { ADDED, MODIFIED, REMOVED}
         private ActionCommands ac;
         private BundleContext bc;
@@ -24,7 +24,7 @@ public class MenuItemServiceTracker<TargetComponent> extends ServiceTracker<Acti
          * @param serviceInterface The interface.class of the tracked service
          * @param actionCommands Where to put Tracked actions.
          */
-        public MenuItemServiceTracker(BundleContext context,Class<ActionFactoryService<TargetComponent>> serviceInterface,ActionCommands actionCommands, TargetComponent targetInstance) {
+        public MenuItemServiceTracker(BundleContext context,Class<ActionService> serviceInterface,ActionCommands actionCommands, TargetComponent targetInstance) {
                 super(context,serviceInterface,null);
                 ac = actionCommands;
                 bc = context;
@@ -32,20 +32,19 @@ public class MenuItemServiceTracker<TargetComponent> extends ServiceTracker<Acti
         }
 
         @Override
-        public MenuTrackerAction<TargetComponent> addingService(ServiceReference<ActionFactoryService<TargetComponent>> reference) {
-                return processOperation(new SwingOperation(reference));
+        public MenuTrackerAction<TargetComponent> addingService(ServiceReference<ActionService> reference) {
+            return processOperation(new SwingOperation(reference));
         }
 
         @Override
-        public void modifiedService(ServiceReference<ActionFactoryService<TargetComponent>> reference, MenuTrackerAction<TargetComponent> service) {
-                processOperation(new SwingOperation(reference,service,ACTION_EVT.MODIFIED));
+        public void modifiedService(ServiceReference<ActionService> reference, MenuTrackerAction<TargetComponent> service) {
+            processOperation(new SwingOperation(reference,service,ACTION_EVT.MODIFIED));
         }
 
         @Override
-        public void removedService(ServiceReference<ActionFactoryService<TargetComponent>> reference, MenuTrackerAction<TargetComponent> service) {
-                processOperation(new SwingOperation(reference, service, ACTION_EVT.REMOVED));
+        public void removedService(ServiceReference<ActionService> reference, MenuTrackerAction<TargetComponent> service) {
+            processOperation(new SwingOperation(reference, service, ACTION_EVT.REMOVED));
         }
-
 
         private MenuTrackerAction<TargetComponent> processOperation(SwingOperation operation) {
                 if(SwingUtilities.isEventDispatchThread()) {
@@ -63,17 +62,17 @@ public class MenuItemServiceTracker<TargetComponent> extends ServiceTracker<Acti
          * Guaranty that the Add/Update/Remove actions operations are done on swing thread.
          */
         private class SwingOperation implements Runnable {
-                private ServiceReference<ActionFactoryService<TargetComponent>> reference;
+                private ServiceReference<ActionService> reference;
                 private MenuTrackerAction<TargetComponent> generatedActions;
                 private ACTION_EVT operation;
 
-                private SwingOperation(ServiceReference<ActionFactoryService<TargetComponent>> reference, MenuTrackerAction<TargetComponent> action, ACTION_EVT operation) {
+                private SwingOperation(ServiceReference<ActionService> reference, MenuTrackerAction<TargetComponent> action, ACTION_EVT operation) {
                         this.reference = reference;
                         this.generatedActions = action;
                         this.operation = operation;
                 }
 
-                private SwingOperation(ServiceReference<ActionFactoryService<TargetComponent>> reference) {
+                private SwingOperation(ServiceReference<ActionService> reference) {
                         this.reference = reference;
                         this.operation = ACTION_EVT.ADDED;
                 }
@@ -84,7 +83,7 @@ public class MenuItemServiceTracker<TargetComponent> extends ServiceTracker<Acti
                 private void removeService() {
                         for(Action action : generatedActions.getActions()) {
                                 ac.removeAction(action);
-                        };
+                        }
                         generatedActions.getActionFactory().disposeActions(targetInstance,generatedActions.getActions());
                 }
                 @Override
@@ -96,7 +95,7 @@ public class MenuItemServiceTracker<TargetComponent> extends ServiceTracker<Acti
                                 case MODIFIED: //Remove then Add
                                         removeService();
                                 case ADDED:
-                                        ActionFactoryService<TargetComponent> service = bc.getService(reference);
+                                        ActionService service = bc.getService(reference);
                                         generatedActions = new MenuTrackerAction<TargetComponent>(service,service.createActions(targetInstance));
                                         for(Action action : generatedActions.getActions()) {
                                                 ac.addAction(action);
