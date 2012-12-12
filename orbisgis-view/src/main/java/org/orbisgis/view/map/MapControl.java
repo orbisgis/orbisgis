@@ -63,7 +63,7 @@ import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * MapControl.
- * 
+ *
  */
 
 public class MapControl extends JComponent implements ContainerListener {
@@ -101,9 +101,9 @@ public class MapControl extends JComponent implements ContainerListener {
 	TransformListener element;
 
 	Automaton defaultTool;
-        
+
         PropertyChangeListener boundingBoxPropertyListener = EventHandler.create(PropertyChangeListener.class,this,"onMapContextBoundingBoxChange");
-        
+
         BufferedImage updatedImage=null; /*!< The last drawn image paint, shown when the status of the mapTransform is dirty */
 
 	public MapControl() {
@@ -112,9 +112,9 @@ public class MapControl extends JComponent implements ContainerListener {
         private void setStatus(int newStatus) {
             status = newStatus;
         }
-        
+
         /**
-         * The bounding box of the map context need 
+         * The bounding box of the map context need
          * to be read and applied to the MapTransform
          */
         public void onMapContextBoundingBoxChange() {
@@ -123,8 +123,8 @@ public class MapControl extends JComponent implements ContainerListener {
                         mapTransform.setExtent(boundingBox);
                 }
         }
-        
-        
+
+
 	final public void initMapControl() throws TransitionException {
 		synchronized (this) {
 			this.mapControlId = lastMapControlId++;
@@ -152,16 +152,16 @@ public class MapControl extends JComponent implements ContainerListener {
 		}
 
                 setLayout(new BorderLayout());
-                
+
                 // adding listeners at the endupdatedImage
                 // to prevent multiple useless repaint
 		toolManager.addToolListener(new MapToolListener());
 		addMouseListener(toolManager);
                 addMouseMotionListener(toolManager);
                 addMouseWheelListener(toolManager);
-                
+
 		mapTransform.addTransformListener(new MapControlTransformListener());
-                
+
                 //Component event invalidate the picture
                 this.addComponentListener(EventHandler.create(ComponentListener.class, this,"invalidateImage"));
 		// Add editable element listen transform event
@@ -210,7 +210,7 @@ public class MapControl extends JComponent implements ContainerListener {
 					refreshLayerListener);
 		}
 	}
-        
+
 	/**
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
@@ -227,7 +227,7 @@ public class MapControl extends JComponent implements ContainerListener {
 		if (mapTransformImage != null && status == UPDATED) {
                     updatedImage = mapTransformImage;
 		}
-                    
+
                 if(updatedImage!=null){
                     g.drawImage(updatedImage, 0, 0, null);
                     toolManager.paintEdition(g);
@@ -277,7 +277,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	/**
 	 * Returns the drawn image
-	 * 
+	 *
 	 * @return imagen.
 	 */
 	public BufferedImage getImage() {
@@ -295,7 +295,7 @@ public class MapControl extends JComponent implements ContainerListener {
 	public void setTool(Automaton tool) throws TransitionException {
 		toolManager.setTool(tool);
 	}
-        
+
 	public void invalidateImage() {
 		setStatus(DIRTY);
 		repaint();
@@ -421,7 +421,7 @@ public class MapControl extends JComponent implements ContainerListener {
 		return toolManager;
 	}
         /**
-         * 
+         *
          * @return The current used tool
          */
 	public Automaton getTool() {
@@ -432,34 +432,34 @@ public class MapControl extends JComponent implements ContainerListener {
             }
 	}
 
-	private class RefreshLayerListener implements LayerListener,
-			EditionListener, DataSourceListener {
-                @Override
-		public void layerAdded(LayerCollectionEvent listener) {
-			for (ILayer layer : listener.getAffected()) {
-				addLayerListenerRecursively(layer, this);
-                                ILayer[] model = getMapContext().getLayers();
-                                int count = 0;
-                                //We check that we have only one spatial layer in
-                                //the layer model. It it is the case, we will :
-                                // - set adjustExtent to true in the MapTransform
-                                // - set the extent of the map to the extent of the layer.
-                                for(int i=0; i<model.length && count <2;i++){
-                                        if(model[i] instanceof Layer){
-                                                count++;
-                                        }
-                                }
-				if (count == 1) {
-					final Envelope e = layer.getEnvelope();
-					if (e != null) {
-                                                mapTransform.setAdjustExtent(true);
-						mapTransform.setExtent(e);
-					}
-				} else {
-                                        invalidateImage();
-                                }
-                        }
-		}
+    private class RefreshLayerListener implements LayerListener,
+            EditionListener, DataSourceListener {
+
+        @Override
+        public void layerAdded(LayerCollectionEvent listener) {
+            for (ILayer layer : listener.getAffected()) {
+                addLayerListenerRecursively(layer, this);
+                ILayer[] model = getMapContext().getLayers();
+                int count = 0;
+                //We check that we have only one spatial layer in
+                //the layer model. It it is the case, we will :
+                // - set adjustExtent to true in the MapTransform
+                // - set the extent of the map to the extent of the layer.
+                for (int i = 0; i < model.length && count < 2; i++) {
+                    if (model[i] instanceof Layer) {
+                        count++;
+                    }
+                }
+                if (count == 1) {
+                    final Envelope e = layer.getEnvelope();
+                    if (e != null) {
+                        mapTransform.setExtent(e);
+                    }
+                } else {
+                    invalidateImage();
+                }
+            }
+        }
 
                 @Override
 		public void layerMoved(LayerCollectionEvent listener) {
@@ -476,7 +476,6 @@ public class MapControl extends JComponent implements ContainerListener {
 			for (ILayer layer : listener.getAffected()) {
 				removeLayerListenerRecursively(layer, this);
                                 if(!mapContext.isLayerModelSpatial()){
-                                        mapTransform.setAdjustExtent(false);
                                         mapTransform.setExtent(new Envelope());
                                 }
 				invalidateImage();
@@ -573,7 +572,7 @@ public class MapControl extends JComponent implements ContainerListener {
                 if(mapContext!=null) {
                         mapContext.removePropertyChangeListener(boundingBoxPropertyListener);
                         mapContext.getLayerModel().removeLayerListenerRecursively(refreshLayerListener);
-                }                
+                }
         }
         /**
          * Switch the loaded map context
@@ -593,7 +592,7 @@ public class MapControl extends JComponent implements ContainerListener {
 	}
 
         private class MapControlTransformListener implements TransformListener {
-            
+
             @Override
             public void imageSizeChanged(int oldWidth, int oldHeight,
                             MapTransform mapTransform) {
@@ -606,9 +605,9 @@ public class MapControl extends JComponent implements ContainerListener {
                     invalidateImage();
                     // Record new BoundingBox value for map context
                     mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
-            }            
+            }
         }
-        
+
         private class MapToolListener implements ToolListener {
                 @Override
                 public void transitionException(ToolManager toolManager,
