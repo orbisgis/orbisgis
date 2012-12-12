@@ -210,6 +210,9 @@ public class ToolUtilities {
 	}
 
 	public static boolean layerCountGreaterThan(MapContext vc, int i) {
+                if(vc==null || vc.getLayerModel()==null) {
+                        return false;
+                }
 		return vc.getLayerModel().getLayersRecursively().length > i;
 	}
 

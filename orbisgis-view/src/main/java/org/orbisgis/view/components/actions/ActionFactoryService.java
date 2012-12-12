@@ -54,5 +54,5 @@ public interface ActionFactoryService<TargetComponent> {
          * @param target The target being unloaded.
          * @param actions The action created by this factory.
          */
-        void disposeAction(TargetComponent target, List<Action> actions);
+        void disposeActions(TargetComponent target, List<Action> actions);
 }

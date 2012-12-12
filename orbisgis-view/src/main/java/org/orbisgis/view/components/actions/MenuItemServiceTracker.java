@@ -81,20 +81,20 @@ public class MenuItemServiceTracker<TargetComponent> extends ServiceTracker<Acti
                 public MenuTrackerAction<TargetComponent> getService() {
                         return generatedActions;
                 }
+                private void removeService() {
+                        for(Action action : generatedActions.getActions()) {
+                                ac.removeAction(action);
+                        };
+                        generatedActions.getActionFactory().disposeActions(targetInstance,generatedActions.getActions());
+                }
                 @Override
                 public void run() {
                         switch(operation) {
                                 case REMOVED:
-                                        for(Action action : generatedActions.getActions()) {
-                                                ac.removeAction(action);
-                                        }
-                                        generatedActions.getActionFactory().disposeAction(targetInstance,generatedActions.getActions());
+                                        removeService();
                                         break;
                                 case MODIFIED: //Remove then Add
-                                        for(Action action : generatedActions.getActions()) {
-                                                ac.removeAction(action);
-                                        };
-                                        generatedActions.getActionFactory().disposeAction(targetInstance,generatedActions.getActions());
+                                        removeService();
                                 case ADDED:
                                         ActionFactoryService<TargetComponent> service = bc.getService(reference);
                                         generatedActions = new MenuTrackerAction<TargetComponent>(service,service.createActions(targetInstance));

@@ -84,7 +84,15 @@ import org.orbisgis.view.map.mapsManager.TreeLeafMapContextFile;
 import org.orbisgis.view.map.mapsManager.TreeLeafMapElement;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.TransitionException;
-import org.orbisgis.view.map.tools.*;
+import org.orbisgis.view.map.tools.CompassTool;
+import org.orbisgis.view.map.tools.FencePolygonTool;
+import org.orbisgis.view.map.tools.MesureLineTool;
+import org.orbisgis.view.map.tools.MesurePolygonTool;
+import org.orbisgis.view.map.tools.PanTool;
+import org.orbisgis.view.map.tools.PickCoordinatesPointTool;
+import org.orbisgis.view.map.tools.SelectionTool;
+import org.orbisgis.view.map.tools.ZoomInTool;
+import org.orbisgis.view.map.tools.ZoomOutTool;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -544,6 +552,14 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         }
 
         @Override
+        public boolean isEnabled() {
+                if(mapContext==null || mapContext.getLayerModel()==null) {
+                        return false;
+                }
+                return automaton.isEnabled(mapContext,mapControl.getToolManager());
+        }
+
+            @Override
         public void actionPerformed(ActionEvent ae) {
             onToolSelected(automaton);
         }

@@ -116,9 +116,9 @@ public class ToolBarActions {
                 dbutton.setIcon(jMenuItem.getIcon());
             }
             //Deselect actions first
-            if(buttonGroup!=null) {
-                cButton.addActionListener(new ButtonGroupActionListener(buttonGroup));
-            }
+            //if(buttonGroup!=null) {
+            //    cButton.addActionListener(new ButtonGroupActionListener(buttonGroup));
+            //}
             transferActionsListeners(jMenuItem,cButton);
         } else if(me instanceof JMenu || me instanceof JPopupMenu){
             CAction cmenu = citem;
