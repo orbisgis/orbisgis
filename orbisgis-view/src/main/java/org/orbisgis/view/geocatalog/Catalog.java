@@ -152,7 +152,7 @@ public class Catalog extends JPanel implements DockingPanel,GeoCatalogExt {
                 button.addActionListener(EventHandler.create(ActionListener.class, filterFactoryManager, "onAddFilter"));
                 toolBar.add(button);
                 toolBar.addSeparator();
-                dockingParameters.setToolBar(toolBar);
+                //dockingParameters.setToolBar(toolBar);
 
                 //Add the geocatalog specific filters
                 registerFilterFactories();

@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.docking.actions;
+package org.orbisgis.view.docking.internals.actions;
 
 import bibliothek.gui.dock.common.intern.action.CDecorateableAction;
 import bibliothek.gui.dock.common.intern.action.CSelectableAction;
@@ -41,13 +41,30 @@ import java.beans.PropertyChangeEvent;
 public class CommonFunctions {
     private CommonFunctions() {
     }
+
     /**
      * Propagate property change from Action to CAction.
      * @param cAction Docking Frames Common Action
      * @param action Swing Action
      * @param propertyChangeEvent Property change information
      */
-    public static void onActionPropertyChange(CDecorateableAction cAction,Action action,PropertyChangeEvent propertyChangeEvent) {
+    public static void onActionPropertyChangeSelectable(CSelectableAction cAction,Action action,PropertyChangeEvent propertyChangeEvent) {
+        String prop = propertyChangeEvent.getPropertyName();
+        if(prop==null || prop.equals(Action.SELECTED_KEY)) {
+            Object selected = action.getValue(Action.SELECTED_KEY);
+            if(selected!=null) {
+                cAction.setSelected((Boolean)selected);
+            }
+        }
+        onActionPropertyChangeDecorateable((CDecorateableAction)cAction,action,propertyChangeEvent);
+    }
+    /**
+     * Propagate property change from Action to CAction.
+     * @param cAction Docking Frames Common Action
+     * @param action Swing Action
+     * @param propertyChangeEvent Property change information
+     */
+    public static void onActionPropertyChangeDecorateable(CDecorateableAction cAction,Action action,PropertyChangeEvent propertyChangeEvent) {
         String prop = propertyChangeEvent.getPropertyName();
         if(prop==null || prop.equals(Action.NAME)) {
             Object text = action.getValue(Action.NAME);
@@ -61,21 +78,11 @@ public class CommonFunctions {
                 cAction.setIcon((Icon)icon);
             }
         }
-    }
-    /**
-     * Propagate property change from Action to CAction.
-     * @param cAction Docking Frames Common Action
-     * @param action Swing Action
-     * @param propertyChangeEvent Property change information
-     */
-    public static void onActionPropertyChange(CSelectableAction cAction,Action action,PropertyChangeEvent propertyChangeEvent) {
-        String prop = propertyChangeEvent.getPropertyName();
-        if(prop==null || prop.equals(Action.SELECTED_KEY)) {
-            Object selected = action.getValue(Action.SELECTED_KEY);
-            if(selected!=null) {
-                cAction.setSelected((Boolean)selected);
+        if(prop==null || prop.equals(Action.SHORT_DESCRIPTION)) {
+            Object description = action.getValue(Action.SHORT_DESCRIPTION);
+            if(description!=null) {
+                cAction.setTooltip((String)description);
             }
         }
-        onActionPropertyChange((CDecorateableAction)cAction,action,propertyChangeEvent);
     }
 }

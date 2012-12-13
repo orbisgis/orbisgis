@@ -28,12 +28,11 @@
  */
 package org.orbisgis.view.toc;
 
+import com.kitfox.svg.A;
 import com.vividsolutions.jts.geom.Envelope;
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -44,15 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -80,6 +71,7 @@ import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
+import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorDockable;
@@ -130,8 +122,8 @@ public class Toc extends JPanel implements EditorDockable {
         private Map<String, TableEditableElement> linkedEditableElements = new HashMap<String, TableEditableElement>();
         private PropertyChangeListener tableSelectionChangeListener = EventHandler.create(PropertyChangeListener.class,this,"onTableSelectionChange","source");
         private PropertyChangeListener tableEditableClose = EventHandler.create(PropertyChangeListener.class,this,"onTableEditableClose","source");
-        private JButton saveButton;
         private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified");
+        private Action saveAction;
         /**
          * Constructor
          */
@@ -142,20 +134,20 @@ public class Toc extends JPanel implements EditorDockable {
                 dockingPanelParameters.setName("toc");
                 dockingPanelParameters.setTitle(I18N.tr("Toc"));
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
-                dockingPanelParameters.setToolBar(makeToolBar());
+                initActions();
                 //Initialise an empty tree
                 add(new JScrollPane(makeTree()));
 
-        } 
-        
-        private JToolBar makeToolBar() {
-                JToolBar toolBar = new JToolBar();
-                saveButton = new JButton(I18N.tr("Save"), OrbisGISIcon.getIcon("save"));
-                saveButton.setToolTipText(I18N.tr("Save the Map"));
-                saveButton.setEnabled(false);                
-                saveButton.addActionListener(EventHandler.create(ActionListener.class,this,"onSaveMapContext"));
-                toolBar.add(saveButton);
-                return toolBar;
+        }
+        private void initActions() {
+                List<Action> tools = new ArrayList<Action>();
+                saveAction = new DefaultAction("SAVE_MAP",I18N.tr("Save"),
+                        I18N.tr("Save the Map"),OrbisGISIcon.getIcon("save"),
+                        EventHandler.create(ActionListener.class,this,"onSaveMapContext"),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
+                saveAction.setEnabled(false);
+                tools.add(saveAction);
+                dockingPanelParameters.setDockActions(tools);
         }
         
         /**
@@ -172,7 +164,7 @@ public class Toc extends JPanel implements EditorDockable {
          */
         public void onMapModified() {
                 if(mapElement!=null) {
-                        saveButton.setEnabled(mapElement.isModified());
+                        saveAction.setEnabled(mapElement.isModified());
                 }
         }
         /**
@@ -439,9 +431,9 @@ public class Toc extends JPanel implements EditorDockable {
                                         }
                                 }
                                 //Update the two selection model
-                                tree.getSelectionModel().setSelectionPaths(keptSelection.toArray(new TreePath[0]));
-                                mapContext.setSelectedLayers(layers.toArray(new ILayer[0]));
-                                mapContext.setSelectedStyles(styles.toArray(new Style[0]));
+                                tree.getSelectionModel().setSelectionPaths(keptSelection.toArray(new TreePath[keptSelection.size()]));
+                                mapContext.setSelectedLayers(layers.toArray(new ILayer[layers.size()]));
+                                mapContext.setSelectedStyles(styles.toArray(new Style[styles.size()]));
                         } finally {
                                 fireSelectionEvent.set(true);
                         }

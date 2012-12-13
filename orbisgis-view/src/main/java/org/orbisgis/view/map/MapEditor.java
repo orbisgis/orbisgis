@@ -142,7 +142,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         mapControl.setDefaultTool(new ZoomInTool());
         //Declare Tools of Map Editors
         //Add the tools in the docking Panel title
-        dockingPanelParameters.setToolBar(createToolBar());
+        //dockingPanelParameters.setToolBar(createToolBar());
         //add(createToolBar(),BorderLayout.NORTH);
         //Set the Drop target
         dragDropHandler = new MapTransferHandler();

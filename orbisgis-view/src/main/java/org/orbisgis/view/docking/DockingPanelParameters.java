@@ -31,8 +31,11 @@ package org.orbisgis.view.docking;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
-import javax.swing.Icon;
-import javax.swing.JToolBar;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import javax.swing.*;
+
 import org.orbisgis.view.docking.DockingLocation.Location;
 
 
@@ -48,7 +51,7 @@ import org.orbisgis.view.docking.DockingLocation.Location;
  * Using parameter beans instead of implementing docking frame panels
  * help to extends/update functionality of application without breaking codes
  * 
- * @warning New properties must be linked with the current docking system {@link org.orbisgis.view.docking.internals.OrbisGISView}
+ * New properties must be linked with the current docking system {@link org.orbisgis.view.docking.internals.OrbisGISView}
  */
 public class DockingPanelParameters implements Serializable {
 
@@ -61,7 +64,6 @@ public class DockingPanelParameters implements Serializable {
         public static final String PROP_EXTERNALIZABLE = "externalizable";
         public static final String PROP_DOCKINGAREAPARAMETERS = "dockingAreaParameters";
         public static final String PROP_CLOSEABLE = "closeable";
-        public static final String PROP_TOOLBAR = "toolBar";
         public static final String PROP_VISIBLE = "visible";
         public static final String PROP_NAME = "name";
         public static final String PROP_TITLE = "title";
@@ -69,6 +71,7 @@ public class DockingPanelParameters implements Serializable {
         public static final String PROP_DOCKINGAREA = "dockingArea";
         public static final String PROP_LAYOUT = "layout";
         public static final String PROP_DEFAULTDOCKINGLOCATION = "defaultDockingLocation";
+        public static final String PROP_DOCK_ACTIONS = "dockActions";
         
         // Property Change Support
         private PropertyChangeSupport propertySupport;
@@ -80,12 +83,11 @@ public class DockingPanelParameters implements Serializable {
         private boolean minimizable = true;
         private boolean externalizable = true;
         private boolean closeable = true;
-        private JToolBar toolBar = null;
         private boolean visible = true;
         private String name = "";
         private DockingPanelLayout layout = null;        
         private DockingLocation defaultDockingLocation = new DockingLocation(Location.TOP_OF, "");
-        
+        private List<Action> dockActions = new ArrayList<Action>();
 
         /**
          * Get the value of defaultDockingLocation
@@ -146,27 +148,6 @@ public class DockingPanelParameters implements Serializable {
                 boolean oldVisible = this.visible;
                 this.visible = visible;
                 propertySupport.firePropertyChange(PROP_VISIBLE, oldVisible, visible);
-        }
-
-        /**
-         * Get the value of toolBar
-         *
-         * @return the value of toolBar
-         */
-        public JToolBar getToolBar() {
-                return toolBar;
-        }
-
-        /**
-         * Set the value of toolBar.
-         * Only controls created thanks to javax.swing.Action are passed into the Action toolbar.
-         * Theses actions must be used instead of using swing buttons.
-         * @param toolBar new value of toolBar
-         */
-        public void setToolBar(JToolBar toolBar) {
-                JToolBar oldToolBar = this.toolBar;
-                this.toolBar = toolBar;
-                propertySupport.firePropertyChange(PROP_TOOLBAR, oldToolBar, toolBar);
         }
 
         /**
@@ -384,5 +365,24 @@ public class DockingPanelParameters implements Serializable {
          */
         public void removePropertyChangeListener(String prop, PropertyChangeListener listener) {
                 propertySupport.removePropertyChangeListener(prop, listener);
+        }
+
+        /**
+         * Replace the current list of Buttons on the docking frame action bar.
+         * Additional buttons type and placement can be given by using {@link org.orbisgis.view.components.actions.ActionTools}
+         * @param actions New action list.
+         */
+        public void setDockActions(List<Action> actions) {
+                List<Action> oldList = new ArrayList<Action>(dockActions);
+                dockActions = new ArrayList<Action>(actions);
+                propertySupport.firePropertyChange(PROP_DOCK_ACTIONS,oldList,dockActions);
+        }
+
+        /**
+         * Get the current button action shown on the action toolbar.
+         * @return Unmodifiable current action list.
+         */
+        public List<Action> getDockActions() {
+                return Collections.unmodifiableList(dockActions);
         }
 }

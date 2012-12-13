@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.docking.actions;
+package org.orbisgis.view.docking.internals.actions;
 
 import bibliothek.gui.dock.common.action.CRadioButton;
 import java.awt.event.ActionEvent;
@@ -61,6 +61,6 @@ public class CToggleButton extends CRadioButton {
      * @param propertyChangeEvent Property edition information
      */
     public void onActionPropertyChange(PropertyChangeEvent propertyChangeEvent) {
-        CommonFunctions.onActionPropertyChange(this,action,propertyChangeEvent);
+        CommonFunctions.onActionPropertyChangeSelectable(this,action,propertyChangeEvent);
     }
 }

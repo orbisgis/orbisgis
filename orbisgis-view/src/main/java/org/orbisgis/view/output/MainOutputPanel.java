@@ -68,7 +68,7 @@ public class MainOutputPanel extends JPanel implements DockingPanel {
         button.setToolTipText(I18N.tr("Clear all log panels"));
         button.addActionListener(EventHandler.create(ActionListener.class,this,"onClearAll"));
         toolBar.add(button);        
-        dockingParameters.setToolBar(toolBar);
+        //dockingParameters.setToolBar(toolBar);
         
         this.setLayout(new BorderLayout());
         tabbedPane = new JTabbedPane();
