@@ -1,9 +1,7 @@
 package org.orbisgis.view.docking.internals.actions;
 
 import bibliothek.gui.dock.common.action.CMenu;
-import org.orbisgis.view.components.actions.ActionTools;
-
-import javax.swing.*;
+import javax.swing.Action;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -11,7 +9,7 @@ import java.beans.PropertyChangeListener;
 /**
  * @author Nicolas Fortin
  */
-public class CMenuExt extends CMenu {
+public class CMenuExt extends CMenu implements CActionHolder {
     private Action action;
     /**
      * Create the menu using Action properties.
@@ -30,6 +28,11 @@ public class CMenuExt extends CMenu {
      * @param propertyChangeEvent
      */
     public void onActionPropertyChange(PropertyChangeEvent propertyChangeEvent) {
-        CommonFunctions.onActionPropertyChangeDecorateable(this,action,propertyChangeEvent);
+        CommonFunctions.onActionPropertyChangeDecorateable(this, action, propertyChangeEvent);
+    }
+
+    @Override
+    public Action getAction() {
+        return action;
     }
 }

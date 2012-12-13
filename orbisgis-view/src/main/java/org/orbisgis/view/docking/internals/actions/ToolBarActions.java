@@ -33,12 +33,17 @@ import bibliothek.gui.dock.common.action.CDropDownButton;
 import bibliothek.gui.dock.common.action.CMenu;
 import bibliothek.gui.dock.common.action.CRadioButton;
 import bibliothek.gui.dock.common.action.CRadioGroup;
+
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.Action;
+import javax.swing.*;
+
+import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionTools;
+import java.util.Map.Entry;
 
 /**
  * Manage DockingFrames CActions, converted from Swing Actions.
@@ -73,6 +78,35 @@ public class ToolBarActions {
         }
         return true;
     }
+    private Action getAction(CAction action) {
+        if(action instanceof CActionHolder) {
+            return ((CActionHolder)action).getAction();
+        } else {
+            return null;
+        }
+    }
+    /**
+     * Find the most appropriate action insertion index.
+     * This is sorting by insertion. But it doesn't guaranty to solve complex order issues.
+     * @param actionList CAction containers
+     * @param newAction Action to insert
+     * @return Advised insertion id [0-actionList.getSize()]
+     */
+    private int getInsertionPosition(List<CAction> actionList, Action newAction) {
+        if(ActionTools.isFirstInsertion(newAction)) {
+            return 0;
+        }
+        for(int i=0;i<actionList.size();i++) {
+            Action compAction = getAction(actionList.get(i));
+            if(compAction!=null) {
+                int position = ActionCommands.getInsertionPosition(i,newAction,compAction);
+                if(position!=-1) {
+                    return position;
+                }
+            }
+        }
+        return actionList.size();
+    }
 
     /**
      * Convert swing Action to DockingFrame buttons.
@@ -83,6 +117,10 @@ public class ToolBarActions {
         Map<String,CAction> menuActions = new HashMap<String, CAction>();
         // Radio groups
         Map<String,CRadioGroup> actionGroup = new HashMap<String, CRadioGroup>();
+        // At the time of writing there is no way to retrieve CAction container items
+        // Then an intermediate list must be create in order to sort sub items.
+        Map<String,ArrayList<CAction>> tempCActionContainer = new HashMap<String, ArrayList<CAction>>();
+
         // Create menu item container
         for(Action action : actions) {
             if(ActionTools.isMenu(action)) {
@@ -98,11 +136,7 @@ public class ToolBarActions {
 
         for(Action action : actions) {
             // Retrieve Parent CAction
-            CAction parentAction=null;
             String parentId = ActionTools.getParentMenuId(action);
-            if(!parentId.isEmpty()) {
-                parentAction = menuActions.get(parentId);
-            }
             // Create menu item
             CAction cAction;
             if(ActionTools.isMenu(action)) {
@@ -124,13 +158,30 @@ public class ToolBarActions {
                     cAction = cRadioButton;
                 }
             }
-            // Put CAction in root or action container.
-            if(parentAction!=null) {
-                // Sub CAction
-                addSubItem(parentAction,cAction);
-            } else {
-                // Root items
-                customActions.add(cAction);
+            // Insert the created CAction in a temporary container
+            ArrayList<CAction> actionList = tempCActionContainer.get(parentId);
+            if(actionList==null) {
+                actionList = new ArrayList<CAction>();
+                tempCActionContainer.put(parentId,actionList);
+            }
+            actionList.add(getInsertionPosition(actionList,action),cAction);
+        }
+        // Insert CAction in each containers
+        for(Entry<String,ArrayList<CAction>> entry : tempCActionContainer.entrySet()) {
+            // Retrieve Parent CAction
+            CAction parentAction=null;
+            if(!entry.getKey().isEmpty()) {
+                parentAction = menuActions.get(entry.getKey());
+            }
+            for(CAction cAction :entry.getValue()) {
+                // Put CAction in root or action container.
+                if(parentAction!=null) {
+                    // Sub CAction
+                    addSubItem(parentAction,cAction);
+                } else {
+                    // Root items
+                    customActions.add(cAction);
+                }
             }
         }
     }

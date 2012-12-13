@@ -38,7 +38,7 @@ import javax.swing.Action;
 /**
  * Implementation of listener on CRadioButton.
  */
-public class CToggleButton extends CRadioButton {
+public class CToggleButton extends CRadioButton implements CActionHolder {
     private Action action;
 
     public CToggleButton(Action action) {
@@ -61,6 +61,11 @@ public class CToggleButton extends CRadioButton {
      * @param propertyChangeEvent Property edition information
      */
     public void onActionPropertyChange(PropertyChangeEvent propertyChangeEvent) {
-        CommonFunctions.onActionPropertyChangeSelectable(this,action,propertyChangeEvent);
+        CommonFunctions.onActionPropertyChangeSelectable(this, action, propertyChangeEvent);
+    }
+
+    @Override
+    public Action getAction() {
+        return action;
     }
 }

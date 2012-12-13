@@ -28,17 +28,20 @@
  */
 package org.orbisgis.view.docking.internals.actions;
 
+import bibliothek.gui.dock.action.DockAction;
 import bibliothek.gui.dock.common.action.CDropDownButton;
 
 import javax.swing.*;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Nicolas Fortin
  */
-public class CDropDownButtonExt extends CDropDownButton {
+public class CDropDownButtonExt extends CDropDownButton implements CActionHolder {
     private Action action;
     public CDropDownButtonExt(Action action) {
         this.action = action;
@@ -54,6 +57,11 @@ public class CDropDownButtonExt extends CDropDownButton {
      * @param propertyChangeEvent
      */
     public void onActionPropertyChange(PropertyChangeEvent propertyChangeEvent) {
-        CommonFunctions.onActionPropertyChangeDecorateable(this,action,propertyChangeEvent);
+        CommonFunctions.onActionPropertyChangeDecorateable(this, action, propertyChangeEvent);
+    }
+
+    @Override
+    public Action getAction() {
+        return action;
     }
 }

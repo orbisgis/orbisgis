@@ -395,7 +395,6 @@ public class ActionCommands extends BeanPropertyChangeSupport {
                 if(ActionTools.isFirstInsertion(action)) {
                     return 0;
                 }
-                final String newElMenuId = ActionTools.getMenuId(action);
                 Component[] components;
                 if(parent instanceof JMenu) {
                         // Special case, JMenu use an internal JPopupMenu
@@ -405,29 +404,14 @@ public class ActionCommands extends BeanPropertyChangeSupport {
                 } else {
                         components = parent.getComponents();
                 }
-                if(newElMenuId.isEmpty()) {
-                        return components.length;
-                }
-                final String insertAfter = ActionTools.getInsertAfterMenuId(action);
-                final String insertBefore= ActionTools.getInsertBeforeMenuId(action);
                 for(int i=0;i<parent.getComponentCount();i++) {
                         Component comp = parent.getComponent(i);
                         if(comp instanceof AbstractButton) {
                                 Action compAction = ((AbstractButton)comp).getAction();
                                 if(compAction!=null) {
-                                        String curMenuId = ActionTools.getMenuId(compAction);
-                                        if(!curMenuId.isEmpty()) {
-                                                // Read new Action and existing Action parameters to set order
-                                                if(insertAfter.equals(curMenuId) ||
-                                                        ActionTools.getInsertBeforeMenuId(compAction)
-                                                                .equals(newElMenuId)) {
-                                                        return i+1;
-                                                }
-                                                if(insertBefore.equals(curMenuId) ||
-                                                        ActionTools.getInsertBeforeMenuId(compAction)
-                                                                .equals(newElMenuId)) {
-                                                        return i;
-                                                }
+                                        int position = getInsertionPosition(i,action,compAction);
+                                        if(position!=-1) {
+                                            return position;
                                         }
                                 }
                         }
@@ -435,6 +419,26 @@ public class ActionCommands extends BeanPropertyChangeSupport {
                 return components.length;
         }
 
+    /**
+     *
+     * @param newActionIndex
+     * @param newAction
+     * @param otherAction
+     * @return -1 (no link between the two actions), newActionIndex or newActionIndex+1
+     */
+    public static int getInsertionPosition(int newActionIndex,Action newAction,Action otherAction) {
+        final String newElMenuId = ActionTools.getMenuId(newAction);
+        final String otherMenuId = ActionTools.getMenuId(otherAction);
+        if((!otherMenuId.isEmpty() && ActionTools.getInsertAfterMenuId(newAction).equals(otherMenuId)) ||
+                (!newElMenuId.isEmpty() && ActionTools.getInsertBeforeMenuId(otherAction).equals(newElMenuId))) {
+            return newActionIndex+1;
+        }
+        if((!otherMenuId.isEmpty() && ActionTools.getInsertBeforeMenuId(newAction).equals(otherMenuId)) ||
+                (!newElMenuId.isEmpty() && ActionTools.getInsertBeforeMenuId(otherAction).equals(newElMenuId))) {
+            return newActionIndex;
+        }
+        return -1; //No link between these two actions.
+    }
     /**
      * Insert a separator at insertPosition if action and otherComp are not in the same logical group.
      * @param parent
