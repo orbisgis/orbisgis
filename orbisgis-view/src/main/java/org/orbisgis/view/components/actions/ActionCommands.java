@@ -28,20 +28,35 @@
  */
 package org.orbisgis.view.components.actions;
 
+import org.apache.commons.collections.ListUtils;
 import org.apache.log4j.Logger;
+import org.orbisgis.core.common.BeanPropertyChangeSupport;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.actions.intern.RemoveActionControls;
 import org.orbisgis.view.components.button.DropDownButton;
-
-import javax.swing.*;
+import javax.swing.AbstractAction;
+import javax.swing.AbstractButton;
+import javax.swing.Action;
+import javax.swing.ActionMap;
+import javax.swing.ButtonGroup;
+import javax.swing.ButtonModel;
+import javax.swing.DefaultButtonModel;
+import javax.swing.InputMap;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSeparator;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 import java.awt.Component;
 import java.awt.Container;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Provide a way to expose actions through multiple controls.
@@ -49,7 +64,8 @@ import java.util.Map;
  * - Register/UnRegister controls at any time
  * @author Nicolas Fortin
  */
-public class ActionCommands {
+public class ActionCommands extends BeanPropertyChangeSupport {
+        public static final String PROP_ACTIONS = "actions";
         private static final Logger LOGGER = Logger.getLogger(ActionCommands.class);
         // Actions
         private List<Action> actions = new ArrayList<Action>();
@@ -151,9 +167,23 @@ public class ActionCommands {
                 if (!actions.contains(action)) {
                         actions.add(action);
                         applyActionsOnAllControls(new Action[]{action});
+                        propertyChangeSupport.fireIndexedPropertyChange(PROP_ACTIONS,actions.size()-1,null,action);
                 }
         }
-
+        /**
+         * Add action list and show in all registered controls.
+         * @param newActions
+         */
+        public void addActions(List<Action> newActions) {
+                List<Action> oldActionList = new ArrayList<Action>(actions);
+                for(Action action : newActions) {
+                        if (!actions.contains(action)) {
+                                actions.add(action);
+                        }
+                }
+                applyActionsOnAllControls(newActions.toArray(new Action[newActions.size()]));
+                propertyChangeSupport.firePropertyChange(PROP_ACTIONS,oldActionList,actions);
+        }
         /**
          * Remove this action of all registered controls.
          * PropertyChange listeners of action will remove all related menu items.
@@ -161,7 +191,32 @@ public class ActionCommands {
          */
         public void removeAction(Action action) {
                 action.putValue(RemoveActionControls.DELETED_PROPERTY, true);
-                actions.remove(action);
+                int index = actions.indexOf(action);
+                if(actions.remove(action)) {
+                        propertyChangeSupport.fireIndexedPropertyChange(PROP_ACTIONS,index,action,null);
+                }
+        }
+        /**
+         * Remove this action list of all registered controls.
+         * PropertyChange listeners of action will remove all related menu items.
+         * @param actionList
+         */
+        public void removeActions(List<Action> actionList) {
+                List<Action> oldActionList = new ArrayList<Action>(actions);
+                // Update property, removal listeners may use it to remove the action's components.
+                for(Action action : actionList) {
+                        action.putValue(RemoveActionControls.DELETED_PROPERTY, true);
+                }
+                actions.removeAll(actionList);
+                propertyChangeSupport.firePropertyChange(PROP_ACTIONS,oldActionList,actions);
+        }
+
+        /**
+         * Get the managed actions.
+         * @return Unmodifiable list of actions.
+         */
+        public List<Action> getActions() {
+                return Collections.unmodifiableList(actions);
         }
 
         private void applyActionsOnAllControls(Action[] actionsAr) {

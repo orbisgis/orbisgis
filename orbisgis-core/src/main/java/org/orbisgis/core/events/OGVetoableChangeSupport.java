@@ -32,7 +32,7 @@ import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeSupport;
 
 /**
- * This class fixes a problem with the vetoablechangesupport when it returns a RuntimeException
+ * This class fixes a problem with the {@link VetoableChangeSupport} when it returns a RuntimeException instead of a PropertyVetoException
  * @author Nicolas Fortin
  */
 public class OGVetoableChangeSupport extends VetoableChangeSupport {
