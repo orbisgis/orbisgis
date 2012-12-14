@@ -29,9 +29,13 @@
 package org.orbisgis.view.sqlconsole;
 
 import org.orbisgis.core.Services;
+import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.edition.SingleEditorFactory;
 import org.orbisgis.view.sqlconsole.language.SQLMetadataManager;
+import org.orbisgis.view.sqlconsole.ui.ext.SQLAction;
+import org.orbisgis.view.sqlconsole.ui.ext.SQLConsoleEditor;
+import org.osgi.framework.BundleContext;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -47,7 +51,16 @@ public class SQLConsoleFactory implements SingleEditorFactory {
         protected final static I18n I18N = I18nFactory.getI18n(SQLConsoleFactory.class);
         private SQLConsole sqlConsole;
         private SQLMetadataManager sqlMetadataManager;
-        
+        private BundleContext hostBundle;
+        private MenuItemServiceTracker<SQLConsoleEditor,SQLAction> actionTracker;
+        /**
+         * Constructor
+         * @param hostBundle The SQLConsole buttons can be extended.
+         */
+        public SQLConsoleFactory(BundleContext hostBundle) {
+            this.hostBundle = hostBundle;
+        }
+
         @Override
         public EditorDockable[] getSinglePanels() {
                 if(sqlConsole==null) {
@@ -58,6 +71,9 @@ public class SQLConsoleFactory implements SingleEditorFactory {
                                 I18N.tr("Handles all Metadata-related caching for the SQLLanguageSupport class"),
                                 sqlMetadataManager);
                         sqlConsole = new SQLConsole();
+                        //Track Action plugin
+                        actionTracker = new MenuItemServiceTracker<SQLConsoleEditor, SQLAction>(hostBundle,SQLAction.class,sqlConsole.getActions(),sqlConsole);
+                        actionTracker.open(); //begin the track
                 }
                 return new EditorDockable[] {sqlConsole};
         }

@@ -370,6 +370,7 @@ public class DockingPanelParameters implements Serializable {
         /**
          * Replace the current list of Buttons on the docking frame action bar.
          * Additional buttons type and placement can be given by using {@link org.orbisgis.view.components.actions.ActionTools}
+         * Actions without icons are not shown.
          * @param actions New action list.
          */
         public void setDockActions(List<Action> actions) {

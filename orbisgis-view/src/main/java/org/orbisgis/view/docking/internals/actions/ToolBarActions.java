@@ -135,14 +135,17 @@ public class ToolBarActions {
             // Retrieve Parent CAction
             String parentId = ActionTools.getParentMenuId(action);
             // Create menu item
-            CAction cAction;
+            CAction cAction=null;
             if(ActionTools.isMenu(action)) {
                 cAction = menuActions.get(ActionTools.getMenuId(action));
             } else {
                 String toggleGroup = ActionTools.getToggleGroup(action);
                 if(toggleGroup.isEmpty()) {
-                    //Standard button
-                    cAction = new CButtonExt(action);
+                    //Standard button,
+                    // if it has no parent, the button is not created if it has no icons
+                    if(!parentId.isEmpty() || ActionTools.getIcon(action)!=null) {
+                        cAction = new CButtonExt(action);
+                    }
                 } else {
                     CRadioButton cRadioButton = new CToggleButton(action);
                     // Get CRadioGroup
@@ -155,13 +158,15 @@ public class ToolBarActions {
                     cAction = cRadioButton;
                 }
             }
-            // Insert the created CAction in a temporary container
-            ArrayList<CAction> actionList = tempCActionContainer.get(parentId);
-            if(actionList==null) {
-                actionList = new ArrayList<CAction>();
-                tempCActionContainer.put(parentId,actionList);
+            if(cAction!=null) {
+                // Insert the created CAction in a temporary container
+                ArrayList<CAction> actionList = tempCActionContainer.get(parentId);
+                if(actionList==null) {
+                    actionList = new ArrayList<CAction>();
+                    tempCActionContainer.put(parentId,actionList);
+                }
+                actionList.add(getInsertionPosition(actionList,action),cAction);
             }
-            actionList.add(getInsertionPosition(actionList,action),cAction);
         }
         // Insert CAction in each containers
         for(Entry<String,ArrayList<CAction>> entry : tempCActionContainer.entrySet()) {

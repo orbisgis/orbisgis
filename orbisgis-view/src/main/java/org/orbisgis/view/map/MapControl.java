@@ -293,7 +293,9 @@ public class MapControl extends JComponent implements ContainerListener {
 	}
 
 	public void setTool(Automaton tool) throws TransitionException {
-		toolManager.setTool(tool);
+        if(toolManager!=null) {
+		    toolManager.setTool(tool);
+        }
 	}
         
 	public void invalidateImage() {

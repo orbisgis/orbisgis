@@ -6,7 +6,7 @@ import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
 /**
  * @author Nicolas Fortin
  */
-public interface SQLAction extends ActionFactoryService<SQLConsolePanel> {
+public interface SQLAction extends ActionFactoryService<SQLConsoleEditor> {
     // Action, MENU IDs
     public static final String A_EXECUTE = "M_EXECUTE";
     public static final String A_CLEAR = "M_CLEAR";

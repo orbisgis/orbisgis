@@ -275,7 +275,7 @@ public class Core {
     private void loadEditorFactories() {
             editors.addEditorFactory(new TocEditorFactory());
             editors.addEditorFactory(new MapEditorFactory(pluginFramework.getHostBundleContext()));
-            editors.addEditorFactory(new SQLConsoleFactory());
+            editors.addEditorFactory(new SQLConsoleFactory(pluginFramework.getHostBundleContext()));
             editors.addEditorFactory(new TableEditorFactory());
             editors.addEditorFactory(new BeanShellFrameFactory());
     }

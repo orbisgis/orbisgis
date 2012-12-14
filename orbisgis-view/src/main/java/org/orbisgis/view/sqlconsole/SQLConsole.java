@@ -29,21 +29,26 @@
 package org.orbisgis.view.sqlconsole;
 
 import javax.swing.JComponent;
+
+import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.components.actions.ActionCommands;
+import org.orbisgis.view.components.actions.ActionDockingListener;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.sqlconsole.ui.SQLConsolePanel;
+import org.orbisgis.view.sqlconsole.ui.ext.SQLConsoleEditor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- *
+ * Docking Panel implementation.
  * @author Nicolas Fortin
  */
-public class SQLConsole implements EditorDockable {
+public class SQLConsole implements EditorDockable,SQLConsoleEditor {
         private DockingPanelParameters dockingPanelParameters = new DockingPanelParameters();
         private SQLConsolePanel sqlPanel = new SQLConsolePanel();
         private MapElement mapElement;
@@ -52,9 +57,20 @@ public class SQLConsole implements EditorDockable {
         public SQLConsole() {
                 dockingPanelParameters.setTitle(I18N.tr("SQL Console"));
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("script_code"));
-                //dockingPanelParameters.setToolBar(sqlPanel.getEditorToolBar());
+                dockingPanelParameters.setDockActions(sqlPanel.getActions().getActions());
+                // Tools that will be created later will also be set in the docking panel
+                // thanks to this listener
+                sqlPanel.getActions().addPropertyChangeListener(
+                        new ActionDockingListener(dockingPanelParameters));
         }
 
+        /**
+         * Get the ActionCommands instance use by SQLConsole.
+         * @return ActionCommands instance
+         */
+        public ActionCommands getActions() {
+            return sqlPanel.getActions();
+        }
         /**
          * Free sql console resources
          */
@@ -89,5 +105,9 @@ public class SQLConsole implements EditorDockable {
                         sqlPanel.setMapContext((MapContext)mapElement.getObject());
                 }
         }
-        
+
+        @Override
+        public RSyntaxTextArea getTextArea() {
+            return sqlPanel.getScriptPanel();
+        }
 }

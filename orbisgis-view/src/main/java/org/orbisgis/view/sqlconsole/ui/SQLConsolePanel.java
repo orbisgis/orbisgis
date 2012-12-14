@@ -112,13 +112,6 @@ public class SQLConsolePanel extends JPanel {
                 split.add(getCenterPanel(), BorderLayout.CENTER);
                 add(split, BorderLayout.CENTER);
                 add(getStatusToolBar(), BorderLayout.SOUTH);
-        }       
-
-        /**
-         * @return ToolBar to command this editor
-         */
-        public JToolBar getEditorToolBar() {
-                return actions.getEditorToolBar(true);
         }
         
         /**
@@ -204,8 +197,16 @@ public class SQLConsolePanel extends JPanel {
                         EventHandler.create(ActionListener.class,sqlFunctionsPanel,"switchPanelVisibilityState"),
                         null).setLogicalGroup("custom"));
         }
-        
+
         /**
+         * Get the ActionCommands instance use by SQLConsole.
+         * @return ActionCommands instance
+         */
+        public ActionCommands getActions() {
+            return actions;
+        }
+
+    /**
          * The map context is used to show the selected geometries
          * @param mapContext 
          */

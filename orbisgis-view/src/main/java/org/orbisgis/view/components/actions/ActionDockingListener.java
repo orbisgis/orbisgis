@@ -85,7 +85,7 @@ public class ActionDockingListener implements PropertyChangeListener {
 
             @Override
             public void run() {
-                List<Action> actions = new ArrayList(commands.getActions());
+                List<Action> actions = new ArrayList<Action>(commands.getActions());
                 awaitingRunnable.set(false);
                 dockingPanelParameters.setDockActions(actions);
             }

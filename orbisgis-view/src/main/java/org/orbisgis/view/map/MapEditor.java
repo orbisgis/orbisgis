@@ -553,7 +553,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             putValue(Action.LARGE_ICON_KEY,automaton.getImageIcon());
             putValue(Action.SHORT_DESCRIPTION,automaton.getTooltip());
             putValue(ActionTools.TOGGLE_GROUP,"automatons"); //radio group
-            putValue(Action.SELECTED_KEY,this.equals(mapControl.getTool()));
+            putValue(Action.SELECTED_KEY,this.automaton.getName().equals(mapControl.getTool().getName()));
         }
 
         @Override
