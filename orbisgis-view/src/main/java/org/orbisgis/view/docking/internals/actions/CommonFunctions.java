@@ -84,5 +84,12 @@ public class CommonFunctions {
                 cAction.setTooltip((String)description);
             }
         }
+        if(prop==null || prop.equals("enabled")) {
+            Object val = action.getValue("enabled");
+            if(val!=null) {
+                cAction.setEnabled((Boolean)val);
+            }
+        }
+
     }
 }

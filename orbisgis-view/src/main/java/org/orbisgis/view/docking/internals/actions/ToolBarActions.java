@@ -33,14 +33,11 @@ import bibliothek.gui.dock.common.action.CDropDownButton;
 import bibliothek.gui.dock.common.action.CMenu;
 import bibliothek.gui.dock.common.action.CRadioButton;
 import bibliothek.gui.dock.common.action.CRadioGroup;
-
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import javax.swing.*;
-
+import javax.swing.Action;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionTools;
 import java.util.Map.Entry;

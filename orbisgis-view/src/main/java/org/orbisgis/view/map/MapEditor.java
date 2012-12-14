@@ -143,6 +143,8 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         //Declare Tools of Map Editors
         //Add the tools in the docking Panel title
         //dockingPanelParameters.setToolBar(createToolBar());
+        createActions();
+        dockingPanelParameters.setDockActions(actions.getActions());
         //add(createToolBar(),BorderLayout.NORTH);
         //Set the Drop target
         dragDropHandler = new MapTransferHandler();
@@ -549,6 +551,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             putValue(Action.LARGE_ICON_KEY,automaton.getImageIcon());
             putValue(Action.SHORT_DESCRIPTION,automaton.getTooltip());
             putValue(ActionTools.TOGGLE_GROUP,"automatons"); //radio group
+            putValue(Action.SELECTED_KEY,this.equals(mapControl.getTool()));
         }
 
         @Override
@@ -561,7 +564,9 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
             @Override
         public void actionPerformed(ActionEvent ae) {
-            setTool(automaton);
+            if(getValue(Action.SELECTED_KEY).equals(Boolean.TRUE)) {
+                setTool(automaton);
+            }
         }
     }
     /**
