@@ -29,14 +29,13 @@
 package org.orbisgis.view.docking.internals.actions;
 
 import bibliothek.gui.dock.action.DockAction;
+import bibliothek.gui.dock.common.action.CAction;
 import bibliothek.gui.dock.common.action.CDropDownButton;
 
-import javax.swing.*;
+import javax.swing.Action;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Nicolas Fortin
@@ -50,6 +49,16 @@ public class CDropDownButtonExt extends CDropDownButton implements CActionHolder
         // Listen to action property changes
         action.addPropertyChangeListener(
                 EventHandler.create(PropertyChangeListener.class, this, "onActionPropertyChange", ""));
+
+    }
+
+    @Override
+    public void add(CAction action) {
+        super.add(action);
+        //If this is the first action, set it as selected
+        if(intern().size()==1) {
+            intern().setSelection(action.intern());
+        }
     }
 
     /**

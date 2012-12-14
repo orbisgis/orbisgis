@@ -64,6 +64,7 @@ import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
+import org.orbisgis.view.components.actions.ActionDockingListener;
 import org.orbisgis.view.components.actions.ActionTools;
 import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.docking.DockingPanelParameters;
@@ -142,10 +143,11 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         mapControl.setDefaultTool(new ZoomInTool());
         //Declare Tools of Map Editors
         //Add the tools in the docking Panel title
-        //dockingPanelParameters.setToolBar(createToolBar());
         createActions();
         dockingPanelParameters.setDockActions(actions.getActions());
-        //add(createToolBar(),BorderLayout.NORTH);
+        // Tools that will be created later will also be set in the docking panel
+        // thanks to this listener
+        actions.addPropertyChangeListener(new ActionDockingListener(dockingPanelParameters));
         //Set the Drop target
         dragDropHandler = new MapTransferHandler();
         this.setTransferHandler(dragDropHandler);

@@ -50,13 +50,16 @@ public class MapEditorFactory implements SingleEditorFactory {
 
         @Override
         public void dispose() {
+            mapEditorExt.close(); //Unregister MapEditor actions.
         }
 
         @Override
         public EditorDockable[] getSinglePanels() {
                 if(mapPanel==null) {
                         mapPanel = new MapEditor();
+                        //Plugins Action will be added to ActionCommands of MapEditor
                         mapEditorExt = new MenuItemServiceTracker<MapEditorExtension,MapEditorAction>(hostBundle,MapEditorAction.class,mapPanel.getActionCommands(),mapPanel);
+                        mapEditorExt.open(); // Start loading actions
                 }
                 return new EditorDockable[] {mapPanel};
         }
