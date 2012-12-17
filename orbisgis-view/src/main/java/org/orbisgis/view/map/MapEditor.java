@@ -140,7 +140,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         mapsManager.setVisible(false);
         add(layeredPane, BorderLayout.CENTER);
         add(mapStatusBar, BorderLayout.PAGE_END);
-        mapControl.setDefaultTool(new ZoomInTool());
+        mapControl.setDefaultTool(new PanTool());
         //Declare Tools of Map Editors
         //Add the tools in the docking Panel title
         createActions();
