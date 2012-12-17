@@ -72,10 +72,10 @@ import org.orbisgis.view.geocatalog.actions.ActionOnNonEmptySourceList;
 import org.orbisgis.view.geocatalog.actions.ActionOnSelection;
 import org.orbisgis.view.geocatalog.dialogs.OpenGdmsFilePanel;
 import org.orbisgis.view.geocatalog.dialogs.OpenGdmsFolderPanel;
-import org.orbisgis.view.geocatalog.ext.GeoCatalogExt;
 import org.orbisgis.view.geocatalog.ext.GeoCatalogMenu;
 import org.orbisgis.view.geocatalog.ext.PopupMenu;
 import org.orbisgis.view.geocatalog.ext.PopupTarget;
+import org.orbisgis.view.geocatalog.ext.TitleActionBar;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.factories.NameContains;
 import org.orbisgis.view.geocatalog.filters.factories.NameNotContains;
@@ -102,7 +102,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * eventSourceListPopupMenuCreating listener container to add more items in the
  * source list pop-up menu.
  */
-public class Catalog extends JPanel implements DockingPanel,GeoCatalogExt,PopupTarget {
+public class Catalog extends JPanel implements DockingPanel,TitleActionBar,PopupTarget {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
 
         private static final long serialVersionUID = 1L;
@@ -121,7 +121,7 @@ public class Catalog extends JPanel implements DockingPanel,GeoCatalogExt,PopupT
         private ActionCommands popupActions = new ActionCommands();
         // Action trackers
         private MenuItemServiceTracker<PopupTarget,PopupMenu> popupActionTracker;
-        private MenuItemServiceTracker<GeoCatalogExt,GeoCatalogMenu> dockingActionTracker;
+        private MenuItemServiceTracker<TitleActionBar,GeoCatalogMenu> dockingActionTracker;
 
         /**
          * For the Unit test purpose
@@ -141,7 +141,7 @@ public class Catalog extends JPanel implements DockingPanel,GeoCatalogExt,PopupT
                 dockingParameters.setTitle(I18N.tr("GeoCatalog"));
                 dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("geocatalog"));
                 dockingParameters.setCloseable(true);
-                //Add the Source List in a Scroll Pane, 
+                //Add the Source List in a Scroll Pane,
                 //then add the scroll pane in this panel
                 add(new JScrollPane(makeSourceList()), BorderLayout.CENTER);
                 //Init the filter factory manager
@@ -175,7 +175,7 @@ public class Catalog extends JPanel implements DockingPanel,GeoCatalogExt,PopupT
         public void registerActionTrackers(BundleContext hostContext) {
             popupActionTracker = new MenuItemServiceTracker<PopupTarget, PopupMenu>(hostContext,PopupMenu.class,
                     popupActions,this);
-            dockingActionTracker = new MenuItemServiceTracker<GeoCatalogExt, GeoCatalogMenu>(hostContext,
+            dockingActionTracker = new MenuItemServiceTracker<TitleActionBar, GeoCatalogMenu>(hostContext,
                     GeoCatalogMenu.class,dockingActions,this);
             // Begin the track
             popupActionTracker.open();
@@ -294,7 +294,7 @@ public class Catalog extends JPanel implements DockingPanel,GeoCatalogExt,PopupT
                         editorManager.openEditable(tableDocument);
                 }
         }
-        
+
         /**
          * The user click on the menu item called "Add/File" The user wants to
          * open a file using the geocatalog. It will open a panel dedicated to
@@ -552,13 +552,13 @@ public class Catalog extends JPanel implements DockingPanel,GeoCatalogExt,PopupT
             //Popup:Save
             popupActions.addAction(new ActionOnSelection(PopupMenu.M_SAVE,I18N.tr("Save"),true,getListSelectionModel()));
             //Popup:Save:File
-            popupActions.addAction(new DefaultAction(PopupMenu.M_SAVE_FILE,I18N.tr("File"),
+            popupActions.addAction(new ActionOnSelection(PopupMenu.M_SAVE_FILE,I18N.tr("File"),
                     I18N.tr("Save selected sources in files"),OrbisGISIcon.getIcon("page_white_save"),
-                    EventHandler.create(ActionListener.class,this,"onMenuSaveInfile"),null));
+                    EventHandler.create(ActionListener.class,this,"onMenuSaveInfile"),getListSelectionModel()).setParent(PopupMenu.M_SAVE));
             //Popup:Save:Db
-            popupActions.addAction(new DefaultAction(PopupMenu.M_SAVE_DB,I18N.tr("Database"),
+            popupActions.addAction(new ActionOnSelection(PopupMenu.M_SAVE_DB,I18N.tr("Database"),
                     I18N.tr("Save selected sources in a data base"),OrbisGISIcon.getIcon("database_save"),
-                    EventHandler.create(ActionListener.class,this,"onMenuSaveInDB"),null));
+                    EventHandler.create(ActionListener.class,this,"onMenuSaveInDB"),getListSelectionModel()).setParent(PopupMenu.M_SAVE));
             //Popup:Open attributes
             popupActions.addAction(new ActionOnSelection(PopupMenu.M_OPEN_ATTRIBUTES,I18N.tr("Open the attributes"),
                     I18N.tr("Open the data source table"),OrbisGISIcon.getIcon("openattributes"),
@@ -627,7 +627,7 @@ public class Catalog extends JPanel implements DockingPanel,GeoCatalogExt,PopupT
                 }
                 return sources;
         }
-        
+
         /**
          * Give information on the behaviour of this panel related to the
          * current docking system

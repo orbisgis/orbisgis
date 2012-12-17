@@ -110,6 +110,7 @@ public class ToolBarActions {
      * @param actions Actions to convert
      */
     public void setActions(List<Action> actions) {
+        customActions.clear();
         // Action containers
         Map<String,CAction> menuActions = new HashMap<String, CAction>();
         // Radio groups

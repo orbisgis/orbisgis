@@ -499,12 +499,20 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
     @Override
     public void setTool(Automaton automaton) {
-        GUILOGGER.debug("Choose the tool named "+automaton.getName());
-        try {
-            mapControl.setTool(automaton);
-        } catch (TransitionException ex) {
-            GUILOGGER.error(I18N.tr("Unable to choose this tool"),ex);
+        if(automaton==null && mapControl.getDefaultTool()!=null) {
+            setTool(mapControl.getDefaultTool());
+        } else {
+            try {
+                mapControl.setTool(automaton);
+            } catch (TransitionException ex) {
+                GUILOGGER.error(I18N.tr("Unable to choose this tool"),ex);
+            }
         }
+    }
+
+    @Override
+    public Automaton getCurrentTool() {
+        return mapControl.getTool();
     }
 
     /**

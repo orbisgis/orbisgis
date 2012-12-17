@@ -28,15 +28,9 @@
  */
 package org.orbisgis.view.geocatalog.ext;
 
-import javax.swing.*;
-
 /**
  * Popup menu have access to this interface
  * @author Nicolas Fortin
  */
-public interface PopupTarget {
-    /**
-     * @return The selection model of the list.
-     */
-    ListSelectionModel getListSelectionModel();
+public interface PopupTarget extends GeoCatalogExt{
 }

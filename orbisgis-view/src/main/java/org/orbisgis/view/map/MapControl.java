@@ -561,11 +561,23 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	}
 
+    /**
+     * Set the default tool.
+     * @param defaultTool Default tool instance
+     */
 	public void setDefaultTool(Automaton defaultTool) {
 		this.defaultTool = defaultTool;
 	}
 
-	public void setElement(TransformListener element) {
+    /**
+     * Get the tool used when no one is set, setTool(null);
+     * @return Tool instance
+     */
+    public Automaton getDefaultTool() {
+        return defaultTool;
+    }
+
+    public void setElement(TransformListener element) {
 		this.element = element;
 	}
         /**

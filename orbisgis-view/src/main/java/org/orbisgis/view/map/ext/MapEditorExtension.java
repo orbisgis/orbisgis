@@ -9,7 +9,14 @@ import org.orbisgis.view.map.tool.Automaton;
 public interface MapEditorExtension extends EditorDockable {
     /**
      * Change the current tool to the provided one.
-     * @param automaton New tool to use.
+     * @param automaton New tool to use.Null will set the default tool of MapEditor.
      */
     public void setTool(Automaton automaton);
+
+    /**
+     * Get the current loaded tool.
+     * @param automaton Loaded tool
+     * @return Automaton instance
+     */
+    public Automaton getCurrentTool();
 }

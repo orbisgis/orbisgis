@@ -41,7 +41,7 @@ public interface ActionFactoryService<TargetComponent> {
         /**
          * Each instance of TargetComponent call createAction once.
          * Do not make a reference to created actions in the ActionFactoryService instance.
-         * @param target
+         * @param target Holder of new actions.
          * @return Action list instance, linked with target.
          * @see org.orbisgis.view.components.actions.ActionTools
          */
