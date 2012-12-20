@@ -37,7 +37,11 @@ import org.apache.log4j.PatternLayout;
 import org.apache.log4j.varia.DenyAllFilter;
 import org.apache.log4j.varia.LevelMatchFilter;
 import org.apache.log4j.varia.LevelRangeFilter;
+import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.docking.DockingPanel;
+import org.orbisgis.view.output.ext.MainLogFrame;
+import org.orbisgis.view.output.ext.MainLogMenuService;
+import org.osgi.framework.BundleContext;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -58,9 +62,10 @@ public class OutputManager {
         private static final Logger GUI_LOGGER = Logger.getLogger("gui");
         private PatternLayout loggingLayout = new PatternLayout("%5p [%t] (%F:%L) - %m%n");
         private PatternLayout infoLayout = new PatternLayout("%m%n");
-        //All panel additionnal objects
+        //All panel additional objects
         private PanelAppender.ShowMessageListener outputAllListener;
         private OutputPanel allPanel;
+        private MenuItemServiceTracker<MainLogFrame,MainLogMenuService> menuPluginTracker;
         
         public OutputManager(boolean debugConsole) {
                 mainPanel = new MainOutputPanel();
@@ -72,13 +77,27 @@ public class OutputManager {
                 makeOutputWarning();
                 makeOutputError();
         }
-
+        public void openMenuPluginTracker(BundleContext context) {
+            menuPluginTracker = new MenuItemServiceTracker<MainLogFrame, MainLogMenuService>(context,
+                    MainLogMenuService.class,mainPanel.getActions(),mainPanel);
+            menuPluginTracker.open();
+        }
         /**
-         * Remove the link between LOG4J and Appenders
+         * Remove the link between LOG4J and Appender and plugin tracker.
          */
         public void dispose() {
-                for (PanelAppender appender : outputPanels.values()) {
-                        ROOT_LOGGER.removeAppender(appender);
+                try {
+                    for (PanelAppender appender : outputPanels.values()) {
+                            if(ROOT_LOGGER.isAttached(appender)) {
+                                ROOT_LOGGER.removeAppender(appender);
+                            } else if(GUI_LOGGER.isAttached(appender)) {
+                                GUI_LOGGER.removeAppender(appender);
+                            }
+                    }
+                } finally {
+                    if(menuPluginTracker!=null) {
+                        menuPluginTracker.close();
+                    }
                 }
         }
 

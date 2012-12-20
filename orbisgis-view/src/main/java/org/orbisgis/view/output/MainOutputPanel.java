@@ -33,14 +33,15 @@ import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import javax.swing.JTabbedPane;
-import javax.swing.JToolBar;
+import javax.swing.*;
+
+import org.orbisgis.view.components.actions.ActionCommands;
+import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.output.ext.MainLogFrame;
+import org.orbisgis.view.output.ext.MainLogMenuService;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -49,12 +50,13 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * This panel includes all Output Type panel.
  */
-public class MainOutputPanel extends JPanel implements DockingPanel {
+public class MainOutputPanel extends JPanel implements DockingPanel,MainLogFrame {
     private static final long serialVersionUID = 1L;
     private static final I18n I18N = I18nFactory.getI18n(MainOutputPanel.class);
     private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< docked panel properties */
     private JTabbedPane tabbedPane;
     private AtomicBoolean initialised = new AtomicBoolean(false);
+    private ActionCommands actions = new ActionCommands();
     
     public MainOutputPanel() {
         dockingParameters.setName("mainLog");
@@ -63,12 +65,10 @@ public class MainOutputPanel extends JPanel implements DockingPanel {
         dockingParameters.setCloseable(true);
         
         //Create the action tools
-        JToolBar toolBar = new JToolBar();
-        JButton button = new JButton(I18N.tr("Clear all"),OrbisGISIcon.getIcon("erase"));
-        button.setToolTipText(I18N.tr("Clear all log panels"));
-        button.addActionListener(EventHandler.create(ActionListener.class,this,"onClearAll"));
-        toolBar.add(button);        
-        //dockingParameters.setToolBar(toolBar);
+        actions.addAction(new DefaultAction(MainLogMenuService.A_CLEAR_ALL,I18N.tr("Clear all"),
+                I18N.tr("Clear all log panels"),OrbisGISIcon.getIcon("erase"),
+                EventHandler.create(ActionListener.class,this,"onClearAll"),null));
+        dockingParameters.setDockActions(actions.getActions());
         
         this.setLayout(new BorderLayout());
         tabbedPane = new JTabbedPane();
@@ -85,8 +85,15 @@ public class MainOutputPanel extends JPanel implements DockingPanel {
                         tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
                 }
         }
-    
-    
+
+    /**
+     * Get the actions manager.
+     * @return actions manager.
+     */
+    public ActionCommands getActions() {
+        return actions;
+    }
+
     /**
      * Found the tab id of the provided sub panel
      * @param subPanel
@@ -134,9 +141,23 @@ public class MainOutputPanel extends JPanel implements DockingPanel {
         return dockingParameters;
     }
 
-        @Override
+    @Override
     public JComponent getComponent() {
         return this;
     }
-    
+
+    @Override
+    public JTextPane getLogTextPane(int index) {
+        return ((OutputPanel)tabbedPane.getTabComponentAt(index)).getTextPane();
+    }
+
+    @Override
+    public String getLogTabName(int index) {
+        return tabbedPane.getTitleAt(index);
+    }
+
+    @Override
+    public int getTabCount() {
+        return tabbedPane.getTabCount();
+    }
 }

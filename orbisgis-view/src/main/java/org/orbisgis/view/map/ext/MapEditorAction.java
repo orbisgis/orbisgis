@@ -34,13 +34,18 @@ import org.orbisgis.view.components.actions.ActionFactoryService;
  * @author Nicolas Fortin
  */
 public interface MapEditorAction extends ActionFactoryService<MapEditorExtension> {
-    // Map editor Actions
+    // Map editor Actions Toggle groups
+    /**
+     * Radio button group is
+     * putValue(ActionTools.TOGGLE_GROUP,MapEditorAction.TOGGLE_GROUP_AUTOMATONS);
+     */
+    public static final String TOGGLE_GROUP_AUTOMATONS = "automatons";
+    // Map editor Actions ID
     // Group
     public static final String A_MEASURE_GROUP = "A_MEASURE_GROUP";
     public static final String A_DRAWING_GROUP = "A_DRAWING_GROUP";
 
     // Built-in Automaton
-    // Radio button group is putValue(ActionTools.TOGGLE_GROUP,"automatons");
     public static final String A_ZOOM_IN = "A_ZOOM_IN";
     public static final String A_ZOOM_OUT = "A_ZOOM_OUT";
     public static final String A_PAN = "A_PAN";

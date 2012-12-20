@@ -43,7 +43,7 @@ import org.orbisgis.view.workspace.ViewWorkspace;
  * The map editor stores the last open default map context
  * @author Nicolas Fortin
  */
-public class MapEditorPersistance implements DockingPanelLayout, Serializable {
+public class MapEditorPersistence implements DockingPanelLayout, Serializable {
         private static final long serialVersionUID = 2L; // One by new property
         private static final String PROP_DEFAULTMAPCONTEXT = "defaultMapContext";
         
@@ -55,7 +55,7 @@ public class MapEditorPersistance implements DockingPanelLayout, Serializable {
         private static final String URL_NODE = "mapcatalog";
         private static final String URL_NODE_PROPERTY = "url";
                 
-        public MapEditorPersistance() {
+        public MapEditorPersistence() {
                 ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
                 setDefaultMapContext(viewWorkspace.getDockingLayoutFile());
         }

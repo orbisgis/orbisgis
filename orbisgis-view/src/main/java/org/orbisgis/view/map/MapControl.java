@@ -57,13 +57,12 @@ import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.ToolListener;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
-import org.orbisgis.view.map.tools.ZoomInTool;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * MapControl.
- * 
+ *
  */
 
 public class MapControl extends JComponent implements ContainerListener {
@@ -100,21 +99,18 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	TransformListener element;
 
-	Automaton defaultTool;
-        
-        PropertyChangeListener boundingBoxPropertyListener = EventHandler.create(PropertyChangeListener.class,this,"onMapContextBoundingBoxChange");
-        
-        BufferedImage updatedImage=null; /*!< The last drawn image paint, shown when the status of the mapTransform is dirty */
+    PropertyChangeListener boundingBoxPropertyListener = EventHandler.create(PropertyChangeListener.class,this,"onMapContextBoundingBoxChange");
+
+    BufferedImage updatedImage=null; /*!< The last drawn image paint, shown when the status of the mapTransform is dirty */
 
 	public MapControl() {
-            defaultTool = new ZoomInTool();
 	}
         private void setStatus(int newStatus) {
             status = newStatus;
         }
-        
+
         /**
-         * The bounding box of the map context need 
+         * The bounding box of the map context need
          * to be read and applied to the MapTransform
          */
         public void onMapContextBoundingBoxChange() {
@@ -123,9 +119,9 @@ public class MapControl extends JComponent implements ContainerListener {
                         mapTransform.setExtent(boundingBox);
                 }
         }
-        
-        
-	final public void initMapControl() throws TransitionException {
+
+
+	final public void initMapControl(Automaton defaultTool) throws TransitionException {
 		synchronized (this) {
 			this.mapControlId = lastMapControlId++;
 		}
@@ -152,16 +148,16 @@ public class MapControl extends JComponent implements ContainerListener {
 		}
 
                 setLayout(new BorderLayout());
-                
+
                 // adding listeners at the endupdatedImage
                 // to prevent multiple useless repaint
 		toolManager.addToolListener(new MapToolListener());
 		addMouseListener(toolManager);
                 addMouseMotionListener(toolManager);
                 addMouseWheelListener(toolManager);
-                
+
 		mapTransform.addTransformListener(new MapControlTransformListener());
-                
+
                 //Component event invalidate the picture
                 this.addComponentListener(EventHandler.create(ComponentListener.class, this,"invalidateImage"));
 		// Add editable element listen transform event
@@ -210,7 +206,7 @@ public class MapControl extends JComponent implements ContainerListener {
 					refreshLayerListener);
 		}
 	}
-        
+
 	/**
 	 * @see javax.swing.JComponent#paintComponent(java.awt.Graphics)
 	 */
@@ -227,10 +223,12 @@ public class MapControl extends JComponent implements ContainerListener {
 		if (mapTransformImage != null && status == UPDATED) {
                     updatedImage = mapTransformImage;
 		}
-                    
+
                 if(updatedImage!=null){
                     g.drawImage(updatedImage, 0, 0, null);
-                    toolManager.paintEdition(g);
+                    if(toolManager!=null) {
+                        toolManager.paintEdition(g);
+                    }
                 }
 
 		// if the image itself is dirty
@@ -277,7 +275,7 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	/**
 	 * Returns the drawn image
-	 * 
+	 *
 	 * @return imagen.
 	 */
 	public BufferedImage getImage() {
@@ -297,7 +295,7 @@ public class MapControl extends JComponent implements ContainerListener {
 		    toolManager.setTool(tool);
         }
 	}
-        
+
 	public void invalidateImage() {
 		setStatus(DIRTY);
 		repaint();
@@ -421,17 +419,6 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	public ToolManager getToolManager() {
 		return toolManager;
-	}
-        /**
-         * 
-         * @return The current used tool
-         */
-	public Automaton getTool() {
-            if(toolManager!=null) {
-                return toolManager.getTool();
-            }else{
-                return defaultTool;
-            }
 	}
 
 	private class RefreshLayerListener implements LayerListener,
@@ -561,22 +548,6 @@ public class MapControl extends JComponent implements ContainerListener {
 
 	}
 
-    /**
-     * Set the default tool.
-     * @param defaultTool Default tool instance
-     */
-	public void setDefaultTool(Automaton defaultTool) {
-		this.defaultTool = defaultTool;
-	}
-
-    /**
-     * Get the tool used when no one is set, setTool(null);
-     * @return Tool instance
-     */
-    public Automaton getDefaultTool() {
-        return defaultTool;
-    }
-
     public void setElement(TransformListener element) {
 		this.element = element;
 	}
@@ -587,7 +558,7 @@ public class MapControl extends JComponent implements ContainerListener {
                 if(mapContext!=null) {
                         mapContext.removePropertyChangeListener(boundingBoxPropertyListener);
                         mapContext.getLayerModel().removeLayerListenerRecursively(refreshLayerListener);
-                }                
+                }
         }
         /**
          * Switch the loaded map context
@@ -607,7 +578,7 @@ public class MapControl extends JComponent implements ContainerListener {
 	}
 
         private class MapControlTransformListener implements TransformListener {
-            
+
             @Override
             public void imageSizeChanged(int oldWidth, int oldHeight,
                             MapTransform mapTransform) {
@@ -620,9 +591,9 @@ public class MapControl extends JComponent implements ContainerListener {
                     invalidateImage();
                     // Record new BoundingBox value for map context
                     mapContext.setBoundingBox(mapTransform.getAdjustedExtent());
-            }            
+            }
         }
-        
+
         private class MapToolListener implements ToolListener {
                 @Override
                 public void transitionException(ToolManager toolManager,
