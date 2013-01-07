@@ -88,6 +88,7 @@ public class MapsManager extends JPanel {
                 // Add the tree in the panel                
                 tree = new FileTree(treeModel);
                 tree.setEditable(true);
+                tree.setShowsRootHandles(true);
                 // Retrieve the default ows maps folder
                 ViewWorkspace workspace = Services.getService(ViewWorkspace.class);
                 // Add the root folder
