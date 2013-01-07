@@ -34,29 +34,12 @@ import org.orbisgis.core.common.BeanPropertyChangeSupport;
 import org.orbisgis.sif.components.CustomButton;
 import org.orbisgis.view.components.actions.intern.RemoveActionControls;
 import org.orbisgis.view.components.button.DropDownButton;
-import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
-import javax.swing.Action;
-import javax.swing.ActionMap;
-import javax.swing.ButtonGroup;
-import javax.swing.ButtonModel;
-import javax.swing.DefaultButtonModel;
-import javax.swing.InputMap;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JSeparator;
-import javax.swing.JToggleButton;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import java.awt.Component;
-import java.awt.Container;
+
+import javax.swing.*;
+import java.awt.*;
 import java.beans.PropertyChangeListener;
 import java.util.*;
+import java.util.List;
 
 /**
  * Provide a way to expose actions through multiple controls.
@@ -211,6 +194,30 @@ public class ActionCommands extends BeanPropertyChangeSupport {
                 propertyChangeSupport.firePropertyChange(PROP_ACTIONS,oldActionList,actions);
         }
 
+        /**
+         * Search the menu item by its action id in provided menu items and sub-menu recursively.
+         * @param actionId #MENU_ID Action identifier
+         * @param menuItems Collection of menu elements
+         * @return Found menu with the same action id or null.
+         */
+        public MenuElement getActionMenu(String actionId, MenuElement[] menuItems) {
+            for(MenuElement menu : menuItems) {
+                if(menu instanceof JMenuItem) {
+                    JMenuItem menuItem = (JMenuItem)menu;
+                    Action action = menuItem.getAction();
+                    if(action!=null) {
+                        if(ActionTools.getMenuId(action).equals(actionId)) {
+                            return menu;
+                        }
+                    }
+                    MenuElement subMenu = getActionMenu(actionId,menu.getSubElements());
+                    if(subMenu!=null) {
+                        return subMenu;
+                    }
+                }
+            }
+            return null;
+        }
         /**
          * Get the managed actions.
          * @return Unmodifiable list of actions.

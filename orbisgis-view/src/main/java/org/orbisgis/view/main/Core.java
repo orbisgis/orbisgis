@@ -62,7 +62,6 @@ import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.edition.dialogs.SaveDocuments;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.orbisgis.view.joblist.JobsPanel;
 import org.orbisgis.view.main.bundles.BundleFromResources;
 import org.orbisgis.view.main.frames.MainFrame;
 import org.orbisgis.view.map.MapEditorFactory;
@@ -266,12 +265,6 @@ public class Core {
     }
 
     /**
-     * Create the Job processing information and control panel
-     */
-    private void makeJobsPanel() {
-            dockManager.addDockingPanel(new JobsPanel());
-    }
-    /**
      * Load the built-ins editors factories
      */
     private void loadEditorFactories() {
@@ -351,10 +344,6 @@ public class Core {
         //Load the log panels
         makeLoggingPanels();
         progress.progressTo(40);
-
-        //Load the Job Panel
-        makeJobsPanel();
-        progress.progressTo(45);
 
         //Load the editor factories manager
         makeEditorManager(dockManager);
@@ -517,7 +506,7 @@ public class Core {
         }
         /**
          * Stops this application, closes the {@link MainFrame} and saves all
-         * properties if the application is not in a {@link #isSecure() secure environment}.
+         * properties.
          * This method is called through the MainFrame.MAIN_FRAME_CLOSING event
          * listener.
          */

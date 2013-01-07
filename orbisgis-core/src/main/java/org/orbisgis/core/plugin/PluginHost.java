@@ -64,7 +64,7 @@ public class PluginHost {
      */
     public PluginHost(File pluginCacheFolder) {
         this.pluginCacheFolder = pluginCacheFolder;
-        packageList.add(new PackageDeclaration("org.osgi.framework", 1,6,0));
+        packageList.add(new PackageDeclaration("org.osgi.framework", 1,7,0));
     }
     /**
      * The host will automatically export all packages, but without version information.
