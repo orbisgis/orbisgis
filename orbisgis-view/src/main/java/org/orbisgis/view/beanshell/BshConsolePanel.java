@@ -115,19 +115,13 @@ public class BshConsolePanel extends JPanel {
                 }
                 setLayout(new BorderLayout());
                 add(getCenterPanel(), BorderLayout.CENTER);
-                add(statusMessage,BorderLayout.SOUTH);
+                add(statusMessage, BorderLayout.SOUTH);
         }
         /**
          * Clear the message shown
          */
         public void onClearMessage() {
                 setStatusMessage("");
-        }
-        /**
-         * @return ToolBar to command this editor
-         */
-        public JToolBar getButtonToolBar() {
-                return actions.getEditorToolBar(true);
         }
         
         /**
@@ -143,6 +137,15 @@ public class BshConsolePanel extends JPanel {
                         }
                 }
         }
+
+        /**
+         * Get the action manager.
+         * @return ActionCommands instance.
+         */
+        public ActionCommands getActions() {
+            return actions;
+        }
+
         /**
          * Create actions instances
          * 
