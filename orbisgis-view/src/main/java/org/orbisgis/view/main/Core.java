@@ -230,7 +230,7 @@ public class Core {
      * Create the Instance of the main frame
      */
     private void makeMainFrame() {
-        mainFrame.init();
+        mainFrame.init(pluginFramework.getHostBundleContext());
         //When the user ask to close OrbisGis it call
         //the shutdown method here,
         // Link the Swing Events with the MainFrame event

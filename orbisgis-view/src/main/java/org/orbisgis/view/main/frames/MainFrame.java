@@ -33,16 +33,20 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.beans.EventHandler;
 import java.util.Locale;
-import javax.swing.*;
-
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.MenuElement;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.DefaultAction;
+import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.main.frames.ext.MainFrameAction;
 import org.orbisgis.view.main.frames.ext.MainWindow;
 import org.orbisgis.view.workspace.ViewWorkspace;
+import org.osgi.framework.BundleContext;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -56,9 +60,10 @@ public class MainFrame extends JFrame implements MainWindow {
         private DockingManager dockingManager=null;
         private ActionCommands actions = new ActionCommands();
         private JMenuBar menuBar = new JMenuBar();
+        private MenuItemServiceTracker<MainWindow,MainFrameAction> menuBarActionTracker;
         /**
          * Creates a new frame. The content of the frame is not created by
-         * this constructor, clients must call {@link #init()}.
+         * this constructor, clients must call {@link #init}.
          */
         public MainFrame(){
                     getContentPane().setLayout(new BorderLayout());
@@ -67,13 +72,27 @@ public class MainFrame extends JFrame implements MainWindow {
                     setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
             setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis"));
         }
-        
-        public void init() {
+
+        @Override
+        public void dispose() {
+            try {
+                if(menuBarActionTracker!=null) {
+                    menuBarActionTracker.close();
+                }
+            } finally {
+                super.dispose();
+            }
+        }
+
+        public void init(BundleContext context) {
                 initActions();
                 // Add actions in menu bar
                 actions.registerContainer(menuBar);
                 this.setJMenuBar(menuBar);
-                getContentPane().add(new MainFrameStatusBar(this),BorderLayout.SOUTH);                
+                getContentPane().add(new MainFrameStatusBar(this),BorderLayout.SOUTH);
+                // Track for new menu items
+                menuBarActionTracker = new MenuItemServiceTracker<MainWindow, MainFrameAction>(context,MainFrameAction.class,actions,this);
+                menuBarActionTracker.open();
         }
 
         public static String getVersion() {
