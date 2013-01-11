@@ -697,6 +697,13 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         }
 
         /**
+         * @return Action manager of tree popup.
+         */
+        public ActionCommands getPopupActions() {
+            return popupActions;
+        }
+
+        /**
          * Action triggered by the Add group button in the menu of the TOC.
          */
         public void onAddGroup(){
