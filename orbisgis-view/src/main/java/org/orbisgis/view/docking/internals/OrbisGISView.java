@@ -33,6 +33,7 @@ import bibliothek.gui.dock.common.CLocation;
 import bibliothek.gui.dock.common.MultipleCDockable;
 import bibliothek.gui.dock.common.SingleCDockable;
 import bibliothek.gui.dock.common.action.CAction;
+import bibliothek.gui.dock.common.action.CSeparator;
 import bibliothek.gui.dock.common.event.CDockableStateListener;
 import bibliothek.gui.dock.common.intern.AbstractCDockable;
 import bibliothek.gui.dock.common.intern.DefaultCDockable;
@@ -178,6 +179,8 @@ public class OrbisGISView {
         for(CAction action : actions) {
             internalDock.addAction(action);
         }
+        // Add a final separator
+        internalDock.addAction(CSeparator.SEPARATOR);
     }
     /**
      * The toolBar has been updated, translate JToolBar

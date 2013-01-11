@@ -128,7 +128,9 @@ public class MainFrameStatusBar extends StatusBar {
                 closeJobPopup();
                 clearJobTitle();
                 runningJobs.dispose();
-                messagePopup.dispose();
+                if(messagePopup!=null) {
+                    messagePopup.dispose();
+                }
         }
         /**
          * The user click on change workspace button

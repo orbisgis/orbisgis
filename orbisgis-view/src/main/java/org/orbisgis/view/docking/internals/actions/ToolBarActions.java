@@ -28,16 +28,17 @@
  */
 package org.orbisgis.view.docking.internals.actions;
 
-import bibliothek.gui.dock.common.action.CAction;
-import bibliothek.gui.dock.common.action.CDropDownButton;
-import bibliothek.gui.dock.common.action.CMenu;
-import bibliothek.gui.dock.common.action.CRadioButton;
-import bibliothek.gui.dock.common.action.CRadioGroup;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.swing.Action;
+import bibliothek.gui.dock.common.action.CAction;
+import bibliothek.gui.dock.common.action.CDropDownButton;
+import bibliothek.gui.dock.common.action.CMenu;
+import bibliothek.gui.dock.common.action.CRadioButton;
+import bibliothek.gui.dock.common.action.CRadioGroup;
+import bibliothek.gui.dock.common.action.CSeparator;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionTools;
 import java.util.Map.Entry;
@@ -106,6 +107,18 @@ public class ToolBarActions {
     }
 
     /**
+     * Get the logical group of action (two different logical group are separated with separation bar)
+     * @param action Common Action
+     * @return Empty string if none, else logicial action group.
+     */
+    private String getActionLogicalGroup(CAction action) {
+        if(action instanceof CActionHolder) {
+            return ActionTools.getLogicalGroup(((CActionHolder)action).getAction());
+        } else {
+            return "";
+        }
+    }
+    /**
      * Convert swing Action to DockingFrame buttons.
      * @param actions Actions to convert
      */
@@ -166,7 +179,24 @@ public class ToolBarActions {
                     actionList = new ArrayList<CAction>();
                     tempCActionContainer.put(parentId,actionList);
                 }
-                actionList.add(getInsertionPosition(actionList,action),cAction);
+                int insertPosition = getInsertionPosition(actionList, action);
+                String currentAG =  ActionTools.getLogicalGroup(action);
+                if(insertPosition>0) {
+                    CAction beforeA = actionList.get(insertPosition-1);
+                    String beforeAG = getActionLogicalGroup(beforeA);
+                    if(!beforeAG.equals(currentAG) && !(beforeA instanceof CSeparator)) {
+                        actionList.add(insertPosition,CSeparator.SEPARATOR);
+                        insertPosition++;
+                    }
+                }
+                if(insertPosition<actionList.size()) {
+                    CAction afterA = actionList.get(insertPosition);
+                    String afterAG = getActionLogicalGroup(afterA);
+                    if(!afterAG.equals(currentAG) && !(afterA instanceof CSeparator)) {
+                        actionList.add(insertPosition,CSeparator.SEPARATOR);
+                    }
+                }
+                actionList.add(insertPosition,cAction);
             }
         }
         // Insert CAction in each containers
