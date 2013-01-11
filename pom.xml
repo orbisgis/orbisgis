@@ -13,6 +13,7 @@
         <url>http://www.orbisgis.org</url>
         <modules>
                 <!-- TODO GDMS here -->
+                <module>gdms</module>
                 <module>plugin-test</module>
                 <module>orbisgis-core</module>
                 <module>legend</module>
@@ -25,6 +26,10 @@
                 <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
                 <netbeans.hint.license>OrbisGIS</netbeans.hint.license>
         </properties>
+        <scm>
+                <connection>scm:git:https://github.com/irstv/orbisgis.git</connection>
+                <url>https://github.com/irstv/orbisgis</url>
+        </scm>
         <repositories>
                 <repository>
                         <id>IRSTV</id>
@@ -48,7 +53,7 @@
                 <repository>
                         <id>IRSTV</id>
                         <name>IRSTV repository</name>
-                        <url>scp://ateliersig@repo.orbisgis.org:/var/www/repo.orbisgis.org</url>
+                        <url>scp://irstv@repo.orbisgis.org:/var/www/repo.orbisgis.org/</url>
                 </repository>
         </distributionManagement>
         <build>

@@ -27,4 +27,4 @@
 # info_at_ orbisgis.org
 #
 
-java -Xmx1024M -jar orbisgis-view-4.0-SNAPSHOT-jar-with-dependencies.jar $*
+java -Xmx1024M -jar orbisgis-dist-4.0-SNAPSHOT-jar-with-dependencies.jar $*

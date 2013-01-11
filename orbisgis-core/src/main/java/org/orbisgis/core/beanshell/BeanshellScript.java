@@ -42,7 +42,7 @@ import org.orbisgis.core.Services;
  *
  * @author Erwan Bocher
  */
-public class BeanshellScript {
+public final class BeanshellScript {
 
         /**
          * Entry point.
@@ -121,5 +121,8 @@ public class BeanshellScript {
          */
         public static String getHelp() {
                 return "Beanshell script arguments. The first argument must be  a path to the script file.\n";
+        }
+
+        private BeanshellScript() {
         }
 }

@@ -393,6 +393,15 @@ public class LayerCollection extends BeanLayer {
 	public boolean isVectorial() {
 		return false;
 	}
+            
+        /**
+         * Used to determine if this layer is a stream layer. It is not, it is a layer collection.
+         * @return false
+         */
+        @Override
+	public boolean isStream() {
+		return false;
+	}
 
         /**
          * Supposed to return the datasource associated to this layer. But it's a collection,
@@ -432,11 +441,6 @@ public class LayerCollection extends BeanLayer {
 	public void setSelection(Set<Integer> newSelection) {
 		throw new UnsupportedOperationException(I18N.tr("No row selection in a layer collection"));
         }
-      
-	@Override
-	public boolean isStream() {
-		return false;
-	}
     
         @Override
         public Style getStyle(int i){

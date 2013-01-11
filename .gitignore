@@ -1,6 +1,9 @@
 target
 nbactions.xml
+**/*.iml
+*.iml
+/target/
+.idea
+**/.ensime*
 **/nb-configuration.xml
 *mo
-*iml
-.idea

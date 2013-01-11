@@ -369,7 +369,7 @@ public abstract class Renderer {
                 g2.setRenderingHints(mt.getRenderingHints());
 
                 Envelope extent = mt.getAdjustedExtent();
-                
+
 
                 ILayer[] layers;
 
@@ -409,7 +409,7 @@ public abstract class Renderer {
                                                         }
                                                 }
                                         } catch (DriverException e) {
-                                                LOGGER.error(I18N.tr("Layer {0} not drawn",layer.getName()), e); 
+                                                LOGGER.error(I18N.tr("Layer {0} not drawn",layer.getName()), e);
                                         }
                                 }
                         }
@@ -419,10 +419,10 @@ public abstract class Renderer {
         private void drawStreamLayer(Graphics2D g2, ILayer layer, int width, int height, Envelope extent, ProgressMonitor pm) {
                 try {
                         layer.open();
-                        
+
                         for (int i = 0 ; i < layer.getDataSource().getRowCount() ; i++) {
                                 GeoStream geoStream = layer.getDataSource().getStream(i);
-                                
+
                                 Image img = geoStream.getMap(width, height, extent, pm);
                                 g2.drawImage(img, 0, 0, null);
                         }

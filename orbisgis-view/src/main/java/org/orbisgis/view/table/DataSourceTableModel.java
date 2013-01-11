@@ -185,6 +185,9 @@ public class DataSourceTableModel extends AbstractTableModel {
         public Object getValueAt(int row, int col) {
                 try {
                         Value val = dataSource.getFieldValue(row, col);
+                        if(val.isNull()) {
+                                return null;
+                        }
                         Type type = getMetadata().getFieldType(col);
                         switch (type.getTypeCode()) {
                                 case Type.STRING:

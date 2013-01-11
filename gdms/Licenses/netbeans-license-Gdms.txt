@@ -1,0 +1,37 @@
+<#if licenseFirst??>
+${licenseFirst}
+</#if>
+${licensePrefix}The GDMS library (Generic Datasources Management System)
+${licensePrefix}is a middleware dedicated to the management of various kinds of
+${licensePrefix}data-sources such as spatial vectorial data or alphanumeric. Based
+${licensePrefix}on the JTS library and conform to the OGC simple feature access
+${licensePrefix}specifications, it provides a complete and robust API to manipulate
+${licensePrefix}in a SQL way remote DBMS (PostgreSQL, H2...) or flat files (.shp,
+${licensePrefix}.csv...).
+${licensePrefix}
+${licensePrefix}Gdms is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+${licensePrefix}team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+${licensePrefix}
+${licensePrefix}Copyright (C) 2007-2012 IRSTV FR CNRS 2488
+${licensePrefix}
+${licensePrefix}This file is part of Gdms.
+${licensePrefix}
+${licensePrefix}Gdms is free software: you can redistribute it and/or modify it under the
+${licensePrefix}terms of the GNU General Public License as published by the Free Software
+${licensePrefix}Foundation, either version 3 of the License, or (at your option) any later
+${licensePrefix}version.
+${licensePrefix}
+${licensePrefix}Gdms is distributed in the hope that it will be useful, but WITHOUT ANY
+${licensePrefix}WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+${licensePrefix}A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+${licensePrefix}
+${licensePrefix}You should have received a copy of the GNU General Public License along with
+${licensePrefix}Gdms. If not, see <http://www.gnu.org/licenses/>.
+${licensePrefix}
+${licensePrefix}For more information, please consult: <http://www.orbisgis.org/>
+${licensePrefix}
+${licensePrefix}or contact directly:
+${licensePrefix}info@orbisgis.org
+<#if licenseLast??>
+${licenseLast}
+</#if>
