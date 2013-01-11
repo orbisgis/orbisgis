@@ -31,15 +31,7 @@ package org.orbisgis.view.components.actions;
 import org.junit.Test;
 import org.orbisgis.view.components.button.DropDownButton;
 
-import javax.swing.AbstractAction;
-import javax.swing.AbstractButton;
-import javax.swing.Action;
-import javax.swing.JButton;
-import javax.swing.JMenu;
-import javax.swing.JPopupMenu;
-import javax.swing.JRadioButton;
-import javax.swing.JRadioButtonMenuItem;
-import javax.swing.JToolBar;
+import javax.swing.*;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
@@ -138,7 +130,7 @@ public class ActionCommandsTest {
                 assertTrue(getSubComponent(menu,1) instanceof JRadioButtonMenuItem);
                 assertTrue(getSubComponent(toolBar,0,0) instanceof JRadioButtonMenuItem);
                 assertTrue(getSubComponent(toolBar,0,1) instanceof JRadioButtonMenuItem);
-                assertTrue(getSubComponent(toolBar,1) instanceof JRadioButton);
+                assertTrue(getSubComponent(toolBar,1) instanceof JToggleButton);
 
                 //Extract Swing components
                 JRadioButtonMenuItem radioAA = (JRadioButtonMenuItem)getSubComponent(menu,0,0);
