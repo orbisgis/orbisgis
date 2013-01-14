@@ -26,37 +26,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-
-package org.orbisgis.view.consoles.sql;
-
-import javax.swing.JComponent;
-import javax.swing.JPanel;
-import org.orbisgis.view.docking.DockingPanel;
-import org.orbisgis.view.docking.DockingPanelParameters;
-import org.xnap.commons.i18n.I18n;
-import org.xnap.commons.i18n.I18nFactory;
+package org.orbisgis.view.geocatalog.ext;
 
 /**
- *
- * @author Erwan Bocher
+ * Actions on the frame title of Source Catalog
+ * @author Nicolas Fortin
  */
-public class SQLConsole extends JPanel implements DockingPanel{
-
-        private static final I18n I18N = I18nFactory.getI18n(SQLConsole.class);
-        private DockingPanelParameters dockingParameters = new DockingPanelParameters(); /*!< docked panel properties */
-
-        public SQLConsole(){
-                
-        }
-        
-        @Override
-        public DockingPanelParameters getDockingParameters() {
-                return dockingParameters;
-        }
-
-        @Override
-        public JComponent getComponent() {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-        
+public interface TitleActionBar extends GeoCatalogExt{
 }

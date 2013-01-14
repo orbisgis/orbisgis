@@ -65,8 +65,8 @@ public class InternalCommonFactory implements MultipleCDockableFactory<CustomMul
         @Override
         public CustomMultipleCDockable read( DockingPanelLayout layout ){
                 DockingPanel panel = factory.create(layout);
-                CustomMultipleCDockable dockable = OrbisGISView.createMultiple(panel, this, ccontrol);                
-                return dockable;
+                CustomMultipleCDockable cdockable = OrbisGISView.createMultiple(panel, this, ccontrol);
+                return cdockable;
         }
 
         /* Called when storing the current layout */

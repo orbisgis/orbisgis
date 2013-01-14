@@ -35,52 +35,64 @@ import java.beans.EventHandler;
 import java.util.Locale;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
+import javax.swing.JMenuBar;
+import javax.swing.MenuElement;
 import org.orbisgis.core.workspace.CoreWorkspace;
-import org.orbisgis.view.components.menubar.MenuBarManager;
-import org.orbisgis.view.components.menubar.MenuItemProperties;
-import org.orbisgis.view.components.menubar.MenuProperties;
+import org.orbisgis.view.components.actions.ActionCommands;
+import org.orbisgis.view.components.actions.DefaultAction;
+import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.docking.DockingManager;
-import org.orbisgis.view.docking.DockingManagerImpl;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.main.frames.ext.MainFrameAction;
+import org.orbisgis.view.main.frames.ext.MainWindow;
 import org.orbisgis.view.workspace.ViewWorkspace;
+import org.osgi.framework.BundleContext;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * Host of the {@link DockStation}s, this frame contain 
- * all other dockable frames.
+ * Main window that contain all docking panels.
  */
-public class MainFrame extends JFrame {
+public class MainFrame extends JFrame implements MainWindow {
         private static final I18n I18N = I18nFactory.getI18n(MainFrame.class);
-        //Main menu keys
-        public static final String MENU_FILE = "file";
-        public static final String MENU_EXIT = "exitapp";
-        public static final String MENU_TOOLS = "tools";
-        public static final String MENU_CONFIGURE = "configure";
-        public static final String MENU_LOOKANDFEEL = "lookAndFeel";
-        public static final String MENU_WINDOWS = "windows";
         
         //The main frame addDockingPanel panels state,theme, and properties
         private DockingManager dockingManager=null;
-        private MenuBarManager menuBar = new MenuBarManager();
+        private ActionCommands actions = new ActionCommands();
+        private JMenuBar menuBar = new JMenuBar();
+        private MenuItemServiceTracker<MainWindow,MainFrameAction> menuBarActionTracker;
         /**
-	 * Creates a new frame. The content of the frame is not created by
-	 * this constructor, clients must call {@link #setup(Core)}.
-         * @param dockingManager 
-	 */
-	public MainFrame(){
-                getContentPane().setLayout(new BorderLayout());
-		setTitle( I18N.tr("OrbisGIS version {0} {1} {2}",
-                        getVersion(),ViewWorkspace.CITY_VERSION,Locale.getDefault().getCountry()));
-                setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
-		setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis")); 
-	}
-        
-        public void init() {
-                createMenu();
-                this.setJMenuBar(menuBar.getRootBar());
-                getContentPane().add(new MainFrameStatusBar(this),BorderLayout.SOUTH);                
+         * Creates a new frame. The content of the frame is not created by
+         * this constructor, clients must call {@link #init}.
+         */
+        public MainFrame(){
+                    getContentPane().setLayout(new BorderLayout());
+            setTitle( I18N.tr("OrbisGIS version {0} {1} {2}",
+                            getVersion(),ViewWorkspace.CITY_VERSION,Locale.getDefault().getCountry()));
+                    setDefaultCloseOperation( DO_NOTHING_ON_CLOSE );
+            setIconImage(OrbisGISIcon.getIconImage("mini_orbisgis"));
+        }
+
+        @Override
+        public void dispose() {
+            try {
+                if(menuBarActionTracker!=null) {
+                    menuBarActionTracker.close();
+                }
+            } finally {
+                super.dispose();
+            }
+        }
+
+        public void init(BundleContext context) {
+                initActions();
+                // Add actions in menu bar
+                actions.registerContainer(menuBar);
+                this.setJMenuBar(menuBar);
+                getContentPane().add(new MainFrameStatusBar(this),BorderLayout.SOUTH);
+                // Track for new menu items
+                menuBarActionTracker = new MenuItemServiceTracker<MainWindow, MainFrameAction>(context,MainFrameAction.class,actions,this);
+                menuBarActionTracker.open();
         }
 
         public static String getVersion() {
@@ -92,41 +104,40 @@ public class MainFrame extends JFrame {
         }
         public void setDockingManager(DockingManager dockingManager) {
             this.dockingManager = dockingManager;
-            //Add Look And Feel menu
-            menuBar.addMenu(MENU_TOOLS, new MenuProperties(MENU_LOOKANDFEEL, dockingManager.getLookAndFeelMenu()));      
-            //Add the window menu
-            menuBar.addMenu("", new MenuProperties(MENU_WINDOWS,dockingManager.getCloseableDockableMenu()));
+
+            // Add Window close menu
+            menuBar.add(dockingManager.getCloseableDockableMenu());
+            // Add l&f menu
+            MenuElement toolsMenu = actions.getActionMenu(MainFrameAction.MENU_TOOLS,menuBar.getSubElements());
+            if(toolsMenu !=null && toolsMenu instanceof JMenu) {
+                ((JMenu)toolsMenu).add(dockingManager.getLookAndFeelMenu());
+            }
         }
+
         /**
          * Create the built-ins menu items
          */
-        private void createMenu() {
-            //File menu
-            menuBar.addMenu("", new MenuProperties(MENU_FILE, new JMenu(I18N.tr("&File"))));
-            //Add exit item
-            JMenuItem exitMenu = new JMenuItem(I18N.tr("&Exit"),OrbisGISIcon.getIcon("exit"));
-            exitMenu.addActionListener(EventHandler.create(ActionListener.class,this,"onMenuExitApplication"));
-            menuBar.addMenuItem(MENU_FILE,new MenuItemProperties(MENU_EXIT,exitMenu));
-            //Add the tools menu
-            menuBar.addMenu("", new MenuProperties(MENU_TOOLS, new JMenu(I18N.tr("&Tools"))));
-            //Add preferencies menu item
-            JMenuItem preferenciesMenu = new JMenuItem(I18N.tr("&Configuration"),OrbisGISIcon.getIcon("preferences-system"));
-            preferenciesMenu.addActionListener(EventHandler.create(ActionListener.class,this,"onMenuShowPreferencies"));
-            menuBar.addMenuItem(MENU_TOOLS, new MenuItemProperties(MENU_TOOLS, preferenciesMenu));
+        private void initActions() {
+            actions.addAction(new DefaultAction(MainFrameAction.MENU_FILE,I18N.tr("&File")).setMenuGroup(true));
+            actions.addAction(new DefaultAction(MainFrameAction.MENU_EXIT, I18N.tr("&Exit"), OrbisGISIcon.getIcon("exit"),
+                    EventHandler.create(ActionListener.class, this, "onMenuExitApplication"))
+                    .setParent(MainFrameAction.MENU_FILE));
+
+            actions.addAction(new DefaultAction(MainFrameAction.MENU_TOOLS,I18N.tr("&Tools")).setMenuGroup(true));
+            actions.addAction(new DefaultAction(MainFrameAction.MENU_CONFIGURE,I18N.tr("&Configuration"),
+                    OrbisGISIcon.getIcon("preferences-system"),
+                    EventHandler.create(ActionListener.class,this,"onMenuShowPreferences"))
+                    .setParent(MainFrameAction.MENU_TOOLS));
+
         }
-        /**
-         * 
-         * @return The menu bar manager
-         */
-        public MenuBarManager getMenuBarManager() {
-            return menuBar;
-        }
+
         /**
          * The user click on preferences menu item
          */
-        public void onMenuShowPreferencies() {
+        public void onMenuShowPreferences() {
             dockingManager.showPreferenceDialog();
         }
+
         /**
          * The user click on exit application menu item
          */

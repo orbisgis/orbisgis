@@ -29,8 +29,8 @@
 package org.orbisgis.sif.common;
 
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
 import javax.swing.AbstractButton;
+import javax.swing.Action;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 import javax.swing.MenuElement;
@@ -39,28 +39,70 @@ import javax.swing.MenuElement;
  * Common tools to Swing Menu
  */
 public class MenuCommonFunctions {
+    public static final Character MNEMONIC_CHARACTER = '&';
+    public static final String MNEMONIC_STRING = MNEMONIC_CHARACTER.toString();
     /**
      * Static class
      */
     private MenuCommonFunctions() {
         
     }
-    
+
     /**
-     * Translate the character following & in the label by a mnemonic
+     * Translate the character following MNEMONIC_CHARACTER in the label by a mnemonic
+     * @param action The action instance
+     */
+    public static void setMnemonic(Action action) {
+        String actionLabel = (String)action.getValue(Action.NAME);
+        if(actionLabel!=null) {
+            int charPosition=getMnemonicCharPos(actionLabel);
+            if(charPosition>=0) {
+                action.putValue(Action.MNEMONIC_KEY,new Integer(Character.toUpperCase(actionLabel.charAt(charPosition+1))));
+                // Update Name
+                action.putValue(Action.NAME,clearMnemonic(charPosition,actionLabel));
+            }
+        }
+    }
+    /**
+     * Translate the character following MNEMONIC_CHARACTER in the label by a mnemonic
      * @param actionComponent The menu item
      */
     public static void setMnemonic(AbstractButton actionComponent) {
         String componentLabel = actionComponent.getText();
-        int charpos=componentLabel.indexOf("&");
-        if(charpos!=-1 && componentLabel.length()>charpos+1) {
-                if(componentLabel.charAt(charpos+1)!=KeyEvent.VK_AMPERSAND) {
-                        actionComponent.setMnemonic(componentLabel.charAt(charpos+1));
-                }
-                actionComponent.setText(componentLabel.replaceFirst("&",""));
+        int charPosition=getMnemonicCharPos(componentLabel);
+        if(charPosition>=0) {
+            actionComponent.setMnemonic(Character.toUpperCase(componentLabel.charAt(charPosition+1)));
+            actionComponent.setText(clearMnemonic(charPosition,componentLabel));
         }
     }
-    
+
+    /**
+     * remove mnemonic hint. ex: "A &Label" become "A Label"
+     * @param mnemonicPosition
+     * @param originalText
+     * @return
+     */
+    private static String clearMnemonic(int mnemonicPosition,String originalText) {
+        String removedSpecChar = originalText.substring(0,mnemonicPosition)+originalText.substring(mnemonicPosition+1,originalText.length());
+        removedSpecChar = removedSpecChar.replace(MNEMONIC_STRING+MNEMONIC_STRING,MNEMONIC_STRING);
+        return removedSpecChar;
+    }
+    /**
+     * @param label
+     * @return Position of the mnemonic character, -1 if not found
+     */
+    private static int getMnemonicCharPos(String label) {
+        int charPosition=label.indexOf(MNEMONIC_CHARACTER);
+        while(charPosition!=-1 && label.length()>charPosition+1) {
+            if(label.charAt(charPosition+1)!=new Character(MNEMONIC_CHARACTER)) {
+                    return charPosition;
+            } else {
+                    //found &&
+                    charPosition = label.indexOf(MNEMONIC_CHARACTER,charPosition+2);
+            }
+        }
+        return -1;
+    }
     /**
      * @param menu
      * @param menuItem

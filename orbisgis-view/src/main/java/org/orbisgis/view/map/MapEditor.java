@@ -32,11 +32,8 @@ import com.vividsolutions.jts.geom.Envelope;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.geom.Point2D;
 import java.beans.EventHandler;
@@ -50,16 +47,10 @@ import java.io.FileNotFoundException;
 import java.net.URI;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.AbstractButton;
-import javax.swing.ButtonGroup;
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
+import javax.swing.Action;
 import javax.swing.JComponent;
 import javax.swing.JLayeredPane;
-import javax.swing.JMenuItem;
 import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JToggleButton;
 import javax.swing.JToolBar;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -77,13 +68,17 @@ import org.orbisgis.core.map.TransformListener;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
-import org.orbisgis.view.components.button.DropDownButton;
+import org.orbisgis.view.components.actions.ActionCommands;
+import org.orbisgis.view.components.actions.ActionDockingListener;
+import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
-import org.orbisgis.view.edition.EditorDockable;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.geocatalog.EditableSource;
 import org.orbisgis.view.icons.OrbisGISIcon;
+import org.orbisgis.view.map.ext.AutomatonHolder;
+import org.orbisgis.view.map.ext.MapEditorAction;
+import org.orbisgis.view.map.ext.MapEditorExtension;
 import org.orbisgis.view.map.jobs.CreateSourceFromSelection;
 import org.orbisgis.view.map.jobs.ReadMapContextJob;
 import org.orbisgis.view.map.jobs.ZoomToSelection;
@@ -91,8 +86,18 @@ import org.orbisgis.view.map.mapsManager.MapsManager;
 import org.orbisgis.view.map.mapsManager.TreeLeafMapContextFile;
 import org.orbisgis.view.map.mapsManager.TreeLeafMapElement;
 import org.orbisgis.view.map.tool.Automaton;
+import org.orbisgis.view.map.tool.ToolListener;
+import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
-import org.orbisgis.view.map.tools.*;
+import org.orbisgis.view.map.tools.CompassTool;
+import org.orbisgis.view.map.tools.FencePolygonTool;
+import org.orbisgis.view.map.tools.MesureLineTool;
+import org.orbisgis.view.map.tools.MesurePolygonTool;
+import org.orbisgis.view.map.tools.PanTool;
+import org.orbisgis.view.map.tools.PickCoordinatesPointTool;
+import org.orbisgis.view.map.tools.SelectionTool;
+import org.orbisgis.view.map.tools.ZoomInTool;
+import org.orbisgis.view.map.tools.ZoomOutTool;
 import org.orbisgis.view.workspace.ViewWorkspace;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -100,11 +105,11 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * The Map Editor Panel
  */
-public class MapEditor extends JPanel implements EditorDockable, TransformListener   {
+public class MapEditor extends JPanel implements TransformListener, MapEditorExtension   {
     private static final I18n I18N = I18nFactory.getI18n(MapEditor.class);
     private static final Logger GUILOGGER = Logger.getLogger("gui."+MapEditor.class);
     //The UID must be incremented when the serialization is not compatible with the new version of this class
-    private static final long serialVersionUID = 1L; 
+    private static final long serialVersionUID = 1L;
     private MapControl mapControl = new MapControl();
     private MapContext mapContext = null;
     private MapElement mapElement;
@@ -123,7 +128,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     private JLayeredPane layeredPane = new JLayeredPane();
     private ComponentListener sizeListener = EventHandler.create(ComponentListener.class,this,"updateMapControlSize",null,"componentResized");
     private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified");
-    
+    private ActionCommands actions = new ActionCommands();
     /**
      * Constructor
      */
@@ -136,20 +141,21 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         dockingPanelParameters.setMinimizable(false);
         dockingPanelParameters.setExternalizable(false);
         dockingPanelParameters.setCloseable(false);
-        dockingPanelParameters.setLayout(new MapEditorPersistance());
+        dockingPanelParameters.setLayout(new MapEditorPersistence());
         layeredPane.add(mapControl,1);
-        layeredPane.add(mapsManager,0);
+        layeredPane.add(mapsManager, 0);
         mapsManager.setVisible(false);
         add(layeredPane, BorderLayout.CENTER);
         add(mapStatusBar, BorderLayout.PAGE_END);
-        mapControl.setDefaultTool(new ZoomInTool());
         //Declare Tools of Map Editors
-        //For debug purpose, also add the toolbar in the frame
-        //add(createToolBar(false), BorderLayout.SOUTH);
         //Add the tools in the docking Panel title
-        dockingPanelParameters.setToolBar(createToolBar(true));      
+        createActions();
+        dockingPanelParameters.setDockActions(actions.getActions());
+        // Tools that will be created later will also be set in the docking panel
+        // thanks to this listener
+        actions.addPropertyChangeListener(new ActionDockingListener(dockingPanelParameters));
         //Set the Drop target
-        dragDropHandler = new MapTransferHandler();        
+        dragDropHandler = new MapTransferHandler();
         this.setTransferHandler(dragDropHandler);
     }
     private void updateMapLabel() {
@@ -190,26 +196,26 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                                 EventHandler.create(VetoableChangeListener.class, this,
                                 "onUserSetScaleDenominator", ""));
                         // Load the Remote Map Catalog servers and keep track for updates
-                        mapsManager.setServerList(getMapEditorPersistance().getMapCatalogUrlList());
+                        mapsManager.setServerList(getMapEditorPersistence().getMapCatalogUrlList());
                         // When the tree is expanded update the manager size
                         mapsManager.getTree().addComponentListener(sizeListener);
                         mapsManager.getTree().addTreeExpansionListener(EventHandler.create(TreeExpansionListener.class,this,"updateMapControlSize"));
-                        
+
                 }
         }
 
         private void initMapContext() {
                 BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
                 ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
-                
-                File serialisedMapContextPath = new File(viewWorkspace.getMapContextPath() + File.separator, getMapEditorPersistance().getDefaultMapContext());
+
+                File serialisedMapContextPath = new File(viewWorkspace.getMapContextPath() + File.separator, getMapEditorPersistence().getDefaultMapContext());
                 if(!serialisedMapContextPath.exists()) {
                         createDefaultMapContext();
                 } else {
                         TreeLeafMapElement defaultMap = (TreeLeafMapElement)mapsManager.getFactoryManager().create(serialisedMapContextPath);
                         try {
-                                MapElement mapElement = defaultMap.getMapElement(new NullProgressMonitor());
-                                backgroundManager.backgroundOperation(new ReadMapContextJob(mapElement));
+                                MapElement mapElementToLoad = defaultMap.getMapElement(new NullProgressMonitor());
+                                backgroundManager.backgroundOperation(new ReadMapContextJob(mapElementToLoad));
                         } catch(IllegalArgumentException ex) {
                                 //Map XML is invalid
                                 GUILOGGER.warn(I18N.tr("Fail to load the map context, starting with an empty map context"),ex);
@@ -225,8 +231,8 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
                 ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
 
-                MapContext defaultMapContext = new OwsMapContext();             
-                
+                MapContext defaultMapContext = new OwsMapContext();
+
 
                 //Load the map context
                 File mapContextFolder = new File(viewWorkspace.getMapContextPath());
@@ -234,11 +240,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         mapContextFolder.mkdir();
                 }
                 File mapContextFile = new File(mapContextFolder, I18N.tr("MyMap.ows"));
-                
+
                 if (!mapContextFile.exists()) {
                         //Create an empty map context
                         TreeLeafMapContextFile.createEmptyMapContext(mapContextFile);
-                }                
+                }
                 try {
                         defaultMapContext.read(new FileInputStream(mapContextFile));
                 } catch (FileNotFoundException ex) {
@@ -249,7 +255,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 MapElement editableMap = new MapElement(defaultMapContext, mapContextFile);
                 backgroundManager.backgroundOperation(new ReadMapContextJob(editableMap));
         }
-        
+
         /**
          * Compute the appropriate components bounds for MapControl
          * and MapsManager and apply theses bounds
@@ -270,7 +276,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         int hPos = layeredPane.getWidth() - Math.min(mapsManagerPreferredSize.width,layeredPane.getWidth());
                         mapsManager.setBounds(hPos,0,Math.min(mapsManagerPreferredSize.width,layeredPane.getWidth()),Math.min(mapsManagerPreferredSize.height,layeredPane.getHeight()));
                         mapsManager.revalidate();
-                }                
+                }
         }
     /**
      * The user Drop a list of Editable
@@ -281,14 +287,14 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         //Load the layers in the background
         bm.nonBlockingBackgroundOperation(new DropDataSourceProcess(editableList));
     }
-    
+
     /**
      * Load a new map context
-     * @param element 
+     * @param element
      */
     private void loadMap(MapElement element) {
-        try {      
-            removeListeners();    
+        try {
+            removeListeners();
             mapElement = element;
             mapContext = (MapContext) element.getObject();
             //We (unfortunately) need a cross reference here : this way, we'll
@@ -297,7 +303,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             mapControl.setMapContext(mapContext);
             mapControl.getMapTransform().setExtent(mapContext.getBoundingBox());
             mapControl.setElement(this);
-            mapControl.initMapControl();
+            mapControl.initMapControl(new PanTool());
             CursorCoordinateLookupTimer = new Timer(CURSOR_COORDINATE_LOOKUP_INTERVAL,
                     EventHandler.create(ActionListener.class,this,"onReadCursorMapCoordinate"));
             CursorCoordinateLookupTimer.setRepeats(false);
@@ -306,7 +312,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             ViewWorkspace viewWorkspace = Services.getService(ViewWorkspace.class);
             URI rootDir =(new File(viewWorkspace.getMapContextPath()+File.separator)).toURI();
             String relative = rootDir.relativize(element.getMapContextFile().toURI()).getPath();
-            getMapEditorPersistance().setDefaultMapContext(relative);
+            getMapEditorPersistence().setDefaultMapContext(relative);
             // Set the loaded map hint to the MapCatalog
             mapsManager.setLoadedMap(element.getMapContextFile());
             // Update the editor label with the new editable name
@@ -317,17 +323,17 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             GUILOGGER.error(ex);
         } catch (TransitionException ex) {
             GUILOGGER.error(ex);
-        }        
+        }
     }
-    private MapEditorPersistance getMapEditorPersistance() {
-            return ((MapEditorPersistance)dockingPanelParameters.getLayout());
+    private MapEditorPersistence getMapEditorPersistence() {
+            return ((MapEditorPersistence)dockingPanelParameters.getLayout());
     }
     /**
      * MouseMove event on the MapControl
-     * @param mousePoition x,y position of the event relative to the MapControl component.
+     * @param mousePosition x,y position of the event relative to the MapControl component.
      */
-    public void onMouseMove(Point mousePoition) {
-            lastCursorPosition = mousePoition;
+    public void onMouseMove(Point mousePosition) {
+            lastCursorPosition = mousePosition;
     }
 
         @Override
@@ -340,13 +346,14 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                 removeListeners();
         }
 
-        
+
+        @Override
         public MapContext getMapContext() {
                 return mapContext;
         }
-    
-    
-    
+
+
+
     /**
      * This method is called by the timer called CursorCoordinateLookupTimer
      * This function fetch the cursor coordinates (pixel)
@@ -359,93 +366,72 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         lastTranslatedCursorPosition=lastCursorPosition;
                         Point2D mapCoordinate = mapControl.getMapTransform().toMapPoint(lastCursorPosition.x, lastCursorPosition.y);
                         mapStatusBar.setCursorCoordinates(mapCoordinate);
-                }                
+                }
             } finally {
                 if(CursorCoordinateLookupTimer!=null) {
                         CursorCoordinateLookupTimer.start();
                 }
             }
     }
-    
-    /**
-     * Create a toolbar corresponding to the current state of the Editor
-     * @return 
-     */
-    private JToolBar createToolBar(boolean useButtonText) {
-        JToolBar toolBar = new JToolBar();
-        ButtonGroup autoSelection = new ButtonGroup();
-        //Navigation Tools
-        autoSelection.add(addButton(toolBar,new ZoomInTool(),useButtonText));
-        autoSelection.add(addButton(toolBar,new ZoomOutTool(),useButtonText));
-        autoSelection.add(addButton(toolBar,new PanTool(),useButtonText));
-        //Full extent button
-        toolBar.add(addButton(OrbisGISIcon.getIcon("world"),
-                I18N.tr("Full extent"),
-                I18N.tr("Zoom to show all geometries"),
-                useButtonText,"onFullExtent"));
-        toolBar.addSeparator();
-        //Selection button
-        autoSelection.add(addButton(toolBar, new SelectionTool(), useButtonText));
-        //Clear selection
-        toolBar.add(addButton(OrbisGISIcon.getIcon("edit-clear"),
-                I18N.tr("Clear selection"),
-                I18N.tr("Clear all selected geometries of all layers"),
-                useButtonText,"onClearSelection"));
-        
-        //Zoom to visible selected geometries
-        toolBar.add(addButton(OrbisGISIcon.getIcon("zoom_selected"),
-                I18N.tr("Zoom to selection"),
-                I18N.tr("Zoom to visible selected geometries"),
-                useButtonText,"onZoomToSelection"));
-        //Create a datasource from selection
-        toolBar.add(addButton(OrbisGISIcon.getIcon("table_go"),
-                I18N.tr("Create a datasource"),
-                I18N.tr("Create a datasource from a selection"),
-                useButtonText,"onCreateDataSourceFromSelection"));        
-        toolBar.addSeparator();
 
-        //Mesure Tools
-        JPopupMenu mesureMenu = new JPopupMenu();
-        JMenuItem defaultMenu = createMenuItem(new MesureLineTool());
-        mesureMenu.add(createMenuItem(new MesurePolygonTool()));
-        mesureMenu.add(defaultMenu);
-        mesureMenu.add(createMenuItem(new CompassTool()));
-        //Create the Mesure Tools Popup Button
-        DropDownButton mesureButton = new DropDownButton();
-        if(useButtonText) {
-            mesureButton.setName(I18N.tr("Mesure tools"));
-        }
-        mesureButton.setButtonAsMenuItem(true);
-        //Add Menu to the Popup Button
-        mesureButton.setComponentPopupMenu(mesureMenu);
-        autoSelection.add(mesureButton);
-        toolBar.add(mesureButton);
-        mesureButton.setSelectedItem(defaultMenu);
-        
-        //Drawing Tools
-        JPopupMenu graphicToolsMenu = new JPopupMenu();
-        defaultMenu = createMenuItem(new FencePolygonTool());
-        graphicToolsMenu.add(defaultMenu);
-        graphicToolsMenu.add(createMenuItem(new PickCoordinatesPointTool() ));
-        
-         //Create the Mesure Tools Popup Button
-        DropDownButton graphicToolsButton = new DropDownButton();
-        if(useButtonText) {
-            graphicToolsButton.setName(I18N.tr("Graphic tools"));
-        }
-        graphicToolsButton.setButtonAsMenuItem(true);
-        //Add Menu to the Popup Button
-        graphicToolsButton.setComponentPopupMenu(graphicToolsMenu);
-        autoSelection.add(graphicToolsButton);
-        toolBar.add(graphicToolsButton);
-        graphicToolsButton.setSelectedItem(defaultMenu);
-        
-        // Show/Hide maps manager
-        toolBar.add(addButton(OrbisGISIcon.getIcon("map"),
-                I18N.tr("Maps tree"),
-                I18N.tr("Show/Hide maps tree"),
-                useButtonText,"onShowHideMapsTree"));
-        toolBar.addSeparator();
+    /**
+     * MapEditor tools declaration
+     */
+    private void createActions() {
+        // Navigation tools
+        actions.addAction(new AutomatonAction(MapEditorAction.A_ZOOM_IN,new ZoomInTool(),this).setLogicalGroup("navigation"));
+        actions.addAction(new AutomatonAction(MapEditorAction.A_ZOOM_OUT,new ZoomOutTool(),this).setLogicalGroup("navigation"));
+        actions.addAction(new AutomatonAction(MapEditorAction.A_PAN,new PanTool(),this).setLogicalGroup("navigation"));
+        actions.addAction(new DefaultAction(MapEditorAction.A_FULL_EXTENT,I18N.tr("Full extent"),
+                OrbisGISIcon.getIcon("world"),EventHandler.create(ActionListener.class,this,"onFullExtent"))
+                .setToolTipText(I18N.tr("Zoom to show all geometries")).setLogicalGroup("navigation"));
+
+        // Selection tools
+        actions.addAction(new AutomatonAction(MapEditorAction.A_SELECTION,new SelectionTool(),this).setLogicalGroup("selection"));
+        actions.addAction(new DefaultAction(MapEditorAction.A_CLEAR_SELECTION, I18N.tr("Clear selection"),
+                OrbisGISIcon.getIcon("edit-clear"),EventHandler.create(ActionListener.class,this,"onClearSelection"))
+                .setToolTipText(I18N.tr("Clear all selected geometries of all layers")).setLogicalGroup("selection"));
+        actions.addAction(new DefaultAction(MapEditorAction.A_ZOOM_SELECTION, I18N.tr("Zoom to selection"),
+                OrbisGISIcon.getIcon("zoom_selected"),EventHandler.create(ActionListener.class,this,"onZoomToSelection"))
+                .setToolTipText(I18N.tr("Zoom to visible selected geometries")).setLogicalGroup("selection"));
+        actions.addAction(new DefaultAction(MapEditorAction.A_DATA_SOURCE_FROM_SELECTION, I18N.tr("Create a datasource"),
+                OrbisGISIcon.getIcon("table_go"),
+                EventHandler.create(ActionListener.class,this,"onCreateDataSourceFromSelection"))
+                .setToolTipText(I18N.tr("Create a datasource from a selection")).setLogicalGroup("selection"));
+
+        // Measure tools
+        actions.addAction(new DefaultAction(MapEditorAction.A_MEASURE_GROUP,I18N.tr("Mesure tools")).setMenuGroup(true));
+        actions.addAction(new AutomatonAction(MapEditorAction.A_MEASURE_LINE,new MesureLineTool(),this)
+                .setParent(MapEditorAction.A_MEASURE_GROUP));
+        actions.addAction(new AutomatonAction(MapEditorAction.A_MEASURE_POLYGON,new MesurePolygonTool(),this)
+                .setParent(MapEditorAction.A_MEASURE_GROUP));
+        actions.addAction(new AutomatonAction(MapEditorAction.A_COMPASS,new CompassTool(),this)
+                .setParent(MapEditorAction.A_MEASURE_GROUP));
+
+        // Drawing tools
+        actions.addAction(new DefaultAction(MapEditorAction.A_DRAWING_GROUP,I18N.tr("Graphic tools")).setMenuGroup(true));
+        actions.addAction(new AutomatonAction(MapEditorAction.A_FENCE,new FencePolygonTool(),this)
+                .setParent(MapEditorAction.A_DRAWING_GROUP));
+        actions.addAction(new AutomatonAction(MapEditorAction.A_PICK_COORDINATES, new PickCoordinatesPointTool(),this)
+                .setParent(MapEditorAction.A_DRAWING_GROUP));
+
+        // Maps manager
+        actions.addAction(new DefaultAction(MapEditorAction.A_MAP_TREE, I18N.tr("Maps tree"),
+                OrbisGISIcon.getIcon("map"),
+                EventHandler.create(ActionListener.class,this,"onShowHideMapsTree"))
+                .setToolTipText(I18N.tr("Show/Hide maps tree")));
+    }
+
+    /**
+     * @return The manager of docking actions.
+     */
+    public ActionCommands getActionCommands() {
+        return actions;
+    }
+    private JToolBar createToolBar() {
+        JToolBar toolBar = new JToolBar();
+        createActions();
+        actions.registerContainer(toolBar);
         return toolBar;
     }
 
@@ -460,68 +446,14 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                     mapsManager.setVisible(false);
             }
     }
-    /**
-     * Add the automaton tool to a Menu
-     * @param automaton
-     * @return 
-     */
-    private JMenuItem createMenuItem(Automaton automaton) {
-        JMenuItem automatonMenuItem = new JMenuItem(automaton.getName(), automaton.getImageIcon());
-        automatonMenuItem.setToolTipText(automaton.getTooltip());
-        automatonMenuItem.addActionListener(new AutomatonItemListener(automaton));        
-        return automatonMenuItem;
-    }
-    
-    /**
-     * Create a simple button
-     * @param icon
-     * @param buttonText
-     * @param buttonToolTip
-     * @param useButtonText
-     * @param localMethodName The name of the method to call on this
-     * @return The button
-     */
-    private AbstractButton addButton(ImageIcon icon, String buttonText,String buttonToolTip,boolean useButtonText,String localMethodName) {
-        String text="";
-        if(useButtonText) {
-           text = buttonText;
-        }
-        JButton newButton = new JButton(text,icon);
-        newButton.setToolTipText(buttonToolTip);
-        newButton.addActionListener(EventHandler.create(ActionListener.class,this,localMethodName));
-        return newButton;
-    }
-    /**
-     * Add the automaton on the toolBar
-     * @param toolBar
-     * @param text
-     * @param automaton
-     * @param useButtonText Show a text inside the ToolBar button.
-     * With DockingFrames, this text appear only on popup menu list
-     * @return 
-     */
-    private AbstractButton addButton(JToolBar toolBar,Automaton automaton,boolean useButtonText) {
-        String text="";
-        if(useButtonText) {
-           text = automaton.getName();
-        }
-        JToggleButton button = new JToggleButton(text,automaton.getImageIcon());
-        //Select it, if this is the currently used tool
-        if(mapControl.getTool().getClass().equals(automaton.getClass()) ) {
-            button.setSelected(true);
-        }
-        button.setToolTipText(automaton.getTooltip());
-        button.addItemListener(new AutomatonItemListener(automaton));
-        toolBar.add(button);
-        return button;
-    }
+
     /**
      * The user click on the button Full Extent
      */
     public void onFullExtent() {
         mapControl.getMapTransform().setExtent(mapContext.getLayerModel().getEnvelope());
     }
-    
+
     /**
      * The user click on the button clear selection
      */
@@ -532,7 +464,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                     }
             }
     }
-    
+
     /**
      * The user click on the button Zoom to selection
      */
@@ -540,23 +472,23 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             BackgroundManager bm = Services.getService(BackgroundManager.class);
             bm.backgroundOperation(new ZoomToSelection(mapContext, mapContext.getLayers()));
     }
-    
-    
-         /**
-         * The user can export the selected features into a new datasource
-         */
-        public void onCreateDataSourceFromSelection() {                
-                ILayer[] layers = mapContext.getSelectedLayers();
-                if(layers!=null|| layers.length>0){
-                for (ILayer layer : layers) {
-                        Set<Integer> selection = layer.getSelection();
-                        if(!selection.isEmpty()){
-                        BackgroundManager bm = Services.getService(BackgroundManager.class);
-                        bm.backgroundOperation(new CreateSourceFromSelection(layer.getDataSource(), selection));
-                }       }
-                }
-        }
-        
+
+
+     /**
+     * The user can export the selected features into a new datasource
+     */
+    public void onCreateDataSourceFromSelection() {
+            ILayer[] layers = mapContext.getSelectedLayers();
+            if(layers!=null|| layers.length>0){
+            for (ILayer layer : layers) {
+                    Set<Integer> selection = layer.getSelection();
+                    if(!selection.isEmpty()){
+                    BackgroundManager bm = Services.getService(BackgroundManager.class);
+                    bm.backgroundOperation(new CreateSourceFromSelection(layer.getDataSource(), selection));
+            }       }
+            }
+    }
+
     /**
      * Give information on the behaviour of this panel related to the current
      * docking system
@@ -570,18 +502,6 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
     @Override
     public JComponent getComponent() {
         return this;
-    }
-    /**
-     * The user click on a Map Tool
-     * @param automaton 
-     */
-    public void onToolSelected(Automaton automaton) {
-        GUILOGGER.debug("Choose the tool named "+automaton.getName());
-        try {
-            mapControl.setTool(automaton);
-        } catch (TransitionException ex) {
-            GUILOGGER.error(I18N.tr("Unable to choose this tool"),ex);
-        }
     }
 
     /**
@@ -619,33 +539,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         loadMap((MapElement)editableElement);
                 }
         }
-        
-    /**
-     * Internal Listener that store an automaton
-     */
-    private class AutomatonItemListener implements ItemListener,ActionListener {
-        private Automaton automaton;
-        AutomatonItemListener(Automaton automaton) {
-            this.automaton = automaton;
-        }
-        /**
-         * Used with Toggle Button (new state can be DESELECTED)
-         */
-        @Override
-        public void itemStateChanged(ItemEvent ie) {
-            if(ie.getStateChange() == ItemEvent.SELECTED) {
-                onToolSelected(automaton);
-            }
-        }
-        /**
-         * Used with Menu Item
-         * @param ae 
-         */
-        @Override
-        public void actionPerformed(ActionEvent ae) {
-            onToolSelected(automaton);
-        }
-    }
+
     /**
      * Remove the listeners on the current loaded document
      */
@@ -653,8 +547,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             if(mapElement!=null) {
                     mapElement.removePropertyChangeListener(modificationListener);
             }
+            if(mapControl!=null && mapControl.getToolManager()!=null) {
+                mapControl.getToolManager().removeToolListener(null);
+            }
     }
-    
+
     /**
      * The editable modified state is switching
      */
@@ -667,6 +564,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         }
                 });
     }
+
+    @Override
+    public ToolManager getToolManager() {
+        return mapControl.getToolManager();
+    }
     /**
      * This task is created when the user Drag Source from GeoCatalog
      * to the map directly. The layer is created directly on the root.
@@ -677,7 +579,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         public DropDataSourceProcess(EditableElement[] editableList) {
             this.editableList = editableList;
         }
-        
+
         @Override
         public void run(org.orbisgis.progress.ProgressMonitor pm) {
             DataManager dataManager = Services.getService(DataManager.class);
@@ -686,7 +588,7 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
             for(EditableElement eElement : editableList) {
                 pm.progressTo(100 * i++ / editableList.length);
                 if(eElement instanceof EditableSource) {
-                    String sourceName = ((EditableSource)eElement).getId();
+                    String sourceName = eElement.getId();
                     try {
                         dropLayer.addLayer(dataManager.createLayer(sourceName));
                     } catch (LayerException e) {
@@ -698,11 +600,11 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
                         mapElement.open(pm);
                         SwingUtilities.invokeLater(new Runnable() {
                                                 @Override
-                                                public void run() {                                                        
-                                                        EditorManager em = Services.getService(EditorManager.class);                        
-                                                        em.openEditable(mapElement);  
+                                                public void run() {
+                                                        EditorManager em = Services.getService(EditorManager.class);
+                                                        em.openEditable(mapElement);
                                                 }
-                                        });                              
+                                        });
                         return;
                 }
             }
@@ -711,7 +613,31 @@ public class MapEditor extends JPanel implements EditorDockable, TransformListen
         @Override
         public String getTaskName() {
             return I18N.tr("Load the data source droped into the map editor.");
-        }    
-        
+        }
+
+    }
+    private class ToolChangeListener implements ToolListener {
+
+        @Override
+        public void stateChanged(ToolManager toolManager) {
+        }
+
+        @Override
+        public void transitionException(ToolManager toolManager, TransitionException e) {
+        }
+
+        @Override
+        public void currentToolChanged(Automaton previous, ToolManager toolManager) {
+            //Find the Action of the new tool
+            for(Action action : actions.getActions()) {
+                if(action instanceof AutomatonHolder) {
+                    if(((AutomatonHolder)action).getAutomaton().equals(toolManager.getTool())) {
+                        // Enable the state of this radio button
+                        action.putValue(Action.SELECTED_KEY, true);
+                    }
+                }
+            }
+        }
+
     }
 }

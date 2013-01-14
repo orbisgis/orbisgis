@@ -33,16 +33,20 @@ import bibliothek.gui.dock.common.CLocation;
 import bibliothek.gui.dock.common.MultipleCDockable;
 import bibliothek.gui.dock.common.SingleCDockable;
 import bibliothek.gui.dock.common.action.CAction;
+import bibliothek.gui.dock.common.action.CSeparator;
 import bibliothek.gui.dock.common.event.CDockableStateListener;
 import bibliothek.gui.dock.common.intern.AbstractCDockable;
 import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.util.List;
-import javax.swing.JToolBar;
+import javax.swing.*;
+
 import org.orbisgis.view.docking.DockingLocation;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
+import org.orbisgis.view.docking.internals.actions.ToolBarActions;
+
 /**
  * This is the link between the DockingPanel and DockingFrames
  * 
@@ -54,8 +58,7 @@ import org.orbisgis.view.docking.DockingPanelParameters;
 public class OrbisGISView {
     private DefaultCDockable internalDock;
     private DockingPanelParameters dockableParameters;
-    private ToolBarActions customActions;
-    
+    private ToolBarActions customActions = new ToolBarActions();
     /**
      * Constructor of the OrbisGISView
      * @param dockingPanel The dockingPanel instance
@@ -149,7 +152,7 @@ public class OrbisGISView {
         internalDock.setExternalizable(dockableParameters.isExternalizable());
         internalDock.setCloseable(dockableParameters.isCloseable());
         internalDock.setVisible(dockableParameters.isVisible());
-        onSetToolBar(dockableParameters.getToolBar());        
+        onSetActions(dockableParameters.getDockActions());
     }
     /**
      * Give access to the panel parameters
@@ -164,12 +167,9 @@ public class OrbisGISView {
      * Clear custom actions list
      */
     private void clearCustomActions() {
-        if(customActions != null) {
             for(CAction customAction : customActions.getCustomActions()) {
                 internalDock.removeAction(customAction);
             }
-        }
-        customActions = new ToolBarActions();
     }
     /**
      * Copy CAction list into this View Action
@@ -179,18 +179,18 @@ public class OrbisGISView {
         for(CAction action : actions) {
             internalDock.addAction(action);
         }
+        // Add a final separator
+        internalDock.addAction(CSeparator.SEPARATOR);
     }
     /**
      * The toolBar has been updated, translate JToolBar
      * into a ActionToolBar automatically
-     * @param toolbar 
+     * @param actions Actions to convert
      */
-    public final void onSetToolBar(JToolBar toolbar) {
-        if(toolbar !=null) {
+    public final void onSetActions(List<Action> actions) {
             clearCustomActions();
-            customActions.convertToolBarToActions(toolbar);
+            customActions.setActions(actions);
             copyActions(customActions.getCustomActions());
-        }
     }
     
     /**
@@ -233,12 +233,12 @@ public class OrbisGISView {
                                                 internalDock,
                                                 "setCloseable",
                                                 "newValue"));
-        //Link JToolBar state change
+        //Link Actions state change
         dockableParameters.addPropertyChangeListener(
-                            DockingPanelParameters.PROP_TOOLBAR,
+                            DockingPanelParameters.PROP_DOCK_ACTIONS,
                             EventHandler.create(PropertyChangeListener.class,
                                                 this,
-                                                "onSetToolBar",
+                                                "onSetActions",
                                                 "newValue"));
         //Link visible state change
         dockableParameters.addPropertyChangeListener(

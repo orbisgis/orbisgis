@@ -28,8 +28,7 @@
  */
 package org.orbisgis.view.components.button;
 
-import java.awt.Graphics2D;
-import java.awt.Image;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
@@ -57,6 +56,65 @@ public class DropDownButton extends JToggleButton implements
          */
         public DropDownButton() {
             
+        }
+
+        /**
+         * Initialise this control by using action
+         * @param action
+         */
+        public DropDownButton(Action action) {
+                super(action);
+        }
+
+        @Override
+        public Component add(Component component, int i) {
+                if(getComponentPopupMenu()==null) {
+                        return super.add(component, i);
+                } else {
+                        setSelectedIfNone(component);
+                        return getComponentPopupMenu().add(component,i);
+                }
+        }
+
+        @Override
+        public Component add(Component component) {
+                if(getComponentPopupMenu()==null) {
+                        return super.add(component);
+                } else {
+                        setSelectedIfNone(component);
+                        return getComponentPopupMenu().add(component);
+                }
+        }
+        private void setSelectedIfNone(Component component) {
+            if(selectedItem==null && component instanceof JMenuItem) {
+                setSelectedItem((JMenuItem)component);
+            }
+        }
+        @Override
+        public void remove(Component component) {
+                if(getComponentPopupMenu()==null) {
+                        super.remove(component);
+                } else {
+                        getComponentPopupMenu().remove(component);
+                }
+        }
+
+        @Override
+        public Component getComponent(int i) {
+                if(getComponentPopupMenu()==null) {
+                        return super.getComponent(i);
+                } else {
+                        return getComponentPopupMenu().getComponent(i);
+                }
+        }
+
+        @Override
+        public Component[] getComponents() {
+                if(getComponentPopupMenu()==null) {
+                        return super.getComponents();
+                } else {
+                        return getComponentPopupMenu().getComponents();
+                }
         }
 
         /**
@@ -115,8 +173,9 @@ public class DropDownButton extends JToggleButton implements
         public void setSelectedItem(JMenuItem menu) {
             selectedItem = menu;     
             if(buttonAsMenuItem) {
-                this.setIcon(menu.getIcon());
-                this.setToolTipText(menu.getToolTipText());        
+                setIcon(menu.getIcon());
+                setText(menu.getText());
+                setToolTipText(menu.getToolTipText());
             }
         }
         
@@ -150,7 +209,9 @@ public class DropDownButton extends JToggleButton implements
 
         @Override
         public void setIcon(Icon icon) {
-            if(icon instanceof ImageIcon) {
+            if(icon == null) {
+                    super.setIcon(null);
+            } else if(icon instanceof ImageIcon) {
                 super.setIcon(mergeIcons((ImageIcon)icon));
             }else{
                 throw new IllegalArgumentException("DropDown button accept only ImageIcon");

@@ -52,8 +52,6 @@ import org.gvsig.remoteClient.wms.WMSClient;
 import org.gvsig.remoteClient.wms.WMSLayer;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
-import org.orbisgis.core.events.EventException;
-import org.orbisgis.core.events.ListenerContainer;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.sif.components.SaveFilePanel;
@@ -61,13 +59,23 @@ import org.orbisgis.utils.CollectionUtils;
 import org.orbisgis.utils.FileUtils;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.components.actions.ActionCommands;
+import org.orbisgis.view.components.actions.ActionDockingListener;
+import org.orbisgis.view.components.actions.DefaultAction;
+import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
 import org.orbisgis.view.components.filter.FilterFactoryManager;
 import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditorManager;
+import org.orbisgis.view.geocatalog.actions.ActionOnNonEmptySourceList;
+import org.orbisgis.view.geocatalog.actions.ActionOnSelection;
 import org.orbisgis.view.geocatalog.dialogs.OpenGdmsFilePanel;
 import org.orbisgis.view.geocatalog.dialogs.OpenGdmsFolderPanel;
+import org.orbisgis.view.geocatalog.ext.GeoCatalogMenu;
+import org.orbisgis.view.geocatalog.ext.PopupMenu;
+import org.orbisgis.view.geocatalog.ext.PopupTarget;
+import org.orbisgis.view.geocatalog.ext.TitleActionBar;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.geocatalog.filters.factories.NameContains;
 import org.orbisgis.view.geocatalog.filters.factories.NameNotContains;
@@ -81,6 +89,7 @@ import org.orbisgis.view.geocatalog.sourceWizards.wms.SRSPanel;
 import org.orbisgis.view.geocatalog.sourceWizards.wms.WMSConnectionPanel;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.table.TableEditableElement;
+import org.osgi.framework.BundleContext;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -93,7 +102,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * eventSourceListPopupMenuCreating listener container to add more items in the
  * source list pop-up menu.
  */
-public class Catalog extends JPanel implements DockingPanel {
+public class Catalog extends JPanel implements DockingPanel,TitleActionBar,PopupTarget {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
 
         private static final long serialVersionUID = 1L;
@@ -107,9 +116,12 @@ public class Catalog extends JPanel implements DockingPanel {
         private SourceListModel sourceListContent;
         //The factory shown when the user click on new factory button
         private static final String DEFAULT_FILTER_FACTORY = "name_contains";
-        //The popup menu event listener manager
-        private ListenerContainer<MenuPopupEventData> eventSourceListPopupMenuCreating = new ListenerContainer<MenuPopupEventData>();
         private FilterFactoryManager<IFilter,DefaultActiveFilter> filterFactoryManager;
+        private ActionCommands dockingActions = new ActionCommands();
+        private ActionCommands popupActions = new ActionCommands();
+        // Action trackers
+        private MenuItemServiceTracker<PopupTarget,PopupMenu> popupActionTracker;
+        private MenuItemServiceTracker<TitleActionBar,GeoCatalogMenu> dockingActionTracker;
 
         /**
          * For the Unit test purpose
@@ -121,17 +133,6 @@ public class Catalog extends JPanel implements DockingPanel {
         }
 
         /**
-         * The popup menu event listener manager The popup menu is being
-         * created, all listeners are able to feed the menu with custom
-         * functions
-         *
-         * @return
-         */
-        public ListenerContainer<MenuPopupEventData> getEventSourceListPopupMenuCreating() {
-                return eventSourceListPopupMenuCreating;
-        }
-
-        /**
          * Default constructor
          */
         public Catalog() {
@@ -140,7 +141,7 @@ public class Catalog extends JPanel implements DockingPanel {
                 dockingParameters.setTitle(I18N.tr("GeoCatalog"));
                 dockingParameters.setTitleIcon(OrbisGISIcon.getIcon("geocatalog"));
                 dockingParameters.setCloseable(true);
-                //Add the Source List in a Scroll Pane, 
+                //Add the Source List in a Scroll Pane,
                 //then add the scroll pane in this panel
                 add(new JScrollPane(makeSourceList()), BorderLayout.CENTER);
                 //Init the filter factory manager
@@ -157,17 +158,43 @@ public class Catalog extends JPanel implements DockingPanel {
                 filterFactoryManager.getEventFilterFactoryChange().addListener(sourceListContent,refreshFilterListener);
                 //Add the filter list at the top of the geocatalog
                 add(filterFactoryManager.makeFilterPanel(false), BorderLayout.NORTH);
-                //Create a toolbar to add a new filter
-                JToolBar toolBar = new JToolBar();
-                JButton button = new JButton(I18N.tr("Add filter"), OrbisGISIcon.getIcon("add_filter"));
-                button.setToolTipText(I18N.tr("Add a new data source filter"));
-                button.addActionListener(EventHandler.create(ActionListener.class, filterFactoryManager, "onAddFilter"));
-                toolBar.add(button);
-                toolBar.addSeparator();
-                dockingParameters.setToolBar(toolBar);
-
+                //Create an action to add a new filter
+                dockingActions.addAction(new DefaultAction(GeoCatalogMenu.M_ADD_FILTER,
+                        I18N.tr("Add filter"), I18N.tr("Add a new data source filter"), OrbisGISIcon.getIcon("add_filter"),
+                        EventHandler.create(ActionListener.class, filterFactoryManager, "onAddFilter"),
+                        null));
+                // Set the built-in actions to docking frame
+                dockingParameters.setDockActions(dockingActions.getActions());
+                // Add a listener to put additional actions to this docking
+                dockingActions.addPropertyChangeListener(new ActionDockingListener(dockingParameters));
                 //Add the geocatalog specific filters
                 registerFilterFactories();
+                // Register built-ins popup actions
+                createPopupActions();
+        }
+        public void registerActionTrackers(BundleContext hostContext) {
+            popupActionTracker = new MenuItemServiceTracker<PopupTarget, PopupMenu>(hostContext,PopupMenu.class,
+                    popupActions,this);
+            dockingActionTracker = new MenuItemServiceTracker<TitleActionBar, GeoCatalogMenu>(hostContext,
+                    GeoCatalogMenu.class,dockingActions,this);
+            // Begin the track
+            popupActionTracker.open();
+            dockingActionTracker.open();
+        }
+        /**
+         * Get the actions related to frame title.
+         * @return actions related to frame title.
+         */
+        public ActionCommands getActionsDocking() {
+            return dockingActions;
+        }
+
+        /**
+         * Get the actions of PopupMenu related to Source list items.
+         * @return actions of PopupMenu related to Source list items.
+         */
+        public ActionCommands getActionsPopup() {
+            return popupActions;
         }
 
         /**
@@ -246,8 +273,9 @@ public class Catalog extends JPanel implements DockingPanel {
                                 sourceList.clearSelection();
                         }
                         //Selection are ready, now create the popup menu
-                        JPopupMenu popup = makePopupMenu();
-                        if (popup != null) {
+                        JPopupMenu popup = new JPopupMenu();
+                        popupActions.copyEnabledActions(popup);
+                        if (popup.getComponentCount()>0) {
                                 popup.show(e.getComponent(), e.getX(), e.getY());
                         }
 
@@ -266,7 +294,7 @@ public class Catalog extends JPanel implements DockingPanel {
                         editorManager.openEditable(tableDocument);
                 }
         }
-        
+
         /**
          * The user click on the menu item called "Add/File" The user wants to
          * open a file using the geocatalog. It will open a panel dedicated to
@@ -283,19 +311,18 @@ public class Catalog extends JPanel implements DockingPanel {
                 if (UIFactory.showDialog(openDialog, true, true)) {
                         // We can retrieve the files that have been selected by the user
                         File[] files = openDialog.getSelectedFiles();
-                        for (int i = 0; i < files.length; i++) {
-                                File file = files[i];
-                                //If there is a driver compatible with
-                                //this file extensions
-                                if (sourceManager.getDriverManager().isDriverFileSupported(file)) {
-                                        //Try to add the data source
-                                        try {
-                                                String name = sourceManager.getUniqueName(FilenameUtils.removeExtension(file.getName()));
-                                                sourceManager.register(name, file);
-                                        } catch (SourceAlreadyExistsException e) {
-                                                LOGGER.error(I18N.tr("This source was already registered"), e);
-                                        }
+                        for (File file : files) {
+                            //If there is a driver compatible with
+                            //this file extensions
+                            if (sourceManager.getDriverManager().isDriverFileSupported(file)) {
+                                //Try to add the data source
+                                try {
+                                    String name = sourceManager.getUniqueName(FilenameUtils.removeExtension(file.getName()));
+                                    sourceManager.register(name, file);
+                                } catch (SourceAlreadyExistsException e) {
+                                    LOGGER.error(I18N.tr("This source was already registered"), e);
                                 }
+                            }
                         }
                 }
 
@@ -375,10 +402,10 @@ public class Catalog extends JPanel implements DockingPanel {
                         }
                         Driver[] filtered = driverManager.getDrivers(new AndDriverFilter(
                                 filter, new WritableDriverFilter(), new FileDriverFilter()));
-                        for (int i = 0; i < filtered.length; i++) {
-                                FileDriver fileDriver = (FileDriver) filtered[i];
-                                String[] extensions = fileDriver.getFileExtensions();
-                                outfilePanel.addFilter(extensions, fileDriver.getTypeDescription());
+                        for (Driver aFiltered : filtered) {
+                            FileDriver fileDriver = (FileDriver) aFiltered;
+                            String[] extensions = fileDriver.getFileExtensions();
+                            outfilePanel.addFilter(extensions, fileDriver.getTypeDescription());
                         }
                         outfilePanel.loadState();
                         if (UIFactory.showDialog(outfilePanel, true, true)) {
@@ -468,17 +495,20 @@ public class Catalog extends JPanel implements DockingPanel {
          * the method that actually process the content of a directory, or a
          * file. If the file is acceptable by the FileFilter, it is processed
          *
-         * @param file
-         * @param pm
+         * @param file File or Folder to register
+         * @param pm Progress manager
          */
         private void processFolder(File file, FileFilter filter, org.orbisgis.progress.ProgressMonitor pm) {
                 if (file.isDirectory()) {
                         pm.startTask(file.getName(), 100);
-                        for (File content : file.listFiles()) {
-                                if (pm.isCancelled()) {
-                                        break;
-                                }
-                                processFolder(content, filter, pm);
+                        File[] files = file.listFiles();
+                        if (files != null) {
+                            for (File content : files) {
+                                    if (pm.isCancelled()) {
+                                            break;
+                                    }
+                                    processFolder(content, filter, pm);
+                            }
                         }
                         pm.endTask();
                 } else {
@@ -495,119 +525,52 @@ public class Catalog extends JPanel implements DockingPanel {
                         }
                 }
         }
+        private void createPopupActions() {
+            //Popup:Add
+            popupActions.addAction(new DefaultAction(PopupMenu.M_ADD,I18N.tr("Add")).setMenuGroup(true));
+            //Popup:Add:File
+            popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_FILE,I18N.tr("File"),
+                    I18N.tr("Add a file from hard drive."),
+                    OrbisGISIcon.getIcon("page_white_add"),EventHandler.create(ActionListener.class,
+                    this,"onMenuAddFile"),null).setParent(PopupMenu.M_ADD));
+            //Popup:Add:Folder
+            popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_FOLDER,I18N.tr("Folder"),
+                    I18N.tr("Add a set of file from an hard drive folder."),
+                    OrbisGISIcon.getIcon("folder_add"),EventHandler.create(ActionListener.class,
+                    this,"onMenuAddFilesFromFolder"),null).setParent(PopupMenu.M_ADD));
 
-        /**
-         * Create a popup menu corresponding to the current state of source
-         * selection
-         *
-         * @return A new popup menu
-         */
-        private JPopupMenu makePopupMenu() {
-                JPopupMenu rootMenu = new JPopupMenu();
-                //Popup:Add
-                JMenu addMenu = new JMenu(I18N.tr("Add"));
-                rootMenu.add(addMenu);
-                //Popup:Add:File
-                JMenuItem addFileItem = new JMenuItem(
-                        I18N.tr("File"),
-                        OrbisGISIcon.getIcon("page_white_add"));
-                addFileItem.addActionListener(EventHandler.create(ActionListener.class,
-                        this,
-                        "onMenuAddFile"));
-                addMenu.add(addFileItem);
-
-                //Add the database panel
-                addFileItem = new JMenuItem(
-                        I18N.tr("DataBase"),
-                        OrbisGISIcon.getIcon("database_add"));
-                addFileItem.addActionListener(EventHandler.create(ActionListener.class,
-                        this,
-                        "onMenuAddFromDataBase"));
-                addMenu.add(addFileItem);
-                
-                //Add the server panel
-                addFileItem = new JMenuItem(
-                        I18N.tr("WMS server"),
-                        OrbisGISIcon.getIcon("server_connect"));
-                addFileItem.addActionListener(EventHandler.create(ActionListener.class,
-                        this,
-                        "onMenuAddWMSServer"));
-                addMenu.add(addFileItem);
-
-
-                //Add files from folder
-                addFileItem = new JMenuItem(
-                        I18N.tr("Folder"),
-                        OrbisGISIcon.getIcon("folder_add"));
-                addFileItem.addActionListener(EventHandler.create(ActionListener.class,
-                        this,
-                        "onMenuAddFilesFromFolder"));
-                addMenu.add(addFileItem);
-
-                if (!sourceList.isSelectionEmpty()) {
-                        //Popup:Save
-                        JMenu saveMenu = new JMenu(I18N.tr("Save"));
-                        rootMenu.add(saveMenu);
-
-                        //Popup:Save:File
-                        JMenuItem saveInFileItem = new JMenuItem(
-                                I18N.tr("File"),
-                                OrbisGISIcon.getIcon("page_white_save"));
-                        saveInFileItem.addActionListener(EventHandler.create(ActionListener.class,
-                                this,
-                                "onMenuSaveInfile"));
-                        saveMenu.add(saveInFileItem);
-
-                        //Popup:Save:File
-                        JMenuItem saveInDBItem = new JMenuItem(
-                                I18N.tr("Database"),
-                                OrbisGISIcon.getIcon("database_save"));
-                        saveInDBItem.addActionListener(EventHandler.create(ActionListener.class,
-                                this,
-                                "onMenuSaveInDB"));
-                        saveMenu.add(saveInDBItem);
-                        //Separator between add/save/new and the attribute table.
-                        rootMenu.addSeparator();
-                        //Popup:Open attributes
-                        JMenuItem openTableMenu = new JMenuItem(I18N.tr("Open the attributes"),
-                                OrbisGISIcon.getIcon("openattributes"));
-                        openTableMenu.addActionListener(EventHandler.create(ActionListener.class,
-                                this, "onMenuShowTable"));
-                        rootMenu.add(openTableMenu);
-                        rootMenu.addSeparator();
-
-                        JMenuItem removeSourceItem = new JMenuItem(
-                                    I18N.tr("Remove the source"),
-                                    OrbisGISIcon.getIcon("remove"));
-                        removeSourceItem.addActionListener(EventHandler.create(ActionListener.class,
-                                    this,
-                                    "onMenuRemoveSource"));
-                        rootMenu.add(removeSourceItem);
-                }
-
-                //Popup:ClearGeocatalog (added if the datasource manager is not empty)
-                DataManager dm = Services.getService(DataManager.class);
-                SourceManager dr = dm.getSourceManager();
-                if (!dr.isEmpty(true)) {
-                        JMenuItem clearCatalogItem = new JMenuItem(I18N.tr("Clear the GeoCatalog"),
-                                OrbisGISIcon.getIcon("bin_closed"));
-                        clearCatalogItem.addActionListener(EventHandler.create(ActionListener.class,
-                                this,
-                                "onMenuClearGeoCatalog"));
-                        rootMenu.add(clearCatalogItem);
-                }
-
-                //////////////////////////////
-                //Plugins
-                //Add additionnal extern data source functions
-                try {
-                        eventSourceListPopupMenuCreating.callListeners(new MenuPopupEventData(rootMenu, this));
-                } catch (EventException ex) {
-                        //A listener cancel the creation of the popup menu
-                        LOGGER.warn(I18N.tr("An external code stop the creation of the PopUp menu"), ex);
-                        return null;
-                }
-                return rootMenu;
+            //Popup:Add:DataBase
+            popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_DB,I18N.tr("DataBase"),
+                    I18N.tr("Add one or more tables from a DataBase"),
+                    OrbisGISIcon.getIcon("database_add"),EventHandler.create(ActionListener.class,
+                    this,"onMenuAddFromDataBase"),null).setParent(PopupMenu.M_ADD));
+            //Popup:Add:WMS
+            popupActions.addAction(new DefaultAction(PopupMenu.M_ADD_WMS,I18N.tr("WMS server"),
+                    I18N.tr("Add a WebMapService"),
+                    OrbisGISIcon.getIcon("server_connect"),EventHandler.create(ActionListener.class,
+                    this,"onMenuAddWMSServer"),null).setParent(PopupMenu.M_ADD));
+            //Popup:Save
+            popupActions.addAction(new ActionOnSelection(PopupMenu.M_SAVE,I18N.tr("Save"),true,getListSelectionModel()));
+            //Popup:Save:File
+            popupActions.addAction(new ActionOnSelection(PopupMenu.M_SAVE_FILE,I18N.tr("File"),
+                    I18N.tr("Save selected sources in files"),OrbisGISIcon.getIcon("page_white_save"),
+                    EventHandler.create(ActionListener.class,this,"onMenuSaveInfile"),getListSelectionModel()).setParent(PopupMenu.M_SAVE));
+            //Popup:Save:Db
+            popupActions.addAction(new ActionOnSelection(PopupMenu.M_SAVE_DB,I18N.tr("Database"),
+                    I18N.tr("Save selected sources in a data base"),OrbisGISIcon.getIcon("database_save"),
+                    EventHandler.create(ActionListener.class,this,"onMenuSaveInDB"),getListSelectionModel()).setParent(PopupMenu.M_SAVE));
+            //Popup:Open attributes
+            popupActions.addAction(new ActionOnSelection(PopupMenu.M_OPEN_ATTRIBUTES,I18N.tr("Open the attributes"),
+                    I18N.tr("Open the data source table"),OrbisGISIcon.getIcon("openattributes"),
+                    EventHandler.create(ActionListener.class,this, "onMenuShowTable"),getListSelectionModel()));
+            //Popup:Remove sources
+            popupActions.addAction(new ActionOnSelection(PopupMenu.M_REMOVE,I18N.tr("Remove the source"),
+                    I18N.tr("Remove from this list the selected sources."),OrbisGISIcon.getIcon("remove"),
+                    EventHandler.create(ActionListener.class,this,"onMenuRemoveSource"),getListSelectionModel()));
+            //Clear Geo-catalog
+            popupActions.addAction(new ActionOnNonEmptySourceList(PopupMenu.M_CLEAR_CATALOG,I18N.tr("Clear the GeoCatalog"),
+                    I18N.tr("Remove all sources in this list"),OrbisGISIcon.getIcon("bin_closed"),
+                    EventHandler.create(ActionListener.class,this,"onMenuClearGeoCatalog")));
         }
 
         /**
@@ -646,13 +609,16 @@ public class Catalog extends JPanel implements DockingPanel {
                 filterFactoryManager.getEventFilterChange().clearListeners();
                 filterFactoryManager.getEventFilterFactoryChange().clearListeners();
                 sourceListContent.dispose();
+                // Close trackers
+                if(popupActionTracker!=null) {
+                    popupActionTracker.close();
+                }
+                if(dockingActionTracker!=null) {
+                    dockingActionTracker.close();
+                }
         }
 
-        /**
-         * Return the names of the selected sources in the geocatalog.
-         *
-         * @return
-         */
+        @Override
         public String[] getSelectedSources() {
                 Object[] selectedValues = getSourceList().getSelectedValues();
                 String[] sources = new String[selectedValues.length];
@@ -676,5 +642,10 @@ public class Catalog extends JPanel implements DockingPanel {
         @Override
         public JComponent getComponent() {
                 return this;
+        }
+
+        @Override
+        public ListSelectionModel getListSelectionModel() {
+            return sourceList.getSelectionModel();
         }
 }
