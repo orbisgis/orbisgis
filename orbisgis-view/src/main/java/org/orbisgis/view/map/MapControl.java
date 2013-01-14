@@ -121,9 +121,9 @@ public class MapControl extends JComponent implements ContainerListener {
                         mapTransform.setExtent(boundingBox);
                 }
         }
-        
-        
-	final public void initMapControl() throws TransitionException {
+
+
+	final public void initMapControl(Automaton defaultTool) throws TransitionException {
 		synchronized (this) {
 			this.mapControlId = lastMapControlId++;
 		}
