@@ -43,6 +43,7 @@ public class BundleFromResources {
                 new BundleReference("org.apache.felix.shell"),
                 new BundleReference("org.apache.felix.bundlerepository"),
                 new BundleReference("orbisgis-oshell"), // Dev shell
+                new BundleReference("orbisgis-omanager"),
         };
         private BundleFromResources() {                
         }
