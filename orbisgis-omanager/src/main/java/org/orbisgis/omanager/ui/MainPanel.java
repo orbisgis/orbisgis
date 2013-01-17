@@ -1,15 +1,51 @@
+/*
+ * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
+ * This cross-platform GIS is developed at French IRSTV institute and is able to
+ * manipulate and create vector and raster spatial information.
+ *
+ * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
+ * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
+ *
+ * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
+ *
+ * This file is part of OrbisGIS.
+ *
+ * OrbisGIS is free software: you can redistribute it and/or modify it under the
+ * terms of the GNU General Public License as published by the Free Software
+ * Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
+ * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along with
+ * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * For more information, please consult: <http://www.orbisgis.org/>
+ * or contact directly:
+ * info_at_ orbisgis.org
+ */
 package org.orbisgis.omanager.ui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
-import org.orbisgis.view.components.list.PanelList;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Dialog that handle bundles.
@@ -17,24 +53,124 @@ import org.orbisgis.view.components.list.PanelList;
  */
 public class MainPanel extends JDialog {
     private static final Dimension DEFAULT_DIMENSION = new Dimension(640,480);
-    private static final Dimension DEFAULT_DETAILS_DIMENSION = new Dimension(200,-1);
+    private static final Dimension DEFAULT_DETAILS_DIMENSION = new Dimension((int)Math.round(DEFAULT_DIMENSION.getWidth()*0.2),-1);
+    private static final Dimension MINIMUM_BUNDLE_LIST_DIMENSION = new Dimension(100,50);
+    private static final I18n I18N = I18nFactory.getI18n(MainPanel.class);
     // Bundle Category filter
     private JList bundleCategory = new JList(new String[] {"All","DataBase","Network","SQL Functions"});
     private JTextArea bundleDetails = new JTextArea();
     // PanelList can be replaced by a standard JList.
     private PanelList bundleList = new PanelList();
 
+
     public MainPanel(Frame frame) {
         super(frame);
         setDefaultCloseOperation(HIDE_ON_CLOSE);
-        // Put components
+        // Main Panel (South button, center Split Pane)
+        JPanel contentPane = new JPanel(new BorderLayout());
+        setContentPane(contentPane);
+        // Buttons on south of main panel
+        JPanel southButtons = new JPanel();
+        southButtons.setLayout(new BoxLayout(southButtons, BoxLayout.X_AXIS));
+        contentPane.add(southButtons,BorderLayout.SOUTH);
+        // Right Side of Split Panel, Bundle Description
+        bundleDetails.setPreferredSize(DEFAULT_DETAILS_DIMENSION);
+        bundleDetails.setEditable(false);
+        // Left Side of Split Panel (Filters north, Categories west, bundles center)
         JPanel leftOfSplitGroup = new JPanel(new BorderLayout());
         bundleCategory.setBorder(BorderFactory.createEtchedBorder());
-        leftOfSplitGroup.add(bundleCategory,BorderLayout.WEST);
+        bundleList.setMinimumSize(MINIMUM_BUNDLE_LIST_DIMENSION);
+        leftOfSplitGroup.add(bundleCategory, BorderLayout.WEST);
+        leftOfSplitGroup.add(createRadioButtons(), BorderLayout.NORTH);
         leftOfSplitGroup.add(bundleList,BorderLayout.CENTER);
-        bundleDetails.setPreferredSize(DEFAULT_DETAILS_DIMENSION);
-        JSplitPane contentPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,leftOfSplitGroup,bundleDetails);
-        setContentPane(contentPane);
+        setDefaultDetailsMessage();
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,new JScrollPane(leftOfSplitGroup),bundleDetails);
+        contentPane.add(splitPane);
         setSize(DEFAULT_DIMENSION);
+        setTitle(I18N.tr("Plug-ins manager"));
     }
+
+    private void addSouthButtons(JPanel southButtons) {
+        JButton repositoryUrls = new JButton(I18N.tr("Manage repositories"));
+        repositoryUrls.setToolTipText(I18N.tr("Add/Remove remote bundle repositories."));
+        repositoryUrls.addActionListener(EventHandler.create(ActionListener.class,this,"onManageBundleRepositories"));
+        southButtons.add(repositoryUrls);
+        JButton refreshRepositories = new JButton(I18N.tr("Refresh"));
+        refreshRepositories.setToolTipText(I18N.tr("Reload list of plug-ins"));
+        refreshRepositories.addActionListener(EventHandler.create(ActionListener.class,this,"onReloadPlugins"));
+    }
+    /**
+     * Message on bundle details message frame when no bundle is selected
+     */
+    private void setDefaultDetailsMessage() {
+        bundleDetails.setText(I18N.tr("Please select a plug-in in the list."));
+    }
+
+    /**
+     * User click on "All states" radio button
+     */
+    public void onRemoveStateFilter() {
+
+    }
+    /**
+     * User click on "Installed" radio button
+     */
+    public void onFilterBundleInstall() {
+
+    }
+    /**
+     * User click on "Update" radio button
+     */
+    public void onFilterBundleUpdate() {
+
+    }
+    /**
+     * User click on an item on the category list.
+     */
+    public void onFilterByBundleCategory() {
+
+    }
+    /**
+     * User click on "Refresh" button.
+     */
+    public void onReloadPlugins() {
+
+    }
+
+    /**
+     * User want to manage repository urls.
+     */
+    public void onManageBundleRepositories() {
+
+    }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        // Remove trackers and listeners
+
+    }
+
+    private void createRadioButton(String label,String toolTipText,boolean state,String methodName,ButtonGroup filterGroup,JPanel radioBar) {
+        JRadioButton noStateFilter = new JRadioButton(label,state);
+        noStateFilter.setToolTipText(toolTipText);
+        noStateFilter.addActionListener(EventHandler.create(ActionListener.class, this, methodName));
+        filterGroup.add(noStateFilter);
+        radioBar.add(noStateFilter);
+    }
+    private JPanel createRadioButtons() {
+        // Make main radio panel
+        JPanel radioBar = new JPanel();
+        radioBar.setLayout(new BoxLayout(radioBar,BoxLayout.X_AXIS));
+        // Create radio buttons
+        ButtonGroup filterGroup = new ButtonGroup();
+        createRadioButton(I18N.tr("All state"),I18N.tr("Do not filter bundle by their state."),true,
+                "onRemoveStateFilter",filterGroup,radioBar);
+        createRadioButton(I18N.tr("Installed"),I18N.tr("Show only installed bundles."),false,"onFilterBundleInstall",
+                filterGroup, radioBar);
+        createRadioButton(I18N.tr("Update"), I18N.tr("Show only bundles where an update is available."), false,
+                "onFilterBundleUpdate", filterGroup, radioBar);
+        return radioBar;
+    }
+
 }

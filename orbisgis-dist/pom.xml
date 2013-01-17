@@ -134,7 +134,13 @@
                         <artifactId>org.apache.felix.bundlerepository</artifactId>
                         <version>1.6.6</version>
                         <scope>provided</scope>
-                </dependency>            
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.osgi.service.obr</artifactId>
+                    <version>1.0.2</version>
+                    <scope>provided</scope>
+                </dependency>
                 <dependency>
                         <groupId>junit</groupId>
                         <artifactId>junit</artifactId>

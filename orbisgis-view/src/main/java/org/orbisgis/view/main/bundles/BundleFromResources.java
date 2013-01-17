@@ -40,10 +40,11 @@ import org.osgi.framework.BundleContext;
  */
 public class BundleFromResources {
         private static final BundleReference[] PROVIDED_BUNDLES = {
-                new BundleReference("org.apache.felix.shell"),
-                new BundleReference("org.apache.felix.bundlerepository"),
-                new BundleReference("orbisgis-oshell"), // Dev shell
-                new BundleReference("orbisgis-omanager"),
+                new BundleReference("org.apache.felix.shell"),            // Felix OSGi shell
+                new BundleReference("org.osgi.service.obr"),              // OBR API
+                new BundleReference("org.apache.felix.bundlerepository"), // OBR Implementation
+                new BundleReference("orbisgis-oshell"),                   // Dev shell GUI
+                new BundleReference("orbisgis-omanager"),                 // Bundle manager GUI
         };
         private BundleFromResources() {                
         }
