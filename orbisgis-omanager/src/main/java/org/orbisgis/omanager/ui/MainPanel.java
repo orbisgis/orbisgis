@@ -33,6 +33,7 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -44,6 +45,10 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.Document;
+import org.apache.log4j.Logger;
+import org.osgi.framework.Constants;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -53,14 +58,17 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class MainPanel extends JDialog {
     private static final Dimension DEFAULT_DIMENSION = new Dimension(640,480);
-    private static final Dimension DEFAULT_DETAILS_DIMENSION = new Dimension((int)Math.round(DEFAULT_DIMENSION.getWidth()*0.2),-1);
+    private static final Dimension DEFAULT_DETAILS_DIMENSION = new Dimension((int)Math.round(DEFAULT_DIMENSION.getWidth()*0.1),-1);
     private static final Dimension MINIMUM_BUNDLE_LIST_DIMENSION = new Dimension(100,50);
     private static final I18n I18N = I18nFactory.getI18n(MainPanel.class);
+    private static final Logger LOGGER = Logger.getLogger(MainPanel.class);
+    private static final int BORDER_PIXEL_GAP = 2;
+
     // Bundle Category filter
     private JList bundleCategory = new JList(new String[] {"All","DataBase","Network","SQL Functions"});
     private JTextArea bundleDetails = new JTextArea();
-    // PanelList can be replaced by a standard JList.
-    private PanelList bundleList = new PanelList();
+    private JList bundleList = new JList();
+    private JPanel bundleActions = new JPanel();
 
 
     public MainPanel(Frame frame) {
@@ -72,19 +80,24 @@ public class MainPanel extends JDialog {
         // Buttons on south of main panel
         JPanel southButtons = new JPanel();
         southButtons.setLayout(new BoxLayout(southButtons, BoxLayout.X_AXIS));
+        addSouthButtons(southButtons);
         contentPane.add(southButtons,BorderLayout.SOUTH);
-        // Right Side of Split Panel, Bundle Description
+        // Right Side of Split Panel, Bundle Description and button action on selected bundle
+        JPanel bundleDetailsAndActions = new JPanel(new BorderLayout());
+        bundleActions.setLayout(new BoxLayout(bundleActions,BoxLayout.X_AXIS));
         bundleDetails.setPreferredSize(DEFAULT_DETAILS_DIMENSION);
         bundleDetails.setEditable(false);
+        bundleDetailsAndActions.add(bundleDetails,BorderLayout.CENTER);
+        bundleDetailsAndActions.add(bundleActions,BorderLayout.SOUTH);
         // Left Side of Split Panel (Filters north, Categories west, bundles center)
-        JPanel leftOfSplitGroup = new JPanel(new BorderLayout());
+        JPanel leftOfSplitGroup = new JPanel(new BorderLayout(BORDER_PIXEL_GAP,BORDER_PIXEL_GAP));
         bundleCategory.setBorder(BorderFactory.createEtchedBorder());
         bundleList.setMinimumSize(MINIMUM_BUNDLE_LIST_DIMENSION);
         leftOfSplitGroup.add(bundleCategory, BorderLayout.WEST);
         leftOfSplitGroup.add(createRadioButtons(), BorderLayout.NORTH);
         leftOfSplitGroup.add(bundleList,BorderLayout.CENTER);
         setDefaultDetailsMessage();
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,new JScrollPane(leftOfSplitGroup),bundleDetails);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,new JScrollPane(leftOfSplitGroup),bundleDetailsAndActions);
         contentPane.add(splitPane);
         setSize(DEFAULT_DIMENSION);
         setTitle(I18N.tr("Plug-ins manager"));
@@ -95,17 +108,39 @@ public class MainPanel extends JDialog {
         repositoryUrls.setToolTipText(I18N.tr("Add/Remove remote bundle repositories."));
         repositoryUrls.addActionListener(EventHandler.create(ActionListener.class,this,"onManageBundleRepositories"));
         southButtons.add(repositoryUrls);
+
         JButton refreshRepositories = new JButton(I18N.tr("Refresh"));
         refreshRepositories.setToolTipText(I18N.tr("Reload list of plug-ins"));
         refreshRepositories.addActionListener(EventHandler.create(ActionListener.class,this,"onReloadPlugins"));
+        southButtons.add(refreshRepositories);
     }
     /**
-     * Message on bundle details message frame when no bundle is selected
+     * Message on bundle details message frame when no bundle is selected, and remove all actions.
      */
     private void setDefaultDetailsMessage() {
         bundleDetails.setText(I18N.tr("Please select a plug-in in the list."));
+        bundleActions.removeAll();
     }
+    private void addDescriptionItem(String text,boolean title,Document document) {
+        try {
+            document.insertString(document.getLength(),text,null);
+        } catch (BadLocationException ex) {
+            LOGGER.error(ex);
+        }
+    }
+    private void setBundleDetailsAndActions(BundleItem selectedItem) {
+        bundleDetails.setText("");
+        Document document = bundleDetails.getDocument();
+        Map<String,String> itemDetails = selectedItem.getDetails();
+        // Title, Description, Version, Category, then other parameters
+        String name = itemDetails.get(Constants.BUNDLE_NAME);
+        if(name!=null) {
+            addDescriptionItem(name,true,document);
+        }
+        for(Map.Entry<String,String> entry : itemDetails.entrySet()) {
 
+        }
+    }
     /**
      * User click on "All states" radio button
      */

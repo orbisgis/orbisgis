@@ -28,12 +28,15 @@
  */
 package org.orbisgis.omanager.ui;
 
+import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataListener;
 import org.osgi.framework.BundleContext;
-import org.osgi.service.obr.Resource;
+import org.osgi.framework.BundleListener;
+import org.osgi.framework.ServiceEvent;
+import org.osgi.framework.ServiceListener;
 
 /**
  * List content of Bundles
@@ -41,7 +44,11 @@ import org.osgi.service.obr.Resource;
  */
 public class BundleListModel implements ListModel {
     private List<ListDataListener> listeners = new ArrayList<ListDataListener>();
+    // Bundles read from local repository and remote repositories
+    private List<BundleItem> storedBundles = new ArrayList<BundleItem>();
+    private List<Integer> shownBundles = null; // Filtered (visible) bundles
     private BundleContext bundleContext;
+    private BundleListener bundleListener = EventHandler.create(BundleListener.class,this,"update");
 
     /**
      * @param bundleContext Bundle context to track.
@@ -51,13 +58,30 @@ public class BundleListModel implements ListModel {
     }
 
     /**
+     * Watch for local bundle updates.
+     */
+    public void install() {
+        bundleContext.addBundleListener(bundleListener);
+    }
+
+    /**
+     * Stop watching for bundles.
+     */
+    public void uninstall() {
+        bundleContext.removeBundleListener(bundleListener);
+    }
+    /**
      * Update the content of the bundle context
      */
     public void update() {
 
     }
     public int getSize() {
-        return 0;
+        if(shownBundles==null) {
+            return storedBundles.size();
+        } else {
+            return shownBundles.size();
+        }
     }
 
     public Object getElementAt(int i) {
@@ -70,5 +94,16 @@ public class BundleListModel implements ListModel {
 
     public void removeListDataListener(ListDataListener listDataListener) {
         listeners.remove(listDataListener);
+    }
+
+    /**
+     * Listen to plug-in state modification
+     */
+    private class ListServiceListener implements ServiceListener {
+        public void serviceChanged(ServiceEvent event) {
+            synchronized ( BundleListModel.this ) {
+
+            }
+        }
     }
 }
