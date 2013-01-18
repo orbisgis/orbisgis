@@ -1,11 +1,11 @@
 package org.orbisgis.omanager.ui;
 
+import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractListModel;
 import javax.swing.ListModel;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import org.apache.commons.collections.iterators.ListIteratorWrapper;
 
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
@@ -42,51 +42,87 @@ import org.apache.commons.collections.iterators.ListIteratorWrapper;
  */
 public class FilteredModel<SubModel extends ListModel> extends AbstractListModel {
     private SubModel subModel;
-    private List<Integer> shownElements = null; // Filtered (visible) elements
-    private List<Integer> subElementsToShown = null;
+    private List<Integer> shownElements = null;      // Filtered (visible) elements
     private ItemFilter<SubModel> elementFilter;
 
     public FilteredModel(SubModel subModel) {
         this.subModel = subModel;
-        subModel.addListDataListener(new SubListListener());
+        subModel.addListDataListener(new SubModelListener());
     }
 
     public int getSize() {
-        return subModel.getSize();
-    }
-    public void setFilter(ItemFilter<SubModel> elementFilter) {
-
-    }
-    public Object getElementAt(int i) {
-        return subModel.getElementAt(i);
+        if(elementFilter==null) {
+            return subModel.getSize();
+        } else {
+            return shownElements.size();
+        }
     }
 
     /**
-     * Convert sub model index to this model index.
-     * @param i Sub element index
-     * @return Shown index, null if filtered
+     * Set the list filter and update the content.
+     * @param elementFilter
      */
-    private Integer subIndexToThisIndex(int i) {
-        if(subElementsToShown==null) {
-            return i;
+    public void setFilter(ItemFilter<SubModel> elementFilter) {
+        this.elementFilter = elementFilter;
+        shownElements = new ArrayList<Integer>();
+        doFilter();
+    }
+    public Object getElementAt(int i) {
+        if(elementFilter==null) {
+            return subModel.getElementAt(i);
         } else {
-            return subElementsToShown.get(i);
+            return subModel.getElementAt(shownElements.get(i));
         }
     }
-    private class SubListListener implements ListDataListener {
 
+    /**
+     * Reapply the filter
+     */
+    public void doFilter() {
+        if(elementFilter==null) {
+            return;
+        }
+        if(getSize()>0) {
+            fireIntervalRemoved(this, 0, getSize() - 1);
+        }
+        shownElements.clear();
+        for(int i=0;i<subModel.getSize();i++)
+        {
+            if(elementFilter.include(subModel,i)) {
+                shownElements.add(i);
+            }
+        }
+        if(getSize()>0) {
+            fireIntervalAdded(this,0,getSize()-1);
+        }
+    }
+
+    /**
+     * Propagate ListModel updates.
+     */
+    private class SubModelListener implements ListDataListener {
         public void intervalAdded(ListDataEvent listDataEvent) {
-            Integer deb = subIndexToThisIndex(listDataEvent.getIndex0());
-            Integer end = subIndexToThisIndex(listDataEvent.getIndex1());
-            fireIntervalAdded(this,deb,end);
+            if(elementFilter==null) {
+                fireIntervalAdded(this,listDataEvent.getIndex0(),listDataEvent.getIndex1());
+            } else {
+                doFilter();
+            }
         }
 
         public void intervalRemoved(ListDataEvent listDataEvent) {
-            fireIntervalRemoved(this,subIndexToThisIndex(listDataEvent.getIndex0()),subIndexToThisIndex(listDataEvent.getIndex1()));
+            if(elementFilter==null) {
+                fireIntervalRemoved(this, listDataEvent.getIndex0(), listDataEvent.getIndex1());
+            } else {
+                doFilter();
+            }
         }
 
         public void contentsChanged(ListDataEvent listDataEvent) {
-            fireContentsChanged(this,subIndexToThisIndex(listDataEvent.getIndex0()),subIndexToThisIndex(listDataEvent.getIndex1()));
+            if(elementFilter==null) {
+                fireContentsChanged(this, listDataEvent.getIndex0(), listDataEvent.getIndex1());
+            } else {
+                doFilter();
+            }
         }
     }
 }
