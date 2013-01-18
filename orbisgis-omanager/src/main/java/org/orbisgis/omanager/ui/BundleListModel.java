@@ -38,6 +38,7 @@ import java.util.Set;
 import javax.swing.AbstractListModel;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 
 /**
@@ -48,7 +49,7 @@ public class BundleListModel extends AbstractListModel {
     // Bundles read from local repository and remote repositories
     private List<BundleItem> storedBundles = new ArrayList<BundleItem>();
     private BundleContext bundleContext;
-    private BundleListener bundleListener = EventHandler.create(BundleListener.class,this,"update");
+    private BundleListener bundleListener = new BundleModelListener();
 
     /**
      * @param bundleContext Bundle context to track.
@@ -112,7 +113,7 @@ public class BundleListModel extends AbstractListModel {
                     // Deleted item
                     int index = storedBundles.indexOf(item);
                     storedBundles.remove(index);
-                    fireIntervalRemoved(this,index,index);
+                    fireIntervalRemoved(this, index, index);
                 }
             }
         }
@@ -140,5 +141,24 @@ public class BundleListModel extends AbstractListModel {
      */
     public BundleItem getBundle(int i) {
         return storedBundles.get(i);
+    }
+
+    private class BundleModelListener implements BundleListener {
+
+        public void bundleChanged(BundleEvent event) {
+            // Find minor modification (like state)
+            if(event.getType()!=BundleEvent.INSTALLED &&
+                    event.getType()!=BundleEvent.UNINSTALLED) {
+                Bundle evtSource = event.getBundle();
+                for(int i=0;i< storedBundles.size();i++) {
+                    if(evtSource.equals(storedBundles.get(i).getBundle())) {
+                        fireContentsChanged(this,i,i);
+                        break;
+                    }
+                }
+            }
+            // For major changes
+            update();
+        }
     }
 }
