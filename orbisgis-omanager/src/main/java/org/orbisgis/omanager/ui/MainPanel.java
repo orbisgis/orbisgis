@@ -58,7 +58,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Nicolas Fortin
  */
 public class MainPanel extends JDialog {
-    private static final Dimension DEFAULT_DIMENSION = new Dimension(640,480);
+    private static final Dimension DEFAULT_DIMENSION = new Dimension(800,480);
     private static final Dimension DEFAULT_DETAILS_DIMENSION = new Dimension((int)Math.round(DEFAULT_DIMENSION.getWidth()*0.1),-1);
     private static final Dimension MINIMUM_BUNDLE_LIST_DIMENSION = new Dimension(100,50);
     private static final I18n I18N = I18nFactory.getI18n(MainPanel.class);
@@ -86,7 +86,7 @@ public class MainPanel extends JDialog {
         // Right Side of Split Panel, Bundle Description and button action on selected bundle
         JPanel bundleDetailsAndActions = new JPanel(new BorderLayout());
         bundleActions.setLayout(new BoxLayout(bundleActions,BoxLayout.X_AXIS));
-        bundleDetails.setPreferredSize(DEFAULT_DETAILS_DIMENSION);
+        //bundleDetails.setPreferredSize(DEFAULT_DETAILS_DIMENSION);
         bundleDetails.setEditable(false);
         bundleDetailsAndActions.add(bundleDetails,BorderLayout.CENTER);
         bundleDetailsAndActions.add(bundleActions,BorderLayout.SOUTH);
@@ -98,10 +98,10 @@ public class MainPanel extends JDialog {
 
         leftOfSplitGroup.add(createRadioButtons(), BorderLayout.NORTH);
         leftOfSplitGroup.add(new JScrollPane(bundleList,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.CENTER);
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED),BorderLayout.CENTER);
 
         setDefaultDetailsMessage();
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,new JScrollPane(leftOfSplitGroup),bundleDetailsAndActions);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,leftOfSplitGroup,bundleDetailsAndActions);
         contentPane.add(splitPane);
         setSize(DEFAULT_DIMENSION);
         setTitle(I18N.tr("Plug-ins manager"));

@@ -42,8 +42,11 @@ import org.osgi.service.obr.Resource;
  * @author Nicolas Fortin
  */
 public class BundleItem {
+    private static final int MAX_SHORT_DESCRIPTION_CHAR_COUNT = 50;
+    private String shortDesc;
     private Resource obrResource; // only if a remote bundle is available
     private Bundle bundle;        // only for downloaded bundle
+
 
     @Override
     public boolean equals(Object o) {
@@ -138,7 +141,35 @@ public class BundleItem {
      * @return The bundle short description. (empty string if none)
      */
     String getShortDescription() {
-        return "";
+        if(shortDesc!=null) {
+            return shortDesc;
+        }
+        String description=null;
+        if(bundle!=null && bundle.getHeaders()!=null) {
+            description = bundle.getHeaders().get(Constants.BUNDLE_DESCRIPTION);
+        } if(obrResource!=null && obrResource.getProperties()!=null) {
+            description = obrResource.getProperties().get(Resource.DESCRIPTION).toString();
+        }
+        if(description!=null) {
+            // Limit size
+            if(description.length()>MAX_SHORT_DESCRIPTION_CHAR_COUNT) {
+                StringBuilder shortDescBuilder = new StringBuilder();
+                for(String word : description.split(" ")) {
+                    if(shortDescBuilder.length()+word.length() < MAX_SHORT_DESCRIPTION_CHAR_COUNT) {
+                        shortDescBuilder.append(word);
+                        shortDescBuilder.append(" ");
+                    } else {
+                        shortDescBuilder.append("..");
+                        break;
+                    }
+                }
+                shortDesc = shortDescBuilder.toString();
+                description = shortDesc;
+            }
+            return description;
+        } else {
+            return "";
+        }
     }
 
     /**
