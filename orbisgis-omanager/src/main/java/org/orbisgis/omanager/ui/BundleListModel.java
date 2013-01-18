@@ -30,23 +30,23 @@ package org.orbisgis.omanager.ui;
 
 import java.beans.EventHandler;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import javax.swing.ListModel;
-import javax.swing.event.ListDataListener;
+import java.util.Map;
+import javax.swing.AbstractListModel;
+import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleListener;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
 
 /**
- * List content of Bundles
+ * List content of Bundles, items are only instance of {@link BundleItem}.
  * @author Nicolas Fortin
  */
-public class BundleListModel implements ListModel {
-    private List<ListDataListener> listeners = new ArrayList<ListDataListener>();
+public class BundleListModel extends AbstractListModel {
     // Bundles read from local repository and remote repositories
     private List<BundleItem> storedBundles = new ArrayList<BundleItem>();
-    private List<Integer> shownBundles = null; // Filtered (visible) bundles
     private BundleContext bundleContext;
     private BundleListener bundleListener = EventHandler.create(BundleListener.class,this,"update");
 
@@ -75,25 +75,47 @@ public class BundleListModel implements ListModel {
      */
     public void update() {
 
+        Map<String,BundleItem> curBundles = new HashMap<String,BundleItem>(storedBundles.size());
+        for(BundleItem bundle : storedBundles) {
+            curBundles.put(bundle.getSymbolicName(),bundle);
+        }
+        // Start with local bundles
+        Bundle[] bundles = bundleContext.getBundles();
+        for(Bundle bundle : bundles) {
+            BundleItem storedBundle = curBundles.get(bundle.getSymbolicName());
+            if(storedBundle!=null) {
+                // Same bundle found in the shown list
+                if(!bundle.equals(storedBundle.getBundle())) {
+                    //TODO check same symbolic name but != version
+                    storedBundle.setBundle(bundle);
+                    int index = storedBundles.indexOf(storedBundle);
+                    fireContentsChanged(this,index,index);
+                }
+            } else {
+                BundleItem newBundle = new BundleItem();
+                newBundle.setBundle(bundle);
+                curBundles.put(bundle.getSymbolicName(),newBundle);
+                int index = storedBundles.size();
+                storedBundles.add(newBundle);
+                fireIntervalAdded(this,index,index);
+            }
+        }
+
     }
     public int getSize() {
-        if(shownBundles==null) {
-            return storedBundles.size();
-        } else {
-            return shownBundles.size();
-        }
+        return storedBundles.size();
     }
 
     public Object getElementAt(int i) {
-        return null;
+        return storedBundles.get(i);
     }
 
-    public void addListDataListener(ListDataListener listDataListener) {
-        listeners.add(listDataListener);
-    }
-
-    public void removeListDataListener(ListDataListener listDataListener) {
-        listeners.remove(listDataListener);
+    /**
+     * @param i Index
+     * @return List element
+     */
+    public BundleItem getBundle(int i) {
+        return storedBundles.get(i);
     }
 
     /**

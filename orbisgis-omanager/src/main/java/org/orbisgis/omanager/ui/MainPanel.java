@@ -91,11 +91,14 @@ public class MainPanel extends JDialog {
         bundleDetailsAndActions.add(bundleActions,BorderLayout.SOUTH);
         // Left Side of Split Panel (Filters north, Categories west, bundles center)
         JPanel leftOfSplitGroup = new JPanel(new BorderLayout(BORDER_PIXEL_GAP,BORDER_PIXEL_GAP));
-        bundleCategory.setBorder(BorderFactory.createEtchedBorder());
         bundleList.setMinimumSize(MINIMUM_BUNDLE_LIST_DIMENSION);
-        leftOfSplitGroup.add(bundleCategory, BorderLayout.WEST);
+        leftOfSplitGroup.add(new JScrollPane(bundleCategory,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.WEST);
+
         leftOfSplitGroup.add(createRadioButtons(), BorderLayout.NORTH);
-        leftOfSplitGroup.add(bundleList,BorderLayout.CENTER);
+        leftOfSplitGroup.add(new JScrollPane(bundleList,
+                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER),BorderLayout.CENTER);
+
         setDefaultDetailsMessage();
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,new JScrollPane(leftOfSplitGroup),bundleDetailsAndActions);
         contentPane.add(splitPane);
