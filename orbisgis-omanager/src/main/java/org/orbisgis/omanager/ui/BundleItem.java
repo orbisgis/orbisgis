@@ -54,7 +54,7 @@ public class BundleItem {
             return false;
         }
         BundleItem other = (BundleItem)o;
-        return bundle.getSymbolicName().equals(other.getSymbolicName()) && getVersion().equals(other.getVersion());
+        return getSymbolicName().equals(other.getSymbolicName()) && getVersion().equals(other.getVersion());
     }
 
     @Override
@@ -127,6 +127,11 @@ public class BundleItem {
         } else {
             return "Unknown";
         }
+    }
+
+    @Override
+    public String toString() {
+        return getPresentationName();
     }
 
     /**

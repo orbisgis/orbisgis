@@ -77,7 +77,7 @@ public class ManagerMenuFactory implements MainFrameAction {
     public void showManager() {
         LOGGER.info("Show manager..");
         if(mainPanel==null) {
-            mainPanel = new MainPanel(target.getMainFrame());
+            mainPanel = new MainPanel(target.getMainFrame(),bundleContext);
         }
         mainPanel.setModal(false);
         mainPanel.setVisible(true);

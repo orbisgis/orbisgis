@@ -48,6 +48,7 @@ import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import org.apache.log4j.Logger;
+import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -69,9 +70,9 @@ public class MainPanel extends JDialog {
     private JTextArea bundleDetails = new JTextArea();
     private JList bundleList = new JList();
     private JPanel bundleActions = new JPanel();
+    private BundleListModel bundleListModel;
 
-
-    public MainPanel(Frame frame) {
+    public MainPanel(Frame frame,BundleContext bundleContext) {
         super(frame);
         setDefaultCloseOperation(HIDE_ON_CLOSE);
         // Main Panel (South button, center Split Pane)
@@ -104,6 +105,10 @@ public class MainPanel extends JDialog {
         contentPane.add(splitPane);
         setSize(DEFAULT_DIMENSION);
         setTitle(I18N.tr("Plug-ins manager"));
+        bundleListModel =  new BundleListModel(bundleContext);
+        bundleList.setModel(bundleListModel);
+        bundleListModel.install();
+        bundleList.setCellRenderer(new BundleListRenderer(bundleList));
     }
 
     private void addSouthButtons(JPanel southButtons) {

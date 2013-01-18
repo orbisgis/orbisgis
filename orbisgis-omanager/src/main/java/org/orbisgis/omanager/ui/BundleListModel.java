@@ -31,14 +31,14 @@ package org.orbisgis.omanager.ui;
 import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.swing.AbstractListModel;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleListener;
-import org.osgi.framework.ServiceEvent;
-import org.osgi.framework.ServiceListener;
 
 /**
  * List content of Bundles, items are only instance of {@link BundleItem}.
@@ -61,6 +61,7 @@ public class BundleListModel extends AbstractListModel {
      * Watch for local bundle updates.
      */
     public void install() {
+        update();
         bundleContext.addBundleListener(bundleListener);
     }
 
@@ -81,8 +82,11 @@ public class BundleListModel extends AbstractListModel {
         }
         // Start with local bundles
         Bundle[] bundles = bundleContext.getBundles();
+        Set<String> currentBundles = new HashSet<String>(bundles.length);
+        // Search new or updated bundles
         for(Bundle bundle : bundles) {
-            BundleItem storedBundle = curBundles.get(bundle.getSymbolicName());
+            currentBundles.add(bundle.getSymbolicName());
+            BundleItem storedBundle = curBundles.get(getIdentifier(bundle));
             if(storedBundle!=null) {
                 // Same bundle found in the shown list
                 if(!bundle.equals(storedBundle.getBundle())) {
@@ -94,13 +98,33 @@ public class BundleListModel extends AbstractListModel {
             } else {
                 BundleItem newBundle = new BundleItem();
                 newBundle.setBundle(bundle);
-                curBundles.put(bundle.getSymbolicName(),newBundle);
+                curBundles.put(getIdentifier(bundle),newBundle);
                 int index = storedBundles.size();
                 storedBundles.add(newBundle);
-                fireIntervalAdded(this,index,index);
+                fireIntervalAdded(this, index, index);
+            }
+        }
+        // Search deleted bundles
+        for(BundleItem item : new ArrayList<BundleItem>(storedBundles)) {
+            if(!currentBundles.contains(getIdentifier(item))) {
+                item.setBundle(null);
+                if(item.getObrResource()==null) {
+                    // Deleted item
+                    int index = storedBundles.indexOf(item);
+                    storedBundles.remove(index);
+                    fireIntervalRemoved(this,index,index);
+                }
             }
         }
 
+
+    }
+
+    private String getIdentifier(Bundle bundle) {
+        return bundle.getSymbolicName();
+    }
+    private String getIdentifier(BundleItem bundle) {
+        return bundle.getSymbolicName();
     }
     public int getSize() {
         return storedBundles.size();
@@ -116,16 +140,5 @@ public class BundleListModel extends AbstractListModel {
      */
     public BundleItem getBundle(int i) {
         return storedBundles.get(i);
-    }
-
-    /**
-     * Listen to plug-in state modification
-     */
-    private class ListServiceListener implements ServiceListener {
-        public void serviceChanged(ServiceEvent event) {
-            synchronized ( BundleListModel.this ) {
-
-            }
-        }
     }
 }
