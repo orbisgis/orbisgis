@@ -31,6 +31,7 @@ package org.orbisgis.omanager.ui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Frame;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.Map;
@@ -45,6 +46,11 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import org.apache.log4j.Logger;
@@ -60,8 +66,9 @@ import org.xnap.commons.i18n.I18nFactory;
 public class MainPanel extends JDialog {
     private static final Dimension DEFAULT_DIMENSION = new Dimension(800,480);
     private static final Dimension MINIMUM_BUNDLE_LIST_DIMENSION = new Dimension(100,50);
+    private static final Dimension MINIMUM_BUNDLE_DESCRIPTION_DIMENSION = new Dimension(250,50);
     private static final I18n I18N = I18nFactory.getI18n(MainPanel.class);
-    private static final Logger LOGGER = Logger.getLogger(MainPanel.class);
+    private static final Logger LOGGER = Logger.getLogger("gui."+MainPanel.class);
     private static final int BORDER_PIXEL_GAP = 2;
 
     // Bundle Category filter
@@ -71,7 +78,13 @@ public class MainPanel extends JDialog {
     private JPanel bundleActions = new JPanel();
     private BundleListModel bundleListModel;
     private JPanel bundleDetailsAndActions = new JPanel(new BorderLayout());
+    private JSplitPane splitPane;
 
+    /**
+     * Constructor of the main plugin panel
+     * @param frame MainFrame, in order to place this dialog and release resource automatically.
+     * @param bundleContext Bundle context instance in order to manage them.
+     */
     public MainPanel(Frame frame,BundleContext bundleContext) {
         super(frame);
         setDefaultCloseOperation(HIDE_ON_CLOSE);
@@ -87,6 +100,7 @@ public class MainPanel extends JDialog {
         bundleActions.setLayout(new BoxLayout(bundleActions,BoxLayout.X_AXIS));
         //bundleDetails.setPreferredSize(DEFAULT_DETAILS_DIMENSION);
         bundleDetails.setEditable(false);
+        bundleDetails.setMinimumSize(MINIMUM_BUNDLE_DESCRIPTION_DIMENSION);
         bundleDetailsAndActions.add(bundleDetails,BorderLayout.CENTER);
         bundleDetailsAndActions.add(bundleActions,BorderLayout.SOUTH);
         // Left Side of Split Panel (Filters north, Categories west, bundles center)
@@ -100,7 +114,7 @@ public class MainPanel extends JDialog {
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED),BorderLayout.CENTER);
 
         setDefaultDetailsMessage();
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,leftOfSplitGroup,bundleDetailsAndActions);
+        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,leftOfSplitGroup,bundleDetailsAndActions);
         contentPane.add(splitPane);
         setSize(DEFAULT_DIMENSION);
         setTitle(I18N.tr("Plug-ins manager"));
@@ -108,8 +122,47 @@ public class MainPanel extends JDialog {
         bundleList.setModel(bundleListModel);
         bundleListModel.install();
         bundleList.setCellRenderer(new BundleListRenderer(bundleList));
+        bundleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        bundleList.addListSelectionListener(EventHandler.create(ListSelectionListener.class,this,"onBundleSelectionChange",""));
+        bundleList.getModel().addListDataListener(EventHandler.create(ListDataListener.class,this,"onListUpdate"));
     }
 
+    /**
+     * The user select another plug-in in the list.
+     * @param e Event object
+     */
+    public void onBundleSelectionChange(ListSelectionEvent e) {
+        if(!e.getValueIsAdjusting()) {
+            Object selected = bundleList.getSelectedValue();
+            if(selected instanceof BundleItem) {
+                BundleItem selectedItem = (BundleItem)selected;
+                setBundleDetailsAndActions(selectedItem);
+            } else {
+                setDefaultDetailsMessage();
+            }
+        }
+    }
+
+    /**
+     * The Data Model of the Bundle list has been updated.
+     */
+    public void onListUpdate() {
+        Object selected = bundleList.getSelectedValue();
+        if(selected instanceof BundleItem) {
+            final BundleItem selectedItem = (BundleItem)selected;
+            if(!SwingUtilities.isEventDispatchThread()) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    public void run() {
+                        setBundleDetailsAndActions(selectedItem);
+                    }
+                });
+            } else {
+                setBundleDetailsAndActions(selectedItem);
+            }
+        } else {
+            setDefaultDetailsMessage();
+        }
+    }
     private void addSouthButtons(JPanel southButtons) {
         JButton repositoryUrls = new JButton(I18N.tr("Manage repositories"));
         repositoryUrls.setToolTipText(I18N.tr("Add/Remove remote bundle repositories."));
@@ -136,7 +189,9 @@ public class MainPanel extends JDialog {
         }
     }
     private void setBundleDetailsAndActions(BundleItem selectedItem) {
-        bundleDetails.setText("");
+        bundleActions.removeAll();
+        // Set description
+        bundleDetails.setText(selectedItem.getPresentationName());
         Document document = bundleDetails.getDocument();
         Map<String,String> itemDetails = selectedItem.getDetails();
         // Title, Description, Version, Category, then other parameters
@@ -147,7 +202,34 @@ public class MainPanel extends JDialog {
         for(Map.Entry<String,String> entry : itemDetails.entrySet()) {
 
         }
-        bundleDetailsAndActions.setVisible(true);
+        // Set buttons
+        if(selectedItem.isStartReady()) {
+            JButton start = new JButton(I18N.tr("Start"));
+            start.setToolTipText(I18N.tr("Activate the selected plug-in"));
+            start.addActionListener(new BundleActionErrorLogger(
+                    EventHandler.create(ActionListener.class,selectedItem.getBundle(),"start")));
+            bundleActions.add(start);
+        }
+        if(selectedItem.isStopReady()) {
+            JButton stop = new JButton(I18N.tr("Stop"));
+            stop.setToolTipText(I18N.tr("Deactivate the selected plug-in"));
+            stop.addActionListener(new BundleActionErrorLogger(
+                    EventHandler.create(ActionListener.class,selectedItem.getBundle(),"stop")));
+            bundleActions.add(stop);
+        }
+        if(selectedItem.isUpdateReady()) {
+            JButton update = new JButton(I18N.tr("Update"));
+            update.setToolTipText(I18N.tr("Update the plug-in with the same version."));
+            update.addActionListener(new BundleActionErrorLogger(
+                    EventHandler.create(ActionListener.class, selectedItem.getBundle(), "update")));
+            bundleActions.add(update);
+        }
+        // Upgrade
+        boolean hidden = !bundleDetailsAndActions.isVisible();
+        if(hidden) {
+            bundleDetailsAndActions.setVisible(true);
+            splitPane.setDividerLocation(-1); // -1 to let swing compute preferred size
+        }
     }
     /**
      * User click on "All states" radio button
@@ -216,4 +298,22 @@ public class MainPanel extends JDialog {
         return radioBar;
     }
 
+    /**
+     * Decorator to another ActionListener in order to catch error and show them on the Logger.
+     */
+    private class BundleActionErrorLogger implements ActionListener {
+        private ActionListener functionCall;
+
+        private BundleActionErrorLogger(ActionListener functionCall) {
+            this.functionCall = functionCall;
+        }
+
+        public void actionPerformed(ActionEvent actionEvent) {
+            try {
+                functionCall.actionPerformed(actionEvent);
+            } catch (Exception ex) {
+                LOGGER.error(ex);
+            }
+        }
+    }
 }

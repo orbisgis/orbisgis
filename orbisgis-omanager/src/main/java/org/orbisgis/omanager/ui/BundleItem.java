@@ -199,4 +199,11 @@ public class BundleItem {
     boolean isStopReady() {
         return (bundle!=null) && (bundle.getState()==Bundle.ACTIVE);
     }
+
+    /**
+     * @return True if the update method can be called.
+     */
+    boolean isUpdateReady() {
+        return (bundle!=null) && (bundle.getState()!=Bundle.UNINSTALLED);
+    }
 }

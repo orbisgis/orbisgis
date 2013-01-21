@@ -155,7 +155,9 @@ public class BundleListRenderer extends ListLaFRenderer {
             StringBuilder sb = new StringBuilder();
             sb.append("<html><h4>");
             sb.append(bi.getPresentationName());
-            sb.append("</h4>");
+            sb.append(" (");
+            sb.append(bi.getVersion());
+            sb.append(")</h4>");
             sb.append(bi.getShortDescription());
             sb.append("</html>");
             label.setText(sb.toString());
