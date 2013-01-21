@@ -59,7 +59,6 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class MainPanel extends JDialog {
     private static final Dimension DEFAULT_DIMENSION = new Dimension(800,480);
-    private static final Dimension DEFAULT_DETAILS_DIMENSION = new Dimension((int)Math.round(DEFAULT_DIMENSION.getWidth()*0.1),-1);
     private static final Dimension MINIMUM_BUNDLE_LIST_DIMENSION = new Dimension(100,50);
     private static final I18n I18N = I18nFactory.getI18n(MainPanel.class);
     private static final Logger LOGGER = Logger.getLogger(MainPanel.class);
@@ -71,6 +70,7 @@ public class MainPanel extends JDialog {
     private JList bundleList = new JList();
     private JPanel bundleActions = new JPanel();
     private BundleListModel bundleListModel;
+    private JPanel bundleDetailsAndActions = new JPanel(new BorderLayout());
 
     public MainPanel(Frame frame,BundleContext bundleContext) {
         super(frame);
@@ -84,7 +84,6 @@ public class MainPanel extends JDialog {
         addSouthButtons(southButtons);
         contentPane.add(southButtons,BorderLayout.SOUTH);
         // Right Side of Split Panel, Bundle Description and button action on selected bundle
-        JPanel bundleDetailsAndActions = new JPanel(new BorderLayout());
         bundleActions.setLayout(new BoxLayout(bundleActions,BoxLayout.X_AXIS));
         //bundleDetails.setPreferredSize(DEFAULT_DETAILS_DIMENSION);
         bundleDetails.setEditable(false);
@@ -126,8 +125,8 @@ public class MainPanel extends JDialog {
      * Message on bundle details message frame when no bundle is selected, and remove all actions.
      */
     private void setDefaultDetailsMessage() {
-        bundleDetails.setText(I18N.tr("Please select a plug-in in the list."));
         bundleActions.removeAll();
+        bundleDetailsAndActions.setVisible(false);
     }
     private void addDescriptionItem(String text,boolean title,Document document) {
         try {
@@ -148,6 +147,7 @@ public class MainPanel extends JDialog {
         for(Map.Entry<String,String> entry : itemDetails.entrySet()) {
 
         }
+        bundleDetailsAndActions.setVisible(true);
     }
     /**
      * User click on "All states" radio button

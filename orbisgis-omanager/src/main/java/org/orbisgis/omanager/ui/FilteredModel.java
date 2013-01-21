@@ -1,12 +1,3 @@
-package org.orbisgis.omanager.ui;
-
-import java.util.ArrayList;
-import java.util.List;
-import javax.swing.AbstractListModel;
-import javax.swing.ListModel;
-import javax.swing.event.ListDataEvent;
-import javax.swing.event.ListDataListener;
-
 /*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
@@ -35,6 +26,14 @@ import javax.swing.event.ListDataListener;
  * or contact directly:
  * info_at_ orbisgis.org
  */
+package org.orbisgis.omanager.ui;
+
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.AbstractListModel;
+import javax.swing.ListModel;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 
 /**
  * Decorator to ListModel, enable filtering

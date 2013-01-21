@@ -22,7 +22,6 @@
                                 <configuration>
                                         <instructions>
                                                 <Private-Package>org.orbisgis.omanager.*</Private-Package>
-                                                <Import-Package>*, org.osgi.service.obr;resolution:=optional</Import-Package>
                                                 <Bundle-Activator>org.orbisgis.omanager.Activator</Bundle-Activator>
                                                 <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
                                                 <Bundle-Icon>http://www.orbisgis.org/icon.png</Bundle-Icon>
@@ -86,6 +85,12 @@
                     <artifactId>org.osgi.service.obr</artifactId>
                     <version>1.0.2</version>
                     <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>junit</groupId>
+                    <artifactId>junit</artifactId>
+                    <version>4.10</version>
+                    <scope>test</scope>
                 </dependency>
         </dependencies>
         <pluginRepositories>

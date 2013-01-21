@@ -28,7 +28,6 @@
  */
 package org.orbisgis.omanager;
 
-import java.awt.Dimension;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.ArrayList;
@@ -45,6 +44,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
+ * Create menu item and create the main menu when the user click on the menu item.
  * @author Nicolas Fortin
  */
 public class ManagerMenuFactory implements MainFrameAction {
@@ -53,13 +53,12 @@ public class ManagerMenuFactory implements MainFrameAction {
     private static final I18n I18N = I18nFactory.getI18n(ManagerMenuFactory.class);
     private BundleContext bundleContext;
     private MainPanel mainPanel;
-    private MainWindow target; // There is only one main window in the application, the it can be stored here.
+    private MainWindow target; // There is only one main window in the application, it can be stored here.
     /**
      * @param bundleContext Used to track OSGi bundle repository service, and to manage bundles.
      */
     public ManagerMenuFactory(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
-        LOGGER.info("Init manager");
     }
 
     public List<Action> createActions(MainWindow target) {
@@ -75,11 +74,10 @@ public class ManagerMenuFactory implements MainFrameAction {
      * Make and show the plug-ins manager
      */
     public void showManager() {
-        LOGGER.info("Show manager..");
         if(mainPanel==null) {
             mainPanel = new MainPanel(target.getMainFrame(),bundleContext);
+            mainPanel.setModal(false);
         }
-        mainPanel.setModal(false);
         mainPanel.setVisible(true);
     }
 
