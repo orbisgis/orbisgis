@@ -34,7 +34,9 @@ import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.util.List;
 import java.util.Map;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -79,6 +81,7 @@ public class MainPanel extends JDialog {
     private BundleListModel bundleListModel;
     private JPanel bundleDetailsAndActions = new JPanel(new BorderLayout());
     private JSplitPane splitPane;
+    private ActionBundleFactory actionFactory;
 
     /**
      * Constructor of the main plugin panel
@@ -87,6 +90,7 @@ public class MainPanel extends JDialog {
      */
     public MainPanel(Frame frame,BundleContext bundleContext) {
         super(frame);
+        actionFactory = new ActionBundleFactory(bundleContext);
         setDefaultCloseOperation(HIDE_ON_CLOSE);
         // Main Panel (South button, center Split Pane)
         JPanel contentPane = new JPanel(new BorderLayout());
@@ -203,26 +207,10 @@ public class MainPanel extends JDialog {
 
         }
         // Set buttons
-        if(selectedItem.isStartReady()) {
-            JButton start = new JButton(I18N.tr("Start"));
-            start.setToolTipText(I18N.tr("Activate the selected plug-in"));
-            start.addActionListener(new BundleActionErrorLogger(
-                    EventHandler.create(ActionListener.class,selectedItem.getBundle(),"start")));
-            bundleActions.add(start);
-        }
-        if(selectedItem.isStopReady()) {
-            JButton stop = new JButton(I18N.tr("Stop"));
-            stop.setToolTipText(I18N.tr("Deactivate the selected plug-in"));
-            stop.addActionListener(new BundleActionErrorLogger(
-                    EventHandler.create(ActionListener.class,selectedItem.getBundle(),"stop")));
-            bundleActions.add(stop);
-        }
-        if(selectedItem.isUpdateReady()) {
-            JButton update = new JButton(I18N.tr("Update"));
-            update.setToolTipText(I18N.tr("Update the plug-in with the same version."));
-            update.addActionListener(new BundleActionErrorLogger(
-                    EventHandler.create(ActionListener.class, selectedItem.getBundle(), "update")));
-            bundleActions.add(update);
+        List<Action> actions = actionFactory.create(selectedItem);
+        for(Action action : actions) {
+            JButton actionButton = new JButton(action);
+            bundleActions.add(actionButton);
         }
         // Upgrade
         boolean hidden = !bundleDetailsAndActions.isVisible();
@@ -296,24 +284,5 @@ public class MainPanel extends JDialog {
         createRadioButton(I18N.tr("Update"), I18N.tr("Show only bundles where an update is available."), false,
                 "onFilterBundleUpdate", filterGroup, radioBar);
         return radioBar;
-    }
-
-    /**
-     * Decorator to another ActionListener in order to catch error and show them on the Logger.
-     */
-    private class BundleActionErrorLogger implements ActionListener {
-        private ActionListener functionCall;
-
-        private BundleActionErrorLogger(ActionListener functionCall) {
-            this.functionCall = functionCall;
-        }
-
-        public void actionPerformed(ActionEvent actionEvent) {
-            try {
-                functionCall.actionPerformed(actionEvent);
-            } catch (Exception ex) {
-                LOGGER.error(ex);
-            }
-        }
     }
 }

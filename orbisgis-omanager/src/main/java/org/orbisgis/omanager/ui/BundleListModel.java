@@ -36,6 +36,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import javax.swing.AbstractListModel;
+import javax.swing.SwingUtilities;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
@@ -113,7 +114,11 @@ public class BundleListModel extends AbstractListModel {
                     // Deleted item
                     int index = storedBundles.indexOf(item);
                     storedBundles.remove(index);
-                    fireIntervalRemoved(this, index, index);
+                    // find valid index
+                    if(index>getSize()) {
+                        index = getSize() - 1;
+                    }
+                    fireIntervalRemoved(this, index,index);
                 }
             }
         }
@@ -132,7 +137,11 @@ public class BundleListModel extends AbstractListModel {
     }
 
     public Object getElementAt(int i) {
-        return storedBundles.get(i);
+        if(i >= 0 && i < getSize()) {
+            return storedBundles.get(i);
+        } else {
+            return null;
+        }
     }
 
     /**
@@ -145,11 +154,23 @@ public class BundleListModel extends AbstractListModel {
 
     private class BundleModelListener implements BundleListener {
 
-        public void bundleChanged(BundleEvent event) {
+        public void bundleChanged(final BundleEvent event) {
+            SwingUtilities.invokeLater(new ProcessBundleEvent(event));
+        }
+    }
+
+    private class ProcessBundleEvent implements Runnable {
+        final BundleEvent evt;
+
+        private ProcessBundleEvent(BundleEvent evt) {
+            this.evt = evt;
+        }
+
+        public void run() {
             // Find minor modification (like state)
-            if(event.getType()!=BundleEvent.INSTALLED &&
-                    event.getType()!=BundleEvent.UNINSTALLED) {
-                Bundle evtSource = event.getBundle();
+            if(evt.getType()!=BundleEvent.INSTALLED &&
+                    evt.getType()!=BundleEvent.UNINSTALLED) {
+                Bundle evtSource = evt.getBundle();
                 for(int i=0;i< storedBundles.size();i++) {
                     if(evtSource.equals(storedBundles.get(i).getBundle())) {
                         fireContentsChanged(this,i,i);

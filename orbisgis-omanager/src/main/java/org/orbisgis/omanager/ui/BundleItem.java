@@ -206,4 +206,11 @@ public class BundleItem {
     boolean isUpdateReady() {
         return (bundle!=null) && (bundle.getState()!=Bundle.UNINSTALLED);
     }
+
+    /**
+     * @return True if the uninstall method can be called.
+     */
+    boolean isUninstallReady() {
+        return (bundle!=null) && (bundle.getState()!=Bundle.UNINSTALLED);
+    }
 }
