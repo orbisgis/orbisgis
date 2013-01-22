@@ -24,7 +24,7 @@
                                                 <Private-Package>org.orbisgis.omanager.*</Private-Package>
                                                 <Bundle-Activator>org.orbisgis.omanager.Activator</Bundle-Activator>
                                                 <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
-                                                <Bundle-Icon>http://www.orbisgis.org/icon.png</Bundle-Icon>
+                                                <Bundle-Icon>icon.png;size=32</Bundle-Icon>
                                                 <Bundle-Category>gui</Bundle-Category>
                                                 <Import-Service>org.osgi.service.obr.RepositoryAdmin</Import-Service>
                                         </instructions>

@@ -29,16 +29,13 @@
 package org.orbisgis.omanager.ui;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.List;
 import java.util.Map;
 import javax.swing.Action;
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -48,19 +45,16 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
-import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
-import javax.swing.text.StyleContext;
 import org.apache.log4j.Logger;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -91,6 +85,7 @@ public class MainPanel extends JDialog {
     private JSplitPane splitPane;
     private ActionBundleFactory actionFactory;
     private BundleDetailsTransformer bundleHeader = new BundleDetailsTransformer();
+    private RepositoryAdminTracker repositoryAdminTracker;
     /**
      * Constructor of the main plugin panel
      * @param frame MainFrame, in order to place this dialog and release resource automatically.
@@ -130,6 +125,7 @@ public class MainPanel extends JDialog {
         contentPane.add(splitPane);
         setSize(DEFAULT_DIMENSION);
         setTitle(I18N.tr("Plug-ins manager"));
+        repositoryAdminTracker = new RepositoryAdminTracker(bundleContext);
         bundleListModel =  new BundleListModel(bundleContext);
         bundleList.setModel(bundleListModel);
         bundleListModel.install();
@@ -194,7 +190,7 @@ public class MainPanel extends JDialog {
         bundleDetailsAndActions.setVisible(false);
     }
     private void addDescriptionItem(String propertyKey,String propertyValue ,Document document) {
-        addDescriptionItem(propertyKey,propertyValue ,document, PROPERTY_TEXT_SIZE_INCREMENT);
+        addDescriptionItem(propertyKey, propertyValue, document, PROPERTY_TEXT_SIZE_INCREMENT);
     }
     private void addDescriptionItem(String propertyKey,String propertyValue ,Document document, int keySize) {
         try {
@@ -204,9 +200,9 @@ public class MainPanel extends JDialog {
             sc.addAttribute(StyleConstants.CharacterConstants.Size, standardSize + keySize);
             document.insertString(document.getLength(), propertyKey, sc);
             if(!propertyValue.isEmpty()) {
-                document.insertString(document.getLength()," : "+propertyValue+"\n",new SimpleAttributeSet());
+                document.insertString(document.getLength()," : "+propertyValue+"\n\n",new SimpleAttributeSet());
             } else {
-                document.insertString(document.getLength(),"\n"+propertyValue+"\n",new SimpleAttributeSet());
+                document.insertString(document.getLength(),"\n"+propertyValue+"\n\n",new SimpleAttributeSet());
             }
         } catch (BadLocationException ex) {
             LOGGER.error(ex);
@@ -218,6 +214,7 @@ public class MainPanel extends JDialog {
             addDescriptionItem(I18N.tr(property),value,document);
         }
     }
+
     private void setBundleDetailsAndActions(BundleItem selectedItem) {
         bundleActions.removeAll();
         // Set description
@@ -239,13 +236,16 @@ public class MainPanel extends JDialog {
             }
             cat.append(I18N.tr(category.trim()));
         }
-        addDescriptionItem(I18N.tr(Constants.BUNDLE_CATEGORY),cat.toString(),document);
+        if(cat.length()>0) {
+            addDescriptionItem(I18N.tr(Constants.BUNDLE_CATEGORY),cat.toString(),document);
+        }
+
         // Add other properties
         for(Map.Entry<String,String> entry : itemDetails.entrySet()) {
             String originalKey = entry.getKey();
             String key = bundleHeader.convert(originalKey);
-            if(!key.isEmpty()) {
-                addDescriptionItem(entry.getKey(),entry.getValue(),document);
+            if(!key.isEmpty() && !entry.getValue().isEmpty()) {
+                addDescriptionItem(key,entry.getValue(),document);
             }
         }
         bundleDetails.setCaretPosition(0); // Got to the beginning of the document
@@ -260,7 +260,7 @@ public class MainPanel extends JDialog {
             bundleDetailsAndActions.setVisible(true);
             splitPane.setDividerLocation(-1); // -1 to let swing compute preferred size
         } else {
-            splitPane.setDividerLocation(splitPane.getDividerLocation());
+            splitPane.updateUI(); // Without this instruction buttons are disabled on some L&F
         }
     }
     /**

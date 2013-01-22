@@ -122,6 +122,7 @@ public class BundleListModel extends AbstractListModel {
                 }
             }
         }
+        // Fetch cached repositories bundles
 
 
     }
