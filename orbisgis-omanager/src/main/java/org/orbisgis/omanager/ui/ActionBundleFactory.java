@@ -29,18 +29,12 @@
 
 package org.orbisgis.omanager.ui;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import javax.swing.Action;
-import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.framework.wiring.FrameworkWiring;
-import org.osgi.service.packageadmin.PackageAdmin;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -72,43 +66,9 @@ public class ActionBundleFactory {
                     .setActionListener(EventHandler.create(ActionListener.class, bundleItem.getBundle(), "update")));
         }
         if(bundleItem.isUninstallReady()) {
-            actions.add(new ActionUninstall(bundleItem));
+            actions.add(new ActionBundle(I18N.tr("Uninstall"), I18N.tr("Remove the selected plug-in"))
+                    .setActionListener(EventHandler.create(ActionListener.class, bundleItem.getBundle(), "uninstall")));
         }
         return actions;
-    }
-
-    private class ActionUninstall extends ActionBundle {
-        private BundleItem bundleItem;
-
-        private ActionUninstall(BundleItem bundleItem) {
-            super(I18N.tr("Uninstall"), I18N.tr("Remove the selected plug-in"));
-            this.bundleItem = bundleItem;
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-            try {
-                // Refresh export
-                // Get package admin service.
-                ServiceReference ref = bundleContext.getServiceReference(
-                        PackageAdmin.class);
-                if (ref == null)
-                {
-                    LOGGER.error(I18N.tr("PackageAdmin service is unavailable."));
-                    return;
-                }
-
-                PackageAdmin pa = (PackageAdmin) bundleContext.getService(ref);
-                if (pa == null)
-                {
-                    LOGGER.error(I18N.tr("PackageAdmin service is unavailable."));
-                    return;
-                }
-                bundleItem.getBundle().uninstall();
-                pa.refreshPackages(new Bundle[] {bundleItem.getBundle()});
-            } catch (Exception ex) {
-                LOGGER.error(ex.getLocalizedMessage(),ex);
-            }
-        }
     }
 }

@@ -29,6 +29,7 @@
 package org.orbisgis.omanager.ui;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
@@ -48,13 +49,18 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
+import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyleContext;
 import org.apache.log4j.Logger;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
@@ -72,17 +78,19 @@ public class MainPanel extends JDialog {
     private static final I18n I18N = I18nFactory.getI18n(MainPanel.class);
     private static final Logger LOGGER = Logger.getLogger("gui."+MainPanel.class);
     private static final int BORDER_PIXEL_GAP = 2;
+    private static final int PROPERTY_TEXT_SIZE_INCREMENT = 3;
+    private static final int PROPERTY_TITLE_SIZE_INCREMENT = 4;
 
     // Bundle Category filter
     private JList bundleCategory = new JList(new String[] {"All","DataBase","Network","SQL Functions"});
-    private JTextArea bundleDetails = new JTextArea();
+    private JTextPane bundleDetails = new JTextPane();
     private JList bundleList = new JList();
     private JPanel bundleActions = new JPanel();
     private BundleListModel bundleListModel;
     private JPanel bundleDetailsAndActions = new JPanel(new BorderLayout());
     private JSplitPane splitPane;
     private ActionBundleFactory actionFactory;
-
+    private BundleDetailsTransformer bundleHeader = new BundleDetailsTransformer();
     /**
      * Constructor of the main plugin panel
      * @param frame MainFrame, in order to place this dialog and release resource automatically.
@@ -105,7 +113,7 @@ public class MainPanel extends JDialog {
         //bundleDetails.setPreferredSize(DEFAULT_DETAILS_DIMENSION);
         bundleDetails.setEditable(false);
         bundleDetails.setMinimumSize(MINIMUM_BUNDLE_DESCRIPTION_DIMENSION);
-        bundleDetailsAndActions.add(bundleDetails,BorderLayout.CENTER);
+        bundleDetailsAndActions.add(new JScrollPane(bundleDetails),BorderLayout.CENTER);
         bundleDetailsAndActions.add(bundleActions,BorderLayout.SOUTH);
         // Left Side of Split Panel (Filters north, Categories west, bundles center)
         JPanel leftOfSplitGroup = new JPanel(new BorderLayout(BORDER_PIXEL_GAP,BORDER_PIXEL_GAP));
@@ -174,7 +182,7 @@ public class MainPanel extends JDialog {
         southButtons.add(repositoryUrls);
 
         JButton refreshRepositories = new JButton(I18N.tr("Refresh"));
-        refreshRepositories.setToolTipText(I18N.tr("Reload list of plug-ins"));
+        refreshRepositories.setToolTipText(I18N.tr("Reload the list of plug-ins from the Internet."));
         refreshRepositories.addActionListener(EventHandler.create(ActionListener.class,this,"onReloadPlugins"));
         southButtons.add(refreshRepositories);
     }
@@ -185,38 +193,74 @@ public class MainPanel extends JDialog {
         bundleActions.removeAll();
         bundleDetailsAndActions.setVisible(false);
     }
-    private void addDescriptionItem(String text,boolean title,Document document) {
+    private void addDescriptionItem(String propertyKey,String propertyValue ,Document document) {
+        addDescriptionItem(propertyKey,propertyValue ,document, PROPERTY_TEXT_SIZE_INCREMENT);
+    }
+    private void addDescriptionItem(String propertyKey,String propertyValue ,Document document, int keySize) {
         try {
-            document.insertString(document.getLength(),text,null);
+            SimpleAttributeSet sc = new SimpleAttributeSet();
+            sc.addAttribute(StyleConstants.CharacterConstants.Bold, Boolean.TRUE);
+            int standardSize = StyleConstants.CharacterConstants.getFontSize(sc);
+            sc.addAttribute(StyleConstants.CharacterConstants.Size, standardSize + keySize);
+            document.insertString(document.getLength(), propertyKey, sc);
+            if(!propertyValue.isEmpty()) {
+                document.insertString(document.getLength()," : "+propertyValue+"\n",new SimpleAttributeSet());
+            } else {
+                document.insertString(document.getLength(),"\n"+propertyValue+"\n",new SimpleAttributeSet());
+            }
         } catch (BadLocationException ex) {
             LOGGER.error(ex);
+        }
+    }
+    private void addHeaderItem(String property,Map<String,String> headers, Document document) {
+        String value = headers.get(property);
+        if(value!=null) {
+            addDescriptionItem(I18N.tr(property),value,document);
         }
     }
     private void setBundleDetailsAndActions(BundleItem selectedItem) {
         bundleActions.removeAll();
         // Set description
-        bundleDetails.setText(selectedItem.getPresentationName());
+        bundleDetails.setText("");
         Document document = bundleDetails.getDocument();
         Map<String,String> itemDetails = selectedItem.getDetails();
+        // Plugin Name
         // Title, Description, Version, Category, then other parameters
-        String name = itemDetails.get(Constants.BUNDLE_NAME);
-        if(name!=null) {
-            addDescriptionItem(name,true,document);
+        addDescriptionItem(selectedItem.getPresentationName(),"",document,PROPERTY_TITLE_SIZE_INCREMENT);
+        // Description
+        addHeaderItem(Constants.BUNDLE_DESCRIPTION, itemDetails, document);
+        // Version
+        addHeaderItem(Constants.BUNDLE_VERSION, itemDetails, document);
+        // Categories
+        StringBuilder cat = new StringBuilder();
+        for(String category : selectedItem.getBundleCategories()) {
+            if(cat.length()>0) {
+                cat.append(", ");
+            }
+            cat.append(I18N.tr(category.trim()));
         }
+        addDescriptionItem(I18N.tr(Constants.BUNDLE_CATEGORY),cat.toString(),document);
+        // Add other properties
         for(Map.Entry<String,String> entry : itemDetails.entrySet()) {
-
+            String originalKey = entry.getKey();
+            String key = bundleHeader.convert(originalKey);
+            if(!key.isEmpty()) {
+                addDescriptionItem(entry.getKey(),entry.getValue(),document);
+            }
         }
+        bundleDetails.setCaretPosition(0); // Got to the beginning of the document
         // Set buttons
         List<Action> actions = actionFactory.create(selectedItem);
         for(Action action : actions) {
             JButton actionButton = new JButton(action);
             bundleActions.add(actionButton);
         }
-        // Upgrade
         boolean hidden = !bundleDetailsAndActions.isVisible();
         if(hidden) {
             bundleDetailsAndActions.setVisible(true);
             splitPane.setDividerLocation(-1); // -1 to let swing compute preferred size
+        } else {
+            splitPane.setDividerLocation(splitPane.getDividerLocation());
         }
     }
     /**

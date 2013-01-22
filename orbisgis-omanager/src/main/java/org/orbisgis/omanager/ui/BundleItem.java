@@ -29,9 +29,12 @@
 package org.orbisgis.omanager.ui;
 
 import java.util.ArrayList;
+import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.mozilla.javascript.edu.emory.mathcs.backport.java.util.Arrays;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
@@ -46,7 +49,6 @@ public class BundleItem {
     private String shortDesc;
     private Resource obrResource; // only if a remote bundle is available
     private Bundle bundle;        // only for downloaded bundle
-
 
     @Override
     public boolean equals(Object o) {
@@ -176,13 +178,36 @@ public class BundleItem {
      * @return A map of bundle details to show on the right side of the GUI. (Title->Value)
      */
     Map<String,String> getDetails() {
-        return new HashMap<String, String>();
+        if(bundle!=null) {
+             // Copy deprecated dictionary into Map
+             Dictionary<String,String> dic = bundle.getHeaders();
+             HashMap<String,String> details = new HashMap<String, String>(dic.size());
+             Enumeration<String> keys = dic.keys();
+             while(keys.hasMoreElements()) {
+                 String key = keys.nextElement();
+                 details.put(key,dic.get(key));
+             }
+            return details;
+        } else {
+            return new HashMap<String, String>();
+        }
     }
 
     /**
      * @return Bundle tags
      */
     List<String> getBundleCategories() {
+        if(bundle!=null) {
+            String categories = bundle.getHeaders().get(Constants.BUNDLE_CATEGORY);
+            if(categories!=null) {
+                String[] catArray = categories.split(",");
+                if(catArray.length==1) {
+                    return Arrays.asList(new String[] {categories});
+                } else {
+                    return Arrays.asList(catArray);
+                }
+            }
+        }
         return new ArrayList<String>();
     }
 
