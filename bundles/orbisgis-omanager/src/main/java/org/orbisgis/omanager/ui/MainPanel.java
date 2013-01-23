@@ -66,7 +66,6 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Nicolas Fortin
  */
 public class MainPanel extends JPanel {
-    private static final Dimension DEFAULT_DIMENSION = new Dimension(800,480);
     private static final Dimension MINIMUM_BUNDLE_LIST_DIMENSION = new Dimension(100,50);
     private static final Dimension MINIMUM_BUNDLE_DESCRIPTION_DIMENSION = new Dimension(250,50);
     private static final I18n I18N = I18nFactory.getI18n(MainPanel.class);
@@ -87,10 +86,9 @@ public class MainPanel extends JPanel {
     private BundleDetailsTransformer bundleHeader = new BundleDetailsTransformer();
     /**
      * Constructor of the main plugin panel
-     * @param frame MainFrame, in order to place this dialog and release resource automatically.
      * @param bundleContext Bundle context instance in order to manage them.
      */
-    public MainPanel(Frame frame,BundleContext bundleContext) {
+    public MainPanel(BundleContext bundleContext) {
         super(new BorderLayout());
         actionFactory = new ActionBundleFactory(bundleContext);
         // Main Panel (South button, center Split Pane)

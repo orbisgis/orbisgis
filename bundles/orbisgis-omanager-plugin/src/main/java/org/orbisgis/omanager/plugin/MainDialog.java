@@ -65,6 +65,10 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
     private JPanel centerComponent = new JPanel(new BorderLayout());
     private ListSelectionListener modelListener = EventHandler.create(ListSelectionListener.class,this,"onShellSelectionChange");
 
+    /**
+     * @param frame MainFrame, in order to place this dialog and release resource automatically.
+     * @param bundleContext
+     */
     public MainDialog(Frame frame, BundleContext bundleContext) {
         super(frame);
         this.bundleContext = bundleContext;
@@ -88,8 +92,8 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
             int selected = shellPlugins.getSelectedIndex();
             if(selected >= 0 && selected < loadedPlugins.size()) {
                 centerComponent.add(loadedPlugins.get(shellPlugins.getSelectedIndex()).getGUI(),BorderLayout.CENTER);
-                centerComponent.updateUI();
             }
+            centerComponent.updateUI();
         }
     }
     public Plugin addingService(ServiceReference<Plugin> reference) {
@@ -163,6 +167,7 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
             Object selected = shellPlugins.getSelectedValue();
             if(selected!=null && selected.equals(plugin.getName())) {
                 centerComponent.removeAll();
+                centerComponent.updateUI();
             }
             updateLoadedPluginsList();
         }
@@ -172,6 +177,7 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
             updateLoadedPluginsList();
             if(!shellPlugins.isVisible()) {
                 centerComponent.add(plugin.getGUI(),BorderLayout.CENTER);
+                centerComponent.updateUI();
                 shellPlugins.setSelectedValue(plugin.getName(),true);
             }
         }
