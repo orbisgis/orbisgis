@@ -5,13 +5,10 @@
         <packaging>bundle</packaging>
         <groupId>org.orbisgis</groupId>
         <artifactId>orbisgis-omanager</artifactId>
-        <name>OrbisGIS OSGi Plugin Manager</name>
-        <description>Graphical user interface to manage OSGi bundles related to OrbisGIS plugins.</description>
-        <version>1.0</version>
+        <name>OSGi Plugin Manager GUI</name>
+        <description>Graphical user interface to manage OSGi bundles.</description>
+        <version>1.1</version>
         <url>http://orbisgis.org</url>
-        <organization>
-
-        </organization>
         <build>
                 <plugins>
                         <plugin>
@@ -22,9 +19,7 @@
                                 <configuration>
                                         <instructions>
                                                 <Private-Package>org.orbisgis.omanager.*</Private-Package>
-                                                <Bundle-Activator>org.orbisgis.omanager.Activator</Bundle-Activator>
                                                 <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
-                                                <Bundle-Icon>icon.png;size=32</Bundle-Icon>
                                                 <Bundle-Category>gui</Bundle-Category>
                                                 <Import-Service>org.osgi.service.obr.RepositoryAdmin</Import-Service>
                                         </instructions>
@@ -69,16 +64,16 @@
         </properties>
         <dependencies>
                 <dependency>
-                        <groupId>org.orbisgis</groupId>
-                        <artifactId>orbisgis-view</artifactId>
-                        <version>4.0-SNAPSHOT</version>
-                        <scope>provided</scope>
-                </dependency>
-                <dependency>
                         <groupId>org.osgi</groupId>
                         <artifactId>org.osgi.core</artifactId>
                         <version>4.3.0</version>
                         <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.osgi</groupId>
+                    <artifactId>org.osgi.compendium</artifactId>
+                    <version>4.3.0</version>
+                    <scope>provided</scope>
                 </dependency>
                 <dependency>
                     <groupId>org.apache.felix</groupId>
@@ -91,6 +86,16 @@
                     <artifactId>junit</artifactId>
                     <version>4.10</version>
                     <scope>test</scope>
+                </dependency>
+                <dependency>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                    <version>1.2.16</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.xnap.commons</groupId>
+                    <artifactId>gettext-commons</artifactId>
+                    <version>0.9.6</version>
                 </dependency>
         </dependencies>
         <pluginRepositories>

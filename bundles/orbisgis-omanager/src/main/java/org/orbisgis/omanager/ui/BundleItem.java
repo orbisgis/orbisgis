@@ -29,6 +29,7 @@
 package org.orbisgis.omanager.ui;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -201,7 +202,7 @@ public class BundleItem {
             if(categories!=null) {
                 String[] catArray = categories.split(",");
                 if(catArray.length==1) {
-                    return Arrays.asList(new String[] {categories});
+                    return Arrays.asList(new String[]{categories});
                 } else {
                     return Arrays.asList(catArray);
                 }

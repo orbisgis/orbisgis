@@ -9,9 +9,6 @@
         <description>Add a menu shortcut in OrbisGIS in order to show the plugin manager</description>
         <version>1.0</version>
         <url>http://orbisgis.org</url>
-        <organization>
-
-        </organization>
         <build>
                 <plugins>
                         <plugin>
@@ -80,9 +77,9 @@
                         <scope>provided</scope>
                 </dependency>
                 <dependency>
-                    <groupId>org.apache.felix</groupId>
-                    <artifactId>org.osgi.service.obr</artifactId>
-                    <version>1.0.2</version>
+                    <groupId>org.orbisgis</groupId>
+                    <artifactId>orbisgis-omanager</artifactId>
+                    <version>1.1</version>
                     <scope>provided</scope>
                 </dependency>
                 <dependency>
