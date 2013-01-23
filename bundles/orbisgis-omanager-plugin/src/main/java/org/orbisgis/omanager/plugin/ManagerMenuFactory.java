@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.omanager;
+package org.orbisgis.omanager.plugin;
 
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;

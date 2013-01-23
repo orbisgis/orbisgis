@@ -26,22 +26,13 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
+
 package org.orbisgis.omanager.plugin;
 
-import org.orbisgis.view.main.frames.ext.MainFrameAction;
-import org.osgi.framework.BundleActivator;
-import org.osgi.framework.BundleContext;
+import javax.swing.JDialog;
 
 /**
- * Register the OSGi plugin manager menu item.
  * @author Nicolas Fortin
  */
-public class Activator implements BundleActivator {
-        public void start(BundleContext bc) throws Exception {
-            // Register the new main menu item "manage plug-ins"
-            bc.registerService(MainFrameAction.class,new ManagerMenuFactory(bc),null);
-        }
-
-        public void stop(BundleContext bc) throws Exception {
-        }
+public class MainDialog extends JDialog {
 }

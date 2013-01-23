@@ -41,6 +41,8 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
+import org.osgi.service.obr.RepositoryAdmin;
+import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * List content of Bundles, items are only instance of {@link BundleItem}.
@@ -51,7 +53,8 @@ public class BundleListModel extends AbstractListModel {
     private List<BundleItem> storedBundles = new ArrayList<BundleItem>();
     private BundleContext bundleContext;
     private BundleListener bundleListener = new BundleModelListener();
-
+    private RepositoryAdminTracker repositoryAdminTrackerCustomizer;
+    private ServiceTracker<RepositoryAdmin,RepositoryAdmin> repositoryAdminTracker;
     /**
      * @param bundleContext Bundle context to track.
      */
@@ -60,9 +63,13 @@ public class BundleListModel extends AbstractListModel {
     }
 
     /**
-     * Watch for local bundle updates.
+     * Watch for local bundle updates and RepositoryAdmin service.
      */
     public void install() {
+        repositoryAdminTrackerCustomizer = new RepositoryAdminTracker(bundleContext);
+        repositoryAdminTracker = new ServiceTracker<RepositoryAdmin, RepositoryAdmin>(bundleContext,
+                RepositoryAdmin.class,repositoryAdminTrackerCustomizer);
+        repositoryAdminTracker.open();
         update();
         bundleContext.addBundleListener(bundleListener);
     }
@@ -72,6 +79,9 @@ public class BundleListModel extends AbstractListModel {
      */
     public void uninstall() {
         bundleContext.removeBundleListener(bundleListener);
+        if(repositoryAdminTracker!=null) {
+            repositoryAdminTracker.close();
+        }
     }
     /**
      * Update the content of the bundle context

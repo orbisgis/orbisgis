@@ -45,6 +45,7 @@ public class BundleFromResources {
                 new BundleReference("org.apache.felix.bundlerepository"), // OBR Implementation
                 new BundleReference("orbisgis-oshell"),                   // Dev shell GUI
                 new BundleReference("orbisgis-omanager"),                 // Bundle manager GUI
+                new BundleReference("orbisgis-omanager-plugin"),          // Bundle manager menu item
         };
         private BundleFromResources() {                
         }

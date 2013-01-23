@@ -39,6 +39,7 @@ import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -76,7 +77,7 @@ public class MainPanel extends JDialog {
     private static final int PROPERTY_TITLE_SIZE_INCREMENT = 4;
 
     // Bundle Category filter
-    private JList bundleCategory = new JList(new String[] {"All","DataBase","Network","SQL Functions"});
+    private JComboBox bundleCategory = new JComboBox(new String[] {"All","DataBase","Network","SQL Functions"});
     private JTextPane bundleDetails = new JTextPane();
     private JList bundleList = new JList();
     private JPanel bundleActions = new JPanel();
@@ -85,7 +86,6 @@ public class MainPanel extends JDialog {
     private JSplitPane splitPane;
     private ActionBundleFactory actionFactory;
     private BundleDetailsTransformer bundleHeader = new BundleDetailsTransformer();
-    private RepositoryAdminTracker repositoryAdminTracker;
     /**
      * Constructor of the main plugin panel
      * @param frame MainFrame, in order to place this dialog and release resource automatically.
@@ -110,13 +110,10 @@ public class MainPanel extends JDialog {
         bundleDetails.setMinimumSize(MINIMUM_BUNDLE_DESCRIPTION_DIMENSION);
         bundleDetailsAndActions.add(new JScrollPane(bundleDetails),BorderLayout.CENTER);
         bundleDetailsAndActions.add(bundleActions,BorderLayout.SOUTH);
-        // Left Side of Split Panel (Filters north, Categories west, bundles center)
+        // Left Side of Split Panel (Filters north, bundles center)
         JPanel leftOfSplitGroup = new JPanel(new BorderLayout(BORDER_PIXEL_GAP,BORDER_PIXEL_GAP));
         bundleList.setMinimumSize(MINIMUM_BUNDLE_LIST_DIMENSION);
-        leftOfSplitGroup.add(new JScrollPane(bundleCategory,
-                JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_NEVER), BorderLayout.WEST);
-
-        leftOfSplitGroup.add(createRadioButtons(), BorderLayout.NORTH);
+        leftOfSplitGroup.add(createFilterComponents(), BorderLayout.NORTH);
         leftOfSplitGroup.add(new JScrollPane(bundleList,
                 JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED),BorderLayout.CENTER);
 
@@ -125,7 +122,6 @@ public class MainPanel extends JDialog {
         contentPane.add(splitPane);
         setSize(DEFAULT_DIMENSION);
         setTitle(I18N.tr("Plug-ins manager"));
-        repositoryAdminTracker = new RepositoryAdminTracker(bundleContext);
         bundleListModel =  new BundleListModel(bundleContext);
         bundleList.setModel(bundleListModel);
         bundleListModel.install();
@@ -305,7 +301,7 @@ public class MainPanel extends JDialog {
     public void dispose() {
         super.dispose();
         // Remove trackers and listeners
-
+        bundleListModel.uninstall();
     }
 
     private void createRadioButton(String label,String toolTipText,boolean state,String methodName,ButtonGroup filterGroup,JPanel radioBar) {
@@ -315,7 +311,7 @@ public class MainPanel extends JDialog {
         filterGroup.add(noStateFilter);
         radioBar.add(noStateFilter);
     }
-    private JPanel createRadioButtons() {
+    private JPanel createFilterComponents() {
         // Make main radio panel
         JPanel radioBar = new JPanel();
         radioBar.setLayout(new BoxLayout(radioBar,BoxLayout.X_AXIS));
@@ -327,6 +323,9 @@ public class MainPanel extends JDialog {
                 filterGroup, radioBar);
         createRadioButton(I18N.tr("Update"), I18N.tr("Show only bundles where an update is available."), false,
                 "onFilterBundleUpdate", filterGroup, radioBar);
+
+        // Category at the end
+        radioBar.add(bundleCategory);
         return radioBar;
     }
 }
