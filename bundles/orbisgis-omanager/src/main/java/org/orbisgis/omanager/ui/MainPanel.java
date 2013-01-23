@@ -40,7 +40,6 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
@@ -66,7 +65,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * Dialog that handle bundles.
  * @author Nicolas Fortin
  */
-public class MainPanel extends JDialog {
+public class MainPanel extends JPanel {
     private static final Dimension DEFAULT_DIMENSION = new Dimension(800,480);
     private static final Dimension MINIMUM_BUNDLE_LIST_DIMENSION = new Dimension(100,50);
     private static final Dimension MINIMUM_BUNDLE_DESCRIPTION_DIMENSION = new Dimension(250,50);
@@ -92,17 +91,14 @@ public class MainPanel extends JDialog {
      * @param bundleContext Bundle context instance in order to manage them.
      */
     public MainPanel(Frame frame,BundleContext bundleContext) {
-        super(frame);
+        super(new BorderLayout());
         actionFactory = new ActionBundleFactory(bundleContext);
-        setDefaultCloseOperation(HIDE_ON_CLOSE);
         // Main Panel (South button, center Split Pane)
-        JPanel contentPane = new JPanel(new BorderLayout());
-        setContentPane(contentPane);
         // Buttons on south of main panel
         JPanel southButtons = new JPanel();
         southButtons.setLayout(new BoxLayout(southButtons, BoxLayout.X_AXIS));
         addSouthButtons(southButtons);
-        contentPane.add(southButtons,BorderLayout.SOUTH);
+        add(southButtons, BorderLayout.SOUTH);
         // Right Side of Split Panel, Bundle Description and button action on selected bundle
         bundleActions.setLayout(new BoxLayout(bundleActions,BoxLayout.X_AXIS));
         //bundleDetails.setPreferredSize(DEFAULT_DETAILS_DIMENSION);
@@ -119,9 +115,7 @@ public class MainPanel extends JDialog {
 
         setDefaultDetailsMessage();
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,leftOfSplitGroup,bundleDetailsAndActions);
-        contentPane.add(splitPane);
-        setSize(DEFAULT_DIMENSION);
-        setTitle(I18N.tr("Plug-ins manager"));
+        add(splitPane);
         bundleListModel =  new BundleListModel(bundleContext);
         bundleList.setModel(bundleListModel);
         bundleListModel.install();
@@ -297,10 +291,10 @@ public class MainPanel extends JDialog {
 
     }
 
-    @Override
+    /**
+     * Remove trackers and listeners
+     */
     public void dispose() {
-        super.dispose();
-        // Remove trackers and listeners
         bundleListModel.uninstall();
     }
 

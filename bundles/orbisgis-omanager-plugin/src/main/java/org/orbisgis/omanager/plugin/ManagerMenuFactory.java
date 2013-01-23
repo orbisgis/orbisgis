@@ -34,12 +34,13 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Action;
 import javax.swing.ImageIcon;
+import org.apache.felix.shell.gui.Plugin;
 import org.apache.log4j.Logger;
-import org.orbisgis.omanager.ui.MainPanel;
 import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.main.frames.ext.MainFrameAction;
 import org.orbisgis.view.main.frames.ext.MainWindow;
 import org.osgi.framework.BundleContext;
+import org.osgi.util.tracker.ServiceTracker;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -52,8 +53,10 @@ public class ManagerMenuFactory implements MainFrameAction {
     public static final String MENU_MANAGE_PLUGINS = "A_MANAGE_PLUGINS";
     private static final I18n I18N = I18nFactory.getI18n(ManagerMenuFactory.class);
     private BundleContext bundleContext;
-    private MainPanel mainPanel;
+    private MainDialog mainPanel;
     private MainWindow target; // There is only one main window in the application, it can be stored here.
+    private ServiceTracker<Plugin,Plugin> pluginTracker;
+
     /**
      * @param bundleContext Used to track OSGi bundle repository service, and to manage bundles.
      */
@@ -75,8 +78,11 @@ public class ManagerMenuFactory implements MainFrameAction {
      */
     public void showManager() {
         if(mainPanel==null) {
-            mainPanel = new MainPanel(target.getMainFrame(),bundleContext);
+            mainPanel = new MainDialog(target.getMainFrame(),bundleContext);
             mainPanel.setModal(false);
+            // Track
+            pluginTracker = new ServiceTracker<Plugin, Plugin>(bundleContext,Plugin.class,mainPanel);
+            pluginTracker.open();
         }
         mainPanel.setVisible(true);
     }
@@ -84,6 +90,7 @@ public class ManagerMenuFactory implements MainFrameAction {
     public void disposeActions(MainWindow target, List<Action> actions) {
         // Close the Dialog if created
         if(mainPanel != null) {
+            pluginTracker.close();
             mainPanel.dispose();
         }
     }
