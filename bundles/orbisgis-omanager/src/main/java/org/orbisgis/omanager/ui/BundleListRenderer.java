@@ -33,7 +33,8 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.FileInputStream;
+import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -42,14 +43,14 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
-import org.orbisgis.view.components.renderers.ListLaFRenderer;
+import javax.swing.ListCellRenderer;
 import org.osgi.framework.Bundle;
-import scala.util.parsing.combinator.testing.Str;
 
 /**
  * @author Nicolas Fortin
  */
-public class BundleListRenderer extends ListLaFRenderer {
+public class BundleListRenderer implements ListCellRenderer {
+    private ListCellRenderer lookAndFeelRenderer;
     private static Dimension bundleIconDimension = new Dimension(32,32);
     private static final ImageIcon defaultIcon = new ImageIcon(BundleListRenderer.class.getResource("defaultIcon.png"));
     private static final ImageIcon activeLayer = new ImageIcon(BundleListRenderer.class.getResource("active_layer.png"));
@@ -58,7 +59,7 @@ public class BundleListRenderer extends ListLaFRenderer {
     private static final String ICON_HEADER = "Bundle-Icon";
 
     public BundleListRenderer(JList list) {
-        super(list);
+        initialize(list);
     }
     private Icon mergeIcons(Image bottom,Image top) {
         BufferedImage image = new BufferedImage(bundleIconDimension.width, bundleIconDimension.height, BufferedImage.TYPE_INT_ARGB);
@@ -163,5 +164,19 @@ public class BundleListRenderer extends ListLaFRenderer {
             label.setText(sb.toString());
         }
         return lafComp;
+    }
+
+    /**
+     * Update the native renderer.
+     * Warning, Used only by PropertyChangeListener on UI property
+     */
+    public void updateLFRenderer() {
+        lookAndFeelRenderer = new JList().getCellRenderer();
+    }
+
+    private void initialize(JList list) {
+        updateLFRenderer();
+        list.addPropertyChangeListener("UI",
+                EventHandler.create(PropertyChangeListener.class, this, "updateLFRenderer"));
     }
 }
