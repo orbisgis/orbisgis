@@ -73,23 +73,41 @@ public class RepositoryAdminTracker implements ServiceTrackerCustomizer<Reposito
         return Collections.unmodifiableList(repositories);
     }
 
+    /**
+     * @return Parsed resource information on the repository XML.
+     */
     public List<Resource> getResources() {
         return Collections.unmodifiableList(resources);
     }
 
     public RepositoryAdmin addingService(ServiceReference<RepositoryAdmin> reference) {
-        RepositoryAdmin repoAdmin = bundleContext.getService(reference);
+        repoAdmin = bundleContext.getService(reference);
+        readRepositories();
         return repoAdmin;
     }
 
     public void modifiedService(ServiceReference<RepositoryAdmin> reference, RepositoryAdmin service) {
-
+        repoAdmin = bundleContext.getService(reference);
+        readRepositories();
     }
 
     public void removedService(ServiceReference<RepositoryAdmin> reference, RepositoryAdmin service) {
         repoAdmin = null;
     }
 
+    /**
+     * Read cached repository information.
+     */
+    public void readRepositories() {
+        if(repoAdmin!=null) {
+            List<Resource> resourceList = new ArrayList<Resource>(resources.size());
+            for(Repository repo : repoAdmin.listRepositories()) {
+                // Copy resources reference to the resource list
+                resourceList.addAll(Arrays.asList(repo.getResources()));
+            }
+            setResources(resourceList);
+        }
+    }
     /**
      * Reload the list of resource by downloading and parsing all repositories XML again.
      */

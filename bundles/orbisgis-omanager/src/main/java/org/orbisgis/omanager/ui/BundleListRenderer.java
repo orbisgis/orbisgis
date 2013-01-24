@@ -54,6 +54,7 @@ public class BundleListRenderer implements ListCellRenderer {
     private static Dimension bundleIconDimension = new Dimension(32,32);
     private static final ImageIcon defaultIcon = new ImageIcon(BundleListRenderer.class.getResource("defaultIcon.png"));
     private static final ImageIcon activeLayer = new ImageIcon(BundleListRenderer.class.getResource("active_layer.png"));
+    private static final ImageIcon obrIcon = mergeIcons(defaultIcon.getImage(),new ImageIcon(BundleListRenderer.class.getResource("obr.png")).getImage());
     private static final String ICON_SEPARATOR = ",";
     private static final String ICON_SIZE_PROP = "size=";
     private static final String ICON_HEADER = "Bundle-Icon";
@@ -61,7 +62,7 @@ public class BundleListRenderer implements ListCellRenderer {
     public BundleListRenderer(JList list) {
         initialize(list);
     }
-    private Icon mergeIcons(Image bottom,Image top) {
+    private static ImageIcon mergeIcons(Image bottom,Image top) {
         BufferedImage image = new BufferedImage(bundleIconDimension.width, bundleIconDimension.height, BufferedImage.TYPE_INT_ARGB);
         Graphics g = image.getGraphics();
         g.drawImage(bottom,0,0,null);
@@ -150,6 +151,8 @@ public class BundleListRenderer implements ListCellRenderer {
             }
             if(bi.getBundle()!=null && bi.getBundle().getState()== Bundle.ACTIVE) {
                 label.setIcon(mergeIcons(bundleImage.getImage(),activeLayer.getImage()));
+            } else if(bi.getBundle()==null && bi.getObrResource()!=null) {
+                label.setIcon(obrIcon);
             } else {
                 label.setIcon(bundleImage);
             }

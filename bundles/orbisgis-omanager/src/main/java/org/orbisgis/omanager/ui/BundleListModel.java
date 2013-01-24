@@ -37,11 +37,13 @@ import java.util.Map;
 import java.util.Set;
 import javax.swing.AbstractListModel;
 import javax.swing.SwingUtilities;
+import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
 import org.osgi.service.obr.RepositoryAdmin;
+import org.osgi.service.obr.Resource;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
@@ -50,6 +52,7 @@ import org.osgi.util.tracker.ServiceTracker;
  */
 public class BundleListModel extends AbstractListModel {
     // Bundles read from local repository and remote repositories
+    private static final Logger LOGGER = Logger.getLogger("gui."+BundleListModel.class);
     private List<BundleItem> storedBundles = new ArrayList<BundleItem>();
     private BundleContext bundleContext;
     private BundleListener bundleListener = new BundleModelListener();
@@ -83,11 +86,20 @@ public class BundleListModel extends AbstractListModel {
             repositoryAdminTracker.close();
         }
     }
+    private void deleteItem(BundleItem item) {
+        // Deleted item
+        int index = storedBundles.indexOf(item);
+        storedBundles.remove(index);
+        // find valid index
+        if(index>getSize()) {
+            index = getSize() - 1;
+        }
+        fireIntervalRemoved(this, index,index);
+    }
     /**
      * Update the content of the bundle context
      */
     public void update() {
-
         Map<String,BundleItem> curBundles = new HashMap<String,BundleItem>(storedBundles.size());
         for(BundleItem bundle : storedBundles) {
             curBundles.put(bundle.getSymbolicName(),bundle);
@@ -121,23 +133,50 @@ public class BundleListModel extends AbstractListModel {
             if(!currentBundles.contains(getIdentifier(item))) {
                 item.setBundle(null);
                 if(item.getObrResource()==null) {
-                    // Deleted item
-                    int index = storedBundles.indexOf(item);
-                    storedBundles.remove(index);
-                    // find valid index
-                    if(index>getSize()) {
-                        index = getSize() - 1;
-                    }
-                    fireIntervalRemoved(this, index,index);
+                    deleteItem(item);
                 }
             }
         }
+        // Remove all stored resources
+        for(BundleItem item : storedBundles) {
+            item.setObrResource(null);
+        }
         // Fetch cached repositories bundles
-
-
+        LOGGER.info("Get OBR resources..");
+        for(Resource resource : repositoryAdminTrackerCustomizer.getResources()) {
+            LOGGER.info("OBR resources : "+resource.getSymbolicName());
+            BundleItem storedBundle = curBundles.get(getIdentifier(resource));
+            if(storedBundle!=null) {
+                // An item has the same identifier
+                Resource storedObrResource = storedBundle.getObrResource();
+                if(storedObrResource==null || (storedObrResource!=null && storedObrResource.getVersion()
+                        .compareTo(resource.getVersion())<0)) {
+                    // Replace stored Obr Resource if the version is inferior or it does not exist
+                    storedBundle.setObrResource(resource);
+                    int index = storedBundles.indexOf(storedBundle);
+                    fireContentsChanged(this,index,index);
+                }
+            } else {
+                BundleItem newBundle = new BundleItem();
+                newBundle.setObrResource(resource);
+                curBundles.put(getIdentifier(resource),newBundle);
+                int index = storedBundles.size();
+                storedBundles.add(newBundle);
+                fireIntervalAdded(this, index, index);
+            }
+        }
+        // Remove empty items
+        for(BundleItem item : new ArrayList<BundleItem>(storedBundles)) {
+            if(item.getBundle()==null && item.getObrResource()==null) {
+                deleteItem(item);
+            }
+        }
     }
 
     private String getIdentifier(Bundle bundle) {
+        return bundle.getSymbolicName();
+    }
+    private String getIdentifier(Resource bundle) {
         return bundle.getSymbolicName();
     }
     private String getIdentifier(BundleItem bundle) {
@@ -162,7 +201,9 @@ public class BundleListModel extends AbstractListModel {
     public BundleItem getBundle(int i) {
         return storedBundles.get(i);
     }
-
+    public void reloadBundleRepositories() {
+        repositoryAdminTrackerCustomizer.refresh();
+    }
     private class BundleModelListener implements BundleListener {
 
         public void bundleChanged(final BundleEvent event) {

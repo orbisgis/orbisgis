@@ -35,6 +35,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
@@ -150,7 +151,10 @@ public class BundleItem {
         if(bundle!=null && bundle.getHeaders()!=null) {
             description = bundle.getHeaders().get(Constants.BUNDLE_DESCRIPTION);
         } if(obrResource!=null && obrResource.getProperties()!=null) {
-            description = obrResource.getProperties().get(Resource.DESCRIPTION).toString();
+            Object descrObj = obrResource.getProperties().get(Resource.DESCRIPTION);
+            if(descrObj instanceof String) {
+                description = (String)descrObj;
+            }
         }
         if(description!=null) {
             // Limit size
@@ -187,6 +191,16 @@ public class BundleItem {
                  String key = keys.nextElement();
                  details.put(key,dic.get(key));
              }
+            return details;
+        } else if(obrResource!=null) {
+            Map resDetails = obrResource.getProperties();
+            HashMap<String,String> details = new HashMap<String, String>(resDetails.size());
+            Set<Map.Entry<String,Object>> pairs = resDetails.entrySet();
+            for(Map.Entry<String,Object> entry : pairs) {
+                if(entry.getValue()!=null) {
+                    details.put(entry.getKey(),entry.getValue().toString());
+                }
+            }
             return details;
         } else {
             return new HashMap<String, String>();

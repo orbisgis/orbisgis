@@ -48,6 +48,7 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -319,5 +320,13 @@ public class MainPanel extends JPanel {
         // Category at the end
         radioBar.add(bundleCategory);
         return radioBar;
+    }
+
+    private class downloadOBRProcess extends SwingWorker {
+        @Override
+        protected Object doInBackground() throws Exception {
+            bundleListModel.reloadBundleRepositories();
+            return null;
+        }
     }
 }

@@ -165,11 +165,15 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
         private void doRemove() {
             loadedPlugins.remove(plugin);
             Object selected = shellPlugins.getSelectedValue();
-            if(selected!=null && selected.equals(plugin.getName())) {
+            if((selected!=null && selected.equals(plugin.getName())) || loadedPlugins.isEmpty()) {
                 centerComponent.removeAll();
                 centerComponent.updateUI();
             }
             updateLoadedPluginsList();
+            if(loadedPlugins.size()==1) {
+                centerComponent.add(loadedPlugins.get(0).getGUI(),BorderLayout.CENTER);
+            }
+            centerComponent.updateUI();
         }
         private void doAdd() {
             plugin = bundleContext.getService(reference);
