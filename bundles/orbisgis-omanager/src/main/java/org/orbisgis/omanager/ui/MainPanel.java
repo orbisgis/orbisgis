@@ -91,7 +91,7 @@ public class MainPanel extends JPanel {
      */
     public MainPanel(BundleContext bundleContext) {
         super(new BorderLayout());
-        actionFactory = new ActionBundleFactory(bundleContext);
+        actionFactory = new ActionBundleFactory(bundleContext,this);
         // Main Panel (South button, center Split Pane)
         // Buttons on south of main panel
         JPanel southButtons = new JPanel();

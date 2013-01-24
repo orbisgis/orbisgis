@@ -252,4 +252,18 @@ public class BundleItem {
     boolean isUninstallReady() {
         return (bundle!=null) && (bundle.getState()!=Bundle.UNINSTALLED);
     }
+
+    /**
+     * @return True if the resource can be deployed
+     */
+    boolean isDeployReady() {
+        return bundle==null && obrResource!=null;
+    }
+
+    /**
+     * @return True if the resource can be deployed and started
+     */
+    boolean isDeployAndStartReady() {
+        return isDeployReady();
+    }
 }
