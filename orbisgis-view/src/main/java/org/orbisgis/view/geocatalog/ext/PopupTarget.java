@@ -26,33 +26,11 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.menubar;
-
-import javax.swing.JMenu;
-import org.orbisgis.sif.common.ContainerItemProperties;
+package org.orbisgis.view.geocatalog.ext;
 
 /**
- * The Menu container bean is used in persistant menu (not popup).
- * This beans separate the final item key and the visible label of the item
- * It will include optional additionnal functionalities like themes
- * @note Do not use the Swing Mnemonic, the key shortcut would be set in
- * the translated label. Use the prefix symbol & to set the shortcut,
- * escape with two &&
+ * Popup menu have access to this interface
+ * @author Nicolas Fortin
  */
-
-
-public class MenuProperties extends ContainerItemProperties {
-    private JMenu menu;
-    public MenuProperties(String key, JMenu menu) {
-        super(key, menu.getText());
-        this.menu = menu;
-    }
-    /**
-     * 
-     * @return  The Menu instance
-     */
-    public JMenu getMenu() {
-        return menu;
-    }
-    
+public interface PopupTarget extends GeoCatalogExt{
 }

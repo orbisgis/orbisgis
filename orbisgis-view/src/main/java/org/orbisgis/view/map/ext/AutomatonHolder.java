@@ -26,28 +26,18 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.components.menubar;
 
-import javax.swing.JMenuItem;
-import org.orbisgis.sif.common.ContainerItemProperties;
+package org.orbisgis.view.map.ext;
+
+import org.orbisgis.view.map.tool.Automaton;
 
 /**
- * The Menu Item beans is used in persistant menu (not popup).
- * This beans separate the final item key and the visible label of the item
- * It will include optional additionnal functionalities like themes
+ * @author Nicolas Fortin
  */
-
-
-public class MenuItemProperties extends ContainerItemProperties {
-    private JMenuItem menuItem;
-    
-    public MenuItemProperties(String key, JMenuItem menuItem) {
-        super(key, menuItem.getText());
-        this.menuItem = menuItem;
-    }
-
-    public JMenuItem getMenuItem() {
-        return menuItem;
-    }
-
+public interface AutomatonHolder {
+    /**
+     * Get the automaton hold by this action.
+     * @return Automation instance
+     */
+    public Automaton getAutomaton();
 }

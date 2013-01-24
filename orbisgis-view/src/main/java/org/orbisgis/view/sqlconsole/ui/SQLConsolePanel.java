@@ -63,6 +63,7 @@ import org.orbisgis.view.sqlconsole.blockComment.QuoteSQL;
 import org.orbisgis.view.sqlconsole.codereformat.CodeReformator;
 import org.orbisgis.view.sqlconsole.codereformat.CommentSpec;
 import org.orbisgis.view.sqlconsole.language.SQLLanguageSupport;
+import org.orbisgis.view.sqlconsole.ui.ext.SQLAction;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -111,13 +112,6 @@ public class SQLConsolePanel extends JPanel {
                 split.add(getCenterPanel(), BorderLayout.CENTER);
                 add(split, BorderLayout.CENTER);
                 add(getStatusToolBar(), BorderLayout.SOUTH);
-        }       
-
-        /**
-         * @return ToolBar to command this editor
-         */
-        public JToolBar getEditorToolBar() {
-                return actions.getEditorToolBar(true);
         }
         
         /**
@@ -128,82 +122,91 @@ public class SQLConsolePanel extends JPanel {
          */
         private void initActions() {
                 //Execute Action
-                actions.addAction(new DefaultAction(
+                actions.addAction(new DefaultAction(SQLAction.A_EXECUTE,
                         I18N.tr("Execute"),
                         I18N.tr("Run SQL statements"),
                         OrbisGISIcon.getIcon("execute"),
                         EventHandler.create(ActionListener.class,this,"onExecute"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK)
-                        ));
+                        ).setLogicalGroup("custom"));
                 //Clear action
-                actions.addAction(new DefaultAction(
+                actions.addAction(new DefaultAction(SQLAction.A_CLEAR,
                         I18N.tr("Clear"),
                         I18N.tr("Erase the content of the editor"),
                         OrbisGISIcon.getIcon("erase"),
                         EventHandler.create(ActionListener.class,this,"onClear"),
                         null
-                       ));
-                //Open action
-                actions.addAction(new DefaultAction(
-                        I18N.tr("Open"),
-                        I18N.tr("Load a file in this editor"),
-                        OrbisGISIcon.getIcon("open"),
-                        EventHandler.create(ActionListener.class,this,"onOpenFile"),
-                        KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)
-                       ));
+                       ).setLogicalGroup("custom").setAfter(SQLAction.A_EXECUTE));
                 //Find action                
-                actions.addAction(new DefaultAction(
+                actions.addAction(new DefaultAction(SQLAction.A_SEARCH,
                         I18N.tr("Search.."),
                         I18N.tr("Search text in the document"),
                         OrbisGISIcon.getIcon("find"),
                         EventHandler.create(ActionListener.class,this,"openFindReplaceDialog"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_F, InputEvent.CTRL_DOWN_MASK)
-                       ).addStroke(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK)));
+                       ).addStroke(KeyStroke.getKeyStroke(KeyEvent.VK_H, InputEvent.CTRL_DOWN_MASK))
+                        .setLogicalGroup("custom"));
                 
                 //Quote
-                actions.addAction(new DefaultAction(
+                actions.addAction(new DefaultAction(SQLAction.A_QUOTE,
                         I18N.tr("Quote"),
                         I18N.tr("Quote selected text"),
                         null,
                         EventHandler.create(ActionListener.class,this,"onQuote"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_SLASH, InputEvent.SHIFT_DOWN_MASK)
-                       ));
+                       ).setLogicalGroup("format"));
                 //unQuote
-                actions.addAction(new DefaultAction(
+                actions.addAction(new DefaultAction(SQLAction.A_UNQUOTE,
                         I18N.tr("Un Quote"),
                         I18N.tr("Un Quote selected text"),
                         null,
                         EventHandler.create(ActionListener.class,this,"onUnQuote"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SLASH, InputEvent.SHIFT_DOWN_MASK)
-                       ));
+                       ).setLogicalGroup("format"));
                 
                 //Format SQL
-                actions.addAction(new DefaultAction(
+                actions.addAction(new DefaultAction(SQLAction.A_FORMAT,
                         I18N.tr("Format"),
                         I18N.tr("Format editor content"),
                         null,
                         EventHandler.create(ActionListener.class,this,"onFormatCode"),
                         KeyStroke.getKeyStroke("alt shift F")
-                       ));
+                       ).setLogicalGroup("format"));
                 
                 //Save
-                actions.addAction(new DefaultAction(
+                actions.addAction(new DefaultAction(SQLAction.A_SAVE,
                         I18N.tr("Save"),
                         I18N.tr("Save the editor content into a file"),
                         OrbisGISIcon.getIcon("save"),
                         EventHandler.create(ActionListener.class,this,"onSaveFile"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)
-                       ));
+                       ).setLogicalGroup("custom"));
+                //Open action
+                actions.addAction(new DefaultAction(SQLAction.A_OPEN,
+                        I18N.tr("Open"),
+                        I18N.tr("Load a file in this editor"),
+                        OrbisGISIcon.getIcon("open"),
+                        EventHandler.create(ActionListener.class,this,"onOpenFile"),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)
+                ).setLogicalGroup("custom"));
                 //ShowHide function list
-                actions.addAction(new DefaultAction(
+                actions.addAction(new DefaultAction(SQLAction.A_SQL_LIST,
                         I18N.tr("SQL list"),
                         I18N.tr("Show/Hide SQL function list"),
                         OrbisGISIcon.getIcon("builtinfunctionmap"),
                         EventHandler.create(ActionListener.class,sqlFunctionsPanel,"switchPanelVisibilityState"),
-                        null));
+                        null).setLogicalGroup("custom"));
         }
-        
+
         /**
+         * Get the ActionCommands instance use by SQLConsole.
+         * @return ActionCommands instance
+         */
+        public ActionCommands getActions() {
+            return actions;
+        }
+
+    /**
          * The map context is used to show the selected geometries
          * @param mapContext 
          */
@@ -227,7 +230,8 @@ public class SQLConsolePanel extends JPanel {
                                 COMMENT_SPECS);
                         scriptPanel.addCaretListener(EventHandler.create(CaretListener.class,this,"onScriptPanelCaretUpdate"));
                         //Add custom actions
-                        actions.feedPopupMenu(scriptPanel.getPopupMenu());
+                        scriptPanel.getPopupMenu().addSeparator();
+                        actions.registerContainer(scriptPanel.getPopupMenu());
                         centerPanel = new RTextScrollPane(scriptPanel);
                 }
                 return centerPanel;

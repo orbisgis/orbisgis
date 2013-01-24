@@ -36,7 +36,9 @@ import bibliothek.gui.dock.event.DropDownActionListener;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Set;
-import org.orbisgis.view.docking.actions.CToggleButton;
+
+import org.orbisgis.view.components.actions.DefaultAction;
+import org.orbisgis.view.docking.internals.actions.CToggleButton;
 
 /**
  * CDropDownAction is not suitable for CRadioGroup, this listener 
@@ -49,7 +51,7 @@ public class ButtonGroupActionListener implements DropDownActionListener,ActionL
         this.radioGroup = radioGroup;
     }
     private void deselectAllButtons() {
-        CToggleButton tb = new CToggleButton();
+        CToggleButton tb = new CToggleButton(new DefaultAction("",""));
         radioGroup.add(tb);
         tb.setSelected(true);
         radioGroup.remove(tb);      

@@ -52,7 +52,7 @@ public class BeanShellFrame implements EditorDockable {
                 parameters.setName(EDITOR_NAME);
                 parameters.setTitle(I18N.tr("BeanShell"));
                 parameters.setTitleIcon(OrbisGISIcon.getIcon("page_white_cup"));
-                parameters.setToolBar(panel.getButtonToolBar());
+                parameters.setDockActions(panel.getActions().getActions());
         }
         public void dispose() {
                 panel.freeResources();

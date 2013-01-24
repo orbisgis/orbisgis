@@ -45,7 +45,7 @@ public class OutputPanel extends JPanel {
         private static final I18n I18N = I18nFactory.getI18n(OutputPanel.class);
         private static final long serialVersionUID = 1L;
         private static final int DEFAULT_MAX_CHARACTERS = 200000;
-	private int maxCharacters = DEFAULT_MAX_CHARACTERS;
+	    private int maxCharacters = DEFAULT_MAX_CHARACTERS;
         private JTextPane textPane;
         private Color defaultColor=Color.black;
         
@@ -63,14 +63,23 @@ public class OutputPanel extends JPanel {
             this();
             this.maxCharacters = maxCharacters;
         }
-	public OutputPanel() {
-            changeAttribute(lastColor); //Init attribute
-            this.setLayout(new BorderLayout());
-            textPane = new JTextPane();
-            textPane.setEditable(false);
-            textPane.setComponentPopupMenu(makePopupMenu());
-            this.add(new JScrollPane(textPane), BorderLayout.CENTER);
-	}
+
+        public OutputPanel() {
+                changeAttribute(lastColor); //Init attribute
+                this.setLayout(new BorderLayout());
+                textPane = new JTextPane();
+                textPane.setEditable(false);
+                textPane.setComponentPopupMenu(makePopupMenu());
+                this.add(new JScrollPane(textPane), BorderLayout.CENTER);
+        }
+
+        /**
+         * Get the internal text pane
+         * @return internal text pane
+         */
+        public JTextPane getTextPane() {
+                return textPane;
+        }
 
         /**
          * Create a popup menu

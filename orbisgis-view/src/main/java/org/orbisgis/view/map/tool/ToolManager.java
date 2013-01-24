@@ -30,9 +30,9 @@ package org.orbisgis.view.map.tool;
 
 import com.vividsolutions.jts.geom.*;
 import com.vividsolutions.jts.geom.Polygon;
+import java.awt.*;
 import java.awt.Dimension;
 import java.awt.Point;
-import java.awt.*;
 import java.awt.event.*;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
@@ -53,7 +53,6 @@ import org.gdms.data.edition.EditionEvent;
 import org.gdms.data.edition.EditionListener;
 import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.driver.DriverException;
-import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.core.layerModel.*;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.map.TransformListener;
@@ -78,12 +77,10 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * Adapter from the MapControl Behaviours to Automaton's interface. It's also
  * the EditionContext of the system.
- * 
+ *
  */
 public class ToolManager implements MouseListener,MouseWheelListener,MouseMotionListener {
-
         public static GeometryFactory toolsGeometryFactory = new GeometryFactory();
-        
         private static final I18n I18N = I18nFactory.getI18n(ToolManager.class);
         private static Logger UILOGGER = Logger.getLogger("gui."+ToolManager.class);
         private Automaton currentTool;
@@ -114,6 +111,8 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         private LineSymbolizer lineSymbolizer;
         private PointSymbolizer pointSymbolizer;
 
+
+
         /**
          * Creates a new EditionToolAdapter.
          *
@@ -126,7 +125,6 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         public ToolManager(Automaton defaultTool, MapContext mapContext,
                 MapTransform mapTransform, Component component)
                 throws TransitionException {
-
                 this.mapTransform = mapTransform;
                 this.component = component;
                 this.mapContext = mapContext;
@@ -159,15 +157,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                                         }
                                         activeLayer.getDataSource().addDataSourceListener(layerListener);
                                 }
-                                try {
-                                        setTool(ToolManager.this.defaultTool);
-                                } catch (TransitionException e) {
-                                        try {
-                                                setTool(ToolManager.this.defaultTool);
-                                        } catch (TransitionException e1) {
-                                                throw new RuntimeException();
-                                        }
-                                }
+                                setTool(ToolManager.this.defaultTool);
                                 recalculateHandlers();
                         }
                 };
@@ -190,7 +180,9 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 });
                 buildSymbolizers();
         }
-
+        /**
+         * Remove listeners installed by the ToolManager.
+         */
         public void freeResources() {
                 if (activeLayer != null) {
                         activeLayer.removeLayerListener(layerListener);
@@ -198,11 +190,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                                 activeLayer.getDataSource().removeEditionListener(layerListener);
                         }
                         activeLayer.getDataSource().removeDataSourceListener(layerListener);
-                        try {
-                                setTool(ToolManager.this.defaultTool);
-                        } catch (TransitionException e2) {
-                                // ignore it
-                        }
+                        setTool(defaultTool);
                 }
                 this.mapContext.removeMapContextListener(mapContextListener);
         }
@@ -247,19 +235,15 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         public void mouseWheelMoved(MouseWheelEvent e) {
                 int notches = e.getWheelRotation();
                 Automaton oldTool = getTool();
-                try {
-                        if (notches < 0) {
-                                setTool(new ZoomInTool());
-                        } else {
-                                setTool(new ZoomOutTool());
-                        }
-                        leftClickTransition(e, Code.PRESS);
-                        leftClickTransition(e, Code.RELEASE);
-                        leftClickTransition(e, Code.POINT);
-                        setTool(oldTool);
-                } catch (TransitionException e1) {
-                        UILOGGER.error(I18N.tr("Cannot set the automaton"), e1);
+                if (notches < 0) {
+                        setTool(new ZoomInTool());
+                } else {
+                        setTool(new ZoomOutTool());
                 }
+                leftClickTransition(e, Code.PRESS);
+                leftClickTransition(e, Code.RELEASE);
+                leftClickTransition(e, Code.POINT);
+                setTool(oldTool);
         }
 
         private void leftClickTransition(MouseEvent e, Code transitionCode) {
@@ -291,8 +275,10 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         }
 
         private void fireCurrentToolChanged(Automaton last) {
-                for (ToolListener listener : listeners) {
-                        listener.currentToolChanged(last, this);
+                if(last==null || !last.equals(currentTool)) {
+                    for (ToolListener listener : listeners) {
+                            listener.currentToolChanged(last, this);
+                    }
                 }
         }
 
@@ -307,12 +293,8 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 if (e.getButton() == MouseEvent.BUTTON1) {
                         leftClickTransition(e, Code.PRESS);
                 } else if (e.getButton() == MouseEvent.BUTTON2) {
-                        try {
-                                setTool(new PanTool());
-                                leftClickTransition(e, Code.PRESS);
-                        } catch (TransitionException e1) {
-                                UILOGGER.error(I18N.tr("Cannot set the automaton"), e1);
-                        }
+                        setTool(new PanTool());
+                        leftClickTransition(e, Code.PRESS);
                 }
         }
 
@@ -496,18 +478,11 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 uiTolerance = tolerance;
         }
 
-        /**
-         * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#transition(java.lang.String)
-         */
         public void transition(Code code) throws NoSuchTransitionException,
                 TransitionException {
                 if (!currentTool.isEnabled(mapContext, this)
-                        && (!currentTool.getClass().equals(defaultTool))) {
-                        /*
-                         * Services.getService(ErrorManager.class).error( "The current tool
-                         * is not enabled");
-                         */
-                        // throw new TransitionException("The current tool is not enabled");
+                        && (!currentTool.equals(defaultTool))) {
+                        UILOGGER.error(I18N.tr("The current tool is not enabled"));
                 } else {
                         try {
                                 currentTool.transition(code);
@@ -564,7 +539,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                                         }
                                 });
                                 toolPopUp.add(item);
-                        }                      
+                        }
 
                 }
         }
@@ -572,9 +547,8 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         /**
          * @throws TransitionException
          * @throws FinishedAutomatonException
-         * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#setEditionTool(org.orbisgis.plugins.core.ui.editors.map.tool.ag.Automaton)
          */
-        public final void setTool(Automaton tool) throws TransitionException {
+        public final void setTool(Automaton tool)  {
                 Automaton lastTool = currentTool;
                 try {
                         if ((currentTool != null) && (activeLayer != null)) {
@@ -592,7 +566,13 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                         fireCurrentToolChanged(lastTool);
                         fireStateChanged();
                 } catch (FinishedAutomatonException e1) {
-                        setTool(defaultTool);
+                        if(!tool.equals(defaultTool)) {
+                            setTool(defaultTool);
+                        }
+                } catch (TransitionException e1) {
+                        if(!tool.equals(defaultTool)) {
+                            setTool(defaultTool);
+                        }
                 }
                 updateCursor();
         }
@@ -611,9 +591,6 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
 
         }
 
-        /**
-         * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#getLastMouseX()
-         */
         public int getLastMouseX() {
                 if (adjustedPoint != null) {
                         return adjustedPoint.x;
@@ -622,9 +599,6 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 }
         }
 
-        /**
-         * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#getLastMouseY()
-         */
         public int getLastMouseY() {
                 if (adjustedPoint != null) {
                         return adjustedPoint.y;
@@ -633,16 +607,10 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 }
         }
 
-        /**
-         * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#getUITolerance()
-         */
         public int getUITolerance() {
                 return uiTolerance;
         }
 
-        /**
-         * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#getCurrentHandlers()
-         */
         public ArrayList<Handler> getCurrentHandlers() {
                 return currentHandlers;
         }
@@ -679,25 +647,27 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 selectionImageDirty = true;
         }
 
-        /**
-         * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#getMouseModifiers()
-         */
         public int getMouseModifiers() {
                 return mouseModifiers;
         }
 
-        /**
-         * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#setMouseModifiers(int)
-         */
         public void setMouseModifiers(int modifiers) {
                 mouseModifiers = modifiers;
         }
 
         /**
-         * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#getEditionTool()
+         * Get the current used tool.
+         * @return The current tool instance
          */
         public Automaton getTool() {
                 return currentTool;
+        }
+        /**
+         * Get the tool to use when the current tool can not be used anymore.
+         * @return the default tool instance
+         */
+        public Automaton getDefaultTool() {
+            return defaultTool;
         }
 
         public void addGeomToDraw(Geometry geom) {
@@ -840,11 +810,11 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         /**
          * This method return the current component that correponds to
          * the mapcontrol.
-         * @return 
+         * @return
          */
         public Component getComponent() {
                 return component;
         }
-        
-        
+
+
 }

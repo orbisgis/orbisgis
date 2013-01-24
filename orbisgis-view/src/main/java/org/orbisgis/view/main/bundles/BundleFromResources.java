@@ -68,5 +68,8 @@ public class BundleFromResources {
                                 }
                         }
                 }
+
+                // Configure Bundles
+
         }
 }

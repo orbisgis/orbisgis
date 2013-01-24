@@ -64,7 +64,7 @@ public class PluginHost {
      */
     public PluginHost(File pluginCacheFolder) {
         this.pluginCacheFolder = pluginCacheFolder;
-        packageList.add(new PackageDeclaration("org.osgi.framework", 1,6,0));
+        packageList.add(new PackageDeclaration("org.orbisgis.view", 4,0,0));
     }
     /**
      * The host will automatically export all packages, but without version information.
@@ -102,7 +102,7 @@ public class PluginHost {
         // Export Host provided packages, by classpaths
         List<String> classPathExtensions = BundleTools.getAvailablePackages();
         for(String ext : classPathExtensions) {
-            if(!packagesName.contains(ext)) {                
+            if(!packagesName.contains(ext) && !ext.startsWith("org.osgi.")) {
                 sortedPackagesExport.add(ext);
             }            
         }

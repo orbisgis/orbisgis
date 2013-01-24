@@ -56,6 +56,7 @@ import java.util.Map;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import org.apache.log4j.Logger;
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.docking.internals.ApplicationRessourceDecorator;
 import org.orbisgis.view.docking.internals.CustomMultipleCDockable;
 import org.orbisgis.view.docking.internals.CustomPanelHolder;
@@ -131,7 +132,9 @@ public final class DockingManagerImpl implements DockingManager {
         @Override
         public JMenu getLookAndFeelMenu() {
             RootMenuPiece laf = new RootMenuPiece(I18N.tr("&Look And Feel"), false, new CLookAndFeelMenuPiece( commonControl ));
-            return laf.getMenu();
+            JMenu menu = laf.getMenu();
+            MenuCommonFunctions.setMnemonic(menu);
+            return menu;
         }
         /**
          * 
@@ -139,8 +142,10 @@ public final class DockingManagerImpl implements DockingManager {
          */
         @Override
         public JMenu getCloseableDockableMenu() {
-            RootMenuPiece laf = new RootMenuPiece(I18N.tr("&Windows"), false,dockableMenuTracker);
-            return laf.getMenu();
+            RootMenuPiece windows = new RootMenuPiece(I18N.tr("&Windows"), false,dockableMenuTracker);
+            JMenu menu = windows.getMenu();
+            MenuCommonFunctions.setMnemonic(menu);
+            return menu;
         }
         
         /**
@@ -230,7 +235,7 @@ public final class DockingManagerImpl implements DockingManager {
         /**
          * The multiple instances panels can be shown at the next start of application
          * if their factory is registered 
-         * before loading the layout {@link setDockingStateFile}
+         * before loading the layout
          * @param factoryName
          * @param factory  
          */
@@ -328,10 +333,7 @@ public final class DockingManagerImpl implements DockingManager {
 	 * Shows a view at the given location as child
 	 * of <code>root</code>.
 	 * @param frame the <code>DockingPanel</code> for which a view should be opened
-	 * @param root the preferred parent, might be <code>null</code>
-	 * @param location the preferred location, relative to <code>root</code>. Might
-	 * be <code>null</code>.
-         * @return Dockable unique ID
+     * @return Dockable unique ID
 	 */
 	private String show(DockingPanel frame){
             //Create the DockingFrame item

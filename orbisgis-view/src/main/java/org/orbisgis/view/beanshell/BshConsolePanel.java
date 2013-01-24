@@ -28,6 +28,7 @@
  */
 package org.orbisgis.view.beanshell;
 
+import org.orbisgis.view.beanshell.ext.BeanShellAction;
 import org.orbisgis.view.components.Log4JOutputStream;
 import bsh.EvalError;
 import bsh.Interpreter;
@@ -114,19 +115,13 @@ public class BshConsolePanel extends JPanel {
                 }
                 setLayout(new BorderLayout());
                 add(getCenterPanel(), BorderLayout.CENTER);
-                add(statusMessage,BorderLayout.SOUTH);
+                add(statusMessage, BorderLayout.SOUTH);
         }
         /**
          * Clear the message shown
          */
         public void onClearMessage() {
                 setStatusMessage("");
-        }
-        /**
-         * @return ToolBar to command this editor
-         */
-        public JToolBar getButtonToolBar() {
-                return actions.getEditorToolBar(true);
         }
         
         /**
@@ -142,6 +137,15 @@ public class BshConsolePanel extends JPanel {
                         }
                 }
         }
+
+        /**
+         * Get the action manager.
+         * @return ActionCommands instance.
+         */
+        public ActionCommands getActions() {
+            return actions;
+        }
+
         /**
          * Create actions instances
          * 
@@ -150,13 +154,13 @@ public class BshConsolePanel extends JPanel {
          */
         private void initActions() {
                 //Execute action
-                actions.addAction(new DefaultAction(I18N.tr("Execute"),
+                actions.addAction(new DefaultAction(BeanShellAction.A_EXECUTE,I18N.tr("Execute"),
                         I18N.tr("Execute the java script"),
                         OrbisGISIcon.getIcon("execute"),
                         EventHandler.create(ActionListener.class, this, "onExecute"),
                         KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, InputEvent.CTRL_DOWN_MASK)));
                 //Clear action
-                actions.addAction(new DefaultAction(
+                actions.addAction(new DefaultAction(BeanShellAction.A_CLEAR,
                         I18N.tr("Clear"),
                         I18N.tr("Erase the content of the editor"),
                         OrbisGISIcon.getIcon("erase"),
@@ -164,7 +168,7 @@ public class BshConsolePanel extends JPanel {
                         null
                        ));
                 //Open action
-                actions.addAction(new DefaultAction(
+                actions.addAction(new DefaultAction(BeanShellAction.A_OPEN,
                         I18N.tr("Open"),
                         I18N.tr("Load a file in this editor"),
                         OrbisGISIcon.getIcon("open"),
@@ -172,7 +176,7 @@ public class BshConsolePanel extends JPanel {
                         KeyStroke.getKeyStroke(KeyEvent.VK_O, InputEvent.CTRL_DOWN_MASK)
                        ));
                 //Save
-                actions.addAction(new DefaultAction(
+                actions.addAction(new DefaultAction(BeanShellAction.A_SAVE,
                         I18N.tr("Save"),
                         I18N.tr("Save the editor content into a file"),
                         OrbisGISIcon.getIcon("save"),
@@ -180,7 +184,7 @@ public class BshConsolePanel extends JPanel {
                         KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK)
                        ));
                 //Find action                
-                actions.addAction(new DefaultAction(
+                actions.addAction(new DefaultAction(BeanShellAction.A_SEARCH,
                         I18N.tr("Search.."),
                         I18N.tr("Search text in the document"),
                         OrbisGISIcon.getIcon("find"),
@@ -271,7 +275,9 @@ public class BshConsolePanel extends JPanel {
                         scriptPanel.addCaretListener(EventHandler.create(CaretListener.class,this,"onScriptPanelCaretUpdate"));
                         scriptPanel.clearParsers();
                         actions.setAccelerators(scriptPanel);
-                        actions.feedPopupMenu(scriptPanel.getPopupMenu());
+                        // Actions will be set on the scriptPanel PopupMenu
+                        scriptPanel.getPopupMenu().addSeparator();
+                        actions.registerContainer(scriptPanel.getPopupMenu());
                         centerPanel = new RTextScrollPane(scriptPanel);
                 }
                 return centerPanel;

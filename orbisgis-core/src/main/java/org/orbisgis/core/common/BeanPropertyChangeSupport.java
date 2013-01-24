@@ -34,7 +34,7 @@ import java.beans.VetoableChangeSupport;
 import org.orbisgis.core.events.OGVetoableChangeSupport;
 
 /**
- * This class expose the bean property change support.
+ * This class expose the bean property change support in conjunction with the VetoableChangeSupport.
  */
 public class BeanPropertyChangeSupport {
 

@@ -28,42 +28,80 @@
  */
 package org.orbisgis.view.components.actions;
 
+import org.orbisgis.sif.common.MenuCommonFunctions;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.Icon;
 import javax.swing.KeyStroke;
 
 /**
- * Action implementation, linked with an action listener.
+ * Action implementation, linked with an action listener. Implement additional properties related to ActionCommands
  * @author Nicolas Fortin
  */
-public class DefaultAction extends AbstractAction {
+public class DefaultAction extends AbstractAction {        
         private static final long serialVersionUID = 1L;
         private ActionListener actionListener;
-        private KeyStroke keyStroke;
-        private List<KeyStroke> additionnalKeyStrokes = new ArrayList<KeyStroke>();
+
         /**
-         * 
+         * @param actionId Action identifier, should be unique for ActionCommands
+         * @param actionLabel I18N label short label
+         */
+        public DefaultAction(String actionId, String actionLabel) {
+            super(actionLabel);
+            putValue(ActionTools.MENU_ID,actionId);
+            MenuCommonFunctions.setMnemonic(this);
+        }
+        /**
+         * @param actionId Action identifier, should be unique for ActionCommands
+         * @param actionLabel I18N label short label
+         * @param icon Icon
+         */
+        public DefaultAction(String actionId, String actionLabel, Icon icon) {
+            super(actionLabel,icon);
+            putValue(ActionTools.MENU_ID,actionId);
+            MenuCommonFunctions.setMnemonic(this);
+        }
+        /**
+         * @param actionId Action identifier, should be unique for ActionCommands
+         * @param actionLabel I18N label short label
+         * @param icon Icon
+         * @param actionListener Fire the event to this listener
+         */
+        public DefaultAction(String actionId, String actionLabel, Icon icon,ActionListener actionListener) {
+            this(actionId, actionLabel, icon);
+            this.actionListener = actionListener;
+        }
+        /**
+         * @param actionId Action identifier, should be unique for ActionCommands
          * @param actionLabel I18N label short label
          * @param actionToolTip I18N tool tip text
          * @param icon Icon
          * @param actionListener Fire the event to this listener
          * @param keyStroke ShortCut for this action
          */
-        public DefaultAction(String actionLabel,String actionToolTip, Icon icon,ActionListener actionListener,KeyStroke keyStroke) {
-                super(actionLabel, icon);
+        public DefaultAction(String actionId, String actionLabel,String actionToolTip, Icon icon,ActionListener actionListener,KeyStroke keyStroke) {
+                this(actionId, actionLabel, icon);
                 this.actionListener = actionListener;
-                this.keyStroke = keyStroke;
                 putValue(SHORT_DESCRIPTION, actionToolTip);
                 if(keyStroke!=null) {
                         putValue(ACCELERATOR_KEY, keyStroke);
                 }
         }
+
         /**
-         * 
+         * @param actionListener Replace current action listener
+         * @return this
+         */
+        public DefaultAction setActionListener(ActionListener actionListener) {
+            this.actionListener = actionListener;
+            return this;
+        }
+
+    /**
          * @return The listener set
          */
         public ActionListener getActionListener() {
@@ -74,7 +112,7 @@ public class DefaultAction extends AbstractAction {
          * @return The action shortcut
          */
         public KeyStroke getKeyStroke() {
-                return keyStroke;
+                return (KeyStroke)getValue(ACCELERATOR_KEY);
         }
         
         /**
@@ -91,26 +129,108 @@ public class DefaultAction extends AbstractAction {
         }
         @Override
         public void actionPerformed(ActionEvent ae) {
-                actionListener.actionPerformed(ae);
+                if(actionListener!=null) {
+                    actionListener.actionPerformed(ae);
+                }
         }
-        
         /**
          * Add a new Accelerator for this action (not used in menu and toolbars)
-         * @see getAdditionnalKeyStrokes
          * @param keyStroke
          * @return this
          */
         public DefaultAction addStroke(KeyStroke keyStroke) {
-                additionnalKeyStrokes.add(keyStroke);
+                List<KeyStroke> additionalKeyStrokes = getAdditionalKeyStrokes();
+                additionalKeyStrokes.add(keyStroke);
+                firePropertyChange(ActionTools.ADDITIONAL_ACCELERATOR_KEY,null,keyStroke);
                 return this;
         }
-        /**
-        * @see addStroke
+       /**
         * @return Accelerator for this action (not used in menu and toolbars)
         */
-        public List<KeyStroke> getAdditionnalKeyStrokes() {
-                return additionnalKeyStrokes;
+        public List<KeyStroke> getAdditionalKeyStrokes() {
+                List<KeyStroke> additionalKeyStrokes = (List<KeyStroke>)getValue(ActionTools.ADDITIONAL_ACCELERATOR_KEY);
+                if(additionalKeyStrokes==null) {
+                    additionalKeyStrokes = new ArrayList<KeyStroke>();
+                    putValue(ActionTools.ADDITIONAL_ACCELERATOR_KEY, additionalKeyStrokes);
+                }
+                return additionalKeyStrokes;
         }
-        
-        
+        /**
+         * @param isGroup If true, this action will create a JMenu instance instead of a JMenuItem.
+         * @return this
+         */
+        public DefaultAction setMenuGroup(boolean isGroup) {
+                putValue(ActionTools.MENU_GROUP, isGroup);
+                return this;
+        }
+
+        public DefaultAction setAfter(String otherMenuID) {
+            putValue(ActionTools.INSERT_AFTER_MENUID,otherMenuID);
+            return this;
+        }
+        public DefaultAction setBefore(String otherMenuID) {
+            putValue(ActionTools.INSERT_BEFORE_MENUID, otherMenuID);
+            return this;
+        }
+
+        /**
+         * If set, other actions with the same actionGroup will be unSet if this action is set active.
+         * ButtonGroup will be created by ActionCommands.
+         * Setting a value will create a JRadioButton or a JRadioButtonMenu instead of JButton and JMenuItem.
+         * @param buttonGroup Actions with the same button group will share the same ButtonGroup
+         * @return this
+         */
+        public DefaultAction setButtonGroup(String buttonGroup) {
+            putValue(ActionTools.TOGGLE_GROUP,buttonGroup);
+            if(getValue(Action.SELECTED_KEY)==null) {
+                putValue(Action.SELECTED_KEY,Boolean.FALSE);
+            }
+            return this;
+        }
+        public DefaultAction setSelected(boolean newState) {
+            putValue(Action.SELECTED_KEY,newState);
+            return this;
+        }
+
+        /**
+         * @return The state of Action.SELECTED_KEY
+         */
+        public boolean isSelected() {
+                Object sel = getValue(Action.SELECTED_KEY);
+                return sel!=null && sel.equals(Boolean.TRUE);
+        }
+
+        /**
+         * @param parentMenuID Parent Action MENU_ID
+         * @return this
+         */
+        public DefaultAction setParent(String parentMenuID) {
+            putValue(ActionTools.PARENT_ID, parentMenuID);
+            return this;
+        }
+        /**
+         * @param toolTipText Short description of Action.
+         * @return this
+         */
+        public DefaultAction setToolTipText(String toolTipText) {
+            putValue(SHORT_DESCRIPTION, toolTipText);
+            return this;
+        }
+        /**
+         * @param logicalGroup Inserted action will insert a JSeparator if the next and
+         *                     previous action is not in the same logical group
+         * @return this
+         */
+        public DefaultAction setLogicalGroup(String logicalGroup) {
+            putValue(ActionTools.LOGICAL_GROUP, logicalGroup);
+            return this;
+        }
+        /**
+         * @param insertFirst If true, this action will be inserted at index=0 instead of last insertion
+         * @return this
+         */
+        public DefaultAction setInsertFirst(boolean insertFirst) {
+            putValue(ActionTools.INSERT_FIRST, insertFirst);
+            return this;
+        }
 }

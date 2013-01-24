@@ -32,6 +32,8 @@ import com.vividsolutions.jts.geom.Envelope;
 import java.awt.BorderLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.beans.EventHandler;
@@ -44,15 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.JButton;
-import javax.swing.JComponent;
-import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JToolBar;
-import javax.swing.JTree;
+import javax.swing.*;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeNode;
@@ -80,6 +74,8 @@ import org.orbisgis.sif.components.SaveFilePanel;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
+import org.orbisgis.view.components.actions.ActionCommands;
+import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorDockable;
@@ -92,10 +88,12 @@ import org.orbisgis.view.map.MapEditor;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.map.jobs.ZoomToSelection;
 import org.orbisgis.view.table.TableEditableElement;
+import org.orbisgis.view.toc.actions.*;
 import org.orbisgis.view.toc.actions.cui.LegendUIController;
 import org.orbisgis.view.toc.actions.cui.LegendsPanel;
 import org.orbisgis.view.toc.actions.cui.legend.EPLegendHelper;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
+import org.orbisgis.view.toc.ext.*;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -103,13 +101,13 @@ import org.xnap.commons.i18n.I18nFactory;
 /**
  * The Toc Panel component
  */
-public class Toc extends JPanel implements EditorDockable {
+public class Toc extends JPanel implements EditorDockable, TocExt {
         //The UID must be incremented when the serialization is not compatible with the new version of this class
 
         private static final long serialVersionUID = 1L;
         private static final I18n I18N = I18nFactory.getI18n(Toc.class);
         private static final Logger LOGGER = Logger.getLogger("gui." + Toc.class);
-        DockingPanelParameters dockingPanelParameters;
+        private DockingPanelParameters dockingPanelParameters;
         private transient MapContext mapContext = null;
         private JTree tree;
         private transient DefaultTreeModel treeModel;
@@ -130,8 +128,15 @@ public class Toc extends JPanel implements EditorDockable {
         private Map<String, TableEditableElement> linkedEditableElements = new HashMap<String, TableEditableElement>();
         private PropertyChangeListener tableSelectionChangeListener = EventHandler.create(PropertyChangeListener.class,this,"onTableSelectionChange","source");
         private PropertyChangeListener tableEditableClose = EventHandler.create(PropertyChangeListener.class,this,"onTableEditableClose","source");
-        private JButton saveButton;
         private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified");
+        private Action saveAction;
+        // Selection state cache, reset values before showing popup.
+        private Map<String,Boolean> selectionState = new HashMap<String, Boolean>();
+        private static final String HAS_LAYER_WITH_ROW_SELECTION = "HAS_LAYER_WITH_ROW_SELECTION";
+        private static final String HAS_LAYER_GROUP = "HAS_LAYER_GROUP"; //One of the selected item is a layer group
+        // Actions containers
+        private ActionCommands popupActions = new ActionCommands();
+
         /**
          * Constructor
          */
@@ -142,22 +147,77 @@ public class Toc extends JPanel implements EditorDockable {
                 dockingPanelParameters.setName("toc");
                 dockingPanelParameters.setTitle(I18N.tr("Toc"));
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("map"));
-                dockingPanelParameters.setToolBar(makeToolBar());
+                initTitleActions();
+                initPopupActions();
                 //Initialise an empty tree
                 add(new JScrollPane(makeTree()));
 
-        } 
-        
-        private JToolBar makeToolBar() {
-                JToolBar toolBar = new JToolBar();
-                saveButton = new JButton(I18N.tr("Save"), OrbisGISIcon.getIcon("save"));
-                saveButton.setToolTipText(I18N.tr("Save the Map"));
-                saveButton.setEnabled(false);                
-                saveButton.addActionListener(EventHandler.create(ActionListener.class,this,"onSaveMapContext"));
-                toolBar.add(saveButton);
-                return toolBar;
         }
-        
+        private void initTitleActions() {
+                List<Action> tools = new ArrayList<Action>();
+                saveAction = new DefaultAction("SAVE_MAP",I18N.tr("Save"),
+                        I18N.tr("Save the Map"),OrbisGISIcon.getIcon("save"),
+                        EventHandler.create(ActionListener.class,this,"onSaveMapContext"),
+                        KeyStroke.getKeyStroke(KeyEvent.VK_S, InputEvent.CTRL_DOWN_MASK));
+                saveAction.setEnabled(false);
+                tools.add(saveAction);
+                dockingPanelParameters.setDockActions(tools);
+        }
+        private void initPopupActions() {
+            // Layer actions
+            popupActions.addAction(new LayerAction(this, TocActionFactory.A_REMOVE_LAYER, I18N.tr("Remove layer"),
+                    I18N.tr("Remove the layer from the map context"),OrbisGISIcon.getIcon("remove"),
+                    EventHandler.create(ActionListener.class, this, "onDeleteLayer"),null));
+            popupActions.addAction(new LayerAction(this, TocActionFactory.A_ZOOM_TO, I18N.tr("Zoom to"),
+                    I18N.tr("Zoom to the layer bounding box"),OrbisGISIcon.getIcon("magnifier"),
+                    EventHandler.create(ActionListener.class, this, "zoomToLayer"),null));
+            popupActions.addAction(new LayerAction(this, TocActionFactory.A_ZOOM_TO_SELECTION,
+                    I18N.tr("Zoom to selection"),I18N.tr("Zoom to selected geometries"),
+                    OrbisGISIcon.getIcon("zoom_selected"),
+                    EventHandler.create(ActionListener.class, this, "zoomToLayerSelection"),null)
+                    .setOnLayerWithRowSelection(true));
+            popupActions.addAction(new LayerAction(this, TocActionFactory.A_CLEAR_SELECTION,
+                    I18N.tr("Clear selection"), I18N.tr("Clear the selected geometries"),
+                    OrbisGISIcon.getIcon("edit-clear"),
+                    EventHandler.create(ActionListener.class,this, "clearLayerRowSelection"),null)
+                    .setOnLayerWithRowSelection(true));
+            popupActions.addAction(new LayerAction(this, TocActionFactory.A_IMPORT_STYLE,
+                    I18N.tr("Import style"), I18N.tr("Import a style from a file."),
+                    OrbisGISIcon.getIcon("add"),
+                    EventHandler.create(ActionListener.class, this, "onImportStyle"),null)
+                    .setSingleSelection(true).setOnRealLayerOnly(true));
+            popupActions.addAction(new LayerAction(this, TocActionFactory.A_ADD_STYLE,
+                    I18N.tr("Add style"), I18N.tr("Add a new style."),
+                    OrbisGISIcon.getIcon("add"),
+                    EventHandler.create(ActionListener.class, this, "onAddStyle"),null)
+                    .setSingleSelection(true).setOnRealLayerOnly(true));
+            popupActions.addAction(new LayerAction(this, TocActionFactory.A_OPEN_ATTRIBUTES,
+                    I18N.tr("Open the attributes"), I18N.tr("Open a spreadsheet view of the attributes."),
+                    OrbisGISIcon.getIcon("openattributes"),
+                    EventHandler.create(ActionListener.class,this, "onMenuShowTable"),null)
+                    .setOnRealLayerOnly(true));
+            popupActions.addAction(new AddLayerGroupAction(this,TocActionFactory.A_ADD_LAYER_GROUP,
+                    I18N.tr("Add layer group"),I18N.tr("Add a the layer group to the map context"),
+                    OrbisGISIcon.getIcon("add"),
+                    EventHandler.create(ActionListener.class, this, "onAddGroup"),null));
+            // Style actions
+            popupActions.addAction(new StyleAction(this,TocActionFactory.A_SIMPLE_EDITION,
+                    I18N.tr("Simple style edition"), I18N.tr("Open the simple editor for SE styles"),
+                    OrbisGISIcon.getIcon("pencil"),
+                    EventHandler.create(ActionListener.class, this, "onSimpleEditor"),null));
+            popupActions.addAction(new StyleAction(this,TocActionFactory.A_ADVANCED_EDITION,
+                    I18N.tr("Advanced style edition"), I18N.tr("Open the advanced editor for SE styles"),
+                    OrbisGISIcon.getIcon("pencil"),
+                    EventHandler.create(ActionListener.class, this, "onAdvancedEditor"),null));
+            popupActions.addAction(new StyleAction(this,TocActionFactory.A_REMOVE_STYLE,
+                    I18N.tr("Remove style"), I18N.tr("Remove this style from the associated layer."),
+                    OrbisGISIcon.getIcon("remove"),
+                    EventHandler.create(ActionListener.class, this, "onDeleteStyle"),null));
+            popupActions.addAction(new StyleAction(this,TocActionFactory.A_EXPORT_STYLE,
+                    I18N.tr("Export style"), I18N.tr("Export this style from the associated layer."),
+                    OrbisGISIcon.getIcon("add"),
+                    EventHandler.create(ActionListener.class, this, "onExportStyle"),null));
+        }
         /**
          * User click on the save button
          */
@@ -172,7 +232,7 @@ public class Toc extends JPanel implements EditorDockable {
          */
         public void onMapModified() {
                 if(mapElement!=null) {
-                        saveButton.setEnabled(mapElement.isModified());
+                        saveAction.setEnabled(mapElement.isModified());
                 }
         }
         /**
@@ -439,9 +499,9 @@ public class Toc extends JPanel implements EditorDockable {
                                         }
                                 }
                                 //Update the two selection model
-                                tree.getSelectionModel().setSelectionPaths(keptSelection.toArray(new TreePath[0]));
-                                mapContext.setSelectedLayers(layers.toArray(new ILayer[0]));
-                                mapContext.setSelectedStyles(styles.toArray(new Style[0]));
+                                tree.getSelectionModel().setSelectionPaths(keptSelection.toArray(new TreePath[keptSelection.size()]));
+                                mapContext.setSelectedLayers(layers.toArray(new ILayer[layers.size()]));
+                                mapContext.setSelectedStyles(styles.toArray(new Style[styles.size()]));
                         } finally {
                                 fireSelectionEvent.set(true);
                         }
@@ -562,11 +622,7 @@ public class Toc extends JPanel implements EditorDockable {
         }
 
         boolean isActive(ILayer layer) {
-                if (mapContext != null) {
-                        return layer == mapContext.getActiveLayer();
-                } else {
-                        return false;
-                }
+            return mapContext != null && layer == mapContext.getActiveLayer();
         }
 
         @Override
@@ -574,140 +630,77 @@ public class Toc extends JPanel implements EditorDockable {
                 return this;
         }
 
-        /**
-         * Called each time on popup trigger button
-         *
-         * @return The constructed PopUp menu, depending to the state of the
-         * tree selection
-         */
-        private JPopupMenu makePopupMenu() {
-                JPopupMenu popup = new JPopupMenu();
-                Object selected = tree.getLastSelectedPathComponent();
-                if (selected instanceof TocTreeNodeStyle) {
-                        makePopupStyle(popup);
-                } else {
-                        if (tree.getSelectionCount() > 0 && selected instanceof TocTreeNodeLayer) {
-                                makePopupLayer(popup);
-                        }
-                        //We add the entry to create layer groups.
-                        JMenuItem deleteLayer = new JMenuItem(I18N.tr("Add layer group"), OrbisGISIcon.getIcon("add"));
-                        deleteLayer.setToolTipText(I18N.tr("Add a the layer group to the map context"));
-                        deleteLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onAddGroup"));
-                        popup.add(deleteLayer);
-                }
-                return popup;
+        @Override
+        public boolean isLayerSelection() {
+            Object selected = tree.getLastSelectedPathComponent();
+            return selected!=null && selected instanceof TocTreeNodeLayer;
         }
 
-	/**
-	 * This method will fill the popup given in argument with all the fields needed
-	 * to handle layers and layer collections.
-	 * @param popup
-	 */
-        private void makePopupLayer(JPopupMenu popup){
+        @Override
+        public JTree getTree() {
+            return tree;
+        }
+
+        @Override
+        public boolean isStyleSelection() {
+            Object selected = tree.getLastSelectedPathComponent();
+            return selected!=null && selected instanceof TocTreeNodeStyle;
+        }
+
+        @Override
+        public boolean hasLayerWithRowSelection() {
+            Boolean hasLayerWithRowSelection = selectionState.get(HAS_LAYER_WITH_ROW_SELECTION);
+            // If the value has not been cached
+            if(hasLayerWithRowSelection==null) {
+                hasLayerWithRowSelection = false;
                 // Fetch selected layers for Row selection
                 TreePath[] selectedItems = tree.getSelectionPaths();
-                boolean hasLayerWithRowSelection = false;
-                boolean hasLayerGroup = false;
-                for (TreePath path : selectedItems) {
+                if(selectedItems!=null) {
+                    for (TreePath path : selectedItems) {
                         Object treeNode = path.getLastPathComponent();
                         if (treeNode instanceof TocTreeNodeLayer) {
-                                //We must distinct layers and layer collections.
-                                //We check only once if the selected object contains
-                                //at least on layer with selected rows or at least a
-                                //layer collection. This will be useful to choose which
-                                //manu entries to show.
-                                ILayer l = ((TocTreeNodeLayer) treeNode).getLayer();
-                                if (!l.getSelection().isEmpty()) {
-                                        hasLayerWithRowSelection = true;
-                                }
-                                if(l instanceof LayerCollection){
-                                        hasLayerGroup=true;
-                                }
-                                if(hasLayerGroup && hasLayerWithRowSelection){
-                                        break;
-                                }
+                            ILayer l = ((TocTreeNodeLayer) treeNode).getLayer();
+                            if (!l.getSelection().isEmpty()) {
+                                hasLayerWithRowSelection = true;
+                                break;
+                            }
                         }
+                    }
                 }
-                // Remove layer
-                JMenuItem deleteLayer = new JMenuItem(I18N.tr("Remove layer"), OrbisGISIcon.getIcon("remove"));
-                deleteLayer.setToolTipText(I18N.tr("Remove the layer from the map context"));
-                deleteLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onDeleteLayer"));
-                popup.add(deleteLayer);
-
-                // Zoom to layer envelope
-                JMenuItem zoomToLayer = new JMenuItem(I18N.tr("Zoom to"), OrbisGISIcon.getIcon("magnifier"));
-                zoomToLayer.setToolTipText(I18N.tr("Zoom to the layer bounding box"));
-                zoomToLayer.addActionListener(EventHandler.create(ActionListener.class, this, "zoomToLayer"));
-                popup.add(zoomToLayer);
-                if (hasLayerWithRowSelection) {
-                        // Zoom to selected geometries
-                        JMenuItem zoomToLayerSelection =
-                                new JMenuItem(I18N.tr("Zoom to selection"),
-                                OrbisGISIcon.getIcon("zoom_selected"));
-                        zoomToLayerSelection.setToolTipText(I18N.tr("Zoom to selected "
-                                + "geometries"));
-                        zoomToLayerSelection.addActionListener(
-                                EventHandler.create(ActionListener.class,
-                                this, "zoomToLayerSelection"));
-                        popup.add(zoomToLayerSelection);
-                        // Zoom to selected geometries
-                        JMenuItem clearLayerSelection =
-                                new JMenuItem(I18N.tr("Clear selection"),
-                                OrbisGISIcon.getIcon("edit-clear"));
-                        clearLayerSelection.setToolTipText(I18N.tr("Clear the selected geometries"));
-                        clearLayerSelection.addActionListener(
-                                EventHandler.create(ActionListener.class,
-                                this, "clearLayerRowSelection"));
-                        popup.add(clearLayerSelection);
-                }
-                if(!hasLayerGroup){
-                        if (tree.getSelectionCount() == 1) {
-                                //display the menu to add a style from a file
-                                JMenuItem importStyle = new JMenuItem(I18N.tr("Import style"), OrbisGISIcon.getIcon("add"));
-                                importStyle.setToolTipText(I18N.tr("Import a style from a file."));
-                                importStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onImportStyle"));
-                                popup.add(importStyle);
-                                //display the menu to add a new style
-                                JMenuItem addStyle = new JMenuItem(I18N.tr("Add style"), OrbisGISIcon.getIcon("add"));
-                                addStyle.setToolTipText(I18N.tr("Add a new style."));
-                                addStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onAddStyle"));
-                                popup.add(addStyle);
+                selectionState.put(HAS_LAYER_WITH_ROW_SELECTION,hasLayerWithRowSelection);
+            }
+            return hasLayerWithRowSelection;
+        }
+        @Override
+        public boolean hasLayerGroup() {
+            Boolean hasLayerGroup = selectionState.get(HAS_LAYER_GROUP);
+            // If the value has not been cached
+            if(hasLayerGroup==null) {
+                hasLayerGroup = false;
+                // Fetch selected layers for Row selection
+                TreePath[] selectedItems = tree.getSelectionPaths();
+                if(selectedItems!=null) {
+                    for (TreePath path : selectedItems) {
+                        Object treeNode = path.getLastPathComponent();
+                        if (treeNode instanceof TocTreeNodeLayer) {
+                            ILayer l = ((TocTreeNodeLayer) treeNode).getLayer();
+                            if (l instanceof LayerCollection) {
+                                hasLayerGroup = true;
+                                break;
+                            }
                         }
-                        //Popup:Open attributes
-                        JMenuItem openTableMenu = new JMenuItem(I18N.tr("Open the attributes"),
-                                OrbisGISIcon.getIcon("openattributes"));
-                        openTableMenu.addActionListener(EventHandler.create(ActionListener.class,
-                                this, "onMenuShowTable"));
-                        popup.add(openTableMenu);
+                    }
                 }
+                selectionState.put(HAS_LAYER_GROUP,hasLayerGroup);
+            }
+            return hasLayerGroup;
         }
 
         /**
-         * If we've right-clicked on a style node
-         *
-         * @param popup
+         * @return Action manager of tree popup.
          */
-        private void makePopupStyle(JPopupMenu popup) {
-                //Display the menu to enter in the simple style editor.
-                JMenuItem simpleEdtiorLayer = new JMenuItem(I18N.tr("Simple style edition"), OrbisGISIcon.getIcon("pencil"));
-                simpleEdtiorLayer.setToolTipText(I18N.tr("Open the simple editor for SE styles"));
-                simpleEdtiorLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onSimpleEditor"));
-                popup.add(simpleEdtiorLayer);
-                //Display the menu to enter in the advanced style editor.
-                JMenuItem advancedEditorLayer = new JMenuItem(I18N.tr("Advanced style edition"), OrbisGISIcon.getIcon("pencil"));
-                advancedEditorLayer.setToolTipText(I18N.tr("Open the adavanced editor for SE styles"));
-                advancedEditorLayer.addActionListener(EventHandler.create(ActionListener.class, this, "onAdvancedEditor"));
-                popup.add(advancedEditorLayer);
-                //Display the menu to remove the currently selected style
-                JMenuItem deleteStyle = new JMenuItem(I18N.tr("Remove style"), OrbisGISIcon.getIcon("remove"));
-                deleteStyle.setToolTipText(I18N.tr("Remove this style from the associater layer."));
-                deleteStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onDeleteStyle"));
-                popup.add(deleteStyle);
-                //Export this style in a file
-                JMenuItem exportStyle = new JMenuItem(I18N.tr("Export style"), OrbisGISIcon.getIcon("add"));
-                exportStyle.setToolTipText(I18N.tr("Export this style from the associater layer."));
-                exportStyle.addActionListener(EventHandler.create(ActionListener.class, this, "onExportStyle"));
-                popup.add(exportStyle);
+        public ActionCommands getPopupActions() {
+            return popupActions;
         }
 
         /**
@@ -756,11 +749,17 @@ public class Toc extends JPanel implements EditorDockable {
          */
         public void zoomToLayer() {
                 ILayer[] selectedResources = mapContext.getSelectedLayers();
-                Envelope env = selectedResources[0].getEnvelope();
+                Envelope env=null;
                 for (ILayer resource : selectedResources) {
-                        env.expandToInclude(resource.getEnvelope());
+                        if(env==null) {
+                            env = resource.getEnvelope();
+                        } else {
+                            env.expandToInclude(resource.getEnvelope());
+                        }
                 }
-                mapContext.setBoundingBox(env);
+                if(env!=null) {
+                    mapContext.setBoundingBox(env);
+                }
         }
         
         /**
@@ -1051,7 +1050,7 @@ public class Toc extends JPanel implements EditorDockable {
                         newStyle.removePropertyChangeListener(tocStyleListener);
                         newStyle.addPropertyChangeListener(tocStyleListener);                        
                 }
-                treeModel.nodeStructureChanged(new TocTreeNodeLayer((ILayer)evt.getSource()));
+                treeModel.nodeStructureChanged(new TocTreeNodeLayer((ILayer) evt.getSource()));
         }
         
         private class TocLayerListener implements LayerListener {
@@ -1288,8 +1287,12 @@ public class Toc extends JPanel implements EditorDockable {
                                 } else {
                                         tree.setSelectionPath(path);
                                 }
+                                //Clear selection state cache (optimisation)
+                                selectionState.clear();
                                 //Show popup
-                                makePopupMenu().show(e.getComponent(),
+                                JPopupMenu menu = new JPopupMenu();
+                                popupActions.copyEnabledActions(menu);
+                                menu.show(e.getComponent(),
                                         e.getX(), e.getY());
                         }
                 }
