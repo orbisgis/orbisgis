@@ -33,8 +33,11 @@ import java.beans.PropertyChangeSupport;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import org.apache.log4j.Logger;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -42,6 +45,8 @@ import org.osgi.service.obr.Repository;
 import org.osgi.service.obr.RepositoryAdmin;
 import org.osgi.service.obr.Resource;
 import org.osgi.util.tracker.ServiceTrackerCustomizer;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * @author Nicolas Fortin
@@ -49,14 +54,11 @@ import org.osgi.util.tracker.ServiceTrackerCustomizer;
 public class RepositoryAdminTracker implements ServiceTrackerCustomizer<RepositoryAdmin,RepositoryAdmin> {
     public static final String PROP_REPOSITORIES = "repositories";
     public static final String PROP_RESOURCES = "resources";
-
-    private List<URL> repositories = new ArrayList<URL>();
-    private List<Resource> resources = new ArrayList<Resource>();
-
+    private static final I18n I18N = I18nFactory.getI18n(RepositoryAdminTracker.class);
     private static final Logger LOGGER = Logger.getLogger(RepositoryAdminTracker.class);
     private BundleContext bundleContext;
     private PropertyChangeSupport propertyChangeSupport = new PropertyChangeSupport(this);
-    RepositoryAdmin repoAdmin;
+    private RepositoryAdmin repoAdmin;
     public RepositoryAdminTracker(BundleContext bundleContext) {
         this.bundleContext = bundleContext;
     }
@@ -69,45 +71,51 @@ public class RepositoryAdminTracker implements ServiceTrackerCustomizer<Reposito
         return propertyChangeSupport;
     }
 
-    public List<URL> getRepositories() {
-        return Collections.unmodifiableList(repositories);
+    public Collection<Repository> getRepositories() {
+        // Use of Set instead of list, to let propertyChangeSupport find difference on set, without sorting importance
+        return new HashSet(Arrays.asList(repoAdmin.listRepositories()));
+    }
+    public List<URL> getRepositoriesURL() {
+        List<URL> repoURLS = new ArrayList<URL>();
+        for(Repository repository : repoAdmin.listRepositories()) {
+            repoURLS.add(repository.getURL());
+        }
+        return Collections.unmodifiableList(repoURLS);
     }
 
     /**
      * @return Parsed resource information on the repository XML.
      */
-    public List<Resource> getResources() {
-        return Collections.unmodifiableList(resources);
+    public Collection<Resource> getResources() {
+        // Use of Set instead of list, to let propertyChangeSupport find difference on set, without sorting importance
+        if(isRepositoryAdminAvailable()) {
+            Set<Resource> resourceList = new HashSet<Resource>();
+            for(Repository newRepo : getRepositories()) {
+                // Copy resources reference to the resource list
+                resourceList.addAll(Arrays.asList(newRepo.getResources()));
+            }
+            return resourceList;
+        } else {
+            return new HashSet<Resource>();
+        }
     }
 
     public RepositoryAdmin addingService(ServiceReference<RepositoryAdmin> reference) {
         repoAdmin = bundleContext.getService(reference);
-        readRepositories();
+        propertyChangeSupport.firePropertyChange(PROP_REPOSITORIES,new HashSet<Repository>(),getRepositories());
+        propertyChangeSupport.firePropertyChange(PROP_RESOURCES,new HashSet<Resource>(),getResources());
         return repoAdmin;
     }
 
     public void modifiedService(ServiceReference<RepositoryAdmin> reference, RepositoryAdmin service) {
+        Collection<Repository> repositories = getRepositories();
         repoAdmin = bundleContext.getService(reference);
-        readRepositories();
     }
 
     public void removedService(ServiceReference<RepositoryAdmin> reference, RepositoryAdmin service) {
         repoAdmin = null;
     }
 
-    /**
-     * Read cached repository information.
-     */
-    public void readRepositories() {
-        if(repoAdmin!=null) {
-            List<Resource> resourceList = new ArrayList<Resource>(resources.size());
-            for(Repository repo : repoAdmin.listRepositories()) {
-                // Copy resources reference to the resource list
-                resourceList.addAll(Arrays.asList(repo.getResources()));
-            }
-            setResources(resourceList);
-        }
-    }
     /**
      * Reload the list of resource by downloading and parsing all repositories XML again.
      */
@@ -117,7 +125,6 @@ public class RepositoryAdminTracker implements ServiceTrackerCustomizer<Reposito
             for(Repository repository : repoAdmin.listRepositories()) {
                 repoURLS.add(repository.getURL());
             }
-            List<Resource> resourceList = new ArrayList<Resource>(resources.size());
             for(URL repoURL : repoURLS) {
                 if(repoAdmin!=null) {
                     repoAdmin.removeRepository(repoURL);
@@ -125,28 +132,44 @@ public class RepositoryAdminTracker implements ServiceTrackerCustomizer<Reposito
                 if(repoAdmin!=null) {
                     try {
                         // Download the repository XML
-                        Repository newRepo = repoAdmin.addRepository(repoURL);
-                        // Copy resources reference to the resource list
-                        resourceList.addAll(Arrays.asList(newRepo.getResources()));
+                        repoAdmin.addRepository(repoURL);
                     } catch (Exception ex) {
                         LOGGER.error(ex.getLocalizedMessage(),ex);
                     }
                 }
             }
-            setRepositories(repoURLS);
-            setResources(resourceList);
         }
     }
-
-    public void setRepositories(List<URL> repositories) {
-        List<URL> oldValue = repositories;
-        this.repositories = repositories;
-        propertyChangeSupport.firePropertyChange(PROP_REPOSITORIES,oldValue,repositories);
+    private boolean isRepositoryAdminAvailable() {
+        if(repoAdmin==null) {
+            LOGGER.error(I18N.tr("RepositoryAdmin bundle is not available"));
+            return false;
+        } else {
+            return true;
+        }
     }
-
-    private void setResources(List<Resource> resources) {
-        List<Resource> oldValue = resources;
-        this.resources = resources;
-        propertyChangeSupport.firePropertyChange(PROP_RESOURCES,oldValue,resources);
+    public void addRepository(URL repository) {
+        if(isRepositoryAdminAvailable()) {
+            Collection<Repository> oldValue = getRepositories();
+            try {
+                repoAdmin.addRepository(repository);
+                propertyChangeSupport.firePropertyChange(PROP_REPOSITORIES,oldValue,getRepositories());
+            } catch (Exception ex) {
+                LOGGER.error(ex.getLocalizedMessage(),ex);
+            }
+        }
+    }
+    public boolean removeRepository(URL repository) {
+        if(isRepositoryAdminAvailable()) {
+            Collection<Repository> oldValue = getRepositories();
+            try {
+                boolean res = repoAdmin.removeRepository(repository);
+                propertyChangeSupport.firePropertyChange(PROP_REPOSITORIES,oldValue,getRepositories());
+                return res;
+            } catch (Exception ex) {
+                LOGGER.error(ex.getLocalizedMessage(),ex);
+            }
+        }
+        return false;
     }
 }

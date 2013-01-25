@@ -28,6 +28,7 @@
  */
 package org.orbisgis.omanager.ui;
 
+import com.sun.imageio.plugins.common.I18N;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Dictionary;
@@ -40,17 +41,41 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.service.obr.Resource;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * A bundle that can be installed in local or/and on remote repository.
  * @author Nicolas Fortin
  */
 public class BundleItem {
+    private static final I18n I18N = I18nFactory.getI18n(BundleItem.class);
     private static final int MAX_SHORT_DESCRIPTION_CHAR_COUNT = 50;
     private String shortDesc;
     private Resource obrResource; // only if a remote bundle is available
     private Bundle bundle;        // only for downloaded bundle
+    private static final Long kilo = 1024L;
+    private static final Long mega = kilo*kilo;
+    private static final Long giga = mega*kilo;
+    private static final Long tera = giga*kilo;
 
+    /**
+     * @param bytes Bytes count
+     * @return User Friendly output of this size
+     */
+    public static String getHumanReadableBytes(long bytes) {
+        if(bytes >= tera) {
+            return String.format(I18N.tr("%.2f TB"),(double)bytes / tera);
+        } else if(bytes >= giga) {
+            return String.format(I18N.tr("%.2f GB"),(double)bytes / giga);
+        } else if(bytes >= mega) {
+            return String.format(I18N.tr("%.2f MB"),(double)bytes / mega);
+        } else if(bytes >= kilo) {
+            return String.format(I18N.tr("%.2f kB"),(double)bytes / kilo);
+        } else {
+            return String.format(I18N.tr("%d bytes"),bytes);
+        }
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -198,7 +223,11 @@ public class BundleItem {
             Set<Map.Entry<String,Object>> pairs = resDetails.entrySet();
             for(Map.Entry<String,Object> entry : pairs) {
                 if(entry.getValue()!=null) {
-                    details.put(entry.getKey(),entry.getValue().toString());
+                    String value = entry.getValue().toString();
+                    if(entry.getKey().equals(Resource.SIZE) && entry.getValue() instanceof Long) {
+                        value = getHumanReadableBytes((Long)entry.getValue());
+                    }
+                    details.put(entry.getKey(),value);
                 }
             }
             return details;

@@ -33,6 +33,12 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import javax.swing.Action;
@@ -41,6 +47,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -59,6 +66,8 @@ import javax.swing.text.StyleConstants;
 import org.apache.log4j.Logger;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.Constants;
+import org.osgi.service.obr.RepositoryAdmin;
+import org.osgi.util.tracker.ServiceTracker;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -74,23 +83,31 @@ public class MainPanel extends JPanel {
     private static final int BORDER_PIXEL_GAP = 2;
     private static final int PROPERTY_TEXT_SIZE_INCREMENT = 3;
     private static final int PROPERTY_TITLE_SIZE_INCREMENT = 4;
+    public static final String DEFAULT_REPOSITORY = "http://plugins.orbisgis.org/repository.xml";
 
     // Bundle Category filter
     private JComboBox bundleCategory = new JComboBox(new String[] {"All","DataBase","Network","SQL Functions"});
     private JTextPane bundleDetails = new JTextPane();
     private JList bundleList = new JList();
     private JPanel bundleActions = new JPanel();
+    private JButton repositoryRemove;
     private BundleListModel bundleListModel;
     private JPanel bundleDetailsAndActions = new JPanel(new BorderLayout());
     private JSplitPane splitPane;
     private ActionBundleFactory actionFactory;
     private BundleDetailsTransformer bundleHeader = new BundleDetailsTransformer();
+    private BundleContext bundleContext;
+    private RepositoryAdminTracker repositoryAdminTrackerCustomizer;
+    private ServiceTracker<RepositoryAdmin,RepositoryAdmin> repositoryAdminTracker;
+
     /**
      * Constructor of the main plugin panel
      * @param bundleContext Bundle context instance in order to manage them.
      */
     public MainPanel(BundleContext bundleContext) {
         super(new BorderLayout());
+        this.bundleContext = bundleContext;
+        initRepositoryTracker();
         actionFactory = new ActionBundleFactory(bundleContext,this);
         // Main Panel (South button, center Split Pane)
         // Buttons on south of main panel
@@ -115,7 +132,7 @@ public class MainPanel extends JPanel {
         setDefaultDetailsMessage();
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,leftOfSplitGroup,bundleDetailsAndActions);
         add(splitPane);
-        bundleListModel =  new BundleListModel(bundleContext);
+        bundleListModel =  new BundleListModel(bundleContext,repositoryAdminTrackerCustomizer);
         bundleList.setModel(bundleListModel);
         bundleListModel.install();
         bundleList.setCellRenderer(new BundleListRenderer(bundleList));
@@ -123,7 +140,13 @@ public class MainPanel extends JPanel {
         bundleList.addListSelectionListener(EventHandler.create(ListSelectionListener.class,this,"onBundleSelectionChange",""));
         bundleList.getModel().addListDataListener(EventHandler.create(ListDataListener.class,this,"onListUpdate"));
     }
-
+    private void initRepositoryTracker() {
+        repositoryAdminTrackerCustomizer = new RepositoryAdminTracker(bundleContext);
+        repositoryAdminTracker = new ServiceTracker<RepositoryAdmin, RepositoryAdmin>(bundleContext,
+                RepositoryAdmin.class,repositoryAdminTrackerCustomizer);
+        repositoryAdminTracker.open();
+        repositoryAdminTrackerCustomizer.getPropertyChangeSupport().addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class,this,"onRepositoryChange"));
+    }
     /**
      * The user select another plug-in in the list.
      * @param e Event object
@@ -140,6 +163,16 @@ public class MainPanel extends JPanel {
         }
     }
 
+    /**
+     * Called by the service tracker when there is an update.
+     */
+    public void onRepositoryChange() {
+         if(repositoryRemove!=null) {
+             // If there is no repositories, the user can't delete anything
+             repositoryRemove.setEnabled(
+                     !repositoryAdminTrackerCustomizer.getRepositories().isEmpty());
+         }
+    }
     /**
      * The Data Model of the Bundle list has been updated.
      */
@@ -161,12 +194,18 @@ public class MainPanel extends JPanel {
         }
     }
     private void addSouthButtons(JPanel southButtons) {
-        JButton repositoryUrls = new JButton(I18N.tr("Manage repositories"));
-        repositoryUrls.setToolTipText(I18N.tr("Add/Remove remote bundle repositories."));
-        repositoryUrls.addActionListener(EventHandler.create(ActionListener.class,this,"onManageBundleRepositories"));
+        JButton repositoryUrls = new JButton(I18N.tr("Add repository"));
+        repositoryUrls.setToolTipText(I18N.tr("Add a remote bundle repository."));
+        repositoryUrls.addActionListener(EventHandler.create(ActionListener.class,this,"onAddBundleRepository"));
         southButtons.add(repositoryUrls);
 
-        JButton refreshRepositories = new JButton(I18N.tr("Refresh"));
+        repositoryRemove = new JButton(I18N.tr("Remove repository"));
+        repositoryRemove.setToolTipText(I18N.tr("Remove a remote bundle repository."));
+        repositoryRemove.addActionListener(EventHandler.create(ActionListener.class,this,"onRemoveBundleRepository"));
+        southButtons.add(repositoryRemove);
+        onRepositoryChange();
+
+        JButton refreshRepositories = new JButton(I18N.tr("Refresh repositories"));
         refreshRepositories.setToolTipText(I18N.tr("Reload the list of plug-ins from the Internet."));
         refreshRepositories.addActionListener(EventHandler.create(ActionListener.class,this,"onReloadPlugins"));
         southButtons.add(refreshRepositories);
@@ -280,20 +319,79 @@ public class MainPanel extends JPanel {
      * User click on "Refresh" button.
      */
     public void onReloadPlugins() {
-
+        DownloadOBRProcess reloadAction = new DownloadOBRProcess();
+        reloadAction.execute();
     }
 
     /**
-     * User want to manage repository urls.
+     * User want to add repository url.
      */
-    public void onManageBundleRepositories() {
+    public void onAddBundleRepository() {
+        String errMessage = "";
+        String chosenURL = DEFAULT_REPOSITORY;
+        do {
+            chosenURL = showInputURI(chosenURL,errMessage);
+            //If a string was returned, say so.
+            if ((chosenURL != null)) {
+                Collection<URL> urls = repositoryAdminTrackerCustomizer.getRepositoriesURL();
+                try {
+                    URI userURI = new URI(chosenURL);
+                    if(urls.contains(userURI)) {
+                        errMessage = I18N.tr("This repository URL already exists");
+                    } else {
+                        repositoryAdminTrackerCustomizer.addRepository(userURI.toURL());
+                    }
+                } catch(Exception ex) {
+                    errMessage = I18N.tr("This is not a valid url");
+                }
+            }
+        } while(chosenURL!=null && !errMessage.isEmpty());
 
+    }
+    private String showInputURI(String defaultValue,String errorMessage) {
+        StringBuilder message = new StringBuilder(I18N.tr("Enter repository URL :"));
+        if(!errorMessage.isEmpty()) {
+            message.append("\n");
+            message.append(errorMessage);
+        }
+        return (String) JOptionPane.showInputDialog(
+                this,
+                message.toString(),
+                I18N.tr("Add plug-in repository"),
+                JOptionPane.PLAIN_MESSAGE,
+                null,
+                null,
+                defaultValue);
+    }
+    /**
+     * User want to remove repository url.
+     */
+    public void onRemoveBundleRepository() {
+        List<URL> urls = repositoryAdminTrackerCustomizer.getRepositoriesURL();
+        if(!urls.isEmpty()) {
+            URL chosenURL = (URL) JOptionPane.showInputDialog(
+                    this,
+                    I18N.tr("Select the server to remove"),
+                    I18N.tr("Remove plug-in repository"),
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    urls.toArray(new URL[urls.size()]),
+                    urls.get(0));
+
+            //If a string was returned, say so.
+            if ((chosenURL != null) && (urls.contains(chosenURL))) {
+                repositoryAdminTrackerCustomizer.removeRepository(chosenURL);
+            }
+        }
     }
 
     /**
      * Remove trackers and listeners
      */
     public void dispose() {
+        if(repositoryAdminTracker!=null) {
+            repositoryAdminTracker.close();
+        }
         bundleListModel.uninstall();
     }
 
@@ -307,7 +405,7 @@ public class MainPanel extends JPanel {
     private JPanel createFilterComponents() {
         // Make main radio panel
         JPanel radioBar = new JPanel();
-        radioBar.setLayout(new BoxLayout(radioBar,BoxLayout.X_AXIS));
+        radioBar.setLayout(new BoxLayout(radioBar, BoxLayout.X_AXIS));
         // Create radio buttons
         ButtonGroup filterGroup = new ButtonGroup();
         createRadioButton(I18N.tr("All state"),I18N.tr("Do not filter bundle by their state."),true,
@@ -322,10 +420,11 @@ public class MainPanel extends JPanel {
         return radioBar;
     }
 
-    private class downloadOBRProcess extends SwingWorker {
+    private class DownloadOBRProcess extends SwingWorker {
+
         @Override
         protected Object doInBackground() throws Exception {
-            bundleListModel.reloadBundleRepositories();
+            repositoryAdminTrackerCustomizer.refresh();
             return null;
         }
     }

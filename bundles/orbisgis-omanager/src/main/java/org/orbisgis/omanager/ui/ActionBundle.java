@@ -32,6 +32,7 @@ package org.orbisgis.omanager.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.AbstractAction;
+import javax.swing.SwingWorker;
 import org.apache.log4j.Logger;
 
 /**
@@ -58,12 +59,35 @@ public class ActionBundle extends AbstractAction {
     }
 
     public void actionPerformed(ActionEvent actionEvent) {
-        if(action!=null) {
-            try {
-                action.actionPerformed(actionEvent);
-            } catch( Exception ex) {
-                LOGGER.error(ex.getLocalizedMessage(),ex);
+        setEnabled(false);
+        (new BackgroundProcess(actionEvent)).execute();
+    }
+
+    /**
+     * Process bundle actions in background.
+     */
+    private class BackgroundProcess extends SwingWorker<Integer,Integer> {
+        private ActionEvent actionEvent;
+
+        private BackgroundProcess(ActionEvent actionEvent) {
+            this.actionEvent = actionEvent;
+        }
+
+        @Override
+        protected Integer doInBackground() throws Exception {
+            if(action!=null) {
+                try {
+                    action.actionPerformed(actionEvent);
+                } catch( Exception ex) {
+                    LOGGER.error(ex.getLocalizedMessage(),ex);
+                }
             }
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            setEnabled(true);
         }
     }
 }

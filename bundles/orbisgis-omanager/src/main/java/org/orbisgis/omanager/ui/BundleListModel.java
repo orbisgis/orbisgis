@@ -29,6 +29,7 @@
 package org.orbisgis.omanager.ui;
 
 import java.beans.EventHandler;
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -42,9 +43,7 @@ import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleEvent;
 import org.osgi.framework.BundleListener;
-import org.osgi.service.obr.RepositoryAdmin;
 import org.osgi.service.obr.Resource;
-import org.osgi.util.tracker.ServiceTracker;
 
 /**
  * List content of Bundles, items are only instance of {@link BundleItem}.
@@ -57,22 +56,20 @@ public class BundleListModel extends AbstractListModel {
     private BundleContext bundleContext;
     private BundleListener bundleListener = new BundleModelListener();
     private RepositoryAdminTracker repositoryAdminTrackerCustomizer;
-    private ServiceTracker<RepositoryAdmin,RepositoryAdmin> repositoryAdminTracker;
     /**
      * @param bundleContext Bundle context to track.
      */
-    public BundleListModel(BundleContext bundleContext) {
+    public BundleListModel(BundleContext bundleContext, RepositoryAdminTracker repositoryAdminTrackerCustomizer) {
         this.bundleContext = bundleContext;
+        this.repositoryAdminTrackerCustomizer = repositoryAdminTrackerCustomizer;
+        repositoryAdminTrackerCustomizer.getPropertyChangeSupport().
+                addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class,this,"update"));
     }
 
     /**
      * Watch for local bundle updates and RepositoryAdmin service.
      */
     public void install() {
-        repositoryAdminTrackerCustomizer = new RepositoryAdminTracker(bundleContext);
-        repositoryAdminTracker = new ServiceTracker<RepositoryAdmin, RepositoryAdmin>(bundleContext,
-                RepositoryAdmin.class,repositoryAdminTrackerCustomizer);
-        repositoryAdminTracker.open();
         update();
         bundleContext.addBundleListener(bundleListener);
     }
@@ -82,9 +79,6 @@ public class BundleListModel extends AbstractListModel {
      */
     public void uninstall() {
         bundleContext.removeBundleListener(bundleListener);
-        if(repositoryAdminTracker!=null) {
-            repositoryAdminTracker.close();
-        }
     }
     private void deleteItem(BundleItem item) {
         // Deleted item
@@ -96,8 +90,9 @@ public class BundleListModel extends AbstractListModel {
         }
         fireIntervalRemoved(this, index,index);
     }
+
     /**
-     * Update the content of the bundle context
+     * Update the content of the bundle context. Called also by the propertyChangeListener.
      */
     public void update() {
         Map<String,BundleItem> curBundles = new HashMap<String,BundleItem>(storedBundles.size());
@@ -201,9 +196,7 @@ public class BundleListModel extends AbstractListModel {
     public BundleItem getBundle(int i) {
         return storedBundles.get(i);
     }
-    public void reloadBundleRepositories() {
-        repositoryAdminTrackerCustomizer.refresh();
-    }
+
     private class BundleModelListener implements BundleListener {
 
         public void bundleChanged(final BundleEvent event) {

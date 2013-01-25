@@ -30,24 +30,13 @@
 package org.orbisgis.omanager.ui;
 
 import java.awt.Component;
-import java.awt.Frame;
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.ArrayList;
 import java.util.List;
 import javax.swing.Action;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
-import javax.swing.tree.TreePath;
 import org.apache.log4j.Logger;
 import org.osgi.framework.BundleContext;
-import org.osgi.framework.ServiceReference;
-import org.osgi.service.obr.RepositoryAdmin;
-import org.osgi.service.obr.Requirement;
-import org.osgi.service.obr.Resolver;
-import org.osgi.service.obr.Resource;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -58,12 +47,8 @@ import org.xnap.commons.i18n.I18nFactory;
 public class ActionBundleFactory {
     private static final I18n I18N = I18nFactory.getI18n(ActionBundleFactory.class);
     private static final Logger LOGGER = Logger.getLogger("gui."+ActionBundleFactory.class);
-    private static final Long kilo = 1024L;
-    private static final Long mega = kilo*kilo;
-    private static final Long giga = mega*kilo;
-    private static final Long tera = giga*kilo;
-    private Component frame;
 
+    private Component frame;
     private BundleContext bundleContext;
 
     public ActionBundleFactory(BundleContext bundleContext,Component frame) {
@@ -91,155 +76,12 @@ public class ActionBundleFactory {
                     .setActionListener(EventHandler.create(ActionListener.class, bundleItem.getBundle(), "uninstall")));
         }
         if(bundleItem.isDeployReady()) {
-            actions.add(new DeployResourceAction(I18N.tr("Download"),I18N.tr("Download this plug-in from the repository"),false,bundleItem.getObrResource()));
+            actions.add(new ActionDeploy(I18N.tr("Download"),I18N.tr("Download this plug-in from the repository"),false,bundleItem.getObrResource(),bundleContext,frame));
         }
         if(bundleItem.isDeployAndStartReady()) {
-            actions.add(new DeployResourceAction(I18N.tr("Download & Start"),I18N.tr("Download this plug-in from the repository then start it"),true,bundleItem.getObrResource()));
+            actions.add(new ActionDeploy(I18N.tr("Download & Start"),I18N.tr("Download this plug-in from the repository then start it"),true,bundleItem.getObrResource(),bundleContext,frame));
         }
         return actions;
     }
 
-    private class DeployResourceAction extends ActionBundle {
-        private boolean start;
-        private Resource resource;
-
-        private DeployResourceAction(String label, String toolTipText, boolean start, Resource resource) {
-            super(label, toolTipText);
-            this.start = start;
-            this.resource = resource;
-        }
-
-        private long getSize(Resource resource) {
-            Object depSize = resource.getProperties().get(Resource.SIZE);
-            if(depSize instanceof Long) {
-                return(Long) depSize;
-            } else {
-                return 0L;
-            }
-        }
-        private String getHumanReadableBytes(long bytes) {
-            if(bytes >= tera) {
-                return String.format(I18N.tr("%.2f TB"),(double)bytes / tera);
-            } else if(bytes >= giga) {
-                return String.format(I18N.tr("%.2f GB"),(double)bytes / giga);
-            } else if(bytes >= mega) {
-                return String.format(I18N.tr("%.2f MB"),(double)bytes / mega);
-            } else if(bytes >= kilo) {
-                return String.format(I18N.tr("%.2f kB"),(double)bytes / kilo);
-            } else {
-                return String.format(I18N.tr("%d bytes"),bytes);
-            }
-        }
-        @Override
-        public void actionPerformed(ActionEvent actionEvent) {
-
-
-                ServiceReference<RepositoryAdmin> repositoryAdminServiceReference = bundleContext.getServiceReference(RepositoryAdmin.class);
-                if(repositoryAdminServiceReference==null) {
-                    LOGGER.error(I18N.tr("OSGi repository service is not available"));
-                    return;
-                }
-                RepositoryAdmin repositoryAdmin = bundleContext.getService(repositoryAdminServiceReference);
-                if(repositoryAdmin==null) {
-                    LOGGER.error(I18N.tr("OSGi repository service is not available"));
-                    return;
-                }
-            try {
-                // Specify the bundle reference to the dependency resolver
-                Resolver resolver = repositoryAdmin.resolver();
-                resolver.add(resource);
-
-                if ((resolver.getAddedResources() != null) &&
-                        (resolver.getAddedResources().length > 0))
-                {
-                    // Find dependencies
-                    if (resolver.resolve()) {
-                        long bytes = getSize(resource);
-                        StringBuilder resourcesNames = new StringBuilder();
-
-                        Resource[] resources = resolver.getRequiredResources();
-                        if ((resources != null) && (resources.length > 0)) {
-                            for (int resIdx = 0; resIdx < resources.length; resIdx++) {
-                                Resource dependency = resources[resIdx];
-                                resourcesNames.append(dependency.getPresentationName());
-                                resourcesNames.append(" (");
-                                resourcesNames.append(dependency.getVersion());
-                                resourcesNames.append(")\n");
-                                bytes += getSize(dependency);
-                            }
-                        }
-                        resources = resolver.getOptionalResources();
-                        if ((resources != null) && (resources.length > 0)) {
-                            for (int resIdx = 0; resIdx < resources.length; resIdx++) {
-                                Resource dependency = resources[resIdx];
-                                bytes += getSize(dependency);
-                                resourcesNames.append("Optional, ");
-                                resourcesNames.append(dependency.getPresentationName());
-                                resourcesNames.append(" (");
-                                resourcesNames.append(dependency.getVersion());
-                                resourcesNames.append(")\n");
-                            }
-                        }
-                        // If there is hidden dependency
-                        // Ask user for validating download
-                        boolean deploy = true;
-                        if(resourcesNames.length()>0) {
-                            resourcesNames.insert(0,") ?\n");
-                            resourcesNames.insert(0,getHumanReadableBytes(bytes));
-                            resourcesNames.insert(0,"Do you want to download the following dependencies (Size : ");
-                            String[] options = {I18N.tr("Yes"),
-                                    I18N.tr("Cancel")};
-                            int n = JOptionPane.showOptionDialog(frame,resourcesNames.toString(),I18N.tr("Dependencies downloading"),
-                                    JOptionPane.YES_NO_OPTION,
-                                    JOptionPane.QUESTION_MESSAGE,null,options,options[1]);
-                            deploy = n==JOptionPane.YES_OPTION;
-                        }
-                        if(deploy) {
-                            try
-                            {
-                                resolver.deploy(start);
-                            }
-                            catch (IllegalStateException ex)
-                            {
-                                LOGGER.error(ex.getLocalizedMessage(),ex);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Requirement[] reqs = resolver.getUnsatisfiedRequirements();
-                        if ((reqs != null) && (reqs.length > 0))
-                        {
-                            StringBuilder sb = new StringBuilder();
-                            sb.append(I18N.trn("Unsatisfied requirement :\n","Unsatisfied requirements :\n",reqs.length+1));
-                            for (int reqIdx = 0; reqIdx < reqs.length; reqIdx++)
-                            {
-                                sb.append("\t");
-                                sb.append(reqs[reqIdx].getFilter());
-                                sb.append("\n");
-                                Resource[] resources = resolver.getResources(reqs[reqIdx]);
-                                for (int resIdx = 0; resIdx < resources.length; resIdx++)
-                                {
-                                    sb.append("\t");
-                                    sb.append(resources[resIdx].getPresentationName());
-                                    sb.append(" (");
-                                    sb.append(resources[resIdx].getVersion());
-                                    sb.append(")\n");
-                                }
-                            }
-                            LOGGER.error(sb.toString());
-                        }
-                        else
-                        {
-                            LOGGER.error(I18N.tr("Could not resolve plug-in for unknown reason"));
-                        }
-                    }
-                }
-            } catch(Exception ex) {
-                LOGGER.error(ex.getLocalizedMessage(),ex);
-            } finally {
-                bundleContext.ungetService(repositoryAdminServiceReference);
-            }
-        }
-    }
 }
