@@ -31,9 +31,11 @@ package org.orbisgis.omanager.ui;
 import com.sun.imageio.plugins.common.I18N;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -239,7 +241,7 @@ public class BundleItem {
     /**
      * @return Bundle tags
      */
-    List<String> getBundleCategories() {
+    Collection<String> getBundleCategories() {
         if(bundle!=null) {
             String categories = bundle.getHeaders().get(Constants.BUNDLE_CATEGORY);
             if(categories!=null) {

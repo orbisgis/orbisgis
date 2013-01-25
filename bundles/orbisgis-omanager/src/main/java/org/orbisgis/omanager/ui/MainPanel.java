@@ -38,12 +38,18 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JList;
@@ -53,6 +59,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextPane;
+import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
@@ -86,7 +93,7 @@ public class MainPanel extends JPanel {
     public static final String DEFAULT_REPOSITORY = "http://plugins.orbisgis.org/repository.xml";
 
     // Bundle Category filter
-    private JComboBox bundleCategory = new JComboBox(new String[] {"All","DataBase","Network","SQL Functions"});
+    private JComboBox bundleCategory = new JComboBox();
     private JTextPane bundleDetails = new JTextPane();
     private JList bundleList = new JList();
     private JPanel bundleActions = new JPanel();
@@ -139,6 +146,7 @@ public class MainPanel extends JPanel {
         bundleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         bundleList.addListSelectionListener(EventHandler.create(ListSelectionListener.class,this,"onBundleSelectionChange",""));
         bundleList.getModel().addListDataListener(EventHandler.create(ListDataListener.class,this,"onListUpdate"));
+        onListUpdate();
     }
     private void initRepositoryTracker() {
         repositoryAdminTrackerCustomizer = new RepositoryAdminTracker(bundleContext);
@@ -146,6 +154,7 @@ public class MainPanel extends JPanel {
                 RepositoryAdmin.class,repositoryAdminTrackerCustomizer);
         repositoryAdminTracker.open();
         repositoryAdminTrackerCustomizer.getPropertyChangeSupport().addPropertyChangeListener(EventHandler.create(PropertyChangeListener.class,this,"onRepositoryChange"));
+
     }
     /**
      * The user select another plug-in in the list.
@@ -153,30 +162,10 @@ public class MainPanel extends JPanel {
      */
     public void onBundleSelectionChange(ListSelectionEvent e) {
         if(!e.getValueIsAdjusting()) {
-            Object selected = bundleList.getSelectedValue();
-            if(selected instanceof BundleItem) {
-                BundleItem selectedItem = (BundleItem)selected;
-                setBundleDetailsAndActions(selectedItem);
-            } else {
-                setDefaultDetailsMessage();
-            }
+            readSelectedBundle();
         }
     }
-
-    /**
-     * Called by the service tracker when there is an update.
-     */
-    public void onRepositoryChange() {
-         if(repositoryRemove!=null) {
-             // If there is no repositories, the user can't delete anything
-             repositoryRemove.setEnabled(
-                     !repositoryAdminTrackerCustomizer.getRepositories().isEmpty());
-         }
-    }
-    /**
-     * The Data Model of the Bundle list has been updated.
-     */
-    public void onListUpdate() {
+    private void readSelectedBundle() {
         Object selected = bundleList.getSelectedValue();
         if(selected instanceof BundleItem) {
             final BundleItem selectedItem = (BundleItem)selected;
@@ -192,6 +181,37 @@ public class MainPanel extends JPanel {
         } else {
             setDefaultDetailsMessage();
         }
+    }
+    /**
+     * Called by the service tracker when there is an update.
+     */
+    public void onRepositoryChange() {
+         if(repositoryRemove!=null) {
+             // If there is no repositories, the user can't delete anything
+             repositoryRemove.setEnabled(
+                     !repositoryAdminTrackerCustomizer.getRepositories().isEmpty());
+         }
+    }
+    /**
+     * The Data Model of the Bundle list has been updated.
+     */
+    public void onListUpdate() {
+        readSelectedBundle();
+        DefaultComboBoxModel model = new DefaultComboBoxModel();
+        // Update the list of categories
+        Set<String> categories = new HashSet<String>();
+        int size = bundleList.getModel().getSize();
+        ListModel listModel = bundleList.getModel();
+        for(int i=0; i<size; i++) {
+            categories.addAll(((BundleItem) listModel.getElementAt(i)).getBundleCategories());
+        }
+        model.addElement(I18N.tr("All"));
+        List<String> sortedCategories = new ArrayList<String>(categories);
+        Collections.sort(sortedCategories,String.CASE_INSENSITIVE_ORDER);
+        for(String category : sortedCategories) {
+            model.addElement(category);
+        }
+        bundleCategory.setModel(model);
     }
     private void addSouthButtons(JPanel southButtons) {
         JButton repositoryUrls = new JButton(I18N.tr("Add repository"));
