@@ -35,9 +35,9 @@ import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter
 import org.orbisgis.core.renderer.se.parameter.color.Recode2Color
 import org.orbisgis.core.renderer.se.parameter.string.StringAttribute
-import org.orbisgis.legend.structure.parameter.AbstractAttributedRPLegend
+import org.orbisgis.legend.structure.parameter.AbstractAttributeLegend
 
-class RecodedColor extends AbstractAttributedRPLegend with RecodedLegend {
+class RecodedColor extends AbstractAttributeLegend with RecodedLegend {
   
   private var parameter : ColorParameter = new ColorLiteral
 

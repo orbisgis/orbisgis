@@ -34,10 +34,10 @@ import org.orbisgis.core.renderer.se.parameter.real.RealLiteral
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter
 import org.orbisgis.core.renderer.se.parameter.real.Recode2Real
 import org.orbisgis.core.renderer.se.parameter.string.StringAttribute
-import org.orbisgis.legend.structure.parameter.AbstractAttributedRPLegend
+import org.orbisgis.legend.structure.parameter.AbstractAttributeLegend
 import org.orbisgis.legend.structure.parameter.NumericLegend
 
-class RecodedReal extends AbstractAttributedRPLegend with RecodedLegend with NumericLegend {
+class RecodedReal extends AbstractAttributeLegend with RecodedLegend with NumericLegend {
 
   var parameter : RealParameter = new RealLiteral
 

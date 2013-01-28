@@ -31,10 +31,10 @@ package org.orbisgis.legend.structure.parameter;
 import org.orbisgis.core.renderer.se.parameter.ValueReference;
 
 /**
- *
+ * Basic methods for parameters that are dependent upon a parameter.
  * @author Alexis Guéganno
  */
-public abstract class AbstractAttributedRPLegend {
+public abstract class AbstractAttributeLegend {
 
         public abstract ValueReference getValueReference();
 
