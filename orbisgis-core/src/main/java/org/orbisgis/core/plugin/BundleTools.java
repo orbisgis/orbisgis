@@ -42,6 +42,7 @@ import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.Version;
 import org.osgi.framework.wiring.BundleRevision;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -56,6 +57,29 @@ public class BundleTools {
     private BundleTools() {        
     }
 
+    /**
+     * Find if the bundle already exists and retrieve it.
+     * @param hostBundle
+     * @param symbolicName
+     * @param version
+     * @return
+     */
+    private static Bundle getBundle(BundleContext hostBundle, String symbolicName, Version version) {
+        Bundle[] bundles = hostBundle.getBundles();
+        for (int i = 0; (bundles != null) && (i < bundles.length); i++)
+        {
+            String sym = bundles[i].getSymbolicName();
+            Version ver = bundles[i].getVersion();
+            if ((symbolicName != null)
+                    && (sym != null)
+                    && symbolicName.equals(sym)
+                    && version.equals(ver))
+            {
+                return bundles[i];
+            }
+        }
+        return null;
+    }
     /**
      * Register in the host bundle the provided list of bundle reference
      * @param hostBundle Host BundleContext

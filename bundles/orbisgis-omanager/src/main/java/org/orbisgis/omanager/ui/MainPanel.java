@@ -34,6 +34,7 @@ import java.awt.Frame;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -52,11 +53,13 @@ import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
 import javax.swing.JTextPane;
 import javax.swing.ListModel;
@@ -66,12 +69,14 @@ import javax.swing.SwingWorker;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import org.apache.log4j.Logger;
 import org.osgi.framework.BundleContext;
+import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.service.obr.RepositoryAdmin;
 import org.osgi.util.tracker.ServiceTracker;
@@ -91,6 +96,7 @@ public class MainPanel extends JPanel {
     private static final int PROPERTY_TEXT_SIZE_INCREMENT = 3;
     private static final int PROPERTY_TITLE_SIZE_INCREMENT = 4;
     public static final String DEFAULT_REPOSITORY = "http://plugins.orbisgis.org/repository.xml";
+    private ItemFilterStatusFactory.STATUS radioFilterStatus = ItemFilterStatusFactory.STATUS.ALL;
 
     // Bundle Category filter
     private JComboBox bundleCategory = new JComboBox();
@@ -99,6 +105,7 @@ public class MainPanel extends JPanel {
     private JPanel bundleActions = new JPanel();
     private JButton repositoryRemove;
     private BundleListModel bundleListModel;
+    private FilteredModel<BundleListModel> filterModel;
     private JPanel bundleDetailsAndActions = new JPanel(new BorderLayout());
     private JSplitPane splitPane;
     private ActionBundleFactory actionFactory;
@@ -140,7 +147,8 @@ public class MainPanel extends JPanel {
         splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,leftOfSplitGroup,bundleDetailsAndActions);
         add(splitPane);
         bundleListModel =  new BundleListModel(bundleContext,repositoryAdminTrackerCustomizer);
-        bundleList.setModel(bundleListModel);
+        filterModel = new FilteredModel<BundleListModel>(bundleListModel);
+        bundleList.setModel(filterModel);
         bundleListModel.install();
         bundleList.setCellRenderer(new BundleListRenderer(bundleList));
         bundleList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -196,6 +204,7 @@ public class MainPanel extends JPanel {
      * The Data Model of the Bundle list has been updated.
      */
     public void onListUpdate() {
+        Object oldValue = bundleCategory.getSelectedItem();
         readSelectedBundle();
         DefaultComboBoxModel model = new DefaultComboBoxModel();
         // Update the list of categories
@@ -208,12 +217,27 @@ public class MainPanel extends JPanel {
         model.addElement(I18N.tr("All"));
         List<String> sortedCategories = new ArrayList<String>(categories);
         Collections.sort(sortedCategories,String.CASE_INSENSITIVE_ORDER);
+        String selectedValue=(String)model.getElementAt(0);
+        model.setSelectedItem(selectedValue);
+        if(oldValue instanceof String) {
+            selectedValue = (String)oldValue;
+        }
         for(String category : sortedCategories) {
             model.addElement(category);
+            if(category.equalsIgnoreCase(selectedValue)) {
+                model.setSelectedItem(category);
+            }
         }
         bundleCategory.setModel(model);
     }
     private void addSouthButtons(JPanel southButtons) {
+
+        JButton addUrl = new JButton(I18N.tr("Install plugin from disk"));
+        addUrl.setToolTipText(I18N.tr("Add a plugin from disk, dependencies could not be resolved."));
+        addUrl.addActionListener(EventHandler.create(ActionListener.class,this,"onAddBundleJar"));
+        southButtons.add(addUrl);
+
+        southButtons.add(new JSeparator(JSeparator.VERTICAL));
         JButton repositoryUrls = new JButton(I18N.tr("Add repository"));
         repositoryUrls.setToolTipText(I18N.tr("Add a remote bundle repository."));
         repositoryUrls.addActionListener(EventHandler.create(ActionListener.class,this,"onAddBundleRepository"));
@@ -306,34 +330,61 @@ public class MainPanel extends JPanel {
         boolean hidden = !bundleDetailsAndActions.isVisible();
         if(hidden) {
             bundleDetailsAndActions.setVisible(true);
-            splitPane.setDividerLocation(-1); // -1 to let swing compute preferred size
+            int lastSize = splitPane.getLastDividerLocation();
+            if(lastSize >= getWidth() - bundleDetailsAndActions.getMinimumSize().width) {
+                lastSize = -1;
+            }
+            splitPane.setDividerLocation(lastSize); // -1 to let swing compute preferred size
         } else {
+            // Save split pane position
+            splitPane.setLastDividerLocation(splitPane.getDividerLocation());
             splitPane.updateUI(); // Without this instruction buttons are disabled on some L&F
+        }
+    }
+    private void applyFilters() {
+        List<ItemFilter<BundleListModel>> filters = new ArrayList<ItemFilter<BundleListModel>>();
+        ItemFilter<BundleListModel> radioFilter = ItemFilterStatusFactory.getFilter(radioFilterStatus);
+        if(radioFilter!=null) {
+            filters.add(radioFilter);
+        }
+        if(bundleCategory.getSelectedIndex()>0
+                && bundleCategory.getSelectedItem() instanceof String) {
+            filters.add(new ItemFilterCategory((String)bundleCategory.getSelectedItem()));
+        }
+        if(filters.size()>=1) {
+            filterModel.setFilter(new ItemFilterAndGroup(filters));
+        } else if(filters.size()==1) {
+            filterModel.setFilter(filters.get(0));
+        } else {
+            filterModel.setFilter(null);
         }
     }
     /**
      * User click on "All states" radio button
      */
     public void onRemoveStateFilter() {
-
+        radioFilterStatus = ItemFilterStatusFactory.STATUS.ALL;
+        applyFilters();
     }
     /**
      * User click on "Installed" radio button
      */
     public void onFilterBundleInstall() {
-
+        radioFilterStatus = ItemFilterStatusFactory.STATUS.INSTALLED;
+        applyFilters();
     }
     /**
      * User click on "Update" radio button
      */
     public void onFilterBundleUpdate() {
-
+        radioFilterStatus = ItemFilterStatusFactory.STATUS.UPDATE;
+        applyFilters();
     }
     /**
      * User click on an item on the category list.
      */
     public void onFilterByBundleCategory() {
-
+        applyFilters();
     }
     /**
      * User click on "Refresh" button.
@@ -343,6 +394,25 @@ public class MainPanel extends JPanel {
         reloadAction.execute();
     }
 
+    /**
+     * User click on install Plug-in from disk button.
+     */
+    public void onAddBundleJar() {
+        JFileChooser chooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter(
+                I18N.tr("OSGi Jar"), "jar");
+        chooser.setFileFilter(filter);
+        int returnVal = chooser.showOpenDialog(this);
+        if(returnVal == JFileChooser.APPROVE_OPTION) {
+            File selected = chooser.getSelectedFile();
+            try {
+                bundleContext.installBundle(selected.getAbsolutePath());
+            } catch (BundleException ex) {
+                LOGGER.error(ex.getLocalizedMessage(),ex);
+            }
+        }
+
+    }
     /**
      * User want to add repository url.
      */
@@ -436,6 +506,7 @@ public class MainPanel extends JPanel {
                 "onFilterBundleUpdate", filterGroup, radioBar);
 
         // Category at the end
+        bundleCategory.addActionListener(EventHandler.create(ActionListener.class,this,"onFilterByBundleCategory"));
         radioBar.add(bundleCategory);
         return radioBar;
     }
@@ -446,6 +517,11 @@ public class MainPanel extends JPanel {
         protected Object doInBackground() throws Exception {
             repositoryAdminTrackerCustomizer.refresh();
             return null;
+        }
+
+        @Override
+        protected void done() {
+            bundleListModel.update();
         }
     }
 }

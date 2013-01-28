@@ -137,9 +137,7 @@ public class BundleListModel extends AbstractListModel {
             item.setObrResource(null);
         }
         // Fetch cached repositories bundles
-        LOGGER.info("Get OBR resources..");
         for(Resource resource : repositoryAdminTrackerCustomizer.getResources()) {
-            LOGGER.info("OBR resources : "+resource.getSymbolicName());
             BundleItem storedBundle = curBundles.get(getIdentifier(resource));
             if(storedBundle!=null) {
                 // An item has the same identifier

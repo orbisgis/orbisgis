@@ -29,26 +29,25 @@
 
 package org.orbisgis.omanager.ui;
 
+import java.util.Collection;
+
 /**
- * Create a filter related to bundle status.
+ * A filter that include elements only il all provided filters accept the element.
  * @author Nicolas Fortin
  */
-public class ItemFilterStatusFactory {
-    private ItemFilterStatusFactory() {}
-    public static enum STATUS { ALL, INSTALLED, UPDATE };
-    public static ItemFilter<BundleListModel> getFilter(STATUS status) {
-        switch (status) {
-            case ALL:
-                return null;
-            default:
-                return new Installed();
+public class ItemFilterAndGroup implements ItemFilter<BundleListModel> {
+    private Collection<ItemFilter<BundleListModel>> filters;
 
-        }
+    public ItemFilterAndGroup(Collection<ItemFilter<BundleListModel>> filters) {
+        this.filters = filters;
     }
 
-    private static class Installed  implements ItemFilter<BundleListModel> {
-        public boolean include(BundleListModel model, int elementId) {
-            return model.getBundle(elementId).getBundle()!=null;
+    public boolean include(BundleListModel model, int elementId) {
+        for(ItemFilter<BundleListModel> filter : filters) {
+            if(!filter.include(model,elementId)) {
+                return false;
+            }
         }
+        return true;
     }
 }

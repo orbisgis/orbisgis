@@ -63,14 +63,22 @@ public class FilteredModel<SubModel extends ListModel> extends AbstractListModel
      */
     public void setFilter(ItemFilter<SubModel> elementFilter) {
         this.elementFilter = elementFilter;
-        shownElements = new ArrayList<Integer>();
-        doFilter();
+        if(elementFilter!=null) {
+            doFilter();
+        } else {
+            shownElements = null;
+            fireIntervalAdded(this,0,getSize()-1);
+        }
     }
     public Object getElementAt(int i) {
         if(elementFilter==null) {
             return subModel.getElementAt(i);
         } else {
-            return subModel.getElementAt(shownElements.get(i));
+            if(i>=0 && i<shownElements.size()) {
+                return subModel.getElementAt(shownElements.get(i));
+            } else {
+                return false;
+            }
         }
     }
 
@@ -81,8 +89,8 @@ public class FilteredModel<SubModel extends ListModel> extends AbstractListModel
         if(elementFilter==null) {
             return;
         }
-        if(getSize()>0) {
-            fireIntervalRemoved(this, 0, getSize() - 1);
+        if(shownElements==null) {
+            shownElements = new ArrayList<Integer>();
         }
         shownElements.clear();
         for(int i=0;i<subModel.getSize();i++)
