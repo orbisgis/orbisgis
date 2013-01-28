@@ -29,7 +29,6 @@
 
 package org.orbisgis.omanager.ui;
 
-import com.sun.imageio.plugins.common.I18N;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;

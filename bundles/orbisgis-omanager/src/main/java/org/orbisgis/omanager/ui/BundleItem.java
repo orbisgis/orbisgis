@@ -28,15 +28,12 @@
  */
 package org.orbisgis.omanager.ui;
 
-import com.sun.imageio.plugins.common.I18N;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Dictionary;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.osgi.framework.Bundle;
