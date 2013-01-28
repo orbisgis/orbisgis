@@ -145,7 +145,8 @@ public class BundleTools {
             // without this check it might generate an infinite loop 
             // @link http://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html#isSymbolicLink(java.nio.file.Path)
             if (!file.isDirectory()) {
-                if (file.getName().endsWith(".class")) {
+                if (file.getName().endsWith(".class")
+                        && file.getParent().length()>rootPath.getAbsolutePath().length()) {
                     String parentPath = file.getParent().substring(rootPath.getAbsolutePath().length()+1);
                     packages.add(parentPath.replace(File.separator, "."));
                 }
