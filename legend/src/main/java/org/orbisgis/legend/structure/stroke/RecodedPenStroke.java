@@ -97,10 +97,20 @@ public class RecodedPenStroke implements LegendStructure {
                 }
         }
 
+        /**
+         * Gets the LegendStructure that is used to describe the dash patterns
+         * in this PenStroke.
+         * @return
+         */
         public final LegendStructure getDashLegend() {
                 return dashLegend;
         }
 
+        /**
+         * Sets the LegendStructure used to describe the dash patterns in this
+         * {@code PenStroke}.
+         * @param dash
+         */
         public final void setDashLegend(LegendStructure dash) {
                 this.dashLegend = dash;
         }
