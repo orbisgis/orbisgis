@@ -34,6 +34,7 @@ import java.util.List;
 import net.opengis.se._2_0.core.AlternativeStrokeElementsType;
 import net.opengis.se._2_0.core.StrokeElementType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
@@ -101,6 +102,13 @@ public class AlternativeStrokeElements extends CompoundStrokeElement {
                         result.merge(elem.getUsedAnalysis());
                 }
                 return result;
+        }
+
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                ls.addAll(elements);
+                return ls;
         }
 
         /**

@@ -28,13 +28,16 @@
  */
 package org.orbisgis.core.renderer.se.graphic;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import net.opengis.se._2_0.thematic.CategoryType;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
@@ -243,5 +246,23 @@ public final class Category  extends AbstractSymbolizerNode implements FillNode,
                 ret.merge(getMeasure().getUsedAnalysis());
             }
             return ret;
+        }
+
+        @Override
+        public List<SymbolizerNode> getChildren() {
+            List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+            if (this.getFill() != null) {
+                ls.add(this.getFill());
+            }
+            if (this.getStroke() != null) {
+                ls.add(this.getStroke());
+            }
+            if (this.getGraphicCollection() != null) {
+                ls.add(this.getGraphicCollection());
+            }
+            if (this.getMeasure() != null) {
+                ls.add(this.getMeasure());
+            }
+            return ls;
         }
 }

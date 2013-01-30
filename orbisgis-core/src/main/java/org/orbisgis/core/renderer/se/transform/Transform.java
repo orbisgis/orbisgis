@@ -39,6 +39,7 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -278,6 +279,13 @@ public class Transform extends AbstractSymbolizerNode implements UomNode {
                         result.merge(t.getUsedAnalysis());
                 }
                 return result;
+        }
+
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                ls.addAll(transformations);
+                return ls;
         }
 
         @Override

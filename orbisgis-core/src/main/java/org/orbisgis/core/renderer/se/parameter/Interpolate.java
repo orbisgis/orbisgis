@@ -35,6 +35,7 @@ import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -265,6 +266,16 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
                         ua.merge(i.getValue().getUsedAnalysis());
                 }
                 return ua;
+        }
+
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls =new ArrayList<SymbolizerNode>();
+                ls.add(lookupValue);
+                for(InterpolationPoint i : iPoints){
+                        ls.add(i.getValue());
+                }
+                return ls;
         }
 
 

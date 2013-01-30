@@ -33,6 +33,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -226,5 +227,12 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
     public UsedAnalysis getUsedAnalysis(){
             //We get an empty UsedAnalysis - we'll merge everything.
            return graphic.getUsedAnalysis();
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        ls.add(graphic);
+        return ls;
     }
 }

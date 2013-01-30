@@ -34,7 +34,9 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Arc2D;
 import java.awt.geom.Area;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import net.opengis.se._2_0.core.HaloType;
 import org.apache.log4j.Logger;
@@ -43,6 +45,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
@@ -273,6 +276,14 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
             ua.merge(radius.getUsedAnalysis());
             ua.merge(fill.getUsedAnalysis());
             return ua;
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+            List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+            ls.add(radius);
+            ls.add(fill);
+            return ls;
     }
 
     /**

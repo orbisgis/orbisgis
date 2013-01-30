@@ -28,7 +28,9 @@
  */
 package org.orbisgis.core.renderer.se;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.opengis.se._2_0.core.ElseFilterType;
@@ -499,6 +501,13 @@ public final class Rule extends AbstractSymbolizerNode {
     public UsedAnalysis getUsedAnalysis() {
             //We get an empty UsedAnalysis - we'll merge everything.
             return getCompositeSymbolizer().getUsedAnalysis();
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+            List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+            ls.add(getCompositeSymbolizer());
+            return ls;
     }
 
 

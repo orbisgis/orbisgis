@@ -71,16 +71,24 @@ public class RealFunctionTest {
     }
 
     @Test
-    public void testgetOperator() throws Exception {
+    public void testGetOperator() throws Exception {
             RealFunction op1 = new RealFunction("log");
             assertTrue(op1.getOperator() == RealFunction.Operators.LOG);
             assertTrue(op1.getOperands().isEmpty());
     }
 
     @Test
-    public void testgetOperatorBis() throws Exception {
+    public void testGetOperatorBis() throws Exception {
             RealFunction op1 = new RealFunction(RealFunction.Operators.ADD);
             assertTrue(op1.getOperator() == RealFunction.Operators.ADD);
             assertTrue(op1.getOperands().isEmpty());
+    }
+
+    @Test
+    public void testgetChildren() throws Exception {
+            RealFunction op1 = new RealFunction("div");
+            op1.addOperand(new RealLiteral(100));
+            op1.addOperand(new RealLiteral(10));
+            assertEquals(op1.getChildren().size(),2);
     }
 }

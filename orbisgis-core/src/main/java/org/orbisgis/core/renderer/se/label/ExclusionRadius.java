@@ -28,12 +28,16 @@
  */
 package org.orbisgis.core.renderer.se.label;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ExclusionRadiusType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.graphic.Slice;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
@@ -129,5 +133,14 @@ public final class ExclusionRadius extends ExclusionZone {
                 UsedAnalysis ua = new UsedAnalysis();
                 ua.merge(radius.getUsedAnalysis());
                 return ua;
+        }
+
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if (radius != null) {
+                        ls.add(radius);
+                }
+                return ls;
         }
 }

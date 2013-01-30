@@ -35,7 +35,9 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MarkGraphicType;
@@ -45,6 +47,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.ViewBoxNode;
 import org.orbisgis.core.renderer.se.common.Halo;
@@ -667,5 +670,35 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
         }
 
         return result;
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        if (wkn != null) {
+            ls .add(wkn);
+        }
+        if (viewBox != null) {
+            ls .add(viewBox);
+        }
+        if (pOffset != null) {
+            ls .add(pOffset);
+        }
+        if (halo != null) {
+            ls .add(halo);
+        }
+        if (fill != null) {
+            ls .add(fill);
+        }
+        if (stroke != null) {
+            ls .add(stroke);
+        }
+        if (transform != null) {
+            ls .add(transform);
+        }
+        if (markIndex != null) {
+            ls .add(markIndex);
+        }
+        return ls;
     }
 }

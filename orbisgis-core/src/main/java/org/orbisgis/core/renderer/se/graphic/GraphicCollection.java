@@ -306,6 +306,13 @@ public final class GraphicCollection extends AbstractSymbolizerNode implements U
         return result;
     }
 
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        ls.addAll(graphics);
+        return ls;
+    }
+
     /**
      * Get a JAXB representation of this {@code GraphicCollection}, that will be
      * useable for XML serialization.

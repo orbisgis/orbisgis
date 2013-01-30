@@ -53,13 +53,7 @@ public class Categorize2RealTest extends AbstractTest {
 
         @Test
         public void testFromJAXB() throws Exception {
-                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
-                JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
-                        new FileInputStream(xml));
-                AreaSymbolizerType ast = (AreaSymbolizerType) (ftsElem.getValue().getRule().get(0).getSymbolizer().getValue());
-                DensityFillType dft = (DensityFillType) (ast.getFill().getValue());
-                JAXBElement je = (JAXBElement) (dft.getPercentage().getContent().get(1));
-                Categorize2Real c2r = new Categorize2Real((CategorizeType) je.getValue());
+                Categorize2Real c2r = getCategorize();
                 assertTrue(c2r.getClassValue(0).getValue(null, 0) == 0.3);
                 assertTrue(c2r.getClassValue(1).getValue(null, 0) == 0.4);
                 assertTrue(c2r.getClassValue(2).getValue(null, 0) == 0.45);
@@ -81,6 +75,23 @@ public class Categorize2RealTest extends AbstractTest {
                 JAXBElement<StyleType> elem = st.getJAXBElement();
                 m.marshal(elem, new FileOutputStream("target/c2routput.se"));
                 assertTrue(true);
+        }
+
+        @Test
+        public void testChlidren() throws Exception {
+                Categorize2Real c2r = getCategorize();
+                //We will have 16 children : 7 thresholds, 8 values and 1 lookup value
+                assertTrue(c2r.getChildren().size() == 16);
+        }
+
+        private Categorize2Real getCategorize() throws Exception{
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
+                JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
+                        new FileInputStream(xml));
+                AreaSymbolizerType ast = (AreaSymbolizerType) (ftsElem.getValue().getRule().get(0).getSymbolizer().getValue());
+                DensityFillType dft = (DensityFillType) (ast.getFill().getValue());
+                JAXBElement je = (JAXBElement) (dft.getPercentage().getContent().get(1));
+                return new Categorize2Real((CategorizeType) je.getValue());
 
         }
 }

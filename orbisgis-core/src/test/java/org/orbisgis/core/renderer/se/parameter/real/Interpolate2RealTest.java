@@ -70,48 +70,19 @@ public class Interpolate2RealTest {
 	 */
         @Test
         public void testLinearInterpolation() throws ParameterException {
-		System.out.println("Linear Interpolation");
-		Interpolate2Real interpolate = new Interpolate2Real(new RealLiteral(-1));
-
-		interpolate.setInterpolationMode(InterpolationMode.LINEAR);
-
-		InterpolationPoint<RealParameter> ip1 = new InterpolationPoint<RealParameter>();
-		ip1.setData(10.0);
-		ip1.setValue(new RealLiteral(100.0));
-		interpolate.addInterpolationPoint(ip1);
-
-		InterpolationPoint<RealParameter> ip2 = new InterpolationPoint<RealParameter>();
-		ip2.setData(50.0);
-		ip2.setValue(new RealLiteral(110.0));
-		interpolate.addInterpolationPoint(ip2);
-
-
-		InterpolationPoint<RealParameter> ip3 = new InterpolationPoint<RealParameter>();
-		ip3.setData(60.0);
-		ip3.setValue(new RealLiteral(200.0));
-		interpolate.addInterpolationPoint(ip3);
-
+                Interpolate2Real interpolate= getLinearInterpolation();
 		double result;
-
 		interpolate.setLookupValue(new RealLiteral(1.0));
 		result = interpolate.getValue(null, -1);
-
-		System.out.println("Result is: " + result);
 		assertEquals(result, 100.0, 0.00000001);
-
 		interpolate.setLookupValue(new RealLiteral(20.0));
 		result = interpolate.getValue(null, -1);
-		System.out.println("Result is: " + result);
 		assertEquals(result, 102.5, 0.00000001);
-
 		interpolate.setLookupValue(new RealLiteral(55.0));
 		result = interpolate.getValue(null, -1);
-		System.out.println("Result is: " + result);
 		assertEquals(result, 155.0, 0.00000001);
-
 		interpolate.setLookupValue(new RealLiteral(70.0));
 		result = interpolate.getValue(null, -1);
-		System.out.println("Result is: " + result);
 		assertEquals(result, 200.0, 0.00000001);
 	}
 
@@ -164,5 +135,34 @@ public class Interpolate2RealTest {
 		System.out.println("Result is: " + result);
 		assertEquals(result, 200.0, 0.00000001);
 	}
+
+        @Test
+        public void testChildren(){
+                Interpolate2Real interpolate = getLinearInterpolation();
+                //We will have 4 children : the lookup value and the three interpolation points
+                assertTrue(interpolate.getChildren().size() == 4);
+        }
+
+        private Interpolate2Real getLinearInterpolation() {
+		System.out.println("Linear Interpolation");
+		Interpolate2Real interpolate = new Interpolate2Real(new RealLiteral(-1));
+		interpolate.setInterpolationMode(InterpolationMode.LINEAR);
+                //First point
+		InterpolationPoint<RealParameter> ip1 = new InterpolationPoint<RealParameter>();
+		ip1.setData(10.0);
+		ip1.setValue(new RealLiteral(100.0));
+		interpolate.addInterpolationPoint(ip1);
+                //Second point
+		InterpolationPoint<RealParameter> ip2 = new InterpolationPoint<RealParameter>();
+		ip2.setData(50.0);
+		ip2.setValue(new RealLiteral(110.0));
+		interpolate.addInterpolationPoint(ip2);
+                //Third point
+		InterpolationPoint<RealParameter> ip3 = new InterpolationPoint<RealParameter>();
+		ip3.setData(60.0);
+		ip3.setValue(new RealLiteral(200.0));
+		interpolate.addInterpolationPoint(ip3);
+                return interpolate;
+        }
 
 }

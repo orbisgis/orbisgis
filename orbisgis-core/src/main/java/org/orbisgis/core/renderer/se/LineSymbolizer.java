@@ -32,7 +32,9 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LineSymbolizerType;
@@ -235,5 +237,17 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
                         ret.merge(stroke.getUsedAnalysis());
                 }
                 return ret;
+        }
+
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if (perpendicularOffset != null) {
+                        ls.add(perpendicularOffset);
+                }
+                if (stroke != null) {
+                        ls.add(stroke);
+                }
+                return ls;
         }
 }

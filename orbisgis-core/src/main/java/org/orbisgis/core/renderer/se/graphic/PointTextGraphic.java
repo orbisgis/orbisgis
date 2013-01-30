@@ -33,7 +33,9 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -42,6 +44,7 @@ import net.opengis.se._2_0.core.TranslateType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.PointLabel;
@@ -262,5 +265,20 @@ public final class PointTextGraphic extends Graphic implements UomNode {
 
         @Override
         public void updateGraphic() {
+        }
+
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if (pointLabel != null) {
+                        ls.add(pointLabel);
+                }
+                if (x != null) {
+                        ls.add(x);
+                }
+                if (y != null) {
+                        ls.add(y);
+                }
+                return ls;
         }
 }

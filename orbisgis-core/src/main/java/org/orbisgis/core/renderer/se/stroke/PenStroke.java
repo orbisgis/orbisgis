@@ -44,6 +44,7 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
@@ -267,6 +268,24 @@ public final class PenStroke extends Stroke implements FillNode {
             result.merge(width.getUsedAnalysis());
         }
         return result;
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        if (fill != null) {
+            ls.add(fill);
+        }
+        if (dashOffset != null) {
+            ls.add(dashOffset);
+        }
+        if (dashArray != null) {
+            ls.add(dashArray);
+        }
+        if (width != null) {
+            ls.add(width);
+        }
+        return ls;
     }
 
     @Override

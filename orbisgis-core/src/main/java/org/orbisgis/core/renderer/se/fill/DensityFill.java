@@ -33,7 +33,9 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.thematic.DensityFillType;
@@ -42,6 +44,7 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -347,6 +350,27 @@ public final class DensityFill extends Fill implements GraphicNode {
         return f;
 
 
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        if (isHatched) {
+            if (hatches != null) {
+                ls.add(hatches);
+            }
+            if (orientation != null) {
+                ls.add(orientation);
+            }
+        } else {
+            if (mark != null) {
+                ls.add(mark);
+            }
+        }
+        if (percentageCovered != null) {
+            ls.add(percentageCovered);
+        }
+        return ls;
     }
 
     @Override

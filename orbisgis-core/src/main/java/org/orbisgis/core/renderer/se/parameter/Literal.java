@@ -36,6 +36,7 @@ import net.opengis.fes._2.LiteralType;
 import net.opengis.fes._2.ObjectFactory;
 import net.opengis.se._2_0.core.ParameterValueType;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 
 /**
  * <code>Literal</code>s are the concrete realizations of <code>SeParameter</code>.
@@ -111,5 +112,10 @@ public abstract class Literal extends AbstractSymbolizerNode implements Comparab
                 UsedAnalysis ret = new UsedAnalysis();
                 ret.include(this);
                 return ret;
+        }
+
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                return new ArrayList<SymbolizerNode>();
         }
 }

@@ -28,10 +28,13 @@
  */
 package org.orbisgis.core.renderer.se.graphic;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import net.opengis.se._2_0.thematic.AxisScaleType;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
@@ -134,6 +137,18 @@ public final class AxisScale extends AbstractSymbolizerNode {
         ua.merge(axisLength.getUsedAnalysis());
         ua.merge(measure.getUsedAnalysis());
         return ua;
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        if (axisLength != null) {
+            ls.add(axisLength);
+        }
+        if (measure != null) {
+            ls.add(measure);
+        }
+        return ls;
     }
     
 }

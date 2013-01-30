@@ -28,10 +28,13 @@
  */
 package org.orbisgis.core.renderer.se.stroke;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import net.opengis.se._2_0.core.StrokeElementType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -252,6 +255,24 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
                         result.merge(stroke.getUsedAnalysis());
                 }
                 return result;
+        }
+
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if (length != null) {
+                        ls.add(length);
+                }
+                if (preGap != null) {
+                        ls.add(preGap);
+                }
+                if (postGap != null) {
+                        ls.add(postGap);
+                }
+                if (stroke != null) {
+                        ls.add(stroke);
+                }
+                return ls;
         }
 
         @Override

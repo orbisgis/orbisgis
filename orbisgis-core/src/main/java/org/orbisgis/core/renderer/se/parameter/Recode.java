@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -327,6 +328,16 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
                 ua.merge(e.getValue().getUsedAnalysis());
         }
         return ua;
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        ls.add(lookupValue);
+        for(Entry<String,ToType> e : mapItems.entrySet()){
+                ls.add(e.getValue());
+        }
+        return ls;
     }
 
 

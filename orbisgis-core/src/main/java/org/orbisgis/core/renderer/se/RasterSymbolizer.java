@@ -32,6 +32,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.raster.RasterSymbolizerType;
 import org.gdms.driver.DataSet;
@@ -239,4 +240,9 @@ public class RasterSymbolizer extends Symbolizer {
                 throw new UnsupportedOperationException("Not supported yet.");
         }
 
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
 }

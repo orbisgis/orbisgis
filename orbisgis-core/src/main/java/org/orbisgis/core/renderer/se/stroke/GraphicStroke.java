@@ -45,6 +45,7 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
@@ -383,6 +384,21 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
                 result.merge(relativePosition.getUsedAnalysis());
         }
         return result;
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        if (graphic != null) {
+            ls.add(graphic);
+        }
+        if (length != null) {
+            ls.add(length);
+        }
+        if (relativePosition != null) {
+            ls.add(relativePosition);
+        }
+        return ls;
     }
 
     @Override

@@ -29,7 +29,9 @@
 package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -38,6 +40,7 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -174,6 +177,18 @@ public final class Scale extends AbstractSymbolizerNode implements Transformatio
         result.merge(y.getUsedAnalysis());
         return result;
       }
+
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if (x != null) {
+                        ls.add(x);
+                }
+                if (y != null) {
+                        ls.add(y);
+                }
+                return ls;
+        }
 
 
     @Override

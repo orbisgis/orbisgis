@@ -37,7 +37,9 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.GraphicFillType;
@@ -46,6 +48,7 @@ import net.opengis.se._2_0.core.TileGapType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -311,6 +314,21 @@ public final class GraphicFill extends Fill {
         }
 
         return f;
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        if (graphic != null) {
+            ls.add(graphic);
+        }
+        if (gapX != null) {
+            ls.add(gapX);
+        }
+        if (gapY != null) {
+            ls.add(gapY);
+        }
+        return ls;
     }
 
     @Override

@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -578,6 +579,18 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
                 ua.merge(t.getUsedAnalysis());
         }
         return ua;
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        ls.add(lookupValue);
+        if(firstClass != null){
+            ls.add(firstClass);
+        }
+        ls.addAll(classValues);
+        ls.addAll(thresholds);
+        return ls;
     }
 
     //**********************************************************************************

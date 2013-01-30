@@ -51,6 +51,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -968,5 +969,27 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
                         ret.merge(c.getUsedAnalysis());
                 }
                 return ret;
+        }
+
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if (areaFill != null) {
+                        ls.add(areaFill);
+                }
+                if (lineStroke != null) {
+                        ls.add(lineStroke);
+                }
+                if (this.categoryGap != null) {
+                        ls.add(categoryGap);
+                }
+                if (categoryWidth != null) {
+                        ls.add(categoryWidth);
+                }
+                if (axisScale != null) {
+                        ls.add(axisScale);
+                }
+                ls.addAll(categories);
+                return ls;
         }
 }

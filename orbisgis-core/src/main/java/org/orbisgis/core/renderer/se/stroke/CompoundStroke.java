@@ -41,6 +41,7 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -465,6 +466,13 @@ public final class CompoundStroke extends Stroke implements UomNode {
             result.merge(elem.getUsedAnalysis());
         }
         return result;
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        ls.addAll(elements);
+        return ls;
     }
 
     private void addCompoundStrokeElement(CompoundStrokeElement cse) {

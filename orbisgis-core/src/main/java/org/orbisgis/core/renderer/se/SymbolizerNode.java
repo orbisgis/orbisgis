@@ -29,6 +29,7 @@
 package org.orbisgis.core.renderer.se;
 
 import java.util.HashSet;
+import java.util.List;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
@@ -71,4 +72,11 @@ public interface SymbolizerNode{
      * Notify the parent of the node that cached values must be unset.
      */
     void update();
+
+    /**
+     * Get all the {@code SymbolizerNode} instances that are direct children
+     * of this.
+     * @return
+     */
+    List<SymbolizerNode> getChildren();
 }

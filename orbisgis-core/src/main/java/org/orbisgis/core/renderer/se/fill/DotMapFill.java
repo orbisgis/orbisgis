@@ -36,7 +36,9 @@ import java.awt.geom.Area;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import javax.xml.bind.JAXBElement;
@@ -47,6 +49,7 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -276,6 +279,21 @@ public final class DotMapFill extends Fill implements GraphicNode {
         }
 
         return f;
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        if (mark != null) {
+            ls.add(mark);
+        }
+        if (quantityPerMark != null) {
+            ls.add(quantityPerMark);
+        }
+        if (totalQuantity != null) {
+            ls.add(totalQuantity);
+        }
+        return ls;
     }
 
     @Override

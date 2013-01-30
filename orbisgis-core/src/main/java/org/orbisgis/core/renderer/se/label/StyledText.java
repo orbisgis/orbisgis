@@ -45,11 +45,13 @@ import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.graphic.Slice;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
@@ -598,46 +600,35 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      */
     public StyledTextType getJAXBType() {
         StyledTextType l = new StyledTextType();
-
         if (text != null) {
             l.setText(text.getJAXBParameterValueType());
         }
-
         if (halo != null) {
             l.setHalo(halo.getJAXBType());
         }
-
         if (fill != null) {
             l.setFill(fill.getJAXBElement());
         }
-
         if (stroke != null) {
             l.setStroke(stroke.getJAXBElement());
         }
-
         FontType font = new FontType();
         if (this.getOwnUom() != null) {
             font.setUom(getOwnUom().toURN());
         }
-
         if (fontFamily != null) {
             font.setFontFamily(fontFamily.getJAXBParameterValueType());
         }
-
         if (fontWeight != null) {
             font.setFontWeight(fontWeight.getJAXBParameterValueType());
         }
-
         if (fontSize != null) {
             font.setFontSize(fontSize.getJAXBParameterValueType());
         }
-
         if (fontStyle != null) {
             font.setFontStyle(fontStyle.getJAXBParameterValueType());
         }
-
         l.setFont(font);
-
         return l;
     }
 
@@ -658,6 +649,15 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
         }
         if (fontSize != null) {
             result.addAll(fontSize.dependsOnFeature());
+        }
+        if (stroke != null) {
+            result.addAll(stroke.dependsOnFeature());
+        }
+        if (fill != null) {
+            result.addAll(fill.dependsOnFeature());
+        }
+        if (halo != null) {
+            result.addAll(halo.dependsOnFeature());
         }
         return result;
     }
@@ -680,6 +680,45 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
         if (fontSize != null) {
             result.merge(fontSize.getUsedAnalysis());
         }
+        if (stroke != null) {
+            result.merge(stroke.getUsedAnalysis());
+        }
+        if (fill != null) {
+            result.merge(fill.getUsedAnalysis());
+        }
+        if (halo != null) {
+            result.merge(halo.getUsedAnalysis());
+        }
         return result;
+    }
+
+    @Override
+    public java.util.List<SymbolizerNode> getChildren() {
+        java.util.List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        if (text != null) {
+            ls.add(text);
+        }
+        if (fontFamily != null) {
+            ls.add(fontFamily);
+        }
+        if (fontWeight != null) {
+            ls.add(fontWeight);
+        }
+        if (fontStyle != null) {
+            ls.add(fontStyle);
+        }
+        if (fontSize != null) {
+            ls.add(fontSize);
+        }
+        if (stroke != null) {
+            ls.add(stroke);
+        }
+        if (fill != null) {
+            ls.add(fill);
+        }
+        if (halo != null) {
+            ls.add(halo);
+        }
+        return ls;
     }
 }

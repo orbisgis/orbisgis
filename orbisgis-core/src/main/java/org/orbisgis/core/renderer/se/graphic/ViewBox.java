@@ -29,12 +29,15 @@
 package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import net.opengis.se._2_0.core.ViewBoxType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
@@ -236,16 +239,25 @@ public final class ViewBox extends  AbstractSymbolizerNode {
          */
         @Override
         public String toString() {
-                String result = "ViewBox:";
-
+                StringBuilder result = new StringBuilder("ViewBox:");
                 if (this.x != null) {
-                        result += "  Width: " + x.toString();
+                        result.append("  Width: ").append(x.toString());
                 }
-
                 if (this.y != null) {
-                        result += "  Height: " + y.toString();
+                        result.append("  Height: ").append(y.toString());
                 }
+                return result.toString();
+        }
 
-                return result;
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if (y != null) {
+                        ls.add(y);
+                }
+                if (x != null) {
+                        ls.add(x);
+                }
+                return ls;
         }
 }

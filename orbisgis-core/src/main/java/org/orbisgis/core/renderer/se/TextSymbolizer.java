@@ -32,6 +32,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -228,5 +229,17 @@ public final class TextSymbolizer extends VectorSymbolizer {
                         ret.merge(label.getUsedAnalysis());
                 }
                 return ret;
+        }
+
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if (perpendicularOffset != null) {
+                        ls.add(perpendicularOffset);
+                }
+                if (label != null) {
+                        ls.add(label);
+                }
+                return ls;
         }
 }

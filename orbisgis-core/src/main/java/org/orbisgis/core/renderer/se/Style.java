@@ -469,6 +469,13 @@ public final class Style extends AbstractSymbolizerNode {
             return ua;
     }
 
+    @Override
+    public List<SymbolizerNode> getChildren() {
+            List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+            ls.addAll(rules);
+            return ls;
+    }
+
     /**
      *
      * @return

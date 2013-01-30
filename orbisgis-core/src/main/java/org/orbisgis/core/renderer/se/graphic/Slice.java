@@ -28,10 +28,13 @@
  */
 package org.orbisgis.core.renderer.se.graphic;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import net.opengis.se._2_0.thematic.SliceType;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.FillNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -180,5 +183,20 @@ public class Slice extends AbstractSymbolizerNode implements FillNode {
                 }
 
                 return result;
+        }
+
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if (fill != null) {
+                        ls.add(fill);
+                }
+                if (value != null) {
+                        ls.add(value);
+                }
+                if (gap != null) {
+                        ls.add(gap);
+                }
+                return ls;
         }
 }

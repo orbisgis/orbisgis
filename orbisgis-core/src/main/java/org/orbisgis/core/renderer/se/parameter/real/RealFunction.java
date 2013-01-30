@@ -37,6 +37,8 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -303,6 +305,13 @@ public class RealFunction extends AbstractSymbolizerNode implements SeParameter,
                 ua.merge(r.getUsedAnalysis());
         }
         return ua;
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls =new ArrayList<SymbolizerNode>();
+        ls.addAll(operands);
+        return ls;
     }
 
 

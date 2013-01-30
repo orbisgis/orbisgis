@@ -32,7 +32,9 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ExternalGraphicType;
@@ -40,6 +42,7 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.ViewBoxNode;
 import org.orbisgis.core.renderer.se.common.Halo;
@@ -436,6 +439,24 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
         }
 
         return ret;
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        if (halo != null) {
+            ls.add(halo);
+        }
+        if (opacity != null) {
+            ls.add(opacity);
+        }
+        if (transform != null) {
+            ls.add(transform);
+        }
+        if (viewBox != null) {
+            ls.add(viewBox);
+        }
+        return ls;
     }
 
     @Override
