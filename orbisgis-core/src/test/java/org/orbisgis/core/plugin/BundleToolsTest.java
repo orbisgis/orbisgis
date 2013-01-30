@@ -47,14 +47,17 @@ public class BundleToolsTest {
     public void parseManifestTest() throws IOException {
         List<PackageDeclaration> packages = new LinkedList<PackageDeclaration>();
         // Header is :
-        // Export-Package: org.xnap.commons.i18n;version="0.9.6"
+        // Export-Package: org.xnap.commons.i18n;version="0.9.6",org.xnap.commons.i18n.nover
         InputStream manifestStream = BundleToolsTest.class.getResourceAsStream("MANIFEST.MF");
         Manifest manifest = new Manifest(manifestStream);
         BundleTools.parseManifest(manifest,packages);
-        Assert.assertEquals(1,packages.size());
+        Assert.assertEquals(2,packages.size());
         PackageDeclaration packageInfo = packages.get(0);
         Assert.assertEquals("org.xnap.commons.i18n",packageInfo.getPackageName());
         Assert.assertEquals(new Version(0,9,6),packageInfo.getVersion());
+        packageInfo = packages.get(1);
+        Assert.assertEquals("org.xnap.commons.i18n.nover",packageInfo.getPackageName());
+        Assert.assertEquals(false,packageInfo.isVersionDefined());
 
     }
 }

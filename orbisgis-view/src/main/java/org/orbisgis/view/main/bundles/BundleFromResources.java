@@ -41,7 +41,7 @@ import org.osgi.framework.BundleContext;
 public class BundleFromResources {
         private static final BundleReference[] PROVIDED_BUNDLES = {
                 new BundleReference("org.apache.felix.shell"),                        // Felix OSGi shell
-                new BundleReference("org.osgi.service.obr"),                          // OBR API
+                new BundleReference("org.osgi.service.obr").setAutoStart(false),      // OBR API
                 new BundleReference("org.apache.felix.shell.gui").setAutoStart(false),// Shell Plugin API
                 new BundleReference("org.apache.felix.bundlerepository"),             // OBR Implementation
                 new BundleReference("orbisgis-oshell"),                               // Dev shell GUI

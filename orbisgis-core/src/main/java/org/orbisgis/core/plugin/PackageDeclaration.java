@@ -70,7 +70,7 @@ public class PackageDeclaration {
      * @return If revisionVersion has been set
      */
     public boolean isVersionDefined() {
-        return version!=null;
+        return version!=null && !version.equals(new Version(0,0,0));
     }   
 
     /**

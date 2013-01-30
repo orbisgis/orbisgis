@@ -31,8 +31,9 @@ package org.orbisgis.core.plugin;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
@@ -41,7 +42,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.StringTokenizer;
 import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -58,10 +58,10 @@ import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-import sun.tools.jar.resources.jar;
 
 /**
- * Functions used by Bundle Host.
+ * Functions used by Bundle Host. As long as OrbisGIS is not entirely converted into OSGi bundles,
+ * the host need to export packages using this class.
  * @author Nicolas Fortin
  */
 public class BundleTools {
@@ -132,7 +132,39 @@ public class BundleTools {
         Collections.sort(packages);
         return packages;
     }
-
+    private static List<String> getClassPath() {
+        List<String> classPath = new LinkedList<String>();
+        // Read declared class in the manifest
+        try {
+            Enumeration<URL> resources = BundleTools.class.getClassLoader().getResources("META-INF/MANIFEST.MF");
+            while (resources.hasMoreElements()) {
+                URL url = resources.nextElement();
+                try {
+                    Manifest manifest = new Manifest(url.openStream());
+                    String value = manifest.getMainAttributes().getValue("Class-Path");
+                    if(value!=null) {
+                        String[] pathElements = value.split(" ");
+                        if(pathElements==null) {
+                            pathElements = new String[] {value};
+                        }
+                        classPath.addAll(Arrays.asList(pathElements));
+                    }
+                } catch (IOException ex) {
+                    LOGGER.warn("Unable to retrieve Jar MANIFEST "+url,ex);
+                }
+            }
+        } catch (IOException ex) {
+            LOGGER.warn("Unable to retrieve Jar MANIFEST",ex);
+        }
+        // Read packages in the class path
+        String javaClasspath = System.getProperty("java.class.path");
+        String[] pathElements = javaClasspath.split(":");
+        if(pathElements==null) {
+            pathElements = new String[] {javaClasspath};
+        }
+        classPath.addAll(Arrays.asList(pathElements));
+        return classPath;
+    }
     /**
      * Read the class path, search for OSGi manifest declaration.
      * Reading MANIFEST is useful to read package versions of OSGi compliant Jars.
@@ -142,10 +174,8 @@ public class BundleTools {
      */
     public static Collection<PackageDeclaration> fetchManifests() {
         List<PackageDeclaration> packages = new LinkedList<PackageDeclaration>();
-        String[] pathElements = System.getProperty("java.class.path").split(":");
-        if(pathElements==null) {
-            pathElements = new String[] {System.getProperty("java.class.path")};
-        }
+        List<String> pathElements = getClassPath();
+        // Fetch
         for (String element : pathElements) {
             File filePath = new File(element);
             if (FilenameUtils.getExtension(element).equals("jar")) {
@@ -162,6 +192,7 @@ public class BundleTools {
                 }
             }
         }
+
         return packages;
     }
 
@@ -220,7 +251,7 @@ public class BundleTools {
     }
     private static Set<String> getAllPackages() {
         Set<String> packages = new HashSet<String>();
-        String[] pathElements = System.getProperty("java.class.path").split(":");
+        List<String> pathElements = getClassPath();
         for (String element : pathElements) {
             File filePath = new File(element);
             if (element.endsWith("jar")) {

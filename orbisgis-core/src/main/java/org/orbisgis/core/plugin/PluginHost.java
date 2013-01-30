@@ -45,7 +45,6 @@ import org.orbisgis.core.Services;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
-import org.osgi.framework.Version;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 
@@ -80,7 +79,14 @@ public class PluginHost {
         }
         packageList.add(packageInfo);
     }
-    
+    private void addPackage(PackageDeclaration packInfo,List<String> sortedPackagesExport) {
+        if(!packInfo.isVersionDefined()) {
+            sortedPackagesExport.add(packInfo.getPackageName());
+        } else {
+            sortedPackagesExport.add(packInfo.getPackageName()+
+                    "; version="+packInfo.getVersion());
+        }
+    }
     /**
      * Parse classpath to find all packages name available. Write them all without version information,
      * Except for defined packages through exportCorePackage(), 
@@ -92,20 +98,14 @@ public class PluginHost {
         List<String> sortedPackagesExport = new ArrayList<String>();
         for(PackageDeclaration packInfo : packageList) {
             packagesName.add(packInfo.getPackageName());
-            if(!packInfo.isVersionDefined()) {
-                sortedPackagesExport.add(packInfo.getPackageName());
-            } else {
-                sortedPackagesExport.add(packInfo.getPackageName()+
-                        "; version="+packInfo.getVersion());
-            }
+            addPackage(packInfo,sortedPackagesExport);
         }
         // Fetch built-ins OSGi bundles package declarations
         Collection<PackageDeclaration> packageDeclarations = BundleTools.fetchManifests();
         for(PackageDeclaration packageDeclaration : packageDeclarations) {
             if(!packagesName.contains(packageDeclaration.getPackageName())) {
                 packagesName.add(packageDeclaration.getPackageName());
-                sortedPackagesExport.add(packageDeclaration.getPackageName()+
-                        "; version="+packageDeclaration.getVersion());
+                addPackage(packageDeclaration,sortedPackagesExport);
             }
         }
         // Export Host provided packages, by classpaths
