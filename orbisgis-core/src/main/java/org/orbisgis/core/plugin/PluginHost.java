@@ -30,6 +30,7 @@ package org.orbisgis.core.plugin;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -44,6 +45,7 @@ import org.orbisgis.core.Services;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
+import org.osgi.framework.Version;
 import org.osgi.framework.launch.Framework;
 import org.osgi.framework.launch.FrameworkFactory;
 
@@ -85,7 +87,7 @@ public class PluginHost {
      * @return 
      */
     private String getExtraPackage() {
-        //Build a set of packages to skip programatically defined packages
+        //Build a set of packages to skip programmaticaly defined packages
         Set<String> packagesName = new HashSet<String>();
         List<String> sortedPackagesExport = new ArrayList<String>();
         for(PackageDeclaration packInfo : packageList) {
@@ -94,9 +96,16 @@ public class PluginHost {
                 sortedPackagesExport.add(packInfo.getPackageName());
             } else {
                 sortedPackagesExport.add(packInfo.getPackageName()+
-                        "; version="+packInfo.getMajorVersion()+
-                        "."+packInfo.getMinorVersion()+
-                        "."+packInfo.getRevisionVersion());                
+                        "; version="+packInfo.getVersion());
+            }
+        }
+        // Fetch built-ins OSGi bundles package declarations
+        Collection<PackageDeclaration> packageDeclarations = BundleTools.fetchManifests();
+        for(PackageDeclaration packageDeclaration : packageDeclarations) {
+            if(!packagesName.contains(packageDeclaration.getPackageName())) {
+                packagesName.add(packageDeclaration.getPackageName());
+                sortedPackagesExport.add(packageDeclaration.getPackageName()+
+                        "; version="+packageDeclaration.getVersion());
             }
         }
         // Export Host provided packages, by classpaths

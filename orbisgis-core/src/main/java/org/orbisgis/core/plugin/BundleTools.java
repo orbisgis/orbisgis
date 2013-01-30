@@ -29,23 +29,36 @@
 package org.orbisgis.core.plugin;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
+import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.felix.framework.util.manifestparser.ManifestParser;
 import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.BundleException;
+import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
+import org.osgi.framework.wiring.BundleCapability;
 import org.osgi.framework.wiring.BundleRevision;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+import sun.tools.jar.resources.jar;
 
 /**
  * Functions used by Bundle Host.
@@ -54,6 +67,8 @@ import org.xnap.commons.i18n.I18nFactory;
 public class BundleTools {
     private final static Logger LOGGER = Logger.getLogger(BundleTools.class);
     private final static I18n I18N = I18nFactory.getI18n(BundleTools.class);
+    private final static String MANIFEST_FILENAME = "MANIFEST.MF";
+    private final static String PACKAGE_NAMESPACE = "osgi.wiring.package";
     private BundleTools() {        
     }
 
@@ -109,12 +124,99 @@ public class BundleTools {
     }
     /**
      * Read the class path, open all Jars and folders, retrieve the package list.
+     * This kind of package list does not contain versions and are useful for non-OSGi packages only.
      * @return List of package name
      */
     public static List<String> getAvailablePackages() {
         List<String> packages = new ArrayList<String>(getAllPackages());
         Collections.sort(packages);
         return packages;
+    }
+
+    /**
+     * Read the class path, search for OSGi manifest declaration.
+     * Reading MANIFEST is useful to read package versions of OSGi compliant Jars.
+     * If a package version is not properly exported then an OSGi bundle that depends on this package with a specified
+     * version could not be Resolved.
+     * @return
+     */
+    public static Collection<PackageDeclaration> fetchManifests() {
+        List<PackageDeclaration> packages = new LinkedList<PackageDeclaration>();
+        String[] pathElements = System.getProperty("java.class.path").split(":");
+        if(pathElements==null) {
+            pathElements = new String[] {System.getProperty("java.class.path")};
+        }
+        for (String element : pathElements) {
+            File filePath = new File(element);
+            if (FilenameUtils.getExtension(element).equals("jar")) {
+                try {
+                    parseJarManifest(filePath, packages);
+                } catch (IOException ex) {
+                    LOGGER.debug("Unable to fetch packages in "+filePath.getAbsolutePath(),ex);
+                }
+            } else if (filePath.isDirectory()) {
+                try {
+                    parseDirectoryManifest(filePath, filePath, packages);
+                } catch (SecurityException ex) {
+                    LOGGER.debug("Unable to fetch the folder "+filePath.getAbsolutePath(),ex);
+                }
+            }
+        }
+        return packages;
+    }
+
+    /**
+     * Parse a Manifest in order to extract Exported Package
+     * @param manifest
+     * @param packages
+     * @throws IOException
+     */
+    public static void parseManifest(Manifest manifest, List<PackageDeclaration> packages) throws IOException {
+        Attributes attributes = manifest.getMainAttributes();
+        String exports = attributes.getValue(Constants.EXPORT_PACKAGE);
+        org.apache.felix.framework.Logger logger = new org.apache.felix.framework.Logger();
+        // Use Apache Felix to parse the Manifest Export header
+        List<BundleCapability> exportsCapability = ManifestParser.parseExportHeader(logger,null,exports,"0",
+                new Version(0,0,0));
+        for(BundleCapability bc : exportsCapability) {
+            Map<String,Object> attr = bc.getAttributes();
+            // If the package contain a package name and a package version
+            if(attr.containsKey(PACKAGE_NAMESPACE) && attr.containsKey(Constants.VERSION_ATTRIBUTE)) {
+                packages.add(new PackageDeclaration((String)attr.get(PACKAGE_NAMESPACE),
+                        (Version)attr.get(Constants.VERSION_ATTRIBUTE)));
+            }
+        }
+    }
+    private static void parseDirectoryManifest(File rootPath, File path, List<PackageDeclaration> packages) throws SecurityException {
+        File[] files = path.listFiles();
+        for (File file : files) {
+            // TODO Java7 check for non-symlink,
+            // without this check it might generate an infinite loop
+            // @link http://docs.oracle.com/javase/7/docs/api/java/nio/file/Files.html#isSymbolicLink(java.nio.file.Path)
+            if (!file.isDirectory()) {
+                if (file.getName().equals(MANIFEST_FILENAME)) {
+                    try {
+                        Manifest manifest = new Manifest(new FileInputStream(file));
+                        parseManifest(manifest, packages);
+                    } catch (Exception ex) {
+                        LOGGER.warn("Unable to read manifest in "+file.getAbsolutePath(),ex);
+                    }
+                } if (FilenameUtils.getExtension(file.getName()).equals("jar")) {
+                    try {
+                        parseJarManifest(file, packages);
+                    } catch (IOException ex) {
+                        LOGGER.warn("Unable to fetch packages in "+file.getAbsolutePath(),ex);
+                    }
+                }
+            } else {
+                parseDirectoryManifest(rootPath, file, packages);
+            }
+        }
+    }
+
+    private static void parseJarManifest(File jarFilePath, List<PackageDeclaration> packages) throws IOException {
+        JarFile jar = new JarFile(jarFilePath);
+        parseManifest(jar.getManifest(), packages);
     }
     private static Set<String> getAllPackages() {
         Set<String> packages = new HashSet<String>();
