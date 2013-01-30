@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.renderer.se.common;
 
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.AffineTransform;
@@ -69,9 +70,9 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
     private static final Logger LOGGER = Logger.getLogger(Halo.class);
     private static final I18n I18N = I18nFactory.getI18n(Halo.class);
         /**
-         * The default radius for new {@code Halo} instances. Set to 5.0, and UOM dependant.
+         * The default radius for new {@code Halo} instances. Set to 1.0, and UOM dependant.
          */
-    public static final double DEFAULT_RADIUS = 5.0;
+    public static final double DEFAULT_RADIUS = 1.0;
 
     private Uom uom;
     private RealParameter radius;
@@ -81,7 +82,7 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
      * Build a new default {@code Halo}, with a solid fill and a radius set to {@code DEFAULT_RADIUS}
      */
     public Halo() {
-        setFill(new SolidFill());
+        setFill(getDefaultFill());
         setRadius(new RealLiteral(DEFAULT_RADIUS));
     }
 
@@ -91,8 +92,8 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
      * @param radius 
      */
     public Halo(Fill fill, RealParameter radius) {
-        this.fill = fill;
-        this.radius = radius;
+        setFill(fill);
+        setRadius(radius);
     }
 
     /**
@@ -103,10 +104,14 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
     public Halo(HaloType halo) throws InvalidStyle {
         if (halo.getFill() != null) {
             this.setFill(Fill.createFromJAXBElement(halo.getFill()));
+        } else {
+                this.setFill(getDefaultFill());
         }
 
         if (halo.getRadius() != null) {
             this.setRadius(SeParameterFactory.createRealParameter(halo.getRadius()));
+        } else{
+                this.setRadius(new RealLiteral(DEFAULT_RADIUS));
         }
 
         if (halo.getUom() != null) {
@@ -135,8 +140,8 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
 
     @Override
     public void setFill(Fill fill) {
-        this.fill = fill;
-        fill.setParent(this);
+        this.fill = fill == null ? getDefaultFill() : fill;
+        this.fill.setParent(this);
     }
 
     @Override
@@ -158,11 +163,13 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
      * @param radius 
      */
     public void setRadius(RealParameter radius) {
-        this.radius = radius;
-        if (this.radius != null) {
+        if (radius != null) {
+            this.radius = radius;
             this.radius.setContext(RealParameterContext.REAL_CONTEXT);
-            this.radius.setParent(this);
+        } else {
+            this.radius = new RealLiteral(DEFAULT_RADIUS);
         }
+        this.radius.setParent(this);
     }
 
     /**
@@ -307,4 +314,13 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
 
         return h;
     }
+
+    /**
+     * Default fill for the halo must be white and 100% opaque.
+     * @return
+     */
+    private Fill getDefaultFill() {
+            return new SolidFill(Color.WHITE, 1);
+    }
+
 }
