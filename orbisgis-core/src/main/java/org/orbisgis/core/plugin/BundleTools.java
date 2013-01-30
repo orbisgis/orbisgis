@@ -178,7 +178,7 @@ public class BundleTools {
         // Fetch
         for (String element : pathElements) {
             File filePath = new File(element);
-            if (FilenameUtils.getExtension(element).equals("jar")) {
+            if (FilenameUtils.getExtension(element).equals("jar") && filePath.exists()) {
                 try {
                     parseJarManifest(filePath, packages);
                 } catch (IOException ex) {
@@ -232,7 +232,7 @@ public class BundleTools {
                     } catch (Exception ex) {
                         LOGGER.warn("Unable to read manifest in "+file.getAbsolutePath(),ex);
                     }
-                } if (FilenameUtils.getExtension(file.getName()).equals("jar")) {
+                } if (FilenameUtils.getExtension(file.getName()).equals("jar") && file.exists()) {
                     try {
                         parseJarManifest(file, packages);
                     } catch (IOException ex) {
