@@ -89,7 +89,7 @@ public final class BshConsolePanel extends JPanel {
         private int line = 0;
         private int character = 0;
         private String currentStatusMessage = "";
-        private String BSHINITFILE = "init.bsh";
+        private static String BSHINITFILE = "init.bsh";
         
         /**
          * Creates a console for beanshell.
@@ -116,8 +116,8 @@ public final class BshConsolePanel extends JPanel {
 
         /**
          * This class is used to load all bsh scripts and register them without
-         * blocking the OrbisGIS UI The bsh scripts are delivered by the
-         * OrbisGIS code. The scripts are overrided after each run.
+         * blocking the OrbisGIS UI.The bsh scripts are stored in the resources
+         * folder. The scripts are overrided after each run.
          */
         private class LoadBSHScripts extends SwingWorker<Object, Object> {
 
