@@ -121,14 +121,6 @@ public final class ExclusionRadius extends ExclusionZone {
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                if (radius != null) {
-                        return radius.dependsOnFeature();
-                }
-                return new HashSet<String>();
-        }
-
-        @Override
         public UsedAnalysis getUsedAnalysis(){
                 UsedAnalysis ua = new UsedAnalysis();
                 ua.merge(radius.getUsedAnalysis());

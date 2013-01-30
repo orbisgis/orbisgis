@@ -235,23 +235,6 @@ public final class DotMapFill extends Fill implements GraphicNode {
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> ret = new HashSet<String>();
-
-        if (mark != null) {
-            ret.addAll(mark.dependsOnFeature());
-        }
-        if (this.quantityPerMark != null) {
-            ret.addAll(quantityPerMark.dependsOnFeature());
-        }
-        if (this.totalQuantity != null) {
-            ret.addAll(totalQuantity.dependsOnFeature());
-        }
-
-        return ret;
-    }
-
-    @Override
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis ua = new UsedAnalysis();
         if(mark != null){

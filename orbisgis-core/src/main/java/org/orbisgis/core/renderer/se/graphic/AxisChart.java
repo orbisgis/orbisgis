@@ -921,33 +921,6 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                HashSet<String> ret = new HashSet<String>();
-                if (areaFill != null) {
-                        ret.addAll(areaFill.dependsOnFeature());
-                }
-                if (lineStroke != null) {
-                        ret.addAll(lineStroke.dependsOnFeature());
-                }
-                if (this.categoryGap != null) {
-                        ret.addAll(categoryGap.dependsOnFeature());
-                }
-                if (categoryWidth != null) {
-                        ret.addAll(categoryWidth.dependsOnFeature());
-                }
-                if (normalizeTo != null) {
-                        ret.addAll(normalizeTo.dependsOnFeature());
-                }
-                if (axisScale != null) {
-                        ret.addAll(axisScale.dependsOnFeature());
-                }
-                for (Category c : categories) {
-                        ret.addAll(c.dependsOnFeature());
-                }
-                return ret;
-        }
-
-        @Override
         public UsedAnalysis getUsedAnalysis() {
                 UsedAnalysis ret = new UsedAnalysis();
                 if (areaFill != null) {

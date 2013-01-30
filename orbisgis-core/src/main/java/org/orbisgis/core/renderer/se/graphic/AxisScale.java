@@ -112,22 +112,6 @@ public final class AxisScale extends AbstractSymbolizerNode {
     }
 
     /**
-     * Gets the feature this {@code AxisScale} depends on.
-     * @return
-     */
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> ret = new HashSet<String>();
-        if(axisLength != null){
-            ret.addAll(axisLength.dependsOnFeature());
-        }
-        if(measure != null){
-            ret.addAll(measure.dependsOnFeature());
-        }
-        return ret;
-    }
-
-    /**
      * Gets the analysis that are used to build this {@code AxisScale}.
      * @return
      */

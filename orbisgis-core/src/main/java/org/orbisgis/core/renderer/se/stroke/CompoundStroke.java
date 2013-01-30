@@ -446,20 +446,6 @@ public final class CompoundStroke extends Stroke implements UomNode {
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> result = new HashSet<String>();
-        /*for (StrokeAnnotationGraphic sag : annotations) {
-            result += sag.dependsOnFeature();
-        }*/
-
-        for (CompoundStrokeElement elem : elements) {
-            result.addAll(elem.dependsOnFeature());
-        }
-
-        return result;
-    }
-
-    @Override
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis result = new UsedAnalysis();
         for (CompoundStrokeElement elem : elements) {

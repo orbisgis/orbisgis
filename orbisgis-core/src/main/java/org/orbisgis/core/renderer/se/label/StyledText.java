@@ -633,36 +633,6 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> result = new HashSet<String>();
-        if (text != null) {
-            result.addAll(text.dependsOnFeature());
-        }
-        if (fontFamily != null) {
-            result.addAll(fontFamily.dependsOnFeature());
-        }
-        if (fontWeight != null) {
-            result.addAll(fontWeight.dependsOnFeature());
-        }
-        if (fontStyle != null) {
-            result.addAll(fontStyle.dependsOnFeature());
-        }
-        if (fontSize != null) {
-            result.addAll(fontSize.dependsOnFeature());
-        }
-        if (stroke != null) {
-            result.addAll(stroke.dependsOnFeature());
-        }
-        if (fill != null) {
-            result.addAll(fill.dependsOnFeature());
-        }
-        if (halo != null) {
-            result.addAll(halo.dependsOnFeature());
-        }
-        return result;
-    }
-
-    @Override
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis result = new UsedAnalysis();
         if (text != null) {

@@ -273,28 +273,6 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                HashSet<String> ret = new HashSet<String>();
-                
-                if(this.getGeometryAttribute()!=null){
-                    ret.addAll(this.getGeometryAttribute().dependsOnFeature());
-                }
-                if (translate != null) {
-                        ret.addAll(translate.dependsOnFeature());
-                }
-                if (fill != null) {
-                        ret.addAll(fill.dependsOnFeature());
-                }
-                if (stroke != null) {
-                        ret.addAll(stroke.dependsOnFeature());
-                }
-                if (perpendicularOffset != null) {
-                        ret.addAll(perpendicularOffset.dependsOnFeature());
-                }
-                return ret;
-        }
-
-        @Override
         public UsedAnalysis getUsedAnalysis() {
                 UsedAnalysis ret = new UsedAnalysis();
                 if (translate != null) {
@@ -315,6 +293,9 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
         @Override
         public List<SymbolizerNode> getChildren() {
                 List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>(4);
+                if(this.getGeometryAttribute()!=null){
+                    ls.add(this.getGeometryAttribute());
+                }
                 if (translate != null) {
                         ls.add(translate);
                 }

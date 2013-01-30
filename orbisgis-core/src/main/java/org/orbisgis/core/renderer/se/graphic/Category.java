@@ -205,27 +205,6 @@ public final class Category  extends AbstractSymbolizerNode implements FillNode,
 
                 return ct;
         }
-        
-        @Override
-        public HashSet<String> dependsOnFeature() {
-            HashSet<String> ret = new HashSet<String>();
-            if (this.getFill() != null) {
-                ret.addAll(this.getFill().dependsOnFeature());
-            }
-
-            if (this.getStroke() != null) {
-                ret.addAll(getStroke().dependsOnFeature());
-            }
-
-            if (this.getGraphicCollection() != null) {
-                ret.addAll(getGraphicCollection().dependsOnFeature());
-            }
-
-            if (this.getMeasure() != null) {
-                ret.addAll(getMeasure().dependsOnFeature());
-            }
-            return ret;
-        }
 
         @Override
         public UsedAnalysis getUsedAnalysis() {

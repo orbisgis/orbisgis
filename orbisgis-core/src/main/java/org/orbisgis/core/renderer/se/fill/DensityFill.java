@@ -295,25 +295,6 @@ public final class DensityFill extends Fill implements GraphicNode {
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> ret = new HashSet<String>();
-        if (percentageCovered != null) {
-            ret.addAll(percentageCovered.dependsOnFeature());
-        }
-        if (useHatches()) {
-            if (hatches != null) {
-                ret.addAll(hatches.dependsOnFeature());
-            }
-            if (orientation != null) {
-                ret.addAll(orientation.dependsOnFeature());
-            }
-        } else if (mark != null) {
-            ret.addAll(mark.dependsOnFeature());
-        }
-        return ret;
-    }
-
-    @Override
     public UsedAnalysis getUsedAnalysis() {
             UsedAnalysis ua = new UsedAnalysis();
             ua.merge(percentageCovered.getUsedAnalysis());

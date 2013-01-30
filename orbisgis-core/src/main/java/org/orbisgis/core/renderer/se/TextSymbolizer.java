@@ -203,23 +203,6 @@ public final class TextSymbolizer extends VectorSymbolizer {
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                HashSet<String> ret = new HashSet<String>();
-                
-                if(this.getGeometryAttribute()!=null){
-                    ret.addAll(this.getGeometryAttribute().dependsOnFeature());
-                }
-                
-                if (perpendicularOffset != null) {
-                        ret.addAll(perpendicularOffset.dependsOnFeature());
-                }
-                if (label != null) {
-                        ret.addAll(label.dependsOnFeature());
-                }
-                return ret;
-        }
-
-        @Override
         public UsedAnalysis getUsedAnalysis() {
                 UsedAnalysis ret = new UsedAnalysis();
                 if (perpendicularOffset != null) {
@@ -234,6 +217,9 @@ public final class TextSymbolizer extends VectorSymbolizer {
         @Override
         public List<SymbolizerNode> getChildren() {
                 List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if(this.getGeometryAttribute()!=null){
+                    ls.add(this.getGeometryAttribute());
+                }
                 if (perpendicularOffset != null) {
                         ls.add(perpendicularOffset);
                 }

@@ -214,16 +214,6 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> ret = new HashSet<String>();
-        if (this.getGeometryAttribute() != null) {
-            ret.addAll(this.getGeometryAttribute().dependsOnFeature());
-        }
-        ret.addAll(graphic.dependsOnFeature());
-        return ret;
-    }
-
-    @Override
     public UsedAnalysis getUsedAnalysis(){
             //We get an empty UsedAnalysis - we'll merge everything.
            return graphic.getUsedAnalysis();
@@ -232,6 +222,9 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
     @Override
     public List<SymbolizerNode> getChildren() {
         List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        if(this.getGeometryAttribute()!=null){
+            ls.add(this.getGeometryAttribute());
+        }
         ls.add(graphic);
         return ls;
     }

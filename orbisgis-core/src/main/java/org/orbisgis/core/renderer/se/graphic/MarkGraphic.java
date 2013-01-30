@@ -607,39 +607,6 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-
-        HashSet<String> result = new HashSet<String>();
-
-        if (wkn != null) {
-            result.addAll(wkn.dependsOnFeature());
-        }
-        if (viewBox != null) {
-            result.addAll(viewBox.dependsOnFeature());
-        }
-        if (pOffset != null) {
-            result.addAll(pOffset.dependsOnFeature());
-        }
-        if (halo != null) {
-            result.addAll(halo.dependsOnFeature());
-        }
-        if (fill != null) {
-            result.addAll(fill.dependsOnFeature());
-        }
-        if (stroke != null) {
-            result.addAll(stroke.dependsOnFeature());
-        }
-        if (transform != null) {
-            result.addAll(transform.dependsOnFeature());
-        }
-        if (markIndex != null) {
-            result.addAll(markIndex.dependsOnFeature());
-        }
-
-        return result;
-    }
-
-    @Override
     public UsedAnalysis getUsedAnalysis() {
 
         UsedAnalysis result = new UsedAnalysis();

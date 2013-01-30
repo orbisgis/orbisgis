@@ -118,13 +118,6 @@ public abstract class ValueReference extends AbstractSymbolizerNode implements S
 		}
 	}
 
-	@Override
-	public HashSet<String> dependsOnFeature() {
-            HashSet<String> out = new HashSet<String>();
-            out.add(getColumnName());
-            return out;
-	}
-
         /**
          * Set the name of the column where the data will be retrieved.
          * @param fieldName 

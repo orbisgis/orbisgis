@@ -449,15 +449,6 @@ public final class Style extends AbstractSymbolizerNode {
             return false;
         }
     }
-    
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> hs = new HashSet<String>();
-        for(Rule r : rules){
-            hs.addAll(r.dependsOnFeature());
-        }
-        return hs;
-    }
 
     @Override
     public UsedAnalysis getUsedAnalysis(){

@@ -77,11 +77,6 @@ public abstract class Literal extends AbstractSymbolizerNode implements Comparab
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                return new HashSet<String>();
-        }
-
-        @Override
         public ParameterValueType getJAXBParameterValueType() {
                 ParameterValueType pvt = new ParameterValueType();
                 pvt.getContent().add(this.toString());

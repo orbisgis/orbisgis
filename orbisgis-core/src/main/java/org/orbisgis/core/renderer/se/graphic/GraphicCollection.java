@@ -289,15 +289,6 @@ public final class GraphicCollection extends AbstractSymbolizerNode implements U
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> result = new HashSet<String>();
-        for (Graphic g : this.graphics) {
-            result.addAll(g.dependsOnFeature());
-        }
-        return result;
-    }
-
-    @Override
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis result = new UsedAnalysis();
         for (Graphic g : this.graphics) {

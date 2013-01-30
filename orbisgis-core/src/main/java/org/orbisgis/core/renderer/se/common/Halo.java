@@ -270,14 +270,6 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> ret = new HashSet<String>();
-        ret.addAll(radius.dependsOnFeature());
-        ret.addAll(fill.dependsOnFeature());
-        return ret;
-    }
-
-    @Override
     public UsedAnalysis getUsedAnalysis() {
             UsedAnalysis ua = new UsedAnalysis();
             ua.merge(radius.getUsedAnalysis());

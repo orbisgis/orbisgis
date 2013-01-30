@@ -87,15 +87,6 @@ public class AlternativeStrokeElements extends CompoundStrokeElement {
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                HashSet<String> result = new HashSet<String>();
-                for (StrokeElement elem : elements) {
-                        result.addAll(elem.dependsOnFeature());
-                }
-                return result;
-        }
-
-        @Override
         public UsedAnalysis getUsedAnalysis() {
                 UsedAnalysis result = new UsedAnalysis();
                 for (StrokeElement elem : elements) {

@@ -264,15 +264,6 @@ public class Transform extends AbstractSymbolizerNode implements UomNode {
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                HashSet<String> result = new HashSet<String>();
-                for (Transformation t : this.transformations) {
-                        result.addAll(t.dependsOnFeature());
-                }
-                return result;
-        }
-
-        @Override
         public UsedAnalysis getUsedAnalysis() {
                 UsedAnalysis result = new UsedAnalysis();
                 for (Transformation t : this.transformations) {

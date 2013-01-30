@@ -219,27 +219,6 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-
-                HashSet<String> result = new HashSet<String>();
-
-                if (length != null) {
-                        result.addAll(length.dependsOnFeature());
-                }
-                if (preGap != null) {
-                        result.addAll(preGap.dependsOnFeature());
-                }
-                if (postGap != null) {
-                        result.addAll(postGap.dependsOnFeature());
-                }
-                if (stroke != null) {
-                        result.addAll(stroke.dependsOnFeature());
-                }
-
-                return result;
-        }
-
-        @Override
         public UsedAnalysis getUsedAnalysis() {
                 UsedAnalysis result = new UsedAnalysis();
                 if (length != null) {

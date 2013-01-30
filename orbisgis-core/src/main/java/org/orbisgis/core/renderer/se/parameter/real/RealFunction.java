@@ -266,16 +266,6 @@ public class RealFunction extends AbstractSymbolizerNode implements SeParameter,
         return 0;
     }
 
-
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> result = new HashSet<String>();
-        for (RealParameter p : operands){
-            result.addAll(p.dependsOnFeature());
-        }
-        return result;
-    }
-
     @Override
 	public ParameterValueType getJAXBParameterValueType() {
 		ParameterValueType p = new ParameterValueType();

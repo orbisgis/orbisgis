@@ -235,24 +235,6 @@ public final class PenStroke extends Stroke implements FillNode {
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> result = new HashSet<String>();
-        if (fill != null) {
-            result.addAll(fill.dependsOnFeature());
-        }
-        if (dashOffset != null) {
-            result.addAll(dashOffset.dependsOnFeature());
-        }
-        if (dashArray != null) {
-            result.addAll(dashArray.dependsOnFeature());
-        }
-        if (width != null) {
-            result.addAll(width.dependsOnFeature());
-        }
-        return result;
-    }
-
-    @Override
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis result = new UsedAnalysis();
         if (fill != null) {

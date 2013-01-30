@@ -127,15 +127,6 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         this.method = CategorizeMethod.MANUAL;
     }
 
-    @Override
-    public final HashSet<String> dependsOnFeature() {
-        HashSet<String>  out = this.getLookupValue().dependsOnFeature();
-        for (int i = 0; i < this.getNumClasses(); i++) {
-            out.addAll(this.getClassValue(i).dependsOnFeature());
-        }
-        return out;
-    }
-
     /**
      * Set the fall bacj value that is returned when a value can't be processed.
      * @param fallbackValue 

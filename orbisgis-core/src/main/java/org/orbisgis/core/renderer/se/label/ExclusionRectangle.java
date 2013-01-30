@@ -145,22 +145,6 @@ public final class ExclusionRectangle extends ExclusionZone {
         return of.createExclusionRectangle(r);
     }
 
-	@Override
-	public HashSet<String> dependsOnFeature() {
-            HashSet<String> result = null;
-            if (x != null) {
-                result = x.dependsOnFeature();
-            }
-            if (y != null) {
-                if(result == null){
-                    result = y.dependsOnFeature();
-                } else {
-                    result.addAll(y.dependsOnFeature());
-                }
-            }
-            return result;
-	}
-
     @Override
     public UsedAnalysis getUsedAnalysis(){
         UsedAnalysis ua = new UsedAnalysis();

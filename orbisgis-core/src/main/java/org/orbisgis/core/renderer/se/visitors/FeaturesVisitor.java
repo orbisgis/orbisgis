@@ -26,38 +26,43 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.core.renderer.se;
+package org.orbisgis.core.renderer.se.visitors;
 
-import org.orbisgis.core.renderer.se.visitors.ISymbolizerVisitor;
+import java.util.HashSet;
+import java.util.List;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
+import org.orbisgis.core.renderer.se.parameter.ValueReference;
 
 /**
- * Base of all SymbolizerNodes concrete implementations.
+ * Search for the names of the features that are used in the visited tree of
+ * {@link SymbolizerNode} instances.
  * @author Alexis Guéganno
  */
-public abstract class AbstractSymbolizerNode implements SymbolizerNode {
-        private SymbolizerNode parent;
+public class FeaturesVisitor implements ISymbolizerVisitor {
+
+        HashSet<String> res = new HashSet<String>();
 
         @Override
-        public SymbolizerNode getParent() {
-                return parent;
-        }
-
-        @Override
-        public void setParent(SymbolizerNode parent) {
-                this.parent = parent;
-                update();
-        }
-
-        @Override
-        public void update() {
-                if(parent != null){
-                        parent.update();
+        public void visitSymbolizerNode(SymbolizerNode sn) {
+                if(!res.isEmpty()){
+                        res = new HashSet<String>();
                 }
+                visitImpl(sn);
         }
 
-        @Override
-        public void acceptVisitor(ISymbolizerVisitor visitor){
-                visitor.visitSymbolizerNode(this);
+        private void visitImpl(SymbolizerNode sn){
+                List<SymbolizerNode> children = sn.getChildren();
+                if(sn instanceof ValueReference){
+                        res.add(((ValueReference)sn).getColumnName());
+                }
+                for(SymbolizerNode c : children){
+                        visitImpl(c);
+                }
+
+        }
+
+        public HashSet<String> getResult(){
+                return res;
         }
 
 }

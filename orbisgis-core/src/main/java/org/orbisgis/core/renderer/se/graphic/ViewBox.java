@@ -146,23 +146,6 @@ public final class ViewBox extends  AbstractSymbolizerNode {
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-            HashSet<String> hs = null;
-            if (x != null) {
-                    hs = x.dependsOnFeature();
-            }
-            if (y != null) { 
-                if(hs == null) {
-                    hs = y.dependsOnFeature();
-                } else {
-                    hs.addAll(y.dependsOnFeature());
-                }
-            }
-
-            return hs;
-        }
-
-        @Override
         public UsedAnalysis getUsedAnalysis() {
             UsedAnalysis ua = new UsedAnalysis();
             if(x!=null){

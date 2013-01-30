@@ -354,23 +354,6 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
         }
     }
 
-
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> result = null;
-        if (graphic != null) {
-            result = graphic.dependsOnFeature();
-        }
-        if (length != null) {
-            if(result == null){
-                result = length.dependsOnFeature();
-            } else {
-                result.addAll(length.dependsOnFeature());
-            }
-        }
-        return result == null ? new HashSet<String>() : result;
-    }
-
     @Override
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis result = new UsedAnalysis();

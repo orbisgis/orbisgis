@@ -403,24 +403,6 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
 
     return delta;
     }*/
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> ret = new HashSet<String>();
-        if (halo != null) {
-            ret.addAll(halo.dependsOnFeature());
-        }
-        if (opacity != null) {
-            ret.addAll(opacity.dependsOnFeature());
-        }
-        if (transform != null) {
-            ret.addAll(transform.dependsOnFeature());
-        }
-        if (viewBox != null) {
-            ret.addAll(viewBox.dependsOnFeature());
-        }
-
-        return ret;
-    }
 
     @Override
     public UsedAnalysis getUsedAnalysis() {

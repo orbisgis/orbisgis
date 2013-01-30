@@ -38,6 +38,7 @@ import java.util.Map;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -146,8 +147,12 @@ public enum WellKnownName implements MarkGraphicSource {
     public Shape getShape(ViewBox viewBox, Map<String,Value> map,
             Double scale, Double dpi, RealParameter markIndex,
             String mimeType) throws ParameterException {
-        if (map == null && viewBox != null && !viewBox.dependsOnFeature().isEmpty()){
-            return null;
+        if (map == null && viewBox != null){
+            FeaturesVisitor fv = new FeaturesVisitor();
+            viewBox.acceptVisitor(fv);
+            if(!fv.getResult().isEmpty()){
+                return null;
+            }
         }
 
         double x=DEFAULT_SIZE, y=DEFAULT_SIZE; // The size of the shape, [final unit] => [px]

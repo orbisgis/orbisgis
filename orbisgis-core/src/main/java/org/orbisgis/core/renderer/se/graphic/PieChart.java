@@ -61,6 +61,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
+import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
 
 /**
  * A PieChart is a way to render statistical informations directly in the map.
@@ -331,7 +332,9 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
     public void setHoleRadius(RealParameter holeRadius) {
         this.holeRadius = holeRadius;
         if (holeRadius != null) {
-            if (this.radius != null && this.radius.dependsOnFeature().isEmpty()) {
+            FeaturesVisitor fv = new FeaturesVisitor();
+            this.radius.acceptVisitor(fv);
+            if (this.radius != null && fv.getResult().isEmpty()) {
                 try {
                     holeRadius.setContext(new RealParameterContext(0.0, radius.getValue(null, -1)));
                 } catch (ParameterException ex) {
@@ -573,27 +576,6 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
 
     @Override
     public void updateGraphic() {
-    }
-
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> result = new HashSet<String>();
-        if (radius != null) {
-            result.addAll(radius.dependsOnFeature());
-        }
-        if (holeRadius != null) {
-            result.addAll(holeRadius.dependsOnFeature());
-        }
-        if (stroke != null) {
-            result.addAll(stroke.dependsOnFeature());
-        }
-        if (this.transform != null) {
-            result.addAll(transform.dependsOnFeature());
-        }
-        for (Slice s : slices) {
-            result.addAll(s.dependsOnFeature());
-        }
-        return result;
     }
 
     @Override

@@ -120,15 +120,6 @@ public class StringConcatenate extends AbstractSymbolizerNode implements SeParam
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                HashSet<String> sb = new HashSet<String>();
-                for(StringParameter sp :inputStrings){
-                        sb.addAll(sp.dependsOnFeature());
-                }
-                return sb;
-        }
-
-        @Override
         public ParameterValueType getJAXBParameterValueType() {
                 ParameterValueType p = new ParameterValueType();
                 p.getContent().add(this.getJAXBExpressionType());

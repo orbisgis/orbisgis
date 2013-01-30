@@ -230,11 +230,6 @@ public class RasterSymbolizer extends Symbolizer {
         System.out.println("  Geom: " + lst.getGeometry());
     }
 
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
         @Override
         public UsedAnalysis getUsedAnalysis() {
                 throw new UnsupportedOperationException("Not supported yet.");

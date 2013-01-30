@@ -91,16 +91,6 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
                 mode = InterpolationMode.LINEAR;
         }
 
-        @Override
-        public final HashSet<String> dependsOnFeature() {
-            HashSet<String> out = this.getLookupValue().dependsOnFeature();
-            for (int i = 0; i < this.getNumInterpolationPoint(); i++) {
-                HashSet<String> r = this.getInterpolationPoint(i).getValue().dependsOnFeature();
-                out.addAll(r);
-            }
-            return out;
-        }
-
         /**
          * Retrieve the mode that is used to process the interpolation.
          * @return 

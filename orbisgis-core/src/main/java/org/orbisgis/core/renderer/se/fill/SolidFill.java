@@ -213,22 +213,6 @@ public final class SolidFill extends Fill {
 		return "Color: " + color + " alpha: " + opacity;
 	}
 
-	@Override
-	public HashSet<String> dependsOnFeature() {
-            HashSet<String> ret = null;
-            if (color != null) {
-                ret = color.dependsOnFeature();
-            }
-            if (opacity != null) {
-                if(ret == null) {
-                    ret = opacity.dependsOnFeature();
-                } else {
-                    ret.addAll(opacity.dependsOnFeature());
-                }
-            }
-            return ret;
-	}
-
     @Override
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis ua = new UsedAnalysis();

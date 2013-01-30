@@ -140,11 +140,6 @@ public class Number2String extends AbstractSymbolizerNode implements SeParameter
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                return numericValue.dependsOnFeature();
-        }
-
-        @Override
         public ParameterValueType getJAXBParameterValueType() {
                 ParameterValueType p = new ParameterValueType();
                 p.getContent().add(this.getJAXBExpressionType());

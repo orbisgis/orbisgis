@@ -152,24 +152,6 @@ public final class Scale extends AbstractSymbolizerNode implements Transformatio
         return false;
     }
 
-
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> result = null;
-        if (x != null) {
-            result = x.dependsOnFeature();
-        }
-        if (y != null) {
-            if(result == null){
-            result = y.dependsOnFeature();
-            } else {
-                result.addAll(y.dependsOnFeature());
-                
-            }
-        }
-        return result;
-    }
-
     @Override
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis result = new UsedAnalysis();

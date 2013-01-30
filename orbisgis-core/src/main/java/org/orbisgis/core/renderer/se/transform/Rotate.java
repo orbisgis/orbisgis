@@ -190,29 +190,6 @@ public final class Rotate extends AbstractSymbolizerNode implements Transformati
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                HashSet<String> result = null;
-                if (x != null) {
-                        result = x.dependsOnFeature();
-                }
-                if (y != null) {
-                    if(result == null){
-                        result = y.dependsOnFeature();
-                    } else {
-                        result.addAll(y.dependsOnFeature());
-                    }
-                }
-                if (rotation != null) {
-                    if(result == null){
-                        result = rotation.dependsOnFeature();
-                    } else {
-                        result.addAll(rotation.dependsOnFeature());
-                    }
-                }
-                return result;
-        }
-
-        @Override
         public UsedAnalysis getUsedAnalysis() {
             UsedAnalysis result = new UsedAnalysis();
             result.merge(x.getUsedAnalysis());

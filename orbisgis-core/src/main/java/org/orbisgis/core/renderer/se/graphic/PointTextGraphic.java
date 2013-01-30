@@ -197,22 +197,6 @@ public final class PointTextGraphic extends Graphic implements UomNode {
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                HashSet<String> result = new HashSet<String>();
-                if (pointLabel != null) {
-                        result.addAll(pointLabel.dependsOnFeature());
-                }
-                if (x != null) {
-                        result.addAll(x.dependsOnFeature());
-                }
-                if (y != null) {
-                        result.addAll(y.dependsOnFeature());
-                }
-
-                return result;
-        }
-
-        @Override
         public UsedAnalysis getUsedAnalysis() {
             UsedAnalysis ua = new UsedAnalysis();
             if(pointLabel != null){

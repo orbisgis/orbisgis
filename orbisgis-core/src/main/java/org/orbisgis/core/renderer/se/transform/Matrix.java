@@ -48,6 +48,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
 
 /**
  * Affine Transformation based on RealParameters
@@ -342,18 +343,6 @@ public final class Matrix extends AbstractSymbolizerNode implements Transformati
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-            HashSet<String> hs = new HashSet<String>();
-            hs.addAll(a.dependsOnFeature());
-            hs.addAll(b.dependsOnFeature());
-            hs.addAll(c.dependsOnFeature());
-            hs.addAll(d.dependsOnFeature());
-            hs.addAll(e.dependsOnFeature());
-            hs.addAll(f.dependsOnFeature());
-            return hs;
-        }
-
-        @Override
         public UsedAnalysis getUsedAnalysis() {
             UsedAnalysis result = new UsedAnalysis();
             result.merge(a.getUsedAnalysis());
@@ -417,12 +406,19 @@ public final class Matrix extends AbstractSymbolizerNode implements Transformati
          * @throws ParameterException when something went wrong...
          */
         public void simplify() throws ParameterException {
-                HashSet<String> sa = a.dependsOnFeature();
-                HashSet<String> sb = b.dependsOnFeature();
-                HashSet<String>sc = c.dependsOnFeature();
-                HashSet<String> sd = d.dependsOnFeature();
-                HashSet<String> se = e.dependsOnFeature();
-                HashSet<String> sf = f.dependsOnFeature();
+                FeaturesVisitor vis = new FeaturesVisitor();
+                a.acceptVisitor(vis);
+                HashSet<String> sa = vis.getResult();
+                b.acceptVisitor(vis);
+                HashSet<String> sb = vis.getResult();
+                c.acceptVisitor(vis);
+                HashSet<String> sc = vis.getResult();
+                d.acceptVisitor(vis);
+                HashSet<String> sd = vis.getResult();
+                e.acceptVisitor(vis);
+                HashSet<String> se = vis.getResult();
+                f.acceptVisitor(vis);
+                HashSet<String> sf = vis.getResult();
 
                 if (sa != null && !sa.isEmpty()) {
                         setA(new RealLiteral(a.getValue(null, -1)));

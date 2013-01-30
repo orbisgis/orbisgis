@@ -139,11 +139,6 @@ public final class TextStroke extends Stroke {
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                return lineLabel.dependsOnFeature();
-        }
-
-        @Override
         public UsedAnalysis getUsedAnalysis() {
                 UsedAnalysis ua = new UsedAnalysis();
                 if(lineLabel != null){

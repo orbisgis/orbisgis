@@ -262,23 +262,6 @@ public final class GraphicFill extends Fill {
 
     }
 
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> sb = new HashSet<String>();
-
-        if (gapX != null) {
-            sb.addAll(gapX.dependsOnFeature());
-        }
-        if (gapY != null) {
-            sb.addAll(gapY.dependsOnFeature());
-        }
-        if (graphic != null) {
-            sb.addAll(graphic.dependsOnFeature());
-        }
-
-        return sb;
-    }
-
         @Override
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis ua = new UsedAnalysis();

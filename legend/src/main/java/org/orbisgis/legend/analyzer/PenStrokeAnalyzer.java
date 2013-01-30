@@ -37,6 +37,7 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
 import org.orbisgis.legend.AbstractAnalyzer;
 import org.orbisgis.legend.Analyzer;
 import org.orbisgis.legend.LegendStructure;
@@ -96,7 +97,9 @@ public class PenStrokeAnalyzer extends AbstractAnalyzer {
                 if(penStroke == null){
                         return new NullPenStrokeLegend();
                 }
-                Set<String> features = penStroke.dependsOnFeature();
+                FeaturesVisitor fv = new FeaturesVisitor();
+                penStroke.acceptVisitor(fv);
+                Set<String> features = fv.getResult();
                 instanciateLegends();
                 if(features.size() < 2){
                         //The distinction is made here :

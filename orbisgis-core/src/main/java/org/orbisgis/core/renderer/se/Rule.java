@@ -52,6 +52,7 @@ import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
+import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
 
 /**
  * Rules are used to group rendering instructions by featyre-property conditions and map scales. 
@@ -336,14 +337,18 @@ public final class Rule extends AbstractSymbolizerNode {
                     if (g instanceof MarkGraphic) {
                         MarkGraphic mark = (MarkGraphic) g;
                         if (mark.getViewBox() != null) {
+                            FeaturesVisitor fv = new FeaturesVisitor();
+                            mark.getViewBox().acceptVisitor(fv);
                             f.append(" ");
-                            f.append(mark.getViewBox().dependsOnFeature());
+                            f.append(fv.getResult());
                         }
                     } else if (g instanceof ExternalGraphic) {
                         ExternalGraphic extG = (ExternalGraphic) g;
                         if (extG.getViewBox() != null) {
+                            FeaturesVisitor fv = new FeaturesVisitor();
+                            extG.getViewBox().acceptVisitor(fv);
                             f.append(" ");
-                            f.append(extG.getViewBox().dependsOnFeature());
+                            f.append(fv.getResult());
                         }
                     }
                     // TODO add others cases !
@@ -490,11 +495,6 @@ public final class Rule extends AbstractSymbolizerNode {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        return symbolizer.dependsOnFeature();
     }
 
     @Override

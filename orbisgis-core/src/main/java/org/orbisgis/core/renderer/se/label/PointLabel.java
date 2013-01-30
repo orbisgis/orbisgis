@@ -218,21 +218,6 @@ public final class PointLabel extends Label {
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> result = new HashSet<String>();
-        if (getLabel() != null) {
-            result.addAll(getLabel().dependsOnFeature());
-        }
-        if (exclusionZone != null) {
-            result.addAll(exclusionZone.dependsOnFeature());
-        }
-        if (rotation != null) {
-            result.addAll(rotation.dependsOnFeature());
-        }
-        return result;
-    }
-
-    @Override
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis result = new UsedAnalysis();
         if (getLabel() != null) {

@@ -124,27 +124,6 @@ public final class HatchedFill extends Fill implements StrokeNode {
         }
     }
 
-
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> ret = new HashSet<String>();
-        if (angle != null) {
-            ret.addAll(angle.dependsOnFeature());
-        }
-        if (distance != null) {
-            ret.addAll(distance.dependsOnFeature());
-        }
-        if (offset != null) {
-            ret.addAll(offset.dependsOnFeature());
-        }
-        if (stroke != null) {
-            ret.addAll(stroke.dependsOnFeature());
-        }
-
-        return ret;
-
-    }
-
     @Override
     public UsedAnalysis getUsedAnalysis() {
         UsedAnalysis ua = new UsedAnalysis();

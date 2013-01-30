@@ -80,15 +80,6 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         mapItems = new LinkedHashMap<String, ToType>();
     }
 
-    @Override
-    public final HashSet<String> dependsOnFeature() {
-        HashSet<String> out = this.getLookupValue().dependsOnFeature();
-        for (int i = 0; i < this.getNumMapItem(); i++) {
-            out.addAll(this.getMapItemValue(i).dependsOnFeature());
-        }
-        return out;
-    }
-
     /**
      * Set the value that will be used if a data can't be processed well.
      * @param fallbackValue

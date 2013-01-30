@@ -247,14 +247,6 @@ public class LineLabel extends Label {
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        if (getLabel() != null) {
-            return getLabel().dependsOnFeature();
-        }
-        return new HashSet<String>();
-    }
-
-    @Override
     public UsedAnalysis getUsedAnalysis() {
         if (getLabel() != null) {
             return getLabel().getUsedAnalysis();

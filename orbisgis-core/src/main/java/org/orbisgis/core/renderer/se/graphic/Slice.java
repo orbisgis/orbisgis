@@ -154,22 +154,6 @@ public class Slice extends AbstractSymbolizerNode implements FillNode {
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                HashSet<String> result = new HashSet<String>();
-                if (fill != null) {
-                        result.addAll(fill.dependsOnFeature());
-                }
-                if (value != null) {
-                        result.addAll(value.dependsOnFeature());
-                }
-                if (gap != null) {
-                        result.addAll(gap.dependsOnFeature());
-                }
-
-                return result;
-        }
-
-        @Override
         public UsedAnalysis getUsedAnalysis() {
                 UsedAnalysis result = new UsedAnalysis();
                 if (fill != null) {

@@ -198,15 +198,6 @@ public final class CompositeSymbolizer extends AbstractSymbolizerNode implements
         public void setUom(Uom unit){}
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> ret = new HashSet<String>();
-        for(Symbolizer symb : symbolizers){
-            ret.addAll(symb.dependsOnFeature());
-        }
-        return ret;
-    }
-
-    @Override
     public UsedAnalysis getUsedAnalysis(){
             //We get an empty UsedAnalysis - we'll merge everything.
             UsedAnalysis ua = new UsedAnalysis();
