@@ -31,7 +31,6 @@ package org.orbisgis.core.renderer.se;
 import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.raster.RasterSymbolizerType;
@@ -42,7 +41,6 @@ import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.color.Categorize2Color;
 import org.orbisgis.core.renderer.se.parameter.color.Interpolate2Color;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -229,12 +227,6 @@ public class RasterSymbolizer extends Symbolizer {
         System.out.println("  Desc: " + lst.getDescription());
         System.out.println("  Geom: " + lst.getGeometry());
     }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-                throw new UnsupportedOperationException("Not supported yet.");
-        }
-
 
     @Override
     public List<SymbolizerNode> getChildren() {

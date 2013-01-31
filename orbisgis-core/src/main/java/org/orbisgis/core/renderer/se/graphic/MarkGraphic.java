@@ -36,7 +36,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -57,7 +56,6 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -604,39 +602,6 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
 
         ObjectFactory of = new ObjectFactory();
         return of.createMarkGraphic(m);
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-
-        UsedAnalysis result = new UsedAnalysis();
-
-        if (wkn != null) {
-            result.merge(wkn.getUsedAnalysis());
-        }
-        if (viewBox != null) {
-            result.merge(viewBox.getUsedAnalysis());
-        }
-        if (pOffset != null) {
-            result.merge(pOffset.getUsedAnalysis());
-        }
-        if (halo != null) {
-            result.merge(halo.getUsedAnalysis());
-        }
-        if (fill != null) {
-            result.merge(fill.getUsedAnalysis());
-        }
-        if (stroke != null) {
-            result.merge(stroke.getUsedAnalysis());
-        }
-        if (transform != null) {
-            result.merge(transform.getUsedAnalysis());
-        }
-        if (markIndex != null) {
-            result.merge(markIndex.getUsedAnalysis());
-        }
-
-        return result;
     }
 
     @Override

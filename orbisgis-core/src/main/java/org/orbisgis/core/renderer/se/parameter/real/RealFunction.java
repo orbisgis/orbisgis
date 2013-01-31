@@ -38,11 +38,9 @@ import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * Defines a function on real numbers. A function is defined with a operation and
@@ -285,16 +283,6 @@ public class RealFunction extends AbstractSymbolizerNode implements SeParameter,
 
         ObjectFactory of = new ObjectFactory();
         return of.createFunction(fcn);
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis ua  = new UsedAnalysis();
-        ua.include(this);
-        for(RealParameter r : operands){
-                ua.merge(r.getUsedAnalysis());
-        }
-        return ua;
     }
 
     @Override

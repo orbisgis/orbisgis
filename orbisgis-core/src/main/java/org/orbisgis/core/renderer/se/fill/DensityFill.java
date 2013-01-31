@@ -295,19 +295,6 @@ public final class DensityFill extends Fill implements GraphicNode {
     }
 
     @Override
-    public UsedAnalysis getUsedAnalysis() {
-            UsedAnalysis ua = new UsedAnalysis();
-            ua.merge(percentageCovered.getUsedAnalysis());
-            if(useHatches()){
-                    ua.merge(orientation.getUsedAnalysis());
-                    ua.merge(hatches.getUsedAnalysis());
-            } else {
-                    ua.merge(mark.getUsedAnalysis());
-            }
-            return ua;
-    }
-
-    @Override
     public DensityFillType getJAXBType() {
         DensityFillType f = new DensityFillType();
 

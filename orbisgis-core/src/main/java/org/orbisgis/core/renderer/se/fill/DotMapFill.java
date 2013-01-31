@@ -235,17 +235,6 @@ public final class DotMapFill extends Fill implements GraphicNode {
     }
 
     @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis ua = new UsedAnalysis();
-        if(mark != null){
-            ua.merge(mark.getUsedAnalysis());
-        }
-        ua.merge(totalQuantity.getUsedAnalysis());
-        ua.merge(quantityPerMark.getUsedAnalysis());
-        return ua;
-    }
-
-    @Override
     public DotMapFillType getJAXBType() {
         DotMapFillType f = new DotMapFillType();
 

@@ -29,7 +29,6 @@
 package org.orbisgis.core.renderer.se.graphic;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import net.opengis.se._2_0.thematic.CategoryType;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
@@ -40,7 +39,6 @@ import org.orbisgis.core.renderer.se.StrokeNode;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 
@@ -204,27 +202,6 @@ public final class Category  extends AbstractSymbolizerNode implements FillNode,
                 }
 
                 return ct;
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-            UsedAnalysis ret = new UsedAnalysis();
-            if (this.getFill() != null) {
-                ret.merge(this.getFill().getUsedAnalysis());
-            }
-
-            if (this.getStroke() != null) {
-                ret.merge(getStroke().getUsedAnalysis());
-            }
-
-            if (this.getGraphicCollection() != null) {
-                ret.merge(getGraphicCollection().getUsedAnalysis());
-            }
-
-            if (this.getMeasure() != null) {
-                ret.merge(getMeasure().getUsedAnalysis());
-            }
-            return ret;
         }
 
         @Override

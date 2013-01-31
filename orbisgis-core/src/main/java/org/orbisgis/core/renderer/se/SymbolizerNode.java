@@ -29,7 +29,6 @@
 package org.orbisgis.core.renderer.se;
 
 import java.util.List;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.visitors.ISymbolizerVisitor;
 
 /**
@@ -51,13 +50,6 @@ public interface SymbolizerNode{
      * @param node 
      */
     void setParent(SymbolizerNode node);
-
-    /**
-     * Retrieve an object describing the type of analysis made in the
-     * symbolizer.
-     * @return
-     */
-    UsedAnalysis getUsedAnalysis();
 
     /**
      * Notify the parent of the node that cached values must be unset.

@@ -36,7 +36,6 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.Area;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import net.opengis.se._2_0.core.HaloType;
@@ -53,7 +52,6 @@ import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -267,14 +265,6 @@ public final class Halo extends AbstractSymbolizerNode implements  UomNode, Fill
             LOGGER.error(
                     I18N.tr("Perpendicular offset failed"));
         }
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-            UsedAnalysis ua = new UsedAnalysis();
-            ua.merge(radius.getUsedAnalysis());
-            ua.merge(fill.getUsedAnalysis());
-            return ua;
     }
 
     @Override

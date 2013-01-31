@@ -31,7 +31,6 @@ package org.orbisgis.core.renderer.se.stroke;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -51,7 +50,6 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -232,24 +230,6 @@ public final class PenStroke extends Stroke implements FillNode {
     public Double getNaturalLengthForCompound(Map<String,Value> map,
             Shape shp, MapTransform mt) throws ParameterException, IOException {
         return Double.POSITIVE_INFINITY;
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis result = new UsedAnalysis();
-        if (fill != null) {
-            result.merge(fill.getUsedAnalysis());
-        }
-        if (dashOffset != null) {
-            result.merge(dashOffset.getUsedAnalysis());
-        }
-        if (dashArray != null) {
-            result.merge(dashArray.getUsedAnalysis());
-        }
-        if (width != null) {
-            result.merge(width.getUsedAnalysis());
-        }
-        return result;
     }
 
     @Override

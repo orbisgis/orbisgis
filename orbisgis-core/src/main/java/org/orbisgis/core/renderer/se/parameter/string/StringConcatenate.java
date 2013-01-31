@@ -41,8 +41,6 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
-import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
  * Implementation of the {@code Concatenate} SE function. This function takes at
@@ -240,16 +238,6 @@ public class StringConcatenate extends AbstractSymbolizerNode implements SeParam
         @Override
         public Iterator<StringParameter> iterator() {
                 return inputStrings.listIterator();
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-                UsedAnalysis ua = new UsedAnalysis();
-                ua.include(this);
-                for(StringParameter sp : inputStrings){
-                        ua.merge(sp.getUsedAnalysis());
-                }
-                return ua;
         }
 
         @Override

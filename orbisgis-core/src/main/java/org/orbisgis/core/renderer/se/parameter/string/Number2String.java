@@ -31,7 +31,6 @@ package org.orbisgis.core.renderer.se.parameter.string;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -46,7 +45,6 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
@@ -286,14 +284,6 @@ public class Number2String extends AbstractSymbolizerNode implements SeParameter
                 if(this.numericValue != null){
                         this.numericValue.setParent(this);
                 }
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-                UsedAnalysis ua = new UsedAnalysis();
-                ua.include(this);
-                ua.merge(numericValue.getUsedAnalysis());
-                return ua;
         }
 
         @Override

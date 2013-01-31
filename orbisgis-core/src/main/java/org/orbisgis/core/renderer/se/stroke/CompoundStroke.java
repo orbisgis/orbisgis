@@ -32,7 +32,6 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -47,7 +46,6 @@ import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -443,15 +441,6 @@ public final class CompoundStroke extends Stroke implements UomNode {
                 }*/
             }
         }
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis result = new UsedAnalysis();
-        for (CompoundStrokeElement elem : elements) {
-            result.merge(elem.getUsedAnalysis());
-        }
-        return result;
     }
 
     @Override

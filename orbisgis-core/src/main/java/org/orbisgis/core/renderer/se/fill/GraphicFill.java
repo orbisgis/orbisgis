@@ -262,17 +262,6 @@ public final class GraphicFill extends Fill {
 
     }
 
-        @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis ua = new UsedAnalysis();
-        ua.merge(gapX.getUsedAnalysis());
-        ua.merge(gapY.getUsedAnalysis());
-        if(graphic != null){
-            ua.merge(graphic.getUsedAnalysis());
-        }
-        return ua;
-    }
-
     @Override
     public GraphicFillType getJAXBType() {
         GraphicFillType f = new GraphicFillType();

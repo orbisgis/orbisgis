@@ -29,7 +29,6 @@
 package org.orbisgis.core.renderer.se;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -51,7 +50,6 @@ import org.orbisgis.core.renderer.se.graphic.ExternalGraphic;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
 
 /**
@@ -495,12 +493,6 @@ public final class Rule extends AbstractSymbolizerNode {
      */
     public void setName(String name) {
         this.name = name;
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-            //We get an empty UsedAnalysis - we'll merge everything.
-            return getCompositeSymbolizer().getUsedAnalysis();
     }
 
     @Override

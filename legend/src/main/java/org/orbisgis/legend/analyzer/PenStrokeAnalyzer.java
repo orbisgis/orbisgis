@@ -38,6 +38,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
+import org.orbisgis.core.renderer.se.visitors.UsedAnalysisVisitor;
 import org.orbisgis.legend.AbstractAnalyzer;
 import org.orbisgis.legend.Analyzer;
 import org.orbisgis.legend.LegendStructure;
@@ -108,7 +109,9 @@ public class PenStrokeAnalyzer extends AbstractAnalyzer {
                         } else {
                                 //We have one feature.
                                 //We validate the analysis we've found.
-                                UsedAnalysis an = penStroke.getUsedAnalysis();
+                                UsedAnalysisVisitor uv = new UsedAnalysisVisitor();
+                                uv.visitSymbolizerNode(penStroke);
+                                UsedAnalysis an = uv.getUsedAnalysis();
                                 List<SeParameter> l = an.getAnalysis();
                                 boolean interp = an.isInterpolateUsed();
                                 boolean cat = an.isCategorizeUsed();

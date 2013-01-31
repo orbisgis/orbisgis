@@ -34,7 +34,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -53,7 +52,6 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -211,12 +209,6 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 
     public void setOnVertex(boolean onVertex) {
         this.onVertex = onVertex;
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis(){
-            //We get an empty UsedAnalysis - we'll merge everything.
-           return graphic.getUsedAnalysis();
     }
 
     @Override

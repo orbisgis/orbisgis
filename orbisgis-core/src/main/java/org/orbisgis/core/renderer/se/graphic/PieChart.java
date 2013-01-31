@@ -36,7 +36,6 @@ import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -55,7 +54,6 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.label.StyledText;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -576,27 +574,6 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
 
     @Override
     public void updateGraphic() {
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis result = new UsedAnalysis();
-        if (radius != null) {
-            result.merge(radius.getUsedAnalysis());
-        }
-        if (holeRadius != null) {
-            result.merge(holeRadius.getUsedAnalysis());
-        }
-        if (stroke != null) {
-            result.merge(stroke.getUsedAnalysis());
-        }
-        if (this.transform != null) {
-            result.merge(transform.getUsedAnalysis());
-        }
-        for (Slice s : slices) {
-            result.merge(s.getUsedAnalysis());
-        }
-        return result;
     }
 
     @Override

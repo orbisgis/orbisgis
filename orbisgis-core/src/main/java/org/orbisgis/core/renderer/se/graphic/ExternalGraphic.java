@@ -33,7 +33,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -50,7 +49,6 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.transform.Transform;
@@ -403,25 +401,6 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
 
     return delta;
     }*/
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis ret = new UsedAnalysis();
-        if (halo != null) {
-            ret.merge(halo.getUsedAnalysis());
-        }
-        if (opacity != null) {
-            ret.merge(opacity.getUsedAnalysis());
-        }
-        if (transform != null) {
-            ret.merge(transform.getUsedAnalysis());
-        }
-        if (viewBox != null) {
-            ret.merge(viewBox.getUsedAnalysis());
-        }
-
-        return ret;
-    }
 
     @Override
     public List<SymbolizerNode> getChildren() {

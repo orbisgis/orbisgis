@@ -29,7 +29,6 @@
 package org.orbisgis.core.renderer.se;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.CompositeSymbolizerType;
@@ -37,7 +36,6 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.SymbolizerType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * This is the entry point of the <code>Symbolizer</code>'s structure in a <code>Rule</code>
@@ -197,21 +195,12 @@ public final class CompositeSymbolizer extends AbstractSymbolizerNode implements
         @Override
         public void setUom(Uom unit){}
 
-    @Override
-    public UsedAnalysis getUsedAnalysis(){
-            //We get an empty UsedAnalysis - we'll merge everything.
-            UsedAnalysis ua = new UsedAnalysis();
-            for(Symbolizer s : symbolizers){
-                    ua.merge(s.getUsedAnalysis());
-            }
-            return ua;
-    }
 
-    @Override
-    public List<SymbolizerNode> getChildren() {
-        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
-        ls.addAll(symbolizers);
-        return ls;
-    }
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                ls.addAll(symbolizers);
+                return ls;
+        }
 
 }

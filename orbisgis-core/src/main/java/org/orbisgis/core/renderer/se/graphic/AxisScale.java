@@ -29,14 +29,12 @@
 package org.orbisgis.core.renderer.se.graphic;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import net.opengis.se._2_0.thematic.AxisScaleType;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -109,18 +107,6 @@ public final class AxisScale extends AbstractSymbolizerNode {
         }
 
         return scale;
-    }
-
-    /**
-     * Gets the analysis that are used to build this {@code AxisScale}.
-     * @return
-     */
-    @Override
-    public UsedAnalysis getUsedAnalysis(){
-        UsedAnalysis ua = new UsedAnalysis();
-        ua.merge(axisLength.getUsedAnalysis());
-        ua.merge(measure.getUsedAnalysis());
-        return ua;
     }
 
     @Override

@@ -35,7 +35,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -48,9 +47,7 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
-import org.orbisgis.core.renderer.se.graphic.Slice;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * A {@code LineLabel} is a text of some kinf associated to a Line (polygon or not).
@@ -244,14 +241,6 @@ public class LineLabel extends Label {
 
         setJAXBProperties(ll);
         return ll;
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        if (getLabel() != null) {
-            return getLabel().getUsedAnalysis();
-        }
-        return new UsedAnalysis();
     }
 
         @Override

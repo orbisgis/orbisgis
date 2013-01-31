@@ -30,7 +30,6 @@ package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
@@ -245,17 +244,6 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
 
                 ObjectFactory of = new ObjectFactory();
                 return of.createInterpolate(i);
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-                UsedAnalysis ua = new UsedAnalysis();
-                ua.include(this);
-                ua.merge(lookupValue.getUsedAnalysis());
-                for(InterpolationPoint i : iPoints){
-                        ua.merge(i.getValue().getUsedAnalysis());
-                }
-                return ua;
         }
 
         @Override

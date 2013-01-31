@@ -33,7 +33,6 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +50,6 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -270,24 +268,6 @@ public final class AreaSymbolizer extends VectorSymbolizer implements FillNode, 
                 }
 
                 return of.createAreaSymbolizer(s);
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-                UsedAnalysis ret = new UsedAnalysis();
-                if (translate != null) {
-                        ret.merge(translate.getUsedAnalysis());
-                }
-                if (fill != null) {
-                        ret.merge(fill.getUsedAnalysis());
-                }
-                if (perpendicularOffset != null) {
-                        ret.merge(perpendicularOffset.getUsedAnalysis());
-                }
-                if (stroke != null) {
-                        ret.merge(stroke.getUsedAnalysis());
-                }
-                return ret;
         }
 
         @Override

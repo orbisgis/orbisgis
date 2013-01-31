@@ -35,7 +35,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -54,7 +53,6 @@ import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -352,21 +350,6 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
                 }
             }
         }
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis result = new UsedAnalysis();
-        if (graphic != null) {
-            result.merge(graphic.getUsedAnalysis());
-        }
-        if (length != null) {
-                result.merge(length.getUsedAnalysis());
-        }
-        if (relativePosition != null) {
-                result.merge(relativePosition.getUsedAnalysis());
-        }
-        return result;
     }
 
     @Override

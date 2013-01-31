@@ -311,17 +311,6 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
     }
 
     @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis ua = new UsedAnalysis();
-        ua.include(this);
-        ua.merge(lookupValue.getUsedAnalysis());
-        for(Entry<String,ToType> e : mapItems.entrySet()){
-                ua.merge(e.getValue().getUsedAnalysis());
-        }
-        return ua;
-    }
-
-    @Override
     public List<SymbolizerNode> getChildren() {
         List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
         ls.add(lookupValue);

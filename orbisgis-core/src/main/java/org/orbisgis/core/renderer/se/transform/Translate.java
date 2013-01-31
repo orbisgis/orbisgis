@@ -30,7 +30,6 @@ package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -44,7 +43,6 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -108,14 +106,6 @@ public class Translate extends AbstractSymbolizerNode implements Transformation 
                 }
 
                 return AffineTransform.getTranslateInstance(tx, ty);
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-            UsedAnalysis result = new UsedAnalysis();
-            result.merge(x.getUsedAnalysis());
-            result.merge(y.getUsedAnalysis());
-            return result;
         }
 
         @Override

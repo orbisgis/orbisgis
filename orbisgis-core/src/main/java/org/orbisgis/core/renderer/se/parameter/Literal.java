@@ -29,7 +29,6 @@
 package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.LiteralType;
@@ -100,13 +99,6 @@ public abstract class Literal extends AbstractSymbolizerNode implements Comparab
                 l.getContent().add(this.toString());
                 ObjectFactory of = new ObjectFactory();
                 return of.createLiteral(l);
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-                UsedAnalysis ret = new UsedAnalysis();
-                ret.include(this);
-                return ret;
         }
 
         @Override

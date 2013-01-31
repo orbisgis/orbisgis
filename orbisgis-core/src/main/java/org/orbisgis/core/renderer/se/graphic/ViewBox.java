@@ -30,7 +30,6 @@ package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import net.opengis.se._2_0.core.ViewBoxType;
@@ -42,7 +41,6 @@ import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -143,18 +141,6 @@ public final class ViewBox extends  AbstractSymbolizerNode {
         public RealParameter getHeight() {
             return y;
                 //return y == null ? x : y;
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-            UsedAnalysis ua = new UsedAnalysis();
-            if(x!=null){
-                ua.merge(x.getUsedAnalysis());
-            }
-            if(y!=null){
-                ua.merge(y.getUsedAnalysis());
-            }
-            return ua;
         }
 
         /**

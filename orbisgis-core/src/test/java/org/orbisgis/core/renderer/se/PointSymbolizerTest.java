@@ -36,6 +36,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
+import org.orbisgis.core.renderer.se.visitors.UsedAnalysisVisitor;
 
 /**
  *
@@ -64,7 +65,9 @@ public class PointSymbolizerTest extends AbstractTest {
         public void testInterpolateUsedAnalysis() throws Exception {
             Style style = new Style(null, "src/test/resources/org/orbisgis/core/renderer/se/symbol_prop_canton_interpol_lin.se");
             PointSymbolizer ps =(PointSymbolizer) style.getRules().get(1).getCompositeSymbolizer().getSymbolizerList().get(0);
-            UsedAnalysis ua = ps.getUsedAnalysis();
+            UsedAnalysisVisitor uv = new UsedAnalysisVisitor();
+            uv.visitSymbolizerNode(ps);
+            UsedAnalysis ua = uv.getUsedAnalysis();
             assertTrue(ua.isInterpolateUsed());
             assertTrue(ua.getAnalysis().size()==1);
         }

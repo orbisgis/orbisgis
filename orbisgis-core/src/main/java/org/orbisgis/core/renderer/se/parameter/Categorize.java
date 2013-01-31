@@ -559,20 +559,6 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     }
 
     @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis ua = new UsedAnalysis();
-        ua.include(this);
-        ua.merge(lookupValue.getUsedAnalysis());
-        if(firstClass != null){
-            ua.merge(firstClass.getUsedAnalysis());
-        }
-        for(ToType t : classValues){
-                ua.merge(t.getUsedAnalysis());
-        }
-        return ua;
-    }
-
-    @Override
     public List<SymbolizerNode> getChildren() {
         List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
         ls.add(lookupValue);

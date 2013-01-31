@@ -50,6 +50,7 @@ import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
 import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
 import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
+import org.orbisgis.core.renderer.se.visitors.UsedAnalysisVisitor;
 
 /**
  *
@@ -139,7 +140,9 @@ public class SymbolizerTest extends AbstractTest {
     public void testRecodeUsedAnalysis() throws Exception {
         Style style = new Style(null, "src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se");
         LineSymbolizer ps =(LineSymbolizer) style.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        UsedAnalysis ua = ps.getUsedAnalysis();
+        UsedAnalysisVisitor uv = new UsedAnalysisVisitor();
+        uv.visitSymbolizerNode(ps);
+        UsedAnalysis ua = uv.getUsedAnalysis();
         assertTrue(ua.isRecodeUsed());
         assertTrue(ua.getAnalysis().size()==1);
     }

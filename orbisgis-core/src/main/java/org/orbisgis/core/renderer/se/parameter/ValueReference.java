@@ -29,7 +29,6 @@
 package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -184,11 +183,6 @@ public abstract class ValueReference extends AbstractSymbolizerNode implements S
 		ObjectFactory of = new ObjectFactory();
 		return of.createValueReference(fieldName);
 	}
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-                return new UsedAnalysis();
-        }
 
         @Override
         public List<SymbolizerNode> getChildren() {

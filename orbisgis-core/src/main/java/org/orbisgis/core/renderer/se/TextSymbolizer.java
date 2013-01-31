@@ -33,7 +33,6 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -52,7 +51,6 @@ import org.orbisgis.core.renderer.se.label.Label;
 import org.orbisgis.core.renderer.se.label.PointLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -200,18 +198,6 @@ public final class TextSymbolizer extends VectorSymbolizer {
                 }
 
                 return of.createTextSymbolizer(s);
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-                UsedAnalysis ret = new UsedAnalysis();
-                if (perpendicularOffset != null) {
-                        ret.merge(perpendicularOffset.getUsedAnalysis());
-                }
-                if (label != null) {
-                        ret.merge(label.getUsedAnalysis());
-                }
-                return ret;
         }
 
         @Override

@@ -125,18 +125,6 @@ public final class HatchedFill extends Fill implements StrokeNode {
     }
 
     @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis ua = new UsedAnalysis();
-        ua.merge(angle.getUsedAnalysis());
-        ua.merge(distance.getUsedAnalysis());
-        ua.merge(offset.getUsedAnalysis());
-        if(stroke != null){
-            ua.merge(stroke.getUsedAnalysis());
-        }
-        return ua;
-    }
-
-    @Override
     public void draw(Graphics2D g2, Map<String,Value> map, Shape shp, boolean selected, MapTransform mt) throws ParameterException, IOException {
 
         if (this.stroke != null) {

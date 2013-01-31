@@ -29,13 +29,11 @@
 package org.orbisgis.core.renderer.se.stroke;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import net.opengis.se._2_0.core.AlternativeStrokeElementsType;
 import net.opengis.se._2_0.core.StrokeElementType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * {@code AlternativeStrokeElements} provides the option for the rendering system to 
@@ -84,15 +82,6 @@ public class AlternativeStrokeElements extends CompoundStrokeElement {
                 }
 
                 return aset;
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-                UsedAnalysis result = new UsedAnalysis();
-                for (StrokeElement elem : elements) {
-                        result.merge(elem.getUsedAnalysis());
-                }
-                return result;
         }
 
         @Override

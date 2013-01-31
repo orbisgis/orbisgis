@@ -44,7 +44,6 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -340,18 +339,6 @@ public final class Matrix extends AbstractSymbolizerNode implements Transformati
                 }
                 this.f.setContext(RealParameterContext.REAL_CONTEXT);
                 this.f.setParent(this);
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-            UsedAnalysis result = new UsedAnalysis();
-            result.merge(a.getUsedAnalysis());
-            result.merge(b.getUsedAnalysis());
-            result.merge(c.getUsedAnalysis());
-            result.merge(d.getUsedAnalysis());
-            result.merge(e.getUsedAnalysis());
-            result.merge(f.getUsedAnalysis());
-            return result;
         }
 
         @Override

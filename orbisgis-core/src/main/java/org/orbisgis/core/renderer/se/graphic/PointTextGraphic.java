@@ -34,7 +34,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -50,7 +49,6 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.PointLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -194,17 +192,6 @@ public final class PointTextGraphic extends Graphic implements UomNode {
                 }
                 ObjectFactory of = new ObjectFactory();
                 return of.createPointTextGraphic(t);
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-            UsedAnalysis ua = new UsedAnalysis();
-            if(pointLabel != null){
-                ua.merge(pointLabel.getUsedAnalysis());
-            }
-            ua.merge(x.getUsedAnalysis());
-            ua.merge(y.getUsedAnalysis());
-            return ua;
         }
 
         /**

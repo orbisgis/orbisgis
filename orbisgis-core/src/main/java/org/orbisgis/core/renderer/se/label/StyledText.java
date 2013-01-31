@@ -34,7 +34,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Map;
 import net.opengis.se._2_0.core.FontType;
 import net.opengis.se._2_0.core.StyledTextType;
@@ -51,10 +50,8 @@ import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.graphic.Slice;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -630,36 +627,6 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
         }
         l.setFont(font);
         return l;
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis result = new UsedAnalysis();
-        if (text != null) {
-            result.merge(text.getUsedAnalysis());
-        }
-        if (fontFamily != null) {
-            result.merge(fontFamily.getUsedAnalysis());
-        }
-        if (fontWeight != null) {
-            result.merge(fontWeight.getUsedAnalysis());
-        }
-        if (fontStyle != null) {
-            result.merge(fontStyle.getUsedAnalysis());
-        }
-        if (fontSize != null) {
-            result.merge(fontSize.getUsedAnalysis());
-        }
-        if (stroke != null) {
-            result.merge(stroke.getUsedAnalysis());
-        }
-        if (fill != null) {
-            result.merge(fill.getUsedAnalysis());
-        }
-        if (halo != null) {
-            result.merge(halo.getUsedAnalysis());
-        }
-        return result;
     }
 
     @Override
