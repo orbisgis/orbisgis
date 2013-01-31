@@ -42,6 +42,11 @@ public class FeaturesVisitor implements ISymbolizerVisitor {
 
         HashSet<String> res = new HashSet<String>();
 
+        /**
+         * Recursively visits {@code sn} and all its children, searching for
+         * feature-dependant nodes.
+         * @param sn
+         */
         @Override
         public void visitSymbolizerNode(SymbolizerNode sn) {
                 if(!res.isEmpty()){
@@ -61,6 +66,11 @@ public class FeaturesVisitor implements ISymbolizerVisitor {
 
         }
 
+        /**
+         * Gets the {@code HashSet<String>} instance that contains all the field
+         * names needed to use safely the last visited {@code SymbolizerNode}.
+         * @return
+         */
         public HashSet<String> getResult(){
                 return res;
         }
