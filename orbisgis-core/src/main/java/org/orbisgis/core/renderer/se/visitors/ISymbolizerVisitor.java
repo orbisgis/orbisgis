@@ -29,10 +29,6 @@
 package org.orbisgis.core.renderer.se.visitors;
 
 import org.orbisgis.core.renderer.se.SymbolizerNode;
-import org.orbisgis.core.renderer.se.fill.Fill;
-import org.orbisgis.core.renderer.se.graphic.Graphic;
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
-import org.orbisgis.core.renderer.se.stroke.Stroke;
 
 /**
  * Visitor implementation for the SE structure. It will be useful to process
@@ -48,28 +44,4 @@ public interface ISymbolizerVisitor {
          * @param sn
          */
         void visitSymbolizerNode(SymbolizerNode sn);
-
-//        /**
-//         * Visiting method dedicated to {@link Fill} instances.
-//         * @param sn
-//         */
-//        void visitFill(Fill sn);
-//
-//        /**
-//         * Visiting method dedicated to {@link Stroke} instances.
-//         * @param sn
-//         */
-//        void visitStroke(Stroke sn);
-//
-//        /**
-//         * Visiting method dedicated to {@link Graphic} instances.
-//         * @param sn
-//         */
-//        void visitGraphic(Graphic sn);
-//
-//        /**
-//         * Visiting method dedicated to {@link SeParameter} instances.
-//         * @param sn
-//         */
-//        void visitParameter(SeParameter sn);
 }

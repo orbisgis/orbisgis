@@ -28,7 +28,6 @@
  */
 package org.orbisgis.core.renderer.se;
 
-import java.util.HashSet;
 import java.util.List;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.visitors.ISymbolizerVisitor;
