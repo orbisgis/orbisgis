@@ -20,6 +20,7 @@
                                                 <Private-Package>org.orbisgis.oshell.*</Private-Package>
                                                 <Bundle-Activator>org.orbisgis.oshell.Activator</Bundle-Activator>
                                                 <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
+                                                <Bundle-Icon>icon.png;size=32</Bundle-Icon>
                                         </instructions>
                                 </configuration>
                         </plugin>
@@ -70,7 +71,7 @@
                 <dependency>
                         <groupId>org.osgi</groupId>
                         <artifactId>org.osgi.core</artifactId>
-                        <version>4.0.0</version>
+                        <version>4.3.1</version>
                         <scope>provided</scope>
                 </dependency>
                 <dependency>

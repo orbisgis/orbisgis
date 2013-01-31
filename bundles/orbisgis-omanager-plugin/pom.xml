@@ -22,7 +22,7 @@
                                                 <Bundle-Activator>org.orbisgis.omanager.plugin.Activator</Bundle-Activator>
                                                 <Bundle-Vendor>IRSTV - FR CNRS 2488</Bundle-Vendor>
                                                 <Bundle-Icon>icon.png;size=32</Bundle-Icon>
-                                                <Bundle-Category>gui,orbisgis</Bundle-Category>
+                                                <Bundle-Category>gui</Bundle-Category>
                                         </instructions>
                                 </configuration>
                         </plugin>
@@ -73,7 +73,7 @@
                 <dependency>
                         <groupId>org.osgi</groupId>
                         <artifactId>org.osgi.core</artifactId>
-                        <version>4.3.0</version>
+                        <version>4.3.1</version>
                         <scope>provided</scope>
                 </dependency>
                 <dependency>

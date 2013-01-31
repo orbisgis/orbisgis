@@ -31,6 +31,7 @@ package org.orbisgis.omanager.ui;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -56,6 +57,12 @@ public class BundleListModel extends AbstractListModel {
     private BundleContext bundleContext;
     private BundleListener bundleListener = new BundleModelListener();
     private RepositoryAdminTracker repositoryAdminTrackerCustomizer;
+    // Hidden bundles
+    private final static Set<String> HIDDEN_BUNDLES_SET =
+            new HashSet<String>(Arrays.asList(new String[]{"org.apache.felix.framework",
+            "org.apache.felix.shell","org.osgi.service.obr","org.apache.felix.shell.gui",
+            "org.apache.felix.bundlerepository","org.orbisgis.omanager-plugin",
+            "org.orbisgis.omanager"}));
     /**
      * @param bundleContext Bundle context to track.
      */
@@ -104,23 +111,25 @@ public class BundleListModel extends AbstractListModel {
         Set<String> currentBundles = new HashSet<String>(bundles.length);
         // Search new or updated bundles
         for(Bundle bundle : bundles) {
-            currentBundles.add(bundle.getSymbolicName());
-            BundleItem storedBundle = curBundles.get(getIdentifier(bundle));
-            if(storedBundle!=null) {
-                // Same bundle found in the shown list
-                if(!bundle.equals(storedBundle.getBundle())) {
-                    //TODO check same symbolic name but != version
-                    storedBundle.setBundle(bundle);
-                    int index = storedBundles.indexOf(storedBundle);
-                    fireContentsChanged(this,index,index);
+            if(!HIDDEN_BUNDLES_SET.contains(bundle.getSymbolicName())) {
+                currentBundles.add(bundle.getSymbolicName());
+                BundleItem storedBundle = curBundles.get(getIdentifier(bundle));
+                if(storedBundle!=null) {
+                    // Same bundle found in the shown list
+                    if(!bundle.equals(storedBundle.getBundle())) {
+                        //TODO check same symbolic name but != version
+                        storedBundle.setBundle(bundle);
+                        int index = storedBundles.indexOf(storedBundle);
+                        fireContentsChanged(this,index,index);
+                    }
+                } else {
+                    BundleItem newBundle = new BundleItem();
+                    newBundle.setBundle(bundle);
+                    curBundles.put(getIdentifier(bundle),newBundle);
+                    int index = storedBundles.size();
+                    storedBundles.add(newBundle);
+                    fireIntervalAdded(this, index, index);
                 }
-            } else {
-                BundleItem newBundle = new BundleItem();
-                newBundle.setBundle(bundle);
-                curBundles.put(getIdentifier(bundle),newBundle);
-                int index = storedBundles.size();
-                storedBundles.add(newBundle);
-                fireIntervalAdded(this, index, index);
             }
         }
         // Search deleted bundles
@@ -138,24 +147,26 @@ public class BundleListModel extends AbstractListModel {
         }
         // Fetch cached repositories bundles
         for(Resource resource : repositoryAdminTrackerCustomizer.getResources()) {
-            BundleItem storedBundle = curBundles.get(getIdentifier(resource));
-            if(storedBundle!=null) {
-                // An item has the same identifier
-                Resource storedObrResource = storedBundle.getObrResource();
-                if(storedObrResource==null || (storedObrResource!=null && storedObrResource.getVersion()
-                        .compareTo(resource.getVersion())<0)) {
-                    // Replace stored Obr Resource if the version is inferior or it does not exist
-                    storedBundle.setObrResource(resource);
-                    int index = storedBundles.indexOf(storedBundle);
-                    fireContentsChanged(this,index,index);
+            if(!HIDDEN_BUNDLES_SET.contains(resource.getSymbolicName())) {
+                BundleItem storedBundle = curBundles.get(getIdentifier(resource));
+                if(storedBundle!=null) {
+                    // An item has the same identifier
+                    Resource storedObrResource = storedBundle.getObrResource();
+                    if(storedObrResource==null || (storedObrResource!=null && storedObrResource.getVersion()
+                            .compareTo(resource.getVersion())<0)) {
+                        // Replace stored Obr Resource if the version is inferior or it does not exist
+                        storedBundle.setObrResource(resource);
+                        int index = storedBundles.indexOf(storedBundle);
+                        fireContentsChanged(this,index,index);
+                    }
+                } else {
+                    BundleItem newBundle = new BundleItem();
+                    newBundle.setObrResource(resource);
+                    curBundles.put(getIdentifier(resource),newBundle);
+                    int index = storedBundles.size();
+                    storedBundles.add(newBundle);
+                    fireIntervalAdded(this, index, index);
                 }
-            } else {
-                BundleItem newBundle = new BundleItem();
-                newBundle.setObrResource(resource);
-                curBundles.put(getIdentifier(resource),newBundle);
-                int index = storedBundles.size();
-                storedBundles.add(newBundle);
-                fireIntervalAdded(this, index, index);
             }
         }
         // Remove empty items

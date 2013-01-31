@@ -92,6 +92,7 @@ public class MainPanel extends JPanel {
     private static final int PROPERTY_TEXT_SIZE_INCREMENT = 3;
     private static final int PROPERTY_TITLE_SIZE_INCREMENT = 4;
     public static final String DEFAULT_REPOSITORY = "http://plugins.orbisgis.org/repository.xml";
+    private static final String DEFAULT_CATEGORY = "OrbisGIS";
     private ItemFilterStatusFactory.STATUS radioFilterStatus = ItemFilterStatusFactory.STATUS.ALL;
 
     // Bundle Category filter
@@ -151,6 +152,7 @@ public class MainPanel extends JPanel {
         bundleList.addListSelectionListener(EventHandler.create(ListSelectionListener.class,this,"onBundleSelectionChange",""));
         bundleList.getModel().addListDataListener(EventHandler.create(ListDataListener.class,this,"onListUpdate"));
         onListUpdate();
+        applyFilters();
     }
     private void initRepositoryTracker() {
         repositoryAdminTrackerCustomizer = new RepositoryAdminTracker(bundleContext);
@@ -210,11 +212,13 @@ public class MainPanel extends JPanel {
         for(int i=0; i<size; i++) {
             categories.addAll(((BundleItem) listModel.getElementAt(i)).getBundleCategories());
         }
+        if(!categories.contains(DEFAULT_CATEGORY)) {
+            categories.add(DEFAULT_CATEGORY);
+        }
         model.addElement(I18N.tr("All"));
         List<String> sortedCategories = new ArrayList<String>(categories);
         Collections.sort(sortedCategories,String.CASE_INSENSITIVE_ORDER);
-        String selectedValue=(String)model.getElementAt(0);
-        model.setSelectedItem(selectedValue);
+        String selectedValue= DEFAULT_CATEGORY;
         if(oldValue instanceof String) {
             selectedValue = (String)oldValue;
         }
@@ -402,7 +406,7 @@ public class MainPanel extends JPanel {
         if(returnVal == JFileChooser.APPROVE_OPTION) {
             File selected = chooser.getSelectedFile();
             try {
-                bundleContext.installBundle(selected.getAbsolutePath());
+                bundleContext.installBundle(selected.toURI().toString());
             } catch (BundleException ex) {
                 LOGGER.error(ex.getLocalizedMessage(),ex);
             }
