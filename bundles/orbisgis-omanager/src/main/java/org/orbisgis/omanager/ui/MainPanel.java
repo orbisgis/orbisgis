@@ -43,6 +43,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -57,11 +58,13 @@ import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.JTextPane;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
@@ -97,6 +100,7 @@ public class MainPanel extends JPanel {
 
     // Bundle Category filter
     private JComboBox bundleCategory = new JComboBox();
+    private JTextField bundleSearchField = new JTextField();
     private JTextPane bundleDetails = new JTextPane();
     private JList bundleList = new JList();
     private JPanel bundleActions = new JPanel();
@@ -110,7 +114,12 @@ public class MainPanel extends JPanel {
     private BundleContext bundleContext;
     private RepositoryAdminTracker repositoryAdminTrackerCustomizer;
     private ServiceTracker<RepositoryAdmin,RepositoryAdmin> repositoryAdminTracker;
-
+    private AtomicBoolean awaitingFilteringThread = new AtomicBoolean(false);
+    private long lastTypedWordInFindTextField = 0;
+    /**
+     * in ms Launch a search if the user don't type any character within this time.
+     */
+    private static final long LAUNCH_SEARCH_IDLE_TIME = 300;
     /**
      * Constructor of the main plugin panel
      * @param bundleContext Bundle context instance in order to manage them.
@@ -232,9 +241,14 @@ public class MainPanel extends JPanel {
     }
     private void addSouthButtons(JPanel southButtons) {
 
-        JButton addUrl = new JButton(I18N.tr("Install plugin from disk"));
-        addUrl.setToolTipText(I18N.tr("Add a plugin from disk, dependencies could not be resolved."));
-        addUrl.addActionListener(EventHandler.create(ActionListener.class,this,"onAddBundleJar"));
+        JButton addFile = new JButton(I18N.tr("Install plugin from disk"));
+        addFile.setToolTipText(I18N.tr("Add a plugin from disk, dependencies could not be resolved."));
+        addFile.addActionListener(EventHandler.create(ActionListener.class, this, "onAddBundleJar"));
+        southButtons.add(addFile);
+
+        JButton addUrl = new JButton(I18N.tr("Install plugin from url"));
+        addUrl.setToolTipText(I18N.tr("Add a plugin from url file:// or http(s)://, dependencies could not be resolved."));
+        addUrl.addActionListener(EventHandler.create(ActionListener.class,this,"onAddBundleJarUri"));
         southButtons.add(addUrl);
 
         southButtons.add(new JSeparator(JSeparator.VERTICAL));
@@ -351,6 +365,10 @@ public class MainPanel extends JPanel {
                 && bundleCategory.getSelectedItem() instanceof String) {
             filters.add(new ItemFilterCategory((String)bundleCategory.getSelectedItem()));
         }
+        String filterTextValue = bundleSearchField.getText().trim();
+        if(!filterTextValue.isEmpty()) {
+            filters.add(new ItemFilterContains(filterTextValue));
+        }
         if(filters.size()>=1) {
             filterModel.setFilter(new ItemFilterAndGroup(filters));
         } else if(filters.size()==1) {
@@ -393,7 +411,35 @@ public class MainPanel extends JPanel {
         DownloadOBRProcess reloadAction = new DownloadOBRProcess();
         reloadAction.execute();
     }
-
+    public void onAddBundleJarUri() {
+        String errMessage = "";
+        String chosenURL = "";
+        do {
+            StringBuilder message = new StringBuilder(I18N.tr("Enter Jar URL :"));
+            if(!errMessage.isEmpty()) {
+                message.append("\n");
+                message.append(errMessage);
+            }
+            chosenURL = (String) JOptionPane.showInputDialog(
+                    this,
+                    message.toString(),
+                    I18N.tr("Add plug-in file"),
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    null,
+                    chosenURL);
+            //If a string was returned, say so.
+            if ((chosenURL != null)) {
+                try {
+                    URI userURI = new URI(chosenURL);
+                    bundleContext.installBundle(userURI.toString());
+                    return;
+                } catch(Exception ex) {
+                    errMessage = ex.getLocalizedMessage();
+                }
+            }
+        } while(chosenURL!=null && !errMessage.isEmpty());
+    }
     /**
      * User click on install Plug-in from disk button.
      */
@@ -430,9 +476,10 @@ public class MainPanel extends JPanel {
                         errMessage = I18N.tr("This repository URL already exists");
                     } else {
                         repositoryAdminTrackerCustomizer.addRepository(userURI.toURL());
+                        return;
                     }
                 } catch(Exception ex) {
-                    errMessage = I18N.tr("This is not a valid url");
+                    errMessage = ex.getLocalizedMessage();
                 }
             }
         } while(chosenURL!=null && !errMessage.isEmpty());
@@ -505,12 +552,65 @@ public class MainPanel extends JPanel {
         createRadioButton(I18N.tr("Update"), I18N.tr("Show only bundles where an update is available."), false,
                 "onFilterBundleUpdate", filterGroup, radioBar);
 
-        // Category at the end
+        // Category
         bundleCategory.addActionListener(EventHandler.create(ActionListener.class,this,"onFilterByBundleCategory"));
         radioBar.add(bundleCategory);
+        // Find text
+        bundleSearchField.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,this,"onSearchTextChange"));
+        bundleSearchField.addActionListener(EventHandler.create(ActionListener.class, this, "onSearchTextValidate"));
+        bundleSearchField.setToolTipText(I18N.tr("Type here to find plug-ins that contains the field words"));
+        radioBar.add(bundleSearchField);
         return radioBar;
     }
 
+    /**
+     * Called when the user validate the research terms
+     */
+    public void onSearchTextValidate() {
+        lastTypedWordInFindTextField = 0;
+        launchTextFindProcess();
+    }
+    /**
+     * Called when a user type a character in the text filter
+     */
+    public void onSearchTextChange() {
+        lastTypedWordInFindTextField = System.currentTimeMillis();
+        launchTextFindProcess();
+    }
+
+    private void launchTextFindProcess() {
+        if(!awaitingFilteringThread.getAndSet(true)) {
+            CheckBundleFilteringTextInput process = new CheckBundleFilteringTextInput();
+            process.execute();
+        }
+    }
+    private class CheckBundleFilteringTextInput extends SwingWorker<Boolean,Boolean> {
+        long oldLastTypedWordInFindTextField;
+        @Override
+        protected Boolean doInBackground() throws Exception {
+            oldLastTypedWordInFindTextField = lastTypedWordInFindTextField;
+            return System.currentTimeMillis()-oldLastTypedWordInFindTextField > LAUNCH_SEARCH_IDLE_TIME;
+        }
+
+        @Override
+        protected void done() {
+            try {
+                Boolean executeFilters = get();
+                if(executeFilters) {
+                    applyFilters();
+                }
+                awaitingFilteringThread.set(false);
+                // If the user type a letter or validate while filtering, launch the filter again
+                if(!executeFilters ||
+                        oldLastTypedWordInFindTextField!=lastTypedWordInFindTextField) {
+                    launchTextFindProcess();
+                }
+            } catch(Exception ex) {
+                awaitingFilteringThread.set(false);
+                LOGGER.error(ex.getLocalizedMessage(),ex);
+            }
+        }
+    }
     private class DownloadOBRProcess extends SwingWorker {
 
         @Override

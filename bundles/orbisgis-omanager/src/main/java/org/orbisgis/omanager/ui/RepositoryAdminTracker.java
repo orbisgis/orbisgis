@@ -73,9 +73,16 @@ public class RepositoryAdminTracker implements ServiceTrackerCustomizer<Reposito
 
     public Collection<Repository> getRepositories() {
         // Use of Set instead of list, to let propertyChangeSupport find difference on set, without sorting importance
-        return new HashSet(Arrays.asList(repoAdmin.listRepositories()));
+        if(isRepositoryAdminAvailable()) {
+            return new HashSet(Arrays.asList(repoAdmin.listRepositories()));
+        } else {
+            return new HashSet();
+        }
     }
     public List<URL> getRepositoriesURL() {
+        if(!isRepositoryAdminAvailable()) {
+            return new ArrayList<URL>();
+        }
         List<URL> repoURLS = new ArrayList<URL>();
         for(Repository repository : repoAdmin.listRepositories()) {
             repoURLS.add(repository.getURL());
@@ -120,7 +127,7 @@ public class RepositoryAdminTracker implements ServiceTrackerCustomizer<Reposito
      * Reload the list of resource by downloading and parsing all repositories XML again.
      */
     public void refresh() {
-        if(repoAdmin!=null) {
+        if(isRepositoryAdminAvailable()) {
             List<URL> repoURLS = new ArrayList<URL>();
             for(Repository repository : repoAdmin.listRepositories()) {
                 repoURLS.add(repository.getURL());

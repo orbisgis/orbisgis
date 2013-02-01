@@ -56,7 +56,7 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plugin,Plugin> {
     private enum SWING_PLUGIN_JOB { ADD, REMOVE, UPDATE };
-    private static final Dimension DEFAULT_DIMENSION = new Dimension(800,480);
+    private static final Dimension DEFAULT_DIMENSION = new Dimension(980,480);
     private static final I18n I18N = I18nFactory.getI18n(MainDialog.class);
     private static final Logger LOGGER = Logger.getLogger("gui."+MainDialog.class);
     private JList shellPlugins = new JList();
