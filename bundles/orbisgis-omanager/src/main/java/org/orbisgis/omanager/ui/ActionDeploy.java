@@ -32,6 +32,7 @@ package org.orbisgis.omanager.ui;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
+import javax.swing.Icon;
 import javax.swing.JOptionPane;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceReference;
@@ -53,8 +54,8 @@ public class ActionDeploy  extends ActionBundle {
     private BundleContext bundleContext;
     private Component frame;
 
-    public ActionDeploy(String label, String toolTipText, boolean start, Resource resource,BundleContext bundleContext,Component frame) {
-        super(label, toolTipText);
+    public ActionDeploy(String label, String toolTipText, boolean start, Resource resource,BundleContext bundleContext,Component frame,Icon icon) {
+        super(label, toolTipText, icon);
         this.start = start;
         this.resource = resource;
         this.bundleContext = bundleContext;

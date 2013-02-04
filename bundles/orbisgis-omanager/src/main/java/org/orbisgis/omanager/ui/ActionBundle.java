@@ -32,6 +32,7 @@ package org.orbisgis.omanager.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.AbstractAction;
+import javax.swing.Icon;
 import javax.swing.SwingWorker;
 import org.apache.log4j.Logger;
 
@@ -43,9 +44,10 @@ public class ActionBundle extends AbstractAction {
     protected static Logger LOGGER = Logger.getLogger(ActionBundle.class);
     private ActionListener action;
 
-    public ActionBundle(String label, String toolTipText) {
+    public ActionBundle(String label, String toolTipText,Icon icon) {
         super(label);
         putValue(SHORT_DESCRIPTION,toolTipText);
+        putValue(SMALL_ICON, icon);
     }
 
     /**

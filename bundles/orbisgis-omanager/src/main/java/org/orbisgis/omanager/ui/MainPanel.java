@@ -39,6 +39,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +49,7 @@ import javax.swing.Action;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFileChooser;
@@ -98,6 +100,7 @@ public class MainPanel extends JPanel {
     public static final String DEFAULT_REPOSITORY = "http://plugins.orbisgis.org/repository.xml";
     private static final String DEFAULT_CATEGORY = "OrbisGIS";
     private ItemFilterStatusFactory.Status radioFilterStatus = ItemFilterStatusFactory.Status.ALL;
+    private Map<String,ImageIcon> buttonIcons = new HashMap<String, ImageIcon>();
 
     // Bundle Category filter
     private JComboBox bundleCategory = new JComboBox();
@@ -164,6 +167,21 @@ public class MainPanel extends JPanel {
         onListUpdate();
         applyFilters();
     }
+
+    private ImageIcon getIcon(String iconName) {
+        ImageIcon icon = buttonIcons.get(iconName);
+        if(icon==null) {
+            try {
+                icon = new ImageIcon(MainPanel.class.getResource(iconName + ".png"));
+                buttonIcons.put(iconName,icon);
+            } catch (Exception ex) {
+                LOGGER.error("Cannot retrieve icon "+iconName,ex);
+                return new ImageIcon();
+            }
+        }
+        return icon;
+    }
+
     private void initRepositoryTracker() {
         repositoryAdminTrackerCustomizer = new RepositoryAdminTracker(bundleContext);
         repositoryAdminTracker = new ServiceTracker<RepositoryAdmin, RepositoryAdmin>(bundleContext,
@@ -242,29 +260,29 @@ public class MainPanel extends JPanel {
     }
     private void addSouthButtons(JPanel southButtons) {
 
-        JButton addFile = new JButton(I18N.tr("Install plugin from disk"));
+        JButton addFile = new ButtonIcon(getIcon("install_plugin_from_disk"));
         addFile.setToolTipText(I18N.tr("Add a plugin from disk, dependencies could not be resolved."));
         addFile.addActionListener(EventHandler.create(ActionListener.class, this, "onAddBundleJar"));
         southButtons.add(addFile);
 
-        JButton addUrl = new JButton(I18N.tr("Install plugin from url"));
+        JButton addUrl = new ButtonIcon(getIcon("install_plugin_from_url"));
         addUrl.setToolTipText(I18N.tr("Add a plugin from url file:// or http(s)://, dependencies could not be resolved."));
         addUrl.addActionListener(EventHandler.create(ActionListener.class,this,"onAddBundleJarUri"));
         southButtons.add(addUrl);
 
         southButtons.add(new JSeparator(JSeparator.VERTICAL));
-        JButton repositoryUrls = new JButton(I18N.tr("Add repository"));
+        JButton repositoryUrls = new ButtonIcon(getIcon("repository_add"));
         repositoryUrls.setToolTipText(I18N.tr("Add a remote bundle repository."));
         repositoryUrls.addActionListener(EventHandler.create(ActionListener.class,this,"onAddBundleRepository"));
         southButtons.add(repositoryUrls);
 
-        repositoryRemove = new JButton(I18N.tr("Remove repository"));
+        repositoryRemove = new ButtonIcon(getIcon("repository_remove"));
         repositoryRemove.setToolTipText(I18N.tr("Remove a remote bundle repository."));
         repositoryRemove.addActionListener(EventHandler.create(ActionListener.class,this,"onRemoveBundleRepository"));
         southButtons.add(repositoryRemove);
         onRepositoryChange();
 
-        JButton refreshRepositories = new JButton(I18N.tr("Refresh repositories"));
+        JButton refreshRepositories = new ButtonIcon(getIcon("repository_refresh"));
         refreshRepositories.setToolTipText(I18N.tr("Reload the list of plug-ins from the Internet."));
         refreshRepositories.addActionListener(EventHandler.create(ActionListener.class,this,"onReloadPlugins"));
         southButtons.add(refreshRepositories);
@@ -339,7 +357,7 @@ public class MainPanel extends JPanel {
         // Set buttons
         List<Action> actions = actionFactory.create(selectedItem);
         for(Action action : actions) {
-            JButton actionButton = new JButton(action);
+            JButton actionButton = new ButtonIcon(action);
             bundleActions.add(actionButton);
         }
         boolean hidden = !bundleDetailsAndActions.isVisible();
@@ -560,6 +578,8 @@ public class MainPanel extends JPanel {
         bundleSearchField.getDocument().addDocumentListener(EventHandler.create(DocumentListener.class,this,"onSearchTextChange"));
         bundleSearchField.addActionListener(EventHandler.create(ActionListener.class, this, "onSearchTextValidate"));
         bundleSearchField.setToolTipText(I18N.tr("Type here to find plug-ins that contains the field words"));
+        // Use MINIMUM_SEARCH_COLUMNS as minimum size
+        bundleSearchField.setMinimumSize(bundleSearchField.getPreferredSize());
         radioBar.add(bundleSearchField);
         return radioBar;
     }

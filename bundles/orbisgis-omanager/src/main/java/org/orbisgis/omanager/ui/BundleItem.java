@@ -249,6 +249,8 @@ public class BundleItem {
                     return Arrays.asList(catArray);
                 }
             }
+        } else if(obrResource!=null && obrResource.getCategories()!=null) {
+            return Arrays.asList(obrResource.getCategories());
         }
         return new ArrayList<String>();
     }
