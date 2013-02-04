@@ -50,7 +50,13 @@ public class UsedAnalysisVisitor implements ISymbolizerVisitor {
                 visitImpl(sn);
         }
 
-        private void visitImpl(SymbolizerNode sn) {
+        /**
+         * The method that does the work... It is not callable directly by the
+         * clients, as it does not clean the inner UsedAnalysis. If you want
+         * to use it directly, inherit this class.
+         * @param sn
+         */
+        protected final void visitImpl(SymbolizerNode sn) {
                 if(sn instanceof SeParameter){
                         usedAnalysis.include((SeParameter) sn);
                 }

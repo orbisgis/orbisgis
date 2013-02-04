@@ -40,7 +40,7 @@ import org.orbisgis.core.renderer.se.parameter.ValueReference;
  */
 public class FeaturesVisitor implements ISymbolizerVisitor {
 
-        HashSet<String> res = new HashSet<String>();
+        private HashSet<String> res = new HashSet<String>();
 
         /**
          * Recursively visits {@code sn} and all its children, searching for
@@ -55,7 +55,13 @@ public class FeaturesVisitor implements ISymbolizerVisitor {
                 visitImpl(sn);
         }
 
-        private void visitImpl(SymbolizerNode sn){
+        /**
+         * The method that does the work... It is not callable directly by the
+         * clients, as it does not clean the inner HashSet. If you want
+         * to use it directly, inherit this class.
+         * @param sn
+         */
+        protected void visitImpl(SymbolizerNode sn){
                 List<SymbolizerNode> children = sn.getChildren();
                 if(sn instanceof ValueReference){
                         res.add(((ValueReference)sn).getColumnName());
