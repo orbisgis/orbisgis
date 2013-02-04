@@ -61,7 +61,57 @@ public class ActionDeploy  extends ActionBundle {
         this.frame = frame;
         setActionListener(EventHandler.create(ActionListener.class, this, "doWork"));
     }
+    private void deployBundle(Resolver resolver) {
+        long bytes = getSize(resource);
+        StringBuilder resourcesNames = new StringBuilder();
 
+        // If the bundle has dependencies, store the dependency name, version and size
+        Resource[] resources = resolver.getRequiredResources();
+        if ((resources != null) && (resources.length > 0)) {
+            for (Resource dependency : resources) {
+                resourcesNames.append(dependency.getPresentationName());
+                resourcesNames.append(" (");
+                resourcesNames.append(dependency.getVersion());
+                resourcesNames.append(")\n");
+                bytes += getSize(dependency);
+            }
+        }
+
+        // If the bundle has optional dependencies, store the dependency name, version and size
+        resources = resolver.getOptionalResources();
+        if ((resources != null) && (resources.length > 0)) {
+            for (Resource dependency : resources) {
+                bytes += getSize(dependency);
+                resourcesNames.append("Optional, ");
+                resourcesNames.append(dependency.getPresentationName());
+                resourcesNames.append(" (");
+                resourcesNames.append(dependency.getVersion());
+                resourcesNames.append(")\n");
+            }
+        }
+        // If there is hidden dependency (needed & optional)
+        // Ask user for validating additional download
+        boolean deploy = true;
+        if(resourcesNames.length()>0) {
+            resourcesNames.insert(0,") ?\n");
+            resourcesNames.insert(0,BundleItem.getHumanReadableBytes(bytes));
+            resourcesNames.insert(0,"Do you want to download the following dependencies (Size : ");
+            String[] options = {I18N.tr("Yes"),
+                    I18N.tr("Cancel")};
+            int n = JOptionPane.showOptionDialog(frame, resourcesNames.toString(), I18N.tr("Dependencies downloading"),
+                    JOptionPane.YES_NO_OPTION,
+                    JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
+            deploy = n==JOptionPane.YES_OPTION;
+        }
+        if(deploy) {
+            try {
+                // Download the bundle and dependencies
+                resolver.deploy(start);
+            } catch (IllegalStateException ex) {
+                LOGGER.error(ex.getLocalizedMessage(),ex);
+            }
+        }
+    }
     /**
      * Called by user on action launch.
      */
@@ -80,6 +130,8 @@ public class ActionDeploy  extends ActionBundle {
         }
         try {
             // Specify the bundle reference to the dependency resolver
+            // Resolver class is able to fetch cached repositories and
+            // fetch dependencies for one or more bundles.
             Resolver resolver = repositoryAdmin.resolver();
             resolver.add(resource);
 
@@ -87,71 +139,25 @@ public class ActionDeploy  extends ActionBundle {
                     (resolver.getAddedResources().length > 0)) {
                 // Find dependencies
                 if (resolver.resolve()) {
-                    long bytes = getSize(resource);
-                    StringBuilder resourcesNames = new StringBuilder();
-
-                    Resource[] resources = resolver.getRequiredResources();
-                    if ((resources != null) && (resources.length > 0)) {
-                        for (int resIdx = 0; resIdx < resources.length; resIdx++) {
-                            Resource dependency = resources[resIdx];
-                            resourcesNames.append(dependency.getPresentationName());
-                            resourcesNames.append(" (");
-                            resourcesNames.append(dependency.getVersion());
-                            resourcesNames.append(")\n");
-                            bytes += getSize(dependency);
-                        }
-                    }
-                    resources = resolver.getOptionalResources();
-                    if ((resources != null) && (resources.length > 0)) {
-                        for (int resIdx = 0; resIdx < resources.length; resIdx++) {
-                            Resource dependency = resources[resIdx];
-                            bytes += getSize(dependency);
-                            resourcesNames.append("Optional, ");
-                            resourcesNames.append(dependency.getPresentationName());
-                            resourcesNames.append(" (");
-                            resourcesNames.append(dependency.getVersion());
-                            resourcesNames.append(")\n");
-                        }
-                    }
-                    // If there is hidden dependency
-                    // Ask user for validating download
-                    boolean deploy = true;
-                    if(resourcesNames.length()>0) {
-                        resourcesNames.insert(0,") ?\n");
-                        resourcesNames.insert(0,BundleItem.getHumanReadableBytes(bytes));
-                        resourcesNames.insert(0,"Do you want to download the following dependencies (Size : ");
-                        String[] options = {I18N.tr("Yes"),
-                                I18N.tr("Cancel")};
-                        int n = JOptionPane.showOptionDialog(frame, resourcesNames.toString(), I18N.tr("Dependencies downloading"),
-                                JOptionPane.YES_NO_OPTION,
-                                JOptionPane.QUESTION_MESSAGE, null, options, options[1]);
-                        deploy = n==JOptionPane.YES_OPTION;
-                    }
-                    if(deploy) {
-                        try {
-                            resolver.deploy(start);
-                        }
-                        catch (IllegalStateException ex) {
-                            LOGGER.error(ex.getLocalizedMessage(),ex);
-                        }
-                    }
-                }
-                else {
-                    Requirement[] reqs = resolver.getUnsatisfiedRequirements();
-                    if ((reqs != null) && (reqs.length > 0)) {
+                    // OSGi Bundle Repository is able to deploy this bundle
+                    deployBundle(resolver);
+                } else {
+                    // Some dependency is missing
+                    // OSGi Bundle Repository is not able to deploy this bundle
+                    // Log missing packages
+                    Requirement[] requirements = resolver.getUnsatisfiedRequirements();
+                    if ((requirements != null) && (requirements.length > 0)) {
                         StringBuilder sb = new StringBuilder();
-                        sb.append(I18N.trn("Unsatisfied requirement :\n","Unsatisfied requirements :\n",reqs.length+1));
-                        for (int reqIdx = 0; reqIdx < reqs.length; reqIdx++)
-                        {
+                        sb.append(I18N.trn("Unsatisfied requirement :\n","Unsatisfied requirements :\n",requirements.length+1));
+                        for (Requirement requirement : requirements) {
                             sb.append("\t");
-                            sb.append(reqs[reqIdx].getFilter());
+                            sb.append(requirement.getFilter());
                             sb.append("\n");
-                            Resource[] resources = resolver.getResources(reqs[reqIdx]);
-                            for (int resIdx = 0; resIdx < resources.length; resIdx++) {
+                            for (Resource resource : resolver.getResources(requirement)) {
                                 sb.append("\t");
-                                sb.append(resources[resIdx].getPresentationName());
+                                sb.append(resource.getPresentationName());
                                 sb.append(" (");
-                                sb.append(resources[resIdx].getVersion());
+                                sb.append(resource.getVersion());
                                 sb.append(")\n");
                             }
                         }

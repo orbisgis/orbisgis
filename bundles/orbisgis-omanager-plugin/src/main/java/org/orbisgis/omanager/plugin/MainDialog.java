@@ -55,7 +55,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Nicolas Fortin
  */
 public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plugin,Plugin> {
-    private enum SWING_PLUGIN_JOB { ADD, REMOVE, UPDATE };
+    private enum SwingPluginJob { ADD, REMOVE, UPDATE };
     private static final Dimension DEFAULT_DIMENSION = new Dimension(980,480);
     private static final I18n I18N = I18nFactory.getI18n(MainDialog.class);
     private static final Logger LOGGER = Logger.getLogger("gui."+MainDialog.class);
@@ -100,7 +100,7 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
     @Override
     public Plugin addingService(ServiceReference<Plugin> reference) {
         try {
-            return doProcess(new SwingPluginProcess(SWING_PLUGIN_JOB.ADD,reference));
+            return doProcess(new SwingPluginProcess(SwingPluginJob.ADD,reference));
         } catch (Exception e) {
             LOGGER.error(e.getLocalizedMessage(),e);
             return null;
@@ -110,7 +110,7 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
     @Override
     public void modifiedService(ServiceReference<Plugin> reference, Plugin service) {
         try {
-            doProcess(new SwingPluginProcess(service,SWING_PLUGIN_JOB.UPDATE,reference));
+            doProcess(new SwingPluginProcess(service, SwingPluginJob.UPDATE,reference));
         } catch (Exception e) {
             LOGGER.error(e.getLocalizedMessage(),e);
         }
@@ -119,7 +119,7 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
     @Override
     public void removedService(ServiceReference<Plugin> reference, Plugin service) {
         try {
-            doProcess(new SwingPluginProcess(service,SWING_PLUGIN_JOB.REMOVE,reference));
+            doProcess(new SwingPluginProcess(service, SwingPluginJob.REMOVE,reference));
         } catch (Exception e) {
             LOGGER.error(e.getLocalizedMessage(),e);
         }
@@ -149,10 +149,10 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
      */
     private class SwingPluginProcess implements Runnable {
         private Plugin plugin;
-        private SWING_PLUGIN_JOB job;
+        private SwingPluginJob job;
         private ServiceReference<Plugin> reference;
 
-        private SwingPluginProcess(Plugin plugin, SWING_PLUGIN_JOB job, ServiceReference<Plugin> reference) {
+        private SwingPluginProcess(Plugin plugin, SwingPluginJob job, ServiceReference<Plugin> reference) {
             this.plugin = plugin;
             this.job = job;
             this.reference = reference;
@@ -162,7 +162,7 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
          * @param job
          * @param reference
          */
-        private SwingPluginProcess(SWING_PLUGIN_JOB job, ServiceReference<Plugin> reference) {
+        private SwingPluginProcess(SwingPluginJob job, ServiceReference<Plugin> reference) {
             this.job = job;
             this.reference = reference;
         }
