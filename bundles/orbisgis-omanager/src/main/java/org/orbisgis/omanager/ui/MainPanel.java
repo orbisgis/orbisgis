@@ -89,6 +89,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class MainPanel extends JPanel {
     private static final Dimension MINIMUM_BUNDLE_LIST_DIMENSION = new Dimension(100,50);
     private static final Dimension MINIMUM_BUNDLE_DESCRIPTION_DIMENSION = new Dimension(250,50);
+    private static final int MINIMUM_SEARCH_COLUMNS = 10;
     private static final I18n I18N = I18nFactory.getI18n(MainPanel.class);
     private static final Logger LOGGER = Logger.getLogger("gui."+MainPanel.class);
     private static final int BORDER_PIXEL_GAP = 2;
@@ -100,7 +101,7 @@ public class MainPanel extends JPanel {
 
     // Bundle Category filter
     private JComboBox bundleCategory = new JComboBox();
-    private JTextField bundleSearchField = new JTextField();
+    private JTextField bundleSearchField = new JTextField(MINIMUM_SEARCH_COLUMNS);
     private JTextPane bundleDetails = new JTextPane();
     private JList bundleList = new JList();
     private JPanel bundleActions = new JPanel();

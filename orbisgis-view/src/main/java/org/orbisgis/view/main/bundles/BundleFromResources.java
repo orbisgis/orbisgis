@@ -39,6 +39,7 @@ import org.osgi.framework.BundleContext;
 public class BundleFromResources {
         private static final BundleReference[] SPECIFIC_BEHAVIOUR_BUNDLES = {
                 new BundleReference("orbisgis-oshell").setAutoStart(false),
+                new BundleReference("org.apache.felix.shell.gui").setAutoStart(false),
         };
         private BundleFromResources() {                
         }

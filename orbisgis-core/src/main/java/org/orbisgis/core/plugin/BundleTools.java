@@ -237,7 +237,7 @@ public class BundleTools {
                 URL url = resources.nextElement();
                 try {
                     Manifest manifest = new Manifest(url.openStream());
-                    String value = manifest.getMainAttributes().getValue("Class-Path");
+                    String value = manifest.getMainAttributes().getValue(Attributes.Name.CLASS_PATH);
                     if(value!=null) {
                         String[] pathElements = value.split(" ");
                         if(pathElements==null) {
