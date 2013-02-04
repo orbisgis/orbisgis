@@ -23,6 +23,13 @@
                         </includes>
                 </fileSet>
                 <fileSet>
+                    <directory>${project.build.directory}/bundle</directory>
+                        <outputDirectory>/bundle</outputDirectory>
+                        <includes>
+                            <include>*.jar</include>
+                        </includes>
+                    </fileSet>
+                <fileSet>
                         <directory>${project.basedir}/src/bin/zip/</directory>
                         <outputDirectory>/</outputDirectory>
                         <includes>

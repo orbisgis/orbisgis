@@ -46,22 +46,26 @@ public class Activator implements BundleActivator, Plugin {
     private MainPanel mainPanel;
     private BundleContext bundleContext;
 
+    @Override
     public void start(BundleContext bundleContext) throws Exception {
         this.bundleContext = bundleContext;
         shellName = I18N.tr("Fusion"); // Means Local&Repo on the same time
         bundleContext.registerService(Plugin.class,this,null);
     }
 
+    @Override
     public void stop(BundleContext bundleContext) throws Exception {
         if(mainPanel!=null) {
             mainPanel.dispose();
         }
     }
 
+    @Override
     public String getName() {
         return shellName;
     }
 
+    @Override
     public Component getGUI() {
         if(mainPanel==null) {
             mainPanel = new MainPanel(bundleContext);

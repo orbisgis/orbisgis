@@ -32,16 +32,21 @@ package org.orbisgis.omanager.ui;
 import java.util.Collection;
 
 /**
- * A filter that include elements only il all provided filters accept the element.
+ * A filter that include elements only if all provided filters accept the element.
  * @author Nicolas Fortin
  */
 public class ItemFilterAndGroup implements ItemFilter<BundleListModel> {
     private Collection<ItemFilter<BundleListModel>> filters;
 
+    /**
+     * Constructor, take a collection of Filters
+     * @param filters Filter collection
+     */
     public ItemFilterAndGroup(Collection<ItemFilter<BundleListModel>> filters) {
         this.filters = filters;
     }
 
+    @Override
     public boolean include(BundleListModel model, int elementId) {
         for(ItemFilter<BundleListModel> filter : filters) {
             if(!filter.include(model,elementId)) {

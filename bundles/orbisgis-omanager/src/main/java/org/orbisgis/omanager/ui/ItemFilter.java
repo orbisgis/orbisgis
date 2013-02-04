@@ -3,6 +3,7 @@ package org.orbisgis.omanager.ui;
 import javax.swing.ListModel;
 
 /**
+ * Used by {@link ##FilteredModel} in order to keep or hide sub-model elements
  * @author Nicolas Fortin
  */
 public interface ItemFilter<SubModel extends ListModel> {

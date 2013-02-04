@@ -44,11 +44,16 @@ public class FilteredModel<SubModel extends ListModel> extends AbstractListModel
     private List<Integer> shownElements = null;      // Filtered (visible) elements
     private ItemFilter<SubModel> elementFilter;
 
+    /**
+     * Constructor.
+     * @param subModel The other model to filter
+     */
     public FilteredModel(SubModel subModel) {
         this.subModel = subModel;
         subModel.addListDataListener(new SubModelListener());
     }
 
+    @Override
     public int getSize() {
         if(elementFilter==null) {
             return subModel.getSize();
@@ -74,6 +79,7 @@ public class FilteredModel<SubModel extends ListModel> extends AbstractListModel
             fireIntervalAdded(this,0,getSize()-1);
         }
     }
+    @Override
     public Object getElementAt(int i) {
         if(elementFilter==null) {
             return subModel.getElementAt(i);
@@ -115,6 +121,7 @@ public class FilteredModel<SubModel extends ListModel> extends AbstractListModel
      * Propagate ListModel updates.
      */
     private class SubModelListener implements ListDataListener {
+        @Override
         public void intervalAdded(ListDataEvent listDataEvent) {
             if(elementFilter==null) {
                 fireIntervalAdded(this,listDataEvent.getIndex0(),listDataEvent.getIndex1());
@@ -123,6 +130,7 @@ public class FilteredModel<SubModel extends ListModel> extends AbstractListModel
             }
         }
 
+        @Override
         public void intervalRemoved(ListDataEvent listDataEvent) {
             if(elementFilter==null) {
                 fireIntervalRemoved(this, listDataEvent.getIndex0(), listDataEvent.getIndex1());
@@ -131,6 +139,7 @@ public class FilteredModel<SubModel extends ListModel> extends AbstractListModel
             }
         }
 
+        @Override
         public void contentsChanged(ListDataEvent listDataEvent) {
             if(elementFilter==null) {
                 fireContentsChanged(this, listDataEvent.getIndex0(), listDataEvent.getIndex1());

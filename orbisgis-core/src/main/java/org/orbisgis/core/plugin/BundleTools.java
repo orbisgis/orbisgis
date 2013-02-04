@@ -30,6 +30,7 @@ package org.orbisgis.core.plugin;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -37,7 +38,9 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -55,7 +58,6 @@ import org.osgi.framework.BundleException;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 import org.osgi.framework.wiring.BundleCapability;
-import org.osgi.framework.wiring.BundleRevision;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -69,6 +71,7 @@ public class BundleTools {
     private final static I18n I18N = I18nFactory.getI18n(BundleTools.class);
     private final static String MANIFEST_FILENAME = "MANIFEST.MF";
     private final static String PACKAGE_NAMESPACE = "osgi.wiring.package";
+    private final static String BUNDLE_DIRECTORY = "bundle";
     private BundleTools() {        
     }
 
@@ -100,6 +103,7 @@ public class BundleTools {
      * @param hostBundle Host BundleContext
      * @param bundleToInstall Bundle Reference array
      */
+    /*
     public static void installBundles(BundleContext hostBundle,BundleReference[] bundleToInstall) {
             for(BundleReference bundleRef : bundleToInstall) {
                     if(bundleRef.getBundleJarContent()==null) {
@@ -122,6 +126,98 @@ public class BundleTools {
                     }
             }
     }
+    */
+
+    /**
+     * @param bundle The bundle instance
+     * @return True if the bundle has no Activator and cannot be started
+     */
+    private static boolean isFragment(Bundle bundle) {
+        return bundle.getHeaders().get(Constants.FRAGMENT_HOST) != null;
+    }
+    /**
+     * Register in the host bundle the provided list of bundle reference
+     * @param hostBundle Host BundleContext
+     * @param nonDefaultBundleDeploying Bundle Reference array to deploy bundles in a non default way (install&start)
+     */
+    public static void installBundles(BundleContext hostBundle,BundleReference[] nonDefaultBundleDeploying) {
+        //Create a Map of nonDefaultBundleDeploying by their artifactId
+        Map<String,BundleReference> customDeployBundles = new HashMap<String, BundleReference>(nonDefaultBundleDeploying.length);
+        for(BundleReference ref : nonDefaultBundleDeploying) {
+            customDeployBundles.put(ref.getArtifactId(),ref);
+        }
+
+        // List bundles in the /bundle subdirectory
+        File bundleFolder = new File(BUNDLE_DIRECTORY);
+        if(!bundleFolder.exists()) {
+            return;
+        }
+        File[] files = bundleFolder.listFiles();
+        List<File> jarList = new ArrayList<File>();
+        if (files != null) {
+            for(File file : files) {
+                if(FilenameUtils.isExtension(file.getName(),"jar")) {
+                    jarList.add(file);
+                }
+            }
+        }
+        if (!jarList.isEmpty()) {
+            Map<String,Bundle> installedBundleMap = new HashMap<String,Bundle>();
+
+            // Keep a reference to bundles in the framework cache
+            for (Bundle bundle : hostBundle.getBundles()) {
+                installedBundleMap.put(bundle.getLocation(), bundle);
+            }
+
+            //
+            final List<Bundle> installedBundleList = new LinkedList<Bundle>();
+            for (File jarFile : jarList) {
+                // Retrieve from the framework cache the bundle at this location
+                Bundle b = installedBundleMap.remove(jarFile.toURI().toString());
+
+                // Read Jar manifest without installing it
+                BundleReference reference = new BundleReference(""); // Default deploy
+                try {
+                    JarFile jar = new JarFile(jarFile);
+                    Manifest manifest = jar.getManifest();
+                    if(manifest!=null && manifest.getMainAttributes()!=null) {
+                        String artifact = manifest.getMainAttributes().getValue(Constants.BUNDLE_SYMBOLICNAME);
+                        BundleReference customRef = customDeployBundles.get(artifact);
+                        if(customRef!=null) {
+                            reference = customRef;
+                        }
+                    }
+
+                } catch (Exception ex) {
+                    LOGGER.error(I18N.tr("Could not read bundle manifest"),ex);
+                }
+
+                try {
+                    // If the bundle is not in the framework cache install it
+                    if ((b == null) && reference.isAutoInstall()) {
+                        b = hostBundle.installBundle(jarFile.toURI().toString());
+                        if (!isFragment(b) && reference.isAutoStart()) {
+                            installedBundleList.add(b);
+                        }
+                    } else if ((b != null)) {
+                        b.update();
+                    }
+                }
+                catch (BundleException ex) {
+                    LOGGER.error("Error while installing bundle in bundle directory",ex);
+                }
+            }
+            // Start new bundles
+            for (Bundle bundle :installedBundleList) {
+                try {
+                    bundle.start();
+                } catch (BundleException ex) {
+                    LOGGER.error("Error while starting bundle in bundle directory",ex);
+                }
+            }
+        }
+    }
+
     /**
      * Read the class path, open all Jars and folders, retrieve the package list.
      * This kind of package list does not contain versions and are useful for non-OSGi packages only.

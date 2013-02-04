@@ -64,7 +64,7 @@
                                         <goal>copy-dependencies</goal>
                                     </goals>
                                     <configuration>
-                                        <outputDirectory>${project.build.directory}/classes/org/orbisgis/view/main/bundles/</outputDirectory>
+                                        <outputDirectory>${project.build.directory}/bundle/</outputDirectory>
                                         <overWriteReleases>false</overWriteReleases>
                                         <overWriteSnapshots>false</overWriteSnapshots>
                                         <overWriteIfNewer>true</overWriteIfNewer>

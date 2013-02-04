@@ -44,7 +44,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 /**
- * A bundle that can be installed in local or/and on remote repository.
+ * A bundle that can be installed from local or/and on remote repository.
  * @author Nicolas Fortin
  */
 public class BundleItem {
@@ -53,24 +53,24 @@ public class BundleItem {
     private String shortDesc;
     private Resource obrResource; // only if a remote bundle is available
     private Bundle bundle;        // only for downloaded bundle
-    private static final Long kilo = 1024L;
-    private static final Long mega = kilo*kilo;
-    private static final Long giga = mega*kilo;
-    private static final Long tera = giga*kilo;
+    private static final Long KILO = 1024L;
+    private static final Long MEGA = KILO * KILO;
+    private static final Long LONG = MEGA * KILO;
+    private static final Long TERA = LONG * KILO;
 
     /**
      * @param bytes Bytes count
      * @return User Friendly output of this size
      */
     public static String getHumanReadableBytes(long bytes) {
-        if(bytes >= tera) {
-            return String.format(I18N.tr("%.2f TB"),(double)bytes / tera);
-        } else if(bytes >= giga) {
-            return String.format(I18N.tr("%.2f GB"),(double)bytes / giga);
-        } else if(bytes >= mega) {
-            return String.format(I18N.tr("%.2f MB"),(double)bytes / mega);
-        } else if(bytes >= kilo) {
-            return String.format(I18N.tr("%.2f kB"),(double)bytes / kilo);
+        if(bytes >= TERA) {
+            return String.format(I18N.tr("%.2f TB"),(double)bytes / TERA);
+        } else if(bytes >= LONG) {
+            return String.format(I18N.tr("%.2f GB"),(double)bytes / LONG);
+        } else if(bytes >= MEGA) {
+            return String.format(I18N.tr("%.2f MB"),(double)bytes / MEGA);
+        } else if(bytes >= KILO) {
+            return String.format(I18N.tr("%.2f kB"),(double)bytes / KILO);
         } else {
             return String.format(I18N.tr("%d bytes"),bytes);
         }
@@ -167,14 +167,14 @@ public class BundleItem {
     /**
      * @return The bundle short description. (empty string if none)
      */
-    String getShortDescription() {
+    public String getShortDescription() {
         if(shortDesc!=null) {
             return shortDesc;
         }
         String description=null;
         if(bundle!=null && bundle.getHeaders()!=null) {
             description = bundle.getHeaders().get(Constants.BUNDLE_DESCRIPTION);
-        } if(obrResource!=null && obrResource.getProperties()!=null) {
+        } else if(obrResource!=null && obrResource.getProperties()!=null) {
             Object descrObj = obrResource.getProperties().get(Resource.DESCRIPTION);
             if(descrObj instanceof String) {
                 description = (String)descrObj;
@@ -205,7 +205,7 @@ public class BundleItem {
     /**
      * @return A map of bundle details to show on the right side of the GUI. (Title->Value)
      */
-    Map<String,String> getDetails() {
+    public Map<String,String> getDetails() {
         if(bundle!=null) {
              // Copy deprecated dictionary into Map
              Dictionary<String,String> dic = bundle.getHeaders();
@@ -238,7 +238,7 @@ public class BundleItem {
     /**
      * @return Bundle tags
      */
-    Collection<String> getBundleCategories() {
+    public Collection<String> getBundleCategories() {
         if(bundle!=null) {
             String categories = bundle.getHeaders().get(Constants.BUNDLE_CATEGORY);
             if(categories!=null) {
@@ -256,42 +256,42 @@ public class BundleItem {
     /**
      * @return True if the start method can be called.
      */
-    boolean isStartReady() {
+    public boolean isStartReady() {
         return (bundle!=null) && (bundle.getState()==Bundle.INSTALLED || bundle.getState()==Bundle.RESOLVED);
     }
 
     /**
      * @return True if the stop method can be called.
      */
-    boolean isStopReady() {
+    public boolean isStopReady() {
         return (bundle!=null) && (bundle.getState()==Bundle.ACTIVE);
     }
 
     /**
      * @return True if the update method can be called.
      */
-    boolean isUpdateReady() {
+    public boolean isUpdateReady() {
         return (bundle!=null) && (bundle.getState()!=Bundle.UNINSTALLED);
     }
 
     /**
      * @return True if the uninstall method can be called.
      */
-    boolean isUninstallReady() {
+    public boolean isUninstallReady() {
         return (bundle!=null) && (bundle.getState()!=Bundle.UNINSTALLED);
     }
 
     /**
      * @return True if the resource can be deployed
      */
-    boolean isDeployReady() {
+    public boolean isDeployReady() {
         return bundle==null && obrResource!=null;
     }
 
     /**
      * @return True if the resource can be deployed and started
      */
-    boolean isDeployAndStartReady() {
+    public boolean isDeployAndStartReady() {
         return isDeployReady();
     }
 }

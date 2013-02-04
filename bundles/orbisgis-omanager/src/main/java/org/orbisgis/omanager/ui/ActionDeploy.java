@@ -84,8 +84,7 @@ public class ActionDeploy  extends ActionBundle {
             resolver.add(resource);
 
             if ((resolver.getAddedResources() != null) &&
-                    (resolver.getAddedResources().length > 0))
-            {
+                    (resolver.getAddedResources().length > 0)) {
                 // Find dependencies
                 if (resolver.resolve()) {
                     long bytes = getSize(resource);
@@ -129,21 +128,17 @@ public class ActionDeploy  extends ActionBundle {
                         deploy = n==JOptionPane.YES_OPTION;
                     }
                     if(deploy) {
-                        try
-                        {
+                        try {
                             resolver.deploy(start);
                         }
-                        catch (IllegalStateException ex)
-                        {
+                        catch (IllegalStateException ex) {
                             LOGGER.error(ex.getLocalizedMessage(),ex);
                         }
                     }
                 }
-                else
-                {
+                else {
                     Requirement[] reqs = resolver.getUnsatisfiedRequirements();
-                    if ((reqs != null) && (reqs.length > 0))
-                    {
+                    if ((reqs != null) && (reqs.length > 0)) {
                         StringBuilder sb = new StringBuilder();
                         sb.append(I18N.trn("Unsatisfied requirement :\n","Unsatisfied requirements :\n",reqs.length+1));
                         for (int reqIdx = 0; reqIdx < reqs.length; reqIdx++)
@@ -152,8 +147,7 @@ public class ActionDeploy  extends ActionBundle {
                             sb.append(reqs[reqIdx].getFilter());
                             sb.append("\n");
                             Resource[] resources = resolver.getResources(reqs[reqIdx]);
-                            for (int resIdx = 0; resIdx < resources.length; resIdx++)
-                            {
+                            for (int resIdx = 0; resIdx < resources.length; resIdx++) {
                                 sb.append("\t");
                                 sb.append(resources[resIdx].getPresentationName());
                                 sb.append(" (");
@@ -162,9 +156,7 @@ public class ActionDeploy  extends ActionBundle {
                             }
                         }
                         LOGGER.error(sb.toString());
-                    }
-                    else
-                    {
+                    } else {
                         LOGGER.error(I18N.tr("Could not resolve plug-in for unknown reason"));
                     }
                 }

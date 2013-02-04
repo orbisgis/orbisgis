@@ -36,10 +36,15 @@ package org.orbisgis.omanager.ui;
 public class ItemFilterCategory implements ItemFilter<BundleListModel> {
     private String category;
 
+    /**
+     * Constructor
+     * @param category This filter will show only the provided category's bundles.
+     */
     public ItemFilterCategory(String category) {
         this.category = category.toLowerCase();
     }
 
+    @Override
     public boolean include(BundleListModel model, int elementId) {
         BundleItem item = model.getBundle(elementId);
         return item.getBundleCategories().contains(this);

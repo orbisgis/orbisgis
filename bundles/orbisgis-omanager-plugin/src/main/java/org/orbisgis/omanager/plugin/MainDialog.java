@@ -96,6 +96,8 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
             centerComponent.updateUI();
         }
     }
+
+    @Override
     public Plugin addingService(ServiceReference<Plugin> reference) {
         try {
             return doProcess(new SwingPluginProcess(SWING_PLUGIN_JOB.ADD,reference));
@@ -105,6 +107,7 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
         }
     }
 
+    @Override
     public void modifiedService(ServiceReference<Plugin> reference, Plugin service) {
         try {
             doProcess(new SwingPluginProcess(service,SWING_PLUGIN_JOB.UPDATE,reference));
@@ -113,6 +116,7 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
         }
     }
 
+    @Override
     public void removedService(ServiceReference<Plugin> reference, Plugin service) {
         try {
             doProcess(new SwingPluginProcess(service,SWING_PLUGIN_JOB.REMOVE,reference));
@@ -197,6 +201,9 @@ public class MainDialog extends JDialog implements ServiceTrackerCustomizer<Plug
             }
         }
 
+        /**
+         * @return The plugin instance
+         */
         public Plugin getPlugin() {
             return plugin;
         }
