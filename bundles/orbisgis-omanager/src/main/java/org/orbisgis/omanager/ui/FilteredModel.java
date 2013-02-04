@@ -55,7 +55,7 @@ public class FilteredModel<SubModel extends ListModel> extends AbstractListModel
 
     @Override
     public int getSize() {
-        if(elementFilter==null) {
+        if(elementFilter==null || shownElements==null) {
             return subModel.getSize();
         } else {
             return shownElements.size();
@@ -96,14 +96,15 @@ public class FilteredModel<SubModel extends ListModel> extends AbstractListModel
      * Reapply the filter
      */
     public void doFilter() {
+        int oldSize = getSize();
         if(elementFilter==null) {
             return;
         }
         if(shownElements==null) {
             shownElements = new ArrayList<Integer>();
         }
-        if(getSize()>0) {
-            fireIntervalRemoved(this,0,getSize()-1);
+        if(oldSize>0) {
+            fireIntervalRemoved(this,0,oldSize-1);
         }
         shownElements.clear();
         for(int i=0;i<subModel.getSize();i++)

@@ -97,7 +97,7 @@ public class MainPanel extends JPanel {
     private static final int PROPERTY_TITLE_SIZE_INCREMENT = 4;
     public static final String DEFAULT_REPOSITORY = "http://plugins.orbisgis.org/repository.xml";
     private static final String DEFAULT_CATEGORY = "OrbisGIS";
-    private ItemFilterStatusFactory.STATUS radioFilterStatus = ItemFilterStatusFactory.STATUS.ALL;
+    private ItemFilterStatusFactory.Status radioFilterStatus = ItemFilterStatusFactory.Status.ALL;
 
     // Bundle Category filter
     private JComboBox bundleCategory = new JComboBox();
@@ -382,21 +382,21 @@ public class MainPanel extends JPanel {
      * User click on "All states" radio button
      */
     public void onRemoveStateFilter() {
-        radioFilterStatus = ItemFilterStatusFactory.STATUS.ALL;
+        radioFilterStatus = ItemFilterStatusFactory.Status.ALL;
         applyFilters();
     }
     /**
      * User click on "Installed" radio button
      */
     public void onFilterBundleInstall() {
-        radioFilterStatus = ItemFilterStatusFactory.STATUS.INSTALLED;
+        radioFilterStatus = ItemFilterStatusFactory.Status.INSTALLED;
         applyFilters();
     }
     /**
      * User click on "Update" radio button
      */
     public void onFilterBundleUpdate() {
-        radioFilterStatus = ItemFilterStatusFactory.STATUS.UPDATE;
+        radioFilterStatus = ItemFilterStatusFactory.Status.UPDATE;
         applyFilters();
     }
     /**

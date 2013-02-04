@@ -85,7 +85,11 @@ public class BundleListModel extends AbstractListModel {
      * Stop watching for bundles.
      */
     public void uninstall() {
-        bundleContext.removeBundleListener(bundleListener);
+        try {
+            bundleContext.removeBundleListener(bundleListener);
+        } catch (IllegalStateException ex) {
+            //ignore
+        }
     }
     private void deleteItem(BundleItem item) {
         // Deleted item
@@ -107,7 +111,13 @@ public class BundleListModel extends AbstractListModel {
             curBundles.put(bundle.getSymbolicName(),bundle);
         }
         // Start with local bundles
-        Bundle[] bundles = bundleContext.getBundles();
+        final Bundle[] bundles;
+        try {
+            bundles = bundleContext.getBundles();
+        } catch(IllegalStateException ex) {
+            // This model should be already uninstalled;
+            return;
+        }
         Set<String> currentBundles = new HashSet<String>(bundles.length);
         // Search new or updated bundles
         for(Bundle bundle : bundles) {

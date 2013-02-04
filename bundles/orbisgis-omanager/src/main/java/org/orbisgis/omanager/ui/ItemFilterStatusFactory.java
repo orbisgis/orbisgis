@@ -35,8 +35,8 @@ package org.orbisgis.omanager.ui;
  */
 public class ItemFilterStatusFactory {
     private ItemFilterStatusFactory() {}
-    public static enum STATUS { ALL, INSTALLED, UPDATE };
-    public static ItemFilter<BundleListModel> getFilter(STATUS status) {
+    public static enum Status { ALL, INSTALLED, UPDATE };
+    public static ItemFilter<BundleListModel> getFilter(Status status) {
         switch (status) {
             case ALL:
                 return null;
