@@ -12,14 +12,15 @@
         </organization>
         <url>http://www.orbisgis.org</url>
         <modules>
-                <!-- TODO GDMS here -->
                 <module>gdms</module>
-                <module>plugin-test</module>
+		<module>bundles/plugin-test</module>
                 <module>orbisgis-core</module>
                 <module>legend</module>
                 <module>orbisgis-sif</module>
                 <module>orbisgis-view</module>
-                <module>orbisgis-oshell</module>
+                <module>bundles/orbisgis-oshell</module>
+                <module>bundles/orbisgis-omanager</module>
+                <module>bundles/orbisgis-omanager-plugin</module>
                 <module>orbisgis-dist</module>
         </modules>
         <properties>

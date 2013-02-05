@@ -28,8 +28,6 @@
  */
 package org.orbisgis.core.plugin;
 
-import java.io.InputStream;
-
 /**
  * Built-in bundle reference. Reference to a bundle stored as a Jar ressource.
  * Used to install minimal bundle of OrbisGIS.
@@ -39,8 +37,8 @@ public class BundleReference {
 
         private String artifactId;
         private String bundleUri;
-        private InputStream bundleJarContent;
         private boolean autoStart = true;
+        private boolean autoInstall = true;
 
         public BundleReference(String artifactId) {
                 this.artifactId = artifactId;
@@ -49,6 +47,23 @@ public class BundleReference {
         public BundleReference(String artifactId, String bundleUri) {
                 this.artifactId = artifactId;
                 this.bundleUri = bundleUri;
+        }
+
+        /**
+         * True if this bundle will be automatically installed at startup.
+         * @return
+         */
+        public boolean isAutoInstall() {
+            return autoInstall;
+        }
+
+        /**
+         * @param autoInstall True to automatically install this bundle at startup.
+         * @return this
+         */
+        public BundleReference setAutoInstall(boolean autoInstall) {
+            this.autoInstall = autoInstall;
+            return this;
         }
 
         /**
@@ -94,20 +109,5 @@ public class BundleReference {
          */
         public String getArtifactId() {
                 return artifactId;
-        }
-
-        /**
-         * Set the input stream to read the jar content.
-         * @param bundleJarContent 
-         */
-        public void setBundleJarContent(InputStream bundleJarContent) {
-                this.bundleJarContent = bundleJarContent;
-        }
-        /**
-         * This input stream read the Bundle Jar File
-         * @return 
-         */
-        public InputStream getBundleJarContent() {
-                return bundleJarContent;
         }
 }

@@ -19,16 +19,16 @@
                         <directory>${project.build.directory}</directory>
                         <outputDirectory>/</outputDirectory>
                         <includes>
-                                <include>*-jar-with-dependencies.jar</include>
+                                <include>*.jar</include>
                         </includes>
                 </fileSet>
                 <fileSet>
-                        <directory>${project.basedir}/src/bin/zip/lib/ext/</directory>
-                        <outputDirectory>/lib/ext/</outputDirectory>
+                    <directory>${project.build.directory}/bundle</directory>
+                        <outputDirectory>/bundle</outputDirectory>
                         <includes>
-                                <include>*</include>
+                            <include>*.jar</include>
                         </includes>
-                </fileSet>
+                    </fileSet>
                 <fileSet>
                         <directory>${project.basedir}/src/bin/zip/</directory>
                         <outputDirectory>/</outputDirectory>
@@ -38,4 +38,11 @@
                         </includes>
                 </fileSet>
         </fileSets>
+        <dependencySets>
+            <dependencySet>
+                <outputDirectory>/bin/</outputDirectory>
+                <useProjectArtifact>true</useProjectArtifact>
+                <scope>runtime</scope>
+            </dependencySet>
+        </dependencySets>
 </assembly>

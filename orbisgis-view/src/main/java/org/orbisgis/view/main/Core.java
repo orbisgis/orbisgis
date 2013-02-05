@@ -148,10 +148,14 @@ public class Core {
         progressInfo.progressTo(20);
     }
     private void startPluginHost() {
-        pluginFramework = new PluginHost(new File(mainContext.getCoreWorkspace().getPluginCache()));
-        pluginFramework.start();
-        // Install built-in bundles
-        BundleFromResources.installResourceBundles(pluginFramework.getHostBundleContext());
+        try {
+            pluginFramework = new PluginHost(new File(mainContext.getCoreWorkspace().getPluginCache()));
+            pluginFramework.start();
+            // Install built-in bundles
+            BundleFromResources.installResourceBundles(pluginFramework.getHostBundleContext());
+        } catch (Exception ex) {
+            LOGGER.error(I18N.tr("Loading of plugins is aborted"),ex);
+        }
     }
     /**
      * Find the workspace folder or addDockingPanel a dialog to select one

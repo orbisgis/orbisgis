@@ -29,23 +29,31 @@
                                 </configuration>
                         </plugin>
                         <plugin>
+                            <groupId>org.apache.maven.plugins</groupId>
+                            <artifactId>maven-jar-plugin</artifactId>
+                            <version>2.4</version>
+                            <configuration>
+                                <archive>
+                                    <manifest>
+                                        <mainClass>org.orbisgis.view.main.Main</mainClass>
+                                        <addClasspath>true</addClasspath>
+                                        <classpathPrefix>bin/</classpathPrefix>
+                                        <!-- <classpathLayoutType>repository</classpathLayoutType> -->
+                                    </manifest>
+                                </archive>
+                            </configuration>
+                        </plugin>
+                        <plugin>
                                 <artifactId>maven-assembly-plugin</artifactId>
                                 <version>2.3</version>
                                 <configuration>
-                                        <archive>
-                                                <manifest>
-                                                        <mainClass>org.orbisgis.view.main.Main</mainClass>
-                                                </manifest>
-                                        </archive>
                                         <descriptors>
-                                                <!-- order is important here! Do not re-order 'jar' & 'bin'. -->
-                                                <descriptor>src/main/assembly/jar.xml</descriptor>
-                                                <descriptor>src/main/assembly/bin.xml</descriptor>
-                                                <descriptor>src/main/assembly/project.xml</descriptor>
+                                                <descriptor>src/main/assembly/bin.xml</descriptor>     <!-- Binary Zip-->
+                                                <descriptor>src/main/assembly/project.xml</descriptor> <!-- Sources   -->
                                         </descriptors>
                                 </configuration>
                         </plugin>
-			<plugin>
+			            <plugin>
                             <groupId>org.apache.maven.plugins</groupId>
                             <artifactId>maven-dependency-plugin</artifactId>
                             <version>2.5.1</version>
@@ -56,7 +64,7 @@
                                         <goal>copy-dependencies</goal>
                                     </goals>
                                     <configuration>
-                                        <outputDirectory>${project.build.directory}/classes/org/orbisgis/view/main/bundles/</outputDirectory>
+                                        <outputDirectory>${project.build.directory}/bundle/</outputDirectory>
                                         <overWriteReleases>false</overWriteReleases>
                                         <overWriteSnapshots>false</overWriteSnapshots>
                                         <overWriteIfNewer>true</overWriteIfNewer>
@@ -124,11 +132,35 @@
                         <scope>provided</scope>
                 </dependency>
                 <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>orbisgis-omanager</artifactId>
+                    <version>1.1</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>orbisgis-omanager-plugin</artifactId>
+                    <version>1.0</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.osgi.service.obr</artifactId>
+                    <version>1.0.2</version>
+                    <scope>provided</scope>
+                </dependency>
+                <dependency>
                         <groupId>org.apache.felix</groupId>
                         <artifactId>org.apache.felix.bundlerepository</artifactId>
                         <version>1.6.6</version>
                         <scope>provided</scope>
-                </dependency>            
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.felix</groupId>
+                    <artifactId>org.apache.felix.shell.gui</artifactId>
+                    <version>0.9.0-SNAPSHOT</version>
+                    <scope>provided</scope>
+                </dependency>
                 <dependency>
                         <groupId>junit</groupId>
                         <artifactId>junit</artifactId>
