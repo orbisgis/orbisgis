@@ -28,6 +28,8 @@
  */
 package org.orbisgis.core.plugin;
 
+import org.osgi.framework.Version;
+
 /**
  * Declaration of an host package, with version number.
  * @author Nicolas Fortin
@@ -35,11 +37,7 @@ package org.orbisgis.core.plugin;
 public class PackageDeclaration {
     
     private String packageName;
-    private int majorVersion=0;
-    private int minorVersion=0;
-    private int revisionVersion=0;
-    private boolean versionDefined = false;
-
+    private Version version;
     /**
      * Full information on a package
      * @param packageName Package identifier
@@ -49,10 +47,7 @@ public class PackageDeclaration {
      */
     public PackageDeclaration(String packageName, int majorVersion, int minorVersion, int revisionVersion) {
         this.packageName = packageName;
-        this.majorVersion = majorVersion;
-        this.minorVersion = minorVersion;
-        this.revisionVersion = revisionVersion;
-        versionDefined = true;
+        this.version = new Version(majorVersion,minorVersion,revisionVersion);
     }
 
     /**
@@ -64,40 +59,19 @@ public class PackageDeclaration {
     }
 
     /**
+     * Declaration of a package without a version number, not recommended.
+     * @param packageName Package identifier
+     */
+    public PackageDeclaration(String packageName,Version version) {
+        this.packageName = packageName;
+        this.version = version;
+    }
+    /**
      * @return If revisionVersion has been set
      */
     public boolean isVersionDefined() {
-        return versionDefined;
+        return version!=null && !version.equals(new Version(0,0,0));
     }   
-    
-    /**
-     * Get the value of revisionVersion
-     *
-     * @return the value of revisionVersion
-     */
-    public int getRevisionVersion() {
-        return revisionVersion;
-    }
-
-
-    /**
-     * Get the value of minorVersion
-     *
-     * @return the value of minorVersion
-     */
-    public int getMinorVersion() {
-        return minorVersion;
-    }
-
-
-    /**
-     * Get the value of majorVersion
-     *
-     * @return the value of majorVersion
-     */
-    public int getMajorVersion() {
-        return majorVersion;
-    }
 
     /**
      * Get the value of packageName
@@ -106,5 +80,13 @@ public class PackageDeclaration {
      */
     public String getPackageName() {
         return packageName;
+    }
+
+    /**
+     * Get the package version
+     * @return null or instance of Version.
+     */
+    public Version getVersion() {
+        return version;
     }
 }

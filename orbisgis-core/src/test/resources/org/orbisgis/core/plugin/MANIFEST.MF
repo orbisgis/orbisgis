@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven Bundle Plugin
+Built-By: fortin
+Build-Jdk: 1.7.0_09
+Bnd-LastModified: 1359024878959
+Bundle-Description: A library that supports gettext-based internationa
+ lization		(i18n) of Java applications.
+Bundle-ManifestVersion: 2
+Bundle-Name: Gettext Commons
+Bundle-SymbolicName: gettext-commons
+Bundle-Version: 0.9.6
+Export-Package: org.xnap.commons.i18n;version="0.9.6",org.xnap.commons.i18n.nover
+Tool: Bnd-1.50.0
+

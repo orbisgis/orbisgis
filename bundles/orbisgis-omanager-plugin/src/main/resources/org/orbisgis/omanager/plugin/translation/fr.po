@@ -1,0 +1,165 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: OrbisGis Shell 1.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-01-22 14:33+0100\n"
+"PO-Revision-Date: 2013-01-22 14:39+0100\n"
+"Last-Translator: Nicolas Fortin <nicolas.fortin _at_ ec-nantes.fr>\n"
+"Language-Team: IRSTV <info _at_ orbisgis.org>\n"
+"Language: en\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: tr;marktr\n"
+"X-Poedit-Basepath: ../../../../../\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"X-Poedit-SearchPath-0: java\n"
+
+#: java/org/orbisgis/omanager/ManagerMenuFactory.java:67
+msgid "&Manage plug-ins"
+msgstr "&Gérer les plugins"
+
+#: java/org/orbisgis/omanager/ui/ActionBundleFactory.java:57
+msgid "Start"
+msgstr "Démarrer"
+
+#: java/org/orbisgis/omanager/ui/ActionBundleFactory.java:57
+msgid "Activate the selected plug-in"
+msgstr "Activer le plugin sélectionné"
+
+#: java/org/orbisgis/omanager/ui/ActionBundleFactory.java:61
+msgid "Stop"
+msgstr "Arrêter"
+
+#: java/org/orbisgis/omanager/ui/ActionBundleFactory.java:61
+msgid "Deactivate the selected plug-in"
+msgstr "Désactiver le plugin sélectionné"
+
+#: java/org/orbisgis/omanager/ui/ActionBundleFactory.java:65
+#: java/org/orbisgis/omanager/ui/MainPanel.java:326
+msgid "Update"
+msgstr "Recharger"
+
+#: java/org/orbisgis/omanager/ui/ActionBundleFactory.java:65
+msgid "Update the plug-in with the same version."
+msgstr "Met à jour le plug-in de même version."
+
+#: java/org/orbisgis/omanager/ui/ActionBundleFactory.java:69
+msgid "Uninstall"
+msgstr "Désinstaller"
+
+#: java/org/orbisgis/omanager/ui/ActionBundleFactory.java:69
+msgid "Remove the selected plug-in"
+msgstr "Supprime le plug-in"
+
+#: java/org/orbisgis/omanager/ui/MainPanel.java:126
+msgid "Plug-ins manager"
+msgstr "Gestionnaire de plugins"
+
+#: java/org/orbisgis/omanager/ui/MainPanel.java:173
+msgid "Manage repositories"
+msgstr "Gérer les Dépôts"
+
+#: java/org/orbisgis/omanager/ui/MainPanel.java:174
+msgid "Add/Remove remote bundle repositories."
+msgstr "Ajouter ou supprimer des dépôts de plugins"
+
+#: java/org/orbisgis/omanager/ui/MainPanel.java:178
+msgid "Refresh"
+msgstr "Actualiser"
+
+#: java/org/orbisgis/omanager/ui/MainPanel.java:179
+msgid "Reload the list of plug-ins from the Internet."
+msgstr "Recharge la liste des plugins depuis les dépôts."
+
+#: java/org/orbisgis/omanager/ui/MainPanel.java:322
+msgid "All state"
+msgstr "Tous"
+
+#: java/org/orbisgis/omanager/ui/MainPanel.java:322
+msgid "Do not filter bundle by their state."
+msgstr "Ne pas filtrer les plugins selon leurs état"
+
+#: java/org/orbisgis/omanager/ui/MainPanel.java:324
+msgid "Installed"
+msgstr "Installé"
+
+#: java/org/orbisgis/omanager/ui/MainPanel.java:324
+msgid "Show only installed bundles."
+msgstr "Affiche seulement les plugins installés"
+
+#: java/org/orbisgis/omanager/ui/MainPanel.java:326
+msgid "Show only bundles where an update is available."
+msgstr "Affiche seulement les plugins dont une mise à niveau est disponible"
+
+#: java/org/orbisgis/omanager/ui/BundleDetailsTransformer.java:51
+msgid "Bundle-ContactAddress"
+msgstr "Contact"
+
+#: java/org/orbisgis/omanager/ui/BundleDetailsTransformer.java:52
+msgid "Bundle-Copyright"
+msgstr "Copyright"
+
+#: java/org/orbisgis/omanager/ui/BundleDetailsTransformer.java:53
+msgid "Bundle-Description"
+msgstr "Description"
+
+#: java/org/orbisgis/omanager/ui/BundleDetailsTransformer.java:54
+msgid "Bundle-DocURL"
+msgstr "Documentation"
+
+#: java/org/orbisgis/omanager/ui/BundleDetailsTransformer.java:62
+msgid "Bundle-License"
+msgstr "License"
+
+#: java/org/orbisgis/omanager/ui/BundleDetailsTransformer.java:63
+msgid "Bundle-Localization"
+msgstr "Traduction"
+
+#: java/org/orbisgis/omanager/ui/BundleDetailsTransformer.java:65
+msgid "Bundle-ManifestVersion"
+msgstr "Version"
+
+#: java/org/orbisgis/omanager/ui/BundleDetailsTransformer.java:67
+msgid "Bundle-NativeCode"
+msgstr "Code Natif"
+
+#: java/org/orbisgis/omanager/ui/BundleDetailsTransformer.java:71
+msgid "Bundle-RequiredExecutionEnvironment"
+msgstr "Environnement d’exécution requis"
+
+#: java/org/orbisgis/omanager/ui/BundleDetailsTransformer.java:72
+msgid "Service-Component"
+msgstr "Composant de service"
+
+#: java/org/orbisgis/omanager/ui/BundleDetailsTransformer.java:73
+msgid "Bundle-SymbolicName"
+msgstr "Nom symbolique"
+
+#: java/org/orbisgis/omanager/ui/BundleDetailsTransformer.java:74
+msgid "Bundle-UpdateLocation"
+msgstr "Emplacement de mise à jour"
+
+#: java/org/orbisgis/omanager/ui/BundleDetailsTransformer.java:75
+msgid "Bundle-Vendor"
+msgstr "Auteur"
+
+#: java/org/orbisgis/omanager/ui/BundleDetailsTransformer.java:76
+msgid "Bundle-Version"
+msgstr "Version"
+
+#: java/org/orbisgis/omanager/ui/BundleDetailsTransformer.java:79
+msgid "gui"
+msgstr "ui"
+
+#~ msgid "Plugin Shell"
+#~ msgstr "Console de Plug-in"
+
+#~ msgid "Plugin shell, type \"help\" for command list.\n"
+#~ msgstr "Console de plugin, entrez \"help\" pour la liste des commandes.\n"
+
+#~ msgid "No shell service is available."
+#~ msgstr "Pas de service de console disponible."
+
+#~ msgid "Cannot show the log message"
+#~ msgstr "Ne peut afficher les messages"

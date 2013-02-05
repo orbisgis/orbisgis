@@ -28,21 +28,18 @@
  */
 package org.orbisgis.view.main.bundles;
 
-import java.io.IOException;
-import java.io.InputStream;
 import org.orbisgis.core.plugin.BundleReference;
 import org.orbisgis.core.plugin.BundleTools;
 import org.osgi.framework.BundleContext;
 
 /**
- * Reference to OrbisGIS View minimal Bundles.
+ * Reference to OrbisGIS View special bundle loading process.
  * @author Nicolas Fortin
  */
 public class BundleFromResources {
-        private static final BundleReference[] PROVIDED_BUNDLES = {
-                new BundleReference("org.apache.felix.shell"),
-                new BundleReference("org.apache.felix.bundlerepository"),
-                new BundleReference("orbisgis-oshell"), // Dev shell
+        private static final BundleReference[] SPECIFIC_BEHAVIOUR_BUNDLES = {
+                new BundleReference("orbisgis-oshell").setAutoStart(false),
+                new BundleReference("org.apache.felix.shell.gui").setAutoStart(false),
         };
         private BundleFromResources() {                
         }
@@ -51,25 +48,6 @@ public class BundleFromResources {
          * @param hostBundle Host bundle context
          */
         public static void installResourceBundles(BundleContext hostBundle) {
-                // Set resource input stream
-                for(BundleReference bundleRef : PROVIDED_BUNDLES) {
-                        bundleRef.setBundleJarContent(BundleFromResources.class
-                                .getResourceAsStream(bundleRef.getResourcePath()));
-                }
-                BundleTools.installBundles(hostBundle,PROVIDED_BUNDLES);
-                // Close input streams
-                for(BundleReference bundleRef : PROVIDED_BUNDLES) {
-                        InputStream jarContent = bundleRef.getBundleJarContent();
-                        if(jarContent!=null) {
-                                try {
-                                        jarContent.close();
-                                } catch(IOException ex) {
-                                        //ignore
-                                }
-                        }
-                }
-
-                // Configure Bundles
-
+                BundleTools.installBundles(hostBundle, SPECIFIC_BEHAVIOUR_BUNDLES);
         }
 }

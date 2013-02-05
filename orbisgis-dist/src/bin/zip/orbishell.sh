@@ -27,4 +27,4 @@
 # info_at_ orbisgis.org
 #
 
-java -Xmx1024M -cp "orbisgis-dist-4.0-SNAPSHOT-jar-with-dependencies.jar" org.orbisgis.core.beanshell.BeanshellScript $*
+java -Xmx1024M -cp "orbisgis-dist-4.0-SNAPSHOT.jar" org.orbisgis.core.beanshell.BeanshellScript $*
