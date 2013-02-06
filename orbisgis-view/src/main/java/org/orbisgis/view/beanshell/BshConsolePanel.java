@@ -89,7 +89,7 @@ public final class BshConsolePanel extends JPanel {
         private int line = 0;
         private int character = 0;
         private String currentStatusMessage = "";
-        private static String BSHINITFILE = "init.bsh";
+        private static final String BSHINITFILE = "init.bsh";
         
         /**
          * Creates a console for beanshell.
