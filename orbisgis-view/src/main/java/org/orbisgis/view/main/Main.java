@@ -29,20 +29,28 @@
 package org.orbisgis.view.main;
 
 import java.util.Stack;
+import javax.swing.JOptionPane;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
 
 /**
  * Entry point of User Interface.
  */
 final class Main 
 {
+    private static final I18n I18N = I18nFactory.getI18n(Main.class);
     private static boolean DEBUG_MODE=false;
+
+    //Minimum supported java version
+    public static final char MIN_JAVA_VERSION = '6';
+    
     /**
      * Utility class
      */
     private Main() {
-        
+
     }
-    
+
     private static void parseCommandLine(String[] args) {
         //Read parameters
         Stack<String> sargs=new Stack<String>();
@@ -56,16 +64,36 @@ final class Main
             }
         }
     }
-    
+
     /**
     * Entry point of User Interface
     */
     public static void main( String[] args )
     {
         parseCommandLine(args);
-        // Listen to future workspace change
-        CoreLauncher coreLauncher = new CoreLauncher();
-        coreLauncher.init(DEBUG_MODE);
-        coreLauncher.launch();
-    }    
+            //Check if the java version is greater than 1.6+
+            if (!isVersion(MIN_JAVA_VERSION)) {
+                    JOptionPane.showMessageDialog(null, I18N.tr("OrbisGIS needs at least a java 1.6+"));
+            } else {
+                    // Listen to future workspace change
+                    CoreLauncher coreLauncher = new CoreLauncher();
+                    coreLauncher.init(DEBUG_MODE);
+                    coreLauncher.launch();
+            }
+    }
+
+        /**
+         * Utility method to check if the java machine is supported.
+         *
+         * @param minJavaVersion
+         * @return
+         */
+        private static boolean isVersion(char minJavaVersion) {
+                String version = System.getProperty("java.version");
+                char minor = version.charAt(2);
+                if (minor >= minJavaVersion ) {
+                        return true;
+                }
+                return false;
+        }
 }
