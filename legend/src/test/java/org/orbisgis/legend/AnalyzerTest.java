@@ -55,6 +55,8 @@ public abstract class AnalyzerTest {
         public static final String DOUBLE_CATEGORIZE = "src/test/resources/org/orbisgis/legend/doubleCategorize.se";
         public static final String DOUBLE_CATEGORIZE_FIELD = "src/test/resources/org/orbisgis/legend/doubleCategorizeDoubleField.se";
         public static final String NESTED = "src/test/resources/org/orbisgis/legend/nestedCategorize.se";
+        public static final String COLOR_CATEGORIZE = "src/test/resources/org/orbisgis/legend/colorCategorize.se";
+        public static final String DENSITY_FILL = "src/test/resources/org/orbisgis/legend/density_hatch_classif.se";
 
         public Style getStyle(String path) throws Exception {
             Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
