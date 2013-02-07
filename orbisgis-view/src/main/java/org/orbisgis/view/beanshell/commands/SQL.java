@@ -52,6 +52,6 @@ public class SQL {
 	public static void execute(String text) {
 		BackgroundManager bm = (BackgroundManager) Services
 				.getService(BackgroundManager.class);
-		bm.backgroundOperation(new ExecuteScriptProcess(text,MapElement.fetchMapContext()));
+		bm.backgroundOperation(new ExecuteScriptProcess(text,MapElement.fetchFirstMapElement().getMapContext()));
 	}
 }
