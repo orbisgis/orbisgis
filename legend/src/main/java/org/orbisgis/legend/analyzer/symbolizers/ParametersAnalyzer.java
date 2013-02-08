@@ -35,6 +35,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
 import org.orbisgis.core.renderer.se.visitors.UsedAnalysisVisitor;
+import org.orbisgis.legend.AbstractAnalyzer;
 
 /**
  * Basic analyzer for symbolizer nodes. We check the nature of inner {@code
@@ -45,7 +46,7 @@ import org.orbisgis.core.renderer.se.visitors.UsedAnalysisVisitor;
  * </ul>
  * @author Alexis Guéganno
  */
-public class ParametersAnalyzer {
+public class ParametersAnalyzer extends AbstractAnalyzer {
 
         private UsedAnalysis ua = new UsedAnalysis();
         private HashSet<String> fields = new HashSet<String>();
@@ -107,4 +108,12 @@ public class ParametersAnalyzer {
                 return fields.size() <=1;
         }
 
+        /**
+         * Gets the compilation of all the analysis that have been made in the
+         * last analyzed SymbolizerNode.
+         * @return
+         */
+        public UsedAnalysis getUsedAnalysis(){
+                return ua;
+        }
 }
