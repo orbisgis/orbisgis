@@ -114,9 +114,8 @@ public class MarkGraphicAnalyzer extends AbstractAnalyzer {
                     DefaultViewBox vbl, ConstantSolidFillLegend fillLeg,
                     ConstantPenStrokeLegend strokeLeg){
         if(vbl == null || vbl instanceof ConstantViewBox){
-            return new ConstantWKNLegend(mark, (StringLiteralLegend) wknLegend,
-                    (ConstantViewBox) vbl, (ConstantSolidFillLegend) fillLeg,
-                    (ConstantPenStrokeLegend) strokeLeg);
+            return new ConstantWKNLegend(mark, wknLegend,
+                    (ConstantViewBox) vbl, fillLeg, strokeLeg);
         } else if(vbl instanceof MonovariateProportionalViewBox) {
             return new ProportionalWKNLegend(mark, wknLegend,
                     (MonovariateProportionalViewBox) vbl, fillLeg, strokeLeg);
