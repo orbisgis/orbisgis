@@ -87,13 +87,7 @@ public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbo
         if(pointSymbolizer.getGraphicCollection().getNumGraphics() == 1){
             Graphic gr = pointSymbolizer.getGraphicCollection().getGraphic(0);
             if(gr instanceof MarkGraphic){
-                LegendStructure mgl = new MarkGraphicAnalyzer((MarkGraphic) gr).getLegend();
-                if(mgl instanceof ConstantWKNLegend){
-                    markGraphic = (ConstantWKNLegend) mgl;
-                }  else {
-                    throw new IllegalArgumentException("We can't analyze yet symbolizers "
-                            + "that are not constants.");
-                }
+                markGraphic = new ConstantWKNLegend((MarkGraphic)gr);
             }
         } else {
             throw new IllegalArgumentException("We can't analyze symbolizers with"

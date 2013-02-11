@@ -30,6 +30,8 @@ package org.orbisgis.legend.structure.fill.constant;
 
 import java.awt.Color;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.legend.structure.fill.SolidFillLegend;
 import org.orbisgis.legend.structure.literal.ColorLiteralLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
@@ -40,6 +42,16 @@ import org.orbisgis.legend.structure.literal.RealLiteralLegend;
  * @author Alexis Guéganno
  */
 public class ConstantSolidFillLegend extends SolidFillLegend implements ConstantSolidFill {
+
+        /**
+         * Builds a new {@code }ConstantSolidFillLegend} instance using the given {@code SolidFill}. Use at your own risks :
+         * you must be sure that the given fill is valid for this legend.
+         * @param sf
+         * @throws ClassCastException if the color or legend can't be identified as literal.
+         */
+        public ConstantSolidFillLegend(SolidFill sf){
+            super(sf, new ColorLiteralLegend((ColorLiteral)sf.getColor()), new RealLiteralLegend((RealLiteral)sf.getOpacity()));
+        }
 
         /**
          * Build a new {@code ConstantSolidFillLegend} using the {@code SolidFill}

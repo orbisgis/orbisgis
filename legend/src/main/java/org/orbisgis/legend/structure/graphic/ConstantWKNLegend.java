@@ -29,6 +29,8 @@
 package org.orbisgis.legend.structure.graphic;
 
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.graphic.ViewBox;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
@@ -40,6 +42,10 @@ import org.orbisgis.legend.structure.viewbox.ConstantViewBox;
  * @author Alexis Guéganno
  */
 public class ConstantWKNLegend extends ConstantFormWKN{
+
+     public ConstantWKNLegend(MarkGraphic mg){
+         super(mg,ConstantViewBox.createConstantViewBox(mg.getViewBox()));
+     }
 
     /**
      * Build a new {@code ConstantWKNLegend}, associated to the given {@code
