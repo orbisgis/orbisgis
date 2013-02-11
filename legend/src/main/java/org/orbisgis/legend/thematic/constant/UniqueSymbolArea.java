@@ -32,7 +32,6 @@ import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.analyzer.FillAnalyzer;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
@@ -69,7 +68,7 @@ public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbo
         super();
         AreaSymbolizer symbolizer = (AreaSymbolizer) getSymbolizer();
         Fill fill = symbolizer.getFill();
-        fillLegend = (ConstantSolidFill) new FillAnalyzer(fill).getLegend();
+        fillLegend = new ConstantSolidFillLegend((SolidFill)fill);
     }
 
     /**

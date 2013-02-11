@@ -32,7 +32,6 @@ import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
@@ -65,7 +64,7 @@ public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUni
     public UniqueSymbolLine() {
         super(new LineSymbolizer());
         Stroke gr = ((LineSymbolizer)getSymbolizer()).getStroke();
-        strokeLegend = (ConstantPenStrokeLegend) new PenStrokeAnalyzer((PenStroke) gr).getLegend();
+        strokeLegend = new ConstantPenStrokeLegend((PenStroke) gr);
     }
 
     /**
