@@ -67,7 +67,7 @@ public class ProportionalPoint extends ConstantFormPoint implements IUniqueSymbo
     /**
      * Tries to build an instance of {@code ProportionalPoint} using the given
      * {@code PointSymbolizer}.
-     * @param symbolizer
+     * @param pointSymbolizer
      * @throws IllegalArgumentException
      * If {@code pointSymbolizer} can't be recognized as a valid {@code
      * UniqueSymbolPoint}.
@@ -77,6 +77,7 @@ public class ProportionalPoint extends ConstantFormPoint implements IUniqueSymbo
         if(pointSymbolizer.getGraphicCollection().getNumGraphics() == 1){
             Graphic gr = pointSymbolizer.getGraphicCollection().getGraphic(0);
             if(gr instanceof MarkGraphic){
+                markGraphic = new ProportionalWKNLegend((MarkGraphic) gr);
                 LegendStructure mgl = new MarkGraphicAnalyzer((MarkGraphic) gr).getLegend();
                 if(mgl instanceof ProportionalWKNLegend){
                     markGraphic = (ProportionalWKNLegend) mgl;

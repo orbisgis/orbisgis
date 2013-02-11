@@ -35,6 +35,7 @@ import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.viewbox.ConstantViewBox;
+import org.orbisgis.legend.structure.viewbox.ViewBoxLegendFactory;
 
 /**
  * A Markgraphic, defined with a well-known name, whose all parameters are
@@ -44,7 +45,7 @@ import org.orbisgis.legend.structure.viewbox.ConstantViewBox;
 public class ConstantWKNLegend extends ConstantFormWKN{
 
      public ConstantWKNLegend(MarkGraphic mg){
-         super(mg,ConstantViewBox.createConstantViewBox(mg.getViewBox()));
+         super(mg, ViewBoxLegendFactory.createConstantViewBox(mg.getViewBox()));
      }
 
     /**

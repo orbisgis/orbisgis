@@ -37,7 +37,13 @@ import org.orbisgis.core.renderer.se.parameter.Interpolate;
 import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
+import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
+import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.core.renderer.se.parameter.real.RealFunction;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.structure.interpolation.InterpolationLegend;
+import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
 
@@ -81,7 +87,7 @@ public class PointSymbolizerAnalyzer extends SymbolizerTypeAnalyzer {
                                     throw new UnsupportedOperationException("Not yet !");
                             } else if(p instanceof Categorize){
                                     throw new UnsupportedOperationException("Not yet !");
-                            } else if(p instanceof Interpolate){
+                            } else if(p instanceof RealParameter && validateInterpolateForProportionalPoint((RealParameter) p)){
                                     //We need to analyze the ViewBox and its Interpolate instance(s)
                                     return new ProportionalPoint(sym);
                             }
@@ -91,6 +97,23 @@ public class PointSymbolizerAnalyzer extends SymbolizerTypeAnalyzer {
             }
         }
         throw new UnsupportedOperationException("We can only work with MarkGraphic instances for now.");
+    }
+
+    public boolean validateInterpolateForProportionalPoint(RealParameter rp){
+        if(rp instanceof Interpolate2Real){
+            RealParameter look =  ((Interpolate2Real)rp).getLookupValue();
+            if(look instanceof RealFunction){
+                RealFunction rf = (RealFunction) look;
+                List<RealParameter> ops = rf.getOperands();
+                if(!ops.isEmpty()){
+                    if(rf.getOperator().equals(RealFunction.Operators.SQRT)
+                                && ops.size() == 1 && ops.get(0) instanceof RealAttribute){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
 }

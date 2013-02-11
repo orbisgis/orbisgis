@@ -86,8 +86,7 @@ public class MonovariateProportionalViewBox extends DefaultViewBox {
                         rf.addOperand(new RealAttribute());
                 } catch(ParameterException pe){
                         throw new IllegalStateException("We've just failed at giving"
-                                + "an operand to a log. Somthing must goes REALLY"
-                                + "wrong...", pe);
+                                + "an operand to a log. Something must be going REALLY wrong...", pe);
                 }
                 ir.setLookupValue(rf);
                 //We set the height

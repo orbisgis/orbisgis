@@ -28,12 +28,16 @@
  */
 package org.orbisgis.legend.structure.graphic;
 
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.viewbox.MonovariateProportionalViewBox;
+import org.orbisgis.legend.structure.viewbox.ViewBoxLegendFactory;
 
 /**
  * This class is used to describe instances of {@link MarkGraphic} that embeds a
@@ -49,6 +53,14 @@ public class ProportionalWKNLegend extends ConstantFormWKN {
     public ProportionalWKNLegend(){
         super();
         setViewBoxLegend(new MonovariateProportionalViewBox());
+    }
+
+    public  ProportionalWKNLegend(MarkGraphic mark){
+        super(mark,
+                    new StringLiteralLegend((StringLiteral) mark.getWkn()),
+                    ViewBoxLegendFactory.createMonovariateProportionalViewBox(mark.getViewBox()),
+                    new ConstantSolidFillLegend((SolidFill)mark.getFill()),
+                    new ConstantPenStrokeLegend((PenStroke)mark.getStroke()));
     }
     /**
      * Build a new isntance of this {@code Legend} specialization.
