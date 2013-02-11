@@ -29,19 +29,11 @@
 package org.orbisgis.legend.analyzer.symbolizers;
 
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
-import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
-import org.orbisgis.core.renderer.se.stroke.Stroke;
-import org.orbisgis.legend.AbstractAnalyzer;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.analyzer.FillAnalyzer;
-import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
-import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
-import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 
 import java.util.List;

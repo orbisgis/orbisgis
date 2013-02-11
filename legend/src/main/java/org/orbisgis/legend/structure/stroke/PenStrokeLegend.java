@@ -37,7 +37,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.analyzer.FillAnalyzer;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 import org.orbisgis.legend.structure.parameter.NumericLegend;
@@ -61,7 +61,7 @@ public class PenStrokeLegend implements StrokeLegend {
                 penStroke = new PenStroke();
                 widthAnalysis = new RealLiteralLegend((RealLiteral)penStroke.getWidth());
                 SolidFill sf = (SolidFill) penStroke.getFill();
-                fillAnalysis = new FillAnalyzer(sf).getLegend();
+                fillAnalysis = new ConstantSolidFillLegend(sf);
                 StringParameter sp = penStroke.getDashArray();
                 dashAnalysis = new StringLiteralLegend((StringLiteral) sp);
         }

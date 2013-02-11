@@ -38,9 +38,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
 import org.orbisgis.legend.structure.fill.constant.ConstantFillLegend;
-import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
@@ -72,7 +70,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
                 ir.addInterpolationPoint(ip2);
                 ir.setLookupValue(new RealAttribute());
                 ps.setWidth(ir);
-                NumericLegend wa = (NumericLegend) new RealParameterAnalyzer(ir).getLegend();
+                NumericLegend wa = new LinearInterpolationLegend(ir);
                 setLineWidthLegend(wa);
         }
 

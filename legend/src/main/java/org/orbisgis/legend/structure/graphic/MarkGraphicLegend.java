@@ -28,18 +28,20 @@
  */
 package org.orbisgis.legend.structure.graphic;
 
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.analyzer.FillAnalyzer;
-import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
-import org.orbisgis.legend.analyzer.ViewBoxAnalyzer;
-import org.orbisgis.legend.analyzer.parameter.StringParameterAnalyzer;
 import org.orbisgis.legend.structure.fill.FillLegend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
+import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 import org.orbisgis.legend.structure.parameter.ParameterLegend;
 import org.orbisgis.legend.structure.stroke.StrokeLegend;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.viewbox.ViewBoxLegend;
+import org.orbisgis.legend.structure.viewbox.ViewBoxLegendFactory;
 
 /**
  * <p>
@@ -71,11 +73,10 @@ public class MarkGraphicLegend implements LegendStructure {
      */
     public MarkGraphicLegend(){
         markGraphic = new MarkGraphic();
-        viewBoxLegend = new ViewBoxAnalyzer(markGraphic.getViewBox()).getLegend();
-        fillLegend = (FillLegend) new FillAnalyzer(markGraphic.getFill()).getLegend();
-        strokeLegend = (StrokeLegend) new PenStrokeAnalyzer(
-            (PenStroke)markGraphic.getStroke()).getLegend();
-        wknLegend = (ParameterLegend) new StringParameterAnalyzer(markGraphic.getWkn()).getLegend();
+        viewBoxLegend = ViewBoxLegendFactory.createConstantViewBox(markGraphic.getViewBox());
+        fillLegend = new ConstantSolidFillLegend((SolidFill)markGraphic.getFill());
+        strokeLegend = new ConstantPenStrokeLegend((PenStroke)markGraphic.getStroke());
+        wknLegend = new StringLiteralLegend((StringLiteral) markGraphic.getWkn());
     }
 
     /**
