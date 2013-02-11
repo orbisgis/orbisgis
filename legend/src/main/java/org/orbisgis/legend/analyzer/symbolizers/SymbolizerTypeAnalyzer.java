@@ -37,7 +37,7 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 
 /**
- * This class extends {@link ParametersAbalyzer} and provides the ability to
+ * This class extends {@link ParametersAnalyzer} and provides the ability to
  * validate some input {@code SymbolizerNode} by checking their type and the
  * type of some of their children.
  * @author Alexis Guéganno
@@ -79,7 +79,9 @@ public class SymbolizerTypeAnalyzer extends ParametersAnalyzer {
                 if(g instanceof MarkGraphic){
                         MarkGraphic mg = (MarkGraphic) g;
                         Halo h = mg.getHalo();
-                        boolean b = validateFill(mg.getFill()) && validateStroke(mg.getStroke());
+                        Fill f = mg.getFill();
+                        Stroke s = mg.getStroke();
+                        boolean b = (f == null || validateFill(mg.getFill())) && (s ==  null || validateStroke(mg.getStroke()));
                         if(h!=null){
                                 return b && validateFill(h.getFill());
                         } else {
