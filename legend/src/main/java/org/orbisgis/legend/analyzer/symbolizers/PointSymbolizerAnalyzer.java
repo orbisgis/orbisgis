@@ -87,11 +87,7 @@ public class PointSymbolizerAnalyzer extends SymbolizerTypeAnalyzer {
                             }
                     }
             } else {
-                StringBuilder sb = new StringBuilder();
-                sb.append("Analysis unicity : ").append(isAnalysisUnique()).append("\n");
-                sb.append("Light analysis : ").append(isAnalysisUnique()).append("\n");
-                sb.append("Field unicity : ").append(isAnalysisUnique()).append("\n");
-                throw new UnsupportedOperationException(sb.toString());
+                throw new UnsupportedOperationException(getStatus());
             }
         }
         throw new UnsupportedOperationException("We can only work with MarkGraphic instances for now.");

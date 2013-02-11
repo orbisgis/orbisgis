@@ -116,4 +116,16 @@ public class ParametersAnalyzer extends AbstractAnalyzer {
         public UsedAnalysis getUsedAnalysis(){
                 return ua;
         }
+
+        /**
+         * Get a String text explaining the status of the currently analyzed SymbolizerNode.
+         * @return
+         */
+        public String getStatus(){
+            StringBuilder sb = new StringBuilder();
+            sb.append("Analysis unicity : ").append(isAnalysisUnique()).append("\n");
+            sb.append("Light analysis : ").append(isAnalysisUnique()).append("\n");
+            sb.append("Field unicity : ").append(isAnalysisUnique()).append("\n");
+            return sb.toString();
+        }
 }
