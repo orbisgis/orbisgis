@@ -28,16 +28,22 @@
  */
 package org.orbisgis.legend.structure.stroke;
 
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
+import org.orbisgis.legend.structure.fill.constant.ConstantFillLegend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
+import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 import org.orbisgis.legend.structure.parameter.NumericLegend;
 
 /**
@@ -71,12 +77,24 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
         }
 
         /**
+         * Builds a {@code ProportionalStrokeLegend} from the given {@code PenStroke}. We suppose the given parameter has
+         * been validated. Otherwise, we will receive {@code ClassCastException} during initialization.
+         * @param penStroke
+         */
+        public ProportionalStrokeLegend(PenStroke penStroke){
+            super(penStroke,
+                        new LinearInterpolationLegend((Interpolate2Real)penStroke.getWidth()),
+                        new ConstantSolidFillLegend((SolidFill) penStroke.getFill()),
+                        penStroke.getDashArray() == null ? null : new StringLiteralLegend((StringLiteral) penStroke.getDashArray()));
+        }
+
+        /**
          * Build a new {@code ProportionalStrokeLegend}, using the given {@code
          * PenStroke}.
          * @param penStroke
          */
         public ProportionalStrokeLegend(PenStroke penStroke, LinearInterpolationLegend width,
-                    LegendStructure fill, LegendStructure dashes) {
+                    ConstantFillLegend fill, LegendStructure dashes) {
                 super(penStroke, width, fill, dashes);
         }
 

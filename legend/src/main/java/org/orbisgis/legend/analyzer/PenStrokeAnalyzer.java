@@ -274,7 +274,7 @@ public class PenStrokeAnalyzer extends AbstractAnalyzer {
                                         (ConstantFillLegend) fill, (StringLiteralLegend) dash);
                         } else if(width instanceof LinearInterpolationLegend){
                                 ret = new ProportionalStrokeLegend(penStroke,
-                                        (LinearInterpolationLegend)width, fill, dash);
+                                        (LinearInterpolationLegend)width, (ConstantFillLegend) fill, dash);
                         } else {
                                 ret = new PenStrokeLegend(penStroke, width, fill, dash);
                         }

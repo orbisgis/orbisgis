@@ -67,16 +67,8 @@ public class ProportionalLine extends ConstantColorAndDashesLine implements Lege
      */
     public ProportionalLine(LineSymbolizer symbolizer) {
         super(symbolizer);
+        strokeLegend = new ProportionalStrokeLegend((PenStroke) symbolizer.getStroke());
         Stroke gr = ((LineSymbolizer)getSymbolizer()).getStroke();
-        if(gr instanceof PenStroke){
-            LegendStructure mgl = new PenStrokeAnalyzer((PenStroke) gr).getLegend();
-            if(mgl instanceof ProportionalStrokeLegend){
-                strokeLegend = (ProportionalStrokeLegend) mgl;
-            }  else {
-                throw new IllegalArgumentException("A unique symbol must be a  "
-                        + "constant.");
-            }
-        }
     }
 
     /**

@@ -109,7 +109,7 @@ public class ProportionalLineTest extends AnalyzerTest {
         try{
             ProportionalLine usl = new ProportionalLine(ls);
             fail();
-        } catch (IllegalArgumentException iae){
+        } catch (ClassCastException iae){
             assertTrue(true);
         }
 
