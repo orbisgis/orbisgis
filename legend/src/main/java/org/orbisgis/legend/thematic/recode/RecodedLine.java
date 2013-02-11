@@ -31,6 +31,8 @@ package org.orbisgis.legend.thematic.recode;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.recode.RecodedColor;
 import org.orbisgis.legend.structure.recode.RecodedReal;
@@ -48,6 +50,23 @@ public class RecodedLine extends SymbolizerLegend implements StrokeUom {
 
         private final LineSymbolizer ls;
         private final RecodedPenStroke ps;
+
+        /**
+         * Builds a new {@code RecodedLine} instance from the given {@link LineSymbolizer}. Take care to validate the
+         * configuration of the symbolizer before calling this constructor.
+         * @param sym
+         * @throws ClassCastException
+         * @throws UnsupportedOperationException If the inner stroke is not a {@link PenStroke} instance.
+         */
+        public RecodedLine(LineSymbolizer sym){
+            ls=sym;
+            Stroke p = ls.getStroke();
+            if(p instanceof PenStroke){
+                ps=new RecodedPenStroke((PenStroke)p);
+            } else {
+                throw new UnsupportedOperationException("Can't build a RecodedLine with such a Stroke: "+p.getClass().getName());
+            }
+        }
 
         public RecodedLine(LineSymbolizer ls, RecodedPenStroke ps){
                 this.ls = ls;

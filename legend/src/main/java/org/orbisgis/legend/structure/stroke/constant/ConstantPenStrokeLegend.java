@@ -50,9 +50,6 @@ public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend impl
          * Build a new instance of {@code ConstantPenStrokeLegend}. Use at your own risk : if ps can't be recognize
          * as a ConstantPenStrokeLegend, you'll receive runtime exceptions...
          * @param ps
-         * @param width
-         * @param fill
-         * @param dash
          * @throws ClassCastException if some {@code ps} fields can't be recognize as valid parameters for this legend.
          */
         public ConstantPenStrokeLegend(PenStroke ps) {

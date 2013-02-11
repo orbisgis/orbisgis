@@ -45,6 +45,15 @@ import org.orbisgis.legend.structure.recode.type.TypeListener;
 public class RecodedSolidFillLegend extends SolidFillLegend {
 
         /**
+         * Build a new {@code RecodedSolidFill} from the given {@link SolidFill}. If it can't be recognized as a {@code
+         * RecodedSolidFill}, you'll receive {@link UnsupportedOperationException} or {@link ClassCastException}.
+         * @param fill
+         */
+        public RecodedSolidFillLegend(SolidFill fill){
+            this(fill, new RecodedColor(fill.getColor()), new RecodedReal(fill.getOpacity()));
+        }
+
+        /**
          * Build a new {@code CategorizedSolidFillLegend} using the {@code 
          * SolidFill} and {@code Recode2ColorLegend} given in parameter.
          * @param fill

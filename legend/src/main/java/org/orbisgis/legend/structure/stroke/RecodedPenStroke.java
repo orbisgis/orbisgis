@@ -28,7 +28,9 @@
  */
 package org.orbisgis.legend.structure.stroke;
 
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.structure.fill.FillLegend;
@@ -37,6 +39,7 @@ import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.parameter.NumericLegend;
 import org.orbisgis.legend.structure.recode.RecodedReal;
+import org.orbisgis.legend.structure.recode.RecodedString;
 
 /**
  * Represents {@code PenStroke} instances that just contain {@code Recode}
@@ -50,6 +53,19 @@ public class RecodedPenStroke implements LegendStructure {
         private FillLegend fillLegend;
         private RecodedReal widthLegend;
         private LegendStructure dashLegend;
+
+        /**
+         * Builds a {@link RecodedPenStroke} from the given stroke. You must be sure that the given parameter is valid.
+         * You'll receive {@link ClassCastException} and {@link UnsupportedOperationException} if it's not...
+         * @param stroke
+         */
+        public RecodedPenStroke(PenStroke stroke){
+            this.stroke = stroke;
+            this.fillLegend = new RecodedSolidFillLegend((SolidFill) stroke.getFill());
+            this.widthLegend = new RecodedReal(stroke.getWidth());
+            StringParameter sp = stroke.getDashArray();
+            this.dashLegend = sp == null ? null : new RecodedString(sp);
+        }
 
         public RecodedPenStroke(PenStroke stroke,
                         RecodedSolidFillLegend fillLegend,

@@ -29,6 +29,7 @@
 package org.orbisgis.legend.analyzer.symbolizers;
 
 import org.orbisgis.core.renderer.se.LineSymbolizer;
+import org.orbisgis.core.renderer.se.parameter.*;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.AbstractAnalyzer;
@@ -41,43 +42,60 @@ import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
 
+import java.util.List;
+
 /**
  * This {@code Analyzer} realization is dedicated to the study of {@code
- * LineSymbolizer} instances. 
+ * LineSymbolizer} instances.
+ *
  * @author Alexis Guéganno
  */
-public class LineSymbolizerAnalyzer extends AbstractAnalyzer {
+public class LineSymbolizerAnalyzer extends SymbolizerTypeAnalyzer {
 
     /**
      * Build a new instance of this {@code Analyzer} using the given {@code
-     * Linesymbolizer}. The obtained {@code LegendStructure}, if any, will be retrievable
+     * LineSymbolizer}. The obtained {@code LegendStructure}, if any, will be retrievable
      * from the {@code getLegend()} method just after initialization.
+     *
      * @param symbolizer
      */
-    public LineSymbolizerAnalyzer(LineSymbolizer symbolizer){
+    public LineSymbolizerAnalyzer(LineSymbolizer symbolizer) {
         setLegend(analyze(symbolizer));
     }
 
-    private LegendStructure analyze(LineSymbolizer symbolizer){
+    private LegendStructure analyze(LineSymbolizer symbolizer) {
+        //We validate the Stroke :
         Stroke str = symbolizer.getStroke();
-        if(str instanceof PenStroke){
-            //We can analyze the PenStroke to know what it is.
-            PenStrokeAnalyzer psa = new PenStrokeAnalyzer((PenStroke) str);
-            LegendStructure leg = psa.getLegend();
-            if(leg instanceof ConstantPenStrokeLegend){
-                return new UniqueSymbolLine(symbolizer, (ConstantPenStrokeLegend) leg);
-            } else if(leg instanceof ProportionalStrokeLegend){
-                return new ProportionalLine(symbolizer, (ProportionalStrokeLegend) leg);
-            } else if(leg instanceof RecodedPenStroke) {
-                return new RecodedLine(symbolizer, (RecodedPenStroke) leg);
+        if (validateStroke(str)) {
+            //We validate the analysis made in the symbolizer.
+            analyzeParameters(symbolizer);
+            if (isAnalysisLight() && isFieldUnique() && isAnalysisUnique()) {
+                //We know we can recognize the analysis. We just have to check
+                //there is something that is not a literal...
+                UsedAnalysis ua = getUsedAnalysis();
+                List<SeParameter> an = ua.getAnalysis();
+                if (an.isEmpty()) {
+                    //Unique Symbol
+                    return new UniqueSymbolLine(symbolizer);
+                } else {
+                    SeParameter p = an.get(0);
+                    if (p instanceof Recode) {
+                        return new RecodedLine(symbolizer);
+                    } else if (p instanceof Categorize) {
+                        throw new UnsupportedOperationException("Not yet !");
+                    } else if (p instanceof Interpolate) {
+                        //We need to analyze the ViewBox and its Interpolate instance(s)
+                        return new ProportionalLine(symbolizer);
+                    }
+                }
+
             } else {
-                throw new UnsupportedOperationException("We are not able to "
-                        + "find any known pattern in this symbolizer");
+                throw new UnsupportedOperationException(getStatus());
             }
-        } else {
-            throw new UnsupportedOperationException("We are not able to anlyze"
-                    + "strokes other than PenStroke");
+
         }
+        throw new UnsupportedOperationException("We are not able to analyze"
+                    + "strokes other than PenStroke");
     }
 
 }

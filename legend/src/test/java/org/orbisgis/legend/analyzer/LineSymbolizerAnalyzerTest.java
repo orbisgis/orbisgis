@@ -88,7 +88,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         try{
             UniqueSymbolLine usl = new UniqueSymbolLine(ls);
             fail();
-        } catch (IllegalArgumentException iae){
+        } catch (ClassCastException iae){
             assertTrue(true);
         }
     }
