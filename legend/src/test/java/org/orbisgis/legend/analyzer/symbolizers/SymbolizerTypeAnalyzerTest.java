@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.fill.GraphicFill;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.graphic.PieChart;
 import org.orbisgis.core.renderer.se.stroke.GraphicStroke;
@@ -40,7 +41,7 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 
 /**
- * Tests made on the class AbstractSymbolizerAnalyzer.
+ * Tests made on the class SymbolizerTypeAnalyzer.
  * @author Alexis Guéganno
  */
 public class SymbolizerTypeAnalyzerTest extends AnalyzerTest {
@@ -123,5 +124,29 @@ public class SymbolizerTypeAnalyzerTest extends AnalyzerTest {
         public void testInvalidGraphic4() throws Exception {
                 SymbolizerTypeAnalyzer sta = new SymbolizerTypeAnalyzer();
                 assertFalse(sta.validateGraphic(new PieChart()));
+        }
+
+        @Test
+        public void testNullStrokeAndFill() throws Exception {
+            SymbolizerTypeAnalyzer sta = new SymbolizerTypeAnalyzer();
+            assertTrue(sta.validateStrokeAndFill(null, null));
+        }
+
+        @Test
+        public void testNullStrokeNotFill() throws Exception {
+            SymbolizerTypeAnalyzer sta = new SymbolizerTypeAnalyzer();
+            assertTrue(sta.validateStrokeAndFill(null,new SolidFill()));
+        }
+
+        @Test
+        public void testNullFillNotStroke() throws Exception {
+            SymbolizerTypeAnalyzer sta = new SymbolizerTypeAnalyzer();
+            assertTrue(sta.validateStrokeAndFill(new PenStroke(),null));
+        }
+
+        @Test
+        public void testNotNullFillAndStroke() throws Exception {
+            SymbolizerTypeAnalyzer sta = new SymbolizerTypeAnalyzer();
+            assertTrue(sta.validateStrokeAndFill(new PenStroke(),new SolidFill()));
         }
 }

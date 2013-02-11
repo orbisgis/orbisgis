@@ -69,6 +69,17 @@ public class SymbolizerTypeAnalyzer extends ParametersAnalyzer {
         }
 
         /**
+         * Validate the given fill and stroke. Both {@code f} and {@code s} can be null. If they are not, they must be
+         * valid using either {@code validateStroke} or {@code validateFill}.
+         * @param f
+         * @param s
+         * @return
+         */
+        public boolean validateStrokeAndFill(Stroke s, Fill f){
+            return (f == null || validateFill(f)) && (s ==  null || validateStroke(s));
+        }
+
+        /**
          * A {@code Graphic} is valid if and only if it is an instance of {@code
          * MarkGraphic} built with both valid {@code Stroke} and {@code Fill}.
          * @param g
@@ -79,9 +90,7 @@ public class SymbolizerTypeAnalyzer extends ParametersAnalyzer {
                 if(g instanceof MarkGraphic){
                         MarkGraphic mg = (MarkGraphic) g;
                         Halo h = mg.getHalo();
-                        Fill f = mg.getFill();
-                        Stroke s = mg.getStroke();
-                        boolean b = (f == null || validateFill(mg.getFill())) && (s ==  null || validateStroke(mg.getStroke()));
+                        boolean b = validateStrokeAndFill(mg.getStroke(),mg.getFill());
                         if(h!=null){
                                 return b && validateFill(h.getFill());
                         } else {
