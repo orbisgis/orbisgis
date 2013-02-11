@@ -29,6 +29,8 @@
 package org.orbisgis.legend.analyzer;
 
 import java.awt.Color;
+
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
@@ -36,6 +38,9 @@ import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
@@ -236,5 +241,24 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         assertTrue(usl.getStrokeUom() == Uom.IN);
         usl.setStrokeUom(null);
         assertTrue(usl.getStrokeUom() == Uom.MM);
+    }
+
+    @Test
+    public void testInterpolateValidation() throws Exception {
+        Style st = getStyle(PROP_LINE);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        LineSymbolizerAnalyzer lsa = new LineSymbolizerAnalyzer(new LineSymbolizer());
+        RealParameter rp= ((PenStroke)ls.getStroke()).getWidth();
+        assertTrue(lsa.validateLinearInterpolate(rp));
+    }
+
+    @Test
+    public void testInterpolateValidation2() throws Exception {
+        Style st = getStyle(PROP_LINE);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        LineSymbolizerAnalyzer lsa = new LineSymbolizerAnalyzer(new LineSymbolizer());
+        Interpolate2Real rp= (Interpolate2Real) ((PenStroke)ls.getStroke()).getWidth();
+        rp.setLookupValue(new RealLiteral(2.0));
+        assertFalse(lsa.validateLinearInterpolate(rp));
     }
 }

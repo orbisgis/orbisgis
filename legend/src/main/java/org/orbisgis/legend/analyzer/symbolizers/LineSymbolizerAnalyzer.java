@@ -29,15 +29,15 @@
 package org.orbisgis.legend.analyzer.symbolizers;
 
 import org.orbisgis.core.renderer.se.LineSymbolizer;
-import org.orbisgis.core.renderer.se.parameter.*;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.core.renderer.se.parameter.Categorize;
+import org.orbisgis.core.renderer.se.parameter.Recode;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
+import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
+import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
-import org.orbisgis.legend.AbstractAnalyzer;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
-import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
-import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
-import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
@@ -83,8 +83,8 @@ public class LineSymbolizerAnalyzer extends SymbolizerTypeAnalyzer {
                         return new RecodedLine(symbolizer);
                     } else if (p instanceof Categorize) {
                         throw new UnsupportedOperationException("Not yet !");
-                    } else if (p instanceof Interpolate) {
-                        //We need to analyze the ViewBox and its Interpolate instance(s)
+                    } else if (p instanceof RealParameter && validateLinearInterpolate((RealParameter)p)) {
+                        //We need to analyze the width and its Interpolate instance
                         return new ProportionalLine(symbolizer);
                     }
                 }
@@ -96,6 +96,20 @@ public class LineSymbolizerAnalyzer extends SymbolizerTypeAnalyzer {
         }
         throw new UnsupportedOperationException("We are not able to analyze"
                     + "strokes other than PenStroke");
+    }
+
+    /**
+     * Check that the given {@link RealParameter} is a valid linear interpolation so that it can be used safely to build
+     * a proportional line.
+     * @param parameter
+     * @return
+     */
+    public boolean validateLinearInterpolate(RealParameter parameter){
+        if(parameter instanceof Interpolate2Real){
+                RealParameter rp =  ((Interpolate2Real)parameter).getLookupValue();
+                return rp instanceof RealAttribute;
+        }
+        return false;
     }
 
 }
