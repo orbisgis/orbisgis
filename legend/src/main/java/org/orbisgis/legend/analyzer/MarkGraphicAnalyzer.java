@@ -66,7 +66,7 @@ public class MarkGraphicAnalyzer extends AbstractAnalyzer {
 
     private LegendStructure analyzeMarkGraphic(MarkGraphic mark){
         //We will analyze each of the four important parameters (the stroke,
-        //the fill, the wellknown name and the viewbox) to determine what can be
+        //the fill, the well known name and the viewbox) to determine what can be
         //this MarkGraphic.
         //The fill.
         FillLegend fillLeg = null;

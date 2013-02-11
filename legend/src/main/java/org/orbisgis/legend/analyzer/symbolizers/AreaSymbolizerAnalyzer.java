@@ -30,6 +30,10 @@ package org.orbisgis.legend.analyzer.symbolizers;
 
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.core.renderer.se.parameter.Categorize;
+import org.orbisgis.core.renderer.se.parameter.Recode;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.AbstractAnalyzer;
@@ -40,12 +44,14 @@ import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
 
+import java.util.List;
+
 /**
  * This {@code Analyzer} realization is dedicated to the study of {@code
- * LineSymbolizer} instances. 
+ * AreaSymbolizer} instances.
  * @author Alexis Guéganno
  */
-public class AreaSymbolizerAnalyzer extends AbstractAnalyzer {
+public class AreaSymbolizerAnalyzer extends SymbolizerTypeAnalyzer {
 
     /**
      * Build a new instance of this {@code Analyzer} using the given {@code
@@ -58,26 +64,32 @@ public class AreaSymbolizerAnalyzer extends AbstractAnalyzer {
     }
 
     private LegendStructure analyze(AreaSymbolizer symbolizer){
-        Stroke str = symbolizer.getStroke();
-        LegendStructure psleg = null;
-        if(str instanceof PenStroke){
-            //We can analyze the PenStroke to know what it is.
-            PenStrokeAnalyzer psa = new PenStrokeAnalyzer((PenStroke) str);
-            psleg = psa.getLegend();
-        }
-        if(str == null || psleg instanceof ConstantPenStrokeLegend){
-            //We retrieve the fill
-            Fill f = symbolizer.getFill();
-            LegendStructure fls;
-            fls = new FillAnalyzer(f).getLegend();
-            if(fls instanceof ConstantSolidFill || f == null){
-                return new UniqueSymbolArea(symbolizer);
+        if(validateStrokeAndFill(symbolizer.getStroke(),symbolizer.getFill())){
+            analyzeParameters(symbolizer);
+            boolean b = isAnalysisLight() && isAnalysisUnique() && isFieldUnique();
+            if(b){
+                //We know we can recognize the analysis. We just have to check
+                //there is something that is not a literal...
+                UsedAnalysis ua = getUsedAnalysis();
+                List<SeParameter> an = ua.getAnalysis();
+                if (an.isEmpty()) {
+                    //Unique Symbol
+                    return new UniqueSymbolArea(symbolizer);
+                } else {
+                    SeParameter p = an.get(0);
+                    if (p instanceof Recode) {
+                        throw new UnsupportedOperationException("Not yet !");
+                    } else if (p instanceof Categorize) {
+                        throw new UnsupportedOperationException("Not yet !");
+                    }
+                }
+            } else {
+                throw new UnsupportedOperationException(getStatus());
             }
-            throw new UnsupportedOperationException("We just find unique symbols for now.");
-        } else {
-            throw new UnsupportedOperationException("We are not able to anlyze"
-                    + "strokes other than PenStroke");
         }
+        throw new UnsupportedOperationException("We can recognize patterns made with PenStroke and SolidFill" +
+                    "instances only");
+
     }
 
 }
