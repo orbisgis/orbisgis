@@ -155,26 +155,4 @@ public class ConstantViewBox extends DefaultViewBox {
                 rll.setDouble(d);
             }
         }
-
-        /**
-         * This utility method is used to create {@code ConstantViewBox} instances quickly. It does not test the given
-         * {@link ViewBox} much, so it's up to the caller to check it can be used to build a {@code ConstantViewbox}.
-         * @param vb
-         * @return
-         * @throws ClassCastException If some argument of the ViewBox are not compatible with a {@code ConstantViewBox}.
-         * @throws IllegalArgumentException if both height and width are null in the ViewBox.
-         */
-        public static ConstantViewBox createConstantViewBox(ViewBox vb) {
-            RealLiteral height = (RealLiteral) vb.getHeight();
-            RealLiteral width = (RealLiteral) vb.getWidth();
-            if(height == null && width == null){
-                throw new IllegalArgumentException("you're not supposed to set both height and width of a viewbox to null.");
-            } else if(height == null){
-                return new ConstantViewBox(new RealLiteralLegend(width),false,vb);
-            } else if(width == null){
-                return new ConstantViewBox(new RealLiteralLegend(height),true,vb);
-            } else {
-                return new ConstantViewBox(new RealLiteralLegend(height),new RealLiteralLegend(width),vb);
-            }
-        }
 }
