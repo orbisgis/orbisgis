@@ -32,8 +32,6 @@ import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.analyzer.MarkGraphicAnalyzer;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
 import org.orbisgis.legend.structure.graphic.ProportionalWKNLegend;
@@ -78,13 +76,6 @@ public class ProportionalPoint extends ConstantFormPoint implements IUniqueSymbo
             Graphic gr = pointSymbolizer.getGraphicCollection().getGraphic(0);
             if(gr instanceof MarkGraphic){
                 markGraphic = new ProportionalWKNLegend((MarkGraphic) gr);
-                LegendStructure mgl = new MarkGraphicAnalyzer((MarkGraphic) gr).getLegend();
-                if(mgl instanceof ProportionalWKNLegend){
-                    markGraphic = (ProportionalWKNLegend) mgl;
-                }  else {
-                    throw new IllegalArgumentException("We can't analyze yet symbolizers "
-                            + "that are not constants.");
-                }
             }
         } else {
             throw new IllegalArgumentException("We can't analyze symbolizers with"
