@@ -99,6 +99,12 @@ public class PointSymbolizerAnalyzer extends SymbolizerTypeAnalyzer {
         throw new UnsupportedOperationException("We can only work with MarkGraphic instances for now.");
     }
 
+    /**
+     * Checks that the given RealParameter is an instance of {@link Interpolate2Real} that can be used to build a
+     * proportional point, ie that it is made on the square root of a numeric attribute.
+     * @param rp
+     * @return
+     */
     public boolean validateInterpolateForProportionalPoint(RealParameter rp){
         if(rp instanceof Interpolate2Real){
             RealParameter look =  ((Interpolate2Real)rp).getLookupValue();
