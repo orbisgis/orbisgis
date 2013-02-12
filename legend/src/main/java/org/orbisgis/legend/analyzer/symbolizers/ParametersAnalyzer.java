@@ -30,6 +30,8 @@ package org.orbisgis.legend.analyzer.symbolizers;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
@@ -49,7 +51,7 @@ import org.orbisgis.legend.AbstractAnalyzer;
 public class ParametersAnalyzer extends AbstractAnalyzer {
 
         private UsedAnalysis ua = new UsedAnalysis();
-        private HashSet<String> fields = new HashSet<String>();
+        private Set<String> fields = new HashSet<String>();
 
         /**
          * Analyses the given {@link SymbolizerNode} instance. It will get its

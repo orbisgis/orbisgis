@@ -28,12 +28,10 @@
  */
 package org.orbisgis.legend.analyzer.symbolizers;
 
-import java.util.List;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
-import org.orbisgis.core.renderer.se.parameter.Interpolate;
 import org.orbisgis.core.renderer.se.parameter.Recode;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
@@ -42,10 +40,10 @@ import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealFunction;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.structure.interpolation.InterpolationLegend;
-import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
+
+import java.util.List;
 
 /**
  * This {@code Analyzer} realization is dedicated to the study of {@code
@@ -111,11 +109,9 @@ public class PointSymbolizerAnalyzer extends SymbolizerTypeAnalyzer {
             if(look instanceof RealFunction){
                 RealFunction rf = (RealFunction) look;
                 List<RealParameter> ops = rf.getOperands();
-                if(!ops.isEmpty()){
-                    if(rf.getOperator().equals(RealFunction.Operators.SQRT)
+                if(!ops.isEmpty() && rf.getOperator().equals(RealFunction.Operators.SQRT)
                                 && ops.size() == 1 && ops.get(0) instanceof RealAttribute){
-                        return true;
-                    }
+                    return true;
                 }
             }
         }
