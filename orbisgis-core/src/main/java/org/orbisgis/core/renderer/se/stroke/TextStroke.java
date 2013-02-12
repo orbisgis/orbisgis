@@ -32,7 +32,8 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -40,9 +41,9 @@ import net.opengis.se._2_0.core.TextStrokeType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.label.LineLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * {@code TexteStroke} is used to render text labels along a line. It is useful 
@@ -136,17 +137,12 @@ public final class TextStroke extends Stroke {
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                return lineLabel.dependsOnFeature();
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-                UsedAnalysis ua = new UsedAnalysis();
-                if(lineLabel != null){
-                    ua.merge(lineLabel.getUsedAnalysis());
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if (lineLabel != null) {
+                        ls.add(lineLabel);
                 }
-                return ua;
+                return ls;
         }
 
         @Override

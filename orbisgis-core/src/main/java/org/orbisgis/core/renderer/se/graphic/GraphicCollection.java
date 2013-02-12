@@ -46,7 +46,6 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -289,21 +288,10 @@ public final class GraphicCollection extends AbstractSymbolizerNode implements U
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> result = new HashSet<String>();
-        for (Graphic g : this.graphics) {
-            result.addAll(g.dependsOnFeature());
-        }
-        return result;
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis result = new UsedAnalysis();
-        for (Graphic g : this.graphics) {
-            result.merge(g.getUsedAnalysis());
-        }
-        return result;
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        ls.addAll(graphics);
+        return ls;
     }
 
     /**

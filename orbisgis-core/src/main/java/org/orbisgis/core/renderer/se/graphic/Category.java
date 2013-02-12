@@ -28,16 +28,17 @@
  */
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import net.opengis.se._2_0.thematic.CategoryType;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 
@@ -202,46 +203,22 @@ public final class Category  extends AbstractSymbolizerNode implements FillNode,
 
                 return ct;
         }
-        
-        @Override
-        public HashSet<String> dependsOnFeature() {
-            HashSet<String> ret = new HashSet<String>();
-            if (this.getFill() != null) {
-                ret.addAll(this.getFill().dependsOnFeature());
-            }
-
-            if (this.getStroke() != null) {
-                ret.addAll(getStroke().dependsOnFeature());
-            }
-
-            if (this.getGraphicCollection() != null) {
-                ret.addAll(getGraphicCollection().dependsOnFeature());
-            }
-
-            if (this.getMeasure() != null) {
-                ret.addAll(getMeasure().dependsOnFeature());
-            }
-            return ret;
-        }
 
         @Override
-        public UsedAnalysis getUsedAnalysis() {
-            UsedAnalysis ret = new UsedAnalysis();
+        public List<SymbolizerNode> getChildren() {
+            List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
             if (this.getFill() != null) {
-                ret.merge(this.getFill().getUsedAnalysis());
+                ls.add(this.getFill());
             }
-
             if (this.getStroke() != null) {
-                ret.merge(getStroke().getUsedAnalysis());
+                ls.add(this.getStroke());
             }
-
             if (this.getGraphicCollection() != null) {
-                ret.merge(getGraphicCollection().getUsedAnalysis());
+                ls.add(this.getGraphicCollection());
             }
-
             if (this.getMeasure() != null) {
-                ret.merge(getMeasure().getUsedAnalysis());
+                ls.add(this.getMeasure());
             }
-            return ret;
+            return ls;
         }
 }

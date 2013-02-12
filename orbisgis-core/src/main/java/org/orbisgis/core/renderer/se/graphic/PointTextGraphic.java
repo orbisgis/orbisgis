@@ -33,7 +33,8 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -42,12 +43,12 @@ import net.opengis.se._2_0.core.TranslateType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.label.PointLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -193,33 +194,6 @@ public final class PointTextGraphic extends Graphic implements UomNode {
                 return of.createPointTextGraphic(t);
         }
 
-        @Override
-        public HashSet<String> dependsOnFeature() {
-                HashSet<String> result = new HashSet<String>();
-                if (pointLabel != null) {
-                        result.addAll(pointLabel.dependsOnFeature());
-                }
-                if (x != null) {
-                        result.addAll(x.dependsOnFeature());
-                }
-                if (y != null) {
-                        result.addAll(y.dependsOnFeature());
-                }
-
-                return result;
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-            UsedAnalysis ua = new UsedAnalysis();
-            if(pointLabel != null){
-                ua.merge(pointLabel.getUsedAnalysis());
-            }
-            ua.merge(x.getUsedAnalysis());
-            ua.merge(y.getUsedAnalysis());
-            return ua;
-        }
-
         /**
          * Get the x-displacement in the associated translation.
          * @return 
@@ -262,5 +236,20 @@ public final class PointTextGraphic extends Graphic implements UomNode {
 
         @Override
         public void updateGraphic() {
+        }
+
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if (pointLabel != null) {
+                        ls.add(pointLabel);
+                }
+                if (x != null) {
+                        ls.add(x);
+                }
+                if (y != null) {
+                        ls.add(y);
+                }
+                return ls;
         }
 }

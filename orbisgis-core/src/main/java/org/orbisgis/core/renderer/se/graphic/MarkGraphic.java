@@ -35,7 +35,8 @@ import java.awt.geom.Arc2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MarkGraphicType;
@@ -45,6 +46,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.ViewBoxNode;
 import org.orbisgis.core.renderer.se.common.Halo;
@@ -54,7 +56,6 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -604,68 +605,32 @@ public final class MarkGraphic extends Graphic implements FillNode, StrokeNode,
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-
-        HashSet<String> result = new HashSet<String>();
-
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
         if (wkn != null) {
-            result.addAll(wkn.dependsOnFeature());
+            ls .add(wkn);
         }
         if (viewBox != null) {
-            result.addAll(viewBox.dependsOnFeature());
+            ls .add(viewBox);
         }
         if (pOffset != null) {
-            result.addAll(pOffset.dependsOnFeature());
+            ls .add(pOffset);
         }
         if (halo != null) {
-            result.addAll(halo.dependsOnFeature());
+            ls .add(halo);
         }
         if (fill != null) {
-            result.addAll(fill.dependsOnFeature());
+            ls .add(fill);
         }
         if (stroke != null) {
-            result.addAll(stroke.dependsOnFeature());
+            ls .add(stroke);
         }
         if (transform != null) {
-            result.addAll(transform.dependsOnFeature());
+            ls .add(transform);
         }
         if (markIndex != null) {
-            result.addAll(markIndex.dependsOnFeature());
+            ls .add(markIndex);
         }
-
-        return result;
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-
-        UsedAnalysis result = new UsedAnalysis();
-
-        if (wkn != null) {
-            result.merge(wkn.getUsedAnalysis());
-        }
-        if (viewBox != null) {
-            result.merge(viewBox.getUsedAnalysis());
-        }
-        if (pOffset != null) {
-            result.merge(pOffset.getUsedAnalysis());
-        }
-        if (halo != null) {
-            result.merge(halo.getUsedAnalysis());
-        }
-        if (fill != null) {
-            result.merge(fill.getUsedAnalysis());
-        }
-        if (stroke != null) {
-            result.merge(stroke.getUsedAnalysis());
-        }
-        if (transform != null) {
-            result.merge(transform.getUsedAnalysis());
-        }
-        if (markIndex != null) {
-            result.merge(markIndex.getUsedAnalysis());
-        }
-
-        return result;
+        return ls;
     }
 }

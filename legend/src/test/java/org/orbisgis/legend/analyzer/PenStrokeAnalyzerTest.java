@@ -28,24 +28,20 @@
  */
 package org.orbisgis.legend.analyzer;
 
-import org.orbisgis.legend.structure.recode.Recode2StringLegend;
-import org.orbisgis.legend.structure.stroke.RecodedDashesPSLegend;
-import org.orbisgis.legend.structure.categorize.Categorize2StringLegend;
-import org.orbisgis.legend.structure.stroke.CategorizedDashesPSLegend;
-import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
-import org.orbisgis.legend.structure.stroke.PenStrokeLegend;
-import org.orbisgis.core.renderer.se.LineSymbolizer;
-import org.orbisgis.core.renderer.se.stroke.PenStroke;
-import org.orbisgis.core.renderer.se.Style;
-import javax.xml.bind.JAXBElement;
-import java.io.File;
-import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.JAXBContext;
-import net.opengis.se._2_0.core.StyleType;
-import org.junit.Test;
-import org.orbisgis.legend.AnalyzerTest;
-import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import static org.junit.Assert.*;
+import org.junit.Test;
+import org.orbisgis.core.renderer.se.LineSymbolizer;
+import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.legend.AnalyzerTest;
+import org.orbisgis.legend.structure.categorize.Categorize2StringLegend;
+import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
+import org.orbisgis.legend.structure.recode.RecodedString;
+import org.orbisgis.legend.structure.stroke.CategorizedDashesPSLegend;
+import org.orbisgis.legend.structure.stroke.PenStrokeLegend;
+import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
+import org.orbisgis.legend.structure.stroke.RecodedDashesPSLegend;
+import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
 /**
  * test that we're able to understand what people are doing with PenStrokes.
  * @author Alexis Guéganno
@@ -61,7 +57,7 @@ public class PenStrokeAnalyzerTest extends AnalyzerTest {
                  PenStroke ps = (PenStroke) (ls.getStroke());
                  PenStrokeAnalyzer psa = new PenStrokeAnalyzer(ps);
                  PenStrokeLegend psl = (PenStrokeLegend) (psa.getLegend());
-                 assertTrue(psl.getWidthAnalysis() instanceof LinearInterpolationLegend);
+                 assertTrue(psl.getLineWidthLegend() instanceof LinearInterpolationLegend);
                  assertTrue(psl instanceof ProportionalStrokeLegend);
         }
 
@@ -74,7 +70,7 @@ public class PenStrokeAnalyzerTest extends AnalyzerTest {
                  PenStroke ps = (PenStroke) (ls.getStroke());
                  PenStrokeAnalyzer psa = new PenStrokeAnalyzer(ps);
                  PenStrokeLegend psl = (PenStrokeLegend) (psa.getLegend());
-                 assertTrue(psl.getDashAnalysis() instanceof Categorize2StringLegend);
+                 assertTrue(psl.getDashLegend() instanceof Categorize2StringLegend);
                  assertTrue(psl instanceof CategorizedDashesPSLegend);
         }
 
@@ -86,9 +82,8 @@ public class PenStrokeAnalyzerTest extends AnalyzerTest {
                  LineSymbolizer ls =(LineSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
                  PenStroke ps = (PenStroke) (ls.getStroke());
                  PenStrokeAnalyzer psa = new PenStrokeAnalyzer(ps);
-                 PenStrokeLegend psl = (PenStrokeLegend) (psa.getLegend());
-                 assertTrue(psl.getDashAnalysis() instanceof Recode2StringLegend);
-                 assertTrue(psl instanceof RecodedDashesPSLegend);
+                 RecodedPenStroke psl = (RecodedPenStroke) (psa.getLegend());
+                 assertTrue(psl.getDashLegend() instanceof RecodedString);
         }
 
         @Test
@@ -100,8 +95,8 @@ public class PenStrokeAnalyzerTest extends AnalyzerTest {
                  PenStroke ps = (PenStroke) (ls.getStroke());
                  PenStrokeAnalyzer psa = new PenStrokeAnalyzer(ps);
                  PenStrokeLegend psl = (PenStrokeLegend) (psa.getLegend());
-                 assertTrue(psl.getDashAnalysis() instanceof Categorize2StringLegend);
-                 assertTrue(psl.getWidthAnalysis() instanceof LinearInterpolationLegend);
+                 assertTrue(psl.getDashLegend() instanceof Categorize2StringLegend);
+                 assertTrue(psl.getLineWidthLegend() instanceof LinearInterpolationLegend);
                  assertFalse(psl instanceof RecodedDashesPSLegend);
                  assertFalse(psl instanceof CategorizedDashesPSLegend);
                  assertFalse(psl instanceof ProportionalStrokeLegend);

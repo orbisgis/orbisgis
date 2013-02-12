@@ -39,6 +39,7 @@ import org.apache.log4j.Logger;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -77,15 +78,6 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
         this.fallbackValue = fallbackValue;
         this.lookupValue = lookupValue;
         mapItems = new LinkedHashMap<String, ToType>();
-    }
-
-    @Override
-    public final HashSet<String> dependsOnFeature() {
-        HashSet<String> out = this.getLookupValue().dependsOnFeature();
-        for (int i = 0; i < this.getNumMapItem(); i++) {
-            out.addAll(this.getMapItemValue(i).dependsOnFeature());
-        }
-        return out;
     }
 
     /**
@@ -136,19 +128,14 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
     }
 
     /**
-     * Add a new map item
+     * Add a new map item or set the value associated to {@code key} to {@code
+     * value}, if key is already stored in this recode.
      * @param key
      * @param value
-     * @return index of new map item or -1 when key already exists
      */
-    public int addMapItem(String key, ToType value) {
-        if (mapItems.containsKey(key)) {
-            return -1;
-        } else {
+    public void addMapItem(String key, ToType value) {
             mapItems.put(key, value);
             value.setParent(this);
-        }
-        return mapItems.size() - 1;
     }
 
     /**
@@ -324,14 +311,13 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
     }
 
     @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis ua = new UsedAnalysis();
-        ua.include(this);
-        ua.merge(lookupValue.getUsedAnalysis());
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        ls.add(lookupValue);
         for(Entry<String,ToType> e : mapItems.entrySet()){
-                ua.merge(e.getValue().getUsedAnalysis());
+                ls.add(e.getValue());
         }
-        return ua;
+        return ls;
     }
 
 

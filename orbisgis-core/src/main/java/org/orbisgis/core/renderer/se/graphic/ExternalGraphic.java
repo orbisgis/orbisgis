@@ -32,7 +32,8 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ExternalGraphicType;
@@ -40,6 +41,7 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.ViewBoxNode;
 import org.orbisgis.core.renderer.se.common.Halo;
@@ -47,7 +49,6 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.common.VariableOnlineResource;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.transform.Transform;
@@ -400,42 +401,23 @@ public final class ExternalGraphic extends Graphic implements UomNode, Transform
 
     return delta;
     }*/
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> ret = new HashSet<String>();
-        if (halo != null) {
-            ret.addAll(halo.dependsOnFeature());
-        }
-        if (opacity != null) {
-            ret.addAll(opacity.dependsOnFeature());
-        }
-        if (transform != null) {
-            ret.addAll(transform.dependsOnFeature());
-        }
-        if (viewBox != null) {
-            ret.addAll(viewBox.dependsOnFeature());
-        }
-
-        return ret;
-    }
 
     @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis ret = new UsedAnalysis();
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
         if (halo != null) {
-            ret.merge(halo.getUsedAnalysis());
+            ls.add(halo);
         }
         if (opacity != null) {
-            ret.merge(opacity.getUsedAnalysis());
+            ls.add(opacity);
         }
         if (transform != null) {
-            ret.merge(transform.getUsedAnalysis());
+            ls.add(transform);
         }
         if (viewBox != null) {
-            ret.merge(viewBox.getUsedAnalysis());
+            ls.add(viewBox);
         }
-
-        return ret;
+        return ls;
     }
 
     @Override

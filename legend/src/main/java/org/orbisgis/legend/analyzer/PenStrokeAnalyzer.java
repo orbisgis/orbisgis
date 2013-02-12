@@ -28,23 +28,33 @@
  */
 package org.orbisgis.legend.analyzer;
 
+import java.util.List;
+import java.util.Set;
 import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
+import org.orbisgis.core.renderer.se.visitors.UsedAnalysisVisitor;
 import org.orbisgis.legend.AbstractAnalyzer;
 import org.orbisgis.legend.Analyzer;
 import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
 import org.orbisgis.legend.analyzer.parameter.StringParameterAnalyzer;
 import org.orbisgis.legend.structure.categorize.Categorize2StringLegend;
+import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantFillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 import org.orbisgis.legend.structure.parameter.NumericLegend;
-import org.orbisgis.legend.structure.recode.Recode2StringLegend;
+import org.orbisgis.legend.structure.recode.RecodedReal;
+import org.orbisgis.legend.structure.recode.RecodedColor;
+import org.orbisgis.legend.structure.recode.RecodedString;
 import org.orbisgis.legend.structure.stroke.*;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
@@ -64,6 +74,9 @@ import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 public class PenStrokeAnalyzer extends AbstractAnalyzer {
 
         private PenStroke penStroke;
+        private NumericLegend legdWidth;
+        private LegendStructure legdDash;
+        private LegendStructure legdFill;
 
         /**
          * Build  a new PenStrokeAnalyzer. The analysis will be made directly
@@ -85,29 +98,136 @@ public class PenStrokeAnalyzer extends AbstractAnalyzer {
                 if(penStroke == null){
                         return new NullPenStrokeLegend();
                 }
-                LegendStructure ret;
-                //We first make the analysis of the width attribute.
+                FeaturesVisitor fv = new FeaturesVisitor();
+                penStroke.acceptVisitor(fv);
+                Set<String> features = fv.getResult();
+                instanciateLegends();
+                if(features.size() < 2){
+                        //The distinction is made here :
+                        if(features.isEmpty()){
+                                return analyzeConstantPenStroke();
+                        } else {
+                                //We have one feature.
+                                //We validate the analysis we've found.
+                                UsedAnalysisVisitor uv = new UsedAnalysisVisitor();
+                                uv.visitSymbolizerNode(penStroke);
+                                UsedAnalysis an = uv.getUsedAnalysis();
+                                List<SeParameter> l = an.getAnalysis();
+                                boolean interp = an.isInterpolateUsed();
+                                boolean cat = an.isCategorizeUsed();
+                                boolean rec = an.isRecodeUsed();
+                                if(interp && !cat && !rec && l.size()==1){
+                                        return analyzePSWithInterpolate();
+                                } else if(!interp && !cat && rec){
+                                        //If here, we know we don't have mixed
+                                        //analysis : we deal with only one feature,
+                                        //one type of analysis, and SeParameter instances
+                                        //are validated by analyzers during instanciateLegend().
+                                        return searchRecode();
+                                }
+                        }
+                }
+                if(legdDash == null){
+                        return analyzeConstantDashes(legdWidth, legdFill, legdDash);
+                } else {
+                        return analyzeWithDashes(legdDash, legdWidth, legdFill);
+                }
+
+        }
+
+        /**
+         * We know that we have a constant PenStroke, let's check its configuration
+         * is valid.
+         * @return 
+         */
+        private LegendStructure analyzeConstantPenStroke(){
+                boolean constantFill = legdFill == null || legdFill instanceof ConstantSolidFillLegend;
+                boolean constantWidth = legdWidth == null || legdWidth instanceof RealLiteralLegend;
+                boolean constantDash = legdDash == null || legdDash instanceof StringLiteralLegend;
+                boolean known = constantDash && constantWidth && constantFill;
+                if(known){
+                        return new ConstantPenStrokeLegend(penStroke, (RealLiteralLegend) legdWidth,
+                                        (ConstantFillLegend) legdFill, (StringLiteralLegend) legdDash);
+                } else {
+                        return new PenStrokeLegend(penStroke, legdWidth, legdFill, legdDash);
+                }
+        }
+
+        /**
+         * We know we have a PenStroke taht contains an Interpolate instance somewhere.
+         * Let's try to get it as a ProportionalStrokeLegend.
+         * @return
+         */
+        private LegendStructure analyzePSWithInterpolate(){
+                boolean constantFill = legdFill == null || legdFill instanceof ConstantSolidFillLegend;
+                boolean constantWidth = legdWidth == null || legdWidth instanceof LinearInterpolationLegend;
+                boolean constantDash = legdDash == null || legdDash instanceof StringLiteralLegend;
+                boolean known = constantDash && constantWidth && constantFill;
+                if(known){
+                        return new ProportionalStrokeLegend(penStroke, (LinearInterpolationLegend) legdWidth,
+                                        (ConstantFillLegend) legdFill, (StringLiteralLegend) legdDash);
+                } else {
+                        return new PenStrokeLegend(penStroke, legdWidth, legdFill, legdDash);
+                }
+        }
+
+        /**
+         * We have inner legends, let's recognize them before going further.
+         */
+        private void instanciateLegends(){
                 RealParameter width= penStroke.getWidth();
                 RealParameterAnalyzer rpaWidth = new RealParameterAnalyzer(width);
-                NumericLegend legdWidth = (NumericLegend) rpaWidth.getLegend();
+                legdWidth = (NumericLegend) rpaWidth.getLegend();
                 StringParameter dashes = penStroke.getDashArray();
-                LegendStructure legdDash;
+                legdDash = null;
                 Fill fill = penStroke.getFill();
-                LegendStructure legdFill = null;
+                legdFill = null;
                 if(fill != null){
                         FillAnalyzer fa = new FillAnalyzer(fill);
                         legdFill = fa.getLegend();
                 }
-                //The distinction is made here :
                 if(dashes != null){
                         StringParameterAnalyzer spaDash = new StringParameterAnalyzer(dashes);
                         legdDash = spaDash.getLegend();
-                        ret = analyzeWithDashes(legdDash, legdWidth, legdFill);
-
-                } else {
-                        ret = analyzeConstantDashes(legdWidth, legdFill, null);
                 }
-                return ret;
+        }
+
+        /**
+         * If we're here, we've found there are only recode on the same attribute
+         * in the symbolizer.
+         * @return
+         */
+        private LegendStructure searchRecode() {
+                boolean rf = legdFill == null
+                        || legdFill instanceof ConstantSolidFillLegend
+                        || legdFill instanceof RecodedSolidFillLegend;
+                boolean rw = legdWidth == null
+                        || legdWidth instanceof RealLiteralLegend
+                        || legdWidth instanceof RecodedReal;
+                boolean rd = legdDash == null
+                        || legdDash instanceof StringLiteralLegend
+                        || legdDash instanceof  RecodedString;
+                if(rd && rw && rf){
+                        if(!(legdFill instanceof RecodedSolidFillLegend)){
+                                SolidFill sf = (SolidFill)penStroke.getFill();
+                                legdFill = new RecodedSolidFillLegend(
+                                        sf,
+                                        new RecodedColor(sf.getColor()),
+                                        new RecodedReal(sf.getOpacity()));
+                        }
+                        RecodedReal w = legdWidth instanceof RealLiteralLegend ?
+                                new RecodedReal(((RealLiteralLegend)legdWidth).getLiteral()) :
+                                (RecodedReal) legdWidth;
+                        RecodedString d = legdDash instanceof StringLiteralLegend ?
+                                new RecodedString(((StringLiteralLegend)legdDash).getLiteral()) :
+                                (RecodedString) legdDash;
+                        return new RecodedPenStroke(penStroke,
+                                (RecodedSolidFillLegend) legdFill,
+                                w,
+                                d);
+                }else {
+                        return new PenStrokeLegend(penStroke, legdWidth, legdFill, legdDash);
+                }
         }
 
         /**
@@ -129,7 +249,7 @@ public class PenStrokeAnalyzer extends AbstractAnalyzer {
                                 //Too many analysis for us.
                                 ret = new PenStrokeLegend(penStroke, width, fill, dashes);
                         }
-                } else if (dashes instanceof Recode2StringLegend && constantFill){
+                } else if (dashes instanceof RecodedString && constantFill){
                         ret = new RecodedDashesPSLegend(penStroke, width, fill, dashes);
                 } else {
                         //We are dealing with a literal
@@ -154,7 +274,7 @@ public class PenStrokeAnalyzer extends AbstractAnalyzer {
                                         (ConstantFillLegend) fill, (StringLiteralLegend) dash);
                         } else if(width instanceof LinearInterpolationLegend){
                                 ret = new ProportionalStrokeLegend(penStroke,
-                                        (LinearInterpolationLegend)width, fill, dash);
+                                        (LinearInterpolationLegend)width, (ConstantFillLegend) fill, dash);
                         } else {
                                 ret = new PenStrokeLegend(penStroke, width, fill, dash);
                         }

@@ -150,18 +150,18 @@ public abstract class LegendUIRecodePanel extends LegendUIComponent
 				// Since it's an abstract class, we have to guess effective type
 				// by checking the first class value type, which always exists.
 				SeParameter classValue = recode.getFallbackValue();
-
+                                int size = recode.getNumMapItem();
 				int index = -1;
 
 				if (classValue instanceof RealParameter) {
-					index = recode.addMapItem("new key", new RealLiteral(1.0));
+					recode.addMapItem("new key", new RealLiteral(1.0));
 				} else if (classValue instanceof ColorParameter) {
-					index = recode.addMapItem("new key", new ColorLiteral());
+					recode.addMapItem("new key", new ColorLiteral());
 				} else if (classValue instanceof StringParameter) {
-					index = recode.addMapItem("new key", new StringLiteral("value"));
+					recode.addMapItem("new key", new StringLiteral("value"));
 				}
 
-				if (index >= 0) {
+				if (recode.getNumMapItem() > size) {
 					keys.add(new KeyInput(index, null, recode.getMapItemKey(index).toString(), 10));
 					SeParameter value = recode.getMapItemValue(index);
 

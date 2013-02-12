@@ -262,6 +262,11 @@ public class PnlProportionalLine extends PnlUniqueSymbolSE {
                 return ret;
         }
 
+        /**
+         * Creates and fill the combo box that will be used to compute the
+         * analysis.
+         * @return
+         */
         private JComboBox getFieldComboBox(){
                 if(ds != null){
                         JComboBox jcc = getNumericFieldCombo(ds);

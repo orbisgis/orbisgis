@@ -34,7 +34,7 @@ import org.orbisgis.legend.analyzer.function.AbstractLiteralValidator;
 import org.orbisgis.legend.analyzer.function.InterpolationAnalyzer;
 import org.orbisgis.legend.structure.categorize.Categorize2RealLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
-import org.orbisgis.legend.structure.recode.Recode2RealLegend;
+import org.orbisgis.legend.structure.recode.RecodedReal;
 
 /**
  * This class analyzes instances of {@code RealParameter} to determine if they
@@ -72,9 +72,9 @@ public class RealParameterAnalyzer extends AbstractLiteralValidator{
                 } else if(rp instanceof Recode2Real){
                         Recode2Real r2r = (Recode2Real) rp;
                         if(validateRecode(r2r)){
-                                return new Recode2RealLegend(r2r);
+                                return new RecodedReal(r2r);
                         } else {
-                                throw new UnsupportedOperationException("Not spported yet");
+                                throw new UnsupportedOperationException("Not supported yet");
                         }
 
                 } else {

@@ -89,7 +89,4 @@ public abstract class ExclusionZone extends AbstractSymbolizerNode implements Uo
         public void setUom(Uom uom) {
                 this.uom = uom;
         }
-
-        @Override
-        public abstract HashSet<String> dependsOnFeature();
 }

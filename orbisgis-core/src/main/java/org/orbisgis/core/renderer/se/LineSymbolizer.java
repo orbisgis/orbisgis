@@ -32,7 +32,8 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LineSymbolizerType;
@@ -46,7 +47,6 @@ import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -209,31 +209,17 @@ public final class LineSymbolizer extends VectorSymbolizer implements StrokeNode
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                HashSet<String> ret = new HashSet<String>();
-                
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
                 if(this.getGeometryAttribute()!=null){
-                    ret.addAll(this.getGeometryAttribute().dependsOnFeature());
+                    ls.add(this.getGeometryAttribute());
                 }
-                 
                 if (perpendicularOffset != null) {
-                        ret.addAll(perpendicularOffset.dependsOnFeature());
+                        ls.add(perpendicularOffset);
                 }
                 if (stroke != null) {
-                        ret.addAll(stroke.dependsOnFeature());
+                        ls.add(stroke);
                 }
-                return ret;
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-                UsedAnalysis ret = new UsedAnalysis();
-                if (perpendicularOffset != null) {
-                        ret.merge(perpendicularOffset.getUsedAnalysis());
-                }
-                if (stroke != null) {
-                        ret.merge(stroke.getUsedAnalysis());
-                }
-                return ret;
+                return ls;
         }
 }

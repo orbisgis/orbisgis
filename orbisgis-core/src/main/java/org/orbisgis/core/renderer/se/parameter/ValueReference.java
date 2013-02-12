@@ -29,7 +29,7 @@
 package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.fes._2.ObjectFactory;
@@ -40,6 +40,7 @@ import org.gdms.driver.DataSet;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 
 /**
  * An (abstract) representation of a Value in a GDMS table. 
@@ -116,13 +117,6 @@ public abstract class ValueReference extends AbstractSymbolizerNode implements S
 		}
 	}
 
-	@Override
-	public HashSet<String> dependsOnFeature() {
-            HashSet<String> out = new HashSet<String>();
-            out.add(getColumnName());
-            return out;
-	}
-
         /**
          * Set the name of the column where the data will be retrieved.
          * @param fieldName 
@@ -191,8 +185,9 @@ public abstract class ValueReference extends AbstractSymbolizerNode implements S
 	}
 
         @Override
-        public UsedAnalysis getUsedAnalysis() {
-                return new UsedAnalysis();
+        public List<SymbolizerNode> getChildren() {
+                return new ArrayList<SymbolizerNode>();
         }
+
 
 }

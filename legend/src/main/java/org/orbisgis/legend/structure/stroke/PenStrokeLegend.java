@@ -37,7 +37,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.analyzer.FillAnalyzer;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 import org.orbisgis.legend.structure.parameter.NumericLegend;
@@ -61,7 +61,7 @@ public class PenStrokeLegend implements StrokeLegend {
                 penStroke = new PenStroke();
                 widthAnalysis = new RealLiteralLegend((RealLiteral)penStroke.getWidth());
                 SolidFill sf = (SolidFill) penStroke.getFill();
-                fillAnalysis = new FillAnalyzer(sf).getLegend();
+                fillAnalysis = new ConstantSolidFillLegend(sf);
                 StringParameter sp = penStroke.getDashArray();
                 dashAnalysis = new StringLiteralLegend((StringLiteral) sp);
         }
@@ -91,7 +91,7 @@ public class PenStrokeLegend implements StrokeLegend {
          * Gets the unit of measure of the associated {@code Stroke}.
          * @return
          */
-        public Uom getUom() {
+        public Uom getStrokeUom() {
                 return getStroke().getUom();
         }
 
@@ -99,7 +99,7 @@ public class PenStrokeLegend implements StrokeLegend {
          * Sets the unit of measure of the associated {@code Stroke}.
          * @param u
          */
-        public void setUom(Uom u){
+        public void setStrokeUom(Uom u){
                 getStroke().setUom(u);
         }
 
@@ -108,7 +108,7 @@ public class PenStrokeLegend implements StrokeLegend {
          * can be {@code null}.
          * @return
          */
-        public LegendStructure getDashAnalysis() {
+        public LegendStructure getDashLegend() {
                 return dashAnalysis;
         }
 
@@ -116,7 +116,7 @@ public class PenStrokeLegend implements StrokeLegend {
          * Replace the analysis that has been made on the dash array.
          * @param ls
          */
-        protected void setDashAnalysis(LegendStructure ls) {
+        protected void setDashLegend(LegendStructure ls) {
             dashAnalysis = ls;
         }
 
@@ -134,7 +134,7 @@ public class PenStrokeLegend implements StrokeLegend {
          * PenStroke}.
          * @return
          */
-        public NumericLegend getWidthAnalysis() {
+        public NumericLegend getLineWidthLegend() {
                 return widthAnalysis;
         }
 
@@ -143,7 +143,7 @@ public class PenStrokeLegend implements StrokeLegend {
          * PenStroke}.
          * @param param
          */
-        public void setWidthAnalysis(NumericLegend param) {
+        public void setLineWidthLegend(NumericLegend param) {
                 widthAnalysis = param;
                 penStroke.setWidth((RealParameter) param.getParameter());
         }

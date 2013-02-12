@@ -1,67 +1,56 @@
-/**
+/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
- * manipulate and create vector and raster spatial information.
- *
+ * manipulate and create vector and raster spatial information. 
+ * 
  * OrbisGIS is distributed under GPL 3 license. It is produced by the "Atelier SIG"
  * team of the IRSTV Institute <http://www.irstv.fr/> CNRS FR 2488.
- *
- * Copyright (C) 2007-2012 IRSTV (FR CNRS 2488)
- *
+ * 
+ * Copyright (C) 2007-1012 IRSTV (FR CNRS 2488)
+ * 
  * This file is part of OrbisGIS.
- *
+ * 
  * OrbisGIS is free software: you can redistribute it and/or modify it under the
  * terms of the GNU General Public License as published by the Free Software
  * Foundation, either version 3 of the License, or (at your option) any later
  * version.
- *
+ * 
  * OrbisGIS is distributed in the hope that it will be useful, but WITHOUT ANY
  * WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
  * A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * 
  * You should have received a copy of the GNU General Public License along with
  * OrbisGIS. If not, see <http://www.gnu.org/licenses/>.
- *
+ * 
  * For more information, please consult: <http://www.orbisgis.org/>
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.legend.structure.recode;
+package org.orbisgis.legend.structure.parameter;
 
-import org.orbisgis.core.renderer.se.parameter.SeParameter;
-import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
-import org.orbisgis.legend.structure.parameter.ParameterLegend;
+import org.orbisgis.core.renderer.se.parameter.ValueReference;
 
 /**
- * LegendStructure associated to a {@code ColorParameter} set using a {@code
- * Recode2Color} instance.
+ * Basic methods for parameters that are dependent upon a parameter.
  * @author Alexis Guéganno
  */
-public class Recode2ColorLegend implements ParameterLegend {
+public abstract class AbstractAttributeLegend {
 
-        private Recode2Color rc;
-
-        /**
-         * Build this {@code Recode2ColorLegend}, using the {@code Recode2Color}
-         * instance given in argument.
-         * @param rc
-         */
-        public Recode2ColorLegend(Recode2Color rc) {
-                this.rc = rc;
-        }
+        public abstract ValueReference getValueReference();
 
         /**
-         * Get the {@code Recode2Color} instance associated to this {@code
-         * Recode2ColorLegend}.
+         * Gets the name of the field where values will be retrieved.
          * @return
          */
-        public Recode2Color getRecode() {
-                return rc;
+        public String getLookupFieldName(){
+                return getValueReference().getColumnName();
         }
 
-        @Override
-        public SeParameter getParameter() {
-                return getRecode();
+        /**
+         * Sets the name of the field where values will be retrieved.
+         * @param name
+         */
+        public void setLookupFieldName(String name){
+                getValueReference().setColumnName(name);
         }
-
 }

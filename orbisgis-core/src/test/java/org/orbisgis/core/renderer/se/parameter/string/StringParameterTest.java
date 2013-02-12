@@ -255,4 +255,28 @@ public class StringParameterTest extends AbstractTest {
                         assertTrue(true);
                 }
         }
+
+        @Test
+        public void testGetChildrenLiteral() throws Exception {
+                StringLiteral sl = new StringLiteral("youhou");
+                assertTrue(sl.getChildren().isEmpty());
+        }
+
+        @Test
+        public void testGetChildrenConcatenate() throws Exception {
+                StringConcatenate conc = getConcatenate();
+                assertTrue(conc.getChildren().size() == 2);
+        }
+
+        private StringConcatenate getConcatenate() throws Exception {
+                String xml = "src/test/resources/org/orbisgis/core/renderer/se/concatenateString.se";
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
+                JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
+                        new FileInputStream(xml));
+                Style st = new Style(ftsElem, null);
+                PointTextGraphic ptg = (PointTextGraphic) ((PointSymbolizer) st.getRules().get(0).getCompositeSymbolizer().
+                        getSymbolizerList().get(0)).getGraphicCollection().getGraphic(0);
+                StringParameter sp = ptg.getPointLabel().getLabel().getText();
+                return (StringConcatenate) sp;
+        }
 }

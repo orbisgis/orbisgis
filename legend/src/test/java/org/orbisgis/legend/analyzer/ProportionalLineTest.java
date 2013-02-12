@@ -37,6 +37,7 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.analyzer.symbolizers.LineSymbolizerAnalyzer;
 import org.orbisgis.legend.structure.stroke.PenStrokeLegend;
@@ -108,7 +109,7 @@ public class ProportionalLineTest extends AnalyzerTest {
         try{
             ProportionalLine usl = new ProportionalLine(ls);
             fail();
-        } catch (IllegalArgumentException iae){
+        } catch (ClassCastException iae){
             assertTrue(true);
         }
 
@@ -193,7 +194,9 @@ public class ProportionalLineTest extends AnalyzerTest {
         Interpolate2Real ir = (Interpolate2Real) ps.getWidth();
         RealAttribute ra = (RealAttribute) ir.getLookupValue();
         assertTrue(ra.getColumnName().equals("LARGEUR"));
-        assertTrue(ls.dependsOnFeature().contains("LARGEUR"));
+        FeaturesVisitor fv = new FeaturesVisitor();
+        ls.acceptVisitor(fv);
+        assertTrue(fv.getResult().contains("LARGEUR"));
     }
 
     @Test
@@ -207,7 +210,9 @@ public class ProportionalLineTest extends AnalyzerTest {
         Interpolate2Real ir = (Interpolate2Real) ps.getWidth();
         RealAttribute ra = (RealAttribute) ir.getLookupValue();
         assertTrue(ra.getColumnName().equals("longueur"));
-        assertTrue(ls.dependsOnFeature().contains("longueur"));
+        FeaturesVisitor fv = new FeaturesVisitor();
+        ls.acceptVisitor(fv);
+        assertTrue(fv.getResult().contains("longueur"));
     }
 
 }

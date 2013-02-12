@@ -28,23 +28,9 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
-import java.awt.Component;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
-import java.net.URL;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JPanel;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.analyzer.FillAnalyzer;
-import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
@@ -58,6 +44,12 @@ import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
+import java.net.URL;
 
 /**
  *
@@ -94,15 +86,13 @@ public class PnlUniqueAreaSE extends PnlUniqueLineSE {
                         if(cps instanceof ConstantPenStrokeLegend ){
                                 setPenStrokeMemory((ConstantPenStrokeLegend) cps);
                         } else {
-                                PenStrokeAnalyzer psa = new PenStrokeAnalyzer(new PenStroke());
-                                setPenStrokeMemory((ConstantPenStrokeLegend) psa.getLegend());
+                                setPenStrokeMemory(new ConstantPenStrokeLegend(new PenStroke()));
                         }
                         ConstantSolidFill csf = uniqueArea.getFillLegend();
                         if(csf instanceof ConstantSolidFillLegend){
                                 setSolidFillMemory((ConstantSolidFillLegend) csf);
                         } else {
-                                FillAnalyzer fa = new FillAnalyzer(new SolidFill());
-                                setSolidFillMemory((ConstantSolidFillLegend) fa.getLegend());
+                            setSolidFillMemory(new ConstantSolidFillLegend(new SolidFill()));
                         }
                         initPreview();
                         this.initializeLegendFields();
