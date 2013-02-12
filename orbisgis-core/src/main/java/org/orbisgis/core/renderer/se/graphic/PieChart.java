@@ -330,13 +330,15 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
     public void setHoleRadius(RealParameter holeRadius) {
         this.holeRadius = holeRadius;
         if (holeRadius != null) {
-            FeaturesVisitor fv = new FeaturesVisitor();
-            this.radius.acceptVisitor(fv);
-            if (this.radius != null && fv.getResult().isEmpty()) {
-                try {
-                    holeRadius.setContext(new RealParameterContext(0.0, radius.getValue(null, -1)));
-                } catch (ParameterException ex) {
-                    // don't throw anything since radius does not depends on features
+            if (this.radius != null){
+                FeaturesVisitor fv = new FeaturesVisitor();
+                this.radius.acceptVisitor(fv);
+                if(fv.getResult().isEmpty()) {
+                    try {
+                        holeRadius.setContext(new RealParameterContext(0.0, radius.getValue(null, -1)));
+                    } catch (ParameterException ex) {
+                        // don't throw anything since radius does not depends on features
+                    }
                 }
             }
             holeRadius.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);

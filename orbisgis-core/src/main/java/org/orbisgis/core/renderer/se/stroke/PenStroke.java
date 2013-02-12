@@ -79,7 +79,6 @@ public final class PenStroke extends Stroke implements FillNode {
     private static final LineCap DEFAULT_CAP = LineCap.BUTT;
     private static final LineJoin DEFAULT_JOIN = LineJoin.ROUND;
     private Fill fill;
-    //private RealParameter opacity;
     private RealParameter width;
     private LineJoin lineJoin;
     private LineCap lineCap;
@@ -125,17 +124,11 @@ public final class PenStroke extends Stroke implements FillNode {
         super();
         setFill(new SolidFill(Color.BLACK, 1.0));
         setWidth(new RealLiteral(0.1));
-        //setOpacity(new RealLiteral(100.0));
-
         setUom(null);
-
         setDashArray(null);
         setDashOffset(null);
-
         setLineCap(null);
         setLineJoin(null);
-
-        //updateBasicStroke();
     }
 
     /**
@@ -269,7 +262,6 @@ public final class PenStroke extends Stroke implements FillNode {
      */
     public void setLineCap(LineCap cap) {
         lineCap = cap;
-        //updateBasicStroke();
     }
 
     /**
@@ -290,7 +282,6 @@ public final class PenStroke extends Stroke implements FillNode {
      */
     public void setLineJoin(LineJoin join) {
         lineJoin = join;
-        //updateBasicStroke();
     }
 
     /**
@@ -317,7 +308,6 @@ public final class PenStroke extends Stroke implements FillNode {
             width.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
             width.setParent(this);
         }
-        //updateBasicStroke();
     }
 
     /**
@@ -342,7 +332,6 @@ public final class PenStroke extends Stroke implements FillNode {
             dashOffset.setContext(RealParameterContext.REAL_CONTEXT);
             dashOffset.setParent(this);
         }
-        //updateBasicStroke();
     }
 
     /**
@@ -540,8 +529,6 @@ public final class PenStroke extends Stroke implements FillNode {
                 if (this.dashArray != null && !this.dashArray.getValue(map).isEmpty() && Math.abs(offset) > 0.0) {
                     String value = dashArray.getValue(map);
                     String[] split = value.split("\\s+");
-                    //value.split("");
-
                     Shape chute = shp;
                     List<Shape> fragments = new ArrayList<Shape>();
                     BasicStroke bs = createBasicStroke(map, shp, mt, null, false);

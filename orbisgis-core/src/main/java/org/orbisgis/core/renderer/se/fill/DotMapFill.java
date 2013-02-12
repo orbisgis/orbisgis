@@ -28,20 +28,6 @@
  */
 package org.orbisgis.core.renderer.se.fill;
 
-import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Area;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.thematic.DotMapFillType;
 import net.opengis.se._2_0.thematic.ObjectFactory;
 import org.apache.log4j.Logger;
@@ -53,11 +39,22 @@ import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.xml.bind.JAXBElement;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Area;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
 
 /**
  * Descriptor for dot maps. Each point represents a given quantity. Points are randomly placed
@@ -164,8 +161,7 @@ public final class DotMapFill extends Fill implements GraphicNode {
 
     /**
      * Return null since an hatched fill cannot be converted into a native java fill
-     * @param fid
-     * @param sds
+     * @param map
      * @param selected
      * @param mt
      * @return null

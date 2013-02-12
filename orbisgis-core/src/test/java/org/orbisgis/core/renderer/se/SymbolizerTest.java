@@ -32,6 +32,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.util.HashSet;
+import java.util.Set;
 import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
@@ -115,7 +116,7 @@ public class SymbolizerTest extends AbstractTest {
         String xml = "src/test/resources/org/orbisgis/core/renderer/se/symbol_prop_canton_interpol_lin.se";
         Style fts = new Style(null, xml);
         fts.acceptVisitor(fv);
-        HashSet<String> feat = fv.getResult();
+        Set<String> feat = fv.getResult();
         assertTrue(feat.size() == 1);
         assertTrue(feat.contains("PTOT99"));
         AreaSymbolizer as = (AreaSymbolizer)fts.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);

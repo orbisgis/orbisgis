@@ -183,8 +183,6 @@ public abstract class Symbolizer extends AbstractSymbolizerNode implements Symbo
      * @param s 
      */
     public void setJAXBProperty(SymbolizerType s) {
-        ObjectFactory of = new ObjectFactory();
-
         // TODO Load description from XML
         s.setDescription(null);
         s.setName(name);

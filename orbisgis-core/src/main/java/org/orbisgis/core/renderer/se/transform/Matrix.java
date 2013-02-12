@@ -29,10 +29,7 @@
 package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MatrixType;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -395,17 +392,17 @@ public final class Matrix extends AbstractSymbolizerNode implements Transformati
         public void simplify() throws ParameterException {
                 FeaturesVisitor vis = new FeaturesVisitor();
                 a.acceptVisitor(vis);
-                HashSet<String> sa = vis.getResult();
+                Set<String> sa = vis.getResult();
                 b.acceptVisitor(vis);
-                HashSet<String> sb = vis.getResult();
+                Set<String> sb = vis.getResult();
                 c.acceptVisitor(vis);
-                HashSet<String> sc = vis.getResult();
+                Set<String> sc = vis.getResult();
                 d.acceptVisitor(vis);
-                HashSet<String> sd = vis.getResult();
+                Set<String> sd = vis.getResult();
                 e.acceptVisitor(vis);
-                HashSet<String> se = vis.getResult();
+                Set<String> se = vis.getResult();
                 f.acceptVisitor(vis);
-                HashSet<String> sf = vis.getResult();
+                Set<String> sf = vis.getResult();
 
                 if (sa != null && !sa.isEmpty()) {
                         setA(new RealLiteral(a.getValue(null, -1)));

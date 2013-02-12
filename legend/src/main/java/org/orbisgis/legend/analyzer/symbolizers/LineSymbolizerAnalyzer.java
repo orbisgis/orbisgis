@@ -106,8 +106,7 @@ public class LineSymbolizerAnalyzer extends SymbolizerTypeAnalyzer {
      */
     public boolean validateLinearInterpolate(RealParameter parameter){
         if(parameter instanceof Interpolate2Real){
-                RealParameter rp =  ((Interpolate2Real)parameter).getLookupValue();
-                return rp instanceof RealAttribute;
+                return ((Interpolate2Real)parameter).getLookupValue() instanceof RealAttribute;
         }
         return false;
     }
