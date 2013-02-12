@@ -38,7 +38,7 @@ import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 
-import java.awt.Color;
+import java.awt.*;
 
 /**
  * Represents an {@code AreaSymbolizer} of which the {@code Stroke} is a constant

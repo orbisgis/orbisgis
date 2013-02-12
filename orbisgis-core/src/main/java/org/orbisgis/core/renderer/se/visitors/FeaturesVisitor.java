@@ -30,6 +30,8 @@ package org.orbisgis.core.renderer.se.visitors;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+
 import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.ValueReference;
 
@@ -40,7 +42,7 @@ import org.orbisgis.core.renderer.se.parameter.ValueReference;
  */
 public class FeaturesVisitor implements ISymbolizerVisitor {
 
-        private HashSet<String> res = new HashSet<String>();
+        private Set<String> res = new HashSet<String>();
 
         /**
          * Recursively visits {@code sn} and all its children, searching for
@@ -77,7 +79,7 @@ public class FeaturesVisitor implements ISymbolizerVisitor {
          * names needed to use safely the last visited {@code SymbolizerNode}.
          * @return
          */
-        public HashSet<String> getResult(){
+        public Set<String> getResult(){
                 return res;
         }
 
