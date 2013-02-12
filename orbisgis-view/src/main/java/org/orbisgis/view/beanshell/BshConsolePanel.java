@@ -28,8 +28,6 @@
  */
 package org.orbisgis.view.beanshell;
 
-import org.orbisgis.view.beanshell.ext.BeanShellAction;
-import org.orbisgis.view.components.Log4JOutputStream;
 import bsh.EvalError;
 import bsh.Interpreter;
 import java.awt.BorderLayout;
@@ -37,15 +35,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.beans.EventHandler;
-import java.io.File;
-import java.io.IOException;
-import java.io.PrintStream;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JToolBar;
-import javax.swing.KeyStroke;
-import javax.swing.Timer;
+import java.io.*;
+import javax.swing.*;
 import javax.swing.event.CaretListener;
 import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Level;
@@ -62,9 +53,12 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.components.OpenFilePanel;
 import org.orbisgis.sif.components.SaveFilePanel;
+import org.orbisgis.view.beanshell.ext.BeanShellAction;
+import org.orbisgis.view.components.Log4JOutputStream;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.components.findReplace.FindReplaceDialog;
@@ -76,7 +70,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * BeanShell console GUI
  * 
  */
-public class BshConsolePanel extends JPanel {
+public final class BshConsolePanel extends JPanel {
         private static final I18n I18N = I18nFactory.getI18n(BshConsolePanel.class);
         private static final Logger LOGGER = Logger.getLogger("gui."+BshConsolePanel.class);
         private static final int MESSAGE_CLEAR_INTERVAL = 10000; //ms Clear message interval
@@ -95,9 +89,12 @@ public class BshConsolePanel extends JPanel {
         private int line = 0;
         private int character = 0;
         private String currentStatusMessage = "";
+        private static final String BSHINITFILE = "init.bsh";
         
         /**
          * Creates a console for beanshell.
+         * The interpreter is able to use scripts available in bsh folder
+         * located in the application folder.
          */
         public BshConsolePanel() {
                 try {
@@ -107,16 +104,69 @@ public class BshConsolePanel extends JPanel {
                         interpreter.setClassLoader(dm.getDataSourceFactory().getClass().getClassLoader());
                         interpreter.set("dsf", dm.getDataSourceFactory());
                         interpreter.eval("setAccessibility(true)");
-                        interpreter.getNameSpace().importCommands(
-                                "org.orbisgis.view.beanshell.commands");
+                        new LoadBSHScripts().execute();
 
                 } catch (EvalError e) {
-                        LOGGER.error(I18N.tr("Cannot initialize beanshell"),e);
+                        LOGGER.error(I18N.tr("Cannot initialize beanshell"), e);
                 }
                 setLayout(new BorderLayout());
                 add(getCenterPanel(), BorderLayout.CENTER);
                 add(statusMessage, BorderLayout.SOUTH);
         }
+
+        /**
+         * This class is used to load all bsh scripts and register them without
+         * blocking the OrbisGIS UI.The bsh scripts are stored in the resources
+         * folder. The scripts are overrided after each run.
+         */
+        private class LoadBSHScripts extends SwingWorker<Object, Object> {
+
+                @Override
+                protected Object doInBackground() {
+                        CoreWorkspace ws = Services.getService(CoreWorkspace.class);
+                        try {
+                                //Load all bsh files from the ressource system folder
+                                //and register them
+                                StringBuilder sb = new StringBuilder("importCommands(");
+                                sb.append("\"org/orbisgis/view/beanshell/system/\"");
+                                sb.append(")");
+                                interpreter.eval(sb.toString());
+                                //The user can specify an init file in its workspace folder
+                                String userBSHFolder = ws.getWorkspaceFolder() + File.separator + BSHINITFILE;
+                                //Set the workspace folder. It can be used in scripts to avoid scope variable.
+                                interpreter.set("wsPath", ws.getWorkspaceFolder());
+                                // Check if the init file exists and run it
+                                // A user_demo.bsh is delivered with OrbisGIS sources for a demontration
+                                File bshInitFile = new File(userBSHFolder);
+                                if (bshInitFile.exists()) {
+                                        interpreter.source(bshInitFile.getAbsolutePath());
+                                } else {
+                                        copyScripts(ws.getWorkspaceFolder(), "init.bsh");
+                                        copyScripts(ws.getWorkspaceFolder(), "user_demo.bsh");
+                                        interpreter.source(bshInitFile.getAbsolutePath());
+                                }
+
+                        } catch (Exception e) {
+                                LOGGER.error(I18N.tr("Cannot initialize beanshell script folder"), e);
+                        }
+                        return null;
+                }
+        }
+
+
+        /**
+         * Copy the script file from the resource folder to the default OrbiGIS
+         * beanshell folder
+         * @param bshFolder
+         * @param scriptName
+         * @throws IOException 
+         */
+        public void copyScripts( String bshFolder, String scriptName) throws IOException {
+                InputStream bshStream = BshConsolePanel.class.getResourceAsStream("/org/orbisgis/view/beanshell/user/"+scriptName);
+                File script = new File(bshFolder + File.separator + scriptName);
+                FileUtils.copyInputStreamToFile(bshStream, script);
+        }
+
         /**
          * Clear the message shown
          */
