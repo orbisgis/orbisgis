@@ -74,6 +74,11 @@
         </properties>
         <dependencies>
                 <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>orbisgis-view-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
                         <groupId>com.fifesoft</groupId>
                         <artifactId>autocomplete</artifactId>
                         <version>2.0.5.1</version>

@@ -32,11 +32,9 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.io.Serializable;
 import javax.swing.Icon;
-import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  * Parameters of a Docking Area.
- * @warning New properties must be linked with the current docking system {@link ReservedDockStation} 
  */
 public class DockingAreaParameters implements Serializable {
     private static final long serialVersionUID = 3L; /*<! Update this integer while adding properties (1 for each new property)*/
@@ -51,7 +49,7 @@ public class DockingAreaParameters implements Serializable {
     private String areaTitle = "";
     public static final String PROP_AREATITLE = "areaTitle";
 
-    private Icon areaIcon = OrbisGISIcon.getIcon("mini_orbisgis");
+    private Icon areaIcon;
     public static final String PROP_AREAICON = "areaIcon";
     private boolean acceptParentFlap = true;
     public static final String PROP_ACCEPTPARENTFLAP = "acceptParentFlap";

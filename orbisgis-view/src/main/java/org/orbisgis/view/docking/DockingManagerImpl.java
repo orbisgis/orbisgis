@@ -61,14 +61,7 @@ import javax.swing.JMenu;
 import org.apache.log4j.Logger;
 import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.components.actions.ActionTools;
-import org.orbisgis.view.docking.internals.ApplicationRessourceDecorator;
-import org.orbisgis.view.docking.internals.CustomMultipleCDockable;
-import org.orbisgis.view.docking.internals.CustomPanelHolder;
-import org.orbisgis.view.docking.internals.CustomSingleCDockable;
-import org.orbisgis.view.docking.internals.DockingArea;
-import org.orbisgis.view.docking.internals.DockingPanelTracker;
-import org.orbisgis.view.docking.internals.InternalCommonFactory;
-import org.orbisgis.view.docking.internals.OrbisGISView;
+import org.orbisgis.view.docking.internals.*;
 import org.orbisgis.view.docking.preferences.OrbisGISPreferenceTreeModel;
 import org.orbisgis.view.docking.preferences.editors.UserInformationEditor;
 import org.orbisgis.view.icons.OrbisGISIcon;
@@ -174,7 +167,7 @@ public final class DockingManagerImpl implements DockingManager {
                                         CustomSingleCDockable scdockable = (CustomSingleCDockable)panel;
                                         DockingPanelLayout layout = scdockable.getDockingPanel().getDockingParameters().getLayout();
                                         if(layout != null) {
-                                                commonControl.getResources().put(scdockable.getUniqueId(), new ApplicationRessourceDecorator(layout));
+                                                commonControl.getResources().put(scdockable.getUniqueId(), new ApplicationRessourceDecorator(new DockingPanelLayoutDecorator(layout)));
                                         }
                                 }                                
                         }
@@ -324,7 +317,7 @@ public final class DockingManagerImpl implements DockingManager {
                 MultipleCDockableFactory<?, ?> factory = commonControl.getMultipleDockableFactory(factoryId);
                 if (factory != null && factory instanceof InternalCommonFactory) {
                         InternalCommonFactory iFactory = (InternalCommonFactory) factory;
-                        CustomMultipleCDockable dockItem = iFactory.read(panelLayout);
+                        CustomMultipleCDockable dockItem = iFactory.read(new DockingPanelLayoutDecorator(panelLayout));
                         if (dockItem != null) {
                                 commonControl.addDockable(dockItem);
                         }
@@ -384,7 +377,7 @@ public final class DockingManagerImpl implements DockingManager {
 
         @Override
         public boolean removeToolbarItem(Action action) {
-
+                return false;
         }
 
         /**
