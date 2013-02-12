@@ -43,12 +43,15 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.ListCellRenderer;
+
+import org.apache.log4j.Logger;
 import org.osgi.framework.Bundle;
 
 /**
  * @author Nicolas Fortin
  */
 public class BundleListRenderer implements ListCellRenderer {
+    private static final Logger LOGGER = Logger.getLogger(BundleListRenderer.class);
     private ListCellRenderer lookAndFeelRenderer;
     private static Dimension bundleIconDimension = new Dimension(32,32);
     private static final ImageIcon defaultIcon = new ImageIcon(BundleListRenderer.class.getResource("defaultIcon.png"));
@@ -137,33 +140,43 @@ public class BundleListRenderer implements ListCellRenderer {
     public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b2) {
         Component lafComp = lookAndFeelRenderer.getListCellRendererComponent(jList,o,i,b,b2);
         if(lafComp instanceof JLabel) {
-            JLabel label = (JLabel)lafComp;
-            BundleItem bi = (BundleItem)o;
-            ImageIcon bundleImage = defaultIcon;
-            // Open the bundle icon if defined
-            if(bi.getBundle()!=null) {
-                Bundle bundle = bi.getBundle();
-                ImageIcon customBundleImage = getBundleIcon(bundle);
-                if(customBundleImage!=null) {
-                    bundleImage = customBundleImage;
+                try {
+                    JLabel label = (JLabel)lafComp;
+                    BundleItem bi = (BundleItem)o;
+                    ImageIcon bundleImage = defaultIcon;
+                    // Open the bundle icon if defined
+                    if(bi.getBundle()!=null) {
+                        Bundle bundle = bi.getBundle();
+                            try {
+                                ImageIcon customBundleImage = getBundleIcon(bundle);
+                                if(customBundleImage!=null) {
+                                    bundleImage = customBundleImage;
+                                }
+                            } catch (Exception ex) {
+                                // If bundle state is not ready or an error occur when loading
+                                // an icon then show the default icon.
+                                LOGGER.error(ex.getLocalizedMessage(),ex);
+                            }
+                    }
+                    if(bi.getBundle()!=null && bi.getBundle().getState()== Bundle.ACTIVE) {
+                        label.setIcon(mergeIcons(bundleImage.getImage(),activeLayer.getImage()));
+                    } else if(bi.getBundle()==null && bi.getObrResource()!=null) {
+                        label.setIcon(obrIcon);
+                    } else {
+                        label.setIcon(bundleImage);
+                    }
+                    StringBuilder sb = new StringBuilder();
+                    sb.append("<html><h4>");
+                    sb.append(bi.getPresentationName());
+                    sb.append(" (");
+                    sb.append(bi.getVersion());
+                    sb.append(")</h4>");
+                    sb.append(bi.getShortDescription());
+                    sb.append("</html>");
+                    label.setText(sb.toString());
+                } catch(Exception ex) {
+                        LOGGER.error(ex.getLocalizedMessage(),ex);
                 }
-            }
-            if(bi.getBundle()!=null && bi.getBundle().getState()== Bundle.ACTIVE) {
-                label.setIcon(mergeIcons(bundleImage.getImage(),activeLayer.getImage()));
-            } else if(bi.getBundle()==null && bi.getObrResource()!=null) {
-                label.setIcon(obrIcon);
-            } else {
-                label.setIcon(bundleImage);
-            }
-            StringBuilder sb = new StringBuilder();
-            sb.append("<html><h4>");
-            sb.append(bi.getPresentationName());
-            sb.append(" (");
-            sb.append(bi.getVersion());
-            sb.append(")</h4>");
-            sb.append(bi.getShortDescription());
-            sb.append("</html>");
-            label.setText(sb.toString());
         }
         return lafComp;
     }
