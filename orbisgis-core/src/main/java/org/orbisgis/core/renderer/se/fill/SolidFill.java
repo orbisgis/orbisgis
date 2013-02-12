@@ -32,7 +32,8 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -40,9 +41,9 @@ import net.opengis.se._2_0.core.SolidFillType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.color.ColorHelper;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
@@ -211,30 +212,6 @@ public final class SolidFill extends Fill {
 	}
 
 	@Override
-	public HashSet<String> dependsOnFeature() {
-            HashSet<String> ret = null;
-            if (color != null) {
-                ret = color.dependsOnFeature();
-            }
-            if (opacity != null) {
-                if(ret == null) {
-                    ret = opacity.dependsOnFeature();
-                } else {
-                    ret.addAll(opacity.dependsOnFeature());
-                }
-            }
-            return ret;
-	}
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis ua = new UsedAnalysis();
-        ua.merge(color.getUsedAnalysis());
-        ua.merge(opacity.getUsedAnalysis());
-        return ua;
-    }
-
-	@Override
 	public SolidFillType getJAXBType() {
 		SolidFillType f = new SolidFillType();
 
@@ -247,6 +224,18 @@ public final class SolidFill extends Fill {
 
 		return f;
 	}
+
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if (color != null) {
+                        ls.add(color);
+                }
+                if (opacity != null) {
+                        ls.add(opacity);
+                }
+                return ls;
+        }
 
 	@Override
 	public JAXBElement<SolidFillType> getJAXBElement() {

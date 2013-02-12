@@ -29,6 +29,7 @@
 package org.orbisgis.view.beanshell;
 
 import javax.swing.JComponent;
+import org.apache.log4j.Logger;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorDockable;
@@ -43,7 +44,8 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class BeanShellFrame implements EditorDockable {
         public static final String EDITOR_NAME = "BeanShell";
-        private final static I18n I18N = I18nFactory.getI18n(BeanShellFrame.class);
+        private static final Logger LOGGER = Logger.getLogger(BeanShellFrame.class);
+        private static final I18n I18N = I18nFactory.getI18n(BeanShellFrame.class);
         private DockingPanelParameters parameters = new DockingPanelParameters();
         private BshConsolePanel panel = new BshConsolePanel();
         private MapElement mapElement;
@@ -53,6 +55,15 @@ public class BeanShellFrame implements EditorDockable {
                 parameters.setTitle(I18N.tr("BeanShell"));
                 parameters.setTitleIcon(OrbisGISIcon.getIcon("page_white_cup"));
                 parameters.setDockActions(panel.getActions().getActions());
+                // If a map is already loaded fetch it in the EditorManager
+                try {
+                    mapElement = MapElement.fetchFirstMapElement();
+                } catch (Exception ex) {
+                    LOGGER.error(ex.getLocalizedMessage(),ex);
+                }
+                if(mapElement!=null) {
+                    setEditableElement(mapElement);
+                }
         }
         public void dispose() {
                 panel.freeResources();

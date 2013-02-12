@@ -30,6 +30,7 @@ package org.orbisgis.core.plugin;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -78,25 +79,33 @@ public class PluginHost {
         }
         packageList.add(packageInfo);
     }
-    
+    private void addPackage(PackageDeclaration packInfo,List<String> sortedPackagesExport) {
+        if(!packInfo.isVersionDefined()) {
+            sortedPackagesExport.add(packInfo.getPackageName());
+        } else {
+            sortedPackagesExport.add(packInfo.getPackageName()+
+                    "; version="+packInfo.getVersion());
+        }
+    }
     /**
      * Parse classpath to find all packages name available. Write them all without version information,
      * Except for defined packages through exportCorePackage(), 
      * @return 
      */
     private String getExtraPackage() {
-        //Build a set of packages to skip programatically defined packages
+        //Build a set of packages to skip programmaticaly defined packages
         Set<String> packagesName = new HashSet<String>();
         List<String> sortedPackagesExport = new ArrayList<String>();
         for(PackageDeclaration packInfo : packageList) {
             packagesName.add(packInfo.getPackageName());
-            if(!packInfo.isVersionDefined()) {
-                sortedPackagesExport.add(packInfo.getPackageName());
-            } else {
-                sortedPackagesExport.add(packInfo.getPackageName()+
-                        "; version="+packInfo.getMajorVersion()+
-                        "."+packInfo.getMinorVersion()+
-                        "."+packInfo.getRevisionVersion());                
+            addPackage(packInfo,sortedPackagesExport);
+        }
+        // Fetch built-ins OSGi bundles package declarations
+        Collection<PackageDeclaration> packageDeclarations = BundleTools.fetchManifests();
+        for(PackageDeclaration packageDeclaration : packageDeclarations) {
+            if(!packagesName.contains(packageDeclaration.getPackageName())) {
+                packagesName.add(packageDeclaration.getPackageName());
+                addPackage(packageDeclaration,sortedPackagesExport);
             }
         }
         // Export Host provided packages, by classpaths

@@ -144,5 +144,9 @@ public class MainFrame extends JFrame implements MainWindow {
         public void onMenuExitApplication() {
             this.processWindowEvent(new WindowEvent(this,WindowEvent.WINDOW_CLOSING));
         }
-        
+
+        @Override
+        public JFrame getMainFrame() {
+            return this;
+        }
 }

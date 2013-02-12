@@ -35,7 +35,9 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.FillType;
@@ -45,6 +47,7 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -119,39 +122,6 @@ public final class HatchedFill extends Fill implements StrokeNode {
         } else {
             throw new InvalidStyle("Hatched Field request a stroke ");
         }
-    }
-
-
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> ret = new HashSet<String>();
-        if (angle != null) {
-            ret.addAll(angle.dependsOnFeature());
-        }
-        if (distance != null) {
-            ret.addAll(distance.dependsOnFeature());
-        }
-        if (offset != null) {
-            ret.addAll(offset.dependsOnFeature());
-        }
-        if (stroke != null) {
-            ret.addAll(stroke.dependsOnFeature());
-        }
-
-        return ret;
-
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis ua = new UsedAnalysis();
-        ua.merge(angle.getUsedAnalysis());
-        ua.merge(distance.getUsedAnalysis());
-        ua.merge(offset.getUsedAnalysis());
-        if(stroke != null){
-            ua.merge(stroke.getUsedAnalysis());
-        }
-        return ua;
     }
 
     @Override
@@ -570,6 +540,24 @@ public final class HatchedFill extends Fill implements StrokeNode {
         }
 
         return hf;
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        if (angle != null) {
+            ls.add(angle);
+        }
+        if (distance != null) {
+            ls.add(distance);
+        }
+        if (offset != null) {
+            ls.add(offset);
+        }
+        if (stroke != null) {
+                ls.add(stroke);
+        }
+        return ls;
     }
 
 

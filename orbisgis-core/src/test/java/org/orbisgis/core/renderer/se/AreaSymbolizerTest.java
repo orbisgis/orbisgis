@@ -38,6 +38,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
+import org.orbisgis.core.renderer.se.visitors.UsedAnalysisVisitor;
 
 /**
  *
@@ -76,7 +77,9 @@ public class AreaSymbolizerTest {
     public void testCategorizeUsedAnalysis() throws Exception {
         Style style = new Style(null, "src/test/resources/org/orbisgis/core/renderer/se/colorCategorize.se");
         AreaSymbolizer ps =(AreaSymbolizer) style.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        UsedAnalysis ua = ps.getUsedAnalysis();
+        UsedAnalysisVisitor uv = new UsedAnalysisVisitor();
+        uv.visitSymbolizerNode(ps);
+        UsedAnalysis ua = uv.getUsedAnalysis();
         assertTrue(ua.isCategorizeUsed());
         assertTrue(ua.getAnalysis().size()==1);
     }

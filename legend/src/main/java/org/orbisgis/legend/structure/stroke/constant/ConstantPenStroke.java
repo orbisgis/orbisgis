@@ -43,13 +43,13 @@ public interface ConstantPenStroke extends StrokeLegend {
          * Gets the unit of measure used to drawn the underlying {@link PenStroke}.
          * @return
          */
-        Uom getUom();
+        Uom getStrokeUom();
         
         /**
          * Sets the unit of measure used to drawn the underlying {@link PenStroke}.
          * @param u 
          */
-        void setUom(Uom u);
+        void setStrokeUom(Uom u);
 
         /**
          * Gets the analysis obtained from the inner solid fill.

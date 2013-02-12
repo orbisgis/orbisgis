@@ -30,11 +30,11 @@ package org.orbisgis.core.renderer.se.parameter;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.*;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -88,16 +88,6 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
                 this.fallbackValue = fallbackValue;
                 this.iPoints = new ArrayList<InterpolationPoint<ToType>>();
                 mode = InterpolationMode.LINEAR;
-        }
-
-        @Override
-        public final HashSet<String> dependsOnFeature() {
-            HashSet<String> out = this.getLookupValue().dependsOnFeature();
-            for (int i = 0; i < this.getNumInterpolationPoint(); i++) {
-                HashSet<String> r = this.getInterpolationPoint(i).getValue().dependsOnFeature();
-                out.addAll(r);
-            }
-            return out;
         }
 
         /**
@@ -257,14 +247,13 @@ public abstract class Interpolate<ToType extends SeParameter, FallbackType exten
         }
 
         @Override
-        public UsedAnalysis getUsedAnalysis() {
-                UsedAnalysis ua = new UsedAnalysis();
-                ua.include(this);
-                ua.merge(lookupValue.getUsedAnalysis());
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls =new ArrayList<SymbolizerNode>();
+                ls.add(lookupValue);
                 for(InterpolationPoint i : iPoints){
-                        ua.merge(i.getValue().getUsedAnalysis());
+                        ls.add(i.getValue());
                 }
-                return ua;
+                return ls;
         }
 
 

@@ -74,7 +74,7 @@ public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
         try{
             UniqueSymbolArea usl = new UniqueSymbolArea(ls);
             fail();
-        } catch(IllegalArgumentException iae){
+        } catch(ClassCastException iae){
             assertTrue(true);
         }
     }

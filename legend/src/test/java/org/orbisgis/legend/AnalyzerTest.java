@@ -49,7 +49,15 @@ public abstract class AnalyzerTest {
         public static final String PROP_LINE = "src/test/resources/org/orbisgis/legend/linearProportional.se";
         public static final String CONSTANT_LINE = "src/test/resources/org/orbisgis/legend/uniqueLineSymbol.se";
         public static final String CONSTANT_DASHED_LINE = "src/test/resources/org/orbisgis/legend/uniqueLineSymbolDash.se";
-        
+        public static final String REAL_RECODE = "src/test/resources/org/orbisgis/legend/density_hatch_recode.se";
+        public static final String STRING_RECODE = "src/test/resources/org/orbisgis/legend/stringRecode.se";
+        public static final String COLOR_RECODE = "src/test/resources/org/orbisgis/legend/colorRecode.se";
+        public static final String DOUBLE_CATEGORIZE = "src/test/resources/org/orbisgis/legend/doubleCategorize.se";
+        public static final String DOUBLE_CATEGORIZE_FIELD = "src/test/resources/org/orbisgis/legend/doubleCategorizeDoubleField.se";
+        public static final String NESTED = "src/test/resources/org/orbisgis/legend/nestedCategorize.se";
+        public static final String COLOR_CATEGORIZE = "src/test/resources/org/orbisgis/legend/colorCategorize.se";
+        public static final String DENSITY_FILL = "src/test/resources/org/orbisgis/legend/density_hatch_classif.se";
+
         public Style getStyle(String path) throws Exception {
             Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
             JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(new File(path));

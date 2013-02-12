@@ -29,7 +29,8 @@
 package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -38,10 +39,10 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -108,27 +109,15 @@ public class Translate extends AbstractSymbolizerNode implements Transformation 
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-            HashSet<String> result = null;
-            if (x != null) {
-                result = x.dependsOnFeature();
-            }
-            if (y != null) {
-                if(result == null) {
-                    result = y.dependsOnFeature();
-                } else {
-                    result.addAll(y.dependsOnFeature());
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if (x != null) {
+                        ls.add(x);
                 }
-            }
-            return result;
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-            UsedAnalysis result = new UsedAnalysis();
-            result.merge(x.getUsedAnalysis());
-            result.merge(y.getUsedAnalysis());
-            return result;
+                if (y != null) {
+                        ls.add(y);
+                }
+                return ls;
         }
 
         @Override

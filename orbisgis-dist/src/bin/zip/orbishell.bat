@@ -27,4 +27,4 @@
 @REM info_at_ orbisgis.org
 @REM
 
-start "OrbisGIS" "javaw" -Xmx1024M -cp 'orbisgis-dist-SNAPSHOT-jar-with-dependencies.jar' org.orbisgis.core.beanshell.BeanshellScript %*
+start "OrbisGIS" "javaw" -Xmx1024M -cp 'orbisgis-dist-4.0-SNAPSHOT.jar' org.orbisgis.core.beanshell.BeanshellScript %*

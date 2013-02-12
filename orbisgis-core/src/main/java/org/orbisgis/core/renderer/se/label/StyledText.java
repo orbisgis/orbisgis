@@ -34,7 +34,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Map;
 import net.opengis.se._2_0.core.FontType;
 import net.opengis.se._2_0.core.StyledTextType;
@@ -45,6 +44,7 @@ import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Halo;
 import org.orbisgis.core.renderer.se.common.Uom;
@@ -52,7 +52,6 @@ import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
@@ -598,88 +597,65 @@ public final class StyledText extends AbstractSymbolizerNode implements UomNode,
      */
     public StyledTextType getJAXBType() {
         StyledTextType l = new StyledTextType();
-
         if (text != null) {
             l.setText(text.getJAXBParameterValueType());
         }
-
         if (halo != null) {
             l.setHalo(halo.getJAXBType());
         }
-
         if (fill != null) {
             l.setFill(fill.getJAXBElement());
         }
-
         if (stroke != null) {
             l.setStroke(stroke.getJAXBElement());
         }
-
         FontType font = new FontType();
         if (this.getOwnUom() != null) {
             font.setUom(getOwnUom().toURN());
         }
-
         if (fontFamily != null) {
             font.setFontFamily(fontFamily.getJAXBParameterValueType());
         }
-
         if (fontWeight != null) {
             font.setFontWeight(fontWeight.getJAXBParameterValueType());
         }
-
         if (fontSize != null) {
             font.setFontSize(fontSize.getJAXBParameterValueType());
         }
-
         if (fontStyle != null) {
             font.setFontStyle(fontStyle.getJAXBParameterValueType());
         }
-
         l.setFont(font);
-
         return l;
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> result = new HashSet<String>();
+    public java.util.List<SymbolizerNode> getChildren() {
+        java.util.List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
         if (text != null) {
-            result.addAll(text.dependsOnFeature());
+            ls.add(text);
         }
         if (fontFamily != null) {
-            result.addAll(fontFamily.dependsOnFeature());
+            ls.add(fontFamily);
         }
         if (fontWeight != null) {
-            result.addAll(fontWeight.dependsOnFeature());
+            ls.add(fontWeight);
         }
         if (fontStyle != null) {
-            result.addAll(fontStyle.dependsOnFeature());
+            ls.add(fontStyle);
         }
         if (fontSize != null) {
-            result.addAll(fontSize.dependsOnFeature());
+            ls.add(fontSize);
         }
-        return result;
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis result = new UsedAnalysis();
-        if (text != null) {
-            result.merge(text.getUsedAnalysis());
+        if (stroke != null) {
+            ls.add(stroke);
         }
-        if (fontFamily != null) {
-            result.merge(fontFamily.getUsedAnalysis());
+        if (fill != null) {
+            ls.add(fill);
         }
-        if (fontWeight != null) {
-            result.merge(fontWeight.getUsedAnalysis());
+        if (halo != null) {
+            ls.add(halo);
         }
-        if (fontStyle != null) {
-            result.merge(fontStyle.getUsedAnalysis());
-        }
-        if (fontSize != null) {
-            result.merge(fontSize.getUsedAnalysis());
-        }
-        return result;
+        return ls;
     }
 }

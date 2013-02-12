@@ -28,11 +28,11 @@
  */
 package org.orbisgis.legend.analyzer.function;
 
-import org.orbisgis.legend.analyzer.function.CategorizeValidator;
-import org.orbisgis.legend.analyzer.function.RecodeValidator;
 import org.orbisgis.core.renderer.se.parameter.Categorize;
 import org.orbisgis.core.renderer.se.parameter.Literal;
 import org.orbisgis.core.renderer.se.parameter.Recode;
+import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
 import org.orbisgis.legend.AbstractAnalyzer;
 
 /**
@@ -59,7 +59,7 @@ public abstract class AbstractLiteralValidator extends AbstractAnalyzer implemen
                                 return false;
                         }
                 }
-                return true;
+                return rc.getLookupValue() instanceof StringAttribute;
         }
 
         /**
@@ -79,7 +79,7 @@ public abstract class AbstractLiteralValidator extends AbstractAnalyzer implemen
                                 return false;
                         }
                 }
-                return true;
+                return cg.getLookupValue() instanceof RealAttribute;
         }
 
 }

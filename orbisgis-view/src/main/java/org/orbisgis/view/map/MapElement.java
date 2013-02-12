@@ -79,14 +79,14 @@ public final class MapElement extends EditableElement {
 	}
 
         /**
-         * Open editable elements loaded in editors, and return the first found MapContext
-         * @return The map context or null if not found
+         * Use the EditorManager service and search for the first available editable map.
+         * @return The map context or null if it is not found.
          */
-        public static MapContext fetchMapContext() {
+        public static MapElement fetchFirstMapElement() {
                 EditorManager editorManager = Services.getService(EditorManager.class);
                 for (EditableElement editable : editorManager.getEditableElements()) {
                         if (editable instanceof MapElement) {
-                                return ((MapElement)editable).getMapContext();
+                                return (MapElement)editable;
                         }
                 }
                 return null;

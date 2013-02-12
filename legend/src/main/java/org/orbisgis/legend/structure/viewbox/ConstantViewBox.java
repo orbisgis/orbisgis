@@ -55,11 +55,11 @@ public class ConstantViewBox extends DefaultViewBox {
          * As {@code ViewBox} instances can be defined with only one dimension
          * parameter, we must be able to treat this case.
          * @param realLiteralLegend
-         * @param isheight
+         * @param isHeight
          * @param vb 
          */
-        public ConstantViewBox(RealLiteralLegend realLiteralLegend, boolean isheight, ViewBox vb) {
-                super(realLiteralLegend, isheight, vb);
+        public ConstantViewBox(RealLiteralLegend realLiteralLegend, boolean isHeight, ViewBox vb) {
+                super(realLiteralLegend, isHeight, vb);
         }
 
         /**

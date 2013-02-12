@@ -103,6 +103,8 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
                     fail();
                 } catch(IllegalArgumentException cce){
                     assertTrue(true);
+                }  catch(ClassCastException cce){
+                    assertTrue(true);
                 }
     }
 

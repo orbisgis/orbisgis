@@ -32,7 +32,6 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -41,12 +40,12 @@ import net.opengis.se._2_0.core.ObjectFactory;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -445,26 +444,10 @@ public final class CompoundStroke extends Stroke implements UomNode {
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> result = new HashSet<String>();
-        /*for (StrokeAnnotationGraphic sag : annotations) {
-            result += sag.dependsOnFeature();
-        }*/
-
-        for (CompoundStrokeElement elem : elements) {
-            result.addAll(elem.dependsOnFeature());
-        }
-
-        return result;
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis result = new UsedAnalysis();
-        for (CompoundStrokeElement elem : elements) {
-            result.merge(elem.getUsedAnalysis());
-        }
-        return result;
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        ls.addAll(elements);
+        return ls;
     }
 
     private void addCompoundStrokeElement(CompoundStrokeElement cse) {

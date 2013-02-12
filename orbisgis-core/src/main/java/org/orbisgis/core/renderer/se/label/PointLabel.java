@@ -33,7 +33,8 @@ import java.awt.Shape;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -42,10 +43,10 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -213,34 +214,19 @@ public final class PointLabel extends Label {
         return pl;
     }
 
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> result = new HashSet<String>();
-        if (getLabel() != null) {
-            result.addAll(getLabel().dependsOnFeature());
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if (getLabel() != null) {
+                        ls.add(getLabel());
+                }
+                if (exclusionZone != null) {
+                        ls.add(exclusionZone);
+                }
+                if (rotation != null) {
+                        ls.add(rotation);
+                }
+                return ls;
         }
-        if (exclusionZone != null) {
-            result.addAll(exclusionZone.dependsOnFeature());
-        }
-        if (rotation != null) {
-            result.addAll(rotation.dependsOnFeature());
-        }
-        return result;
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis result = new UsedAnalysis();
-        if (getLabel() != null) {
-            result.merge(getLabel().getUsedAnalysis());
-        }
-        if (exclusionZone != null) {
-            result.merge(exclusionZone.getUsedAnalysis());
-        }
-        if (rotation != null) {
-            result.merge(rotation.getUsedAnalysis());
-        }
-        return result;
-    }
 
 }
