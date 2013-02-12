@@ -28,31 +28,30 @@
  */
 package org.orbisgis.legend.analyzer;
 
-import org.orbisgis.legend.analyzer.parameter.StringParameterAnalyzer;
-import org.orbisgis.legend.structure.recode.Recode2StringLegend;
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.util.ValidationEventCollector;
-import org.orbisgis.legend.structure.categorize.Categorize2StringLegend;
-import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
-import org.orbisgis.core.renderer.se.graphic.PointTextGraphic;
-import org.orbisgis.core.renderer.se.PointSymbolizer;
+import java.io.File;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
-import java.io.File;
-import javax.xml.bind.JAXBException;
 import net.opengis.se._2_0.core.StyleType;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.graphic.PointTextGraphic;
+import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.legend.AnalyzerTest;
+import org.orbisgis.legend.analyzer.parameter.StringParameterAnalyzer;
+import org.orbisgis.legend.structure.categorize.Categorize2StringLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
-import static org.junit.Assert.*;
+import org.orbisgis.legend.structure.recode.RecodedString;
 
 /**
  *
  * @author Alexis Guéganno
  */
-public class StringAnalyzerTest {
+public class StringAnalyzerTest extends AnalyzerTest {
 
         @Test
         public void testLiteralString() throws Exception {
@@ -84,8 +83,7 @@ public class StringAnalyzerTest {
 
         @Test
         public void testRecode() throws Exception {
-                String location = "src/test/resources/org/orbisgis/legend/stringRecode.se";
-                File xml = new File(location);
+                File xml = new File(STRING_RECODE);
                 Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(xml);
                 Style style = new Style(st, null);
@@ -93,6 +91,66 @@ public class StringAnalyzerTest {
                 PointTextGraphic ptg = (PointTextGraphic) ps.getGraphicCollection().getGraphic(0);
                 StringParameter sp = (StringParameter) ptg.getPointLabel().getLabel().getText();
                 StringParameterAnalyzer spa = new StringParameterAnalyzer(sp);
-                assertTrue(spa.getLegend() instanceof Recode2StringLegend);
+                assertTrue(spa.getLegend() instanceof RecodedString);
+        }
+
+        private Recode2String getRecode2String() throws Exception {
+                File xml = new File(STRING_RECODE);
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
+                JAXBElement<StyleType> st = (JAXBElement<StyleType>) u.unmarshal(xml);
+                Style style = new Style(st, null);
+                PointSymbolizer ps = (PointSymbolizer) style.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+                PointTextGraphic ptg = (PointTextGraphic) ps.getGraphicCollection().getGraphic(0);
+                return (Recode2String)  ptg.getPointLabel().getLabel().getText();
+
+        }
+
+        @Test
+        public void testStringRecodedAddValue() throws Exception {
+                Recode2String r2 = getRecode2String();
+                RecodedString r2d2 = new RecodedString(r2);
+                assertTrue(r2d2.size() == 3);
+                r2d2.addItem("2", "Pas large");
+                assertTrue(r2d2.size() == 3);
+                assertTrue(r2d2.getItemValue(0).equals("Pas large"));
+                assertTrue(r2d2.getItemValue("2").equals("Pas large"));
+                assertTrue(r2.getMapItemValue(0).getValue(null).equals("Pas large"));
+                assertTrue(r2.getMapItemValue("2").getValue(null).equals("Pas large"));
+                r2d2.addItem("50.0", "75.0");
+                assertTrue(r2d2.size() == 4);
+                assertTrue(r2.getNumMapItem() == 4);
+                assertTrue(r2d2.getItemValue(3).equals("75.0"));
+                assertTrue(r2d2.getItemValue("50.0").equals("75.0"));
+                assertTrue(r2.getMapItemValue(3).getValue(null).equals("75.0"));
+                assertTrue(r2.getMapItemValue("50.0").getValue(null).equals("75.0"));
+        }
+
+        @Test
+        public void testStringRecodedFromLiteral() throws Exception {
+                StringLiteral sl = new StringLiteral("bonjour");
+                RecodedString rs = new RecodedString(sl);
+                assertTrue(rs.getParameter() == sl);
+                assertTrue(rs.size()==0);
+                assertTrue(rs.getFallbackValue().equals("bonjour"));
+                rs.addItem("r","s");
+                assertTrue(rs.getItemValue("r").equals("s"));
+                assertTrue(rs.size()==1);
+                assertTrue(rs.getFallbackValue().equals("bonjour"));
+                assertFalse(rs.getParameter() == sl);
+        }
+
+        @Test
+        public void testStringLiteralFromRecode() throws Exception{
+                Recode2String r2 = getRecode2String();
+                RecodedString r2d2 = new RecodedString(r2);
+                assertTrue(r2d2.size() == 3);
+                r2d2.removeItem(0);
+                assertTrue(r2d2.size() == 2);
+                r2d2.removeItem(0);
+                assertTrue(r2d2.size() == 1);
+                r2d2.removeItem(0);
+                assertTrue(r2d2.size() == 0);
+                assertTrue(r2d2.getParameter() instanceof StringLiteral);
+                assertTrue(r2d2.getFallbackValue().equals("Road"));
         }
 }

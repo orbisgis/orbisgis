@@ -34,7 +34,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBElement;
@@ -53,7 +52,6 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * Usable representation of SE styles. This is the upper node of the symbology
@@ -449,24 +447,12 @@ public final class Style extends AbstractSymbolizerNode {
             return false;
         }
     }
-    
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> hs = new HashSet<String>();
-        for(Rule r : rules){
-            hs.addAll(r.dependsOnFeature());
-        }
-        return hs;
-    }
 
     @Override
-    public UsedAnalysis getUsedAnalysis(){
-            //We get an empty UsedAnalysis - we'll merge everything.
-            UsedAnalysis ua = new UsedAnalysis();
-            for(Rule r : rules){
-                    ua.merge(r.getUsedAnalysis());
-            }
-            return ua;
+    public List<SymbolizerNode> getChildren() {
+            List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+            ls.addAll(rules);
+            return ls;
     }
 
     /**

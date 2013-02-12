@@ -44,6 +44,7 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
 
 /**
  * Entry point for all kind of symbolizer
@@ -68,6 +69,7 @@ public abstract class Symbolizer extends AbstractSymbolizerNode implements Symbo
     protected int level;
     private Set<String> features;
     private Map<String,Value> featuresMap;
+    private FeaturesVisitor featuresVisitor = new FeaturesVisitor();
 
     /**
      * Build an empty Symbolizer, with the default name and no description.
@@ -263,7 +265,8 @@ public abstract class Symbolizer extends AbstractSymbolizerNode implements Symbo
      */
     public Map<String,Value> getFeaturesMap(DataSet sds, long fid) throws DriverException{
         if(features==null){
-            features = dependsOnFeature();
+            acceptVisitor(featuresVisitor);
+            features = featuresVisitor.getResult();
         }
         if(featuresMap == null){
             featuresMap = new HashMap<String,Value>();

@@ -56,7 +56,7 @@ public class CategorizedSolidFillLegend extends SolidFillLegend {
          * @return
          */
         public Color getFallBackColor() {
-            return ((Categorize2ColorLegend) getColorLegend()).getFallBackColor();
+            return ((Categorize2ColorLegend) getFillColorLegend()).getFallBackColor();
         }
 
         /**
@@ -65,7 +65,7 @@ public class CategorizedSolidFillLegend extends SolidFillLegend {
          * @param col
          */
         public void setFallBackColor(Color col) {
-            ((Categorize2ColorLegend) getColorLegend()).setFallBackColor(col);
+            ((Categorize2ColorLegend) getFillColorLegend()).setFallBackColor(col);
         }
 
         /**
@@ -76,7 +76,7 @@ public class CategorizedSolidFillLegend extends SolidFillLegend {
          * @return
          */
         public Color getColor(int i) {
-            return ((Categorize2ColorLegend) getColorLegend()).getColor(i);
+            return ((Categorize2ColorLegend) getFillColorLegend()).getColor(i);
         }
 
         /**
@@ -87,7 +87,7 @@ public class CategorizedSolidFillLegend extends SolidFillLegend {
          * @param col
          */
         public void setColor(int i, Color col) {
-            ((Categorize2ColorLegend) getColorLegend()).setColor(i, col);
+            ((Categorize2ColorLegend) getFillColorLegend()).setColor(i, col);
         }
 
         /**
@@ -95,7 +95,7 @@ public class CategorizedSolidFillLegend extends SolidFillLegend {
          * @return
          */
         public int getNumClass() {
-            return ((Categorize2ColorLegend) getColorLegend()).getNumClass();
+            return ((Categorize2ColorLegend) getFillColorLegend()).getNumClass();
         }
 
         /**
@@ -104,7 +104,7 @@ public class CategorizedSolidFillLegend extends SolidFillLegend {
          * @return
          */
         public double getThreshold(int i) {
-            return ((Categorize2ColorLegend) getColorLegend()).getThreshold(i);
+            return ((Categorize2ColorLegend) getFillColorLegend()).getThreshold(i);
         }
 
         /**
@@ -113,7 +113,7 @@ public class CategorizedSolidFillLegend extends SolidFillLegend {
          * @param d
          */
         public void setThreshold(int i, double d) {
-            ((Categorize2ColorLegend) getColorLegend()).setThreshold(i, d);
+            ((Categorize2ColorLegend) getFillColorLegend()).setThreshold(i, d);
         }
 
         /**
@@ -122,7 +122,7 @@ public class CategorizedSolidFillLegend extends SolidFillLegend {
          * @param col
          */
         public void addClass(double threshold, Color col){
-            ((Categorize2ColorLegend) getColorLegend()).addClass(threshold, col);
+            ((Categorize2ColorLegend) getFillColorLegend()).addClass(threshold, col);
         }
 
         /**
@@ -130,7 +130,7 @@ public class CategorizedSolidFillLegend extends SolidFillLegend {
          * @param i
          */
         public void removeClass(int i) {
-            ((Categorize2ColorLegend) getColorLegend()).removeClass(i);
+            ((Categorize2ColorLegend) getFillColorLegend()).removeClass(i);
         }
 
 }

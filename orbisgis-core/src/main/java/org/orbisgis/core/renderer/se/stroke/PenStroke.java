@@ -31,7 +31,6 @@ package org.orbisgis.core.renderer.se.stroke;
 import java.awt.*;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
@@ -44,13 +43,13 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -234,39 +233,21 @@ public final class PenStroke extends Stroke implements FillNode {
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> result = new HashSet<String>();
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
         if (fill != null) {
-            result.addAll(fill.dependsOnFeature());
+            ls.add(fill);
         }
         if (dashOffset != null) {
-            result.addAll(dashOffset.dependsOnFeature());
+            ls.add(dashOffset);
         }
         if (dashArray != null) {
-            result.addAll(dashArray.dependsOnFeature());
+            ls.add(dashArray);
         }
         if (width != null) {
-            result.addAll(width.dependsOnFeature());
+            ls.add(width);
         }
-        return result;
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis result = new UsedAnalysis();
-        if (fill != null) {
-            result.merge(fill.getUsedAnalysis());
-        }
-        if (dashOffset != null) {
-            result.merge(dashOffset.getUsedAnalysis());
-        }
-        if (dashArray != null) {
-            result.merge(dashArray.getUsedAnalysis());
-        }
-        if (width != null) {
-            result.merge(width.getUsedAnalysis());
-        }
-        return result;
+        return ls;
     }
 
     @Override

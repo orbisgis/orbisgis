@@ -28,14 +28,20 @@
  */
 package org.orbisgis.legend.analyzer;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
+import org.orbisgis.core.renderer.se.parameter.ParameterException;
+import org.orbisgis.core.renderer.se.parameter.real.*;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
 import org.orbisgis.legend.analyzer.symbolizers.PointSymbolizerAnalyzer;
+import org.orbisgis.legend.structure.parameter.NumericLegend;
 import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
 
 /**
@@ -67,7 +73,7 @@ public class ProportionalPointTest extends AnalyzerTest {
                 try{
                     ProportionalPoint uvp = new ProportionalPoint(ps);
                     fail();
-                } catch(IllegalArgumentException cce){
+                } catch(ClassCastException cce){
                     assertTrue(true);
                 }
     }
@@ -151,6 +157,62 @@ public class ProportionalPointTest extends AnalyzerTest {
         PointSymbolizer ps = (PointSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
         ProportionalPoint uvp = new ProportionalPoint(ps);
         assertTrue(uvp.getLookupFieldName().equals("PTOT99"));
+    }
 
+    @Test
+    public void testValidateInterpolate() throws Exception {
+        PointSymbolizerAnalyzer psa = new PointSymbolizerAnalyzer(new PointSymbolizer());
+        Interpolate2Real rp = new Interpolate2Real(new RealLiteral(2.0));
+        assertFalse(psa.validateInterpolateForProportionalPoint(rp));
+    }
+
+    @Test
+    public void testValidateInterpolate2() throws Exception {
+        PointSymbolizerAnalyzer psa = new PointSymbolizerAnalyzer(new PointSymbolizer());
+        Interpolate2Real ir = new Interpolate2Real(new RealLiteral(0));
+        InterpolationPoint<RealParameter> ip =new InterpolationPoint<RealParameter>();
+        ip.setData(0);
+        ip.setValue(new RealLiteral(0));
+        ir.addInterpolationPoint(ip);
+        InterpolationPoint<RealParameter> ip2 =new InterpolationPoint<RealParameter>();
+        ip2.setData(1);
+        ip2.setValue(new RealLiteral(1));
+        ir.addInterpolationPoint(ip2);
+        //We must not forget our interpolation function...
+        //It's empty ! Don't forget to fill it later !
+        RealFunction rf = new RealFunction(RealFunction.Operators.SQRT);
+        try{
+            rf.addOperand(new RealAttribute());
+        } catch(ParameterException pe){
+            throw new IllegalStateException("We've just failed at giving"
+                        + "an operand to a log. Something must be going REALLY wrong...", pe);
+        }
+        ir.setLookupValue(rf);
+        assertTrue(psa.validateInterpolateForProportionalPoint(ir));
+    }
+
+    @Test
+    public void testValidateInterpolate3() throws Exception {
+        PointSymbolizerAnalyzer psa = new PointSymbolizerAnalyzer(new PointSymbolizer());
+        Interpolate2Real ir = new Interpolate2Real(new RealLiteral(0));
+        InterpolationPoint<RealParameter> ip =new InterpolationPoint<RealParameter>();
+        ip.setData(0);
+        ip.setValue(new RealLiteral(0));
+        ir.addInterpolationPoint(ip);
+        InterpolationPoint<RealParameter> ip2 =new InterpolationPoint<RealParameter>();
+        ip2.setData(1);
+        ip2.setValue(new RealLiteral(1));
+        ir.addInterpolationPoint(ip2);
+        //We must not forget our interpolation function...
+        //It's empty ! Don't forget to fill it later !
+        RealFunction rf = new RealFunction(RealFunction.Operators.LOG);
+        try{
+            rf.addOperand(new RealAttribute());
+        } catch(ParameterException pe){
+            throw new IllegalStateException("We've just failed at giving"
+                        + "an operand to a log. Something must be going REALLY wrong...", pe);
+        }
+        ir.setLookupValue(rf);
+        assertFalse(psa.validateInterpolateForProportionalPoint(ir));
     }
 }

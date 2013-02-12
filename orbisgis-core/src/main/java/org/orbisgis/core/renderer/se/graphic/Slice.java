@@ -28,12 +28,13 @@
  */
 package org.orbisgis.core.renderer.se.graphic;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import net.opengis.se._2_0.thematic.SliceType;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.FillNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.fill.Fill;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -151,34 +152,17 @@ public class Slice extends AbstractSymbolizerNode implements FillNode {
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                HashSet<String> result = new HashSet<String>();
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
                 if (fill != null) {
-                        result.addAll(fill.dependsOnFeature());
+                        ls.add(fill);
                 }
                 if (value != null) {
-                        result.addAll(value.dependsOnFeature());
+                        ls.add(value);
                 }
                 if (gap != null) {
-                        result.addAll(gap.dependsOnFeature());
+                        ls.add(gap);
                 }
-
-                return result;
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-                UsedAnalysis result = new UsedAnalysis();
-                if (fill != null) {
-                        result.merge(fill.getUsedAnalysis());
-                }
-                if (value != null) {
-                        result.merge(value.getUsedAnalysis());
-                }
-                if (gap != null) {
-                        result.merge(gap.getUsedAnalysis());
-                }
-
-                return result;
+                return ls;
         }
 }

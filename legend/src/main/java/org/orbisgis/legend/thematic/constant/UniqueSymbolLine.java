@@ -32,7 +32,6 @@ import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
@@ -65,15 +64,14 @@ public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUni
     public UniqueSymbolLine() {
         super(new LineSymbolizer());
         Stroke gr = ((LineSymbolizer)getSymbolizer()).getStroke();
-        strokeLegend = (ConstantPenStrokeLegend) new PenStrokeAnalyzer((PenStroke) gr).getLegend();
+        strokeLegend = new ConstantPenStrokeLegend((PenStroke) gr);
     }
 
     /**
      * Build a new {@code UniqueSymbolLine} from the given symbolizer. Note that
-     * {@code symbolizer} must really be a unique symbole. Otherwise, an
-     * {@code IllegalArgumentException} will be thrown.
+     * {@code symbolizer} must really be a unique symbole. Otherwise, you'll face {@code ClassCastException}.
      * @param symbolizer
-     * @throws IllegalArgumentException
+     * @throws ClassCastException
      * If the {@code Stroke} contaiend in {@code symbolizer} can't be recognized
      * as a {@code ConstantPenStrokeLegend}.
      */
@@ -81,13 +79,7 @@ public class UniqueSymbolLine extends ConstantColorAndDashesLine implements IUni
         super(symbolizer);
         Stroke gr = ((LineSymbolizer)getSymbolizer()).getStroke();
         if(gr instanceof PenStroke){
-            LegendStructure mgl = new PenStrokeAnalyzer((PenStroke) gr).getLegend();
-            if(mgl instanceof ConstantPenStrokeLegend){
-                strokeLegend = (ConstantPenStrokeLegend) mgl;
-            }  else {
-                throw new IllegalArgumentException("A unique symbol must be a  "
-                        + "constant.");
-            }
+            strokeLegend = new ConstantPenStrokeLegend((PenStroke) gr);
         }
     }
 

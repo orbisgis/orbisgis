@@ -33,7 +33,9 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.thematic.DensityFillType;
@@ -42,6 +44,7 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
@@ -292,38 +295,6 @@ public final class DensityFill extends Fill implements GraphicNode {
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> ret = new HashSet<String>();
-        if (percentageCovered != null) {
-            ret.addAll(percentageCovered.dependsOnFeature());
-        }
-        if (useHatches()) {
-            if (hatches != null) {
-                ret.addAll(hatches.dependsOnFeature());
-            }
-            if (orientation != null) {
-                ret.addAll(orientation.dependsOnFeature());
-            }
-        } else if (mark != null) {
-            ret.addAll(mark.dependsOnFeature());
-        }
-        return ret;
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-            UsedAnalysis ua = new UsedAnalysis();
-            ua.merge(percentageCovered.getUsedAnalysis());
-            if(useHatches()){
-                    ua.merge(orientation.getUsedAnalysis());
-                    ua.merge(hatches.getUsedAnalysis());
-            } else {
-                    ua.merge(mark.getUsedAnalysis());
-            }
-            return ua;
-    }
-
-    @Override
     public DensityFillType getJAXBType() {
         DensityFillType f = new DensityFillType();
 
@@ -347,6 +318,27 @@ public final class DensityFill extends Fill implements GraphicNode {
         return f;
 
 
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        if (isHatched) {
+            if (hatches != null) {
+                ls.add(hatches);
+            }
+            if (orientation != null) {
+                ls.add(orientation);
+            }
+        } else {
+            if (mark != null) {
+                ls.add(mark);
+            }
+        }
+        if (percentageCovered != null) {
+            ls.add(percentageCovered);
+        }
+        return ls;
     }
 
     @Override

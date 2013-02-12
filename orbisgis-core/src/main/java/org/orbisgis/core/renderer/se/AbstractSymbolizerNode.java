@@ -28,8 +28,10 @@
  */
 package org.orbisgis.core.renderer.se;
 
+import org.orbisgis.core.renderer.se.visitors.ISymbolizerVisitor;
+
 /**
- *
+ * Base of all SymbolizerNodes concrete implementations.
  * @author Alexis Guéganno
  */
 public abstract class AbstractSymbolizerNode implements SymbolizerNode {
@@ -51,6 +53,11 @@ public abstract class AbstractSymbolizerNode implements SymbolizerNode {
                 if(parent != null){
                         parent.update();
                 }
+        }
+
+        @Override
+        public void acceptVisitor(ISymbolizerVisitor visitor){
+                visitor.visitSymbolizerNode(this);
         }
 
 }

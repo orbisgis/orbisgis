@@ -28,25 +28,27 @@
  */
 package org.orbisgis.legend.analyzer;
 
-import org.orbisgis.legend.analyzer.parameter.ColorParameterAnalyzer;
-import org.orbisgis.legend.structure.categorize.Categorize2ColorLegend;
-import org.orbisgis.core.renderer.se.AreaSymbolizer;
-import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.LineSymbolizer;
-import org.orbisgis.core.renderer.se.Style;
+import java.awt.Color;
 import java.io.FileInputStream;
 import javax.xml.bind.JAXBElement;
-import net.opengis.se._2_0.core.StyleType;
 import javax.xml.bind.Unmarshaller;
-import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
-import org.orbisgis.legend.AnalyzerTest;
+import net.opengis.se._2_0.core.StyleType;
+import static org.junit.Assert.*;
 import org.junit.Test;
 import org.orbisgis.core.Services;
+import org.orbisgis.core.renderer.se.AreaSymbolizer;
+import org.orbisgis.core.renderer.se.LineSymbolizer;
+import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
+import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
+import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.legend.AnalyzerTest;
+import org.orbisgis.legend.analyzer.parameter.ColorParameterAnalyzer;
+import org.orbisgis.legend.structure.categorize.Categorize2ColorLegend;
 import org.orbisgis.legend.structure.literal.ColorLiteralLegend;
-import org.orbisgis.legend.structure.recode.Recode2ColorLegend;
-import static org.junit.Assert.*;
+import org.orbisgis.legend.structure.recode.RecodedColor;
 
 /**
  * This tests check that we are able to analyze color nodes properly.
@@ -54,7 +56,6 @@ import static org.junit.Assert.*;
  */
 public class ColorAnalyzerTest extends AnalyzerTest{
 
-        private String xmlRecode = "src/test/resources/org/orbisgis/legend/colorRecode.se";
         private String xmlCategorize = "src/test/resources/org/orbisgis/legend/colorCategorize.se";
 
         @Test
@@ -71,14 +72,14 @@ public class ColorAnalyzerTest extends AnalyzerTest{
                 //We retrieve a Recode from an external file...
                 Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
-                        new FileInputStream(xmlRecode));
+                        new FileInputStream(COLOR_RECODE));
                 Style st = new Style(ftsElem, null);
                 LineSymbolizer ls = (LineSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
                 PenStroke ps = (PenStroke)ls.getStroke();
                 SolidFill sf = (SolidFill) ps.getFill();
                 ColorParameter cp = sf.getColor();
                 ColorParameterAnalyzer cpa = new ColorParameterAnalyzer(cp);
-                assertTrue(cpa.getLegend() instanceof Recode2ColorLegend);
+                assertTrue(cpa.getLegend() instanceof RecodedColor);
         }
 
         @Test
@@ -93,6 +94,103 @@ public class ColorAnalyzerTest extends AnalyzerTest{
                 ColorParameter cp = sf.getColor();
                 ColorParameterAnalyzer cpa = new ColorParameterAnalyzer(cp);
                 assertTrue(cpa.getLegend() instanceof Categorize2ColorLegend);
+        }
+
+        @Test
+        public void testRecodeWrapperGetter() throws Exception{
+                Recode2Color r2 = getRecode2Color();
+                RecodedColor r2d2 = new RecodedColor(r2);
+                assertTrue(r2d2.getKey(0).equals("1"));
+                assertTrue(r2d2.getKey(1).equals("2.5"));
+                assertTrue(r2d2.getItemValue(0).equals(new Color(0x22, 0x33, 0x44)));
+                assertTrue(r2d2.getItemValue(1).equals(new Color(0xAA, 0x17, 0xB4)));
+                assertTrue(r2d2.getItemValue(2).equals(new Color(0xCC, 0x00, 0x99)));
+                assertTrue(r2d2.getItemValue("1").equals(new Color(0x22, 0x33, 0x44)));
+                assertTrue(r2d2.getItemValue("2.5").equals(new Color(0xAA, 0x17, 0xB4)));
+                assertTrue(r2d2.getItemValue("20").equals(new Color(0xCC, 0x00, 0x99)));
+                assertTrue(r2d2.getLookupFieldName().equals("PREC_ALTI"));
+
+        }
+
+        @Test
+        public void testRecodeWrapperSetters() throws Exception {
+                Recode2Color r2 = getRecode2Color();
+                RecodedColor r2d2 = new RecodedColor(r2);
+                r2d2.setKey(0, "youhou ?");
+                r2d2.setKey(1, ":-)");
+                assertTrue(r2d2.getKey(0).equals("youhou ?"));
+                assertTrue(r2d2.getKey(1).equals(":-)"));
+                assertTrue(r2d2.getItemValue(0).equals(new Color(0x22, 0x33, 0x44)));
+                assertTrue(r2d2.getItemValue(1).equals(new Color(0xAA, 0x17, 0xB4)));
+                assertTrue(r2d2.getItemValue(2).equals(new Color(0xCC, 0x00, 0x99)));
+                assertTrue(r2d2.getItemValue("youhou ?").equals(new Color(0x22, 0x33, 0x44)));
+                assertTrue(r2d2.getItemValue(":-)").equals(new Color(0xAA, 0x17, 0xB4)));
+                assertNull(r2d2.getItemValue("0"));
+                assertNull(r2d2.getItemValue("50.0"));
+        }
+
+        @Test
+        public void testRecodeWrapperAddValue() throws Exception {
+                Recode2Color r2 = getRecode2Color();
+                RecodedColor r2d2 = new RecodedColor(r2);
+                r2d2.addItem("1", new Color(0x22, 0x33, 0x45));
+                assertTrue(r2d2.getItemValue(0).equals(new Color(0x22, 0x33, 0x45)));
+                assertTrue(r2d2.getItemValue("1").equals(new Color(0x22, 0x33, 0x45)));
+                assertTrue(r2.getMapItemValue(0).getColor(null).equals(new Color(0x22, 0x33, 0x45)));
+                assertTrue(r2.getMapItemValue("1").getColor(null).equals(new Color(0x22, 0x33, 0x45)));
+                r2d2.addItem("50.0", new Color(0x22, 0x33, 0x46));
+                assertTrue(r2d2.size() == 5);
+                assertTrue(r2.getNumMapItem() == 5);
+                assertTrue(r2d2.getItemValue(4).equals(new Color(0x22, 0x33, 0x46)));
+                assertTrue(r2d2.getItemValue("50.0").equals(new Color(0x22, 0x33, 0x46)));
+                assertTrue(r2.getMapItemValue(4).getColor(null).equals(new Color(0x22, 0x33, 0x46)));
+                assertTrue(r2.getMapItemValue("50.0").getColor(null).equals(new Color(0x22, 0x33, 0x46)));
+
+        }
+
+        @Test
+        public void testColorRecodedFromLiteral() throws Exception {
+                ColorLiteral sl = new ColorLiteral(new Color(0x5,0x5,0x5));
+                RecodedColor rs = new RecodedColor(sl);
+                assertTrue(rs.getParameter() == sl);
+                assertTrue(rs.size()==0);
+                assertTrue(rs.getFallbackValue().equals(new Color(0x5,0x5,0x5)));
+                rs.addItem("r",new Color(0x15,0x15,0x15));
+                assertTrue(rs.getItemValue("r").equals(new Color(0x15,0x15,0x15)));
+                assertTrue(rs.size()==1);
+                assertTrue(rs.getFallbackValue().equals(new Color(0x5,0x5,0x5)));
+                assertFalse(rs.getParameter() == sl);
+        }
+
+        @Test
+        public void testColorLiteralFromRecode() throws Exception{
+                Recode2Color r2 = getRecode2Color();
+                RecodedColor r2d2 = new RecodedColor(r2);
+                assertTrue(r2d2.getFallbackValue().equals(new Color(0x33,0x55,0x66)));
+                assertTrue(r2d2.size() == 4);
+                r2d2.removeItem(0);
+                assertTrue(r2d2.size() == 3);
+                r2d2.removeItem(0);
+                assertTrue(r2d2.size() == 2);
+                r2d2.removeItem(0);
+                assertTrue(r2d2.size() == 1);
+                r2d2.removeItem(0);
+                assertTrue(r2d2.size() == 0);
+                assertTrue(r2d2.getParameter() instanceof ColorLiteral);
+                assertTrue(r2d2.getFallbackValue().equals(new Color(0x33,0x55,0x66)));
+        }
+
+        private Recode2Color getRecode2Color() throws Exception {
+                //We retrieve a Recode from an external file...
+                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
+                JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
+                        new FileInputStream(COLOR_RECODE));
+                Style st = new Style(ftsElem, null);
+                LineSymbolizer ls = (LineSymbolizer) (st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0));
+                PenStroke ps = (PenStroke)ls.getStroke();
+                SolidFill sf = (SolidFill) ps.getFill();
+                return (Recode2Color)sf.getColor();
+
         }
 
 }

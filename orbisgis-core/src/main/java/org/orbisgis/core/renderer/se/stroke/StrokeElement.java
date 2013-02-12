@@ -28,12 +28,13 @@
  */
 package org.orbisgis.core.renderer.se.stroke;
 
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import net.opengis.se._2_0.core.StrokeElementType;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -216,42 +217,21 @@ public final class StrokeElement extends CompoundStrokeElement implements Stroke
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-
-                HashSet<String> result = new HashSet<String>();
-
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
                 if (length != null) {
-                        result.addAll(length.dependsOnFeature());
+                        ls.add(length);
                 }
                 if (preGap != null) {
-                        result.addAll(preGap.dependsOnFeature());
+                        ls.add(preGap);
                 }
                 if (postGap != null) {
-                        result.addAll(postGap.dependsOnFeature());
+                        ls.add(postGap);
                 }
                 if (stroke != null) {
-                        result.addAll(stroke.dependsOnFeature());
+                        ls.add(stroke);
                 }
-
-                return result;
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-                UsedAnalysis result = new UsedAnalysis();
-                if (length != null) {
-                        result.merge(length.getUsedAnalysis());
-                }
-                if (preGap != null) {
-                        result.merge(preGap.getUsedAnalysis());
-                }
-                if (postGap != null) {
-                        result.merge(postGap.getUsedAnalysis());
-                }
-                if (stroke != null) {
-                        result.merge(stroke.getUsedAnalysis());
-                }
-                return result;
+                return ls;
         }
 
         @Override

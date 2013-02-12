@@ -158,23 +158,29 @@ public class Recode2ColorTest {
 
     @Test
     public void testMarshalUnmarshal() throws Exception {
-            String xml = "src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se";
-                Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
-                JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
-                        new FileInputStream(xml));
-                Marshaller m = Services.JAXBCONTEXT.createMarshaller();
-                m.marshal(ftsElem, new FileOutputStream("target/c2routput.se"));
-                Style st = new Style(ftsElem, null);
-                JAXBElement<StyleType> elem = st.getJAXBElement();
-                m.marshal(elem, new FileOutputStream("target/c2routput.se"));
-                //Let's search in the created JAXBElement
-                StyleType stype = elem.getValue();
-                RuleType rt = stype.getRule().get(0);
-                LineSymbolizerType lst = ((LineSymbolizerType)(rt.getSymbolizer().getValue()));
-                SolidFillType sf = ((SolidFillType)((PenStrokeType)lst.getStroke().getValue()).getFill().getValue());
-                JAXBElement je = (JAXBElement) (sf.getColor().getContent().get(0));
-                RecodeType rect = ((RecodeType)(je.getValue()));
-                assertTrue(rect.getMapItem().size() == 4);
+        String xml = "src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se";
+        Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
+        JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(
+                new FileInputStream(xml));
+        Marshaller m = Services.JAXBCONTEXT.createMarshaller();
+        m.marshal(ftsElem, new FileOutputStream("target/c2routput.se"));
+        Style st = new Style(ftsElem, null);
+        JAXBElement<StyleType> elem = st.getJAXBElement();
+        m.marshal(elem, new FileOutputStream("target/c2routput.se"));
+        //Let's search in the created JAXBElement
+        StyleType stype = elem.getValue();
+        RuleType rt = stype.getRule().get(0);
+        LineSymbolizerType lst = ((LineSymbolizerType)(rt.getSymbolizer().getValue()));
+        SolidFillType sf = ((SolidFillType)((PenStrokeType)lst.getStroke().getValue()).getFill().getValue());
+        JAXBElement je = (JAXBElement) (sf.getColor().getContent().get(0));
+        RecodeType rect = ((RecodeType)(je.getValue()));
+        assertTrue(rect.getMapItem().size() == 4);
+    }
+
+    @Test
+    public void testRecodeGetChildren() throws Exception {
+        testAddMapItems();
+        assertTrue(recode.getChildren().size()==4);
     }
 
 }

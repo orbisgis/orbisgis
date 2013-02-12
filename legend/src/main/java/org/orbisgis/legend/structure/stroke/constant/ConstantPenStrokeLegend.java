@@ -28,9 +28,13 @@
  */
 package org.orbisgis.legend.structure.stroke.constant;
 
+import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.structure.fill.constant.ConstantFillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
@@ -41,6 +45,18 @@ import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
  * @author Alexis Guéganno
  */
 public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend implements ConstantPenStroke{
+
+        /**
+         * Build a new instance of {@code ConstantPenStrokeLegend}. Use at your own risk : if ps can't be recognize
+         * as a ConstantPenStrokeLegend, you'll receive runtime exceptions...
+         * @param ps
+         * @throws ClassCastException if some {@code ps} fields can't be recognize as valid parameters for this legend.
+         */
+        public ConstantPenStrokeLegend(PenStroke ps) {
+                super(ps, new RealLiteralLegend((RealLiteral)ps.getWidth()),
+                            new ConstantSolidFillLegend((SolidFill) ps.getFill()),
+                            new StringLiteralLegend((StringLiteral) ps.getDashArray()));
+        }
 
         public ConstantPenStrokeLegend(){
                 super();
@@ -64,7 +80,7 @@ public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend impl
          */
         @Override
         public double getLineWidth() {
-            return ((RealLiteralLegend) getWidthAnalysis()).getDouble();
+            return ((RealLiteralLegend) getLineWidthLegend()).getDouble();
         }
 
         /**
@@ -73,7 +89,7 @@ public class ConstantPenStrokeLegend extends ConstantColorAndDashesPSLegend impl
          */
         @Override
         public void setLineWidth(double width) {
-            ((RealLiteralLegend) getWidthAnalysis()).setDouble(width);
+            ((RealLiteralLegend) getLineWidthLegend()).setDouble(width);
         }
 
         @Override

@@ -35,7 +35,7 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.LineLabelType;
@@ -44,10 +44,10 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.RenderContext;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * A {@code LineLabel} is a text of some kinf associated to a Line (polygon or not).
@@ -243,19 +243,12 @@ public class LineLabel extends Label {
         return ll;
     }
 
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        if (getLabel() != null) {
-            return getLabel().dependsOnFeature();
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if (getLabel() != null) {
+                        ls.add(getLabel());
+                }
+                return ls;
         }
-        return new HashSet<String>();
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        if (getLabel() != null) {
-            return getLabel().getUsedAnalysis();
-        }
-        return new UsedAnalysis();
-    }
 }

@@ -98,9 +98,9 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
         }
 
         @Override
-        public final int addMapItem(String key, RealParameter p) {
+        public final void addMapItem(String key, RealParameter p) {
                 p.setContext(ctx);
-                return super.addMapItem(key, p);
+                super.addMapItem(key, p);
         }
 
         @Override
@@ -110,6 +110,11 @@ public class Recode2Real extends Recode<RealParameter, RealLiteral> implements R
                 if (getFallbackValue() != null) {
                         this.getFallbackValue().setContext(ctx);
                 }
+        }
+
+        @Override
+        public RealLiteral getFallbackValue(){
+                return (RealLiteral) super.getFallbackValue();
         }
 
         @Override

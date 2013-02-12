@@ -32,7 +32,7 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +51,6 @@ import org.orbisgis.core.renderer.se.label.Label;
 import org.orbisgis.core.renderer.se.label.PointLabel;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -202,31 +201,17 @@ public final class TextSymbolizer extends VectorSymbolizer {
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                HashSet<String> ret = new HashSet<String>();
-                
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
                 if(this.getGeometryAttribute()!=null){
-                    ret.addAll(this.getGeometryAttribute().dependsOnFeature());
+                    ls.add(this.getGeometryAttribute());
                 }
-                
                 if (perpendicularOffset != null) {
-                        ret.addAll(perpendicularOffset.dependsOnFeature());
+                        ls.add(perpendicularOffset);
                 }
                 if (label != null) {
-                        ret.addAll(label.dependsOnFeature());
+                        ls.add(label);
                 }
-                return ret;
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-                UsedAnalysis ret = new UsedAnalysis();
-                if (perpendicularOffset != null) {
-                        ret.merge(perpendicularOffset.getUsedAnalysis());
-                }
-                if (label != null) {
-                        ret.merge(label.getUsedAnalysis());
-                }
-                return ret;
+                return ls;
         }
 }

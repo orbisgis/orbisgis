@@ -28,30 +28,12 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.Insets;
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
-import java.net.URL;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.event.ChangeListener;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.WellKnownName;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.analyzer.FillAnalyzer;
-import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
@@ -59,14 +41,21 @@ import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantFormPoint;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.components.JNumericSpinner;
 import org.orbisgis.sif.common.ContainerItemProperties;
+import org.orbisgis.sif.components.JNumericSpinner;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.swing.*;
+import javax.swing.event.ChangeListener;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
+import java.net.URL;
 
 /**
  *
@@ -102,15 +91,13 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
                         if(cps instanceof ConstantPenStrokeLegend ){
                                 setPenStrokeMemory((ConstantPenStrokeLegend) cps);
                         } else {
-                                PenStrokeAnalyzer psa = new PenStrokeAnalyzer(new PenStroke());
-                                setPenStrokeMemory((ConstantPenStrokeLegend) psa.getLegend());
+                                setPenStrokeMemory(new ConstantPenStrokeLegend(new PenStroke()));
                         }
                         ConstantSolidFill csf = uniquePoint.getFillLegend();
                         if(csf instanceof ConstantSolidFillLegend){
                                 setSolidFillMemory((ConstantSolidFillLegend) csf);
                         } else {
-                                FillAnalyzer fa = new FillAnalyzer(new SolidFill());
-                                setSolidFillMemory((ConstantSolidFillLegend) fa.getLegend());
+                                setSolidFillMemory(new ConstantSolidFillLegend(new SolidFill()));
                         }
                         initPreview();
                         this.initializeLegendFields();
@@ -218,7 +205,7 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
         /**
          * Builds the UI block used to configure the fill color of the
          * symbolizer.
-         * @param fillLegend
+         * @param point
          * @param title
          * @return
          */
@@ -365,7 +352,6 @@ public class PnlUniquePointSE extends PnlUniqueAreaSE {
 
         /**
          * ComboBox to configure the unit of measure used to draw th stroke.
-         * @param pt
          * @return
          */
         protected JComboBox getPointUomCombo(){

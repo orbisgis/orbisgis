@@ -36,9 +36,7 @@ import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealFunction;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
 import org.orbisgis.legend.structure.interpolation.SqrtInterpolationLegend;
-import org.orbisgis.legend.structure.parameter.NumericLegend;
 
 /**
  * The representation of a monovariate proportional symbol, that has been
@@ -78,7 +76,6 @@ public class MonovariateProportionalViewBox extends DefaultViewBox {
                 ip2.setData(1);
                 ip2.setValue(new RealLiteral(1));
                 ir.addInterpolationPoint(ip2);
-                setHeightLegend((NumericLegend)new RealParameterAnalyzer(ir).getLegend());
                 //We must not forget our interpolation function...
                 //It's empty ! Don't forget to fill it later !
                 RealFunction rf = new RealFunction(RealFunction.Operators.SQRT);
@@ -86,13 +83,12 @@ public class MonovariateProportionalViewBox extends DefaultViewBox {
                         rf.addOperand(new RealAttribute());
                 } catch(ParameterException pe){
                         throw new IllegalStateException("We've just failed at giving"
-                                + "an operand to a log. Somthing must goes REALLY"
-                                + "wrong...", pe);
+                                + "an operand to a log. Something must be going REALLY wrong...", pe);
                 }
                 ir.setLookupValue(rf);
                 //We set the height
                 vb.setHeight(ir);
-                setHeightLegend((NumericLegend)new RealParameterAnalyzer(ir).getLegend());
+            setHeightLegend(new SqrtInterpolationLegend(ir));
         }
 
         /**

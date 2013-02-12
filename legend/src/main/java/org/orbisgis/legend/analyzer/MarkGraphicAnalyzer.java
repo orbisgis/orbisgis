@@ -66,7 +66,7 @@ public class MarkGraphicAnalyzer extends AbstractAnalyzer {
 
     private LegendStructure analyzeMarkGraphic(MarkGraphic mark){
         //We will analyze each of the four important parameters (the stroke,
-        //the fill, the wellknown name and the viewbox) to determine what can be
+        //the fill, the well known name and the viewbox) to determine what can be
         //this MarkGraphic.
         //The fill.
         FillLegend fillLeg = null;
@@ -114,9 +114,8 @@ public class MarkGraphicAnalyzer extends AbstractAnalyzer {
                     DefaultViewBox vbl, ConstantSolidFillLegend fillLeg,
                     ConstantPenStrokeLegend strokeLeg){
         if(vbl == null || vbl instanceof ConstantViewBox){
-            return new ConstantWKNLegend(mark, (StringLiteralLegend) wknLegend,
-                    (ConstantViewBox) vbl, (ConstantSolidFillLegend) fillLeg,
-                    (ConstantPenStrokeLegend) strokeLeg);
+            return new ConstantWKNLegend(mark, wknLegend,
+                    (ConstantViewBox) vbl, fillLeg, strokeLeg);
         } else if(vbl instanceof MonovariateProportionalViewBox) {
             return new ProportionalWKNLegend(mark, wknLegend,
                     (MonovariateProportionalViewBox) vbl, fillLeg, strokeLeg);

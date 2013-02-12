@@ -85,11 +85,11 @@ public class NullPenStrokeLegend implements ConstantPenStroke {
     public void setLineOpacity(double tr) {}
 
     @Override
-    public Uom getUom() {
+    public Uom getStrokeUom() {
         return Uom.PX;
     }
 
     @Override
-    public void setUom(Uom u){}
+    public void setStrokeUom(Uom u){}
 
 }

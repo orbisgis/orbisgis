@@ -30,9 +30,10 @@ package org.orbisgis.legend.thematic.constant;
 
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.analyzer.FillAnalyzer;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.thematic.ConstantStrokeArea;
@@ -67,7 +68,7 @@ public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbo
         super();
         AreaSymbolizer symbolizer = (AreaSymbolizer) getSymbolizer();
         Fill fill = symbolizer.getFill();
-        fillLegend = (ConstantSolidFill) new FillAnalyzer(fill).getLegend();
+        fillLegend = new ConstantSolidFillLegend((SolidFill)fill);
     }
 
     /**
@@ -80,15 +81,7 @@ public class UniqueSymbolArea extends ConstantStrokeArea implements IUniqueSymbo
         //If we're here, we have a constant stroke : it is either null or an instance
         //of ConstantPenStrokeLegend. Let's analyze the Fill.
         Fill fill = symbolizer.getFill();
-        LegendStructure fillLgd = new FillAnalyzer(fill).getLegend();
-        if(fillLgd instanceof ConstantSolidFill){
-            fillLegend = (ConstantSolidFill) fillLgd;
-        } else {
-            throw new IllegalArgumentException("The fill of this AreaSymbolizer "
-                    + "can't be recognized as constant.");
-        }
-        //If we're here, we have a constant stroke and a constant fill. If we
-        //can't manage the input Symbolizer, an exception has been thrown.
+        fillLegend = fill == null ? new NullSolidFillLegend() : new ConstantSolidFillLegend((SolidFill)fill);
     }
 
     /**

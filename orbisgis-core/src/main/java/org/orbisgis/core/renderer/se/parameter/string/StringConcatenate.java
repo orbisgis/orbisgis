@@ -37,10 +37,10 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * Implementation of the {@code Concatenate} SE function. This function takes at
@@ -115,15 +115,6 @@ public class StringConcatenate extends AbstractSymbolizerNode implements SeParam
 
         @Override
         public void setRestrictionTo(String[] list) {
-        }
-
-        @Override
-        public HashSet<String> dependsOnFeature() {
-                HashSet<String> sb = new HashSet<String>();
-                for(StringParameter sp :inputStrings){
-                        sb.addAll(sp.dependsOnFeature());
-                }
-                return sb;
         }
 
         @Override
@@ -250,13 +241,10 @@ public class StringConcatenate extends AbstractSymbolizerNode implements SeParam
         }
 
         @Override
-        public UsedAnalysis getUsedAnalysis() {
-                UsedAnalysis ua = new UsedAnalysis();
-                ua.include(this);
-                for(StringParameter sp : inputStrings){
-                        ua.merge(sp.getUsedAnalysis());
-                }
-                return ua;
+        public List<SymbolizerNode> getChildren() {
+            List<SymbolizerNode> ls =new ArrayList<SymbolizerNode>();
+            ls.addAll(inputStrings);
+            return ls;
         }
 
 }

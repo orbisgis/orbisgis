@@ -60,6 +60,7 @@ import org.orbisgis.core.renderer.se.graphic.ViewBox;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
 
 /**
  * An {@code OnlineResource} is used to keep a reference to an graphic resource
@@ -183,7 +184,9 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
         double height = rawImage.getHeight();
 
         if (viewBox != null && mt != null && viewBox.usable()) {
-            if (map == null && !viewBox.dependsOnFeature().isEmpty()) {
+            FeaturesVisitor fv = new FeaturesVisitor();
+            viewBox.acceptVisitor(fv);
+            if (map == null && !fv.getResult().isEmpty()) {
                 throw new ParameterException("View box depends on feature"); // TODO I18n 
             }
 
@@ -233,7 +236,9 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
             }
 
             if (viewBox != null && mt != null && viewBox.usable()) {
-                if (map == null && !viewBox.dependsOnFeature().isEmpty()) {
+                FeaturesVisitor fv = new FeaturesVisitor();
+                viewBox.acceptVisitor(fv);
+                if (map == null && !fv.getResult().isEmpty()) {
                     throw new ParameterException("View box depends on feature"); // TODO I18n
                 }
 
@@ -351,7 +356,9 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
             BufferedImage img;
 
             if (viewBox != null && mt != null && viewBox.usable()) {
-                if (map == null && !viewBox.dependsOnFeature().isEmpty()) {
+                FeaturesVisitor fv = new FeaturesVisitor();
+                viewBox.acceptVisitor(fv);
+                if (map == null && !fv.getResult().isEmpty()) {
                     throw new ParameterException("View box depends on feature"); // TODO I18n
                 }
 
@@ -409,7 +416,9 @@ public class OnlineResource implements ExternalGraphicSource, MarkGraphicSource 
 
 
         if (viewBox != null && mt != null && viewBox.usable()) {
-            if (map == null && !viewBox.dependsOnFeature().isEmpty()) {
+            FeaturesVisitor fv = new FeaturesVisitor();
+            viewBox.acceptVisitor(fv);
+            if (map == null && !fv.getResult().isEmpty()) {
                 throw new ParameterException("View box depends on feature"); // TODO I18n
             }
 

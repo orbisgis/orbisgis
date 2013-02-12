@@ -34,7 +34,6 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
 import org.orbisgis.legend.structure.stroke.ProportionalStrokeLegend;
 import org.orbisgis.legend.thematic.ConstantColorAndDashesLine;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
@@ -67,16 +66,8 @@ public class ProportionalLine extends ConstantColorAndDashesLine implements Lege
      */
     public ProportionalLine(LineSymbolizer symbolizer) {
         super(symbolizer);
+        strokeLegend = new ProportionalStrokeLegend((PenStroke) symbolizer.getStroke());
         Stroke gr = ((LineSymbolizer)getSymbolizer()).getStroke();
-        if(gr instanceof PenStroke){
-            LegendStructure mgl = new PenStrokeAnalyzer((PenStroke) gr).getLegend();
-            if(mgl instanceof ProportionalStrokeLegend){
-                strokeLegend = (ProportionalStrokeLegend) mgl;
-            }  else {
-                throw new IllegalArgumentException("A unique symbol must be a  "
-                        + "constant.");
-            }
-        }
     }
 
     /**

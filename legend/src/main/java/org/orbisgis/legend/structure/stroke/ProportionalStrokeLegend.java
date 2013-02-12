@@ -28,16 +28,20 @@
  */
 package org.orbisgis.legend.structure.stroke;
 
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.InterpolationPoint;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
 import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
+import org.orbisgis.legend.structure.fill.constant.ConstantFillLegend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.interpolation.LinearInterpolationLegend;
+import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 import org.orbisgis.legend.structure.parameter.NumericLegend;
 
 /**
@@ -66,8 +70,20 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
                 ir.addInterpolationPoint(ip2);
                 ir.setLookupValue(new RealAttribute());
                 ps.setWidth(ir);
-                NumericLegend wa = (NumericLegend) new RealParameterAnalyzer(ir).getLegend();
-                setWidthAnalysis(wa);
+                NumericLegend wa = new LinearInterpolationLegend(ir);
+                setLineWidthLegend(wa);
+        }
+
+        /**
+         * Builds a {@code ProportionalStrokeLegend} from the given {@code PenStroke}. We suppose the given parameter has
+         * been validated. Otherwise, we will receive {@code ClassCastException} during initialization.
+         * @param penStroke
+         */
+        public ProportionalStrokeLegend(PenStroke penStroke){
+            super(penStroke,
+                        new LinearInterpolationLegend((Interpolate2Real)penStroke.getWidth()),
+                        new ConstantSolidFillLegend((SolidFill) penStroke.getFill()),
+                        penStroke.getDashArray() == null ? null : new StringLiteralLegend((StringLiteral) penStroke.getDashArray()));
         }
 
         /**
@@ -76,7 +92,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @param penStroke
          */
         public ProportionalStrokeLegend(PenStroke penStroke, LinearInterpolationLegend width,
-                    LegendStructure fill, LegendStructure dashes) {
+                    ConstantFillLegend fill, LegendStructure dashes) {
                 super(penStroke, width, fill, dashes);
         }
 
@@ -85,7 +101,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @return
          */
         public double getFirstData() {
-            return ((LinearInterpolationLegend)getWidthAnalysis()).getFirstData();
+            return ((LinearInterpolationLegend)getLineWidthLegend()).getFirstData();
         }
 
         /**
@@ -93,7 +109,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @return
          */
         public double getSecondData() {
-            return ((LinearInterpolationLegend)getWidthAnalysis()).getSecondData();
+            return ((LinearInterpolationLegend)getLineWidthLegend()).getSecondData();
         }
 
         /**
@@ -101,7 +117,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @param d
          */
         public void setFirstData(double d) {
-            ((LinearInterpolationLegend)getWidthAnalysis()).setFirstData(d);
+            ((LinearInterpolationLegend)getLineWidthLegend()).setFirstData(d);
         }
 
         /**
@@ -109,7 +125,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @param d
          */
         public void setSecondData(double d){
-            ((LinearInterpolationLegend)getWidthAnalysis()).setSecondData(d);
+            ((LinearInterpolationLegend)getLineWidthLegend()).setSecondData(d);
         }
 
         /**
@@ -119,7 +135,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @return
          */
         public double getFirstValue() throws ParameterException {
-            return ((LinearInterpolationLegend)getWidthAnalysis()).getFirstValue();
+            return ((LinearInterpolationLegend)getLineWidthLegend()).getFirstValue();
         }
 
         /**
@@ -127,7 +143,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @param d
          */
         public void setFirstValue(double d) {
-            ((LinearInterpolationLegend)getWidthAnalysis()).setFirstValue(d);
+            ((LinearInterpolationLegend)getLineWidthLegend()).setFirstValue(d);
         }
         
         /**
@@ -137,7 +153,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @return
          */
         public double getSecondValue() throws ParameterException {
-            return ((LinearInterpolationLegend)getWidthAnalysis()).getSecondValue();
+            return ((LinearInterpolationLegend)getLineWidthLegend()).getSecondValue();
         }
 
         /**
@@ -145,7 +161,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @param d 
          */
         public void setSecondValue(double d) {
-            ((LinearInterpolationLegend)getWidthAnalysis()).setSecondValue(d);
+            ((LinearInterpolationLegend)getLineWidthLegend()).setSecondValue(d);
         }
 
         /**
@@ -153,7 +169,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @param name
          */
         public void setLookupFieldName(String name) {
-                ((LinearInterpolationLegend)getWidthAnalysis()).setLookupFieldName(name);
+                ((LinearInterpolationLegend)getLineWidthLegend()).setLookupFieldName(name);
         }
 
         /**
@@ -161,7 +177,7 @@ public class ProportionalStrokeLegend extends ConstantColorAndDashesPSLegend {
          * @return
          */
         public String getLookupFieldName() {
-                return ((LinearInterpolationLegend)getWidthAnalysis()).getLookupFieldName();
+                return ((LinearInterpolationLegend)getLineWidthLegend()).getLookupFieldName();
         }
         
 }
