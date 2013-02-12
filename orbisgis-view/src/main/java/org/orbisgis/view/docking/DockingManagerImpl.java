@@ -39,6 +39,8 @@ import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import bibliothek.gui.dock.common.menu.CLookAndFeelMenuPiece;
 import bibliothek.gui.dock.common.menu.SingleCDockableListMenuPiece;
 import bibliothek.gui.dock.facile.menu.RootMenuPiece;
+import bibliothek.gui.dock.toolbar.CToolbarContentArea;
+import bibliothek.gui.dock.toolbar.location.CToolbarAreaLocation;
 import bibliothek.gui.dock.util.PropertyKey;
 import bibliothek.util.PathCombiner;
 import bibliothek.util.xml.XElement;
@@ -53,10 +55,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import org.apache.log4j.Logger;
 import org.orbisgis.sif.common.MenuCommonFunctions;
+import org.orbisgis.view.components.actions.ActionTools;
 import org.orbisgis.view.docking.internals.ApplicationRessourceDecorator;
 import org.orbisgis.view.docking.internals.CustomMultipleCDockable;
 import org.orbisgis.view.docking.internals.CustomPanelHolder;
@@ -82,20 +86,20 @@ public final class DockingManagerImpl implements DockingManager {
         private SingleCDockableListMenuPiece dockableMenuTracker;
         private static final I18n I18N = I18nFactory.getI18n(DockingManagerImpl.class);
         private static final Logger LOGGER = Logger.getLogger(DockingManagerImpl.class);
-        File dockingState=null;
+        private File dockingState=null;
         private static final boolean DOCKING_STATE_XML = true;
         private CControl commonControl; /*!< link to the docking-frames */
         //Docking Area (DockingFrames feature named WorkingArea)
         private Map<String,DockingArea> dockingAreas = new HashMap<String,DockingArea>();
-	/** the available preferences for docking frames */
+	    /** the available preferences for docking frames */
         private PreferenceTreeModel preferences;
         private DockingPanelTracker singleFrameTracker;
-
-	/**
-	 * Creates the new manager
-	 * @param owner the window used as parent for all dialogs
-	 */
-	public DockingManagerImpl( JFrame owner,BundleContext context){
+        private CToolbarContentArea area;
+        /**
+         * Creates the new manager
+         * @param owner the window used as parent for all dialogs
+         */
+	    public DockingManagerImpl( JFrame owner,BundleContext context){
                 this.owner = owner;
                 commonControl = new CControl(owner);
                 commonControl.addControlListener(new DockingListener());
@@ -105,13 +109,15 @@ public final class DockingManagerImpl implements DockingManager {
                 commonControl.setPreferenceModel(preferences);
 
                 //DEFAULT property of a view
-		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, I18N.tr("Docked Window") );
-		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_ICON, OrbisGISIcon.getIcon("mini_orbisgis") );
+                commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, I18N.tr("Docked Window") );
+                commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_ICON, OrbisGISIcon.getIcon("mini_orbisgis") );
                 //StackDockStation will contain all instances of ReservedDockStation
-                owner.add(commonControl.getContentArea());
+                area = new CToolbarContentArea( commonControl, "base" );
+                commonControl.addStationContainer( area );
+                owner.add(area);
                 singleFrameTracker = new DockingPanelTracker(context, this);
                 singleFrameTracker.open();
-	}
+	    }
         /**
          * @return the managed frame
          */
@@ -359,6 +365,28 @@ public final class DockingManagerImpl implements DockingManager {
             commonControl.addDockable(dockItem);
             return dockItem.getUniqueId();
 	}
+
+        @Override
+        public String addToolbarItem(Action action) {
+                String id = ActionTools.getMenuId(action);
+                if(id==null || commonControl.getSingleDockable(id)!=null) {
+                        // Create a unique ID
+                        int inc=1;
+                        id = "action-"+inc;
+                        while(commonControl.getSingleDockable(id)!=null) {
+                                inc++;
+                        }
+                        action.putValue(ActionTools.MENU_ID,id);
+                }
+                CToolbarAreaLocation location = new CToolbarAreaLocation( area.getEastToolbar() );
+                return id;
+        }
+
+        @Override
+        public boolean removeToolbarItem(Action action) {
+
+        }
+
         /**
          * When a dockable is added, this listener
          * read the OrbisGIS DockingPanelParameters of the panel

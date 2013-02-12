@@ -28,6 +28,7 @@
  */
 package org.orbisgis.core.plugin;
 
+import org.apache.log4j.Logger;
 import org.gdms.sql.function.Function;
 import org.gdms.sql.function.FunctionManager;
 import org.osgi.framework.BundleContext;
@@ -42,6 +43,7 @@ import org.osgi.util.tracker.ServiceTracker;
 public class FunctionTracker extends ServiceTracker<Function, String> {
     private FunctionManager functionManager;
     private BundleContext bundleContext;
+    private static final Logger LOGGER = Logger.getLogger(FunctionTracker.class);
     
     /**
      * 
@@ -64,7 +66,14 @@ public class FunctionTracker extends ServiceTracker<Function, String> {
     public String addingService(ServiceReference<Function> ref)
     {
         Function newSqlFunction = bundleContext.getService(ref);
-        return functionManager.addFunction(newSqlFunction.getClass());
+        String name = "";
+        // If the error is not catch then all other Functions services are skipped.
+        try {
+                name = functionManager.addFunction(newSqlFunction.getClass());
+        } catch (IllegalArgumentException ex) {
+                LOGGER.error(ex.getLocalizedMessage(),ex);
+        }
+        return name;
     }
 
     /**
