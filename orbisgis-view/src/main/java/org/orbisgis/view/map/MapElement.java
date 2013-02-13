@@ -48,6 +48,7 @@ import org.orbisgis.core.layerModel.MapContextListener;
 import org.orbisgis.core.layerModel.SelectionEvent;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
+import org.orbisgis.view.edition.AbstractEditableElement;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.toc.Toc;
@@ -58,7 +59,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * MapElement is an editable document that contains a Map Context.
  * @note The source code, functionality is mainly provided by GeocognitionMapContext
  */
-public final class MapElement extends EditableElement {
+public final class MapElement extends AbstractEditableElement {
         public static final String EDITABLE_TYPE = "MapContext";
         private static final Logger LOGGER = Logger.getLogger("gui."+MapElement.class);
 	private static final I18n I18N = I18nFactory.getI18n(MapElement.class);

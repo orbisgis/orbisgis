@@ -42,7 +42,7 @@ import org.gdms.source.SourceRemovalEvent;
 import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.view.edition.AbstractEditableElement;
 import org.orbisgis.view.edition.EditableElementException;
 
 /**
@@ -50,7 +50,7 @@ import org.orbisgis.view.edition.EditableElementException;
  * 
  * Open/Close , open and close the DataSource
  */
-public class EditableSource extends EditableElement {
+public class EditableSource extends AbstractEditableElement {
 
 	public static final String EDITABLE_RESOURCE_TYPE = "EditableSource";
 

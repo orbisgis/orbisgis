@@ -26,27 +26,19 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.toc.ext;
+package org.orbisgis.view.sqlconsole.ui.ext;
 
-import org.orbisgis.view.components.actions.DefaultAction;
-
-import javax.swing.*;
-import java.awt.event.ActionListener;
+import javax.swing.JTextArea;
 
 /**
- * Action shown on style items
+ * OrbisGIS plugin have access to this interface.
+ * Do not break backward compatibility.
  * @author Nicolas Fortin
  */
-public class StyleAction extends DefaultAction {
-    protected TocExt toc;
-
-    public StyleAction(TocExt toc, String actionId, String actionLabel, String actionToolTip, Icon icon, ActionListener actionListener, KeyStroke keyStroke) {
-        super(actionId, actionLabel, actionToolTip, icon, actionListener, keyStroke);
-        this.toc = toc;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return toc.isStyleSelection() && super.isEnabled();
-    }
+public interface SQLConsoleEditor {
+    /**
+     * Give access to the editor in the console.
+     * @return Component instance
+     */
+    JTextArea getTextArea();
 }
