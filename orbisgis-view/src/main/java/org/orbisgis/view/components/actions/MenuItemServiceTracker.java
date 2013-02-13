@@ -8,13 +8,12 @@ import org.osgi.framework.ServiceReference;
 import org.osgi.util.tracker.ServiceTracker;
 
 /**
- * Register action to an ActionCommands
+ * Register action to an ActionHolder
  * @author Nicolas Fortin
  */
-//MenuItemServiceTracker<TargetComponent,ActionService extends MenuTrackerAction<TargetComponent>> extends ServiceTracker<ActionService,ActionService> {
 public class MenuItemServiceTracker<TargetComponent,ActionService extends ActionFactoryService<TargetComponent>> extends ServiceTracker<ActionService,MenuTrackerAction<TargetComponent>> {
         private static enum ACTION_EVT { ADDED, MODIFIED, REMOVED}
-        private ActionCommands ac;
+        private ActionsHolder ah;
         private BundleContext bc;
         private TargetComponent targetInstance;
         private static final Logger LOGGER = Logger.getLogger(MenuItemServiceTracker.class);
@@ -22,11 +21,11 @@ public class MenuItemServiceTracker<TargetComponent,ActionService extends Action
         /**
          * @param context Bundle context
          * @param serviceInterface The interface.class of the tracked service
-         * @param actionCommands Where to put Tracked actions.
+         * @param actionHolder Where to put Tracked actions.
          */
-        public MenuItemServiceTracker(BundleContext context,Class<ActionService> serviceInterface,ActionCommands actionCommands, TargetComponent targetInstance) {
+        public MenuItemServiceTracker(BundleContext context,Class<ActionService> serviceInterface,ActionsHolder actionHolder, TargetComponent targetInstance) {
                 super(context,serviceInterface,null);
-                ac = actionCommands;
+                ah = actionHolder;
                 bc = context;
                 this.targetInstance = targetInstance;
         }
@@ -81,9 +80,7 @@ public class MenuItemServiceTracker<TargetComponent,ActionService extends Action
                         return generatedActions;
                 }
                 private void removeService() {
-                        for(Action action : generatedActions.getActions()) {
-                                ac.removeAction(action);
-                        }
+                        ah.removeActions(generatedActions.getActions());
                         generatedActions.getActionFactory().disposeActions(targetInstance,generatedActions.getActions());
                 }
                 @Override
@@ -97,9 +94,7 @@ public class MenuItemServiceTracker<TargetComponent,ActionService extends Action
                                 case ADDED:
                                         ActionService service = bc.getService(reference);
                                         generatedActions = new MenuTrackerAction<TargetComponent>(service,service.createActions(targetInstance));
-                                        for(Action action : generatedActions.getActions()) {
-                                                ac.addAction(action);
-                                        }
+                                        ah.addActions(generatedActions.getActions());
                                         break;
                         }
                 }

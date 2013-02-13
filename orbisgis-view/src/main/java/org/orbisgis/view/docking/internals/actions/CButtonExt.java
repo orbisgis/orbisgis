@@ -16,7 +16,6 @@ public class CButtonExt extends CButton implements CActionHolder {
 
     public CButtonExt(Action action) {
         this.action = action;
-        this.action = action;
         // Read properties from the action
         onActionPropertyChange(new PropertyChangeEvent(action,null,null,null));
         // Listen to action property changes

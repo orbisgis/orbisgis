@@ -60,12 +60,13 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import org.apache.log4j.Logger;
 import org.orbisgis.view.components.actions.ActionTools;
+import org.orbisgis.view.components.actions.ActionsHolder;
 import org.orbisgis.view.docking.internals.*;
+import org.orbisgis.view.docking.internals.actions.ToolBarItem;
 import org.orbisgis.view.docking.preferences.OrbisGISPreferenceTreeModel;
 import org.orbisgis.view.docking.preferences.editors.UserInformationEditor;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.util.MenuCommonFunctions;
-import org.osgi.framework.BundleContext;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 /**
@@ -73,7 +74,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * 
  * This manager can save and load emplacement of views in XML.
  */
-public final class DockingManagerImpl implements DockingManager {        
+public final class DockingManagerImpl implements DockingManager, ActionsHolder {
 
         private JFrame owner;
         private SingleCDockableListMenuPiece dockableMenuTracker;
@@ -86,13 +87,12 @@ public final class DockingManagerImpl implements DockingManager {
         private Map<String,DockingArea> dockingAreas = new HashMap<String,DockingArea>();
 	    /** the available preferences for docking frames */
         private PreferenceTreeModel preferences;
-        private DockingPanelTracker singleFrameTracker;
         private CToolbarContentArea area;
         /**
          * Creates the new manager
          * @param owner the window used as parent for all dialogs
          */
-	    public DockingManagerImpl( JFrame owner,BundleContext context){
+	    public DockingManagerImpl( JFrame owner){
                 this.owner = owner;
                 commonControl = new CControl(owner);
                 commonControl.addControlListener(new DockingListener());
@@ -108,8 +108,6 @@ public final class DockingManagerImpl implements DockingManager {
                 area = new CToolbarContentArea( commonControl, "base" );
                 commonControl.addStationContainer( area );
                 owner.add(area);
-                singleFrameTracker = new DockingPanelTracker(context, this);
-                singleFrameTracker.open();
 	    }
         /**
          * @return the managed frame
@@ -249,8 +247,6 @@ public final class DockingManagerImpl implements DockingManager {
          */
         @Override
         public void dispose() {
-            saveLayout();
-            singleFrameTracker.close();
             commonControl.destroy();
         }
 
@@ -360,6 +356,30 @@ public final class DockingManagerImpl implements DockingManager {
 	}
 
         @Override
+        public void addAction(Action action) {
+                addToolbarItem(action);
+        }
+
+        @Override
+        public void addActions(List<Action> newActions) {
+                for(Action action : newActions) {
+                        addToolbarItem(action);
+                }
+        }
+
+        @Override
+        public boolean removeAction(Action action) {
+                return removeToolbarItem(action);
+        }
+
+        @Override
+        public void removeActions(List<Action> actionList) {
+                for(Action action : actionList) {
+                        removeToolbarItem(action);
+                }
+        }
+
+        @Override
         public String addToolbarItem(Action action) {
                 String id = ActionTools.getMenuId(action);
                 if(id==null || commonControl.getSingleDockable(id)!=null) {
@@ -369,14 +389,26 @@ public final class DockingManagerImpl implements DockingManager {
                         while(commonControl.getSingleDockable(id)!=null) {
                                 inc++;
                         }
+                        String oldId="";
+                        if(ActionTools.getMenuId(action)!=null) {
+                                oldId = ActionTools.getMenuId(action);
+                        }
+                        LOGGER.warn(I18N.tr("ToolBar item {0} is not unique, it has been renamed to {1}",oldId,id));
                         action.putValue(ActionTools.MENU_ID,id);
                 }
                 CToolbarAreaLocation location = new CToolbarAreaLocation( area.getEastToolbar() );
+                ToolBarItem toolbar = new ToolBarItem(id,action);
+                commonControl.addDockable(toolbar);
+                toolbar.setVisible(true);
                 return id;
         }
 
         @Override
         public boolean removeToolbarItem(Action action) {
+                String id = ActionTools.getMenuId(action);
+                if(id!=null) {
+                        return commonControl.removeSingleDockable(id);
+                }
                 return false;
         }
 
