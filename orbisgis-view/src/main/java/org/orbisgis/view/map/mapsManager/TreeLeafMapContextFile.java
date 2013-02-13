@@ -46,10 +46,10 @@ import org.orbisgis.core.layerModel.OwsMapContext;
 import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
+import org.orbisgis.view.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -127,7 +127,7 @@ public final class TreeLeafMapContextFile extends TreeLeafMapElement implements 
                         folderRemove.addActionListener(
                         EventHandler.create(ActionListener.class,
                         this, "onDeleteFile"));
-                        MenuCommonFunctions.updateOrInsertMenuItem(menu,folderRemove);
+                        MenuCommonFunctions.updateOrInsertMenuItem(menu, folderRemove);
                 }
         }       
 

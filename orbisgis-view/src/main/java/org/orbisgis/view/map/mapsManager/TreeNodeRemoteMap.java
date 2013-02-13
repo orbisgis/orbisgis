@@ -43,7 +43,6 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.core.renderer.se.common.Description;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeLeaf;
 import org.orbisgis.view.components.fstree.DragTreeNode;
@@ -56,6 +55,7 @@ import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.map.TransferableMap;
 import org.orbisgis.view.map.mapsManager.jobs.DeleteRemoteMapContext;
 import org.orbisgis.view.map.mapsManager.jobs.UploadMapContext;
+import org.orbisgis.view.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -161,6 +161,6 @@ public class TreeNodeRemoteMap extends AbstractTreeNodeLeaf implements TreeNodeC
                 remove.addActionListener(
                 EventHandler.create(ActionListener.class,
                 this, "onDeleteMap"));
-                MenuCommonFunctions.updateOrInsertMenuItem(menu,remove);
+                MenuCommonFunctions.updateOrInsertMenuItem(menu, remove);
         }
 }
