@@ -86,4 +86,10 @@ abstract trait RecodedLegend extends ParameterLegend {
     val te : TypeEvent = new TypeEvent(this)
     listeners foreach (_.typeChanged(te))
   }
+
+  /**
+   * Accepts the given visitor.
+   * @param visitor A visitor for RecodedLegend instances.
+   */
+  def acceptVisitor(visitor: RecodedParameterVisitor) : Unit = visitor.visit(this)
 }
