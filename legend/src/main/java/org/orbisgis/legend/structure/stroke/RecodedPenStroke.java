@@ -81,6 +81,10 @@ public class RecodedPenStroke implements LegendStructure {
                 this.dashLegend = dashLegend;
         }
 
+        /**
+         * Gets the inner {@link RecodedSolidFillLegend}.
+         * @return the inner {@link RecodedSolidFillLegend}.
+         */
         public final RecodedSolidFillLegend getFillLegend() {
                 return fillLegend;
         }
@@ -93,7 +97,17 @@ public class RecodedPenStroke implements LegendStructure {
          *     will generate the appropriate default {@link SolidFill} as described in Symbology Encoding. We explicitly
          *     set it because it's safer and easier to manage in the upper layers.
          * </p>
-         * @param fill
+         * <p>
+         *     The type of {@code fill} can be :
+         *     <ul><li>null</li>
+         *     <li>{@link RecodedSolidFillLegend}</li>
+         *     <li>{@link ConstantSolidFillLegend}</li>
+         *     <li>{@link NullSolidFillLegend}</li>
+         *     </ul>
+         * </p>
+         * @param fill The original {@link FillLegend}. It will be transformed to a {@code RecodedSolidFillLegend} if
+         *             needed.
+         * @throws IllegalArgumentException If the type of {@code fill}is not accepted.
          */
         public final void setFillLegend(FillLegend fill) {
                 if(fill instanceof  RecodedSolidFillLegend) {
@@ -142,7 +156,7 @@ public class RecodedPenStroke implements LegendStructure {
         /**
          * Sets the LegendStructure used to describe the dash patterns in this
          * {@code PenStroke}.
-         * @param dash
+         * @param dash  The new dash configuration.
          */
         public final void setDashLegend(RecodedString dash) {
             this.dashLegend = dash;
