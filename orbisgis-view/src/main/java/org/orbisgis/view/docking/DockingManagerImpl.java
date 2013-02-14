@@ -40,13 +40,19 @@ import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import bibliothek.gui.dock.common.menu.CLookAndFeelMenuPiece;
 import bibliothek.gui.dock.common.menu.SingleCDockableListMenuPiece;
 import bibliothek.gui.dock.facile.menu.RootMenuPiece;
+import bibliothek.gui.dock.themes.ThemeManager;
 import bibliothek.gui.dock.toolbar.CToolbarContentArea;
 import bibliothek.gui.dock.toolbar.location.CToolbarAreaLocation;
 import bibliothek.gui.dock.toolbar.location.CToolbarLocation;
+import bibliothek.gui.dock.util.BackgroundComponent;
+import bibliothek.gui.dock.util.BackgroundPaint;
+import bibliothek.gui.dock.util.PaintableComponent;
 import bibliothek.gui.dock.util.PropertyKey;
 import bibliothek.util.PathCombiner;
 import bibliothek.util.xml.XElement;
 import bibliothek.util.xml.XIO;
+
+import java.awt.*;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
@@ -54,9 +60,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.*;
-import javax.swing.Action;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
+import java.util.List;
+import javax.swing.*;
+
 import org.apache.log4j.Logger;
 import org.orbisgis.view.components.actions.ActionTools;
 import org.orbisgis.view.components.actions.ActionsHolder;
@@ -107,7 +113,8 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
                 //DEFAULT property of a view
                 // commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, I18N.tr("Docked Window") );
                 commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_ICON, OrbisGISIcon.getIcon("mini_orbisgis") );
-                //StackDockStation will contain all instances of ReservedDockStation
+                commonControl.getController().getThemeManager().setBackgroundPaint(ThemeManager.BACKGROUND_PAINT + ".station.toolbar.container",new ToolBarBackGround());
+                        //StackDockStation will contain all instances of ReservedDockStation
                 area = new CToolbarContentArea( commonControl, "base" );
                 commonControl.addStationContainer( area );
                 owner.add(area);
@@ -530,5 +537,27 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
                         
                 }
                 
+        }
+
+        private static class ToolBarBackGround implements BackgroundPaint {
+                private Color backgroundColor = Color.LIGHT_GRAY;
+                @Override
+                public void install(BackgroundComponent backgroundComponent) {
+                        backgroundColor = UIManager.getColor("Button.background");
+                }
+
+                @Override
+                public void uninstall(BackgroundComponent backgroundComponent) {
+                        //ignore
+                }
+
+                @Override
+                public void paint(BackgroundComponent backgroundComponent, PaintableComponent paintable, Graphics g) {
+                        paintable.paintBackground( null );
+                        g.setColor( backgroundColor );
+                        int w = paintable.getComponent().getWidth();
+                        int h = paintable.getComponent().getHeight();
+                        g.fillRect(0, 0, w, h);
+                }
         }
 }
