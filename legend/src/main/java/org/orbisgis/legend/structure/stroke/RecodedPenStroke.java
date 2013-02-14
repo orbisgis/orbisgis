@@ -81,7 +81,7 @@ public class RecodedPenStroke implements LegendStructure {
                 this.dashLegend = dashLegend;
         }
 
-        public final FillLegend getFillLegend() {
+        public final RecodedSolidFillLegend getFillLegend() {
                 return fillLegend;
         }
 
