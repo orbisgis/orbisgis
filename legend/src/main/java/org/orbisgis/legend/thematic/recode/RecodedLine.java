@@ -81,7 +81,7 @@ public class RecodedLine extends SymbolizerLegend implements StrokeUom {
          * @return
          */
         public RecodedReal getLineOpacity(){
-                return (RecodedReal) ((RecodedSolidFillLegend)ps.getFillLegend()).getFillOpacityLegend();
+                return (RecodedReal) ps.getFillLegend().getFillOpacityLegend();
         }
 
         /**
@@ -89,7 +89,7 @@ public class RecodedLine extends SymbolizerLegend implements StrokeUom {
          * @return
          */
         public RecodedColor getLineColor(){
-                return (RecodedColor) ((RecodedSolidFillLegend)ps.getFillLegend()).getFillColorLegend();
+                return (RecodedColor) ps.getFillLegend().getFillColorLegend();
         }
 
         /**
@@ -97,7 +97,7 @@ public class RecodedLine extends SymbolizerLegend implements StrokeUom {
          * @return
          */
         public RecodedString getLineDash() {
-                return (RecodedString) ps.getDashLegend();
+                return ps.getDashLegend();
         }
 
         @Override
