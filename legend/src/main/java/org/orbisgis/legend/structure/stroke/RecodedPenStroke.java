@@ -42,6 +42,8 @@ import org.orbisgis.legend.structure.parameter.NumericLegend;
 import org.orbisgis.legend.structure.recode.RecodedReal;
 import org.orbisgis.legend.structure.recode.RecodedString;
 
+import java.awt.*;
+
 /**
  * Represents {@code PenStroke} instances that just contain {@code Recode}
  * instances. These {@code Recode} must be linked to the same field and must
@@ -51,7 +53,7 @@ import org.orbisgis.legend.structure.recode.RecodedString;
 public class RecodedPenStroke implements LegendStructure {
 
         private PenStroke stroke;
-        private FillLegend fillLegend;
+        private RecodedSolidFillLegend fillLegend;
         private RecodedReal widthLegend;
         private RecodedString dashLegend;
 
@@ -62,7 +64,8 @@ public class RecodedPenStroke implements LegendStructure {
          */
         public RecodedPenStroke(PenStroke stroke){
             this.stroke = stroke;
-            this.fillLegend = new RecodedSolidFillLegend((SolidFill) stroke.getFill());
+            SolidFill sf = (SolidFill) stroke.getFill();
+            this.fillLegend = new RecodedSolidFillLegend( sf == null ?  new SolidFill(Color.BLACK,1.0) : sf);
             this.widthLegend = new RecodedReal(stroke.getWidth());
             StringParameter sp = stroke.getDashArray();
             this.dashLegend = sp == null ? null : new RecodedString(sp);
@@ -84,21 +87,29 @@ public class RecodedPenStroke implements LegendStructure {
 
         /**
          * Sets the {@code LegendStructure} that describes the fill associated to
-         * the inner {@code PenStroke}.
+         * the inner {@code PenStroke}.</p>
+         * <p>
+         *     Even if you pass null as an input, you'll get a suitable {@code Fill} in your symbology tree. This method
+         *     will generate the appropriate default {@link SolidFill} as described in Symbology Encoding. We explicitly
+         *     set it because it's safer and easier to manage in the upper layers.
+         * </p>
          * @param fill
          */
         public final void setFillLegend(FillLegend fill) {
-                if(fill instanceof ConstantSolidFillLegend || fill instanceof RecodedSolidFillLegend){
-                        this.fillLegend = fill;
-                        stroke.setFill(fill.getFill());
+                if(fill instanceof  RecodedSolidFillLegend) {
+                    this.fillLegend = (RecodedSolidFillLegend) fill;
+                } else if(fill instanceof ConstantSolidFillLegend){
+                    this.fillLegend = new RecodedSolidFillLegend((SolidFill) fill.getFill());
                 } else if(fill == null || fill instanceof NullSolidFillLegend){
-                        fillLegend = new NullSolidFillLegend();
-                        stroke.setFill(null);
+                    //We must generate the expected value for SE.
+                    SolidFill sf = new SolidFill(Color.BLACK,1.0);
+                    fillLegend = new RecodedSolidFillLegend(sf);
                 } else {
                         throw new IllegalArgumentException("Can't set the fill legend to something"
                                 + "that is neither a ConstantSolidFillLegend nor"
                                 + "a RecodedSolidFillLegend.");
                 }
+                stroke.setFill(fillLegend.getFill());
         }
 
         /**

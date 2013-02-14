@@ -32,10 +32,14 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
+import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.recode.RecodedReal;
 import org.orbisgis.legend.structure.recode.RecodedString;
@@ -77,8 +81,8 @@ public class RecodedPenStrokeTest extends AnalyzerTest {
         PenStroke ps = getPenStroke();
         RecodedPenStroke rps = new RecodedPenStroke(ps);
         rps.setFillLegend(null);
-        assertTrue(ps.getFill() == null);
-        assertTrue(rps.getFillLegend() instanceof NullSolidFillLegend);
+        assertTrue(ps.getFill() instanceof SolidFill);
+        assertTrue(rps.getFillLegend() instanceof RecodedSolidFillLegend);
     }
 
     @Test
@@ -86,8 +90,8 @@ public class RecodedPenStrokeTest extends AnalyzerTest {
         PenStroke ps = getPenStroke();
         RecodedPenStroke rps = new RecodedPenStroke(ps);
         rps.setFillLegend(new NullSolidFillLegend());
-        assertTrue(ps.getFill() == null);
-        assertTrue(rps.getFillLegend() instanceof NullSolidFillLegend);
+        assertTrue(ps.getFill() instanceof SolidFill);
+        assertTrue(rps.getFillLegend() instanceof RecodedSolidFillLegend);
     }
 
     private PenStroke getPenStroke() throws Exception{
