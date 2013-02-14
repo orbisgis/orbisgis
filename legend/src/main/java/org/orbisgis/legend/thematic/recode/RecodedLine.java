@@ -42,7 +42,7 @@ import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
 
 /**
- * Wrapper for lines made of a {@code PenStroke} where paramters are made of
+ * Wrapper for lines made of a {@code PenStroke} where parameters are made of
  * {@code Recode} instances on a common field or of {@code Literal}.
  * @author Alexis Guéganno
  */
@@ -66,11 +66,6 @@ public class RecodedLine extends SymbolizerLegend implements StrokeUom {
             } else {
                 throw new UnsupportedOperationException("Can't build a RecodedLine with such a Stroke: "+p.getClass().getName());
             }
-        }
-
-        public RecodedLine(LineSymbolizer ls, RecodedPenStroke ps){
-                this.ls = ls;
-                this.ps = ps;
         }
 
         /**
