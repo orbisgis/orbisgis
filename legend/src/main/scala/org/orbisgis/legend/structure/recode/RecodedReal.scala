@@ -49,7 +49,7 @@ class RecodedReal extends AbstractAttributeLegend with RecodedLegend with Numeri
   def getParameter : RealParameter = parameter
 
   /**
-   * Sets paramter to s
+   * Sets parameter to s
    * @param s
    * @throws IllegalArgumentException if s is neither a Recode2String nor a StringLiteral
    */

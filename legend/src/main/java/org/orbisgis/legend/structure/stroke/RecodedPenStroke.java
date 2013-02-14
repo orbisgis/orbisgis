@@ -28,6 +28,7 @@
  */
 package org.orbisgis.legend.structure.stroke;
 
+import org.apache.log4j.NDC;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
@@ -99,18 +100,22 @@ public class RecodedPenStroke implements LegendStructure {
                 }
         }
 
+        /**
+         * Gets the legend that describe the width of the inner {@link PenStroke}.
+         * @return The legend that describe the width of the inner {@link PenStroke}.
+         */
         public final NumericLegend getWidthLegend() {
                 return widthLegend;
         }
 
-        public final void setWidthLegend(NumericLegend width) {
-                if(width instanceof RecodedReal){
-                        this.widthLegend = (RecodedReal) width;
-                        stroke.setWidth((RealParameter)width.getParameter());
-                } else {
-                        throw new IllegalArgumentException("Can't set the width legend to something"
-                                + "that is not embeddable in a Recoded2Real");
-                }
+        /**
+         * Sets the legend describing the behaviour of the PenStroke's width to {@code width}. The width of the inner
+         * {@link PenStroke} is changed accordingly.
+         * @param width The new description of the width.
+         */
+        public final void setWidthLegend(RecodedReal width) {
+                this.widthLegend = width;
+                stroke.setWidth(width.getParameter());
         }
 
         /**
@@ -130,7 +135,5 @@ public class RecodedPenStroke implements LegendStructure {
         public final void setDashLegend(LegendStructure dash) {
                 this.dashLegend = dash;
         }
-
-
 
 }
