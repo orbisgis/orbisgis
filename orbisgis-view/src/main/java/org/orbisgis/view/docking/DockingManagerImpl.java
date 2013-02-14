@@ -51,10 +51,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -176,6 +173,21 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
                         LOGGER.error(I18N.tr("Unable to load the docking layout."), ex);
                         commonControl.readXML(backup);
                 }
+                // Check that non closable frame are shown
+                for(DockingPanel panel : getPanels()) {
+                        DockingPanelParameters params = panel.getDockingParameters();
+                        if(!params.isCloseable() && !params.isVisible()) {
+                                params.setVisible(true);
+                        }
+                }
+                // Check that all toolbars are visible
+                for(ToolBarItem item : getToolBarItems()) {
+                        if(!item.isVisible()) {
+                                // Reset location
+                                setLocation(item);
+                                item.setVisible(true);
+                        }
+                }
         }
 
         private void writeXML() throws IOException {
@@ -271,12 +283,27 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
          * @return 
          */
         private List<CustomPanelHolder> getPanelDecorator() {
-                List<CustomPanelHolder> activePanel = new ArrayList<CustomPanelHolder>();
+                List<CustomPanelHolder> activePanel = new LinkedList<CustomPanelHolder>();
                 int count = commonControl.getCDockableCount();
                 for(int i=0; i<count; i++) {
-                        activePanel.add(((CustomPanelHolder)commonControl.getCDockable(i)));
+                        CDockable dockable = commonControl.getCDockable(i);
+                        if(dockable instanceof CustomPanelHolder) {
+                                activePanel.add(((CustomPanelHolder)dockable));
+                        }
                 }
                 return activePanel;                
+        }
+
+        private List<ToolBarItem> getToolBarItems() {
+                List<ToolBarItem> toolBarItemList = new LinkedList<ToolBarItem>();
+                int count = commonControl.getCDockableCount();
+                for(int i=0; i<count; i++) {
+                        CDockable dockable = commonControl.getCDockable(i);
+                        if(dockable instanceof ToolBarItem) {
+                                toolBarItemList.add((ToolBarItem)dockable);
+                        }
+                }
+                return toolBarItemList;
         }
         /**
          * Get the current opened panels
@@ -362,7 +389,12 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
 
         @Override
         public void addActions(List<Action> newActions) {
+                // A set of toolbar without GroupId are updated to use the same group id.
+                String defaultLogicalId = "group-"+commonControl.getCDockableCount();
                 for(Action action : newActions) {
+                        if(ActionTools.getLogicalGroup(action).isEmpty()) {
+                                action.putValue(ActionTools.LOGICAL_GROUP,defaultLogicalId);
+                        }
                         addToolbarItem(action);
                 }
         }
@@ -396,13 +428,55 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
                         LOGGER.warn(I18N.tr("ToolBar item {0} is not unique, it has been renamed to {1}",oldId,id));
                         action.putValue(ActionTools.MENU_ID,id);
                 }
-                CToolbarAreaLocation location = new CToolbarAreaLocation( area.getEastToolbar() );
                 ToolBarItem toolbar = new ToolBarItem(id,action);
                 commonControl.addDockable(toolbar);
+                try {
+                        setLocation(toolbar);
+                } catch (RuntimeException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(),ex);
+                }
                 toolbar.setVisible(true);
                 return id;
         }
 
+        /**
+         * Find the most appropriate Location by reading group and insert instruction in Action properties.
+         * @param toolbar New ToolBarItem, must be already registered in the CControl
+         */
+        private void setLocation(ToolBarItem toolbar) {
+                Action action = toolbar.getAction();
+                // Default location is north
+                CToolbarAreaLocation location = new CToolbarAreaLocation(area.getNorthToolbar());
+                toolbar.setLocation(location);
+                // Read actions properties
+                String actionId = ActionTools.getMenuId(action);
+                String insertAfter = ActionTools.getInsertAfterMenuId(action);
+                String insertBefore = ActionTools.getInsertBeforeMenuId(action);
+                String logicalGroup = ActionTools.getLogicalGroup(action);
+                // Read other toolbars properties
+                for(ToolBarItem toolBarItem : getToolBarItems()) {
+                        // If this is not the same object instance
+                        if(toolBarItem!=toolbar) {
+                                Action activeAction = toolBarItem.getAction();
+                                String activeId = ActionTools.getMenuId(activeAction);
+                                String activeLogicalGroup = ActionTools.getLogicalGroup(activeAction);
+                                String activeInsertAfter = ActionTools.getInsertAfterMenuId(activeAction);
+                                String activeInsertBefore = ActionTools.getInsertBeforeMenuId(activeAction);
+                                if((!insertAfter.isEmpty() && insertAfter.equals(activeId)) ||
+                                        (!logicalGroup.isEmpty() && activeLogicalGroup.equals(logicalGroup)) ||
+                                        (!activeInsertBefore.isEmpty() && activeInsertBefore.equals(actionId))
+                                        ) {
+                                        toolbar.setLocationsAside(toolBarItem);
+                                        break;
+                                } else if((!insertBefore.isEmpty() && insertBefore.equals(activeId)) ||
+                                        (!activeInsertAfter.isEmpty() && activeInsertAfter.equals(actionId))) {
+                                        toolbar.setLocationsAside(toolBarItem);
+                                        toolBarItem.setLocationsAside(toolbar);
+                                        break;
+                                }
+                        }
+                }
+        }
         @Override
         public boolean removeToolbarItem(Action action) {
                 String id = ActionTools.getMenuId(action);
@@ -424,6 +498,8 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
                         if(dockable instanceof CustomPanelHolder && dockable instanceof DefaultCDockable) {
                                 CustomPanelHolder dockItem = (CustomPanelHolder)dockable;
                                 OrbisGISView.setListeners(dockItem.getDockingPanel(), (DefaultCDockable)dockable);
+                        } else if(dockable instanceof ToolBarItem) {
+                                // Known dockable
                         } else {
                                 LOGGER.error("Unknown dockable, not an OrbisGIS approved component.");
                         }
