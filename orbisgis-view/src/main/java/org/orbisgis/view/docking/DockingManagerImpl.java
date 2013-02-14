@@ -31,6 +31,7 @@ package org.orbisgis.view.docking;
 import bibliothek.extension.gui.dock.preference.PreferenceTreeDialog;
 import bibliothek.extension.gui.dock.preference.PreferenceTreeModel;
 import bibliothek.gui.dock.common.CControl;
+import bibliothek.gui.dock.common.CLocation;
 import bibliothek.gui.dock.common.MultipleCDockableFactory;
 import bibliothek.gui.dock.common.SingleCDockable;
 import bibliothek.gui.dock.common.event.CControlListener;
@@ -41,6 +42,7 @@ import bibliothek.gui.dock.common.menu.SingleCDockableListMenuPiece;
 import bibliothek.gui.dock.facile.menu.RootMenuPiece;
 import bibliothek.gui.dock.toolbar.CToolbarContentArea;
 import bibliothek.gui.dock.toolbar.location.CToolbarAreaLocation;
+import bibliothek.gui.dock.toolbar.location.CToolbarLocation;
 import bibliothek.gui.dock.util.PropertyKey;
 import bibliothek.util.PathCombiner;
 import bibliothek.util.xml.XElement;
@@ -85,6 +87,10 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
 	    /** the available preferences for docking frames */
         private PreferenceTreeModel preferences;
         private CToolbarContentArea area;
+        // Map of ToolBarItem location by their LogicalGroupId
+        // Key: Logical Value: Last set location
+        // private Map<String,CLocation> lastToolBarLocation = new HashMap<String, CLocation>();
+
         /**
          * Creates the new manager
          * @param owner the window used as parent for all dialogs
@@ -99,7 +105,7 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
                 commonControl.setPreferenceModel(preferences);
 
                 //DEFAULT property of a view
-                commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, I18N.tr("Docked Window") );
+                // commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, I18N.tr("Docked Window") );
                 commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_ICON, OrbisGISIcon.getIcon("mini_orbisgis") );
                 //StackDockStation will contain all instances of ReservedDockStation
                 area = new CToolbarContentArea( commonControl, "base" );
@@ -181,11 +187,15 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
                         }
                 }
                 // Check that all toolbars are visible
+                CToolbarLocation defaultLocation = area.getNorthToolbar().getStationLocation().group(0).toolbar(0,0);
+                int itemId = 0;
                 for(ToolBarItem item : getToolBarItems()) {
                         if(!item.isVisible()) {
                                 // Reset location
-                                setLocation(item);
+                                setLocation(item,defaultLocation.item(itemId++));
                                 item.setVisible(true);
+                                // Reset style
+                                item.setResizeRequest(ToolBarItem.TOOLBAR_ITEM_SIZE, true);
                         }
                 }
         }
@@ -389,13 +399,12 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
 
         @Override
         public void addActions(List<Action> newActions) {
-                // A set of toolbar without GroupId are updated to use the same group id.
-                String defaultLogicalId = "group-"+commonControl.getCDockableCount();
+                // A set of toolbar items, on the same group by default
+                CToolbarAreaLocation location = area.getNorthToolbar().getStationLocation();
+                CToolbarLocation defaultLocation = location.group(0).toolbar(0,0);
+                int itemId = 0;
                 for(Action action : newActions) {
-                        if(ActionTools.getLogicalGroup(action).isEmpty()) {
-                                action.putValue(ActionTools.LOGICAL_GROUP,defaultLogicalId);
-                        }
-                        addToolbarItem(action);
+                        addToolbarItem(action,defaultLocation.item(itemId++));
                 }
         }
 
@@ -410,9 +419,11 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
                         removeToolbarItem(action);
                 }
         }
-
         @Override
         public String addToolbarItem(Action action) {
+                return addToolbarItem(action,new CToolbarAreaLocation(area.getNorthToolbar()));
+        }
+        public String addToolbarItem(Action action, CLocation defaultLocation) {
                 String id = ActionTools.getMenuId(action);
                 if(id==null || commonControl.getSingleDockable(id)!=null) {
                         // Create a unique ID
@@ -431,7 +442,7 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
                 ToolBarItem toolbar = new ToolBarItem(id,action);
                 commonControl.addDockable(toolbar);
                 try {
-                        setLocation(toolbar);
+                        setLocation(toolbar,defaultLocation);
                 } catch (RuntimeException ex) {
                         LOGGER.error(ex.getLocalizedMessage(),ex);
                 }
@@ -443,11 +454,10 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
          * Find the most appropriate Location by reading group and insert instruction in Action properties.
          * @param toolbar New ToolBarItem, must be already registered in the CControl
          */
-        private void setLocation(ToolBarItem toolbar) {
+        private void setLocation(ToolBarItem toolbar, CLocation defaultLocation) {
                 Action action = toolbar.getAction();
                 // Default location is north
-                CToolbarAreaLocation location = new CToolbarAreaLocation(area.getNorthToolbar());
-                toolbar.setLocation(location);
+                toolbar.setLocation(defaultLocation);
                 // Read actions properties
                 String actionId = ActionTools.getMenuId(action);
                 String insertAfter = ActionTools.getInsertAfterMenuId(action);

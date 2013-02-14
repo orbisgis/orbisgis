@@ -30,8 +30,11 @@
 package org.orbisgis.view.docking.internals.actions;
 
 
-import javax.swing.Action;
+import javax.swing.*;
+
 import bibliothek.gui.dock.toolbar.CToolbarItem;
+
+import java.awt.*;
 
 /**
  * Dockable Tool Bar, related only with a swing Action instance.
@@ -39,6 +42,7 @@ import bibliothek.gui.dock.toolbar.CToolbarItem;
  */
 public class ToolBarItem extends CToolbarItem implements CActionHolder {
         private Action action;
+        public static final Dimension TOOLBAR_ITEM_SIZE = new Dimension(24,24);
 
         public ToolBarItem(String id, Action action) {
                 super(id);
