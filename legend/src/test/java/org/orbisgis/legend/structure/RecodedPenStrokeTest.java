@@ -33,11 +33,15 @@ import org.junit.Test;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
+import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.recode.RecodedReal;
+import org.orbisgis.legend.structure.recode.RecodedString;
 import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -47,18 +51,48 @@ public class RecodedPenStrokeTest extends AnalyzerTest {
 
     @Test
     public void testSetWidthLegendLiteral() throws Exception {
-        RecodedPenStroke rps = getRecodedPenStroke();
+        RecodedPenStroke rps = new RecodedPenStroke(getPenStroke());
         RecodedReal rll = new RecodedReal(new RealLiteral(4));
         rps.setWidthLegend(rll);
         assertTrue(rps.getWidthLegend() == rll);
     }
 
+    @Test
+    public void testGetDashLegend() throws Exception {
+        RecodedPenStroke rps = new RecodedPenStroke(getPenStroke());
+        assertNull(rps.getDashLegend());
+    }
 
+    @Test
+    public void testSetDashLegend() throws Exception {
+        PenStroke ps = getPenStroke();
+        RecodedPenStroke rps = new RecodedPenStroke(ps);
+        assertNull(rps.getDashLegend());
+        rps.setDashLegend(new RecodedString(new StringLiteral("sss")));
+        assertTrue(ps.getDashArray() == rps.getDashLegend().getParameter());
+    }
 
-    private RecodedPenStroke getRecodedPenStroke() throws Exception{
+    @Test
+    public void testSetNullFill() throws Exception {
+        PenStroke ps = getPenStroke();
+        RecodedPenStroke rps = new RecodedPenStroke(ps);
+        rps.setFillLegend(null);
+        assertTrue(ps.getFill() == null);
+        assertTrue(rps.getFillLegend() instanceof NullSolidFillLegend);
+    }
+
+    @Test
+    public void testSetNullSolidFill() throws Exception {
+        PenStroke ps = getPenStroke();
+        RecodedPenStroke rps = new RecodedPenStroke(ps);
+        rps.setFillLegend(new NullSolidFillLegend());
+        assertTrue(ps.getFill() == null);
+        assertTrue(rps.getFillLegend() instanceof NullSolidFillLegend);
+    }
+
+    private PenStroke getPenStroke() throws Exception{
         Style s = getStyle(COLOR_RECODE);
         LineSymbolizer ls = (LineSymbolizer) s.getRules().get(0).getCompositeSymbolizer().getChildren().get(0);
-        PenStroke ps = (PenStroke) ls.getStroke();
-        return new RecodedPenStroke(ps);
+        return (PenStroke) ls.getStroke();
     }
 }

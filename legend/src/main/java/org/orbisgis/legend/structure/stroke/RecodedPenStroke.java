@@ -53,7 +53,7 @@ public class RecodedPenStroke implements LegendStructure {
         private PenStroke stroke;
         private FillLegend fillLegend;
         private RecodedReal widthLegend;
-        private LegendStructure dashLegend;
+        private RecodedString dashLegend;
 
         /**
          * Builds a {@link RecodedPenStroke} from the given stroke. You must be sure that the given parameter is valid.
@@ -71,7 +71,7 @@ public class RecodedPenStroke implements LegendStructure {
         public RecodedPenStroke(PenStroke stroke,
                         RecodedSolidFillLegend fillLegend,
                         RecodedReal widthLegend,
-                        LegendStructure dashLegend) {
+                        RecodedString dashLegend) {
                 this.stroke = stroke;
                 this.fillLegend = fillLegend;
                 this.widthLegend = widthLegend;
@@ -92,6 +92,7 @@ public class RecodedPenStroke implements LegendStructure {
                         this.fillLegend = fill;
                         stroke.setFill(fill.getFill());
                 } else if(fill == null || fill instanceof NullSolidFillLegend){
+                        fillLegend = new NullSolidFillLegend();
                         stroke.setFill(null);
                 } else {
                         throw new IllegalArgumentException("Can't set the fill legend to something"
@@ -123,7 +124,7 @@ public class RecodedPenStroke implements LegendStructure {
          * in this PenStroke.
          * @return
          */
-        public final LegendStructure getDashLegend() {
+        public final RecodedString getDashLegend() {
                 return dashLegend;
         }
 
@@ -132,8 +133,13 @@ public class RecodedPenStroke implements LegendStructure {
          * {@code PenStroke}.
          * @param dash
          */
-        public final void setDashLegend(LegendStructure dash) {
-                this.dashLegend = dash;
+        public final void setDashLegend(RecodedString dash) {
+            this.dashLegend = dash;
+            if(dash == null){
+                stroke.setDashArray(null);
+            } else {
+                stroke.setDashArray(dash.getParameter());
+            }
         }
 
 }
