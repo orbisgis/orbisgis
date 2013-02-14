@@ -37,6 +37,13 @@ import org.orbisgis.legend.structure.recode.`type`.TypeEvent
 import org.orbisgis.legend.structure.recode.`type`.TypeListener
 import scala.collection.mutable.ArrayBuffer
 
+/**
+ * This trait intends to provide some useful methods for the representation of parameters included in unique value
+ * classifications. We can retrieve the {@link ValueReference} used to get data from the input source, change the field
+ * on which the analysis is made. Finally, we can add listeners that will be notified when the type of the inner
+ * parameter changes.
+ * @author Alexis
+ */
 abstract trait RecodedLegend extends ParameterLegend {
 
   var field : String = ""
@@ -57,7 +64,7 @@ abstract trait RecodedLegend extends ParameterLegend {
 
   /**
    * Sets the field used to make the analysis
-   * @param s
+   * @param s The new field name.
    */
   def setField(s : String) = {
     field = s
@@ -66,8 +73,15 @@ abstract trait RecodedLegend extends ParameterLegend {
     }
   }
 
+  /**
+   * Adds a listener that will be notified when {@link fireTypeChanged} is called.
+   * @param l The listener that will be added.
+   */
   def addListener(l : TypeListener) : Unit = listeners += l
 
+  /**
+   * Notifies that the actual type of the inner {@code SeParameter} has changed.
+   */
   def fireTypeChanged() : Unit = {
     val te : TypeEvent = new TypeEvent(this)
     listeners foreach (_.typeChanged(te))
