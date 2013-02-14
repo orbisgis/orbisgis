@@ -31,9 +31,13 @@ package org.orbisgis.legend.thematic;
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
+import org.orbisgis.legend.structure.recode.RecodedColor;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
+
+import java.awt.*;
 
 import static org.junit.Assert.assertTrue;
 
@@ -45,10 +49,35 @@ public class RecodedLineTest extends AnalyzerTest {
     @Test
     public void testGetFillOpacity() throws Exception{
         LineSymbolizer ls = getLineSymbolizer();
+        RecodedLine  rl = new RecodedLine(ls);
+        assertTrue(rl.getLineOpacity().getFallbackValue() == 1.0);
+    }
+
+    @Test
+    public void testGetOpacitySetNullFill() throws Exception{
+        LineSymbolizer ls = getLineSymbolizer();
         PenStroke ps = (PenStroke) ls.getStroke();
         ps.setFill(null);
         RecodedLine  rl = new RecodedLine(ls);
         assertTrue(rl.getLineOpacity().getFallbackValue() == 1.0);
+    }
+
+    @Test
+    public void testGetColor() throws Exception {
+        LineSymbolizer lineSymbolizer = getLineSymbolizer();
+        PenStroke ps = (PenStroke) lineSymbolizer.getStroke();
+        RecodedLine rl = new RecodedLine(lineSymbolizer);
+        RecodedColor rc = rl.getLineColor();
+        assertTrue(rc.getParameter() == ((SolidFill)ps.getFill()).getColor());
+    }
+
+    @Test
+    public void testGetColorSetNullFill() throws Exception {
+        LineSymbolizer lineSymbolizer = getLineSymbolizer();
+        PenStroke ps = (PenStroke) lineSymbolizer.getStroke();
+        ps.setFill(null);
+        RecodedLine rl = new RecodedLine(lineSymbolizer);
+        assertTrue(rl.getLineColor().getFallbackValue().equals(Color.BLACK));
     }
 
     private LineSymbolizer getLineSymbolizer() throws Exception{
