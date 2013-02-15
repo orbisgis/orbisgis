@@ -506,8 +506,8 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
 
         /**
          * Recreate all CAction and put them in already shown ToolBarItems.
-         * Remove toolbars
-         * @param actions
+         * Remove toolbars that hold action not provided and add toolbars.
+         * @param actions Actions to show in toolbars
          */
         private void resetToolBarsCActions(List<Action> actions) {
             // Create root CAction, the size of rootActions might be smaller than actions
@@ -517,14 +517,14 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
             // Create Map of newly generated CActions in order to optimize updates checks.
             // Key: Action Menu ID
             Map<String,CAction> actionMap = new HashMap<String, CAction>(rootActions.size());
-            Set<String> generatedId = new HashSet(actionMap.keySet());
             for(CAction action : rootActions) {
                 if(action instanceof CActionHolder) {
                     actionMap.put(ActionTools.getMenuId(((CActionHolder)action).getAction()),action);
                 } else {
-                    LOGGER.warn("Generated CAction must implements CActionHolder interface");
+                    // Ignore Menu Separator
                 }
             }
+            Set<String> generatedId = new HashSet(actionMap.keySet());
             // Update and remove toolbars
             for(ToolBarItem item : getToolBarItems()) {
                 String shownRootMenuId = ActionTools.getMenuId(item.getAction());
