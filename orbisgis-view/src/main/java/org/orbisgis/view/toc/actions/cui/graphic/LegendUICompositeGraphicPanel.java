@@ -108,14 +108,6 @@ public class LegendUICompositeGraphicPanel extends LegendUIComponent {
 
         currentGraphic = -1;
 
-        int i;
-        for (i = 0; i < gc.getNumGraphics(); i++) {
-            Graphic graphic = gc.getGraphic(i);
-            LegendUIComponent gPanel = getCompForGraphic(graphic);
-            graphics.add(gPanel);
-            model.addElement(graphic);
-        }
-
         list = new JList(model);
         list.setCellRenderer(new CellRenderer());
         list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -124,6 +116,14 @@ public class LegendUICompositeGraphicPanel extends LegendUIComponent {
         btnAdd = new JButton(OrbisGISIcon.getIcon("add"));
         btnDown = new JButton(OrbisGISIcon.getIcon("go-down"));
         btnUp = new JButton(OrbisGISIcon.getIcon("go-up"));
+
+        int i;
+        for (i = 0; i < gc.getNumGraphics(); i++) {
+            Graphic graphic = gc.getGraphic(i);
+            LegendUIComponent gPanel = getCompForGraphic(graphic);
+            graphics.add(gPanel);
+            model.addElement(graphic);
+        }
 
 
         btnRm.setMargin(new Insets(0, 0, 0, 0));
