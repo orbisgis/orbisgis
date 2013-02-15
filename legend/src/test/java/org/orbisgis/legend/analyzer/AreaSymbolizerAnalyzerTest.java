@@ -142,7 +142,7 @@ public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
     @Test
     public void testConstantDefaultConstructor() throws Exception {
         UniqueSymbolArea usa = new UniqueSymbolArea();
-        assertTrue(usa.getLineWidth() == 0.1);
+        assertTrue(usa.getLineWidth() == 0.25);
         assertTrue(usa.getLineColor().equals(Color.black));
     }
 

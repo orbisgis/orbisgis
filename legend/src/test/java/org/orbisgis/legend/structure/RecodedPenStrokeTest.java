@@ -64,14 +64,14 @@ public class RecodedPenStrokeTest extends AnalyzerTest {
     @Test
     public void testGetDashLegend() throws Exception {
         RecodedPenStroke rps = new RecodedPenStroke(getPenStroke());
-        assertNull(rps.getDashLegend());
+        assertTrue(rps.getDashLegend().getFallbackValue().isEmpty());
     }
 
     @Test
     public void testSetDashLegend() throws Exception {
         PenStroke ps = getPenStroke();
         RecodedPenStroke rps = new RecodedPenStroke(ps);
-        assertNull(rps.getDashLegend());
+        assertTrue(rps.getDashLegend().getFallbackValue().isEmpty());
         rps.setDashLegend(new RecodedString(new StringLiteral("sss")));
         assertTrue(ps.getDashArray() == rps.getDashLegend().getParameter());
     }

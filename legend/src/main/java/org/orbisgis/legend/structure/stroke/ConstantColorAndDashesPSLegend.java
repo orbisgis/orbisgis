@@ -86,7 +86,7 @@ public abstract class ConstantColorAndDashesPSLegend extends PenStrokeLegend {
 
     /**
      * Sets the {@code Color} of the associated {@code PenStroke}.
-     * @param col
+     * @param opacity The new opacity.
      */
     public void setLineOpacity(double opacity) {
         ((ConstantSolidFillLegend)getFillAnalysis()).setOpacity(opacity);
@@ -116,26 +116,26 @@ public abstract class ConstantColorAndDashesPSLegend extends PenStrokeLegend {
         /**
         * Set the {@code String} that represent the dash pattern for the
          * associated {@code PenStroke}.
-        * @param dashes
+        * @param str The new dash array.
         */
         public void setDashArray(String str) {
             PenStroke ps = (PenStroke) getStroke();
             StringLiteral rl = (StringLiteral) ps.getDashArray();
             String da = validateDashArray(str) ? str : "";
-            if(!da.isEmpty()){
-                if(rl == null){
-                    rl = new StringLiteral(da);
-                    ps.setDashArray(rl);
-                    setDashLegend(new StringLiteralLegend(rl));
-                } else {
-                    rl.setValue(da);
-                }
+            if(rl == null){
+                rl = new StringLiteral(da);
+                ps.setDashArray(rl);
+                setDashLegend(new StringLiteralLegend(rl));
             } else {
-                ps.setDashArray(null);
-                setDashLegend(null);
+                rl.setValue(da);
             }
         }
 
+        /**
+         * Validate the given String, searching for a dash array pattern.
+         * @param str The string to be validated.
+         * @return true if {@code str} is made of space separated double values.
+         */
         private boolean validateDashArray(String str) {
             String[] splits = str.split(" ");
             for(String s : splits){

@@ -68,7 +68,7 @@ public class RecodedPenStroke implements LegendStructure {
             this.fillLegend = new RecodedSolidFillLegend( sf == null ?  new SolidFill(Color.BLACK,1.0) : sf);
             this.widthLegend = new RecodedReal(stroke.getWidth());
             StringParameter sp = stroke.getDashArray();
-            this.dashLegend = sp == null ? null : new RecodedString(sp);
+            this.dashLegend = new RecodedString(sp);
         }
 
         public RecodedPenStroke(PenStroke stroke,
