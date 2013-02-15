@@ -40,6 +40,7 @@ import org.orbisgis.legend.thematic.recode.RecodedLine;
 
 import java.awt.*;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.Assert.assertTrue;
 
@@ -105,6 +106,18 @@ public class RecodedLineTest extends AnalyzerTest {
             assertTrue(rec.field().equals(field));
         }
 
+    }
+
+    @Test
+    public void testGetKeys() throws Exception {
+        LineSymbolizer lineSymbolizer = getLineSymbolizer();
+        RecodedLine rl = new RecodedLine(lineSymbolizer);
+        Set<String> keys = rl.getKeys();
+        assertTrue(keys.size() == 4);
+        assertTrue(keys.contains("1"));
+        assertTrue(keys.contains("2.5"));
+        assertTrue(keys.contains("20"));
+        assertTrue(keys.contains("9999"));
     }
 
     private LineSymbolizer getLineSymbolizer() throws Exception{
