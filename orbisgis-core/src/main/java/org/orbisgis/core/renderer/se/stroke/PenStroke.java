@@ -152,12 +152,10 @@ public final class PenStroke extends Stroke implements FillNode {
         if (t.getFill() != null) {
             this.setFill(Fill.createFromJAXBElement(t.getFill()));
         } else {
-            this.setFill(new SolidFill(Color.BLACK));
+            this.setFill(new SolidFill(Color.BLACK,1.0));
         }
-
-        if (t.getDashArray() != null) {
-            this.setDashArray(SeParameterFactory.createStringParameter(t.getDashArray()));
-        }
+        //Null values are handled by the setter and resent by SeParameterFactory
+        this.setDashArray(SeParameterFactory.createStringParameter(t.getDashArray()));
 
         if (t.getDashOffset() != null) {
             this.setDashOffset(SeParameterFactory.createRealParameter(t.getDashOffset()));
