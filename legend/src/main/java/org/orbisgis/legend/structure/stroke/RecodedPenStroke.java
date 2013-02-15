@@ -28,8 +28,8 @@
  */
 package org.orbisgis.legend.structure.stroke;
 
-import org.apache.log4j.NDC;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
@@ -38,11 +38,12 @@ import org.orbisgis.legend.structure.fill.FillLegend;
 import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
-import org.orbisgis.legend.structure.parameter.NumericLegend;
 import org.orbisgis.legend.structure.recode.RecodedReal;
 import org.orbisgis.legend.structure.recode.RecodedString;
+import org.orbisgis.legend.structure.recode.type.TypeListener;
 
 import java.awt.*;
+import java.beans.EventHandler;
 
 /**
  * Represents {@code PenStroke} instances that just contain {@code Recode}
@@ -60,7 +61,7 @@ public class RecodedPenStroke implements LegendStructure {
         /**
          * Builds a {@link RecodedPenStroke} from the given stroke. You must be sure that the given parameter is valid.
          * You'll receive {@link ClassCastException} and {@link UnsupportedOperationException} if it's not...
-         * @param stroke
+         * @param stroke The original {@code PenStroke} we want to manage through this legend.
          */
         public RecodedPenStroke(PenStroke stroke){
             this.stroke = stroke;
@@ -69,6 +70,10 @@ public class RecodedPenStroke implements LegendStructure {
             this.widthLegend = new RecodedReal(stroke.getWidth());
             StringParameter sp = stroke.getDashArray();
             this.dashLegend = new RecodedString(sp);
+            TypeListener tl = EventHandler.create(TypeListener.class, this, "replaceWidth", "source.parameter");
+            widthLegend.addListener(tl);
+            TypeListener tlZ = EventHandler.create(TypeListener.class, this, "replaceDash", "source.parameter");
+            dashLegend.addListener(tlZ);
         }
 
         public RecodedPenStroke(PenStroke stroke,
@@ -79,6 +84,30 @@ public class RecodedPenStroke implements LegendStructure {
                 this.fillLegend = fillLegend;
                 this.widthLegend = widthLegend;
                 this.dashLegend = dashLegend;
+                TypeListener tl = EventHandler.create(TypeListener.class, this, "replaceWidth", "source.parameter");
+                widthLegend.addListener(tl);
+                TypeListener tlZ = EventHandler.create(TypeListener.class, this, "replaceDash", "source.parameter");
+                dashLegend.addListener(tlZ);
+        }
+
+        /**
+         * Replace the {@code StringParameter} embedded in the inner PenStroke with {@code sp}. This method is called
+         * when a type change occurs in the associated {@link RecodedString} happens.
+         * @param sp The new {@code StringParameter}
+         * @throws ClassCastException if sp is not a {@code StringParameter}
+         */
+        public void replaceDash(SeParameter sp){
+            stroke.setDashArray((StringParameter) sp);
+        }
+
+        /**
+         * Replace the {@code RealParameter} embedded in the inner PenStroke with {@code sp}. This method is called
+         * when a type change occurs in the associated {@link RecodedString} happens.
+         * @param sp The new {@code RealParameter}
+         * @throws ClassCastException if sp is not a {@code RealParameter}
+         */
+        public void replaceWidth(SeParameter sp){
+            stroke.setWidth((RealParameter)sp);
         }
 
         /**
@@ -130,7 +159,7 @@ public class RecodedPenStroke implements LegendStructure {
          * Gets the legend that describe the width of the inner {@link PenStroke}.
          * @return The legend that describe the width of the inner {@link PenStroke}.
          */
-        public final NumericLegend getWidthLegend() {
+        public final RecodedReal getWidthLegend() {
                 return widthLegend;
         }
 
@@ -147,7 +176,7 @@ public class RecodedPenStroke implements LegendStructure {
         /**
          * Gets the LegendStructure that is used to describe the dash patterns
          * in this PenStroke.
-         * @return
+         * @return  The {@link RecodedString} representing the associated dash pattern.
          */
         public final RecodedString getDashLegend() {
                 return dashLegend;

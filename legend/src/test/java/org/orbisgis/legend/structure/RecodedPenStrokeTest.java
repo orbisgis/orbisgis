@@ -28,24 +28,21 @@
  */
 package org.orbisgis.legend.structure;
 
-import org.junit.Assert;
 import org.junit.Test;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
+import org.orbisgis.core.renderer.se.parameter.real.Recode2Real;
+import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
-import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
-import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
-import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.recode.RecodedReal;
 import org.orbisgis.legend.structure.recode.RecodedString;
 import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
 
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -82,7 +79,7 @@ public class RecodedPenStrokeTest extends AnalyzerTest {
         RecodedPenStroke rps = new RecodedPenStroke(ps);
         rps.setFillLegend(null);
         assertTrue(ps.getFill() instanceof SolidFill);
-        assertTrue(rps.getFillLegend() instanceof RecodedSolidFillLegend);
+        assertTrue(rps.getFillLegend() != null);
     }
 
     @Test
@@ -91,11 +88,80 @@ public class RecodedPenStrokeTest extends AnalyzerTest {
         RecodedPenStroke rps = new RecodedPenStroke(ps);
         rps.setFillLegend(new NullSolidFillLegend());
         assertTrue(ps.getFill() instanceof SolidFill);
-        assertTrue(rps.getFillLegend() instanceof RecodedSolidFillLegend);
+        assertTrue(rps.getFillLegend() != null);
+    }
+
+    @Test
+    public void testDashChangePropagation() throws Exception {
+        PenStroke ps = getPenStroke();
+        RecodedPenStroke rps = new RecodedPenStroke(ps);
+        RecodedString dashes = rps.getDashLegend();
+        assertTrue(rps.getDashLegend().getParameter() instanceof StringLiteral);
+        assertTrue(ps.getDashArray() instanceof StringLiteral);
+        assertTrue(ps.getDashArray() == dashes.getParameter());
+        dashes.addItem("bonjour","2 5 8 5");
+        assertTrue(rps.getDashLegend().getParameter() instanceof Recode2String);
+        assertTrue(ps.getDashArray() instanceof Recode2String);
+        assertTrue(ps.getDashArray() == dashes.getParameter());
+    }
+
+    @Test
+    public void testDashChangePropagationBis() throws Exception {
+        PenStroke ps = getPenStrokeDashes();
+        RecodedPenStroke rps = new RecodedPenStroke(ps);
+        RecodedString dashes = rps.getDashLegend();
+        assertTrue(dashes.getParameter() instanceof Recode2String);
+        assertTrue(ps.getDashArray() instanceof Recode2String);
+        assertTrue(ps.getDashArray() == dashes.getParameter());
+        dashes.removeItem("2");
+        dashes.removeItem("5");
+        dashes.removeItem("7");
+        //We should have a literal from now on.
+        assertTrue(rps.getDashLegend().getParameter() instanceof StringLiteral);
+        assertTrue(ps.getDashArray() instanceof StringLiteral);
+        assertTrue(ps.getDashArray() == dashes.getParameter());
+    }
+
+    @Test
+    public void testWidthChangePropagation() throws Exception {
+        PenStroke ps = getPenStroke();
+        RecodedPenStroke rps = new RecodedPenStroke(ps);
+        RecodedReal widthLegend = rps.getWidthLegend();
+        assertTrue(rps.getWidthLegend().getParameter() instanceof RealLiteral);
+        assertTrue(ps.getWidth() instanceof RealLiteral);
+        assertTrue(ps.getWidth() == widthLegend.getParameter());
+        widthLegend.addItem("bonjour", 50);
+        assertTrue(rps.getWidthLegend().getParameter() instanceof Recode2Real);
+        assertTrue(ps.getWidth() instanceof Recode2Real);
+        assertTrue(ps.getWidth() == widthLegend.getParameter());
+    }
+
+    @Test
+    public void testWidthChangePropagationBis() throws Exception {
+        PenStroke ps = getPenStroke();
+        RecodedPenStroke rps = new RecodedPenStroke(ps);
+        RecodedReal widthLegend = rps.getWidthLegend();
+        assertTrue(rps.getWidthLegend().getParameter() instanceof RealLiteral);
+        assertTrue(ps.getWidth() instanceof RealLiteral);
+        assertTrue(ps.getWidth() == widthLegend.getParameter());
+        widthLegend.addItem("bonjour", 50);
+        assertTrue(rps.getWidthLegend().getParameter() instanceof Recode2Real);
+        assertTrue(ps.getWidth() instanceof Recode2Real);
+        assertTrue(ps.getWidth() == widthLegend.getParameter());
+        widthLegend.removeItem("bonjour");
+        assertTrue(rps.getWidthLegend().getParameter() instanceof RealLiteral);
+        assertTrue(ps.getWidth() instanceof RealLiteral);
+        assertTrue(ps.getWidth() == widthLegend.getParameter());
     }
 
     private PenStroke getPenStroke() throws Exception{
         Style s = getStyle(COLOR_RECODE);
+        LineSymbolizer ls = (LineSymbolizer) s.getRules().get(0).getCompositeSymbolizer().getChildren().get(0);
+        return (PenStroke) ls.getStroke();
+    }
+
+    private PenStroke getPenStrokeDashes() throws Exception{
+        Style s = getStyle(DASH_RECODE);
         LineSymbolizer ls = (LineSymbolizer) s.getRules().get(0).getCompositeSymbolizer().getChildren().get(0);
         return (PenStroke) ls.getStroke();
     }

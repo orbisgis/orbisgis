@@ -32,16 +32,14 @@ import org.junit.Test;
 import org.orbisgis.core.renderer.se.LineSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.core.renderer.se.parameter.string.Recode2String;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.structure.recode.RecodedColor;
-import org.orbisgis.legend.structure.recode.RecodedString;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
 
 import java.awt.*;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author alexis
