@@ -73,7 +73,7 @@ public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
          * @return
          */
         public RecodedReal getLineWidth(){
-                return (RecodedReal) ps.getWidthLegend();
+                return ps.getWidthLegend();
         }
 
         /**
