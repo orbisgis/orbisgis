@@ -192,6 +192,23 @@ public class ProportionalPointTest extends AnalyzerTest {
     }
 
     @Test
+    public void testCreateAndAnalyze() throws Exception{
+        ProportionalPoint pp = new ProportionalPoint();
+        PointSymbolizer ps = (PointSymbolizer) pp.getSymbolizer();
+        PointSymbolizerAnalyzer psa = new PointSymbolizerAnalyzer(ps);
+        assertTrue(psa.getLegend() instanceof ProportionalPoint);
+    }
+
+    @Test
+    public void testCreateAndAnalyze2() throws Exception{
+        ProportionalPoint pp = new ProportionalPoint();
+        pp.setOnVertex();
+        PointSymbolizer ps = (PointSymbolizer) pp.getSymbolizer();
+        PointSymbolizerAnalyzer psa = new PointSymbolizerAnalyzer(ps);
+        assertTrue(psa.getLegend() instanceof ProportionalPoint);
+    }
+
+    @Test
     public void testValidateInterpolate3() throws Exception {
         PointSymbolizerAnalyzer psa = new PointSymbolizerAnalyzer(new PointSymbolizer());
         Interpolate2Real ir = new Interpolate2Real(new RealLiteral(0));
