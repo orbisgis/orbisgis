@@ -34,6 +34,7 @@ import bibliothek.gui.dock.common.CControl;
 import bibliothek.gui.dock.common.CLocation;
 import bibliothek.gui.dock.common.MultipleCDockableFactory;
 import bibliothek.gui.dock.common.SingleCDockable;
+import bibliothek.gui.dock.common.action.CAction;
 import bibliothek.gui.dock.common.event.CControlListener;
 import bibliothek.gui.dock.common.intern.CDockable;
 import bibliothek.gui.dock.common.intern.DefaultCDockable;
@@ -67,6 +68,8 @@ import org.apache.log4j.Logger;
 import org.orbisgis.view.components.actions.ActionTools;
 import org.orbisgis.view.components.actions.ActionsHolder;
 import org.orbisgis.view.docking.internals.*;
+import org.orbisgis.view.docking.internals.actions.CActionHolder;
+import org.orbisgis.view.docking.internals.actions.ToolBarActions;
 import org.orbisgis.view.docking.internals.actions.ToolBarItem;
 import org.orbisgis.view.docking.preferences.OrbisGISPreferenceTreeModel;
 import org.orbisgis.view.docking.preferences.editors.UserInformationEditor;
@@ -93,10 +96,11 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
 	    /** the available preferences for docking frames */
         private PreferenceTreeModel preferences;
         private CToolbarContentArea area;
-        // Map of ToolBarItem location by their LogicalGroupId
+        // Map for the default lo
         // Key: Logical Value: Last set location
-        // private Map<String,CLocation> lastToolBarLocation = new HashMap<String, CLocation>();
-
+        private Map<String,CLocation> lastToolBarLocation = new HashMap<String, CLocation>();
+        // Action provided to this DockingManager
+        private List<Action> addedToolBarActions = new LinkedList<Action>();
         /**
          * Creates the new manager
          * @param owner the window used as parent for all dialogs
@@ -406,31 +410,28 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
 
         @Override
         public void addActions(List<Action> newActions) {
-                // A set of toolbar items, on the same group by default
-                CToolbarAreaLocation location = area.getNorthToolbar().getStationLocation();
-                CToolbarLocation defaultLocation = location.group(0).toolbar(0,0);
-                int itemId = 0;
-                for(Action action : newActions) {
-                        addToolbarItem(action,defaultLocation.item(itemId++));
-                }
+                addedToolBarActions.addAll(newActions);
+                resetToolBarsCActions(addedToolBarActions);
         }
 
         @Override
         public boolean removeAction(Action action) {
-                return removeToolbarItem(action);
+                removeActions(Arrays.asList(new Action[]{action}));
+                return addedToolBarActions.contains(action);
         }
 
         @Override
         public void removeActions(List<Action> actionList) {
-                for(Action action : actionList) {
-                        removeToolbarItem(action);
-                }
+                addedToolBarActions.removeAll(actionList);
+                resetToolBarsCActions(addedToolBarActions);
         }
         @Override
         public String addToolbarItem(Action action) {
-                return addToolbarItem(action,new CToolbarAreaLocation(area.getNorthToolbar()));
+                addActions(Arrays.asList(new Action[]{action}));
+                return ActionTools.getMenuId(action);
         }
-        public String addToolbarItem(Action action, CLocation defaultLocation) {
+
+        private String addToolbarItem(CAction cAction,Action action, CLocation defaultLocation) {
                 String id = ActionTools.getMenuId(action);
                 if(id==null || commonControl.getSingleDockable(id)!=null) {
                         // Create a unique ID
@@ -446,7 +447,7 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
                         LOGGER.warn(I18N.tr("ToolBar item {0} is not unique, it has been renamed to {1}",oldId,id));
                         action.putValue(ActionTools.MENU_ID,id);
                 }
-                ToolBarItem toolbar = new ToolBarItem(id,action);
+                ToolBarItem toolbar = new ToolBarItem(id,cAction,action);
                 commonControl.addDockable(toolbar);
                 try {
                         setLocation(toolbar,defaultLocation);
@@ -504,6 +505,54 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
         }
 
         /**
+         * Recreate all CAction and put them in already shown ToolBarItems.
+         * Remove toolbars
+         * @param actions
+         */
+        private void resetToolBarsCActions(List<Action> actions) {
+            // Create root CAction, the size of rootActions might be smaller than actions
+            ToolBarActions toolBarCActions = new ToolBarActions();
+            toolBarCActions.setActions(actions);
+            List<CAction> rootActions = toolBarCActions.getCustomActions();
+            // Create Map of newly generated CActions in order to optimize updates checks.
+            // Key: Action Menu ID
+            Map<String,CAction> actionMap = new HashMap<String, CAction>(rootActions.size());
+            Set<String> generatedId = new HashSet(actionMap.keySet());
+            for(CAction action : rootActions) {
+                if(action instanceof CActionHolder) {
+                    actionMap.put(ActionTools.getMenuId(((CActionHolder)action).getAction()),action);
+                } else {
+                    LOGGER.warn("Generated CAction must implements CActionHolder interface");
+                }
+            }
+            // Update and remove toolbars
+            for(ToolBarItem item : getToolBarItems()) {
+                String shownRootMenuId = ActionTools.getMenuId(item.getAction());
+                CAction newCAction = actionMap.get(shownRootMenuId);
+                if(newCAction==null) {
+                    // This ToolBarItem has to be remove
+                    commonControl.removeSingleDockable(shownRootMenuId);
+                } else {
+                    // The ToolBarItem's CAction must be replaced by the new one
+                    generatedId.remove(shownRootMenuId);
+                    item.setItem(newCAction);
+                }
+            }
+            // Add new toolbars
+            for(String newActionId : generatedId) {
+                CAction newCAction = actionMap.get(newActionId);
+                Action action = ((CActionHolder)newCAction).getAction();
+                // Default Location depends on
+                String logicalGroup = ActionTools.getLogicalGroup(action);
+                CLocation defaultLocation = lastToolBarLocation.get(logicalGroup);
+                if(defaultLocation==null) {
+                    defaultLocation = area.getNorthToolbar().getStationLocation().group(lastToolBarLocation.size()).toolbar(0,0).item(0);
+                    lastToolBarLocation.put(logicalGroup,defaultLocation);
+                }
+                addToolbarItem(newCAction,action,defaultLocation);
+            }
+        }
+        /**
          * When a dockable is added, this listener
          * read the OrbisGIS DockingPanelParameters of the panel
          * and apply to the DockingFrames panel instance
@@ -540,10 +589,8 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
         }
 
         private static class ToolBarBackGround implements BackgroundPaint {
-                private Color backgroundColor = Color.LIGHT_GRAY;
                 @Override
                 public void install(BackgroundComponent backgroundComponent) {
-                        backgroundColor = UIManager.getColor("Button.background");
                 }
 
                 @Override
@@ -554,7 +601,7 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
                 @Override
                 public void paint(BackgroundComponent backgroundComponent, PaintableComponent paintable, Graphics g) {
                         paintable.paintBackground( null );
-                        g.setColor( backgroundColor );
+                        g.setColor( UIManager.getColor("Panel.background") );
                         int w = paintable.getComponent().getWidth();
                         int h = paintable.getComponent().getHeight();
                         g.fillRect(0, 0, w, h);

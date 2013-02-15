@@ -29,11 +29,9 @@
 
 package org.orbisgis.view.docking.internals.actions;
 
-
-import javax.swing.*;
-
+import bibliothek.gui.dock.common.action.CAction;
 import bibliothek.gui.dock.toolbar.CToolbarItem;
-
+import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -44,10 +42,10 @@ public class ToolBarItem extends CToolbarItem implements CActionHolder {
         private Action action;
         public static final Dimension TOOLBAR_ITEM_SIZE = new Dimension(24,24);
 
-        public ToolBarItem(String id, Action action) {
+        public ToolBarItem(String id, CAction cAction, Action action) {
                 super(id);
                 this.action = action;
-                setItem(new CButtonExt(action));
+                setItem(cAction);
         }
 
         public Action getAction() {
