@@ -29,8 +29,7 @@
 
 package org.orbisgis.legend.structure.recode
 
-import org.orbisgis.core.renderer.se.parameter.Recode
-import org.orbisgis.core.renderer.se.parameter.ValueReference
+import org.orbisgis.core.renderer.se.parameter.{Literal, Recode, ValueReference}
 import org.orbisgis.core.renderer.se.parameter.string.StringAttribute
 import org.orbisgis.legend.structure.parameter.ParameterLegend
 import org.orbisgis.legend.structure.recode.`type`.TypeEvent
@@ -70,6 +69,7 @@ abstract trait RecodedLegend extends ParameterLegend {
     field = s
     getParameter match {
       case c : Recode[_,_] => c.setLookupValue(new StringAttribute(s))
+      case l : Literal =>
     }
   }
 

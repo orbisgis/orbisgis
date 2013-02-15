@@ -46,7 +46,7 @@ import java.util.List;
  * {@code Recode} instances on a common field or of {@code Literal}.
  * @author Alexis Guéganno
  */
-public class RecodedLine extends SymbolizerLegend implements StrokeUom, RecodedLegendStructure {
+public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
 
         private final LineSymbolizer ls;
         private final RecodedPenStroke ps;

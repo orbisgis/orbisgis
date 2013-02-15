@@ -94,6 +94,19 @@ public class RecodedLineTest extends AnalyzerTest {
         assertTrue(legs.contains(rl.getLineColor()));
     }
 
+    @Test
+    public void testSetFieldGlobally() throws Exception {
+        LineSymbolizer lineSymbolizer = getLineSymbolizer();
+        RecodedLine rl = new RecodedLine(lineSymbolizer);
+        String field = "chewbidouah";
+        rl.setAnalysisField(field);
+        List<RecodedLegend> legs= rl.getRecodedLegends();
+        for(RecodedLegend rec : legs){
+            assertTrue(rec.field().equals(field));
+        }
+
+    }
+
     private LineSymbolizer getLineSymbolizer() throws Exception{
         Style s = getStyle(COLOR_RECODE);
         return (LineSymbolizer) s.getRules().get(0).getCompositeSymbolizer().getChildren().get(0);
