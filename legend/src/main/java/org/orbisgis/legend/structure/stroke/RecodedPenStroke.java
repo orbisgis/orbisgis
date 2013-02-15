@@ -38,12 +38,16 @@ import org.orbisgis.legend.structure.fill.FillLegend;
 import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
+import org.orbisgis.legend.structure.recode.RecodedLegend;
+import org.orbisgis.legend.structure.recode.RecodedLegendStructure;
 import org.orbisgis.legend.structure.recode.RecodedReal;
 import org.orbisgis.legend.structure.recode.RecodedString;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 
 import java.awt.*;
 import java.beans.EventHandler;
+import java.util.*;
+import java.util.List;
 
 /**
  * Represents {@code PenStroke} instances that just contain {@code Recode}
@@ -51,7 +55,7 @@ import java.beans.EventHandler;
  * be simple analysis.
  * @author Alexis Guéganno
  */
-public class RecodedPenStroke implements LegendStructure {
+public class RecodedPenStroke implements RecodedLegendStructure {
 
         private PenStroke stroke;
         private RecodedSolidFillLegend fillLegend;
@@ -196,4 +200,11 @@ public class RecodedPenStroke implements LegendStructure {
             }
         }
 
+        @Override
+        public List<RecodedLegend> getRecodedLegends() {
+            List<RecodedLegend> ret = fillLegend.getRecodedLegends();
+            ret.add(dashLegend);
+            ret.add(widthLegend);
+            return ret;
+        }
 }

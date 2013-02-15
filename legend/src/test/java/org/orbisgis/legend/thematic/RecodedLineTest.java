@@ -35,9 +35,11 @@ import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.structure.recode.RecodedColor;
+import org.orbisgis.legend.structure.recode.RecodedLegend;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
 
 import java.awt.*;
+import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
@@ -78,6 +80,18 @@ public class RecodedLineTest extends AnalyzerTest {
         ps.setFill(null);
         RecodedLine rl = new RecodedLine(lineSymbolizer);
         assertTrue(rl.getLineColor().getFallbackValue().equals(Color.BLACK));
+    }
+
+    @Test
+    public void testGetRecodedLegends() throws Exception {
+        LineSymbolizer lineSymbolizer = getLineSymbolizer();
+        RecodedLine rl = new RecodedLine(lineSymbolizer);
+        List<RecodedLegend>  legs= rl.getRecodedLegends();
+        assertTrue(legs.size() == 4);
+        assertTrue(legs.contains(rl.getLineWidth()));
+        assertTrue(legs.contains(rl.getLineOpacity()));
+        assertTrue(legs.contains(rl.getLineDash()));
+        assertTrue(legs.contains(rl.getLineColor()));
     }
 
     private LineSymbolizer getLineSymbolizer() throws Exception{

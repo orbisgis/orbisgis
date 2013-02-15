@@ -34,19 +34,19 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
-import org.orbisgis.legend.structure.recode.RecodedColor;
-import org.orbisgis.legend.structure.recode.RecodedReal;
-import org.orbisgis.legend.structure.recode.RecodedString;
+import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
 import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
+
+import java.util.List;
 
 /**
  * Wrapper for lines made of a {@code PenStroke} where parameters are made of
  * {@code Recode} instances on a common field or of {@code Literal}.
  * @author Alexis Guéganno
  */
-public class RecodedLine extends SymbolizerLegend implements StrokeUom {
+public class RecodedLine extends SymbolizerLegend implements StrokeUom, RecodedLegendStructure {
 
         private final LineSymbolizer ls;
         private final RecodedPenStroke ps;
@@ -120,4 +120,8 @@ public class RecodedLine extends SymbolizerLegend implements StrokeUom {
                 ls.getStroke().setUom(u);
         }
 
+        @Override
+        public List<RecodedLegend> getRecodedLegends() {
+            return ps.getRecodedLegends();
+        }
 }

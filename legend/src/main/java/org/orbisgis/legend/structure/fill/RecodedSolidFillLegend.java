@@ -29,11 +29,16 @@
 package org.orbisgis.legend.structure.fill;
 
 import java.beans.EventHandler;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.legend.structure.recode.RecodedColor;
+import org.orbisgis.legend.structure.recode.RecodedLegend;
+import org.orbisgis.legend.structure.recode.RecodedLegendStructure;
 import org.orbisgis.legend.structure.recode.RecodedReal;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 
@@ -42,7 +47,7 @@ import org.orbisgis.legend.structure.recode.type.TypeListener;
  * according to a {@code Recode} operation.
  * @author Alexis Guéganno
  */
-public class RecodedSolidFillLegend extends SolidFillLegend {
+public class RecodedSolidFillLegend extends SolidFillLegend implements RecodedLegendStructure {
 
         /**
          * Build a new {@code RecodedSolidFill} from the given {@link SolidFill}. If it can't be recognized as a {@code
@@ -90,4 +95,11 @@ public class RecodedSolidFillLegend extends SolidFillLegend {
                 sf.setOpacity((RealParameter) sp);
         }
 
+        @Override
+        public List<RecodedLegend> getRecodedLegends() {
+            LinkedList<RecodedLegend> ret = new LinkedList<RecodedLegend>();
+            ret.add((RecodedColor)getFillColorLegend());
+            ret.add((RecodedReal)getFillOpacityLegend());
+            return ret;
+        }
 }
