@@ -35,6 +35,8 @@ import org.orbisgis.legend.structure.parameter.ParameterLegend
 import org.orbisgis.legend.structure.recode.`type`.TypeEvent
 import org.orbisgis.legend.structure.recode.`type`.TypeListener
 import scala.collection.mutable.ArrayBuffer
+import java.util.Set
+import java.util
 
 /**
  * This trait intends to provide some useful methods for the representation of parameters included in unique value
@@ -92,4 +94,13 @@ abstract trait RecodedLegend extends ParameterLegend {
    * @param visitor A visitor for RecodedLegend instances.
    */
   def acceptVisitor(visitor: RecodedParameterVisitor) : Unit = visitor.visit(this)
+
+  /**
+   * Gets the keys that define this RecodedLegend.
+   * @return The string keys in a Set.
+   */
+  def getKeys() : Set[String] = getParameter match{
+    case l : Literal => new util.HashSet[String]
+    case c : Recode[_,_] => c.getKeys
+  }
 }

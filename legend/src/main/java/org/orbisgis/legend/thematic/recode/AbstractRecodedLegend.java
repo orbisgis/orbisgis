@@ -28,11 +28,10 @@
  */
 package org.orbisgis.legend.thematic.recode;
 
-import org.orbisgis.legend.structure.recode.RecodedLegend;
-import org.orbisgis.legend.structure.recode.RecodedLegendStructure;
-import org.orbisgis.legend.structure.recode.RecodedParameterVisitor;
-import org.orbisgis.legend.structure.recode.SetFieldVisitor;
+import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.thematic.SymbolizerLegend;
+
+import java.util.Set;
 
 /**
  * Common base for all the legends describing unique value analysis. It provides useful method to globally manage
@@ -61,5 +60,15 @@ public abstract class AbstractRecodedLegend extends SymbolizerLegend implements 
     public void setAnalysisField(String field) {
         SetFieldVisitor sfv = new SetFieldVisitor(field);
         applyGlobalVisitor(sfv);
+    }
+
+    /**
+     * Gets the keys currently used in the analysis.
+     * @return The keys used in a Set of String.
+     */
+    public Set<String> getKeys() {
+        KeysRetriever kr = new KeysRetriever();
+        applyGlobalVisitor(kr);
+        return kr.getKeys();
     }
 }
