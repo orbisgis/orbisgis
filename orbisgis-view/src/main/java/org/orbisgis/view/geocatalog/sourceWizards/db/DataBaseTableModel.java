@@ -53,10 +53,12 @@ public class DataBaseTableModel extends AbstractTableModel {
         private static final Logger LOGGER = Logger.getLogger(DataBaseTableModel.class);
         private static final I18n I18N = I18nFactory.getI18n(DataBaseTableModel.class);
         private final String[] sourceNames;
-        private static final String[] COLUMN_NAMES = new String[]{"Source name", "Table name", "Schema",
-                                "PK", "Spatial field", "CRS name", "EPSG code", "Export"};
+        private static final String[] COLUMN_NAMES = new String[]{"Source name", "Table name", "Schema", 
+                "Input field", "Output field", "Input EPSG", "Output EPSG", "Export"};
         private ArrayList<DataBaseRow> data = new ArrayList<DataBaseRow>();
         private boolean isEditable = false;
+        private String crsName = "Unknown";
+      
 
         /**
          * Build a new {@code DataBaseTableModel} using the {@code Source}
@@ -87,15 +89,15 @@ public class DataBaseTableModel extends AbstractTableModel {
                 try {
                         DataManager dm = Services.getService(DataManager.class);
                         DataSourceFactory dsf = dm.getDataSourceFactory();
-                        String crsName = "Unknown";
+                        
                         int epsgCode = -1;
                         final int validType = SourceManager.VECTORIAL | SourceManager.RASTER
                                 | SourceManager.STREAM | SourceManager.SYSTEM_TABLE;
                         for (String sourceName : sourceNames) {
                                 int type = sourceManager.getSource(sourceName).getType();
                                 if ((validType & type) == 0) {
-                                        DataBaseRow row = new DataBaseRow(sourceName, sourceName, "public", "gid",
-                                                "the_geom", crsName, epsgCode, Boolean.TRUE);
+                                        DataBaseRow row = new DataBaseRow(sourceName, sourceName, "public", "-",
+                                                "-", epsgCode, epsgCode,  Boolean.TRUE);
                                         //We don't need to call setSpatial : isSpatial is false
                                         //by default.
                                         data.add(row);
@@ -105,11 +107,11 @@ public class DataBaseTableModel extends AbstractTableModel {
                                         String geomField = ds.getFieldName(ds.getSpatialFieldIndex());
                                         CoordinateReferenceSystem crs = ds.getCRS();
                                         if (crs != null) {
-                                                crsName = crs.getIdentifiers().toString();
+                                                crsName = crs.getName().getCode();
                                         }
                                         ds.close();
                                         DataBaseRow row = new DataBaseRow(sourceName, sourceName,
-                                                "public", "gid", geomField, crsName, epsgCode, Boolean.TRUE);
+                                                "public", geomField, geomField, epsgCode,epsgCode, Boolean.TRUE);
 
                                         row.setSpatial(true);
                                         data.add(row);
@@ -142,15 +144,14 @@ public class DataBaseTableModel extends AbstractTableModel {
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
                 if (isEditable) {
-                        if (columnIndex == 0 || columnIndex == 5) {
+                        if (columnIndex == 0 || columnIndex == 3 || columnIndex == 5) {
                                 return false;
                         }
                         if (!data.get(rowIndex).isSpatial()) {
                                 if ((columnIndex == 4) || (columnIndex == 6)) {
                                         return false;
                                 }
-                        }
-
+                        }                        
                         return true;
                 }
                 return false;

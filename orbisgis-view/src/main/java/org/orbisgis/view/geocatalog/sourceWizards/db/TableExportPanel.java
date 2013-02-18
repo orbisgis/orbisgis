@@ -186,7 +186,6 @@ public class TableExportPanel extends JDialog {
                 DataBaseTableModel model = (DataBaseTableModel) jtableExporter.getModel();
                 if (!connectionToolBar.isConnected()) {
                         JOptionPane.showMessageDialog(this, I18N.tr("Please connect to a database"));
-
                 } else if (!model.isOneRowSelected()) {
                         JOptionPane.showMessageDialog(this, I18N.tr("At least one row must be checked."));
                 } else {
@@ -202,6 +201,7 @@ public class TableExportPanel extends JDialog {
                                         userParams.put("dbName", dbParameters[4]);
                                         userParams.put("userName", dbLogin);
                                         userParams.put("password", dbpassWord);
+                                        userParams.put("ssl", dbParameters[3]);
                                         backgroundManager.nonBlockingBackgroundOperation(new ExportToDatabase(i, row, userParams, port));
                                 }
                         }
@@ -268,21 +268,9 @@ public class TableExportPanel extends JDialog {
 
                 @Override
                 public void run(ProgressMonitor pm) {
-                        DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
-                        try {
-                                SQLScript s = Engine.loadScript(TableExportPanel.class.getResourceAsStream("export-to-database.bsql"));
-                                s.setDataSourceFactory(dsf);
-                                s.setTableParameter("tableName", row.getInputSourceName());
-                                s.setFieldParameter("outputGeomField", row.getOutputSpatialField());
-                                s.setFieldParameter("inputGeomField", row.getInputSpatialField());
-                                s.setValueParameter("outputSchema", ValueFactory.createValue(row.getSchema()));
-                                s.setValueParameter("outputTableName", ValueFactory.createValue(row.getOutputSourceName()));
-                                s.setValueParameter("crs", ValueFactory.createValue("EPSG:" + row.getInputEpsgCode()));
-                                s.setValueParameter("port", ValueFactory.createValue(port));
-                                for (Map.Entry<String, String> e : params.entrySet()) {
-                                        s.setValueParameter(e.getKey(), ValueFactory.createValue(e.getValue()));
-                                }
-                                s.execute();
+                        try {   
+                                loadAndExecuteScript();
+                                
                                 SwingUtilities.invokeLater(new Runnable() {
                                         @Override
                                         public void run() {
@@ -311,6 +299,55 @@ public class TableExportPanel extends JDialog {
                 @Override
                 public String getTaskName() {
                         return I18N.tr("Saving the source in a database.");
+                }
+
+                /**
+                 * A method to load the requiered script and execute it.
+                 */
+                private void loadAndExecuteScript() throws IOException{
+                        DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
+                        //If the table is not spatial run the simple script                       
+                        if (!row.isSpatial()) {
+                                SQLScript s = Engine.loadScript(TableExportPanel.class.getResourceAsStream("export-to-database.bsql"));
+                                s.setDataSourceFactory(dsf);
+                                s.setTableParameter("tableName", row.getInputSourceName());
+                                s.setValueParameter("outputSchema", ValueFactory.createValue(row.getSchema()));
+                                s.setValueParameter("outputTableName", ValueFactory.createValue(row.getOutputSourceName()));
+                                s.setValueParameter("port", ValueFactory.createValue(port));
+                                for (Map.Entry<String, String> e : params.entrySet()) {
+                                        if(e.getKey().equals("ssl")){
+                                              s.setValueParameter(e.getKey(), ValueFactory.createValue(Boolean.valueOf(e.getValue())));  
+                                        }
+                                        else{
+                                        s.setValueParameter(e.getKey(), ValueFactory.createValue(e.getValue()));
+                                        }
+                                }
+                                s.execute();  
+                        }
+                        //If the table is spatial:
+                        //Note : the user must set a correct CRS to the datasource
+                        else{
+                                SQLScript s = Engine.loadScript(TableExportPanel.class.getResourceAsStream("spatial-export-to-database.bsql"));
+                                s.setDataSourceFactory(dsf);
+                                s.setTableParameter("tableName", row.getInputSourceName());
+                                s.setFieldParameter("outputGeomField", row.getOutputSpatialField());
+                                s.setFieldParameter("inputGeomField", row.getInputSpatialField());
+                                s.setValueParameter("outputSchema", ValueFactory.createValue(row.getSchema()));
+                                s.setValueParameter("outputTableName", ValueFactory.createValue(row.getOutputSourceName()));
+                                s.setValueParameter("crs", ValueFactory.createValue("EPSG:" + row.getOutputEpsgCode()));
+                                s.setValueParameter("port", ValueFactory.createValue(port));
+                                for (Map.Entry<String, String> e : params.entrySet()) {
+                                        if(e.getKey().equals("ssl")){
+                                             s.setValueParameter(e.getKey(), ValueFactory.createValue(Boolean.valueOf(e.getValue())));     
+                                        }
+                                        else{
+                                        s.setValueParameter(e.getKey(), ValueFactory.createValue(e.getValue()));
+                                        }
+                                }
+                                s.execute();                        
+                        }
+                        
+                       
                 }
         }
         /**

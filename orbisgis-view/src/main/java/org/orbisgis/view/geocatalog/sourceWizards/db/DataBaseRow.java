@@ -43,9 +43,8 @@ public class DataBaseRow {
         private String intputSourceName;
         private String outputSourceName;
         private String schema;
-        private String pk = "gid";
-        private int inputEpsgCode;
-        private String crsName = "Unknown";
+        private int inputEpsgCode = -1;
+        private int outputEpsgCode = -1;
         private Boolean export;
         private boolean isSpatial = false;
         private String outputSpatialField = "the_geom";
@@ -58,23 +57,19 @@ public class DataBaseRow {
          * @param intputSourceName
          * @param outputSourceName
          * @param schema
-         * @param pk
          * @param inputSpatialField
-         * @param crsName
          * @param inputEpsgCode
          * @param export
          */
-        public DataBaseRow(String intputSourceName, String outputSourceName, String schema, 
-                        String pk, String inputSpatialField, String crsName,
-                        int inputEpsgCode, Boolean export) {
+        public DataBaseRow(String intputSourceName, String outputSourceName, String schema, String inputSpatialField, String outputSpatialField,
+                        int inputEpsgCode, int outputEpsgCode, Boolean export) {
                 this.intputSourceName = intputSourceName;
                 this.outputSourceName = outputSourceName;
+                this.schema = schema;                
                 this.inputSpatialField = inputSpatialField;
-                this.schema = schema;
-                this.pk = pk;
-                this.outputSpatialField = inputSpatialField;
+                this.outputSpatialField = outputSpatialField;
                 this.inputEpsgCode = inputEpsgCode;
-                this.crsName=crsName;
+                this.outputEpsgCode=outputEpsgCode;                
                 this.export = export;
         }
 
@@ -110,14 +105,7 @@ public class DataBaseRow {
                 return export;
         }
 
-        /**
-         * Return the list of all primary key
-         *
-         * @return
-         */
-        public String getPK() {
-                return pk;
-        }
+       
 
         /**
          * Return the name of the schema
@@ -150,29 +138,20 @@ public class DataBaseRow {
                         case 1:
                                 return getOutputSourceName();
                         case 2:
-                                return getSchema();
-                        case 3:
-                                return getPK();
+                                return getSchema();   
+                        case 3 :
+                                return getInputSpatialField();
                         case 4:
-                                return getOutputSpatialField();
+                                return getOutputSpatialField();                       
                         case 5:
-                                return getCrsName();
-                        case 6:
                                 return String.valueOf(getInputEpsgCode());
+                        case 6:
+                                return String.valueOf(getOutputEpsgCode());
                         case 7:
                                 return isExport();
                         default:
                                 return null;
                 }
-        }
-
-        /**
-         * Return the name of the CRS
-         *
-         * @return
-         */
-        public String getCrsName() {
-                return crsName;
         }
 
         public String getOutputSpatialField() {
@@ -197,16 +176,13 @@ public class DataBaseRow {
                         case 2:
                                 setSchema(String.valueOf(aValue));
                                 break;
-                        case 3:
-                                setPk(String.valueOf(aValue));
-                                break;
                         case 4:
                                 setOutputSpatialField(String.valueOf(aValue));
                                 break;
                         case 6:
                                 try {
                                         Integer value = Integer.valueOf(aValue.toString());
-                                        setInputEpsgCode(value);
+                                        setOutputEpsgCode(value);
                                 } catch (NumberFormatException e) {
                                         JOptionPane.showMessageDialog(null, I18N.tr("Cannot format the EPSG code into an int.\n"
                                                 + "The default code will be used."));
@@ -240,14 +216,7 @@ public class DataBaseRow {
                 this.export = export;
         }
 
-        /**
-         * Change the name of the primary key
-         *
-         * @param pk
-         */
-        public void setPk(String pk) {
-                this.pk = pk;
-        }
+        
 
         /**
          * Change the schema name
@@ -265,22 +234,48 @@ public class DataBaseRow {
          */
         public Object[] getObjects() {
                 return new Object[]{getInputSourceName(), getOutputSourceName(), getSchema(),
-                        getPK(), getInputSpatialField(), getInputEpsgCode(), isExport()};
+                        getInputSpatialField(), getInputEpsgCode(), isExport()};
         }
 
+        /**
+         * Change the name of the datasource
+         * @param outPutsourceName 
+         */
         public void setOutputSourceName(String outPutsourceName) {
                 this.outputSourceName = outPutsourceName;
         }
 
+        /**
+         * Return the name of the output table
+         * @return 
+         */
         public String getOutputSourceName() {
                 return outputSourceName;
         }
 
+        /**
+         * Return the field name of the default spatial column
+         * @return 
+         */
         public String getInputSpatialField() {
                 return inputSpatialField;
         }
+        
 
-        public void setInputSpatialField(String inputSpatialField) {
-                this.inputSpatialField = inputSpatialField;
+        /**
+         * Return the output epsg code set by the user
+         * @return 
+         */
+        public int getOutputEpsgCode() {
+                return outputEpsgCode;
         }
+
+        /**
+         * Change the name of the output epsg code
+         * @param outputEpsgCode 
+         */
+        public void setOutputEpsgCode(int outputEpsgCode) {
+                this.outputEpsgCode = outputEpsgCode;
+        }        
+        
 }
