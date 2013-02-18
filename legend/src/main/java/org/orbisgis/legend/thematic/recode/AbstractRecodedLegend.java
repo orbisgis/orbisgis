@@ -32,6 +32,7 @@ import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.thematic.SymbolizerLegend;
 
 import java.util.Set;
+import java.util.SortedSet;
 
 /**
  * Common base for all the legends describing unique value analysis. It provides useful method to globally manage
@@ -66,7 +67,7 @@ public abstract class AbstractRecodedLegend extends SymbolizerLegend implements 
      * Gets the keys currently used in the analysis.
      * @return The keys used in a Set of String.
      */
-    public Set<String> getKeys() {
+    public SortedSet<String> getKeys() {
         KeysRetriever kr = new KeysRetriever();
         applyGlobalVisitor(kr);
         return kr.getKeys();

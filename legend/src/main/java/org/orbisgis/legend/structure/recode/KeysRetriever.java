@@ -28,8 +28,7 @@
  */
 package org.orbisgis.legend.structure.recode;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Concatenate the keys used in all the visited {@link RecodedLegend}.
@@ -37,13 +36,13 @@ import java.util.Set;
  */
 public class KeysRetriever implements RecodedParameterVisitor {
 
-    private final Set<String> set;
+    private final TreeSet<String> set;
 
     /**
      * Default constructor.
      */
     public KeysRetriever(){
-        set = new HashSet<String>();
+        set = new TreeSet<String>();
     }
 
     @Override
@@ -55,7 +54,7 @@ public class KeysRetriever implements RecodedParameterVisitor {
      * Gets the gathered keys.
      * @return The gathered keys in a Set.
      */
-    public Set<String> getKeys() {
+    public TreeSet<String> getKeys() {
         return set;
     }
 }
