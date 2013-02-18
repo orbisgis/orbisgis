@@ -98,7 +98,7 @@ class RecodedReal extends AbstractAttributeLegend with RecodedLegend with Numeri
   /**
    * Gets the Double value, if any, associated to {@code key} in the inner {@code
    * Recode}.
-   * @param key
+   * @param i
    * @return
    */
   def getItemValue(i : String) : Double = parameter match {
@@ -128,8 +128,8 @@ class RecodedReal extends AbstractAttributeLegend with RecodedLegend with Numeri
 
   /**
    * Sets the ith key of the inner {@code Recode}.
-   * @param i
-   * @param newKey
+   * @param i The range of the key in the map.
+   * @param key The new ith key
    */
   def setKey(i : Int, key : String) = parameter match {
     case c : RealLiteral => throw new UnsupportedOperationException("A literal does not have a ith key.")
@@ -138,7 +138,7 @@ class RecodedReal extends AbstractAttributeLegend with RecodedLegend with Numeri
 
   /**
    * Adds an item in the inner {@code Recode}.
-   * @param key
+   * @param key Adds the new
    * @param value
    */
   def addItem(key : String, value : Double) = parameter match {
@@ -151,7 +151,7 @@ class RecodedReal extends AbstractAttributeLegend with RecodedLegend with Numeri
 
   /**
    * Removes an item from the inner {@code Recode}.
-   * @param i
+   * @param i The index of the item to be removed.
    */
   def  removeItem(i : Int) = parameter match {
     case c : RealLiteral => throw new UnsupportedOperationException(
@@ -166,7 +166,7 @@ class RecodedReal extends AbstractAttributeLegend with RecodedLegend with Numeri
 
   /**
    * Removes an item from the inner {@code Recode}.
-   * @param key
+   * @param key The key of the item to be removed.
    */
   def  removeItem(key : String) = parameter match {
     case c : RealLiteral => throw new UnsupportedOperationException(
