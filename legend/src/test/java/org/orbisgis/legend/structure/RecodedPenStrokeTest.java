@@ -51,47 +51,6 @@ import static org.junit.Assert.assertTrue;
 public class RecodedPenStrokeTest extends AnalyzerTest {
 
     @Test
-    public void testSetWidthLegendLiteral() throws Exception {
-        RecodedPenStroke rps = new RecodedPenStroke(getPenStroke());
-        RecodedReal rll = new RecodedReal(new RealLiteral(4));
-        rps.setWidthLegend(rll);
-        assertTrue(rps.getWidthLegend() == rll);
-    }
-
-    @Test
-    public void testGetDashLegend() throws Exception {
-        RecodedPenStroke rps = new RecodedPenStroke(getPenStroke());
-        assertTrue(rps.getDashLegend().getFallbackValue().isEmpty());
-    }
-
-    @Test
-    public void testSetDashLegend() throws Exception {
-        PenStroke ps = getPenStroke();
-        RecodedPenStroke rps = new RecodedPenStroke(ps);
-        assertTrue(rps.getDashLegend().getFallbackValue().isEmpty());
-        rps.setDashLegend(new RecodedString(new StringLiteral("sss")));
-        assertTrue(ps.getDashArray() == rps.getDashLegend().getParameter());
-    }
-
-    @Test
-    public void testSetNullFill() throws Exception {
-        PenStroke ps = getPenStroke();
-        RecodedPenStroke rps = new RecodedPenStroke(ps);
-        rps.setFillLegend(null);
-        assertTrue(ps.getFill() instanceof SolidFill);
-        assertTrue(rps.getFillLegend() != null);
-    }
-
-    @Test
-    public void testSetNullSolidFill() throws Exception {
-        PenStroke ps = getPenStroke();
-        RecodedPenStroke rps = new RecodedPenStroke(ps);
-        rps.setFillLegend(new NullSolidFillLegend());
-        assertTrue(ps.getFill() instanceof SolidFill);
-        assertTrue(rps.getFillLegend() != null);
-    }
-
-    @Test
     public void testDashChangePropagation() throws Exception {
         PenStroke ps = getPenStroke();
         RecodedPenStroke rps = new RecodedPenStroke(ps);

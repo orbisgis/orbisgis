@@ -123,58 +123,11 @@ public class RecodedPenStroke implements RecodedLegendStructure {
         }
 
         /**
-         * Sets the {@code LegendStructure} that describes the fill associated to
-         * the inner {@code PenStroke}.</p>
-         * <p>
-         *     Even if you pass null as an input, you'll get a suitable {@code Fill} in your symbology tree. This method
-         *     will generate the appropriate default {@link SolidFill} as described in Symbology Encoding. We explicitly
-         *     set it because it's safer and easier to manage in the upper layers.
-         * </p>
-         * <p>
-         *     The type of {@code fill} can be :
-         *     <ul><li>null</li>
-         *     <li>{@link RecodedSolidFillLegend}</li>
-         *     <li>{@link ConstantSolidFillLegend}</li>
-         *     <li>{@link NullSolidFillLegend}</li>
-         *     </ul>
-         * </p>
-         * @param fill The original {@link FillLegend}. It will be transformed to a {@code RecodedSolidFillLegend} if
-         *             needed.
-         * @throws IllegalArgumentException If the type of {@code fill}is not accepted.
-         */
-        public final void setFillLegend(FillLegend fill) {
-                if(fill instanceof  RecodedSolidFillLegend) {
-                    this.fillLegend = (RecodedSolidFillLegend) fill;
-                } else if(fill instanceof ConstantSolidFillLegend){
-                    this.fillLegend = new RecodedSolidFillLegend((SolidFill) fill.getFill());
-                } else if(fill == null || fill instanceof NullSolidFillLegend){
-                    //We must generate the expected value for SE.
-                    SolidFill sf = new SolidFill(Color.BLACK,1.0);
-                    fillLegend = new RecodedSolidFillLegend(sf);
-                } else {
-                        throw new IllegalArgumentException("Can't set the fill legend to something"
-                                + "that is neither a ConstantSolidFillLegend nor"
-                                + "a RecodedSolidFillLegend.");
-                }
-                stroke.setFill(fillLegend.getFill());
-        }
-
-        /**
          * Gets the legend that describe the width of the inner {@link PenStroke}.
          * @return The legend that describe the width of the inner {@link PenStroke}.
          */
         public final RecodedReal getWidthLegend() {
                 return widthLegend;
-        }
-
-        /**
-         * Sets the legend describing the behaviour of the PenStroke's width to {@code width}. The width of the inner
-         * {@link PenStroke} is changed accordingly.
-         * @param width The new description of the width.
-         */
-        public final void setWidthLegend(RecodedReal width) {
-                this.widthLegend = width;
-                stroke.setWidth(width.getParameter());
         }
 
         /**
@@ -184,20 +137,6 @@ public class RecodedPenStroke implements RecodedLegendStructure {
          */
         public final RecodedString getDashLegend() {
                 return dashLegend;
-        }
-
-        /**
-         * Sets the LegendStructure used to describe the dash patterns in this
-         * {@code PenStroke}.
-         * @param dash  The new dash configuration.
-         */
-        public final void setDashLegend(RecodedString dash) {
-            this.dashLegend = dash;
-            if(dash == null){
-                stroke.setDashArray(null);
-            } else {
-                stroke.setDashArray(dash.getParameter());
-            }
         }
 
         @Override
