@@ -38,10 +38,7 @@ import org.orbisgis.legend.structure.fill.FillLegend;
 import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
-import org.orbisgis.legend.structure.recode.RecodedLegend;
-import org.orbisgis.legend.structure.recode.RecodedLegendStructure;
-import org.orbisgis.legend.structure.recode.RecodedReal;
-import org.orbisgis.legend.structure.recode.RecodedString;
+import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 
 import java.awt.*;
@@ -73,7 +70,7 @@ public class RecodedPenStroke implements RecodedLegendStructure {
             this.fillLegend = new RecodedSolidFillLegend( sf == null ?  new SolidFill(Color.BLACK,1.0) : sf);
             this.widthLegend = new RecodedReal(stroke.getWidth());
             StringParameter sp = stroke.getDashArray();
-            this.dashLegend = new RecodedString(sp);
+            this.dashLegend = new RecodedDash(sp);
             TypeListener tl = EventHandler.create(TypeListener.class, this, "replaceWidth", "source.parameter");
             widthLegend.addListener(tl);
             TypeListener tlZ = EventHandler.create(TypeListener.class, this, "replaceDash", "source.parameter");

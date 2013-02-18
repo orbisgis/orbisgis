@@ -29,6 +29,8 @@
 package org.orbisgis.legend.structure.stroke;
 
 import java.awt.Color;
+
+import org.orbisgis.core.renderer.se.parameter.ParameterUtil;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.LegendStructure;
@@ -121,7 +123,7 @@ public abstract class ConstantColorAndDashesPSLegend extends PenStrokeLegend {
         public void setDashArray(String str) {
             PenStroke ps = (PenStroke) getStroke();
             StringLiteral rl = (StringLiteral) ps.getDashArray();
-            String da = validateDashArray(str) ? str : "";
+            String da = ParameterUtil.validateDashArray(str) ? str : "";
             if(rl == null){
                 rl = new StringLiteral(da);
                 ps.setDashArray(rl);
@@ -129,26 +131,6 @@ public abstract class ConstantColorAndDashesPSLegend extends PenStrokeLegend {
             } else {
                 rl.setValue(da);
             }
-        }
-
-        /**
-         * Validate the given String, searching for a dash array pattern.
-         * @param str The string to be validated.
-         * @return true if {@code str} is made of space separated double values.
-         */
-        private boolean validateDashArray(String str) {
-            String[] splits = str.split(" ");
-            for(String s : splits){
-                try{
-                    double d = Double.valueOf(s);
-                    if(d<0){
-                            return false;
-                    }
-                } catch(NumberFormatException nfe){
-                    return false;
-                }
-            }
-            return true;
         }
 
 }
