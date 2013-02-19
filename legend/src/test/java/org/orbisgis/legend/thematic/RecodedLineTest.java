@@ -51,8 +51,7 @@ public class RecodedLineTest extends AnalyzerTest {
 
     @Test
     public void testGetFillOpacity() throws Exception{
-        LineSymbolizer ls = getLineSymbolizer();
-        RecodedLine  rl = new RecodedLine(ls);
+        RecodedLine rl = getRecodedLine();
         assertTrue(rl.getLineOpacity().getFallbackValue() == 1.0);
     }
 
@@ -85,8 +84,7 @@ public class RecodedLineTest extends AnalyzerTest {
 
     @Test
     public void testGetRecodedLegends() throws Exception {
-        LineSymbolizer lineSymbolizer = getLineSymbolizer();
-        RecodedLine rl = new RecodedLine(lineSymbolizer);
+        RecodedLine rl = getRecodedLine();
         List<RecodedLegend>  legs= rl.getRecodedLegends();
         assertTrue(legs.size() == 4);
         assertTrue(legs.contains(rl.getLineWidth()));
@@ -97,8 +95,7 @@ public class RecodedLineTest extends AnalyzerTest {
 
     @Test
     public void testSetFieldGlobally() throws Exception {
-        LineSymbolizer lineSymbolizer = getLineSymbolizer();
-        RecodedLine rl = new RecodedLine(lineSymbolizer);
+        RecodedLine rl = getRecodedLine();
         String field = "chewbidouah";
         rl.setAnalysisField(field);
         List<RecodedLegend> legs= rl.getRecodedLegends();
@@ -110,8 +107,7 @@ public class RecodedLineTest extends AnalyzerTest {
 
     @Test
     public void testGetKeys() throws Exception {
-        LineSymbolizer lineSymbolizer = getLineSymbolizer();
-        RecodedLine rl = new RecodedLine(lineSymbolizer);
+        RecodedLine rl = getRecodedLine();
         Set<String> keys = rl.getKeys();
         assertTrue(keys.size() == 4);
         assertTrue(keys.contains("1"));
@@ -120,8 +116,26 @@ public class RecodedLineTest extends AnalyzerTest {
         assertTrue(keys.contains("9999"));
     }
 
+    @Test
+    public void testGet() throws Exception {
+        RecodedLine rl = getRecodedLine();
+        LineParameters lp = rl.get("1");
+        LineParameters t = new LineParameters(new Color(0x22,0x33,0x44),1.0,.5,"");
+        assertTrue(lp.equals(t));
+        lp = rl.get("2.5");
+        t = new LineParameters(new Color(0xAA,0x17,0xB4),1.0,.5,"");
+        assertTrue(lp.equals(t));
+        lp = rl.get("bonjour");
+        t = new LineParameters(new Color(0x33,0x55,0x66),1.0,.5,"");
+        assertTrue(lp.equals(t));
+    }
+
     private LineSymbolizer getLineSymbolizer() throws Exception{
         Style s = getStyle(COLOR_RECODE);
         return (LineSymbolizer) s.getRules().get(0).getCompositeSymbolizer().getChildren().get(0);
+    }
+
+    private RecodedLine getRecodedLine() throws Exception {
+        return new RecodedLine(getLineSymbolizer());
     }
 }

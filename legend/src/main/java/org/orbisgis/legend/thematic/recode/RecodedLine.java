@@ -36,9 +36,11 @@ import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
+import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
 
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -106,6 +108,23 @@ public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
          */
         public RecodedString getLineDash() {
                 return ps.getDashLegend();
+        }
+
+        /**
+         * Gets the {@link LineParameters} that is used to build the line associated to {@code key}.
+         * @param key The key of the map
+         * @return The {@link LineParameters} instance associated to {@code key}.
+         */
+        public LineParameters get(String key){
+            Color c = getLineColor().getItemValue(key);
+            c = c==null ? getLineColor().getFallbackValue() : c;
+            Double op = getLineOpacity().getItemValue(key);
+            op = op==null ? getLineOpacity().getFallbackValue() : op;
+            Double w = getLineWidth().getItemValue(key);
+            w = w==null ? getLineWidth().getFallbackValue() : w;
+            String d = getLineDash().getItemValue(key);
+            d = d==null ? getLineDash().getFallbackValue() : d;
+            return new LineParameters(c,op,w,d);
         }
 
         @Override

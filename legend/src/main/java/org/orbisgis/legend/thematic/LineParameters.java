@@ -90,4 +90,17 @@ public class LineParameters {
     public String getLineDash() {
         return dash;
     }
+
+    @Override
+    public boolean equals(Object o){
+        if(o instanceof LineParameters){
+            LineParameters bis = (LineParameters) o;
+            return bis.getLineColor().equals(color) &&
+                        bis.getLineWidth().equals(width) &&
+                        bis.getLineDash().equals(dash) &&
+                        bis.getLineOpacity().equals(opacity);
+        } else {
+            return false;
+        }
+    }
 }

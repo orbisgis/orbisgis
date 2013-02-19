@@ -33,6 +33,7 @@ import org.orbisgis.legend.AnalyzerTest;
 
 import java.awt.*;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -65,5 +66,20 @@ public class LineParametersTest extends AnalyzerTest {
         assertTrue(lp.getLineDash().isEmpty());
         assertTrue(lp.getLineOpacity() == .4);
         assertTrue(lp.getLineWidth() == 2.0);
+    }
+
+    @Test
+    public void testEquality() throws Exception {
+        LineParameters lp = new LineParameters(Color.BLUE,.4,2.0,"2 2");
+        LineParameters lp2 = new LineParameters(Color.BLUE,.4,2.0,"2 2");
+        assertTrue(lp.equals(lp2));
+        lp2 = new LineParameters(Color.BLUE,.4,2.0,"2 1 2");
+        assertFalse(lp.equals(lp2));
+        lp2 = new LineParameters(Color.BLUE,.4,3.0,"2 2");
+        assertFalse(lp.equals(lp2));
+        lp2 = new LineParameters(Color.BLUE,.5,2.0,"2 2");
+        assertFalse(lp.equals(lp2));
+        lp2 = new LineParameters(Color.YELLOW,.4,2.0,"2 2");
+        assertFalse(lp.equals(lp2));
     }
 }
