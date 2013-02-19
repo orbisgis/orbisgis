@@ -87,33 +87,33 @@ public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
 
         /**
          * Gets the wrapper that manages the width of the line.
-         * @return
+         * @return the recoded width
          */
-        public RecodedReal getLineWidth(){
+        private RecodedReal getLineWidth(){
                 return ps.getWidthLegend();
         }
 
         /**
          * Gets the wrapper that manages the opacity of the line.
-         * @return
+         * @return the recoded opacity
          */
-        public RecodedReal getLineOpacity(){
+        private RecodedReal getLineOpacity(){
                 return (RecodedReal) ps.getFillLegend().getFillOpacityLegend();
         }
 
         /**
          * Gets the wrapper that manages the color of the line.
-         * @return
+         * @return the recoded color
          */
-        public RecodedColor getLineColor(){
+        private RecodedColor getLineColor(){
                 return (RecodedColor) ps.getFillLegend().getFillColorLegend();
         }
 
         /**
          * Gets the wrapper that manages the dash pattern of the line.
-         * @return
+         * @return the recoded dash
          */
-        public RecodedString getLineDash() {
+        private RecodedString getLineDash() {
                 return ps.getDashLegend();
         }
 
