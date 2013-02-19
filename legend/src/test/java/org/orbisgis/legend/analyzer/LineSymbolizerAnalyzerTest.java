@@ -219,7 +219,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         UniqueSymbolLine usl = new UniqueSymbolLine();
         LineSymbolizerAnalyzer lsa = new LineSymbolizerAnalyzer((LineSymbolizer)usl.getSymbolizer());
         assertTrue(lsa.getLegend() instanceof UniqueSymbolLine);
-        assertTrue(usl.getPenStroke().getLineWidth() == 0.25);
+        assertTrue(usl.getPenStroke().getLineWidth() == PenStroke.DEFAULT_WIDTH);
         assertTrue(usl.getLineColor().equals(Color.BLACK));
     }
 

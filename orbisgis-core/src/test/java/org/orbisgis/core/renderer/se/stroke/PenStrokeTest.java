@@ -54,9 +54,9 @@ public class PenStrokeTest extends AbstractTest {
     @Test
     public void testSetWidth() throws Exception {
         PenStroke ps = new PenStroke();
-        assertEquals(ps.getWidth().getValue(null), (Double) 0.25);
+        assertEquals(ps.getWidth().getValue(null), (Double) PenStroke.DEFAULT_WIDTH);
         ps.setWidth(null);
-        assertEquals(ps.getWidth().getValue(null), (Double) 0.25);
+        assertEquals(ps.getWidth().getValue(null), (Double) PenStroke.DEFAULT_WIDTH);
         ps.setWidth(new RealLiteral(0.4));
         assertEquals(ps.getWidth().getValue(null),(Double) 0.4);
     }

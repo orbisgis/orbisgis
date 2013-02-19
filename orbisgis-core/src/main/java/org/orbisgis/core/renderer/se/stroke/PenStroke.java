@@ -77,6 +77,7 @@ public final class PenStroke extends Stroke implements FillNode {
 
     private static final I18n I18N = I18nFactory.getI18n(PenStroke.class);
     private static final double DEFAULT_WIDTH_PX = 1.0;
+    public static final double DEFAULT_WIDTH = .25;
     /**
      * The cap used by default. Value is {@code LineCap.BUTT}.
      */
@@ -130,7 +131,7 @@ public final class PenStroke extends Stroke implements FillNode {
     public PenStroke() {
         super();
         setFill(getDefaultFill());
-        setWidth(new RealLiteral(0.25));
+        setWidth(new RealLiteral(DEFAULT_WIDTH));
         setUom(null);
         setDashArray(new StringLiteral(""));
         setDashOffset(new RealLiteral(0));
@@ -164,7 +165,7 @@ public final class PenStroke extends Stroke implements FillNode {
         if (t.getWidth() != null) {
             this.setWidth(SeParameterFactory.createRealParameter(t.getWidth()));
         } else {
-            setWidth(new RealLiteral(DEFAULT_WIDTH_PX));
+            setWidth(new RealLiteral(DEFAULT_WIDTH));
         }
 
         if (t.getLineCap() != null) {
