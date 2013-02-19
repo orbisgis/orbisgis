@@ -33,15 +33,12 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
-import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
 import org.orbisgis.legend.thematic.LineParameters;
-import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
 
 import java.awt.*;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -172,6 +169,16 @@ public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
             getLineOpacity().removeItem(key);
             getLineWidth().removeItem(key);
             return ret;
+        }
+
+        /**
+         * Removes all the entries in this unique value classification.
+         */
+        public void clear() {
+            Set<String> keys = keySet();
+            for (String next : keys) {
+                remove(next);
+            }
         }
 
         @Override

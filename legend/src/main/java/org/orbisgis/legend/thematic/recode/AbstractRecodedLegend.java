@@ -101,4 +101,12 @@ public abstract class AbstractRecodedLegend extends SymbolizerLegend implements 
     public int size(){
         return keySet().size();
     }
+
+    /**
+     * Returns true if there is nothing in this map.
+     * @return {@code true} if we don't have any key-value mapping.
+     */
+    public boolean isEmpty(){
+        return keySet().isEmpty();
+    }
 }
