@@ -42,7 +42,7 @@ class RecodedColor extends AbstractAttributeLegend with RecodedLegend {
   private var parameter : ColorParameter = new ColorLiteral
 
   /**
-   * Tries to build a RecodedColor usign the {@code ColorParameter} given in
+   * Tries to build a RecodedColor using the {@code ColorParameter} given in
    * argument.
    * @param param
    */
@@ -58,7 +58,7 @@ class RecodedColor extends AbstractAttributeLegend with RecodedLegend {
   def getParameter : ColorParameter = parameter
 
   /**
-   * Sets paramter to s
+   * Sets parameter to s
    * @param s
    * @throws IllegalArgumentException if s is neither a Recode2String nor a StringLiteral
    */
@@ -74,7 +74,7 @@ class RecodedColor extends AbstractAttributeLegend with RecodedLegend {
   }
 
   /**
-   * Gets the number of elements registerd in this analysis.
+   * Gets the number of elements registered in this analysis.
    * @return
    */
   def size : Int = {
@@ -111,7 +111,7 @@ class RecodedColor extends AbstractAttributeLegend with RecodedLegend {
   /**
    * Gets the Color value, if any, associated to {@code key} in the inner {@code
    * Recode}.
-   * @param key
+   * @param i
    * @return
    */
   def getItemValue(i : String) : Color = parameter match {
@@ -142,7 +142,7 @@ class RecodedColor extends AbstractAttributeLegend with RecodedLegend {
   /**
    * Sets the ith key of the inner {@code Recode}.
    * @param i
-   * @param newKey
+   * @param key
    */
   def setKey(i : Int, key : String) = parameter match {
     case c : ColorLiteral => throw new UnsupportedOperationException("A literal does not have a ith key.")

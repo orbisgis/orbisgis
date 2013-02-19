@@ -34,19 +34,19 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
-import org.orbisgis.legend.structure.recode.RecodedColor;
-import org.orbisgis.legend.structure.recode.RecodedReal;
-import org.orbisgis.legend.structure.recode.RecodedString;
+import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
 import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
 
+import java.util.List;
+
 /**
- * Wrapper for lines made of a {@code PenStroke} where paramters are made of
+ * Wrapper for lines made of a {@code PenStroke} where parameters are made of
  * {@code Recode} instances on a common field or of {@code Literal}.
  * @author Alexis Guéganno
  */
-public class RecodedLine extends SymbolizerLegend implements StrokeUom {
+public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
 
         private final LineSymbolizer ls;
         private final RecodedPenStroke ps;
@@ -68,17 +68,12 @@ public class RecodedLine extends SymbolizerLegend implements StrokeUom {
             }
         }
 
-        public RecodedLine(LineSymbolizer ls, RecodedPenStroke ps){
-                this.ls = ls;
-                this.ps = ps;
-        }
-
         /**
          * Gets the wrapper that manages the width of the line.
          * @return
          */
         public RecodedReal getLineWidth(){
-                return (RecodedReal) ps.getWidthLegend();
+                return ps.getWidthLegend();
         }
 
         /**
@@ -86,7 +81,7 @@ public class RecodedLine extends SymbolizerLegend implements StrokeUom {
          * @return
          */
         public RecodedReal getLineOpacity(){
-                return (RecodedReal) ((RecodedSolidFillLegend)ps.getFillLegend()).getFillOpacityLegend();
+                return (RecodedReal) ps.getFillLegend().getFillOpacityLegend();
         }
 
         /**
@@ -94,7 +89,7 @@ public class RecodedLine extends SymbolizerLegend implements StrokeUom {
          * @return
          */
         public RecodedColor getLineColor(){
-                return (RecodedColor) ((RecodedSolidFillLegend)ps.getFillLegend()).getFillColorLegend();
+                return (RecodedColor) ps.getFillLegend().getFillColorLegend();
         }
 
         /**
@@ -102,7 +97,7 @@ public class RecodedLine extends SymbolizerLegend implements StrokeUom {
          * @return
          */
         public RecodedString getLineDash() {
-                return (RecodedString) ps.getDashLegend();
+                return ps.getDashLegend();
         }
 
         @Override
@@ -125,4 +120,8 @@ public class RecodedLine extends SymbolizerLegend implements StrokeUom {
                 ls.getStroke().setUom(u);
         }
 
+        @Override
+        public List<RecodedLegend> getRecodedLegends() {
+            return ps.getRecodedLegends();
+        }
 }

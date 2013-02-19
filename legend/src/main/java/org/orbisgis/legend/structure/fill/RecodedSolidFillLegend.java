@@ -29,20 +29,25 @@
 package org.orbisgis.legend.structure.fill;
 
 import java.beans.EventHandler;
+import java.util.LinkedList;
+import java.util.List;
+
 import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.legend.structure.recode.RecodedColor;
+import org.orbisgis.legend.structure.recode.RecodedLegend;
+import org.orbisgis.legend.structure.recode.RecodedLegendStructure;
 import org.orbisgis.legend.structure.recode.RecodedReal;
 import org.orbisgis.legend.structure.recode.type.TypeListener;
 
 /**
  * A {@code Legend} that represents a {@code SolidFill} where the color is defined
- * accorgind to a {@code Recode} operation.
+ * according to a {@code Recode} operation.
  * @author Alexis Guéganno
  */
-public class RecodedSolidFillLegend extends SolidFillLegend {
+public class RecodedSolidFillLegend extends SolidFillLegend implements RecodedLegendStructure {
 
         /**
          * Build a new {@code RecodedSolidFill} from the given {@link SolidFill}. If it can't be recognized as a {@code
@@ -56,8 +61,9 @@ public class RecodedSolidFillLegend extends SolidFillLegend {
         /**
          * Build a new {@code CategorizedSolidFillLegend} using the {@code 
          * SolidFill} and {@code Recode2ColorLegend} given in parameter.
-         * @param fill
-         * @param colorLegend
+         * @param fill The fill associated to this {@code RecodedSolidFillLegend}.
+         * @param colorLegend The representation of the color
+         * @param opacity The representation of the opacity
          */
         public RecodedSolidFillLegend(SolidFill fill, RecodedColor colorLegend, RecodedReal opacity) {
                 super(fill, colorLegend, opacity);
@@ -67,14 +73,33 @@ public class RecodedSolidFillLegend extends SolidFillLegend {
                 opacity.addListener(tlZ);
         }
 
+        /**
+         * Replace the {@code ColorParameter} embedded in the inner SolidFill with {@code sp}. This method is called
+         * when a type change occurs in the associated {@link RecodedColor} happens.
+         * @param sp The new {@code ColorParameter}
+         * @throws ClassCastException if sp is not a {@code ColorParameter}
+         */
         public void replaceColor(SeParameter sp){
                 SolidFill sf = getFill();
                 sf.setColor((ColorParameter) sp);
         }
 
+        /**
+         * Replace the {@code RealParameter} embedded in the inner SolidFill with {@code sp}. This method is called
+         * when a type change occurs in the associated {@link RecodedReal} happens.
+         * @param sp The new {@code RealParameter}
+         * @throws ClassCastException if sp is not a {@code RealParameter}
+         */
         public void replaceOpacity(SeParameter sp){
                 SolidFill sf = getFill();
                 sf.setOpacity((RealParameter) sp);
         }
 
+        @Override
+        public List<RecodedLegend> getRecodedLegends() {
+            LinkedList<RecodedLegend> ret = new LinkedList<RecodedLegend>();
+            ret.add((RecodedColor)getFillColorLegend());
+            ret.add((RecodedReal)getFillOpacityLegend());
+            return ret;
+        }
 }

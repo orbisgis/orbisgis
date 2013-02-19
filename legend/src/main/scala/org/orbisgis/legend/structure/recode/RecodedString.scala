@@ -36,10 +36,19 @@ import org.orbisgis.core.renderer.se.parameter.string.StringLiteral
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter
 import org.orbisgis.legend.structure.parameter.AbstractAttributeLegend
 
+/**
+ * Wrapper for StringLiteral and Recode2String instances : both of them can be recognized as part of a unique value
+ * analysis.
+ * @author Alexis
+ */
 class RecodedString extends AbstractAttributeLegend with RecodedLegend {
 
   var parameter : StringParameter = new StringLiteral
 
+  /**
+   * Gets the number of items defined in the inner StringParameter.
+   * @return
+   */
   def size : Int = {
     parameter match {
       case _ : StringLiteral => 0
@@ -47,11 +56,19 @@ class RecodedString extends AbstractAttributeLegend with RecodedLegend {
     }
   }
 
+  /**
+   * Builds a new RecodedString using the given parameter.
+   * @param param The original StringParameter
+   * @throws IllegalArgumentException If param is neither a StringLiteral nor a Recode2String.
+   */
   def this(param : StringParameter) = {
     this
     setParameter(param)
   }
 
+  /**
+   * Gets the inner parameter.
+   **/
   def getParameter : StringParameter = parameter
 
   /**
@@ -106,7 +123,7 @@ class RecodedString extends AbstractAttributeLegend with RecodedLegend {
   /**
    * Gets the Double value, if any, associated to {@code key} in the inner {@code
    * Recode}.
-   * @param key
+   * @param i
    * @return
    */
   def getItemValue(i : String) : String = parameter match {
@@ -127,7 +144,7 @@ class RecodedString extends AbstractAttributeLegend with RecodedLegend {
   /**
    * Sets the ith key of the inner {@code Recode}.
    * @param i
-   * @param newKey
+   * @param key
    */
   def setKey(i : Int, key : String) = parameter match {
     case c : StringLiteral => throw new UnsupportedOperationException("A literal does not have a ith key.")

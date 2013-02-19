@@ -53,6 +53,7 @@ import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -76,8 +77,15 @@ public final class PenStroke extends Stroke implements FillNode {
 
     private static final I18n I18N = I18nFactory.getI18n(PenStroke.class);
     private static final double DEFAULT_WIDTH_PX = 1.0;
-    private static final LineCap DEFAULT_CAP = LineCap.BUTT;
-    private static final LineJoin DEFAULT_JOIN = LineJoin.ROUND;
+    public static final double DEFAULT_WIDTH = .25;
+    /**
+     * The cap used by default. Value is {@code LineCap.BUTT}.
+     */
+    public static final LineCap DEFAULT_CAP = LineCap.BUTT;
+    /**
+     * The join used by default. Value is {@code LineCap.MITRE}.
+     */
+    public static final LineJoin DEFAULT_JOIN = LineJoin.MITRE;
     private Fill fill;
     private RealParameter width;
     private LineJoin lineJoin;
@@ -122,13 +130,13 @@ public final class PenStroke extends Stroke implements FillNode {
      */
     public PenStroke() {
         super();
-        setFill(new SolidFill(Color.BLACK, 1.0));
-        setWidth(new RealLiteral(0.1));
+        setFill(getDefaultFill());
+        setWidth(new RealLiteral(DEFAULT_WIDTH));
         setUom(null);
-        setDashArray(null);
-        setDashOffset(null);
-        setLineCap(null);
-        setLineJoin(null);
+        setDashArray(new StringLiteral(""));
+        setDashOffset(new RealLiteral(0));
+        setLineCap(DEFAULT_CAP);
+        setLineJoin(DEFAULT_JOIN);
     }
 
     /**
@@ -145,12 +153,10 @@ public final class PenStroke extends Stroke implements FillNode {
         if (t.getFill() != null) {
             this.setFill(Fill.createFromJAXBElement(t.getFill()));
         } else {
-            this.setFill(new SolidFill(Color.BLACK));
+            this.setFill(new SolidFill(Color.BLACK,1.0));
         }
-
-        if (t.getDashArray() != null) {
-            this.setDashArray(SeParameterFactory.createStringParameter(t.getDashArray()));
-        }
+        //Null values are handled by the setter and resent by SeParameterFactory
+        this.setDashArray(SeParameterFactory.createStringParameter(t.getDashArray()));
 
         if (t.getDashOffset() != null) {
             this.setDashOffset(SeParameterFactory.createRealParameter(t.getDashOffset()));
@@ -159,7 +165,7 @@ public final class PenStroke extends Stroke implements FillNode {
         if (t.getWidth() != null) {
             this.setWidth(SeParameterFactory.createRealParameter(t.getWidth()));
         } else {
-            setWidth(new RealLiteral(DEFAULT_WIDTH_PX));
+            setWidth(new RealLiteral(DEFAULT_WIDTH));
         }
 
         if (t.getLineCap() != null) {
@@ -248,20 +254,27 @@ public final class PenStroke extends Stroke implements FillNode {
         return fill;
     }
 
+    /**
+     * Sets the fill used to draw the inside of this {@code PenStroke}.
+     * @param fill The new {@link Fill}. If null, will be set to a {@link SolidFill} which color is black and opacity
+     *             is 100%.
+     */
     @Override
     public void setFill(Fill fill) {
-        if (fill != null) {
-            fill.setParent(this);
-        }
-        this.fill = fill;
+        this.fill = fill == null ? getDefaultFill() : fill;
+        this.fill.setParent(this);
+    }
+
+    private Fill getDefaultFill(){
+        return new SolidFill(Color.BLACK, 1.0);
     }
 
     /**
      * Sets the way to draw the extremities of a line.
-     * @param cap 
+     * @param cap The new {@link LineCap}. Will be replaced by {@value DEFAULT_CAP} if null.
      */
     public void setLineCap(LineCap cap) {
-        lineCap = cap;
+        lineCap = cap == null ? DEFAULT_CAP : cap;
     }
 
     /**
@@ -278,10 +291,10 @@ public final class PenStroke extends Stroke implements FillNode {
 
     /**
      * Sets the ways used to draw the join between line segments.
-     * @param join 
+     * @param join  The new {@link LineJoin}. Will be replaced by {@value DEFAULT_JOIN} if null.
      */
     public void setLineJoin(LineJoin join) {
-        lineJoin = join;
+        lineJoin = join == null ? DEFAULT_JOIN : join;
     }
 
     /**
@@ -299,11 +312,10 @@ public final class PenStroke extends Stroke implements FillNode {
 
     /**
      * Set the width used to draw the lines with this {@code PenStroke}.
-     * @param width 
+     * @param width The new width. If null, will be replaced with {@link PenStroke#DEFAULT_WIDTH}, as specified in SE 2.0.
      */
     public void setWidth(RealParameter width) {
-        this.width = width;
-
+        this.width = width == null ? new RealLiteral(DEFAULT_WIDTH) : width;
         if (width != null) {
             width.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
             width.setParent(this);
@@ -319,19 +331,21 @@ public final class PenStroke extends Stroke implements FillNode {
     }
 
     /**
-     * 
-     * @return 
+     * Gets the offset let before drawing the first dash.
+     * @return  The offset let before drawing the first dash.
      */
     public RealParameter getDashOffset() {
         return dashOffset;
     }
 
+    /**
+     * Sets the offset let before drawing the first dash.
+     * @param dashOffset If null, will be defaulted to 0.
+     */
     public void setDashOffset(RealParameter dashOffset) {
-        this.dashOffset = dashOffset;
-        if (dashOffset != null) {
-            dashOffset.setContext(RealParameterContext.REAL_CONTEXT);
-            dashOffset.setParent(this);
-        }
+        this.dashOffset = dashOffset == null ? new RealLiteral(0) : dashOffset;
+        this.dashOffset.setContext(RealParameterContext.REAL_CONTEXT);
+        this.dashOffset.setParent(this);
     }
 
     /**
@@ -350,13 +364,11 @@ public final class PenStroke extends Stroke implements FillNode {
      * is in fact stored as a string parameter, filled with space separated double values.</p>
      * <p>These values represent the length (in the inner UOM) of the opaque (even elements of the array)
      * and transparent (odd elements of the array) parts of the lines to draw.
-     * @param dashArray 
+     * @param dashArray The new dash array. If null, will be replaced by a StringLiteral built with the empty string.
      */
     public void setDashArray(StringParameter dashArray) {
-        this.dashArray = dashArray;
-        if(this.dashArray != null){
-                this.dashArray.setParent(this);
-        }
+        this.dashArray = dashArray == null ? new StringLiteral("") : dashArray;
+        this.dashArray.setParent(this);
     }
 
     private BasicStroke createBasicStroke(Map<String,Value> map,
@@ -704,11 +716,6 @@ public final class PenStroke extends Stroke implements FillNode {
         if (this.lineJoin != null) {
             s.setLineJoin(this.lineJoin.getParameterValueType());
         }
-
-        /*if (this.opacity != null) {
-        s.setOpacity(this.opacity.getJAXBParameterValueType());
-        }*/
-
         if (this.width != null) {
             s.setWidth(this.width.getJAXBParameterValueType());
         }

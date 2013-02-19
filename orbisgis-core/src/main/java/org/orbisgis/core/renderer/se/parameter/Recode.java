@@ -93,7 +93,6 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
 
     /**
      * Get the value that will be used if a data can't be processed well.
-     * @param fallbackValue
      */
     public FallbackType getFallbackValue() {
         return fallbackValue;
@@ -113,7 +112,6 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
 
     /**
      * Get the value that will be used to retrieve data to be processed.
-     * @param lookupValue
      */
     public StringParameter getLookupValue() {
         return lookupValue;
@@ -147,6 +145,14 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
      */
     public ToType getMapItemValue(String key) {
         return mapItems.get(key);
+    }
+
+    /**
+     * Gets the set containing the keys that define this Recode.
+     * @return A deep copy of the inner key set.
+     */
+    public Set<String> getKeys() {
+        return new HashSet<String>(mapItems.keySet());
     }
 
     /**
@@ -195,7 +201,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
     }
     /**
      * Remove the ith <code>MapItem</code>
-     * @param key
+     * @param i
      */
 	public void removeMapItem(int i){
         String key = getMapItemKey(i);
@@ -229,8 +235,7 @@ public abstract class Recode<ToType extends SeParameter, FallbackType extends To
     /**
     * Get the value associated to the key sored in {@code map}. The needed value
     * will be retrieved using the 
-    * @param sds
-    * @param fid
+    * @param map
     * @return
     * A {@code ToType} instance. If the feature found in {@code sds} at
     * {@code fid} does not match anything in the underlying map, the {@code

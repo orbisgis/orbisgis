@@ -28,22 +28,25 @@
  */
 package org.orbisgis.legend.analyzer;
 
-import java.awt.Color;
-import java.io.FileInputStream;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.Unmarshaller;
 import net.opengis.se._2_0.core.StyleType;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Style;
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.analyzer.symbolizers.AreaSymbolizerAnalyzer;
 import org.orbisgis.legend.thematic.choropleth.ChoroplethArea;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolArea;
+
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.Unmarshaller;
+import java.awt.*;
+import java.io.FileInputStream;
+
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  *
@@ -142,7 +145,7 @@ public class AreaSymbolizerAnalyzerTest extends AnalyzerTest {
     @Test
     public void testConstantDefaultConstructor() throws Exception {
         UniqueSymbolArea usa = new UniqueSymbolArea();
-        assertTrue(usa.getLineWidth() == 0.1);
+        assertTrue(usa.getLineWidth() == PenStroke.DEFAULT_WIDTH);
         assertTrue(usa.getLineColor().equals(Color.black));
     }
 
