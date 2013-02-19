@@ -44,6 +44,7 @@ import java.util.Set;
 
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * @author alexis
@@ -137,8 +138,50 @@ public class RecodedLineTest extends AnalyzerTest {
         assertNull(rl.put("zen",new LineParameters(new Color(130, 180, 113),1.0,.5,"")));
         LineParameters lp = new LineParameters(new Color(130, 180, 113),1.0,.5,"");
         assertTrue(lp.equals(rl.get("zen")));
-        LineParameters ret = rl.put("zen", new LineParameters(new Color(140, 140, 140),1.0,.5,""));
+        LineParameters ret = rl.put("zen", new LineParameters(new Color(140, 140, 140), 1.0, .5, ""));
         assertTrue(ret.equals(lp));
+    }
+
+    @Test
+    public void testPutNPE() throws Exception {
+        RecodedLine rl = getRecodedLine();
+        try{
+            rl.put(null,new LineParameters(new Color(130, 180, 113),1.0,.5,""));
+            fail();
+        } catch (NullPointerException npe){
+            assertTrue(true);
+        }
+        try{
+            rl.put("patate",null);
+            fail();
+        } catch (NullPointerException npe){
+            assertTrue(true);
+        }
+        try{
+            rl.put(null,null);
+            fail();
+        } catch (NullPointerException npe){
+            assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testRemove() throws Exception {
+        RecodedLine rl = getRecodedLine();
+        LineParameters rem = rl.remove("1");
+        assertTrue(rem.equals(new LineParameters(new Color(0x22,0x33,0x44),1.0,.5,"")));
+    }
+
+    @Test
+    public void testRemoveNPE() throws Exception {
+        RecodedLine rl = getRecodedLine();
+        try{
+            rl.remove(null);
+            fail();
+        } catch (NullPointerException npe){
+            assertTrue(true);
+        }
+
     }
 
     private LineSymbolizer getLineSymbolizer() throws Exception{

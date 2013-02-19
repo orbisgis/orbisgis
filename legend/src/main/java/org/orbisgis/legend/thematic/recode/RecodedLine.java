@@ -147,6 +147,23 @@ public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
             return ret;
         }
 
+        /**
+         * Removes the mapping for the given key.
+         * @param key The key we want to remove from this unique value analysis.
+         * @return  The value previously associated to the given key, or null if there was not.
+         */
+        public LineParameters remove(String key){
+            if(key == null){
+                throw new NullPointerException("We don't manage null as key");
+            }
+            LineParameters ret = getKeys().contains(key) ? get(key) : null;
+            getLineColor().removeItem(key);
+            getLineDash().removeItem(key);
+            getLineOpacity().removeItem(key);
+            getLineWidth().removeItem(key);
+            return ret;
+        }
+
         @Override
         public Symbolizer getSymbolizer() {
                 return ls;

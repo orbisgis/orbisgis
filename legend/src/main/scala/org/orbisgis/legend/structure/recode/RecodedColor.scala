@@ -167,14 +167,13 @@ class RecodedColor extends AbstractAttributeLegend with RecodedLegend {
    * @param i
    */
   def  removeItem(i : Int) = parameter match {
-    case c : ColorLiteral => throw new UnsupportedOperationException(
-        "You can't remove an item from a literal.")
     case a : Recode2Color =>
       a.removeMapItem(i)
       if(a.getNumMapItem == 0){
         val cl : ColorLiteral = new ColorLiteral(a.getFallbackValue.getColor(null))
         setParameter(cl)
       }
+    case _ =>
   }
 
   /**
@@ -182,14 +181,13 @@ class RecodedColor extends AbstractAttributeLegend with RecodedLegend {
    * @param key
    */
   def  removeItem(key : String) = parameter match {
-    case c : ColorLiteral => throw new UnsupportedOperationException(
-        "You can't remove an item from a literal.")
     case a : Recode2Color =>
       a.removeMapItem(key)
       if(a.getNumMapItem == 0){
         val cl : ColorLiteral = new ColorLiteral(a.getFallbackValue.getColor(null))
         setParameter(cl)
       }
+    case _ =>
   }
 
 

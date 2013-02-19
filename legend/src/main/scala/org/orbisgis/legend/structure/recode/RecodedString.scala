@@ -169,13 +169,12 @@ class RecodedString extends AbstractAttributeLegend with RecodedLegend {
    * @param i
    */
   def  removeItem(i : Int) = parameter match {
-    case c : StringLiteral => throw new UnsupportedOperationException(
-        "You can't remove an item from a literal.")
     case a : Recode2String =>
       a.removeMapItem(i)
       if(a.getNumMapItem == 0){
         setParameter(new StringLiteral(a.getFallbackValue.getValue(null)))
       }
+    case _ =>
   }
 
   /**
@@ -183,12 +182,11 @@ class RecodedString extends AbstractAttributeLegend with RecodedLegend {
    * @param key
    */
   def  removeItem(key : String) = parameter match {
-    case c : StringLiteral => throw new UnsupportedOperationException(
-        "You can't remove an item from a literal.")
     case a : Recode2String =>
       a.removeMapItem(key)
       if(a.getNumMapItem == 0){
         setParameter(new StringLiteral(a.getFallbackValue.getValue(null)))
       }
+    case _ =>
   }
 }

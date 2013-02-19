@@ -154,14 +154,13 @@ class RecodedReal extends AbstractAttributeLegend with RecodedLegend with Numeri
    * @param i The index of the item to be removed.
    */
   def  removeItem(i : Int) = parameter match {
-    case c : RealLiteral => throw new UnsupportedOperationException(
-        "You can't remove an item from a literal.")
     case a : Recode2Real =>
       a.removeMapItem(i)
       if(a.getNumMapItem == 0){
         val cl : RealLiteral = new RealLiteral(a.getFallbackValue.getValue(null))
         setParameter(cl)
       }
+    case _ =>
   }
 
   /**
@@ -169,13 +168,12 @@ class RecodedReal extends AbstractAttributeLegend with RecodedLegend with Numeri
    * @param key The key of the item to be removed.
    */
   def  removeItem(key : String) = parameter match {
-    case c : RealLiteral => throw new UnsupportedOperationException(
-        "You can't remove an item from a literal.")
     case a : Recode2Real =>
       a.removeMapItem(key)
       if(a.getNumMapItem == 0){
         val cl : RealLiteral = new RealLiteral(a.getFallbackValue.getValue(null))
         setParameter(cl)
       }
+    case _ =>
   }
 }
