@@ -28,22 +28,8 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
-import java.awt.Component;
-import java.awt.Container;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.GridLayout;
-import java.awt.event.ActionListener;
-import java.beans.EventHandler;
-import java.net.URL;
-import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JPanel;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.Legend;
-import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
 import org.orbisgis.legend.structure.stroke.ConstantColorAndDashesPSLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
@@ -58,6 +44,12 @@ import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.beans.EventHandler;
+import java.net.URL;
 
 /**
  * {@code JPanel} that ca nbe used to configure simple constant {@code
@@ -98,8 +90,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                         if(uniqueLine.getPenStroke() instanceof ConstantPenStrokeLegend){
                                 penStrokeMemory = (ConstantPenStrokeLegend) uniqueLine.getPenStroke();
                         } else {
-                                PenStrokeAnalyzer psa = new PenStrokeAnalyzer(new PenStroke());
-                                penStrokeMemory = (ConstantPenStrokeLegend) psa.getLegend();
+                                penStrokeMemory = new ConstantPenStrokeLegend(new PenStroke());
                         }
                         initPreview();
                         initializeLegendFields();
@@ -178,7 +169,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
 
         /**
          * Gets a panel containing all the fields to edit a unique line.
-         * @param legend
+         * @param leg
          * @param title
          * @return
          */
@@ -281,7 +272,7 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
          * Recursively enables or disables all the components contained in the
          * containers of {@code comps}.
          * @param enable
-         * @param comps
+         * @param comp
          */
         protected void setFieldState(boolean enable, Component comp){
                 comp.setEnabled(enable);

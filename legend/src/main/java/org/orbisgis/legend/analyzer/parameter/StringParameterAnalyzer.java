@@ -36,7 +36,7 @@ import org.orbisgis.legend.LegendStructure;
 import org.orbisgis.legend.analyzer.function.AbstractLiteralValidator;
 import org.orbisgis.legend.structure.categorize.Categorize2StringLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
-import org.orbisgis.legend.structure.recode.Recode2StringLegend;
+import org.orbisgis.legend.structure.recode.RecodedString;
 
 /**
  *
@@ -66,7 +66,7 @@ public class StringParameterAnalyzer extends AbstractLiteralValidator {
                         }
                 } else if(sp instanceof Recode2String){
                         if(validateRecode((Recode2String) sp)){
-                                return new Recode2StringLegend((Recode2String) sp);
+                                return new RecodedString((Recode2String) sp);
                         }
                 } else {
                         throw new UnsupportedOperationException("We've been unable to recognize this StringParameter.");

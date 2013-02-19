@@ -43,7 +43,7 @@ public class SolidFillLegend implements FillLegend {
 
         private SolidFill fill;
         private LegendStructure colorLegend;
-        private RealLiteralLegend opacityLegend;
+        private LegendStructure opacityLegend;
 
         /**
          * Build a {@code SolidFillLegend} using the {@code Fill} and {@code
@@ -51,7 +51,7 @@ public class SolidFillLegend implements FillLegend {
          * @param fill
          * @param colorLegend
          */
-        public SolidFillLegend(SolidFill fill, LegendStructure colorLegend, RealLiteralLegend rll) {
+        public SolidFillLegend(SolidFill fill, LegendStructure colorLegend, LegendStructure rll) {
                 this.fill = fill;
                 this.colorLegend = colorLegend;
                 this.opacityLegend = rll;
@@ -62,7 +62,7 @@ public class SolidFillLegend implements FillLegend {
          * inner {@code Fill}
          * @return
          */
-        public LegendStructure getColorLegend() {
+        public LegendStructure getFillColorLegend() {
                 return colorLegend;
         }
 
@@ -72,7 +72,7 @@ public class SolidFillLegend implements FillLegend {
          * recognized as a {@link RealLiteralLegend}.
          * @return
          */
-        public RealLiteralLegend getOpacityLegend(){
+        public LegendStructure getFillOpacityLegend(){
             return opacityLegend;
         }
 

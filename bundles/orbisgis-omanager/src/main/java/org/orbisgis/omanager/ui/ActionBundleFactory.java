@@ -33,8 +33,11 @@ import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.Action;
+import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
 import org.osgi.framework.BundleContext;
 import org.xnap.commons.i18n.I18n;
@@ -46,7 +49,21 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class ActionBundleFactory {
     private static final I18n I18N = I18nFactory.getI18n(ActionBundleFactory.class);
-    private static final Logger LOGGER = Logger.getLogger("gui."+ActionBundleFactory.class);
+    private static final Logger LOGGER = Logger.getLogger("gui." + ActionBundleFactory.class);
+    private Map<String,ImageIcon> buttonIcons = new HashMap<String, ImageIcon>();
+    private ImageIcon getIcon(String iconName) {
+        ImageIcon icon = buttonIcons.get(iconName);
+        if(icon==null) {
+            try {
+                icon = new ImageIcon(MainPanel.class.getResource(iconName + ".png"));
+                buttonIcons.put(iconName,icon);
+            } catch (Exception ex) {
+                LOGGER.error("Cannot retrieve icon "+iconName,ex);
+                return new ImageIcon();
+            }
+        }
+        return icon;
+    }
 
     private Component frame;
     private BundleContext bundleContext;
@@ -60,26 +77,26 @@ public class ActionBundleFactory {
         List<Action> actions = new ArrayList<Action>();
 
         if(bundleItem.isStartReady()) {
-            actions.add(new ActionBundle(I18N.tr("Start"),I18N.tr("Activate the selected plug-in"))
+            actions.add(new ActionBundle(I18N.tr("Start"),I18N.tr("Activate the selected plug-in"),getIcon("execute"))
                     .setActionListener(EventHandler.create(ActionListener.class, bundleItem.getBundle(), "start")));
         }
         if(bundleItem.isStopReady()) {
-            actions.add(new ActionBundle(I18N.tr("Stop"),I18N.tr("Deactivate the selected plug-in"))
+            actions.add(new ActionBundle(I18N.tr("Stop"),I18N.tr("Deactivate the selected plug-in"),getIcon("stop"))
                     .setActionListener(EventHandler.create(ActionListener.class, bundleItem.getBundle(), "stop")));
         }
         if(bundleItem.isUpdateReady()) {
-            actions.add(new ActionBundle(I18N.tr("Update"), I18N.tr("Update the plug-in with the same version."))
+            actions.add(new ActionBundle(I18N.tr("Update"), I18N.tr("Update the plug-in with the same version."),getIcon("arrow_refresh"))
                     .setActionListener(EventHandler.create(ActionListener.class, bundleItem.getBundle(), "update")));
         }
         if(bundleItem.isUninstallReady()) {
-            actions.add(new ActionBundle(I18N.tr("Uninstall"), I18N.tr("Remove the selected plug-in"))
+            actions.add(new ActionBundle(I18N.tr("Uninstall"), I18N.tr("Remove the selected plug-in"),getIcon("uninstall"))
                     .setActionListener(EventHandler.create(ActionListener.class, bundleItem.getBundle(), "uninstall")));
         }
         if(bundleItem.isDeployReady()) {
-            actions.add(new ActionDeploy(I18N.tr("Download"),I18N.tr("Download this plug-in from the repository"),false,bundleItem.getObrResource(),bundleContext,frame));
+            actions.add(new ActionDeploy(I18N.tr("Download"),I18N.tr("Download this plug-in from the repository"),false,bundleItem.getObrResource(),bundleContext,frame,getIcon("download")));
         }
         if(bundleItem.isDeployAndStartReady()) {
-            actions.add(new ActionDeploy(I18N.tr("Download & Start"),I18N.tr("Download this plug-in from the repository then start it"),true,bundleItem.getObrResource(),bundleContext,frame));
+            actions.add(new ActionDeploy(I18N.tr("Download & Start"),I18N.tr("Download this plug-in from the repository then start it"),true,bundleItem.getObrResource(),bundleContext,frame,getIcon("download_and_start")));
         }
         return actions;
     }

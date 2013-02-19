@@ -38,7 +38,6 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -51,13 +50,13 @@ import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.FillNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
@@ -920,53 +919,24 @@ public final class AxisChart extends Graphic implements UomNode, FillNode,
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                HashSet<String> ret = new HashSet<String>();
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
                 if (areaFill != null) {
-                        ret.addAll(areaFill.dependsOnFeature());
+                        ls.add(areaFill);
                 }
                 if (lineStroke != null) {
-                        ret.addAll(lineStroke.dependsOnFeature());
+                        ls.add(lineStroke);
                 }
                 if (this.categoryGap != null) {
-                        ret.addAll(categoryGap.dependsOnFeature());
+                        ls.add(categoryGap);
                 }
                 if (categoryWidth != null) {
-                        ret.addAll(categoryWidth.dependsOnFeature());
-                }
-                if (normalizeTo != null) {
-                        ret.addAll(normalizeTo.dependsOnFeature());
+                        ls.add(categoryWidth);
                 }
                 if (axisScale != null) {
-                        ret.addAll(axisScale.dependsOnFeature());
+                        ls.add(axisScale);
                 }
-                for (Category c : categories) {
-                        ret.addAll(c.dependsOnFeature());
-                }
-                return ret;
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-                UsedAnalysis ret = new UsedAnalysis();
-                if (areaFill != null) {
-                        ret.merge(areaFill.getUsedAnalysis());
-                }
-                if (lineStroke != null) {
-                        ret.merge(lineStroke.getUsedAnalysis());
-                }
-                if (this.categoryGap != null) {
-                        ret.merge(categoryGap.getUsedAnalysis());
-                }
-                if (categoryWidth != null) {
-                        ret.merge(categoryWidth.getUsedAnalysis());
-                }
-                if (axisScale != null) {
-                        ret.merge(axisScale.getUsedAnalysis());
-                }
-                for (Category c : categories) {
-                        ret.merge(c.getUsedAnalysis());
-                }
-                return ret;
+                ls.addAll(categories);
+                return ls;
         }
 }

@@ -102,7 +102,7 @@ public abstract class ConstantColorAndDashesPSLegend extends PenStrokeLegend {
          */
         public String getDashArray() {
             String ret = "";
-            StringLiteralLegend sll = (StringLiteralLegend) getDashAnalysis();
+            StringLiteralLegend sll = (StringLiteralLegend) getDashLegend();
             if(sll == null){
                 return ret;
             }
@@ -126,13 +126,13 @@ public abstract class ConstantColorAndDashesPSLegend extends PenStrokeLegend {
                 if(rl == null){
                     rl = new StringLiteral(da);
                     ps.setDashArray(rl);
-                    setDashAnalysis(new StringLiteralLegend(rl));
+                    setDashLegend(new StringLiteralLegend(rl));
                 } else {
                     rl.setValue(da);
                 }
             } else {
                 ps.setDashArray(null);
-                setDashAnalysis(null);
+                setDashLegend(null);
             }
         }
 

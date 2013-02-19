@@ -31,14 +31,19 @@ package org.orbisgis.legend.analyzer.symbolizers;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
-import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
-import org.orbisgis.legend.AbstractAnalyzer;
+import org.orbisgis.core.renderer.se.parameter.Categorize;
+import org.orbisgis.core.renderer.se.parameter.Recode;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
+import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
+import org.orbisgis.core.renderer.se.parameter.real.Interpolate2Real;
+import org.orbisgis.core.renderer.se.parameter.real.RealAttribute;
+import org.orbisgis.core.renderer.se.parameter.real.RealFunction;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.analyzer.MarkGraphicAnalyzer;
-import org.orbisgis.legend.structure.graphic.ConstantWKNLegend;
-import org.orbisgis.legend.structure.graphic.ProportionalWKNLegend;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolPoint;
 import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
+
+import java.util.List;
 
 /**
  * This {@code Analyzer} realization is dedicated to the study of {@code
@@ -46,7 +51,7 @@ import org.orbisgis.legend.thematic.proportional.ProportionalPoint;
  * that can be found in its inner {@code Graphic} instance.
  * @author Alexis Guéganno
  */
-public class PointSymbolizerAnalyzer extends AbstractAnalyzer {
+public class PointSymbolizerAnalyzer extends SymbolizerTypeAnalyzer {
 
     /**
      * Build a new {@code Analyzer} from the given PointSymbolizer.
@@ -56,29 +61,61 @@ public class PointSymbolizerAnalyzer extends AbstractAnalyzer {
         setLegend(analyze(symbolizer));
     }
 
-    private LegendStructure analyze(PointSymbolizer symbolizer){
-        //We must retrieve the inner graphic, assuming there is only one.
-        GraphicCollection graphs = symbolizer.getGraphicCollection();
-        if(graphs.getNumGraphics() ==1 ){
-            //We can start our analysis. We basically analyse the present Graphic.
-            Graphic graphic = graphs.getGraphic(0);
-            if(graphic instanceof MarkGraphic){
-                MarkGraphicAnalyzer mga = new MarkGraphicAnalyzer((MarkGraphic) graphic);
-                LegendStructure gl = mga.getLegend();
-                if(gl instanceof ConstantWKNLegend){
-                    return new UniqueSymbolPoint(symbolizer, (ConstantWKNLegend) gl);
-                } else if(gl instanceof ProportionalWKNLegend){
-                    return new ProportionalPoint(symbolizer, (ProportionalWKNLegend) gl);
-                } else {
-                    throw new UnsupportedOperationException("Soon !");
-                }
-            } else {
-                throw new UnsupportedOperationException("We can just analyze MarkGraphic.");
-            }
-        } else {
-            throw new UnsupportedOperationException("Can't analyze a PointSymbolizer"
-                    + "that contains more than one Graphic instance");
+    private LegendStructure analyze(PointSymbolizer sym) {
+        //We validate the graphic
+        GraphicCollection gc = sym.getGraphicCollection();
+        if (gc.getNumGraphics() != 1) {
+            throw new UnsupportedOperationException("We don't manage mixed graphic yet.");
         }
+        Graphic g = gc.getGraphic(0);
+        if (validateGraphic(g)) {
+            analyzeParameters(sym);
+            boolean b = isAnalysisLight() && isAnalysisUnique() && isFieldUnique();
+            if(b){
+                    //We know we can recognize the analysis. We just have to check
+                    //there is something that is not a literal...
+                    UsedAnalysis ua = getUsedAnalysis();
+                    List<SeParameter> an = ua.getAnalysis();
+                    if(an.isEmpty()){
+                            //Unique Symbol
+                            return new UniqueSymbolPoint(sym);
+                    } else {
+                            SeParameter p = an.get(0);
+                            if(p instanceof Recode){
+                                    throw new UnsupportedOperationException("Not yet !");
+                            } else if(p instanceof Categorize){
+                                    throw new UnsupportedOperationException("Not yet !");
+                            } else if(p instanceof RealParameter && validateInterpolateForProportionalPoint((RealParameter) p)){
+                                    //We need to analyze the ViewBox and its Interpolate instance(s)
+                                    return new ProportionalPoint(sym);
+                            }
+                    }
+            } else {
+                throw new UnsupportedOperationException(getStatus());
+            }
+        }
+        throw new UnsupportedOperationException("We can only work with MarkGraphic instances for now.");
+    }
+
+    /**
+     * Checks that the given RealParameter is an instance of {@link Interpolate2Real} that can be used to build a
+     * proportional point, ie that it is made on the square root of a numeric attribute.
+     * @param rp
+     * @return
+     */
+    public boolean validateInterpolateForProportionalPoint(RealParameter rp){
+        if(rp instanceof Interpolate2Real){
+            RealParameter look =  ((Interpolate2Real)rp).getLookupValue();
+            if(look instanceof RealFunction){
+                RealFunction rf = (RealFunction) look;
+                List<RealParameter> ops = rf.getOperands();
+                if(!ops.isEmpty() && rf.getOperator().equals(RealFunction.Operators.SQRT)
+                                && ops.size() == 1 && ops.get(0) instanceof RealAttribute){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 }

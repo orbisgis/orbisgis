@@ -1,0 +1,20 @@
+/*
+* This script permits to execute a sql script in beanshell, using the 
+* @author = Erwan BOCHER
+*/
+
+import org.orbisgis.core.Services;
+import org.orbisgis.view.background.BackgroundManager;
+import org.orbisgis.view.map.MapElement;
+import org.orbisgis.view.sqlconsole.actions.ExecuteScriptProcess;
+
+
+bsh.help.cd = "usage: sql( \"SELECT * FROM mytable;\" )";
+
+
+sql(instruction){
+
+BackgroundManager bm = (BackgroundManager) Services.getService(BackgroundManager.class);
+bm.backgroundOperation(new ExecuteScriptProcess(instruction,MapElement.fetchMapContext()));
+
+}

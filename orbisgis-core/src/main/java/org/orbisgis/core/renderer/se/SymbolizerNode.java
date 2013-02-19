@@ -28,8 +28,8 @@
  */
 package org.orbisgis.core.renderer.se;
 
-import java.util.HashSet;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
+import java.util.List;
+import org.orbisgis.core.renderer.se.visitors.ISymbolizerVisitor;
 
 /**
  * SymbolizerNode allow to browse the styling tree
@@ -52,23 +52,20 @@ public interface SymbolizerNode{
     void setParent(SymbolizerNode node);
 
     /**
-     * Get a set containing the name of the features that are referenced in 
-     * this {@code Style}. We use a {@code HashSet}. This way, we can be sure
-     * that features are not referenced twice.
-     * @return 
-     * The names of all the needed features, in a {@code HashSet} instance.
-     */
-    HashSet<String> dependsOnFeature();
-
-    /**
-     * Retrieve an object describing the type of analysis made in the
-     * symbolizer.
-     * @return
-     */
-    UsedAnalysis getUsedAnalysis();
-
-    /**
      * Notify the parent of the node that cached values must be unset.
      */
     void update();
+
+    /**
+     * Get all the {@code SymbolizerNode} instances that are direct children
+     * of this.
+     * @return
+     */
+    List<SymbolizerNode> getChildren();
+
+    /**
+     * Accepts the visit of {@code visitor}.
+     * @param visitor
+     */
+    void acceptVisitor(ISymbolizerVisitor visitor);
 }

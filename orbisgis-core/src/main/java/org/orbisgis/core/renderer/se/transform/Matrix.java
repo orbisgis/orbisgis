@@ -29,8 +29,7 @@
 package org.orbisgis.core.renderer.se.transform;
 
 import java.awt.geom.AffineTransform;
-import java.util.HashSet;
-import java.util.Map;
+import java.util.*;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.MatrixType;
 import net.opengis.se._2_0.core.ObjectFactory;
@@ -38,13 +37,14 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
 
 /**
  * Affine Transformation based on RealParameters
@@ -339,27 +339,27 @@ public final class Matrix extends AbstractSymbolizerNode implements Transformati
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-            HashSet<String> hs = new HashSet<String>();
-            hs.addAll(a.dependsOnFeature());
-            hs.addAll(b.dependsOnFeature());
-            hs.addAll(c.dependsOnFeature());
-            hs.addAll(d.dependsOnFeature());
-            hs.addAll(e.dependsOnFeature());
-            hs.addAll(f.dependsOnFeature());
-            return hs;
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-            UsedAnalysis result = new UsedAnalysis();
-            result.merge(a.getUsedAnalysis());
-            result.merge(b.getUsedAnalysis());
-            result.merge(c.getUsedAnalysis());
-            result.merge(d.getUsedAnalysis());
-            result.merge(e.getUsedAnalysis());
-            result.merge(f.getUsedAnalysis());
-            return result;
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if (a != null) {
+                        ls.add(a);
+                }
+                if (b != null) {
+                        ls.add(b);
+                }
+                if (c != null) {
+                        ls.add(c);
+                }
+                if (d != null) {
+                        ls.add(d);
+                }
+                if (e != null) {
+                        ls.add(e);
+                }
+                if (f != null) {
+                        ls.add(f);
+                }
+                return ls;
         }
 
         @Override
@@ -390,12 +390,19 @@ public final class Matrix extends AbstractSymbolizerNode implements Transformati
          * @throws ParameterException when something went wrong...
          */
         public void simplify() throws ParameterException {
-                HashSet<String> sa = a.dependsOnFeature();
-                HashSet<String> sb = b.dependsOnFeature();
-                HashSet<String>sc = c.dependsOnFeature();
-                HashSet<String> sd = d.dependsOnFeature();
-                HashSet<String> se = e.dependsOnFeature();
-                HashSet<String> sf = f.dependsOnFeature();
+                FeaturesVisitor vis = new FeaturesVisitor();
+                a.acceptVisitor(vis);
+                Set<String> sa = vis.getResult();
+                b.acceptVisitor(vis);
+                Set<String> sb = vis.getResult();
+                c.acceptVisitor(vis);
+                Set<String> sc = vis.getResult();
+                d.acceptVisitor(vis);
+                Set<String> sd = vis.getResult();
+                e.acceptVisitor(vis);
+                Set<String> se = vis.getResult();
+                f.acceptVisitor(vis);
+                Set<String> sf = vis.getResult();
 
                 if (sa != null && !sa.isEmpty()) {
                         setA(new RealLiteral(a.getValue(null, -1)));

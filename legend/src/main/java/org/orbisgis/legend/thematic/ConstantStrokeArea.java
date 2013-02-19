@@ -28,16 +28,17 @@
  */
 package org.orbisgis.legend.thematic;
 
-import java.awt.Color;
 import org.orbisgis.core.renderer.se.AreaSymbolizer;
 import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.analyzer.PenStrokeAnalyzer;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
 import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
+
+import java.awt.*;
 
 /**
  * Represents an {@code AreaSymbolizer} of which the {@code Stroke} is a constant
@@ -52,14 +53,14 @@ public abstract class ConstantStrokeArea extends SymbolizerLegend {
     private ConstantPenStroke strokeLegend;
 
     /**
-     * Build a new default {@code ConstantStrokeArea} from scratch. It contains a
+     * Builds a new default {@code ConstantStrokeArea} from scratch. It contains a
      * default {@code AreaSymbolizer}, which is associated to a constant {@code
      * PenStroke}.
      */
     public ConstantStrokeArea() {
         areaSymbolizer = new AreaSymbolizer();
         Stroke stroke = areaSymbolizer.getStroke();
-        strokeLegend = (ConstantPenStroke) new PenStrokeAnalyzer((PenStroke) stroke).getLegend();
+        strokeLegend = new ConstantPenStrokeLegend((PenStroke)stroke);
     }
 
     /**
@@ -70,18 +71,7 @@ public abstract class ConstantStrokeArea extends SymbolizerLegend {
     public ConstantStrokeArea(AreaSymbolizer symbolizer){
         areaSymbolizer=symbolizer;
         Stroke stroke = symbolizer.getStroke();
-        if(stroke instanceof PenStroke || stroke == null){
-            LegendStructure strokeLgd = new PenStrokeAnalyzer((PenStroke) stroke).getLegend();
-            if(strokeLgd instanceof ConstantPenStroke){
-                strokeLegend = (ConstantPenStroke) strokeLgd;
-            } else {
-                throw new IllegalArgumentException("The stroke of this AreaSymbolizer "
-                        + "can't be recognized as a constant PenStroke.");
-            }
-        } else {
-            throw new IllegalArgumentException("We are not able to process Stroke"
-                    + "that are not PenStroke.");
-        }
+        strokeLegend = stroke == null ? new NullPenStrokeLegend() : new ConstantPenStrokeLegend((PenStroke)stroke);
     }
 
     /**
@@ -171,7 +161,7 @@ public abstract class ConstantStrokeArea extends SymbolizerLegend {
      * @return
      */
     public Uom getStrokeUom(){
-            return getStrokeLegend().getUom();
+            return getStrokeLegend().getStrokeUom();
     }
 
     /**
@@ -179,6 +169,6 @@ public abstract class ConstantStrokeArea extends SymbolizerLegend {
      * @param u
      */
     public void setStrokeUom(Uom u){
-            getStrokeLegend().setUom(u);
+            getStrokeLegend().setStrokeUom(u);
     }
 }

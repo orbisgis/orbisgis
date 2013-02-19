@@ -96,7 +96,7 @@ public interface DockingManager {
         /**
          * The multiple instances panels can be shown at the next start of application
          * if their factory is registered 
-         * before loading the layout {@link DockingPanelParameters#setLayout(DockingPanelLayout)}
+         * before loading the layout {@link setDockingStateFile}
          * @param factoryName
          * @param factory  
          */

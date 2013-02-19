@@ -32,6 +32,7 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 import java.io.FileInputStream;
 import java.util.HashSet;
+import java.util.Set;
 import javax.swing.JPanel;
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.Unmarshaller;
@@ -49,6 +50,8 @@ import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.color.ColorLiteral;
 import org.orbisgis.core.renderer.se.parameter.color.Recode2Color;
 import org.orbisgis.core.renderer.se.parameter.string.StringAttribute;
+import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
+import org.orbisgis.core.renderer.se.visitors.UsedAnalysisVisitor;
 
 /**
  *
@@ -109,9 +112,11 @@ public class SymbolizerTest extends AbstractTest {
     
     @Test 
     public void testDependsOnFeature() throws Exception {
+        FeaturesVisitor fv = new FeaturesVisitor();
         String xml = "src/test/resources/org/orbisgis/core/renderer/se/symbol_prop_canton_interpol_lin.se";
         Style fts = new Style(null, xml);
-        HashSet<String> feat = fts.dependsOnFeature();
+        fts.acceptVisitor(fv);
+        Set<String> feat = fv.getResult();
         assertTrue(feat.size() == 1);
         assertTrue(feat.contains("PTOT99"));
         AreaSymbolizer as = (AreaSymbolizer)fts.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
@@ -120,11 +125,13 @@ public class SymbolizerTest extends AbstractTest {
         Recode2Color rc = new Recode2Color(new ColorLiteral("#887766"), sa);
         rc.addMapItem("bonjour", new ColorLiteral("#546576"));
         fill.setColor(rc);
-        feat = fts.dependsOnFeature();
+        fts.acceptVisitor(fv);
+        feat = fv.getResult();
         assertTrue(feat.size() == 1);
         assertTrue(feat.contains("PTOT99"));
         sa.setColumnName("ohhai");
-        feat = fts.dependsOnFeature();
+        fts.acceptVisitor(fv);
+        feat = fv.getResult();
         assertTrue(feat.size() == 2);
         assertTrue(feat.contains("PTOT99"));
         assertTrue(feat.contains("ohhai"));
@@ -134,7 +141,9 @@ public class SymbolizerTest extends AbstractTest {
     public void testRecodeUsedAnalysis() throws Exception {
         Style style = new Style(null, "src/test/resources/org/orbisgis/core/renderer/se/colorRecode.se");
         LineSymbolizer ps =(LineSymbolizer) style.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        UsedAnalysis ua = ps.getUsedAnalysis();
+        UsedAnalysisVisitor uv = new UsedAnalysisVisitor();
+        uv.visitSymbolizerNode(ps);
+        UsedAnalysis ua = uv.getUsedAnalysis();
         assertTrue(ua.isRecodeUsed());
         assertTrue(ua.getAnalysis().size()==1);
     }

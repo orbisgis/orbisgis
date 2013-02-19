@@ -28,31 +28,30 @@
  */
 package org.orbisgis.core.renderer.se.fill;
 
-import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.Shape;
-import java.awt.TexturePaint;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.util.HashSet;
-import java.util.Map;
-import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.GraphicFillType;
 import net.opengis.se._2_0.core.ObjectFactory;
 import net.opengis.se._2_0.core.TileGapType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
+
+import javax.xml.bind.JAXBElement;
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A "GraphicFill" defines repeated-graphic filling (stippling) pattern for an area geometry.
@@ -260,34 +259,6 @@ public final class GraphicFill extends Fill {
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> sb = new HashSet<String>();
-
-        if (gapX != null) {
-            sb.addAll(gapX.dependsOnFeature());
-        }
-        if (gapY != null) {
-            sb.addAll(gapY.dependsOnFeature());
-        }
-        if (graphic != null) {
-            sb.addAll(graphic.dependsOnFeature());
-        }
-
-        return sb;
-    }
-
-        @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis ua = new UsedAnalysis();
-        ua.merge(gapX.getUsedAnalysis());
-        ua.merge(gapY.getUsedAnalysis());
-        if(graphic != null){
-            ua.merge(graphic.getUsedAnalysis());
-        }
-        return ua;
-    }
-
-    @Override
     public GraphicFillType getJAXBType() {
         GraphicFillType f = new GraphicFillType();
 
@@ -311,6 +282,21 @@ public final class GraphicFill extends Fill {
         }
 
         return f;
+    }
+
+    @Override
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        if (graphic != null) {
+            ls.add(graphic);
+        }
+        if (gapX != null) {
+            ls.add(gapX);
+        }
+        if (gapY != null) {
+            ls.add(gapY);
+        }
+        return ls;
     }
 
     @Override

@@ -37,10 +37,10 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  * Defines a function on real numbers. A function is defined with a operation and
@@ -264,16 +264,6 @@ public class RealFunction extends AbstractSymbolizerNode implements SeParameter,
         return 0;
     }
 
-
-    @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> result = new HashSet<String>();
-        for (RealParameter p : operands){
-            result.addAll(p.dependsOnFeature());
-        }
-        return result;
-    }
-
     @Override
 	public ParameterValueType getJAXBParameterValueType() {
 		ParameterValueType p = new ParameterValueType();
@@ -296,13 +286,10 @@ public class RealFunction extends AbstractSymbolizerNode implements SeParameter,
     }
 
     @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis ua  = new UsedAnalysis();
-        ua.include(this);
-        for(RealParameter r : operands){
-                ua.merge(r.getUsedAnalysis());
-        }
-        return ua;
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls =new ArrayList<SymbolizerNode>();
+        ls.addAll(operands);
+        return ls;
     }
 
 

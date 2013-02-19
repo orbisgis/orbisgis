@@ -31,8 +31,6 @@ package org.orbisgis.legend.thematic.constant;
 import org.orbisgis.core.renderer.se.PointSymbolizer;
 import org.orbisgis.core.renderer.se.graphic.Graphic;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
-import org.orbisgis.legend.LegendStructure;
-import org.orbisgis.legend.analyzer.MarkGraphicAnalyzer;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
 import org.orbisgis.legend.structure.graphic.ConstantFormWKN;
 import org.orbisgis.legend.structure.graphic.ConstantWKNLegend;
@@ -70,7 +68,7 @@ public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbo
     public UniqueSymbolPoint() {
         super(new PointSymbolizer());
         Graphic gr = ((PointSymbolizer) getSymbolizer()).getGraphicCollection().getGraphic(0);
-        markGraphic = (ConstantWKNLegend) new MarkGraphicAnalyzer((MarkGraphic) gr).getLegend();
+        markGraphic = new ConstantWKNLegend((MarkGraphic)gr);
     }
 
     /**
@@ -87,13 +85,7 @@ public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbo
         if(pointSymbolizer.getGraphicCollection().getNumGraphics() == 1){
             Graphic gr = pointSymbolizer.getGraphicCollection().getGraphic(0);
             if(gr instanceof MarkGraphic){
-                LegendStructure mgl = new MarkGraphicAnalyzer((MarkGraphic) gr).getLegend();
-                if(mgl instanceof ConstantWKNLegend){
-                    markGraphic = (ConstantWKNLegend) mgl;
-                }  else {
-                    throw new IllegalArgumentException("We can't analyze yet symbolizers "
-                            + "that are not constants.");
-                }
+                markGraphic = new ConstantWKNLegend((MarkGraphic)gr);
             }
         } else {
             throw new IllegalArgumentException("We can't analyze symbolizers with"

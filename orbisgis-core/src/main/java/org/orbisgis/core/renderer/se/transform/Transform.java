@@ -31,7 +31,6 @@ package org.orbisgis.core.renderer.se.transform;
 import java.awt.geom.AffineTransform;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import net.opengis.se._2_0.core.*;
@@ -39,10 +38,10 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 
 /**
  *
@@ -263,21 +262,10 @@ public class Transform extends AbstractSymbolizerNode implements UomNode {
         }
 
         @Override
-        public HashSet<String> dependsOnFeature() {
-                HashSet<String> result = new HashSet<String>();
-                for (Transformation t : this.transformations) {
-                        result.addAll(t.dependsOnFeature());
-                }
-                return result;
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-                UsedAnalysis result = new UsedAnalysis();
-                for (Transformation t : this.transformations) {
-                        result.merge(t.getUsedAnalysis());
-                }
-                return result;
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                ls.addAll(transformations);
+                return ls;
         }
 
         @Override

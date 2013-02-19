@@ -35,6 +35,7 @@ import org.apache.log4j.Logger;
 import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
@@ -124,15 +125,6 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
         setFallbackValue(fallbackValue);
         setLookupValue(lookupValue);
         this.method = CategorizeMethod.MANUAL;
-    }
-
-    @Override
-    public final HashSet<String> dependsOnFeature() {
-        HashSet<String>  out = this.getLookupValue().dependsOnFeature();
-        for (int i = 0; i < this.getNumClasses(); i++) {
-            out.addAll(this.getClassValue(i).dependsOnFeature());
-        }
-        return out;
     }
 
     /**
@@ -567,17 +559,15 @@ public abstract class Categorize<ToType extends SeParameter, FallbackType extend
     }
 
     @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis ua = new UsedAnalysis();
-        ua.include(this);
-        ua.merge(lookupValue.getUsedAnalysis());
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        ls.add(lookupValue);
         if(firstClass != null){
-            ua.merge(firstClass.getUsedAnalysis());
+            ls.add(firstClass);
         }
-        for(ToType t : classValues){
-                ua.merge(t.getUsedAnalysis());
-        }
-        return ua;
+        ls.addAll(classValues);
+        ls.addAll(thresholds);
+        return ls;
     }
 
     //**********************************************************************************

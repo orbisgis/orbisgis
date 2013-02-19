@@ -35,7 +35,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -45,6 +44,7 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.GraphicNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.RelativeOrientation;
 import org.orbisgis.core.renderer.se.common.ShapeHelper;
@@ -53,7 +53,6 @@ import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -353,36 +352,19 @@ public final class GraphicStroke extends Stroke implements GraphicNode, UomNode 
         }
     }
 
-
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> result = null;
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
         if (graphic != null) {
-            result = graphic.dependsOnFeature();
+            ls.add(graphic);
         }
         if (length != null) {
-            if(result == null){
-                result = length.dependsOnFeature();
-            } else {
-                result.addAll(length.dependsOnFeature());
-            }
-        }
-        return result == null ? new HashSet<String>() : result;
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis result = new UsedAnalysis();
-        if (graphic != null) {
-            result.merge(graphic.getUsedAnalysis());
-        }
-        if (length != null) {
-                result.merge(length.getUsedAnalysis());
+            ls.add(length);
         }
         if (relativePosition != null) {
-                result.merge(relativePosition.getUsedAnalysis());
+            ls.add(relativePosition);
         }
-        return result;
+        return ls;
     }
 
     @Override

@@ -30,7 +30,8 @@ package org.orbisgis.core.renderer.se.parameter.string;
 
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.FormatNumberType;
@@ -40,10 +41,10 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DataSet;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 
 /**
@@ -134,11 +135,6 @@ public class Number2String extends AbstractSymbolizerNode implements SeParameter
 
         @Override
         public void setRestrictionTo(String[] list) {
-        }
-
-        @Override
-        public HashSet<String> dependsOnFeature() {
-                return numericValue.dependsOnFeature();
         }
 
         @Override
@@ -291,10 +287,9 @@ public class Number2String extends AbstractSymbolizerNode implements SeParameter
         }
 
         @Override
-        public UsedAnalysis getUsedAnalysis() {
-                UsedAnalysis ua = new UsedAnalysis();
-                ua.include(this);
-                ua.merge(numericValue.getUsedAnalysis());
-                return ua;
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                ls.add(numericValue);
+                return ls;
         }
 }

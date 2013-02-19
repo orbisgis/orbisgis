@@ -28,9 +28,14 @@
  */
 package org.orbisgis.legend.structure.fill;
 
+import java.beans.EventHandler;
 import org.orbisgis.core.renderer.se.fill.SolidFill;
-import org.orbisgis.legend.structure.literal.RealLiteralLegend;
-import org.orbisgis.legend.structure.recode.Recode2ColorLegend;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
+import org.orbisgis.core.renderer.se.parameter.color.ColorParameter;
+import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
+import org.orbisgis.legend.structure.recode.RecodedColor;
+import org.orbisgis.legend.structure.recode.RecodedReal;
+import org.orbisgis.legend.structure.recode.type.TypeListener;
 
 /**
  * A {@code Legend} that represents a {@code SolidFill} where the color is defined
@@ -40,13 +45,36 @@ import org.orbisgis.legend.structure.recode.Recode2ColorLegend;
 public class RecodedSolidFillLegend extends SolidFillLegend {
 
         /**
+         * Build a new {@code RecodedSolidFill} from the given {@link SolidFill}. If it can't be recognized as a {@code
+         * RecodedSolidFill}, you'll receive {@link UnsupportedOperationException} or {@link ClassCastException}.
+         * @param fill
+         */
+        public RecodedSolidFillLegend(SolidFill fill){
+            this(fill, new RecodedColor(fill.getColor()), new RecodedReal(fill.getOpacity()));
+        }
+
+        /**
          * Build a new {@code CategorizedSolidFillLegend} using the {@code 
          * SolidFill} and {@code Recode2ColorLegend} given in parameter.
          * @param fill
          * @param colorLegend
          */
-        public RecodedSolidFillLegend(SolidFill fill, Recode2ColorLegend colorLegend, RealLiteralLegend opacity) {
+        public RecodedSolidFillLegend(SolidFill fill, RecodedColor colorLegend, RecodedReal opacity) {
                 super(fill, colorLegend, opacity);
+                TypeListener tl = EventHandler.create(TypeListener.class, this, "replaceColor", "source.parameter");
+                colorLegend.addListener(tl);
+                TypeListener tlZ = EventHandler.create(TypeListener.class, this, "replaceOpacity", "source.parameter");
+                opacity.addListener(tlZ);
+        }
+
+        public void replaceColor(SeParameter sp){
+                SolidFill sf = getFill();
+                sf.setColor((ColorParameter) sp);
+        }
+
+        public void replaceOpacity(SeParameter sp){
+                SolidFill sf = getFill();
+                sf.setOpacity((RealParameter) sp);
         }
 
 }

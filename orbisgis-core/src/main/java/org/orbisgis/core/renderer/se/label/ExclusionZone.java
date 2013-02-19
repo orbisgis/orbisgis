@@ -28,8 +28,6 @@
  */
 package org.orbisgis.core.renderer.se.label;
 
-import java.util.HashSet;
-import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.ExclusionRadiusType;
 import net.opengis.se._2_0.core.ExclusionRectangleType;
 import net.opengis.se._2_0.core.ExclusionZoneType;
@@ -37,6 +35,8 @@ import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
+
+import javax.xml.bind.JAXBElement;
 
 /**
  * An {@code ExclusionZone} defines an area around a {@code PointLabel} where other 
@@ -89,7 +89,4 @@ public abstract class ExclusionZone extends AbstractSymbolizerNode implements Uo
         public void setUom(Uom uom) {
                 this.uom = uom;
         }
-
-        @Override
-        public abstract HashSet<String> dependsOnFeature();
 }

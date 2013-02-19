@@ -31,7 +31,7 @@ package org.orbisgis.legend.structure.viewbox;
 import org.orbisgis.core.renderer.se.graphic.ViewBox;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
-import org.orbisgis.legend.analyzer.parameter.RealParameterAnalyzer;
+import org.orbisgis.legend.structure.literal.RealLiteralLegend;
 import org.orbisgis.legend.structure.parameter.NumericLegend;
 
 /**
@@ -52,8 +52,8 @@ public class DefaultViewBox implements ViewBoxLegend{
          */
         public DefaultViewBox(){
                 viewBox = new ViewBox();
-                height = (NumericLegend) new RealParameterAnalyzer(new RealLiteral(3)).getLegend();
-                width = (NumericLegend) new RealParameterAnalyzer(new RealLiteral(3)).getLegend();
+                height = new RealLiteralLegend(new RealLiteral(3));
+                width = new RealLiteralLegend(new RealLiteral(3));
                 viewBox.setWidth((RealParameter)width.getParameter());
                 viewBox.setHeight((RealParameter)height.getParameter());
         }

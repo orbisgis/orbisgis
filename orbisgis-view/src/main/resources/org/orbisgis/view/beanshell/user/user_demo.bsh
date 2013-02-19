@@ -1,0 +1,19 @@
+/*
+* This is a demo script that returns the number of layers
+*/
+
+import org.orbisgis.core.Services;
+import org.orbisgis.view.edition.EditorManager;
+import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.view.map.MapElement;
+
+EditorManager editorManager = Services.getService(EditorManager.class);
+
+layerCount(){
+for (EditableElement editable : editorManager.getEditableElements()) {
+         if (editable instanceof MapElement) {
+         		MapElement mapElement = (MapElement) editable;
+       		return mapElement.getMapContext().getLayerModel().getLayerCount();
+         }
+}
+}

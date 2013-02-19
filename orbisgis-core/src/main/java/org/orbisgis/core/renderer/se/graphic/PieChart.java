@@ -36,7 +36,6 @@ import java.awt.geom.Area;
 import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -48,18 +47,19 @@ import org.gdms.data.values.Value;
 import org.orbisgis.core.map.MapTransform;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
 import org.orbisgis.core.renderer.se.StrokeNode;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.fill.Fill;
 import org.orbisgis.core.renderer.se.label.StyledText;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealLiteral;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.core.renderer.se.transform.Transform;
+import org.orbisgis.core.renderer.se.visitors.FeaturesVisitor;
 
 /**
  * A PieChart is a way to render statistical informations directly in the map.
@@ -330,11 +330,15 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
     public void setHoleRadius(RealParameter holeRadius) {
         this.holeRadius = holeRadius;
         if (holeRadius != null) {
-            if (this.radius != null && this.radius.dependsOnFeature().isEmpty()) {
-                try {
-                    holeRadius.setContext(new RealParameterContext(0.0, radius.getValue(null, -1)));
-                } catch (ParameterException ex) {
-                    // don't throw anything since radius does not depends on features
+            if (this.radius != null){
+                FeaturesVisitor fv = new FeaturesVisitor();
+                this.radius.acceptVisitor(fv);
+                if(fv.getResult().isEmpty()) {
+                    try {
+                        holeRadius.setContext(new RealParameterContext(0.0, radius.getValue(null, -1)));
+                    } catch (ParameterException ex) {
+                        // don't throw anything since radius does not depends on features
+                    }
                 }
             }
             holeRadius.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
@@ -575,45 +579,22 @@ public final class PieChart extends Graphic implements StrokeNode, UomNode,
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> result = new HashSet<String>();
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
         if (radius != null) {
-            result.addAll(radius.dependsOnFeature());
+            ls.add(radius);
         }
         if (holeRadius != null) {
-            result.addAll(holeRadius.dependsOnFeature());
+            ls.add(holeRadius);
         }
         if (stroke != null) {
-            result.addAll(stroke.dependsOnFeature());
+            ls.add(stroke);
         }
-        if (this.transform != null) {
-            result.addAll(transform.dependsOnFeature());
+        if (transform != null) {
+            ls.add(transform);
         }
-        for (Slice s : slices) {
-            result.addAll(s.dependsOnFeature());
-        }
-        return result;
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis() {
-        UsedAnalysis result = new UsedAnalysis();
-        if (radius != null) {
-            result.merge(radius.getUsedAnalysis());
-        }
-        if (holeRadius != null) {
-            result.merge(holeRadius.getUsedAnalysis());
-        }
-        if (stroke != null) {
-            result.merge(stroke.getUsedAnalysis());
-        }
-        if (this.transform != null) {
-            result.merge(transform.getUsedAnalysis());
-        }
-        for (Slice s : slices) {
-            result.merge(s.getUsedAnalysis());
-        }
-        return result;
+        ls.addAll(slices);
+        return ls;
     }
 
     @Override

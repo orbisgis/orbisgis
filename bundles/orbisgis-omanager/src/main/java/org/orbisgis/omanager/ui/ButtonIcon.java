@@ -1,4 +1,4 @@
-/**
+/*
  * OrbisGIS is a GIS application dedicated to scientific spatial simulation.
  * This cross-platform GIS is developed at French IRSTV institute and is able to
  * manipulate and create vector and raster spatial information.
@@ -26,39 +26,42 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.view.beanshell.commands;
 
-import bsh.CallStack;
-import bsh.Interpreter;
-import java.io.File;
-import java.lang.reflect.Method;
-import java.net.URL;
-import java.net.URLClassLoader;
+package org.orbisgis.omanager.ui;
+
+import java.awt.Insets;
+import javax.swing.Action;
+import javax.swing.Icon;
+import javax.swing.JButton;
 
 /**
- * This class is used to load a JAR into the current classloader.
- * If the file doesn't exist nothing is reported.
- * @author ebocher
+ * (no border, no background)
+ * @author Nicolas Fortin
  */
-public class AddJAR {
+public class ButtonIcon extends JButton {
 
-        /**
-         * Implement the command action.
-         */
-        public static void invoke(Interpreter env, CallStack callstack, String filePath) throws Exception {
-                execute(filePath);
-        }
+    private void setStyle() {
+        setMargin(new Insets(0, 0, 0, 0));
+        setBorderPainted(false);
+        setContentAreaFilled(false);
+    }
 
-        public static void execute(String filePath) throws Exception {
-                File file = new File(filePath);
-                if(file.exists()){
-                addSoftwareLibrary(new File(filePath));
-                }
-        }
+    /**
+     * Constructor with action, an Icon must be set
+     * @param action
+     */
+    public ButtonIcon(Action action) {
+        super(action);
+        setStyle();
+    }
 
-        private static void addSoftwareLibrary(File file) throws Exception {
-                Method method = URLClassLoader.class.getDeclaredMethod("addURL", new Class[]{URL.class});
-                method.setAccessible(true);
-                method.invoke(ClassLoader.getSystemClassLoader(), new Object[]{file.toURI().toURL()});
-        }
+    /**
+     * Constructor with icon
+     * @param icon
+     */
+    public ButtonIcon(Icon icon) {
+        super(icon);
+        setStyle();
+    }
+
 }

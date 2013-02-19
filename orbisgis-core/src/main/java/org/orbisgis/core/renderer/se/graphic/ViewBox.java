@@ -29,17 +29,18 @@
 package org.orbisgis.core.renderer.se.graphic;
 
 import java.awt.geom.Point2D;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import net.opengis.se._2_0.core.ViewBoxType;
 import org.gdms.data.values.Value;
 import org.orbisgis.core.renderer.se.AbstractSymbolizerNode;
 import org.orbisgis.core.renderer.se.SeExceptions.InvalidStyle;
+import org.orbisgis.core.renderer.se.SymbolizerNode;
 import org.orbisgis.core.renderer.se.UomNode;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
 import org.orbisgis.core.renderer.se.parameter.SeParameterFactory;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameterContext;
 
@@ -142,35 +143,6 @@ public final class ViewBox extends  AbstractSymbolizerNode {
                 //return y == null ? x : y;
         }
 
-        @Override
-        public HashSet<String> dependsOnFeature() {
-            HashSet<String> hs = null;
-            if (x != null) {
-                    hs = x.dependsOnFeature();
-            }
-            if (y != null) { 
-                if(hs == null) {
-                    hs = y.dependsOnFeature();
-                } else {
-                    hs.addAll(y.dependsOnFeature());
-                }
-            }
-
-            return hs;
-        }
-
-        @Override
-        public UsedAnalysis getUsedAnalysis() {
-            UsedAnalysis ua = new UsedAnalysis();
-            if(x!=null){
-                ua.merge(x.getUsedAnalysis());
-            }
-            if(y!=null){
-                ua.merge(y.getUsedAnalysis());
-            }
-            return ua;
-        }
-
         /**
          * Return the final dimension described by this view box, in [px].
          * @param ds map
@@ -236,16 +208,25 @@ public final class ViewBox extends  AbstractSymbolizerNode {
          */
         @Override
         public String toString() {
-                String result = "ViewBox:";
-
+                StringBuilder result = new StringBuilder("ViewBox:");
                 if (this.x != null) {
-                        result += "  Width: " + x.toString();
+                        result.append("  Width: ").append(x.toString());
                 }
-
                 if (this.y != null) {
-                        result += "  Height: " + y.toString();
+                        result.append("  Height: ").append(y.toString());
                 }
+                return result.toString();
+        }
 
-                return result;
+        @Override
+        public List<SymbolizerNode> getChildren() {
+                List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+                if (y != null) {
+                        ls.add(y);
+                }
+                if (x != null) {
+                        ls.add(x);
+                }
+                return ls;
         }
 }

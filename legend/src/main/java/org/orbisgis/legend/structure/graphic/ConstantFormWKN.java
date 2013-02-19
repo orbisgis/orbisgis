@@ -29,12 +29,21 @@
 package org.orbisgis.legend.structure.graphic;
 
 import org.orbisgis.core.renderer.se.common.Uom;
+import org.orbisgis.core.renderer.se.fill.Fill;
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
+import org.orbisgis.core.renderer.se.stroke.Stroke;
 import org.orbisgis.legend.LegendStructure;
+import org.orbisgis.legend.structure.fill.FillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFill;
+import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
+import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
 import org.orbisgis.legend.structure.literal.StringLiteralLegend;
 import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
+import org.orbisgis.legend.structure.stroke.constant.ConstantPenStrokeLegend;
+import org.orbisgis.legend.structure.stroke.constant.NullPenStrokeLegend;
 
 /**
  * This abstract class is a common {@code LegendStructure} description for all the {@code
@@ -45,6 +54,32 @@ import org.orbisgis.legend.structure.stroke.constant.ConstantPenStroke;
  * @author Alexis Guéganno
  */
 public abstract class ConstantFormWKN extends MarkGraphicLegend {
+
+    /**
+     * Builds a new ConstantFormWKN from the given mark and viewBoxLegend. We consider that the varying parameters are
+     * all gathered in the mark's view box. All the other parameters are considered to be constant. It's up to you to
+     * be sure it is.
+     * @param mark
+     * @param viewBoxLegend
+     */
+    public ConstantFormWKN(MarkGraphic mark, LegendStructure viewBoxLegend){
+        super(mark,
+                    new StringLiteralLegend((StringLiteral)mark.getWkn()),
+                    viewBoxLegend,
+                    getFillLeg(mark),
+                    getStrokeLeg(mark)
+        );
+    }
+
+    private static FillLegend getFillLeg(MarkGraphic mark){
+        Fill f = mark.getFill();
+        return  f == null ? new NullSolidFillLegend() :  new ConstantSolidFillLegend((SolidFill)f);
+    }
+
+    private static ConstantPenStroke getStrokeLeg(MarkGraphic mark){
+        Stroke s = mark.getStroke();
+        return s == null ? new NullPenStrokeLegend() :  new ConstantPenStrokeLegend((PenStroke) s);
+    }
 
     /**
      * Builds a new default {@code ConstantFormWKN} associated to a default
@@ -122,7 +157,7 @@ public abstract class ConstantFormWKN extends MarkGraphicLegend {
      * @return
      */
     public Uom getStrokeUom(){
-            return getPenStroke().getUom();
+            return getPenStroke().getStrokeUom();
     }
 
     /**
@@ -130,7 +165,7 @@ public abstract class ConstantFormWKN extends MarkGraphicLegend {
      * @param u
      */
     public void setStrokeUom(Uom u){
-            getPenStroke().setUom(u);
+            getPenStroke().setStrokeUom(u);
     }
 
     /**

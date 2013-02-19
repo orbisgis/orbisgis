@@ -33,7 +33,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import javax.xml.bind.JAXBElement;
@@ -52,7 +52,6 @@ import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.graphic.GraphicCollection;
 import org.orbisgis.core.renderer.se.graphic.MarkGraphic;
 import org.orbisgis.core.renderer.se.parameter.ParameterException;
-import org.orbisgis.core.renderer.se.parameter.UsedAnalysis;
 import org.orbisgis.core.renderer.se.parameter.geometry.GeometryAttribute;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
@@ -213,18 +212,12 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
     }
 
     @Override
-    public HashSet<String> dependsOnFeature() {
-        HashSet<String> ret = new HashSet<String>();
-        if (this.getGeometryAttribute() != null) {
-            ret.addAll(this.getGeometryAttribute().dependsOnFeature());
+    public List<SymbolizerNode> getChildren() {
+        List<SymbolizerNode> ls = new ArrayList<SymbolizerNode>();
+        if(this.getGeometryAttribute()!=null){
+            ls.add(this.getGeometryAttribute());
         }
-        ret.addAll(graphic.dependsOnFeature());
-        return ret;
-    }
-
-    @Override
-    public UsedAnalysis getUsedAnalysis(){
-            //We get an empty UsedAnalysis - we'll merge everything.
-           return graphic.getUsedAnalysis();
+        ls.add(graphic);
+        return ls;
     }
 }
