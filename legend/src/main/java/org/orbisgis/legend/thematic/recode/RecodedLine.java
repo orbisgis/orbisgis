@@ -127,6 +127,26 @@ public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
             return new LineParameters(c,op,w,d);
         }
 
+        /**
+         * Puts the given line configuration in the unique values managed by this {@code RecodedLine}. If there was
+         * already a value associated to {@code key}, the former configuration is returned by the method.
+         * @param  key Key with which the specified value is to be associated
+         * @param value  Value to be associated with the specified key
+         * @return The former configuration associated to {@code key}, if any, {@code null} otherwise.
+         * @throws NullPointerException if key or value are null.
+         */
+        public LineParameters put(String key, LineParameters value){
+            if(key == null || value == null){
+                throw new NullPointerException("We don't manage null as key");
+            }
+            LineParameters ret = getKeys().contains(key) ? get(key) : null;
+            getLineColor().addItem(key, value.getLineColor());
+            getLineOpacity().addItem(key, value.getLineOpacity());
+            getLineWidth().addItem(key, value.getLineWidth());
+            getLineDash().addItem(key, value.getLineDash());
+            return ret;
+        }
+
         @Override
         public Symbolizer getSymbolizer() {
                 return ls;

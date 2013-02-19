@@ -42,6 +42,7 @@ import java.awt.*;
 import java.util.List;
 import java.util.Set;
 
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -128,6 +129,16 @@ public class RecodedLineTest extends AnalyzerTest {
         lp = rl.get("bonjour");
         t = new LineParameters(new Color(0x33,0x55,0x66),1.0,.5,"");
         assertTrue(lp.equals(t));
+    }
+
+    @Test
+    public void testPut() throws  Exception {
+        RecodedLine rl = getRecodedLine();
+        assertNull(rl.put("zen",new LineParameters(new Color(130, 180, 113),1.0,.5,"")));
+        LineParameters lp = new LineParameters(new Color(130, 180, 113),1.0,.5,"");
+        assertTrue(lp.equals(rl.get("zen")));
+        LineParameters ret = rl.put("zen", new LineParameters(new Color(140, 140, 140),1.0,.5,""));
+        assertTrue(ret.equals(lp));
     }
 
     private LineSymbolizer getLineSymbolizer() throws Exception{
