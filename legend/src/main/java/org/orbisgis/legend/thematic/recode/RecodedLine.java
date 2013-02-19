@@ -41,7 +41,9 @@ import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
 
 import java.awt.*;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Wrapper for lines made of a {@code PenStroke} where parameters are made of
@@ -67,12 +69,24 @@ public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
          * @param sym The original LineSymbolizer.
          * @throws ClassCastException
          * @throws UnsupportedOperationException If the inner stroke is not a {@link PenStroke} instance.
+         * @throws IllegalStateException If the inner parameters have different analysis fields.
          */
         public RecodedLine(LineSymbolizer sym){
             ls=sym;
             Stroke p = ls.getStroke();
             if(p instanceof PenStroke){
                 ps=new RecodedPenStroke((PenStroke)p);
+                FieldAggregatorVisitor fav = new FieldAggregatorVisitor();
+                applyGlobalVisitor(fav);
+                Set<String> fields = fav.getFields();
+                if(fields.size()>1){
+                    throw new IllegalStateException("All the input parameters are supposed to be built with the same input field.");
+                } else if (fields.size() ==1){
+                    //Even the RecodedLegend built on Literal instances deserve a field name.
+                    Iterator<String> it = fields.iterator();
+                    SetFieldVisitor sfv = new SetFieldVisitor(it.next());
+                    applyGlobalVisitor(sfv);
+                }
             } else {
                 throw new UnsupportedOperationException("Can't build a RecodedLine with such a Stroke: "+p.getClass().getName());
             }

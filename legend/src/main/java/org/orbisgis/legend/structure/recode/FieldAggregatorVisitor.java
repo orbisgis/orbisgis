@@ -45,7 +45,7 @@ public class FieldAggregatorVisitor implements RecodedParameterVisitor {
      */
     @Override
     public void visit(RecodedLegend legend) {
-        if(legend.field() !=null){
+        if(legend.field() !=null && !legend.field().isEmpty()){
             fields.add(legend.field());
         }
     }

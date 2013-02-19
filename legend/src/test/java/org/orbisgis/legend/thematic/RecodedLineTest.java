@@ -36,6 +36,7 @@ import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.structure.recode.RecodedColor;
 import org.orbisgis.legend.structure.recode.RecodedLegend;
+import org.orbisgis.legend.structure.recode.RecodedParameterVisitor;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
 
 import java.awt.*;
@@ -184,6 +185,14 @@ public class RecodedLineTest extends AnalyzerTest {
 
     }
 
+    @Test
+    public void testGlobalFieldSetConstructor() throws Exception {
+        RecodedLine rl = getRecodedLine();
+        ValidateFieldNotNull vfnn = new ValidateFieldNotNull();
+        rl.applyGlobalVisitor(vfnn);
+        assertTrue(true);
+    }
+
     private LineSymbolizer getLineSymbolizer() throws Exception{
         Style s = getStyle(COLOR_RECODE);
         return (LineSymbolizer) s.getRules().get(0).getCompositeSymbolizer().getChildren().get(0);
@@ -191,5 +200,13 @@ public class RecodedLineTest extends AnalyzerTest {
 
     private RecodedLine getRecodedLine() throws Exception {
         return new RecodedLine(getLineSymbolizer());
+    }
+
+    private static class ValidateFieldNotNull implements RecodedParameterVisitor{
+
+        @Override
+        public void visit(RecodedLegend legend) {
+            assertTrue(legend.field() != null);
+        }
     }
 }
