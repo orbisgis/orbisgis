@@ -111,7 +111,7 @@ public class PluginHost {
         // Export Host provided packages, by classpaths
         List<String> classPathExtensions = BundleTools.getAvailablePackages();
         for(String ext : classPathExtensions) {
-            if(!packagesName.contains(ext) && !ext.startsWith("org.osgi.")) {
+            if(!packagesName.contains(ext) && !ext.startsWith("org.osgi.") && !ext.startsWith("java.")) {
                 sortedPackagesExport.add(ext);
             }            
         }
