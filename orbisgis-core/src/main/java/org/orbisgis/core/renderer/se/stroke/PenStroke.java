@@ -312,10 +312,10 @@ public final class PenStroke extends Stroke implements FillNode {
 
     /**
      * Set the width used to draw the lines with this {@code PenStroke}.
-     * @param width The new width. If null, will be replaced with 0.25, as specified in SE 2.0.
+     * @param width The new width. If null, will be replaced with {@link PenStroke#DEFAULT_WIDTH}, as specified in SE 2.0.
      */
     public void setWidth(RealParameter width) {
-        this.width = width == null ? new RealLiteral(0.25) : width;
+        this.width = width == null ? new RealLiteral(DEFAULT_WIDTH) : width;
         if (width != null) {
             width.setContext(RealParameterContext.NON_NEGATIVE_CONTEXT);
             width.setParent(this);
