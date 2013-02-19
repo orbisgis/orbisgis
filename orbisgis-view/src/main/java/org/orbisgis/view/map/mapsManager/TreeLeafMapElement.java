@@ -38,7 +38,6 @@ import javax.swing.JPopupMenu;
 import org.orbisgis.core.Services;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeLeaf;
 import org.orbisgis.view.components.fstree.DragTreeNode;
@@ -51,6 +50,7 @@ import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.map.TransferableMap;
 import org.orbisgis.view.map.jobs.ReadMapContextJob;
+import org.orbisgis.view.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

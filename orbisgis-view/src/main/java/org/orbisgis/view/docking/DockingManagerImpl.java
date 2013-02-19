@@ -30,45 +30,55 @@ package org.orbisgis.view.docking;
 
 import bibliothek.extension.gui.dock.preference.PreferenceTreeDialog;
 import bibliothek.extension.gui.dock.preference.PreferenceTreeModel;
+import bibliothek.gui.dock.ToolbarDockStation;
 import bibliothek.gui.dock.common.CControl;
+import bibliothek.gui.dock.common.CLocation;
 import bibliothek.gui.dock.common.MultipleCDockableFactory;
 import bibliothek.gui.dock.common.SingleCDockable;
+import bibliothek.gui.dock.common.action.CAction;
 import bibliothek.gui.dock.common.event.CControlListener;
 import bibliothek.gui.dock.common.intern.CDockable;
 import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import bibliothek.gui.dock.common.menu.CLookAndFeelMenuPiece;
 import bibliothek.gui.dock.common.menu.SingleCDockableListMenuPiece;
 import bibliothek.gui.dock.facile.menu.RootMenuPiece;
+import bibliothek.gui.dock.layout.DockableProperty;
+import bibliothek.gui.dock.station.toolbar.ToolbarProperty;
+import bibliothek.gui.dock.themes.ThemeManager;
+import bibliothek.gui.dock.toolbar.CToolbarContentArea;
+import bibliothek.gui.dock.toolbar.location.CToolbarAreaLocation;
+import bibliothek.gui.dock.toolbar.location.CToolbarItemLocation;
+import bibliothek.gui.dock.toolbar.location.CToolbarLocation;
+import bibliothek.gui.dock.util.BackgroundComponent;
+import bibliothek.gui.dock.util.BackgroundPaint;
+import bibliothek.gui.dock.util.PaintableComponent;
 import bibliothek.gui.dock.util.PropertyKey;
 import bibliothek.util.PathCombiner;
 import bibliothek.util.xml.XElement;
 import bibliothek.util.xml.XIO;
+
+import java.awt.*;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
-import javax.swing.JFrame;
-import javax.swing.JMenu;
+import javax.swing.*;
+
 import org.apache.log4j.Logger;
-import org.orbisgis.sif.common.MenuCommonFunctions;
-import org.orbisgis.view.docking.internals.ApplicationRessourceDecorator;
-import org.orbisgis.view.docking.internals.CustomMultipleCDockable;
-import org.orbisgis.view.docking.internals.CustomPanelHolder;
-import org.orbisgis.view.docking.internals.CustomSingleCDockable;
-import org.orbisgis.view.docking.internals.DockingArea;
-import org.orbisgis.view.docking.internals.DockingPanelTracker;
-import org.orbisgis.view.docking.internals.InternalCommonFactory;
-import org.orbisgis.view.docking.internals.OrbisGISView;
+import org.orbisgis.view.components.actions.ActionTools;
+import org.orbisgis.view.components.actions.ActionsHolder;
+import org.orbisgis.view.docking.internals.*;
+import org.orbisgis.view.docking.internals.actions.CActionHolder;
+import org.orbisgis.view.docking.internals.actions.ToolBarActions;
+import org.orbisgis.view.docking.internals.actions.ToolBarItem;
 import org.orbisgis.view.docking.preferences.OrbisGISPreferenceTreeModel;
 import org.orbisgis.view.docking.preferences.editors.UserInformationEditor;
 import org.orbisgis.view.icons.OrbisGISIcon;
-import org.osgi.framework.BundleContext;
+import org.orbisgis.view.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 /**
@@ -76,26 +86,29 @@ import org.xnap.commons.i18n.I18nFactory;
  * 
  * This manager can save and load emplacement of views in XML.
  */
-public final class DockingManagerImpl implements DockingManager {        
+public final class DockingManagerImpl implements DockingManager, ActionsHolder {
 
         private JFrame owner;
         private SingleCDockableListMenuPiece dockableMenuTracker;
         private static final I18n I18N = I18nFactory.getI18n(DockingManagerImpl.class);
         private static final Logger LOGGER = Logger.getLogger(DockingManagerImpl.class);
-        File dockingState=null;
+        private File dockingState=null;
         private static final boolean DOCKING_STATE_XML = true;
         private CControl commonControl; /*!< link to the docking-frames */
         //Docking Area (DockingFrames feature named WorkingArea)
         private Map<String,DockingArea> dockingAreas = new HashMap<String,DockingArea>();
-	/** the available preferences for docking frames */
+	    /** the available preferences for docking frames */
         private PreferenceTreeModel preferences;
-        private DockingPanelTracker singleFrameTracker;
-
-	/**
-	 * Creates the new manager
-	 * @param owner the window used as parent for all dialogs
-	 */
-	public DockingManagerImpl( JFrame owner,BundleContext context){
+        private CToolbarContentArea area;
+        // In order to separate toolbars keep unique count
+        private int createdToolbars = 0;
+        // Action provided to this DockingManager
+        private List<Action> addedToolBarActions = new LinkedList<Action>();
+        /**
+         * Creates the new manager
+         * @param owner the window used as parent for all dialogs
+         */
+	    public DockingManagerImpl( JFrame owner){
                 this.owner = owner;
                 commonControl = new CControl(owner);
                 commonControl.addControlListener(new DockingListener());
@@ -105,13 +118,17 @@ public final class DockingManagerImpl implements DockingManager {
                 commonControl.setPreferenceModel(preferences);
 
                 //DEFAULT property of a view
-		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, I18N.tr("Docked Window") );
-		commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_ICON, OrbisGISIcon.getIcon("mini_orbisgis") );
+                // commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_TITLE, I18N.tr("Docked Window") );
+                commonControl.getController().getProperties().set( PropertyKey.DOCK_STATION_ICON, OrbisGISIcon.getIcon("mini_orbisgis") );
+                commonControl.getController().getThemeManager().setBackgroundPaint(ThemeManager.BACKGROUND_PAINT + ".station.toolbar.container",new ToolBarBackGround());
+                commonControl.putProperty( ToolbarDockStation.SIDE_GAP, 2 );
+                commonControl.putProperty( ToolbarDockStation.GAP, 2 );
+
                 //StackDockStation will contain all instances of ReservedDockStation
-                owner.add(commonControl.getContentArea());
-                singleFrameTracker = new DockingPanelTracker(context, this);
-                singleFrameTracker.open();
-	}
+                area = new CToolbarContentArea( commonControl, "base" );
+                commonControl.addStationContainer( area );
+                owner.add(area);
+	    }
         /**
          * @return the managed frame
          */
@@ -168,7 +185,7 @@ public final class DockingManagerImpl implements DockingManager {
                                         CustomSingleCDockable scdockable = (CustomSingleCDockable)panel;
                                         DockingPanelLayout layout = scdockable.getDockingPanel().getDockingParameters().getLayout();
                                         if(layout != null) {
-                                                commonControl.getResources().put(scdockable.getUniqueId(), new ApplicationRessourceDecorator(layout));
+                                                commonControl.getResources().put(scdockable.getUniqueId(), new ApplicationRessourceDecorator(new DockingPanelLayoutDecorator(layout)));
                                         }
                                 }                                
                         }
@@ -178,6 +195,22 @@ public final class DockingManagerImpl implements DockingManager {
                 } catch (IllegalArgumentException ex) {
                         LOGGER.error(I18N.tr("Unable to load the docking layout."), ex);
                         commonControl.readXML(backup);
+                }
+                // Check that non closable frame are shown
+                for(DockingPanel panel : getPanels()) {
+                        DockingPanelParameters params = panel.getDockingParameters();
+                        if(!params.isCloseable() && !params.isVisible()) {
+                                params.setVisible(true);
+                        }
+                }
+                // Check that all toolbars are visible
+                Map<String,CLocation> lastToolBarLocation = new HashMap<String, CLocation>();
+                for(ToolBarItem item : getToolBarItems()) {
+                        if(!item.isVisible()) {
+                                // Reset location
+                                String logicalGroup = ActionTools.getLogicalGroup(item.getAction());
+                                setLocation(item,getDefaultLocation(lastToolBarLocation,logicalGroup));
+                        }
                 }
         }
 
@@ -250,8 +283,6 @@ public final class DockingManagerImpl implements DockingManager {
          */
         @Override
         public void dispose() {
-            saveLayout();
-            singleFrameTracker.close();
             commonControl.destroy();
         }
 
@@ -276,12 +307,27 @@ public final class DockingManagerImpl implements DockingManager {
          * @return 
          */
         private List<CustomPanelHolder> getPanelDecorator() {
-                List<CustomPanelHolder> activePanel = new ArrayList<CustomPanelHolder>();
+                List<CustomPanelHolder> activePanel = new LinkedList<CustomPanelHolder>();
                 int count = commonControl.getCDockableCount();
                 for(int i=0; i<count; i++) {
-                        activePanel.add(((CustomPanelHolder)commonControl.getCDockable(i)));
+                        CDockable dockable = commonControl.getCDockable(i);
+                        if(dockable instanceof CustomPanelHolder) {
+                                activePanel.add(((CustomPanelHolder)dockable));
+                        }
                 }
                 return activePanel;                
+        }
+
+        private List<ToolBarItem> getToolBarItems() {
+                List<ToolBarItem> toolBarItemList = new LinkedList<ToolBarItem>();
+                int count = commonControl.getCDockableCount();
+                for(int i=0; i<count; i++) {
+                        CDockable dockable = commonControl.getCDockable(i);
+                        if(dockable instanceof ToolBarItem) {
+                                toolBarItemList.add((ToolBarItem)dockable);
+                        }
+                }
+                return toolBarItemList;
         }
         /**
          * Get the current opened panels
@@ -318,7 +364,7 @@ public final class DockingManagerImpl implements DockingManager {
                 MultipleCDockableFactory<?, ?> factory = commonControl.getMultipleDockableFactory(factoryId);
                 if (factory != null && factory instanceof InternalCommonFactory) {
                         InternalCommonFactory iFactory = (InternalCommonFactory) factory;
-                        CustomMultipleCDockable dockItem = iFactory.read(panelLayout);
+                        CustomMultipleCDockable dockItem = iFactory.read(new DockingPanelLayoutDecorator(panelLayout));
                         if (dockItem != null) {
                                 commonControl.addDockable(dockItem);
                         }
@@ -359,6 +405,195 @@ public final class DockingManagerImpl implements DockingManager {
             commonControl.addDockable(dockItem);
             return dockItem.getUniqueId();
 	}
+
+        @Override
+        public void addAction(Action action) {
+                addToolbarItem(action);
+        }
+
+        @Override
+        public void addActions(List<Action> newActions) {
+                addedToolBarActions.addAll(newActions);
+                resetToolBarsCActions(addedToolBarActions);
+        }
+
+        @Override
+        public boolean removeAction(Action action) {
+                removeActions(Arrays.asList(new Action[]{action}));
+                return addedToolBarActions.contains(action);
+        }
+
+        @Override
+        public void removeActions(List<Action> actionList) {
+                addedToolBarActions.removeAll(actionList);
+                resetToolBarsCActions(addedToolBarActions);
+        }
+        @Override
+        public String addToolbarItem(Action action) {
+                addActions(Arrays.asList(new Action[]{action}));
+                return ActionTools.getMenuId(action);
+        }
+
+        private ToolBarItem addToolbarItem(CAction cAction,Action action, CLocation defaultLocation) {
+                String id = ActionTools.getMenuId(action);
+                if(id==null || commonControl.getSingleDockable(id)!=null) {
+                        // Create a unique ID
+                        int inc=1;
+                        id = "action-"+inc;
+                        while(commonControl.getSingleDockable(id)!=null) {
+                                inc++;
+                        }
+                        String oldId="";
+                        if(ActionTools.getMenuId(action)!=null) {
+                                oldId = ActionTools.getMenuId(action);
+                        }
+                        LOGGER.warn(I18N.tr("ToolBar item {0} is not unique, it has been renamed to {1}",oldId,id));
+                        action.putValue(ActionTools.MENU_ID,id);
+                }
+                ToolBarItem toolbar = new ToolBarItem(id,cAction,action);
+                commonControl.addDockable(toolbar);
+                try {
+                        setLocation(toolbar,defaultLocation);
+                } catch (RuntimeException ex) {
+                        LOGGER.error(ex.getLocalizedMessage(),ex);
+                }
+                return toolbar;
+        }
+
+        /**
+         * Find the most appropriate Location by reading group and insert instruction in Action properties.
+         * @param toolbar New ToolBarItem, must be already registered in the CControl
+         */
+        private void setLocation(ToolBarItem toolbar, CLocation defaultLocation) {
+                Action action = toolbar.getAction();
+                // Default location is north
+                boolean locationSet = false;
+                // Read actions properties
+                String actionId = ActionTools.getMenuId(action);
+                String insertAfter = ActionTools.getInsertAfterMenuId(action);
+                String insertBefore = ActionTools.getInsertBeforeMenuId(action);
+                String logicalGroup = ActionTools.getLogicalGroup(action);
+                // Read other toolbars properties
+                // Find specified placement by item key
+                for(ToolBarItem toolBarItem : getToolBarItems()) {
+                        // If this is not the same object instance
+                        if(toolBarItem!=toolbar) {
+                                Action activeAction = toolBarItem.getAction();
+                                String activeId = ActionTools.getMenuId(activeAction);
+                                String activeLogicalGroup = ActionTools.getLogicalGroup(activeAction);
+                                String activeInsertAfter = ActionTools.getInsertAfterMenuId(activeAction);
+                                String activeInsertBefore = ActionTools.getInsertBeforeMenuId(activeAction);
+                                if((!insertAfter.isEmpty() && insertAfter.equals(activeId)) ||
+                                   (!activeInsertBefore.isEmpty() && activeInsertBefore.equals(actionId))) {
+                                        setNextPosition(toolBarItem, toolbar);
+                                        locationSet=true;
+                                        break;
+                                } else if((!insertBefore.isEmpty() && insertBefore.equals(activeId)) ||
+                                        (!activeInsertAfter.isEmpty() && activeInsertAfter.equals(actionId))) {
+                                        setNextPosition(toolBarItem,toolbar);
+                                        setNextPosition(toolbar, toolBarItem);
+                                        locationSet=true;
+                                        break;
+                                }
+                        }
+                }
+                // If not found use the logical group
+                if(!locationSet && !logicalGroup.isEmpty()) {
+                    ToolBarItem lastGroupItem = null;
+                    for(ToolBarItem toolBarItem : getToolBarItems()) {
+                        // If this is not the same object instance
+                        if(toolBarItem!=toolbar) {
+                            Action activeAction = toolBarItem.getAction();
+                            String activeLogicalGroup = ActionTools.getLogicalGroup(activeAction);
+                            if((!logicalGroup.isEmpty() && activeLogicalGroup.equals(logicalGroup))) {
+                                lastGroupItem = toolBarItem;
+                            }
+                        }
+                    }
+                    if(lastGroupItem!=null) {
+                        setNextPosition(lastGroupItem, toolbar);
+                        locationSet=true;
+                    }
+                }
+                if(!locationSet) {
+                    toolbar.setLocation(defaultLocation);
+                    toolbar.setVisible(true);
+                }
+        }
+        @Override
+        public boolean removeToolbarItem(Action action) {
+                String id = ActionTools.getMenuId(action);
+                if(id!=null) {
+                        return commonControl.removeSingleDockable(id);
+                }
+                return false;
+        }
+        private void setNextPosition(ToolBarItem item,ToolBarItem itemNext) {
+            CLocation location = commonControl.getLocationManager().getLocation(item.intern());
+            if(location!=null) {
+                    itemNext.setLocation(location.aside());
+                    itemNext.setVisible(true);
+            }
+        }
+        /**
+         * Recreate all CAction and put them in already shown ToolBarItems.
+         * Remove toolbars that hold action not provided and add toolbars.
+         * @param actions Actions to show in toolbars
+         */
+        private void resetToolBarsCActions(List<Action> actions) {
+            // Key: Logical Value: Last set location
+            Map<String,CLocation> lastToolBarLocation = new HashMap<String, CLocation>();
+            // Create root CAction, the size of rootActions might be smaller than actions
+            ToolBarActions toolBarCActions = new ToolBarActions();
+            toolBarCActions.setActions(actions);
+            List<CAction> rootActions = toolBarCActions.getCustomActions();
+            // Create Map of newly generated CActions in order to optimize updates checks.
+            // Key: Action Menu ID
+            Map<String,CAction> actionMap = new HashMap<String, CAction>(rootActions.size());
+            List<String> generatedId = new LinkedList();
+            for(CAction action : rootActions) {
+                if(action instanceof CActionHolder) {
+                    String key = ActionTools.getMenuId(((CActionHolder) action).getAction());
+                    actionMap.put(key,action);
+                    generatedId.add(key);
+                } else {
+                    // Ignore Menu Separator
+                }
+            }
+            // Update and remove toolbars
+            for(ToolBarItem item : getToolBarItems()) {
+                String shownRootMenuId = ActionTools.getMenuId(item.getAction());
+                CAction newCAction = actionMap.get(shownRootMenuId);
+                if(newCAction==null) {
+                    // This ToolBarItem has to be remove
+                    commonControl.removeSingleDockable(shownRootMenuId);
+                } else {
+                    // The ToolBarItem's CAction must be replaced by the new one
+                    generatedId.remove(shownRootMenuId);
+                    item.setItem(newCAction);
+                }
+            }
+            for(String newActionId : generatedId) {
+                CAction newCAction = actionMap.get(newActionId);
+                Action action = ((CActionHolder)newCAction).getAction();
+                // Default Location depends on
+                String logicalGroup = ActionTools.getLogicalGroup(action);
+                CLocation defaultLocation = getDefaultLocation(lastToolBarLocation, logicalGroup);
+                lastToolBarLocation.put(logicalGroup,defaultLocation);
+                addToolbarItem(newCAction, action, defaultLocation);
+            }
+        }
+
+    private CLocation getDefaultLocation(Map<String,CLocation> lastToolBarLocation, String logicalGroupId) {
+        CLocation defaultLocation = lastToolBarLocation.get(logicalGroupId);
+        if(defaultLocation==null) {
+            defaultLocation = area.getNorthToolbar().getStationLocation().group(createdToolbars++).toolbar(0,0).item(0);
+        } else {
+            // Aside is deprecated but It has to be used if the ToolBarItem is new.
+            defaultLocation = defaultLocation.aside();
+        }
+        return defaultLocation;
+    }
         /**
          * When a dockable is added, this listener
          * read the OrbisGIS DockingPanelParameters of the panel
@@ -371,6 +606,8 @@ public final class DockingManagerImpl implements DockingManager {
                         if(dockable instanceof CustomPanelHolder && dockable instanceof DefaultCDockable) {
                                 CustomPanelHolder dockItem = (CustomPanelHolder)dockable;
                                 OrbisGISView.setListeners(dockItem.getDockingPanel(), (DefaultCDockable)dockable);
+                        } else if(dockable instanceof ToolBarItem) {
+                                // Known dockable
                         } else {
                                 LOGGER.error("Unknown dockable, not an OrbisGIS approved component.");
                         }
@@ -391,5 +628,25 @@ public final class DockingManagerImpl implements DockingManager {
                         
                 }
                 
+        }
+
+        private static class ToolBarBackGround implements BackgroundPaint {
+                @Override
+                public void install(BackgroundComponent backgroundComponent) {
+                }
+
+                @Override
+                public void uninstall(BackgroundComponent backgroundComponent) {
+                        //ignore
+                }
+
+                @Override
+                public void paint(BackgroundComponent backgroundComponent, PaintableComponent paintable, Graphics g) {
+                        paintable.paintBackground( null );
+                        g.setColor( UIManager.getColor("Panel.background") );
+                        int w = paintable.getComponent().getWidth();
+                        int h = paintable.getComponent().getHeight();
+                        g.fillRect(0, 0, w, h);
+                }
         }
 }

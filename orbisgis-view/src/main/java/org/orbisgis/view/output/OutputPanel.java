@@ -35,7 +35,7 @@ import java.beans.EventHandler;
 import javax.swing.*;
 import javax.swing.text.*;
 import org.apache.log4j.Logger;
-import org.orbisgis.sif.common.MenuCommonFunctions;
+import org.orbisgis.view.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
