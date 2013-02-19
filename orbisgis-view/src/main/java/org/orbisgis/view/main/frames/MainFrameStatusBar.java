@@ -92,14 +92,14 @@ public class MainFrameStatusBar extends StatusBar {
         @Override
         public void addNotify() {
                 super.addNotify();
-                if(!listenToLogger.getAndSet(true)) {
-                        // Popup disabled
+                // Popup disabled
+                //if(!listenToLogger.getAndSet(true)) {
                         // - At the current state this popup is too aggressive, and keep all logs message
                         // - Only the last message should be shown without keeping all non displayed messages.
                         // - The user should be able to enable/disable this feature
                         // messagePopup = new PopupMessageDialog(this, owner);
                         // messagePopup.init();
-                }
+                //}
         }
 
         private void makeJobList() {
