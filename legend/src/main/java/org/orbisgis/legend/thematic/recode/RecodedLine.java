@@ -52,9 +52,17 @@ public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
         private final RecodedPenStroke ps;
 
         /**
+         * Default constructor. Builds a {@code RecodedLine} from scratch using a constant {@link LineSymbolizer} that
+         * embeds a constant {@link PenStroke}.
+         */
+        public RecodedLine(){
+            this(new LineSymbolizer());
+        }
+
+        /**
          * Builds a new {@code RecodedLine} instance from the given {@link LineSymbolizer}. Take care to validate the
          * configuration of the symbolizer before calling this constructor.
-         * @param sym
+         * @param sym The original LineSymbolizer.
          * @throws ClassCastException
          * @throws UnsupportedOperationException If the inner stroke is not a {@link PenStroke} instance.
          */
