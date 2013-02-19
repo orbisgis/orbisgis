@@ -195,10 +195,10 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         //Let's get the current width
         MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
         double width = ((PenStroke)mg.getStroke()).getWidth().getValue(null, 0);
-        assertTrue(width == 1.0);
+        assertTrue(width == PenStroke.DEFAULT_WIDTH);
         //We've checked the width from the symbolizer, let's get it from the Legend
         UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
-        assertTrue(uvp.getPenStroke().getLineWidth() == 1.0);
+        assertTrue(uvp.getPenStroke().getLineWidth() == PenStroke.DEFAULT_WIDTH);
     }
 
     @Test
@@ -208,7 +208,7 @@ public class PointSymbolizerAnalyzerTest extends AnalyzerTest {
         //Let's get the current width
         MarkGraphic mg = (MarkGraphic) ps.getGraphicCollection().getGraphic(0);
         double width = ((PenStroke)mg.getStroke()).getWidth().getValue(null, 0);
-        assertTrue(width == 1.0);
+        assertTrue(width == PenStroke.DEFAULT_WIDTH);
         //We've checked the width from the symbolizer, let's get it from the Legend
         UniqueSymbolPoint uvp = new UniqueSymbolPoint(ps);
         uvp.getPenStroke().setLineWidth(4.0);
