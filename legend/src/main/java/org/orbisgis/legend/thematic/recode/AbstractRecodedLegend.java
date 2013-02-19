@@ -72,4 +72,12 @@ public abstract class AbstractRecodedLegend extends SymbolizerLegend implements 
         applyGlobalVisitor(kr);
         return kr.getKeys();
     }
+
+    /**
+     * Returns the number of elements contained in this unique value classification.
+     * @return The number of elements contained in this unique value classification.
+     */
+    public int size(){
+        return keySet().size();
+    }
 }

@@ -111,7 +111,7 @@ public class RecodedLineTest extends AnalyzerTest {
     public void testGetKeys() throws Exception {
         RecodedLine rl = getRecodedLine();
         Set<String> keys = rl.keySet();
-        assertTrue(keys.size() == 4);
+        assertTrue(rl.size() == 4);
         assertTrue(keys.contains("1"));
         assertTrue(keys.contains("2.5"));
         assertTrue(keys.contains("20"));
