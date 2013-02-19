@@ -78,13 +78,9 @@ public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
                 ps=new RecodedPenStroke((PenStroke)p);
                 FieldAggregatorVisitor fav = new FieldAggregatorVisitor();
                 applyGlobalVisitor(fav);
-                Set<String> fields = fav.getFields();
-                if(fields.size()>1){
-                    throw new IllegalStateException("All the input parameters are supposed to be built with the same input field.");
-                } else if (fields.size() ==1){
-                    //Even the RecodedLegend built on Literal instances deserve a field name.
-                    Iterator<String> it = fields.iterator();
-                    SetFieldVisitor sfv = new SetFieldVisitor(it.next());
+                String f = getAnalysisField();
+                if(!f.isEmpty()){
+                    SetFieldVisitor sfv = new SetFieldVisitor(f);
                     applyGlobalVisitor(sfv);
                 }
             } else {

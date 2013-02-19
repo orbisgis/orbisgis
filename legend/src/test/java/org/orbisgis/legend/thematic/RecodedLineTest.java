@@ -193,6 +193,12 @@ public class RecodedLineTest extends AnalyzerTest {
         assertTrue(true);
     }
 
+    @Test
+    public void testGetAnalysisField() throws Exception {
+        RecodedLine rl = getRecodedLine();
+        assertTrue(rl.getAnalysisField().equals("PREC_ALTI"));
+    }
+
     private LineSymbolizer getLineSymbolizer() throws Exception{
         Style s = getStyle(COLOR_RECODE);
         return (LineSymbolizer) s.getRules().get(0).getCompositeSymbolizer().getChildren().get(0);

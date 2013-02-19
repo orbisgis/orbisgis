@@ -31,6 +31,7 @@ package org.orbisgis.legend.thematic.recode;
 import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.thematic.SymbolizerLegend;
 
+import java.util.Iterator;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -51,6 +52,26 @@ public abstract class AbstractRecodedLegend extends SymbolizerLegend implements 
     public void applyGlobalVisitor(RecodedParameterVisitor rpv){
         for(RecodedLegend rl : getRecodedLegends()){
             rl.acceptVisitor(rpv);
+        }
+    }
+
+    /**
+     * Gets the analysis field.
+     * @return The name of the analysis field.
+     */
+    public String getAnalysisField(){
+        FieldAggregatorVisitor fav = new FieldAggregatorVisitor();
+        applyGlobalVisitor(fav);
+        Set<String> fields = fav.getFields();
+        if(fields.size() > 1){
+            throw new IllegalStateException("We won't be able to handle a RecodedLine with two analysis fields.");
+        } else {
+            Iterator<String> it = fields.iterator();
+            if(it.hasNext()){
+                return it.next();
+            } else {
+                return "";
+            }
         }
     }
 
