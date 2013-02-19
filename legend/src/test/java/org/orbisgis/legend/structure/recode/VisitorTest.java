@@ -38,6 +38,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
 
+import javax.swing.*;
 import java.awt.*;
 
 import static org.junit.Assert.assertTrue;
@@ -74,6 +75,29 @@ public class VisitorTest extends AnalyzerTest{
         SetFieldVisitor sfv = new SetFieldVisitor(str);
         rc.acceptVisitor(sfv);
         assertTrue(rc.getLookupFieldName().equals(str));
+    }
+
+    @Test
+    public void testGatherField() throws Exception {
+        RecodedColor rc = getRecodedColor();
+        String name = "PREC_ALTI";
+        assertTrue(rc.getLookupFieldName().equals(name));
+        FieldAggregatorVisitor fav = new FieldAggregatorVisitor();
+        fav.visit(rc);
+        assertTrue(fav.getFields().contains(name));
+        RecodedColor rc2 = getRecodedColor();
+        String name2 = "youhou";
+        rc2.setField(name2);
+        fav.visit(rc2);
+        assertTrue(fav.getFields().contains(name));
+        assertTrue(fav.getFields().contains(name2));
+        assertTrue(fav.getFields().size() == 2);
+        RecodedColor rc3= getRecodedColor();
+        rc3.setField(null);
+        fav.visit(rc3);
+        assertTrue(fav.getFields().contains(name));
+        assertTrue(fav.getFields().contains(name2));
+        assertTrue(fav.getFields().size() == 2);
     }
 
     private RecodedColor getRecodedColor() throws Exception {
