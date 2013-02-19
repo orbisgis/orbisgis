@@ -160,7 +160,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         usl.getPenStroke().setDashArray("");
         PenStroke ps = (PenStroke) ls.getStroke();
         StringLiteral sl = (StringLiteral) ps.getDashArray();
-        assertTrue(sl == null);
+        assertTrue(sl.getValue(null).isEmpty());
         assertTrue(usl.getPenStroke().getDashArray().equals(""));
     }
 
@@ -171,7 +171,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
         PenStroke ps = (PenStroke) ls.getStroke();
         StringLiteral sl = (StringLiteral) ps.getDashArray();
-        assertTrue(sl == null);
+        assertTrue(sl.getValue(null).isEmpty());
         assertTrue(usl.getPenStroke().getDashArray().equals(""));
         usl.getPenStroke().setDashArray("1 5 3");
         assertTrue(usl.getPenStroke().getDashArray().equals("1 5 3"));
@@ -185,10 +185,10 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         UniqueSymbolLine usl = new UniqueSymbolLine(ls);
         PenStroke ps = (PenStroke) ls.getStroke();
         StringLiteral sl = (StringLiteral) ps.getDashArray();
-        assertTrue(sl == null);
+        assertTrue(sl.getValue(null).isEmpty());
         assertTrue(usl.getPenStroke().getDashArray().equals(""));
         usl.getPenStroke().setDashArray("bonjour bonjour !");
-        assertTrue(sl == null);
+        assertTrue(sl.getValue(null).isEmpty());
         assertTrue(usl.getPenStroke().getDashArray().equals(""));
 
     }
@@ -201,7 +201,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         usl.getPenStroke().setDashArray("bonjour bonjour !");
         PenStroke ps = (PenStroke) ls.getStroke();
         StringLiteral sl = (StringLiteral) ps.getDashArray();
-        assertTrue(sl == null);
+        assertTrue(sl.getValue(null).isEmpty());
         assertTrue(usl.getPenStroke().getDashArray().equals(""));
     }
 
@@ -219,7 +219,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         UniqueSymbolLine usl = new UniqueSymbolLine();
         LineSymbolizerAnalyzer lsa = new LineSymbolizerAnalyzer((LineSymbolizer)usl.getSymbolizer());
         assertTrue(lsa.getLegend() instanceof UniqueSymbolLine);
-        assertTrue(usl.getPenStroke().getLineWidth() == 0.1);
+        assertTrue(usl.getPenStroke().getLineWidth() == PenStroke.DEFAULT_WIDTH);
         assertTrue(usl.getLineColor().equals(Color.BLACK));
     }
 

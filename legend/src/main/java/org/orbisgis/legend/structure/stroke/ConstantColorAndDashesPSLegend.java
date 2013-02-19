@@ -29,6 +29,8 @@
 package org.orbisgis.legend.structure.stroke;
 
 import java.awt.Color;
+
+import org.orbisgis.core.renderer.se.parameter.ParameterUtil;
 import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.LegendStructure;
@@ -86,7 +88,7 @@ public abstract class ConstantColorAndDashesPSLegend extends PenStrokeLegend {
 
     /**
      * Sets the {@code Color} of the associated {@code PenStroke}.
-     * @param col
+     * @param opacity The new opacity.
      */
     public void setLineOpacity(double opacity) {
         ((ConstantSolidFillLegend)getFillAnalysis()).setOpacity(opacity);
@@ -116,39 +118,19 @@ public abstract class ConstantColorAndDashesPSLegend extends PenStrokeLegend {
         /**
         * Set the {@code String} that represent the dash pattern for the
          * associated {@code PenStroke}.
-        * @param dashes
+        * @param str The new dash array.
         */
         public void setDashArray(String str) {
             PenStroke ps = (PenStroke) getStroke();
             StringLiteral rl = (StringLiteral) ps.getDashArray();
-            String da = validateDashArray(str) ? str : "";
-            if(!da.isEmpty()){
-                if(rl == null){
-                    rl = new StringLiteral(da);
-                    ps.setDashArray(rl);
-                    setDashLegend(new StringLiteralLegend(rl));
-                } else {
-                    rl.setValue(da);
-                }
+            String da = ParameterUtil.validateDashArray(str) ? str : "";
+            if(rl == null){
+                rl = new StringLiteral(da);
+                ps.setDashArray(rl);
+                setDashLegend(new StringLiteralLegend(rl));
             } else {
-                ps.setDashArray(null);
-                setDashLegend(null);
+                rl.setValue(da);
             }
-        }
-
-        private boolean validateDashArray(String str) {
-            String[] splits = str.split(" ");
-            for(String s : splits){
-                try{
-                    double d = Double.valueOf(s);
-                    if(d<0){
-                            return false;
-                    }
-                } catch(NumberFormatException nfe){
-                    return false;
-                }
-            }
-            return true;
         }
 
 }

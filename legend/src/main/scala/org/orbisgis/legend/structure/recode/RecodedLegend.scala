@@ -29,14 +29,22 @@
 
 package org.orbisgis.legend.structure.recode
 
-import org.orbisgis.core.renderer.se.parameter.Recode
-import org.orbisgis.core.renderer.se.parameter.ValueReference
+import org.orbisgis.core.renderer.se.parameter.{Literal, Recode, ValueReference}
 import org.orbisgis.core.renderer.se.parameter.string.StringAttribute
 import org.orbisgis.legend.structure.parameter.ParameterLegend
 import org.orbisgis.legend.structure.recode.`type`.TypeEvent
 import org.orbisgis.legend.structure.recode.`type`.TypeListener
 import scala.collection.mutable.ArrayBuffer
+import java.util.Set
+import java.util
 
+/**
+ * This trait intends to provide some useful methods for the representation of parameters included in unique value
+ * classifications. We can retrieve the {@link ValueReference} used to get data from the input source, change the field
+ * on which the analysis is made. Finally, we can add listeners that will be notified when the type of the inner
+ * parameter changes.
+ * @author Alexis
+ */
 abstract trait RecodedLegend extends ParameterLegend {
 
   var field : String = ""
@@ -57,19 +65,42 @@ abstract trait RecodedLegend extends ParameterLegend {
 
   /**
    * Sets the field used to make the analysis
-   * @param s
+   * @param s The new field name.
    */
   def setField(s : String) = {
     field = s
     getParameter match {
       case c : Recode[_,_] => c.setLookupValue(new StringAttribute(s))
+      case l : Literal =>
     }
   }
 
+  /**
+   * Adds a listener that will be notified when {@link fireTypeChanged} is called.
+   * @param l The listener that will be added.
+   */
   def addListener(l : TypeListener) : Unit = listeners += l
 
+  /**
+   * Notifies that the actual type of the inner {@code SeParameter} has changed.
+   */
   def fireTypeChanged() : Unit = {
     val te : TypeEvent = new TypeEvent(this)
     listeners foreach (_.typeChanged(te))
+  }
+
+  /**
+   * Accepts the given visitor.
+   * @param visitor A visitor for RecodedLegend instances.
+   */
+  def acceptVisitor(visitor: RecodedParameterVisitor) : Unit = visitor.visit(this)
+
+  /**
+   * Gets the keys that define this RecodedLegend.
+   * @return The string keys in a Set.
+   */
+  def getKeys() : Set[String] = getParameter match{
+    case l : Literal => new util.HashSet[String]
+    case c : Recode[_,_] => c.getKeys
   }
 }

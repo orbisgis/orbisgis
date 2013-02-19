@@ -29,6 +29,7 @@
 package org.orbisgis.legend.structure.stroke;
 
 import org.orbisgis.core.renderer.se.fill.SolidFill;
+import org.orbisgis.core.renderer.se.parameter.SeParameter;
 import org.orbisgis.core.renderer.se.parameter.real.RealParameter;
 import org.orbisgis.core.renderer.se.parameter.string.StringParameter;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
@@ -37,9 +38,13 @@ import org.orbisgis.legend.structure.fill.FillLegend;
 import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.ConstantSolidFillLegend;
 import org.orbisgis.legend.structure.fill.constant.NullSolidFillLegend;
-import org.orbisgis.legend.structure.parameter.NumericLegend;
-import org.orbisgis.legend.structure.recode.RecodedReal;
-import org.orbisgis.legend.structure.recode.RecodedString;
+import org.orbisgis.legend.structure.recode.*;
+import org.orbisgis.legend.structure.recode.type.TypeListener;
+
+import java.awt.*;
+import java.beans.EventHandler;
+import java.util.*;
+import java.util.List;
 
 /**
  * Represents {@code PenStroke} instances that just contain {@code Recode}
@@ -47,90 +52,95 @@ import org.orbisgis.legend.structure.recode.RecodedString;
  * be simple analysis.
  * @author Alexis Guéganno
  */
-public class RecodedPenStroke implements LegendStructure {
+public class RecodedPenStroke implements RecodedLegendStructure {
 
         private PenStroke stroke;
-        private FillLegend fillLegend;
+        private RecodedSolidFillLegend fillLegend;
         private RecodedReal widthLegend;
-        private LegendStructure dashLegend;
+        private RecodedString dashLegend;
 
         /**
          * Builds a {@link RecodedPenStroke} from the given stroke. You must be sure that the given parameter is valid.
          * You'll receive {@link ClassCastException} and {@link UnsupportedOperationException} if it's not...
-         * @param stroke
+         * @param stroke The original {@code PenStroke} we want to manage through this legend.
          */
         public RecodedPenStroke(PenStroke stroke){
             this.stroke = stroke;
-            this.fillLegend = new RecodedSolidFillLegend((SolidFill) stroke.getFill());
+            SolidFill sf = (SolidFill) stroke.getFill();
+            this.fillLegend = new RecodedSolidFillLegend( sf == null ?  new SolidFill(Color.BLACK,1.0) : sf);
             this.widthLegend = new RecodedReal(stroke.getWidth());
             StringParameter sp = stroke.getDashArray();
-            this.dashLegend = sp == null ? null : new RecodedString(sp);
+            this.dashLegend = new RecodedDash(sp);
+            TypeListener tl = EventHandler.create(TypeListener.class, this, "replaceWidth", "source.parameter");
+            widthLegend.addListener(tl);
+            TypeListener tlZ = EventHandler.create(TypeListener.class, this, "replaceDash", "source.parameter");
+            dashLegend.addListener(tlZ);
         }
 
         public RecodedPenStroke(PenStroke stroke,
                         RecodedSolidFillLegend fillLegend,
                         RecodedReal widthLegend,
-                        LegendStructure dashLegend) {
+                        RecodedString dashLegend) {
                 this.stroke = stroke;
                 this.fillLegend = fillLegend;
                 this.widthLegend = widthLegend;
                 this.dashLegend = dashLegend;
+                TypeListener tl = EventHandler.create(TypeListener.class, this, "replaceWidth", "source.parameter");
+                widthLegend.addListener(tl);
+                TypeListener tlZ = EventHandler.create(TypeListener.class, this, "replaceDash", "source.parameter");
+                dashLegend.addListener(tlZ);
         }
 
-        public final FillLegend getFillLegend() {
+        /**
+         * Replace the {@code StringParameter} embedded in the inner PenStroke with {@code sp}. This method is called
+         * when a type change occurs in the associated {@link RecodedString} happens.
+         * @param sp The new {@code StringParameter}
+         * @throws ClassCastException if sp is not a {@code StringParameter}
+         */
+        public void replaceDash(SeParameter sp){
+            stroke.setDashArray((StringParameter) sp);
+        }
+
+        /**
+         * Replace the {@code RealParameter} embedded in the inner PenStroke with {@code sp}. This method is called
+         * when a type change occurs in the associated {@link RecodedString} happens.
+         * @param sp The new {@code RealParameter}
+         * @throws ClassCastException if sp is not a {@code RealParameter}
+         */
+        public void replaceWidth(SeParameter sp){
+            stroke.setWidth((RealParameter)sp);
+        }
+
+        /**
+         * Gets the inner {@link RecodedSolidFillLegend}.
+         * @return the inner {@link RecodedSolidFillLegend}.
+         */
+        public final RecodedSolidFillLegend getFillLegend() {
                 return fillLegend;
         }
 
         /**
-         * Sets the {@code LegendStructure} that describes the fill associated to
-         * the inner {@code PenStroke}.
-         * @param fill
+         * Gets the legend that describe the width of the inner {@link PenStroke}.
+         * @return The legend that describe the width of the inner {@link PenStroke}.
          */
-        public final void setFillLegend(FillLegend fill) {
-                if(fill instanceof ConstantSolidFillLegend || fill instanceof RecodedSolidFillLegend){
-                        this.fillLegend = fill;
-                        stroke.setFill(fill.getFill());
-                } else if(fill == null || fill instanceof NullSolidFillLegend){
-                        stroke.setFill(null);
-                } else {
-                        throw new IllegalArgumentException("Can't set the fill legend to something"
-                                + "that is neither a ConstantSolidFillLegend nor"
-                                + "a RecodedSolidFillLegend.");
-                }
-        }
-
-        public final NumericLegend getWidthLegend() {
+        public final RecodedReal getWidthLegend() {
                 return widthLegend;
-        }
-
-        public final void setWidthLegend(NumericLegend width) {
-                if(width instanceof RecodedReal){
-                        this.widthLegend = (RecodedReal) width;
-                        stroke.setWidth((RealParameter)width.getParameter());
-                } else {
-                        throw new IllegalArgumentException("Can't set the width legend to something"
-                                + "that is not embeddable in a Recoded2Real");
-                }
         }
 
         /**
          * Gets the LegendStructure that is used to describe the dash patterns
          * in this PenStroke.
-         * @return
+         * @return  The {@link RecodedString} representing the associated dash pattern.
          */
-        public final LegendStructure getDashLegend() {
+        public final RecodedString getDashLegend() {
                 return dashLegend;
         }
 
-        /**
-         * Sets the LegendStructure used to describe the dash patterns in this
-         * {@code PenStroke}.
-         * @param dash
-         */
-        public final void setDashLegend(LegendStructure dash) {
-                this.dashLegend = dash;
+        @Override
+        public List<RecodedLegend> getRecodedLegends() {
+            List<RecodedLegend> ret = fillLegend.getRecodedLegends();
+            ret.add(dashLegend);
+            ret.add(widthLegend);
+            return ret;
         }
-
-
-
 }

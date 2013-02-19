@@ -85,7 +85,7 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
 
     /**
      * Build a new default {@code PointSymbolizer}. It contains a 
-     * {@link graphicCollection} that contains a single default {@code MarkGraphic}.
+     * {@link GraphicCollection} that contains a single default {@code MarkGraphic}.
      * Its UOM is {@link Uom#MM}.
      */
     public PointSymbolizer() {
@@ -193,11 +193,12 @@ public final class PointSymbolizer extends VectorSymbolizer implements GraphicNo
         }
 
         if (onVertex) {
-            ExtensionType exts = s.getExtension();
+            ExtensionType exts = new ExtensionType();
             ExtensionParameterType param = of.createExtensionParameterType();
             param.setName("mode");
             param.setContent(MODE_VERTEX);
             exts.getExtensionParameter().add(param);
+            s.setExtension(exts);
         }
 
         return of.createPointSymbolizer(s);
