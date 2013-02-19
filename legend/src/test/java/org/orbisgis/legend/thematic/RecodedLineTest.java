@@ -110,7 +110,7 @@ public class RecodedLineTest extends AnalyzerTest {
     @Test
     public void testGetKeys() throws Exception {
         RecodedLine rl = getRecodedLine();
-        Set<String> keys = rl.getKeys();
+        Set<String> keys = rl.keySet();
         assertTrue(keys.size() == 4);
         assertTrue(keys.contains("1"));
         assertTrue(keys.contains("2.5"));
@@ -169,7 +169,7 @@ public class RecodedLineTest extends AnalyzerTest {
     public void testRemove() throws Exception {
         RecodedLine rl = getRecodedLine();
         LineParameters rem = rl.remove("1");
-        assertTrue(rem.equals(new LineParameters(new Color(0x22,0x33,0x44),1.0,.5,"")));
+        assertTrue(rem.equals(new LineParameters(new Color(0x22, 0x33, 0x44), 1.0, .5, "")));
     }
 
     @Test

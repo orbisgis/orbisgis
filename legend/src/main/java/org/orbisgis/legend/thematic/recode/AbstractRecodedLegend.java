@@ -67,7 +67,7 @@ public abstract class AbstractRecodedLegend extends SymbolizerLegend implements 
      * Gets the keys currently used in the analysis.
      * @return The keys used in a Set of String.
      */
-    public SortedSet<String> getKeys() {
+    public SortedSet<String> keySet() {
         KeysRetriever kr = new KeysRetriever();
         applyGlobalVisitor(kr);
         return kr.getKeys();

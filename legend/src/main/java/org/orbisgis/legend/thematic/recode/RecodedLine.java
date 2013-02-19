@@ -139,7 +139,7 @@ public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
             if(key == null || value == null){
                 throw new NullPointerException("We don't manage null as key");
             }
-            LineParameters ret = getKeys().contains(key) ? get(key) : null;
+            LineParameters ret = keySet().contains(key) ? get(key) : null;
             getLineColor().addItem(key, value.getLineColor());
             getLineOpacity().addItem(key, value.getLineOpacity());
             getLineWidth().addItem(key, value.getLineWidth());
@@ -156,7 +156,7 @@ public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
             if(key == null){
                 throw new NullPointerException("We don't manage null as key");
             }
-            LineParameters ret = getKeys().contains(key) ? get(key) : null;
+            LineParameters ret = keySet().contains(key) ? get(key) : null;
             getLineColor().removeItem(key);
             getLineDash().removeItem(key);
             getLineOpacity().removeItem(key);
