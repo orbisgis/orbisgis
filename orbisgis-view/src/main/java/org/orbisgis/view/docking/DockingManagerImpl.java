@@ -462,7 +462,7 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
                         LOGGER.warn(I18N.tr("ToolBar item {0} is not unique, it has been renamed to {1}",oldId,id));
                         action.putValue(ActionTools.MENU_ID,id);
                 }
-                ToolBarItem toolbar = new ToolBarItem(id,cAction,action);
+                ToolBarItem toolbar = new ToolBarItem(id,cAction);
                 commonControl.addDockable(toolbar);
                 try {
                         setLocation(toolbar,defaultLocation);
@@ -574,15 +574,18 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
             }
             // Update and remove toolbars
             for(ToolBarItem item : getToolBarItems()) {
-                String shownRootMenuId = ActionTools.getMenuId(item.getAction());
+                String shownRootMenuId = item.getUniqueId();
                 CAction newCAction = actionMap.get(shownRootMenuId);
                 if(newCAction==null) {
-                    // This ToolBarItem has to be remove
-                    commonControl.removeSingleDockable(shownRootMenuId);
+                    // This ToolBarItem has to be reset
+                    item.resetItem();
                 } else {
                     // The ToolBarItem's CAction must be replaced by the new one
                     generatedId.remove(shownRootMenuId);
                     item.setItem(newCAction);
+                    if(!item.isVisible()) {
+                        item.setVisible(true);
+                    }
                 }
             }
             for(String newActionId : generatedId) {

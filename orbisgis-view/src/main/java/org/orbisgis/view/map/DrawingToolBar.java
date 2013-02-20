@@ -27,48 +27,45 @@
  * info_at_ orbisgis.org
  */
 
-package org.orbisgis.view.docking.internals.actions;
+package org.orbisgis.view.map;
 
-import bibliothek.gui.dock.common.action.CAction;
-import bibliothek.gui.dock.toolbar.CToolbarItem;
+import org.orbisgis.view.main.frames.ext.MainWindow;
+import org.orbisgis.view.main.frames.ext.ToolBarAction;
+import org.orbisgis.view.map.ext.MapEditorExtension;
+import org.orbisgis.view.map.tools.LineTool;
+import org.osgi.framework.BundleContext;
+
 import javax.swing.Action;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Dockable Tool Bar, related only with a swing Action instance.
+ * Generate the Actions for the Drawing ToolBar.
  * @author Nicolas Fortin
  */
-public class ToolBarItem extends CToolbarItem implements CActionHolder {
-        private Action action;
+public class DrawingToolBar implements ToolBarAction {
+    private MapEditorExtension mapEditor;
+    private BundleContext bc;
 
     /**
-     * Create a new toolbar item
-     * @param id
-     * @param cAction Null or CAction instance
+     * Constructor, this service implementation, register and unregister itself.
+     * @param mapEditor
+     * @param bc
      */
-        public ToolBarItem(String id,CAction cAction) {
-                super(id);
-                setItem(cAction);
-        }
+    public DrawingToolBar(MapEditorExtension mapEditor, BundleContext bc) {
+        this.mapEditor = mapEditor;
+        this.bc = bc;
+    }
 
-        /**
-         * In order to keep layout, the ToolBarItem can be kept and CAction and Action removed.
-         */
-        public void resetItem() {
-            setVisible(false);
-            setItem((CAction)null);
-        }
-        @Override
-        public void setItem(CAction item) {
-            if(item instanceof CActionHolder) {
-                action = ((CActionHolder) item).getAction();
-            } else if(item==null) {
-                action = null;
-            }
-            super.setItem(item);
-        }
+    @Override
+    public List<Action> createActions(MainWindow target) {
+        List<Action> actions = new LinkedList<Action>();
+        actions.add(new AutomatonAction(DRAW_LINE,new LineTool(),mapEditor));
+        return actions;
+    }
 
-        @Override
-        public Action getAction() {
-                return action;
-        }
+    @Override
+    public void disposeActions(MainWindow target, List<Action> actions) {
+
+    }
 }

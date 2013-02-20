@@ -28,17 +28,42 @@
  */
 package org.orbisgis.view.map.tool;
 
-import com.vividsolutions.jts.geom.*;
+import com.vividsolutions.jts.geom.Envelope;
+import com.vividsolutions.jts.geom.Geometry;
+import com.vividsolutions.jts.geom.GeometryCollection;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import com.vividsolutions.jts.geom.LineString;
+import com.vividsolutions.jts.geom.MultiLineString;
+import com.vividsolutions.jts.geom.MultiPoint;
+import com.vividsolutions.jts.geom.MultiPolygon;
 import com.vividsolutions.jts.geom.Polygon;
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.Point;
-import java.awt.event.*;
+import java.awt.Toolkit;
+import java.awt.Transparency;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,7 +110,7 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         private static Logger UILOGGER = Logger.getLogger("gui."+ToolManager.class);
         private Automaton currentTool;
         private ILayer activeLayer = null;
-        private MapContextListener mapContextListener;
+        private PropertyChangeListener mapContextListener;
         private double[] values = new double[0];
         private int uiTolerance = 6;
         private boolean selectionImageDirty = true;
@@ -132,37 +157,8 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 setTool(defaultTool);
                 this.defaultTool = defaultTool;
                 updateCursor();
-                mapContextListener = new MapContextListener() {
 
-                        @Override
-                        public void layerSelectionChanged(MapContext mapContext) {
-                        }
-
-                        @Override
-                        public void activeLayerChanged(ILayer previousActiveLayer, MapContext mapContext) {
-                                ILayer layer = mapContext.getActiveLayer();
-                                if (activeLayer == layer) {
-                                        return;
-                                }
-                                freeResources();
-                                activeLayer = layer;
-                                if (activeLayer != null) {
-                                        activeLayer.addLayerListener(layerListener);
-                                        if (activeLayer.getDataSource().isEditable()) {
-                                                try {
-                                                        activeLayer.getDataSource().addEditionListener(layerListener);
-                                                } catch(UnsupportedOperationException ex) {
-                                                        UILOGGER.warn(I18N.tr("The ToolManager cannot listen to source modifications"),ex);
-                                                }
-                                        }
-                                        activeLayer.getDataSource().addDataSourceListener(layerListener);
-                                }
-                                setTool(ToolManager.this.defaultTool);
-                                recalculateHandlers();
-                        }
-                };
-
-                this.mapContext.addMapContextListener(mapContextListener);
+                this.mapContext.addPropertyChangeListener(MapContext.PROP_ACTIVELAYER,mapContextListener);
 
                 mapTransform.addTransformListener(new TransformListener() {
 
@@ -180,19 +176,45 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 });
                 buildSymbolizers();
         }
+
+        /**
+         * When the Edited Layer in the MapContext has been set/unset
+         * @param evt
+         */
+        public void activeLayerChanged(PropertyChangeEvent evt) {
+            removeSourceListener();
+            activeLayer = (ILayer)evt.getNewValue();
+            if (activeLayer != null) {
+                activeLayer.addLayerListener(layerListener);
+                if (activeLayer.getDataSource().isEditable()) {
+                    try {
+                        activeLayer.getDataSource().addEditionListener(layerListener);
+                    } catch(UnsupportedOperationException ex) {
+                        UILOGGER.warn(I18N.tr("The ToolManager cannot listen to source modifications"),ex);
+                    }
+                }
+                activeLayer.getDataSource().addDataSourceListener(layerListener);
+            }
+            setTool(ToolManager.this.defaultTool);
+            recalculateHandlers();
+        }
+
+        private void removeSourceListener() {
+            if (activeLayer != null) {
+                activeLayer.removeLayerListener(layerListener);
+                if (activeLayer.getDataSource().isEditable()) {
+                    activeLayer.getDataSource().removeEditionListener(layerListener);
+                }
+                activeLayer.getDataSource().removeDataSourceListener(layerListener);
+                setTool(defaultTool);
+            }
+        }
         /**
          * Remove listeners installed by the ToolManager.
          */
         public void freeResources() {
-                if (activeLayer != null) {
-                        activeLayer.removeLayerListener(layerListener);
-                        if (activeLayer.getDataSource().isEditable()) {
-                                activeLayer.getDataSource().removeEditionListener(layerListener);
-                        }
-                        activeLayer.getDataSource().removeDataSourceListener(layerListener);
-                        setTool(defaultTool);
-                }
-                this.mapContext.removeMapContextListener(mapContextListener);
+                removeSourceListener();
+                this.mapContext.removePropertyChangeListener(mapContextListener);
         }
 
         @Override
@@ -450,28 +472,30 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         }
 
         /**
-         * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#getValues()
+         * Seems to be a cache of values for Automatons
          */
         public double[] getValues() {
                 return values;
         }
 
         /**
-         * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#setValues(double[])
+         * Seems to be a cache of values for Automatons
          */
         public void setValues(double[] values) {
                 this.values = values;
         }
 
         /**
-         * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#getTolerance()
+         * An epsilon value for user input through automatons
+         * @return Epsilon value in current projection unit.
          */
         public double getTolerance() {
                 return uiTolerance / mapTransform.getAffineTransform().getScaleX();
         }
 
         /**
-         * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#setUITolerance(int)
+         * An epsilon value for user input through automatons
+         * @param tolerance new Epsilon (pixels)
          */
         public void setUITolerance(int tolerance) {
                 UILOGGER.info("setting uiTolerance: " + tolerance);

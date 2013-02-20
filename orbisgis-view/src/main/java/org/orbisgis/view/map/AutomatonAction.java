@@ -32,6 +32,7 @@ package org.orbisgis.view.map;
 import org.orbisgis.view.components.actions.ActionTools;
 import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.map.ext.AutomatonHolder;
+import org.orbisgis.view.map.ext.MapEditorAction;
 import org.orbisgis.view.map.ext.MapEditorExtension;
 import org.orbisgis.view.map.tool.Automaton;
 import javax.swing.Action;
@@ -51,7 +52,7 @@ public class AutomatonAction extends DefaultAction implements AutomatonHolder {
         putValue(Action.SMALL_ICON,automaton.getImageIcon());
         putValue(Action.LARGE_ICON_KEY,automaton.getImageIcon());
         putValue(Action.SHORT_DESCRIPTION,automaton.getTooltip());
-        putValue(ActionTools.TOGGLE_GROUP,"automatons"); //radio group
+        putValue(ActionTools.TOGGLE_GROUP, MapEditorAction.TOGGLE_GROUP_AUTOMATONS); //radio group
         if(extension.getToolManager()!=null) {
             putValue(Action.SELECTED_KEY,this.automaton.getName().equals(extension.getToolManager().getTool().getName()));
         }

@@ -38,5 +38,25 @@ import org.orbisgis.view.components.actions.ActionFactoryService;
  * @author Nicolas Fortin
  */
 public interface ToolBarAction  extends ActionFactoryService<MainWindow> {
+    // Drawing toolbar items
+    public static final String DRAW_LINE = "DRAW_LINE";
+    public static final String DRAW_MULTI_LINE = "DRAW_MULTI_LINE";
+    public static final String DRAW_POINT = "DRAW_POINT";
+    public static final String DRAW_MULTI_POINT = "DRAW_MULTI_POINT";
+    public static final String DRAW_POLYGON = "DRAW_POLYGON";
+    public static final String DRAW_MULTI_POLYGON = "DRAW_MULTI_POLYGON";
+    public static final String DRAW_AUTO_POLYGON = "DRAW_AUTO_POLYGON";
+    public static final String DRAW_CHANGE_COORDINATE = "DRAW_CHANGE_COORDINATE";
+    public static final String DRAW_COPY_LINE = "DRAW_COPY_LINE";
+    public static final String DRAW_COPY_POINT = "DRAW_COPY_POINT";
+    public static final String DRAW_COPY_POLYGON = "DRAW_COPY_POLYGON";
+    public static final String DRAW_CUT_POLYGON = "DRAW_CUT_POLYGON";
+    public static final String DRAW_MOVE_GEOMETRY = "DRAW_MOVE_GEOMETRY";
+    public static final String DRAW_MOVE_VERTEX = "DRAW_MOVE_VERTEX";
+    public static final String DRAW_SPLIT_LINESTRING = "DRAW_SPLIT_LINESTRING";
+    public static final String DRAW_SPLIT_POLYGON = "DRAW_SPLIT_POLYGON";
+    public static final String DRAW_VERTEX_ADDITION = "DRAW_VERTEX_ADDITION";
+    public static final String DRAW_VERTEX_DELETION = "DRAW_VERTEX_DELETION";
+
 
 }
