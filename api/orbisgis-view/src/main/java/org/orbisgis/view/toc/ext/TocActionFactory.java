@@ -43,6 +43,7 @@ public interface TocActionFactory extends ActionFactoryService<TocExt> {
     public static final String A_IMPORT_STYLE = "A_IMPORT_STYLE";
     public static final String A_ADD_STYLE = "A_ADD_STYLE";
     public static final String A_OPEN_ATTRIBUTES = "A_OPEN_ATTRIBUTES";
+    public static final String A_EDIT_GEOMETRY = "A_EDIT_GEOMETRY";
     public static final String A_ADD_LAYER_GROUP = "A_ADD_LAYER_GROUP";
 
     // Style actions

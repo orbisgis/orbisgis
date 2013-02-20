@@ -71,7 +71,6 @@ import java.util.Map;
  * @author Nicolas Fortin
  */
 public class ActionCommands extends BeanPropertyChangeSupport implements ActionsHolder {
-        public static final String PROP_ACTIONS = "actions";
         private static final Logger LOGGER = Logger.getLogger(ActionCommands.class);
         // Actions
         private List<Action> actions = new ArrayList<Action>();

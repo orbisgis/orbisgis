@@ -51,6 +51,9 @@ public class TocTreeNodeLayer implements MutableTreeNode {
         private static final Logger LOGGER = Logger.getLogger(TocTreeNodeLayer.class);
 
         public TocTreeNodeLayer(ILayer layer) {
+                if(layer==null) {
+                    throw new IllegalArgumentException("TreeNode instanced with null ILayer");
+                }
                 this.layer = layer;
         }
 

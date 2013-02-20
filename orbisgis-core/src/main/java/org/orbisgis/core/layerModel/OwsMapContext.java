@@ -347,10 +347,6 @@ public final class OwsMapContext extends BeanMapContext {
                 this.activeLayer = activeLayer;
 
                 propertyChangeSupport.firePropertyChange(PROP_ACTIVELAYER, lastActive, activeLayer);
-                //Deprecated listeners
-                for (MapContextListener listener : listeners) {
-                        listener.activeLayerChanged(lastActive, this);
-                }
         }
 
         private OWSContextType createJaxbMapContext() {

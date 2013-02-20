@@ -100,7 +100,7 @@ public class PointTool extends AbstractPointTool {
 			row[sds.getSpatialFieldIndex()] = ValueFactory.createValue(g);
 			row = ToolUtilities.populateNotNullFields(sds, row);
 			sds.insertFilledRow(row);
-		} catch (DriverException e) {
+		} catch (Exception e) {
 			throw new TransitionException("Cannot insert polygon", e);
 		}
 	}

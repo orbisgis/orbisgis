@@ -39,12 +39,7 @@ import java.awt.event.MouseEvent;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.*;
 import javax.swing.event.TreeSelectionListener;
@@ -128,7 +123,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         private Map<String, TableEditableElement> linkedEditableElements = new HashMap<String, TableEditableElement>();
         private PropertyChangeListener tableSelectionChangeListener = EventHandler.create(PropertyChangeListener.class,this,"onTableSelectionChange","source");
         private PropertyChangeListener tableEditableClose = EventHandler.create(PropertyChangeListener.class,this,"onTableEditableClose","source");
-        private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified");
+        private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified","");
         private Action saveAction;
         // Selection state cache, reset values before showing popup.
         private Map<String,Boolean> selectionState = new HashMap<String, Boolean>();
@@ -169,12 +164,12 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     I18N.tr("Remove the layer from the map context"),OrbisGISIcon.getIcon("remove"),
                     EventHandler.create(ActionListener.class, this, "onDeleteLayer"),null));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_ZOOM_TO, I18N.tr("Zoom to"),
-                    I18N.tr("Zoom to the layer bounding box"),OrbisGISIcon.getIcon("magnifier"),
-                    EventHandler.create(ActionListener.class, this, "zoomToLayer"),null));
+                    I18N.tr("Zoom to the layer bounding box"), OrbisGISIcon.getIcon("magnifier"),
+                    EventHandler.create(ActionListener.class, this, "zoomToLayer"), null));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_ZOOM_TO_SELECTION,
-                    I18N.tr("Zoom to selection"),I18N.tr("Zoom to selected geometries"),
+                    I18N.tr("Zoom to selection"), I18N.tr("Zoom to selected geometries"),
                     OrbisGISIcon.getIcon("zoom_selected"),
-                    EventHandler.create(ActionListener.class, this, "zoomToLayerSelection"),null)
+                    EventHandler.create(ActionListener.class, this, "zoomToLayerSelection"), null)
                     .setOnLayerWithRowSelection(true));
             popupActions.addAction(new LayerAction(this, TocActionFactory.A_CLEAR_SELECTION,
                     I18N.tr("Clear selection"), I18N.tr("Clear the selected geometries"),
@@ -196,6 +191,11 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     OrbisGISIcon.getIcon("openattributes"),
                     EventHandler.create(ActionListener.class,this, "onMenuShowTable"),null)
                     .setOnRealLayerOnly(true));
+            popupActions.addAction(new LayerAction(this, TocActionFactory.A_EDIT_GEOMETRY,
+                    I18N.tr("Start/Stop the edition of the layer geometries"), I18N.tr("Open/Close the drawing toolbar."),
+                    OrbisGISIcon.getIcon("pencil"),
+                    EventHandler.create(ActionListener.class,this, "onMenuSetActiveLayer"),null)
+                    .setOnRealLayerOnly(true).setSingleSelection(true).setOnEditableDataSource(true));
             popupActions.addAction(new AddLayerGroupAction(this,TocActionFactory.A_ADD_LAYER_GROUP,
                     I18N.tr("Add layer group"),I18N.tr("Add a the layer group to the map context"),
                     OrbisGISIcon.getIcon("add"),
@@ -213,10 +213,10 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                     I18N.tr("Remove style"), I18N.tr("Remove this style from the associated layer."),
                     OrbisGISIcon.getIcon("remove"),
                     EventHandler.create(ActionListener.class, this, "onDeleteStyle"),null));
-            popupActions.addAction(new StyleAction(this,TocActionFactory.A_EXPORT_STYLE,
+            popupActions.addAction(new StyleAction(this, TocActionFactory.A_EXPORT_STYLE,
                     I18N.tr("Export style"), I18N.tr("Export this style from the associated layer."),
                     OrbisGISIcon.getIcon("add"),
-                    EventHandler.create(ActionListener.class, this, "onExportStyle"),null));
+                    EventHandler.create(ActionListener.class, this, "onExportStyle"), null));
         }
         /**
          * User click on the save button
@@ -226,12 +226,28 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         mapElement.save();
                 }
         }
-        
+
+        /**
+         * User select the Start/Stop edition of a layer geometries
+         */
+        public void onMenuSetActiveLayer() {
+            if(mapContext!=null) {
+                List<ILayer> selectedLayers = getSelectedLayers();
+                if(!selectedLayers.isEmpty()) {
+                    ILayer selectedLayer = selectedLayers.get(0);
+                    if(mapContext.getActiveLayer()!=null && mapContext.getActiveLayer().equals(selectedLayer)) {
+                        mapContext.setActiveLayer(null);
+                    } else {
+                        mapContext.setActiveLayer(selectedLayer);
+                    }
+                }
+            }
+        }
         /**
          * The Map Element has been updated
          */
-        public void onMapModified() {
-                if(mapElement!=null) {
+        public void onMapModified(PropertyChangeEvent evt) {
+                if(mapElement!=null && MapElement.PROP_MODIFIED.equals(evt.getPropertyName())) {
                         saveAction.setEnabled(mapElement.isModified());
                 }
         }
@@ -602,8 +618,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         this.mapContext.addMapContextListener(tocMapContextListener);
                         final ILayer root = this.mapContext.getLayerModel();
                         addPropertyListeners(new TocTreeNodeLayer(root));
-                        mapElement.addPropertyChangeListener(MapElement.PROP_MODIFIED,modificationListener);
-                        onMapModified();
+                        mapElement.addPropertyChangeListener(MapElement.PROP_MODIFIED, modificationListener);
                         root.addLayerListenerRecursively(tocLayerListener);
                         // Apply treeModel and clear the selection        
                         fireSelectionEvent.set(false);
@@ -646,7 +661,24 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
             Object selected = tree.getLastSelectedPathComponent();
             return selected!=null && selected instanceof TocTreeNodeStyle;
         }
-
+        @Override
+        public boolean isSelectedLayersEditable() {
+            // Fetch selected layers for Row selection
+            TreePath[] selectedItems = tree.getSelectionPaths();
+            if(selectedItems!=null) {
+                for (TreePath path : selectedItems) {
+                    Object treeNode = path.getLastPathComponent();
+                    if (treeNode instanceof TocTreeNodeLayer) {
+                        ILayer l = ((TocTreeNodeLayer) treeNode).getLayer();
+                        DataSource src = l.getDataSource();
+                        if(!src.isEditable()) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
         @Override
         public boolean hasLayerWithRowSelection() {
             Boolean hasLayerWithRowSelection = selectionState.get(HAS_LAYER_WITH_ROW_SELECTION);
@@ -1135,13 +1167,6 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 @Override
                 public void layerSelectionChanged(MapContext mapContext) {
                         setTocSelection(mapContext);
-                }
-
-                @Override
-                public void activeLayerChanged(ILayer previousActiveLayer,
-                        MapContext mapContext) {
-                        treeModel.nodeChanged(new TocTreeNodeLayer(previousActiveLayer));
-                        treeModel.nodeChanged(new TocTreeNodeLayer(mapContext.getActiveLayer()));
                 }
         }
 

@@ -29,10 +29,14 @@
 package org.orbisgis.view.map;
 
 import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import javax.swing.JOptionPane;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
@@ -44,7 +48,6 @@ import org.orbisgis.core.layerModel.LayerException;
 import org.orbisgis.core.layerModel.LayerListenerAdapter;
 import org.orbisgis.core.layerModel.LayerListenerEvent;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.layerModel.MapContextListener;
 import org.orbisgis.core.layerModel.SelectionEvent;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
@@ -63,13 +66,16 @@ public final class MapElement extends AbstractEditableElement {
         public static final String EDITABLE_TYPE = "MapContext";
         private static final Logger LOGGER = Logger.getLogger("gui."+MapElement.class);
 	private static final I18n I18N = I18nFactory.getI18n(MapElement.class);
+
+	// The following events does not change the MapElement modification state.
+    private Set<String> ignoredModificationEvents = new HashSet(Arrays.asList(
+            new String[]{MapContext.PROP_ACTIVELAYER, MapContext.PROP_SELECTEDLAYERS, MapContext.PROP_SELECTEDSTYLES}));
         
 	private MapContext mapContext;
         private MapEditor editor;
         private String mapId;
-        private MapContextListener updateListener = EventHandler.create(MapContextListener.class, this , "setModified");
         private PropertyChangeListener mapContextPropertyUpdateListener =
-                EventHandler.create(PropertyChangeListener.class, this , "setModified");
+                EventHandler.create(PropertyChangeListener.class, this , "onMapUpdate","");
         private LayerUpdateListener layerUpdateListener = new LayerUpdateListener();
         private File mapContextFile;
         
@@ -100,8 +106,10 @@ public final class MapElement extends AbstractEditableElement {
         /**
          * Set this element as modified
          */
-        public void setModified() {
-                setModified(true);
+        public void onMapUpdate(PropertyChangeEvent evt) {
+                if(!ignoredModificationEvents.contains(evt.getPropertyName())) {
+                    setModified(true);
+                }
         }
         
         /**
@@ -157,7 +165,6 @@ public final class MapElement extends AbstractEditableElement {
                 setModified(false);
                 try {
                     mapContext.open(progressMonitor);
-                    mapContext.addMapContextListener(updateListener);
                     mapContext.addPropertyChangeListener(mapContextPropertyUpdateListener);
                     mapContext.getLayerModel().addLayerListenerRecursively(layerUpdateListener);
                 } catch (LayerException ex) {
@@ -171,7 +178,6 @@ public final class MapElement extends AbstractEditableElement {
 	public void close(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException {
 		mapContext.close(progressMonitor);
-                mapContext.removeMapContextListener(updateListener);
                 mapContext.removePropertyChangeListener(mapContextPropertyUpdateListener);
                 mapContext.getLayerModel().removeLayerListenerRecursively(layerUpdateListener);
                 

@@ -42,13 +42,8 @@ import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import bibliothek.gui.dock.common.menu.CLookAndFeelMenuPiece;
 import bibliothek.gui.dock.common.menu.SingleCDockableListMenuPiece;
 import bibliothek.gui.dock.facile.menu.RootMenuPiece;
-import bibliothek.gui.dock.layout.DockableProperty;
-import bibliothek.gui.dock.station.toolbar.ToolbarProperty;
 import bibliothek.gui.dock.themes.ThemeManager;
 import bibliothek.gui.dock.toolbar.CToolbarContentArea;
-import bibliothek.gui.dock.toolbar.location.CToolbarAreaLocation;
-import bibliothek.gui.dock.toolbar.location.CToolbarItemLocation;
-import bibliothek.gui.dock.toolbar.location.CToolbarLocation;
 import bibliothek.gui.dock.util.BackgroundComponent;
 import bibliothek.gui.dock.util.BackgroundPaint;
 import bibliothek.gui.dock.util.PaintableComponent;
@@ -56,22 +51,35 @@ import bibliothek.gui.dock.util.PropertyKey;
 import bibliothek.util.PathCombiner;
 import bibliothek.util.xml.XElement;
 import bibliothek.util.xml.XIO;
-
-import java.awt.*;
+import java.awt.Graphics;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import javax.swing.*;
-
+import java.util.Map;
+import javax.swing.Action;
+import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.UIManager;
 import org.apache.log4j.Logger;
+import org.orbisgis.core.common.BeanPropertyChangeSupport;
 import org.orbisgis.view.components.actions.ActionTools;
 import org.orbisgis.view.components.actions.ActionsHolder;
-import org.orbisgis.view.docking.internals.*;
+import org.orbisgis.view.docking.internals.ApplicationRessourceDecorator;
+import org.orbisgis.view.docking.internals.CustomMultipleCDockable;
+import org.orbisgis.view.docking.internals.CustomPanelHolder;
+import org.orbisgis.view.docking.internals.CustomSingleCDockable;
+import org.orbisgis.view.docking.internals.DockingArea;
+import org.orbisgis.view.docking.internals.DockingPanelLayoutDecorator;
+import org.orbisgis.view.docking.internals.InternalCommonFactory;
+import org.orbisgis.view.docking.internals.OrbisGISView;
 import org.orbisgis.view.docking.internals.actions.CActionHolder;
 import org.orbisgis.view.docking.internals.actions.ToolBarActions;
 import org.orbisgis.view.docking.internals.actions.ToolBarItem;
@@ -86,7 +94,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * 
  * This manager can save and load emplacement of views in XML.
  */
-public final class DockingManagerImpl implements DockingManager, ActionsHolder {
+public final class DockingManagerImpl extends BeanPropertyChangeSupport implements DockingManager, ActionsHolder {
 
         private JFrame owner;
         private SingleCDockableListMenuPiece dockableMenuTracker;
@@ -413,8 +421,10 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
 
         @Override
         public void addActions(List<Action> newActions) {
+                List<Action> before = new ArrayList<Action>(addedToolBarActions);
                 addedToolBarActions.addAll(newActions);
                 resetToolBarsCActions(addedToolBarActions);
+                propertyChangeSupport.firePropertyChange(PROP_ACTIONS,before,addedToolBarActions);
         }
 
         @Override
@@ -425,8 +435,10 @@ public final class DockingManagerImpl implements DockingManager, ActionsHolder {
 
         @Override
         public void removeActions(List<Action> actionList) {
+                List<Action> before = new ArrayList<Action>(addedToolBarActions);
                 addedToolBarActions.removeAll(actionList);
                 resetToolBarsCActions(addedToolBarActions);
+                propertyChangeSupport.firePropertyChange(PROP_ACTIONS,before,addedToolBarActions);
         }
         @Override
         public String addToolbarItem(Action action) {
