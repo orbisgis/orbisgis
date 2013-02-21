@@ -160,7 +160,7 @@
                 <dependency>
                         <groupId>${project.groupId}</groupId>
                         <artifactId>plugin</artifactId>
-                        <version>${project.version}</version>
+                        <version>1.0</version>
                         <scope>test</scope>
                 </dependency>
         </dependencies>

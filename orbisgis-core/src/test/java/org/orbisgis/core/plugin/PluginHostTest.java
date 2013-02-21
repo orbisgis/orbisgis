@@ -93,7 +93,7 @@ public class PluginHostTest extends AbstractTest {
         assertNotNull(dataManager);
         FunctionManager manager = dataManager.getDataSourceFactory().getFunctionManager();        
         PluginHost host = startHost();
-        File bundlePath = new File("target/bundle/plugin-4.0-SNAPSHOT.jar");
+        File bundlePath = new File("target/bundle/plugin-1.0.jar");
         System.out.println("Install plugin :"+bundlePath.getAbsolutePath());
         assertTrue(bundlePath.exists());
         // Install the external package
