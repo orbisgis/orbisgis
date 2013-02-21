@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workspaces> 
     <workspace>
-        default
+        <name>default</name>
     </workspace>
     <workspace>
-        toto
+        <name>toto</name>
     </workspace>
     <workspace>
-        titi
+        <name>titi</name>
     </workspace>
     <workspace>
-        tata
+        <name>tata</name>
     </workspace>
 </workspaces>
