@@ -29,6 +29,7 @@
 
 package org.orbisgis.view.map;
 
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.main.frames.ext.MainWindow;
 import org.orbisgis.view.main.frames.ext.ToolBarAction;
 import org.orbisgis.view.map.ext.MapEditorExtension;
@@ -55,12 +56,17 @@ public class DrawingToolBar implements ToolBarAction {
     @Override
     public List<Action> createActions(MainWindow target) {
         List<Action> actions = new LinkedList<Action>();
-        actions.add(new AutomatonAction(DRAW_LINE,new LineTool(),mapEditor));
+        actions.add(new AutomatonAction(DRAW_LINE,new LineTool(),mapEditor)
+                .addTrackedMapContextProperty(MapContext.PROP_ACTIVELAYER));
         return actions;
     }
 
     @Override
     public void disposeActions(MainWindow target, List<Action> actions) {
-
+        for(Action action : actions) {
+            if(action instanceof AutomatonAction) {
+                ((AutomatonAction) action).disposeAutomaton();
+            }
+        }
     }
 }

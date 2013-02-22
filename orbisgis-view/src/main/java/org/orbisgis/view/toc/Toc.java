@@ -789,6 +789,43 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
          */
         public void onDeleteLayer() {
                 ILayer[] selectedResources = mapContext.getSelectedLayers();
+                boolean saveDataSources = false;
+                // Check for modified sources
+                for (ILayer resource : selectedResources) {
+                    DataSource dataSource = resource.getDataSource();
+                    if(dataSource!=null && dataSource.isModified()) {
+                        int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                                I18N.tr("Some layers use modified data source, do you want to save these modifications before removing them ?"),
+                                I18N.tr("Save geometry edits"),
+                                JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+                        if(response==JOptionPane.YES_OPTION) {
+                            saveDataSources = true;
+                        } else if(response==JOptionPane.CANCEL_OPTION) {
+                            return;
+                        }
+                        break;
+                    }
+                }
+                // Commit
+                if(saveDataSources) {
+                    for (ILayer resource : selectedResources) {
+                            DataSource dataSource = resource.getDataSource();
+                            if(dataSource!=null && dataSource.isModified()) {
+                                try {
+                                    dataSource.commit();
+                                } catch (Exception ex) {
+                                    int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                                            I18N.tr("The layer data source {0} can not be saved, are you sure you want to continue ?",resource.getName()),
+                                            I18N.tr("Errors on data source save process"),
+                                            JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+                                    if(response==JOptionPane.NO_OPTION) {
+                                        return;
+                                    }
+                                }
+                            }
+                    }
+                }
+                // Remove layers
                 for (ILayer resource : selectedResources) {
                         try {
                                 resource.getParent().remove(resource);

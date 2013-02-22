@@ -46,6 +46,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.Action;
@@ -71,6 +74,7 @@ import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
+import org.orbisgis.view.components.actions.ActionsHolder;
 import org.orbisgis.view.components.actions.DefaultAction;
 import org.orbisgis.view.docking.DockingPanelParameters;
 import org.orbisgis.view.edition.EditableElement;
@@ -156,9 +160,38 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         // Tools that will be created later will also be set in the docking panel
         // thanks to this listener
         actions.addPropertyChangeListener(new ActionDockingListener(dockingPanelParameters));
+        // Auto-release Automaton Actions
+        actions.addPropertyChangeListener(ActionsHolder.PROP_ACTIONS,EventHandler.create(PropertyChangeListener.class,this,"onResetActions",""));
         //Set the Drop target
         dragDropHandler = new MapTransferHandler();
         this.setTransferHandler(dragDropHandler);
+    }
+
+    /**
+     * Action list on Map Editor has been updated. Release no longer used AutomatonActions.
+     * @param evt
+     */
+    public void onResetActions(PropertyChangeEvent evt) {
+        // Populate old actions
+        List<AutomatonAction> oldValues = new ArrayList<AutomatonAction>();
+        Object oldAct = evt.getOldValue();
+        if(oldAct instanceof AutomatonAction) {
+            oldValues.add((AutomatonAction)oldAct);
+        } if(oldAct instanceof List) {
+            for(Object action : (List)oldAct) {
+                if(action instanceof AutomatonAction) {
+                    oldValues.add((AutomatonAction) action);
+                }
+            }
+        }
+        // Do not dispose kept actions
+        Object newValue = evt.getNewValue();
+        if(newValue instanceof List) {
+            oldValues.removeAll((List)oldAct);
+        }
+        for(AutomatonAction action : oldValues) {
+            action.disposeAutomaton();
+        }
     }
     private void updateMapLabel() {
                 if (mapElement == null) {
@@ -296,6 +329,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
      */
     private void loadMap(MapElement element) {
         MapElement oldMapElement = mapElement;
+        ToolManager oldToolManager = getToolManager();
         try {
             removeListeners();
             mapElement = element;
@@ -327,6 +361,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         } catch (TransitionException ex) {
             GUILOGGER.error(ex);
         }
+        firePropertyChange(PROP_TOOL_MANAGER,oldToolManager,getToolManager());
         firePropertyChange(PROP_MAP_ELEMENT,oldMapElement, mapElement);
     }
     private MapEditorPersistence getMapEditorPersistence() {
@@ -391,7 +426,8 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
                 .setToolTipText(I18N.tr("Zoom to show all geometries")).setLogicalGroup("navigation"));
 
         // Selection tools
-        actions.addAction(new AutomatonAction(MapEditorAction.A_SELECTION,new SelectionTool(),this).setLogicalGroup("selection"));
+        actions.addAction(new AutomatonAction(MapEditorAction.A_SELECTION,new SelectionTool(),this)
+                .addTrackedMapContextProperty(MapContext.PROP_SELECTEDLAYERS).setLogicalGroup("selection"));
         actions.addAction(new DefaultAction(MapEditorAction.A_CLEAR_SELECTION, I18N.tr("Clear selection"),
                 OrbisGISIcon.getIcon("edit-clear"),EventHandler.create(ActionListener.class,this,"onClearSelection"))
                 .setToolTipText(I18N.tr("Clear all selected geometries of all layers")).setLogicalGroup("selection"));

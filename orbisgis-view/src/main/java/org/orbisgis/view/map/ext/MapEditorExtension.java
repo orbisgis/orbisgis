@@ -10,6 +10,7 @@ import org.orbisgis.view.util.PropertyHost;
  */
 public interface MapEditorExtension extends EditorDockable, PropertyHost {
     public static final String PROP_MAP_ELEMENT = "mapElement";
+    public static final String PROP_TOOL_MANAGER = "toolManager";
 
     /**
      * Get the loaded map element
