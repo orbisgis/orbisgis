@@ -41,6 +41,9 @@ import javax.swing.JOptionPane;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
+import org.gdms.data.edition.EditionEvent;
+import org.gdms.data.edition.EditionListener;
+import org.gdms.data.edition.MultipleEditionEvent;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerCollectionEvent;
@@ -77,6 +80,7 @@ public final class MapElement extends AbstractEditableElement {
         private PropertyChangeListener mapContextPropertyUpdateListener =
                 EventHandler.create(PropertyChangeListener.class, this , "onMapUpdate","");
         private LayerUpdateListener layerUpdateListener = new LayerUpdateListener();
+        private SourceUpdateListener sourceUpdateListener = new SourceUpdateListener();
         private File mapContextFile;
         
 	public MapElement(MapContext mapContext,File mapContextFile) {
@@ -130,6 +134,37 @@ public final class MapElement extends AbstractEditableElement {
                 }
                 return false;
         }
+    private boolean hasModifiedDataSources() {
+        for(ILayer layer : mapContext.getLayers()) {
+            DataSource source = layer.getDataSource();
+            if(source!=null) {
+                if(source.isModified()) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    /**
+     * @return True if all sources saved without errors.
+     */
+    private boolean saveModifiedDataSources() {
+        boolean commitWithoutErrors=true;
+        for(ILayer layer : mapContext.getLayers()) {
+            DataSource source = layer.getDataSource();
+            if(source!=null) {
+                if(source.isModified()) {
+                    try {
+                        source.commit();
+                    } catch (Exception ex) {
+                        LOGGER.error(ex.getLocalizedMessage(),ex);
+                        commitWithoutErrors = false;
+                    }
+                }
+            }
+        }
+        return commitWithoutErrors;
+    }
         
 	@Override
 	public void save() throws UnsupportedOperationException {
@@ -144,7 +179,28 @@ public final class MapElement extends AbstractEditableElement {
                                 doSave = false;
                         }
                 }
+                if(hasModifiedDataSources()) {
+                    int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                            I18N.tr("Some layers use modified data source, do you want to save also these modifications ?"),
+                            I18N.tr("Save geometry edits"),
+                            JOptionPane.YES_NO_CANCEL_OPTION,JOptionPane.WARNING_MESSAGE);
+                    if(response == JOptionPane.CANCEL_OPTION) {
+                        doSave = false;
+                    } else if(response == JOptionPane.YES_OPTION){
+                        // Save DataSources
+                        if(!saveModifiedDataSources()) {
+                            response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                                    I18N.tr("Some layers data source modifications can not be saved, are you sure you want to continue ?"),
+                                    I18N.tr("Errors on data source save process"),
+                                    JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+                            if(response == JOptionPane.NO_OPTION) {
+                                doSave = false;
+                            }
+                        }
+                    }
+                }
                 if(doSave) {
+                        // Save MapContext
                         try {
                                 //Create folders if needed
                                 File parentFolder = mapContextFile.getParentFile();
@@ -155,7 +211,9 @@ public final class MapElement extends AbstractEditableElement {
                         } catch (FileNotFoundException ex) {
                                 throw new UnsupportedOperationException(ex);
                         }
-                        setModified(false);
+                        if(doSave) {
+                            setModified(false);
+                        }
                 }
 	}
 
@@ -166,7 +224,7 @@ public final class MapElement extends AbstractEditableElement {
                 try {
                     mapContext.open(progressMonitor);
                     mapContext.addPropertyChangeListener(mapContextPropertyUpdateListener);
-                    mapContext.getLayerModel().addLayerListenerRecursively(layerUpdateListener);
+                    setListeners(mapContext.getLayerModel());
                 } catch (LayerException ex) {
                     LOGGER.error(I18N.tr("Unable to load the map context"),ex);
                 } catch (IllegalStateException ex) {
@@ -178,11 +236,40 @@ public final class MapElement extends AbstractEditableElement {
 	public void close(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException {
 		mapContext.close(progressMonitor);
-                mapContext.removePropertyChangeListener(mapContextPropertyUpdateListener);
-                mapContext.getLayerModel().removeLayerListenerRecursively(layerUpdateListener);
-                
+        mapContext.removePropertyChangeListener(mapContextPropertyUpdateListener);
+        removeListeners(mapContext.getLayerModel());
 	}
-
+    private void setListeners(ILayer layer) {
+        if(layer==null) {
+            return;
+        }
+        layer.addLayerListener(layerUpdateListener);
+        if(layer.getDataSource()!=null) {
+            layer.getDataSource().addEditionListener(sourceUpdateListener);
+        }
+        ILayer[] layers = layer.getLayersRecursively();
+        if(layers!=null) {
+            for(ILayer subLayer : layers) {
+                setListeners(subLayer);
+            }
+        }
+    }
+    private void removeListeners(ILayer layer) {
+        if(layer==null) {
+            return;
+        }
+        layer.removeLayerListener(layerUpdateListener);
+        DataSource src = layer.getDataSource();
+        if(src!=null) {
+            src.removeEditionListener(sourceUpdateListener);
+        }
+        ILayer[] layers = layer.getLayersRecursively();
+        if(layers!=null) {
+            for(ILayer subLayer : layers) {
+                removeListeners(subLayer);
+            }
+        }
+    }
         @Override
         public String getId() {
             return mapId;
@@ -229,7 +316,22 @@ public final class MapElement extends AbstractEditableElement {
         public void setMapEditor(MapEditor edit){
                 editor = edit;
         }
+        private class SourceUpdateListener implements EditionListener {
+            @Override
+            public void singleModification(EditionEvent e) {
+                if(e.getDataSource().isModified()) {
+                    setModified(true);
+                }
+            }
 
+            @Override
+            public void multipleModification(MultipleEditionEvent me) {
+                for(EditionEvent e : me.getEvents()) {
+                    singleModification(e);
+                    break;
+                }
+            }
+        }
         /**
          * Set the editable map as modified when the layer model change
          */
@@ -253,7 +355,7 @@ public final class MapElement extends AbstractEditableElement {
             @Override
             public void layerAdded(LayerCollectionEvent e) {
                 for (final ILayer layer : e.getAffected()) {
-                        layer.addLayerListenerRecursively(this);
+                        setListeners(layer);
                 }
                 setModified(true);
             }
@@ -261,7 +363,7 @@ public final class MapElement extends AbstractEditableElement {
             @Override
             public void layerRemoved(LayerCollectionEvent e) {
                 for (final ILayer layer : e.getAffected()) {
-                        layer.removeLayerListenerRecursively(this);
+                        removeListeners(layer);
                 }
                 setModified(true);
             }
@@ -273,7 +375,7 @@ public final class MapElement extends AbstractEditableElement {
 
             @Override
             public void selectionChanged(SelectionEvent e) {
-                setModified(true);
+                // row selection is not serialised in MapContext
             }
             
         }

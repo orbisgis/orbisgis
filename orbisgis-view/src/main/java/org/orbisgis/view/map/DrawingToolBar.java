@@ -33,8 +33,6 @@ import org.orbisgis.view.main.frames.ext.MainWindow;
 import org.orbisgis.view.main.frames.ext.ToolBarAction;
 import org.orbisgis.view.map.ext.MapEditorExtension;
 import org.orbisgis.view.map.tools.LineTool;
-import org.osgi.framework.BundleContext;
-
 import javax.swing.Action;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,16 +43,13 @@ import java.util.List;
  */
 public class DrawingToolBar implements ToolBarAction {
     private MapEditorExtension mapEditor;
-    private BundleContext bc;
 
     /**
-     * Constructor, this service implementation, register and unregister itself.
+     * Constructor, this service implementation, register and un-register itself.
      * @param mapEditor
-     * @param bc
      */
-    public DrawingToolBar(MapEditorExtension mapEditor, BundleContext bc) {
+    public DrawingToolBar(MapEditorExtension mapEditor) {
         this.mapEditor = mapEditor;
-        this.bc = bc;
     }
 
     @Override

@@ -42,7 +42,6 @@ public class LayerAction extends DefaultAction {
     private boolean singleSelection = false;
     private boolean onRealLayerOnly = false;
     private boolean onLayerWithRowSelection = false;
-    private boolean onEditableDataSource = false;
 
     /**
      * @param onLayerWithRowSelection If true this action is shown only if one of the selected layer contain a row selection.
@@ -50,16 +49,6 @@ public class LayerAction extends DefaultAction {
      */
     public LayerAction setOnLayerWithRowSelection(boolean onLayerWithRowSelection) {
         this.onLayerWithRowSelection = onLayerWithRowSelection;
-        return this;
-    }
-
-    /**
-     * @param onEditableDataSource if true this action is shown only if the user select a Layer
-     *                             where data source is editable.
-     * @return this
-     */
-    public LayerAction setOnEditableDataSource(boolean onEditableDataSource) {
-        this.onEditableDataSource = onEditableDataSource;
         return this;
     }
 
@@ -91,7 +80,6 @@ public class LayerAction extends DefaultAction {
     public boolean isEnabled() {
         return (!onLayerWithRowSelection || toc.hasLayerWithRowSelection()) &&
                 (!singleSelection || toc.getTree().getSelectionCount()==1) &&
-                (!onEditableDataSource || toc.isSelectedLayersEditable()) &&
                 (!onRealLayerOnly || !toc.hasLayerGroup()) && toc.isLayerSelection() && super.isEnabled();
     }
 }

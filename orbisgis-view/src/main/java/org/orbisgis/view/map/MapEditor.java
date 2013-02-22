@@ -39,6 +39,7 @@ import java.awt.geom.Point2D;
 import java.beans.EventHandler;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.beans.PropertyVetoException;
 import java.beans.VetoableChangeListener;
 import java.io.File;
@@ -129,6 +130,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     private ComponentListener sizeListener = EventHandler.create(ComponentListener.class,this,"updateMapControlSize",null,"componentResized");
     private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified");
     private ActionCommands actions = new ActionCommands();
+
     /**
      * Constructor
      */
@@ -293,6 +295,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
      * @param element
      */
     private void loadMap(MapElement element) {
+        MapElement oldMapElement = mapElement;
         try {
             removeListeners();
             mapElement = element;
@@ -324,6 +327,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         } catch (TransitionException ex) {
             GUILOGGER.error(ex);
         }
+        firePropertyChange(PROP_MAP_ELEMENT,oldMapElement, mapElement);
     }
     private MapEditorPersistence getMapEditorPersistence() {
             return ((MapEditorPersistence)dockingPanelParameters.getLayout());
@@ -348,8 +352,8 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
 
 
         @Override
-        public MapContext getMapContext() {
-                return mapContext;
+        public MapElement getMapElement() {
+                return mapElement;
         }
 
 

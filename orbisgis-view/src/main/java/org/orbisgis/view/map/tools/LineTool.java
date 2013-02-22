@@ -58,6 +58,7 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 
@@ -70,6 +71,8 @@ import org.gdms.data.types.ConstraintFactory;
 import org.gdms.data.types.GeometryDimensionConstraint;
 import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
+
+import javax.swing.*;
 
 public class LineTool extends AbstractLineTool {
 
@@ -112,6 +115,11 @@ public class LineTool extends AbstractLineTool {
                 } catch (DriverException e) {
                         throw new TransitionException(I18N.tr("Cannot insert linestring"), e);
                 }
+        }
+
+        @Override
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("edition/drawline");
         }
 
         @Override

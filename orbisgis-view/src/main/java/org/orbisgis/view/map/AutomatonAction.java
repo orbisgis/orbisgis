@@ -35,7 +35,11 @@ import org.orbisgis.view.map.ext.AutomatonHolder;
 import org.orbisgis.view.map.ext.MapEditorAction;
 import org.orbisgis.view.map.ext.MapEditorExtension;
 import org.orbisgis.view.map.tool.Automaton;
-import javax.swing.Action;
+import org.orbisgis.view.map.tool.ToolListener;
+import org.orbisgis.view.map.tool.ToolManager;
+import org.orbisgis.view.map.tool.TransitionException;
+
+import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 /**
@@ -60,7 +64,10 @@ public class AutomatonAction extends DefaultAction implements AutomatonHolder {
 
     @Override
     public boolean isEnabled() {
-        return automaton.isEnabled(extension.getMapContext(),extension.getToolManager());
+        if(extension.getMapElement()==null || extension.getToolManager()==null) {
+            return false;
+        }
+        return automaton.isEnabled(extension.getMapElement().getMapContext(),extension.getToolManager());
     }
 
     /**
@@ -74,6 +81,37 @@ public class AutomatonAction extends DefaultAction implements AutomatonHolder {
     public void actionPerformed(ActionEvent ae) {
         if(getValue(Action.SELECTED_KEY).equals(Boolean.TRUE) && extension.getToolManager()!=null) {
             extension.getToolManager().setTool(automaton);
+            extension.getToolManager().addToolListener(new DeactivateTool());
+        }
+    }
+
+    /**
+     * In order to deactivate tools that are not in the same button group (different controls)
+     * this listener disable unused Automaton.
+     */
+    private class DeactivateTool implements ToolListener {
+
+        @Override
+        public void stateChanged(ToolManager toolManager) {
+        }
+
+        @Override
+        public void transitionException(ToolManager toolManager, TransitionException e) {
+        }
+
+        @Override
+        public void currentToolChanged(Automaton previous, ToolManager toolManager) {
+            if(toolManager.getTool()!=null && !toolManager.getTool().equals(automaton)) {
+                putValue(Action.SELECTED_KEY,false);
+                final ToolManager manager = toolManager;
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        manager.removeToolListener(DeactivateTool.this);
+                    }
+                });
+            }
+
         }
     }
 }

@@ -42,11 +42,6 @@ public interface TocExt {
     boolean hasLayerWithRowSelection();
 
     /**
-     * @return True if all selected datasources behinds layers can be edited in the map editor.
-     */
-    boolean isSelectedLayersEditable();
-
-    /**
      * @return True if one of the selected layer is a layer collection item.
      */
     boolean hasLayerGroup();

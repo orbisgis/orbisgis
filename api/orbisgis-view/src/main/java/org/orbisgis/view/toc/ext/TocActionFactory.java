@@ -44,6 +44,8 @@ public interface TocActionFactory extends ActionFactoryService<TocExt> {
     public static final String A_ADD_STYLE = "A_ADD_STYLE";
     public static final String A_OPEN_ATTRIBUTES = "A_OPEN_ATTRIBUTES";
     public static final String A_EDIT_GEOMETRY = "A_EDIT_GEOMETRY";
+    public static final String A_STOP_EDIT_GEOMETRY = "A_STOP_EDIT_GEOMETRY";
+    public static final String A_SAVE_EDIT_GEOMETRY = "A_SAVE_EDIT_GEOMETRY";
     public static final String A_ADD_LAYER_GROUP = "A_ADD_LAYER_GROUP";
 
     // Style actions
@@ -51,4 +53,8 @@ public interface TocActionFactory extends ActionFactoryService<TocExt> {
     public static final String A_ADVANCED_EDITION = "A_ADVANCED_EDITION";
     public static final String A_REMOVE_STYLE = "A_REMOVE_STYLE";
     public static final String A_EXPORT_STYLE = "A_EXPORT_STYLE";
+
+    // Logic groups
+    public static final String G_DRAWING = "G_DRAWING";
+
 }
