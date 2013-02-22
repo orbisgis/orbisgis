@@ -60,7 +60,6 @@ import org.gdms.data.types.Type;
 import org.gdms.data.types.TypeFactory;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
-import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.ToolManager;
@@ -117,6 +116,6 @@ public class PointTool extends AbstractPointTool {
 
         @Override
         public ImageIcon getImageIcon() {
-            return OrbisGISIcon.getIcon("point");
+            return OrbisGISIcon.getIcon("edition/drawpoint");
         }
 }

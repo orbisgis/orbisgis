@@ -96,7 +96,7 @@ public class PolygonTool extends AbstractPolygonTool {
 
         @Override
         public ImageIcon getImageIcon() {
-            return OrbisGISIcon.getIcon("polygon");
+            return OrbisGISIcon.getIcon("edition/drawpolygon");
         }
 
 }

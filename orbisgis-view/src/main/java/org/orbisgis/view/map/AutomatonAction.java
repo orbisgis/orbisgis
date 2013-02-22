@@ -216,10 +216,12 @@ public class AutomatonAction extends DefaultAction implements AutomatonHolder {
 
         @Override
         public void stateChanged(ToolManager toolManager) {
+            checkAutomatonState();
         }
 
         @Override
         public void transitionException(ToolManager toolManager, TransitionException e) {
+            checkAutomatonState();
         }
 
         @Override

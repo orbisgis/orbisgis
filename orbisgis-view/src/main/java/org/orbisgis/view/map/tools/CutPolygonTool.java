@@ -117,6 +117,6 @@ public class CutPolygonTool extends AbstractPolygonTool {
 
         @Override
         public ImageIcon getImageIcon() {
-            return OrbisGISIcon.getIcon("cutpolygon");
+            return OrbisGISIcon.getIcon("edition/cutpolygon");
         }
 }

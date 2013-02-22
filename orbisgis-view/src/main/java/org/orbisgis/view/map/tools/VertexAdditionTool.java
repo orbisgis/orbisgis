@@ -41,11 +41,14 @@ import org.gdms.geometryUtils.GeometryEdit;
 import org.gdms.geometryUtils.GeometryException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.DrawingException;
 import org.orbisgis.view.map.tool.FinishedAutomatonException;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.tools.generated.VertexAddition;
+
+import javax.swing.*;
 
 public class VertexAdditionTool extends VertexAddition {
 
@@ -132,5 +135,9 @@ public class VertexAdditionTool extends VertexAddition {
         @Override
         public String getName() {
                 return I18N.tr("Add a new vertex");
+        }
+        @Override
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("edition/vertexaddition");
         }
 }

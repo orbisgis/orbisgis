@@ -32,8 +32,22 @@ package org.orbisgis.view.map;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.main.frames.ext.MainWindow;
 import org.orbisgis.view.main.frames.ext.ToolBarAction;
+import org.orbisgis.view.map.ext.MapEditorAction;
 import org.orbisgis.view.map.ext.MapEditorExtension;
+import org.orbisgis.view.map.tool.Automaton;
+import org.orbisgis.view.map.tools.AutoCompletePolygonTool;
+import org.orbisgis.view.map.tools.CutPolygonTool;
 import org.orbisgis.view.map.tools.LineTool;
+import org.orbisgis.view.map.tools.MultilineTool;
+import org.orbisgis.view.map.tools.MultipointTool;
+import org.orbisgis.view.map.tools.MultipolygonTool;
+import org.orbisgis.view.map.tools.PointTool;
+import org.orbisgis.view.map.tools.PolygonTool;
+import org.orbisgis.view.map.tools.SplitLineStringTool;
+import org.orbisgis.view.map.tools.SplitPolygonTool;
+import org.orbisgis.view.map.tools.VertexAdditionTool;
+import org.orbisgis.view.map.tools.VertexDeletionTool;
+
 import javax.swing.Action;
 import java.util.LinkedList;
 import java.util.List;
@@ -56,11 +70,27 @@ public class DrawingToolBar implements ToolBarAction {
     @Override
     public List<Action> createActions(MainWindow target) {
         List<Action> actions = new LinkedList<Action>();
-        actions.add(new AutomatonAction(DRAW_LINE,new LineTool(),mapEditor)
-                .addTrackedMapContextProperty(MapContext.PROP_ACTIVELAYER));
+        add(actions,DRAW_AUTO_POLYGON,new AutoCompletePolygonTool());
+        add(actions,DRAW_CUT_POLYGON, new CutPolygonTool());
+        add(actions,DRAW_MULTI_POINT, new MultipointTool());
+        add(actions,DRAW_MULTI_LINE, new MultilineTool());
+        add(actions,DRAW_MULTI_POLYGON, new MultipolygonTool());
+        add(actions,DRAW_POINT, new PointTool());
+        add(actions,DRAW_LINE, new LineTool());
+        add(actions,DRAW_POLYGON, new PolygonTool());
+        add(actions,DRAW_SPLIT_LINESTRING, new SplitLineStringTool());
+        add(actions,DRAW_SPLIT_POLYGON,new SplitPolygonTool());
+        add(actions,DRAW_VERTEX_ADDITION, new VertexAdditionTool());
+        add(actions,DRAW_VERTEX_DELETION, new VertexDeletionTool());
         return actions;
     }
-
+    private AutomatonAction add(List<Action> actions,String ID,Automaton action) {
+        AutomatonAction newAction = new AutomatonAction(ID,action,mapEditor)
+                .addTrackedMapContextProperty(MapContext.PROP_ACTIVELAYER);
+        newAction.setLogicalGroup("draw");
+        actions.add(newAction);
+        return newAction;
+    }
     @Override
     public void disposeActions(MainWindow target, List<Action> actions) {
         for(Action action : actions) {

@@ -109,6 +109,6 @@ public class SplitLineStringTool extends AbstractPointTool {
 
         @Override
         public ImageIcon getImageIcon() {
-            return OrbisGISIcon.getIcon("splitlinestring");
+            return OrbisGISIcon.getIcon("edition/splitlinestring");
         }
 }

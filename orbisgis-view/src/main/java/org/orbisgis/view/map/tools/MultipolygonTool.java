@@ -37,8 +37,11 @@ import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
+
+import javax.swing.*;
 
 public class MultipolygonTool extends AbstractMultipolygonTool {
 
@@ -80,6 +83,10 @@ public class MultipolygonTool extends AbstractMultipolygonTool {
 
         @Override
 	public String getName() {
-		return I18N.tr("orbisgis.core.ui.editors.map.tool.multipolygon_tooltip"); 
+		return I18N.tr("Draw multi-polygon");
 	}
+    @Override
+    public ImageIcon getImageIcon() {
+        return OrbisGISIcon.getIcon("edition/drawmultipolygon");
+    }
 }

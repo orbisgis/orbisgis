@@ -40,8 +40,11 @@ import org.gdms.driver.DriverException;
 import org.gdms.geometryUtils.GeometryException;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
+import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.*;
 import org.orbisgis.view.map.tools.generated.VertexDeletion;
+
+import javax.swing.*;
 
 public class VertexDeletionTool extends VertexDeletion {
 
@@ -117,20 +120,24 @@ public class VertexDeletionTool extends VertexDeletion {
                 throws DrawingException {
         }
 
-	@Override
+	    @Override
         public boolean isEnabled(MapContext vc, ToolManager tm) {
                 return ToolUtilities.activeSelectionGreaterThan(vc, 0)
                         && ToolUtilities.isActiveLayerEditable(vc) && ToolUtilities.isSelectionGreaterOrEqualsThan(vc, 1)
                         && !ToolUtilities.geometryTypeIs(vc, TypeFactory.createType(Type.POINT));
         }
 
-	@Override
+	    @Override
         public boolean isVisible(MapContext vc, ToolManager tm) {
                 return isEnabled(vc, tm);
         }
 
-	@Override
+	    @Override
         public String getName() {
                 return I18N.tr("Delete vertex");
+        }
+        @Override
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("edition/vertexdeletetion");
         }
 }

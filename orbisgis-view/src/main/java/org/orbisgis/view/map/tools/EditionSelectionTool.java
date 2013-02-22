@@ -136,7 +136,7 @@ public class EditionSelectionTool extends AbstractSelectionTool {
 
         @Override
         public ImageIcon getImageIcon() {
-            return OrbisGISIcon.getIcon("moveVertex");
+            return OrbisGISIcon.getIcon("edition/movevertex");
         }
 
 }
