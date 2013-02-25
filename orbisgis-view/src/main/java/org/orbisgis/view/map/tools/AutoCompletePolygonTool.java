@@ -183,12 +183,17 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
         }
 
         @Override
-    public ImageIcon getImageIcon() {
-        return OrbisGISIcon.getIcon("autocompletepolygon");
-    }
+        public String getTooltip() {
+            return getName();
+        }
 
         @Override
-    public void update(Observable o, Object o1) {
+        public ImageIcon getImageIcon() {
+            return OrbisGISIcon.getIcon("edition/autocompletepolygon");
+        }
+
+        @Override
+        public void update(Observable o, Object o1) {
         
     }
 }

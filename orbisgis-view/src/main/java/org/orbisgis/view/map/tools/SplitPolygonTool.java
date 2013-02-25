@@ -77,6 +77,12 @@ public class SplitPolygonTool extends AbstractLineTool {
         public String getName() {
                 return I18N.tr("Split polygon");
         }
+
+        @Override
+        public String getTooltip() {
+                return I18N.tr("Split a polygon by drawing a line");
+        }
+
         @Override
         public ImageIcon getImageIcon() {
             return OrbisGISIcon.getIcon("edition/splitpolygon");

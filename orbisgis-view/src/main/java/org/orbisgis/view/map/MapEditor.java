@@ -133,6 +133,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     private JLayeredPane layeredPane = new JLayeredPane();
     private ComponentListener sizeListener = EventHandler.create(ComponentListener.class,this,"updateMapControlSize",null,"componentResized");
     private PropertyChangeListener modificationListener = EventHandler.create(PropertyChangeListener.class,this,"onMapModified");
+    private PropertyChangeListener activeLayerListener = EventHandler.create(PropertyChangeListener.class,this,"onActiveLayerChange","");
     private ActionCommands actions = new ActionCommands();
 
     /**
@@ -334,6 +335,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
             removeListeners();
             mapElement = element;
             mapContext = (MapContext) element.getObject();
+            mapContext.addPropertyChangeListener(MapContext.PROP_ACTIVELAYER, activeLayerListener);
             //We (unfortunately) need a cross reference here : this way, we'll
             //be able to retrieve the MapTransform from the Toc..
             element.setMapEditor(this);
@@ -495,6 +497,16 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     }
 
     /**
+     * The edited layer of the loaded Map Context has been set.
+     * @param evt Event raised by the MapContext
+     */
+    public void onActiveLayerChange(PropertyChangeEvent evt) {
+        if(getToolManager()!=null) {
+            getToolManager().activeLayerChanged(evt);
+            getToolManager().checkToolStatus();
+        }
+    }
+    /**
      * The user click on the button clear selection
      */
     public void onClearSelection() {
@@ -586,6 +598,7 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
     private void removeListeners() {
             if(mapElement!=null) {
                     mapElement.removePropertyChangeListener(modificationListener);
+                    mapElement.getMapContext().removePropertyChangeListener(activeLayerListener);
             }
             if(mapControl!=null && mapControl.getToolManager()!=null) {
                 mapControl.getToolManager().removeToolListener(null);

@@ -32,7 +32,6 @@ import com.vividsolutions.jts.geom.Geometry;
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
 import java.util.Observable;
-import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import org.gdms.data.DataSource;
 import org.gdms.driver.DriverException;
@@ -41,18 +40,10 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.*;
 
-
-public class EditionSelectionTool extends AbstractSelectionTool {
-
-        AbstractButton button;
-
-        public AbstractButton getButton() {
-                return button;
-        }
-
-        public void setButton(AbstractButton button) {
-                this.button = button;
-        }
+/**
+ * A tool to move vertex of the edited layer.
+ */
+public class MoveVertexTool extends AbstractSelectionTool {
 
         @Override
         public void update(Observable o, Object arg) {
@@ -84,9 +75,6 @@ public class EditionSelectionTool extends AbstractSelectionTool {
                 
         }
 
-        /**
-         * @see org.orbisgis.plugins.org.orbisgis.plugins.core.ui.editors.table.estouro.tools.generated.Selection#transitionTo_MakeMove()
-         */
         @Override
         public void transitionTo_MakeMove(MapContext mc, ToolManager tm)
                 throws TransitionException, FinishedAutomatonException {
@@ -110,9 +98,6 @@ public class EditionSelectionTool extends AbstractSelectionTool {
                 transition(Code.EMPTY);
         }
 
-        /**
-         * @see org.orbisgis.plugins.org.orbisgis.plugins.core.ui.editors.table.estouro.tools.generated.Selection#drawIn_Movement(java.awt.Graphics)
-         */
         @Override
         public void drawIn_Movement(Graphics g, MapContext vc, ToolManager tm)
                 throws DrawingException {
@@ -135,8 +120,12 @@ public class EditionSelectionTool extends AbstractSelectionTool {
         }
 
         @Override
+        public String getTooltip() {
+            return I18N.tr("Move vertex");
+        }
+
+        @Override
         public ImageIcon getImageIcon() {
             return OrbisGISIcon.getIcon("edition/movevertex");
         }
-
 }

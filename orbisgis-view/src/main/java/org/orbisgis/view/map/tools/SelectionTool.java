@@ -68,8 +68,6 @@ import org.orbisgis.view.map.tool.ToolManager;
  */
 public class SelectionTool extends AbstractSelectionTool {
 
-	AbstractButton button;
-
 	@Override
 	public void update(Observable o, Object arg) {
 		//PlugInContext.checkTool(this);

@@ -107,7 +107,12 @@ public class SplitLineStringTool extends AbstractPointTool {
                 return I18N.tr("Split line");
         }
 
-        @Override
+    @Override
+    public String getTooltip() {
+        return I18N.tr("Split a line by selecting a vertex");
+    }
+
+    @Override
         public ImageIcon getImageIcon() {
             return OrbisGISIcon.getIcon("edition/splitlinestring");
         }

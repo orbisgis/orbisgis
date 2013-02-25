@@ -204,6 +204,9 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
                         LOGGER.error(I18N.tr("Unable to load the docking layout."), ex);
                         commonControl.readXML(backup);
                 }
+                // When reading a layout file, all components that are not in the layout file are hidden by DockingFrames
+                // Some components cannot be hidden or shown by the user, the following lines
+                // restore the visibility these components.
                 // Check that non closable frame are shown
                 for(DockingPanel panel : getPanels()) {
                         DockingPanelParameters params = panel.getDockingParameters();
@@ -211,14 +214,18 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
                                 params.setVisible(true);
                         }
                 }
-                // Check that all toolbars are visible
-                Map<String,CLocation> lastToolBarLocation = new HashMap<String, CLocation>();
+                // Check that all non empty toolbars are visible
+                // Empty hidden toolbars are kept in order to restore/save the layout.
+                boolean doReset=false;
                 for(ToolBarItem item : getToolBarItems()) {
-                        if(!item.isVisible()) {
-                                // Reset location
-                                String logicalGroup = ActionTools.getLogicalGroup(item.getAction());
-                                setLocation(item,getDefaultLocation(lastToolBarLocation,logicalGroup));
+                        if(!item.isVisible() && item.getAction()!=null) {
+                            doReset = true;
+                            // Reset layout
+                            commonControl.removeSingleDockable(item.getUniqueId());
                         }
+                }
+                if(doReset) {
+                    resetToolBarsCActions(addedToolBarActions);
                 }
         }
 

@@ -747,7 +747,7 @@ public class TableEditor extends JPanel implements EditorDockable {
         }
         /**
          * Convert index from model to view then update the table selection
-         * @param selection ModelIndex selection
+         * @param modelSelection ModelIndex selection
          */
         private void setRowSelection(IntegerUnion modelSelection) {
                 IntegerUnion newSelection;
@@ -767,17 +767,23 @@ public class TableEditor extends JPanel implements EditorDockable {
         
         /**
          * Update the table selection
-         * @param selection View index selection
+         * @param viewSelection View index selection
          */
         private void setViewRowSelection(IntegerUnion viewSelection) {             
                 Iterator<Integer> intervals = viewSelection.getValueRanges().iterator();
+                final int maxRow = table.getRowCount();
                 try {
                         table.getSelectionModel().setValueIsAdjusting(true);
                         table.clearSelection();
                         while(intervals.hasNext()) {
+                                // If the DataSource here and in other editors is not the same (uncommitted changes)
+                                // Then the selected row index may not be the same and can be out of range.
+                                // The check is done here.
                                 int begin = intervals.next();
-                                int end = intervals.next();
-                                table.addRowSelectionInterval(begin, end);
+                                int end = Math.min(intervals.next(),maxRow - 1);
+                                if(begin < maxRow) {
+                                    table.addRowSelectionInterval(begin, end);
+                                }
                         }
                 }finally {
                         table.getSelectionModel().setValueIsAdjusting(false);
@@ -824,10 +830,9 @@ public class TableEditor extends JPanel implements EditorDockable {
                         onUpdateEditableSelection.set(false);
                 }
         }
-        
+
         /**
-         * 
-         * @param filtered If the shown rows do not reflect the model
+         *  Update the title label.
          */
         private void updateTitle() {
                 String sourceName = tableEditableElement.getSourceName();

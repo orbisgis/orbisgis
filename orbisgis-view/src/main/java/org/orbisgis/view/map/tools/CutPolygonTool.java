@@ -46,7 +46,9 @@ import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.*;
 
-
+/**
+ * This tool subtract polygons in Handler by the drawing one, using {@link GeometryEdit#cutMultiPolygon}.
+ */
 public class CutPolygonTool extends AbstractPolygonTool {
 
         @Override
@@ -113,6 +115,11 @@ public class CutPolygonTool extends AbstractPolygonTool {
         @Override
         public String getName() {
                 return I18N.tr("Cut a polygon");
+        }
+
+        @Override
+        public String getTooltip() {
+                return I18N.tr("Cut polygons by drawing another one");
         }
 
         @Override

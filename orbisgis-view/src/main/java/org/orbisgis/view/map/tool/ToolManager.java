@@ -702,7 +702,10 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 this.textToDraw.add(text);
         }
 
-        public void checkToolStatus() throws TransitionException {
+        /**
+         * If the current Tool is disabled, reset to the default Tool
+         */
+        public void checkToolStatus() {
                 if (!currentTool.isEnabled(mapContext, this)
                         && !currentTool.getClass().equals(defaultTool.getClass())) {
                         setTool(defaultTool);
