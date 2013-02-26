@@ -30,28 +30,38 @@ package org.orbisgis.view.geocatalog.sourceWizards.db;
 
 import java.awt.Color;
 import java.awt.Component;
+import javax.swing.Icon;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
+import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  * Cell renderer designed for {@code DataBaseTableModel}.
  * @author Alexis Guéganno
  * @author Erwan Bocher
  */
-public class TableCellRenderer extends DefaultTableCellRenderer {
-
+public class StatusColumnRenderer extends DefaultTableCellRenderer {
+        private static final Icon WAITING_ICON = OrbisGISIcon.getIcon("help");
+        private static final Icon OK_ICON = OrbisGISIcon.getIcon("emoticon_smile");
+        private static final Icon ERROR_ICON = OrbisGISIcon.getIcon("emoticon_unhappy");
+       
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                         boolean isSelected, boolean hasFocus, int row, int column) {
-                Component component = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-                DataBaseTableModel model = (DataBaseTableModel) table.getModel();
+                Component component = super.getTableCellRendererComponent(table, "", isSelected, hasFocus, row, column);
                 //As defined in DataBaseTableModel#COLUMN_NAMES.
-                if ((column == 3) || (column == 4)) {
-                        DataBaseRow dataBaseRow = model.getRow(row);
-                        if (!dataBaseRow.isSpatial()) {
-                                Color clr = new Color(206, 206, 206);
-                                component.setForeground(clr);
-                                component.setBackground(clr);
+                if (value instanceof DataBaseRow.ExportStatus) {
+                        switch ((DataBaseRow.ExportStatus) value) {
+                                case OK:
+                                        return new JLabel(OK_ICON);
+                                case ERROR:
+                                        return new JLabel(ERROR_ICON);
+                                 case UNKNOWN:
+                                        return new JLabel(WAITING_ICON);
+                                default:
+                                        return component;
+                                
                         }
                 } else {
                         Color clr = new Color(255, 255, 255);

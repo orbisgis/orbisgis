@@ -53,12 +53,11 @@ public class DataBaseTableModel extends AbstractTableModel {
         private static final Logger LOGGER = Logger.getLogger(DataBaseTableModel.class);
         private static final I18n I18N = I18nFactory.getI18n(DataBaseTableModel.class);
         private final String[] sourceNames;
-        private static final String[] COLUMN_NAMES = new String[]{"Source name", "Table name", "Schema", 
+        private static final String[] COLUMN_NAMES = new String[]{"Status", "Source name", "Table name", "Schema", 
                 "Input field", "Output field", "Input EPSG", "Output EPSG", "Export"};
         private ArrayList<DataBaseRow> data = new ArrayList<DataBaseRow>();
         private boolean isEditable = false;
-        private String crsName = "Unknown";
-      
+        int epsgCode = -1;
 
         /**
          * Build a new {@code DataBaseTableModel} using the {@code Source}
@@ -90,7 +89,7 @@ public class DataBaseTableModel extends AbstractTableModel {
                         DataManager dm = Services.getService(DataManager.class);
                         DataSourceFactory dsf = dm.getDataSourceFactory();
                         
-                        int epsgCode = -1;
+                        
                         final int validType = SourceManager.VECTORIAL | SourceManager.RASTER
                                 | SourceManager.STREAM | SourceManager.SYSTEM_TABLE;
                         for (String sourceName : sourceNames) {
@@ -107,7 +106,7 @@ public class DataBaseTableModel extends AbstractTableModel {
                                         String geomField = ds.getFieldName(ds.getSpatialFieldIndex());
                                         CoordinateReferenceSystem crs = ds.getCRS();
                                         if (crs != null) {
-                                                crsName = crs.getName().getCode();
+                                                epsgCode = Integer.valueOf(crs.getName().getCode());
                                         }
                                         ds.close();
                                         DataBaseRow row = new DataBaseRow(sourceName, sourceName,
@@ -144,11 +143,11 @@ public class DataBaseTableModel extends AbstractTableModel {
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
                 if (isEditable) {
-                        if (columnIndex == 0 || columnIndex == 3 || columnIndex == 5) {
+                        if (columnIndex == 1 || columnIndex == 4 || columnIndex == 6) {
                                 return false;
                         }
                         if (!data.get(rowIndex).isSpatial()) {
-                                if ((columnIndex == 4) || (columnIndex == 6)) {
+                                if ((columnIndex == 5) || (columnIndex == 7)) {
                                         return false;
                                 }
                         }                        

@@ -40,6 +40,8 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class DataBaseRow {
         
+        public static enum ExportStatus{UNKNOWN, OK, ERROR};
+        private ExportStatus exportStatus = ExportStatus.UNKNOWN;
         private String intputSourceName;
         private String outputSourceName;
         private String schema;
@@ -73,6 +75,15 @@ public class DataBaseRow {
                 this.export = export;
         }
 
+        /**
+         * Update the status of the row
+         * @param exportStatus 
+         */
+        public void setExportStatus(ExportStatus exportStatus) {
+                this.exportStatus = exportStatus;                
+        }
+
+        
         /**
          * Specify if the input source is spatial
          * @return
@@ -133,21 +144,24 @@ public class DataBaseRow {
          */
         public Object getValue(int col) {
                 switch (col) {
+                        
                         case 0:
-                                return getInputSourceName();
+                                return this.exportStatus;                                 
                         case 1:
-                                return getOutputSourceName();
+                                return getInputSourceName();
                         case 2:
+                                return getOutputSourceName();
+                        case 3:
                                 return getSchema();   
-                        case 3 :
+                        case 4 :
                                 return getInputSpatialField();
-                        case 4:
-                                return getOutputSpatialField();                       
                         case 5:
-                                return String.valueOf(getInputEpsgCode());
+                                return getOutputSpatialField();                       
                         case 6:
-                                return String.valueOf(getOutputEpsgCode());
+                                return String.valueOf(getInputEpsgCode());
                         case 7:
+                                return String.valueOf(getOutputEpsgCode());
+                        case 8:
                                 return isExport();
                         default:
                                 return null;
@@ -170,16 +184,16 @@ public class DataBaseRow {
          */
         public void setValue(Object aValue, int col) {
                 switch (col) {
-                        case 1:
+                        case 2:
                                 setOutputSourceName(String.valueOf(aValue));
                                 break;
-                        case 2:
+                        case 3:
                                 setSchema(String.valueOf(aValue));
                                 break;
-                        case 4:
+                        case 5:
                                 setOutputSpatialField(String.valueOf(aValue));
                                 break;
-                        case 6:
+                        case 7:
                                 try {
                                         Integer value = Integer.valueOf(aValue.toString());
                                         setOutputEpsgCode(value);
@@ -190,7 +204,7 @@ public class DataBaseRow {
                                 break;
 
 
-                        case 7:
+                        case 8:
                                 setExport(Boolean.valueOf(aValue.toString()));
                                 break;
                         default:
@@ -233,8 +247,8 @@ public class DataBaseRow {
          * @return
          */
         public Object[] getObjects() {
-                return new Object[]{getInputSourceName(), getOutputSourceName(), getSchema(),
-                        getInputSpatialField(), getInputEpsgCode(), isExport()};
+                return new Object[]{this.exportStatus, getInputSourceName(), getOutputSourceName(), getSchema(),
+                        getInputSpatialField(), getOutputSpatialField(), getInputEpsgCode(),getOutputEpsgCode(), isExport()};
         }
 
         /**

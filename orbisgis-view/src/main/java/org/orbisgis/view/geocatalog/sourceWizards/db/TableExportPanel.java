@@ -50,6 +50,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 import javax.swing.table.TableColumn;
+import javax.swing.table.TableColumnModel;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.values.ValueFactory;
@@ -136,8 +137,9 @@ public class TableExportPanel extends JDialog {
                         jtableExporter.setRowHeight(20);
                         DataBaseTableModel dataBaseTableModel = new DataBaseTableModel(sourceManager, sourceNames);
                         jtableExporter.setModel(dataBaseTableModel);
-                        //jtableExporter.setDefaultRenderer(Object.class, new org.orbisgis.view.geocatalog.sourceWizards.db.TableCellRenderer());
-                        TableColumn schemaColumn = jtableExporter.getColumnModel().getColumn(2);
+                        TableColumnModel columnModel = jtableExporter.getColumnModel();
+                        columnModel.getColumn(0).setCellRenderer(new StatusColumnRenderer());
+                        TableColumn schemaColumn = columnModel.getColumn(3);
                         comboBoxSchemas = new JComboBox(getSchemas());
                         schemaColumn.setCellEditor(new DefaultCellEditor(comboBoxSchemas) {
 
@@ -202,7 +204,7 @@ public class TableExportPanel extends JDialog {
                                         userParams.put("userName", dbLogin);
                                         userParams.put("password", dbpassWord);
                                         userParams.put("ssl", dbParameters[3]);
-                                        backgroundManager.nonBlockingBackgroundOperation(new ExportToDatabase(i, row, userParams, port));
+                                        backgroundManager.nonBlockingBackgroundOperation(new ExportToDatabase(row, userParams, port));                                        
                                 }
                         }
                 }
@@ -256,12 +258,10 @@ public class TableExportPanel extends JDialog {
 
                 private final DataBaseRow row;
                 private final Map<String, String> params;
-                private final int rowId;
                 private final int port;
 
-                private ExportToDatabase(int rowId, DataBaseRow row, Map<String, String> params, int port) {
+                private ExportToDatabase( DataBaseRow row, Map<String, String> params, int port) {
                         this.row = row;
-                        this.rowId = rowId;
                         this.params = params;
                         this.port = port;
                 }
@@ -274,15 +274,17 @@ public class TableExportPanel extends JDialog {
                                 SwingUtilities.invokeLater(new Runnable() {
                                         @Override
                                         public void run() {
-                                                jtableExporter.remove(rowId);
+                                                row.setExportStatus(DataBaseRow.ExportStatus.OK);                                                
                                         }
                                 });
                         } catch (SemanticException ex) {
                                 LOGGER.warn(ex.getLocalizedMessage(), ex);
                                 showOkOnlyDialog(ex.getLocalizedMessage());
+                                row.setExportStatus(DataBaseRow.ExportStatus.ERROR);
                         } catch (IOException ex) {
                                 LOGGER.warn(ex.getLocalizedMessage(), ex);
                                 showOkOnlyDialog(ex.getLocalizedMessage());
+                                row.setExportStatus(DataBaseRow.ExportStatus.ERROR);
                         }
                 }
  
