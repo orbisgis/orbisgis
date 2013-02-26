@@ -86,6 +86,13 @@ public class AutomatonAction extends DefaultAction implements AutomatonHolder {
     }
 
     /**
+     * @return The Map extension linked with this Automaton Action
+     */
+    public MapEditorExtension getExtension() {
+        return extension;
+    }
+
+    /**
      * The automaton activation state (enabled/disabled) will be checked
      * when one of trackedMapContextProperties is updated.
      * @param trackedMapContextProperties One of MapContext#PROP_*
@@ -179,7 +186,11 @@ public class AutomatonAction extends DefaultAction implements AutomatonHolder {
         }
         extension = null;
     }
-    private void checkAutomatonState() {
+
+    /**
+     * When the tracked properties change this method is called in order to enable/disable automaton
+     */
+    protected void checkAutomatonState() {
         init();
         if(extension.getMapElement()!=null && extension.getToolManager()!=null) {
             boolean automatonState = automaton.isEnabled(extension.getMapElement().getMapContext(),extension.getToolManager());

@@ -101,7 +101,10 @@ public class SplitPolygonTool extends AbstractLineTool {
                                                         GeometryDimensionConstraint.DIMENSION_SURFACE)))) {
                                 List<Polygon> pols = new ArrayList<Polygon>();
                                 for (int i = 0; i < geom.getNumGeometries(); i++) {
-                                        pols.addAll(GeometryEdit.splitPolygon((Polygon) geom.getGeometryN(i), ls));
+                                        List<Polygon> polygons = GeometryEdit.splitPolygon((Polygon) geom.getGeometryN(i), ls);
+                                        if(polygons!=null) {
+                                            pols.addAll(polygons);
+                                        }
                                 }
                                 MultiPolygon result = gf.createMultiPolygon(pols.toArray(new Polygon[pols.size()]));
                                 if (result != null) {

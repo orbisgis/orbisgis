@@ -56,6 +56,8 @@ public class ActionTools {
         // Using logical group on actions will automatically create JSeparator between such groups
         // Actions with the same logical group are created on the same toolbar also
         public static final String LOGICAL_GROUP = "logicalGroup";
+        // To hide an Action control without removing the Action
+        public static final String VISIBLE = "visible";
         /** If set, other actions with the same actionGroup will be unSet if this action is set active.
          * ButtonGroup will be created by ActionCommands.
          * Setting a value will create a JRadioButton or a JRadioButtonMenu instead of JButton and JMenuItem.
@@ -76,6 +78,20 @@ public class ActionTools {
                         return null;
                 }
                 return (Icon)val;
+        }
+
+        /**
+         * Visible property of control linked with this action.
+         * A visible at True does not mean that the user see the control, it can be hidden by other components.
+         * @param action Action to read
+         * @return True if visible
+         */
+        public static boolean isVisible(Action action) {
+            Object val = action.getValue(VISIBLE);
+            if(!(val instanceof Boolean)) {
+                return true;
+            }
+            return (Boolean)val;
         }
         /**
          * Return the list of additional KeyStrokes.

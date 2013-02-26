@@ -227,6 +227,18 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
                 if(doReset) {
                     resetToolBarsCActions(addedToolBarActions);
                 }
+                // All toolbars have been set to visible in order to set layout
+                // The visible state can be reset here
+                // Set the visibility of all ToolBarItems
+                for(ToolBarItem item : getToolBarItems()) {
+                    Action action = item.getAction();
+                    if(action!=null) {
+                        item.setVisible(ActionTools.isVisible(action));
+                    } else {
+                        item.setVisible(false);
+                    }
+                    item.setTrackActionVisibleState(true);
+                }
         }
 
         private void writeXML() throws IOException {

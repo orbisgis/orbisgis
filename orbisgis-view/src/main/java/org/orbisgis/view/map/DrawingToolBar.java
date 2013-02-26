@@ -87,8 +87,7 @@ public class DrawingToolBar implements ToolBarAction {
         return actions;
     }
     private AutomatonAction add(List<Action> actions,String ID,Automaton action) {
-        AutomatonAction newAction = new AutomatonAction(ID,action,mapEditor)
-                .addTrackedMapContextProperty(MapContext.PROP_ACTIVELAYER);
+        AutomatonAction newAction = new DrawingAction(ID,action,mapEditor);
         newAction.setLogicalGroup("draw");
         actions.add(newAction);
         return newAction;
