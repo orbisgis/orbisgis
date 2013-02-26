@@ -41,6 +41,7 @@ import bibliothek.gui.dock.common.intern.CDockable;
 import bibliothek.gui.dock.common.intern.DefaultCDockable;
 import bibliothek.gui.dock.common.menu.CLookAndFeelMenuPiece;
 import bibliothek.gui.dock.common.menu.SingleCDockableListMenuPiece;
+import bibliothek.gui.dock.common.mode.CLocationMode;
 import bibliothek.gui.dock.facile.menu.RootMenuPiece;
 import bibliothek.gui.dock.themes.ThemeManager;
 import bibliothek.gui.dock.toolbar.CToolbarContentArea;
@@ -99,7 +100,7 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
         private JFrame owner;
         private SingleCDockableListMenuPiece dockableMenuTracker;
         private static final I18n I18N = I18nFactory.getI18n(DockingManagerImpl.class);
-        private static final Logger LOGGER = Logger.getLogger(DockingManagerImpl.class);
+        private static final Logger LOGGER = Logger.getLogger("gui."+DockingManagerImpl.class);
         private File dockingState=null;
         private static final boolean DOCKING_STATE_XML = true;
         private CControl commonControl; /*!< link to the docking-frames */
@@ -230,18 +231,15 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
                 // All toolbars have been set to visible in order to set layout
                 // The visible state can be reset here
                 // Set the visibility of all ToolBarItems
-                for(ToolBarItem item : getToolBarItems()) {
-                    Action action = item.getAction();
-                    if(action!=null) {
-                        item.setVisible(ActionTools.isVisible(action));
-                    } else {
-                        item.setVisible(false);
-                    }
-                    item.setTrackActionVisibleState(true);
-                }
+                refreshToolBarsState();
         }
 
         private void writeXML() throws IOException {
+                // Not visible toolbars cannot retrieve their state on next OrbisGIS loading
+                for(ToolBarItem item : getToolBarItems()) {
+                    item.setVisible(true);
+                    item.setTrackActionVisibleState(false);
+                }
                 // Make an empty XML tree
                 XElement root = new XElement( "root" );
                 
@@ -251,7 +249,23 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
                 BufferedOutputStream out = new BufferedOutputStream( new FileOutputStream( dockingState ));
                 XIO.writeUTF( root, out );
                 out.close();
-                
+                // Recover original state
+                refreshToolBarsState();
+        }
+
+        /**
+         * Apply the ToolBar action visible state to their ToolBarItems
+         */
+        private void refreshToolBarsState() {
+            for(ToolBarItem item : getToolBarItems()) {
+                Action itemAction = item.getAction();
+                if(itemAction!=null) {
+                    item.setVisible(ActionTools.isVisible(itemAction));
+                } else {
+                    item.setVisible(false);
+                }
+                item.setTrackActionVisibleState(true);
+            }
         }
         /**
          * Load the docking layout 
