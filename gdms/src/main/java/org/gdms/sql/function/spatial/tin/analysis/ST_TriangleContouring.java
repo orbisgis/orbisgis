@@ -79,8 +79,11 @@ import org.gdms.sql.function.table.TableFunctionSignature;
  * Split triangle into area within the specified range values.
  */
 public class ST_TriangleContouring extends AbstractTableFunction {
-
-        private static final double EPSILON = 1E-15;
+    // Parameter index of Iso intervals if the function take the Z for iso
+    private static final int ISO_FIELD_ID_Z_SIGNATURE = 0;
+    // Parameter index of Iso intervals if the function take other columns values for iso
+    private static final int ISO_FIELD_ID_FIELD_SIGNATURE = 3;
+    private static final double EPSILON = 1E-15;
         private GeometryFactory factory = new GeometryFactory();
 
         private static boolean isoEqual(double isoValue1, double isoValue2) {
@@ -94,12 +97,15 @@ public class ST_TriangleContouring extends AbstractTableFunction {
 
         @Override
         public String getSqlOrder() {
-                return "select ST_TriangleContouring( the_geom, 'field_vert1' ,'field_vert2','field_vert3', '15,20,30,50,80') from triangle_table";
+                return "-- Use Z\n" +
+                        "select * from ST_TriangleContouring( triangle_table, '15,20,30,50,80');\n" +
+                        "-- Use other columns for iso\n" +
+                        "select * from ST_TriangleContouring( triangle_table, 'field_vert1' ,'field_vert2','field_vert3', '15,20,30,50,80');";
         }
 
         @Override
         public String getDescription() {
-                return "select ST_TriangleContouring( geomToUpdate, verticeOneLevelValue,verticeTwoLevelValue,verticeThreeLevelValue, isoLevels ) from triangle_table";
+                return "Create an ISO surface contouring of the provided spatial table, use Z value of triangles if you not provide the name of vertices level columns.";
         }
 
         private static boolean computeSplitPositionOrdered(double marker1, double marker2,
@@ -246,7 +252,6 @@ public class ST_TriangleContouring extends AbstractTableFunction {
          * @param[out] intervalTriangles Split triangles covered by the region
          * @return False if the entire geometry is outside of the region, true if
          * outsideTriangles or intervalTriangles has been updated.
-         * @throws ExecutionException
          */
         private static boolean splitInterval(Double beginIncluded, Double endExcluded,
                 TriMarkers currentTriangle,
@@ -604,14 +609,29 @@ public class ST_TriangleContouring extends AbstractTableFunction {
                         // Declare source and Destination tables
                         final DataSet sds = tables[0];
                         // Open source and Destination tables
+                        boolean isoOnZ = values.length == 1;
 
-                        String isolevelsStr = values[0].getAsString();
+                        // Find field index
+                        TriMarkersFactory triangleFactory;
+                        if(!isoOnZ) {
+                            int vertex1FieldIndex = sds.getMetadata().getFieldIndex(values[0]
+                                    .getAsString());
+                            int vertex2FieldIndex = sds.getMetadata().getFieldIndex(values[1]
+                                    .getAsString());
+                            int vertex3FieldIndex = sds.getMetadata().getFieldIndex(values[2]
+                                    .getAsString());
+                            triangleFactory = new ValueOnField(vertex1FieldIndex,
+                                    vertex2FieldIndex,vertex3FieldIndex,sds);
+                        } else {
+                            triangleFactory = new ValueOnZ();
+                        }
+                        // The field index depends on the function signature
+                        String isolevelsStr = values[isoOnZ ? ISO_FIELD_ID_Z_SIGNATURE : ISO_FIELD_ID_FIELD_SIGNATURE].getAsString();
                         int spatialFieldIndex = sds.getSpatialFieldIndex();
 
                         List<Double> isoLvls = new LinkedList<Double>();
                         for (String isolvl : isolevelsStr.split(",")) {
                                 isoLvls.add(Double.valueOf(isolvl));
-                                spatialFieldIndex = sds.getSpatialFieldIndex();
                         }
 
                         int fieldCount = sds.getMetadata().getFieldCount();
@@ -633,10 +653,8 @@ public class ST_TriangleContouring extends AbstractTableFunction {
                                         if (Double.isNaN(pts[2].z)) {
                                                 pts[2].z = 0;
                                         }
-                                        TriMarkers currentTriangle = new TriMarkers(pts[0], pts[1],
-                                                pts[2], pts[0].z,
-                                                pts[1].z,
-                                                pts[2].z);
+                                        TriMarkers currentTriangle = triangleFactory.getTriangle(pts,rowIndex);
+
 
                                         Map<Short, Deque<TriMarkers>> triangleToDriver = processTriangle(currentTriangle, isoLvls);
 
@@ -695,7 +713,58 @@ public class ST_TriangleContouring extends AbstractTableFunction {
                 return new FunctionSignature[]{
                                 new TableFunctionSignature(TableDefinition.GEOMETRY,
                                 new TableArgument(TableDefinition.GEOMETRY),
-                                ScalarArgument.STRING) //'75,80,90'                            
+                                ScalarArgument.STRING) ,        //'75,80,90'
+                                new TableFunctionSignature(TableDefinition.GEOMETRY,
+                                        new TableArgument(TableDefinition.GEOMETRY),
+                                        ScalarArgument.STRING, //'db_v1'
+                                        ScalarArgument.STRING,//'db_v2'
+                                        ScalarArgument.STRING,//'db_v3'
+                                        ScalarArgument.STRING) //'75,80,90'
                         };
+        }
+
+        /**
+         * Triangle factory
+         */
+        private interface TriMarkersFactory {
+            TriMarkers getTriangle(Coordinate[] pts, long rowIndex) throws DriverException;
+        }
+
+        /**
+         * Read vertex level from the Z value
+         */
+        private static class ValueOnZ implements TriMarkersFactory {
+            @Override
+            public TriMarkers getTriangle(Coordinate[] pts, long rowIndex) throws DriverException {
+                return new TriMarkers(pts[0], pts[1],
+                        pts[2], pts[0].z,
+                        pts[1].z,
+                        pts[2].z);
+            }
+        }
+
+        /**
+         * Read vertex level from another fields
+         */
+        private static class ValueOnField implements TriMarkersFactory {
+            private final int vertex1FieldIndex;
+            private final int vertex2FieldIndex;
+            private final int vertex3FieldIndex;
+            private final DataSet sds;
+
+            private ValueOnField(int vertex1FieldIndex, int vertex2FieldIndex, int vertex3FieldIndex, DataSet sds) {
+                this.vertex1FieldIndex = vertex1FieldIndex;
+                this.vertex2FieldIndex = vertex2FieldIndex;
+                this.vertex3FieldIndex = vertex3FieldIndex;
+                this.sds = sds;
+            }
+
+            @Override
+            public TriMarkers getTriangle(Coordinate[] pts, long rowIndex) throws DriverException {
+                return new TriMarkers(pts[0], pts[1],
+                        pts[2], sds.getFieldValue(rowIndex, vertex1FieldIndex).getAsDouble(),
+                        sds.getFieldValue(rowIndex, vertex2FieldIndex).getAsDouble(),
+                        sds.getFieldValue(rowIndex, vertex3FieldIndex).getAsDouble());
+            }
         }
 }
