@@ -40,12 +40,11 @@ import org.orbisgis.legend.structure.recode.RecodedParameterVisitor;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
 
 import java.awt.*;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * @author alexis
@@ -213,6 +212,62 @@ public class RecodedLineTest extends AnalyzerTest {
         assertTrue(rl.isEmpty());
         rl.clear();
         assertTrue(rl.isEmpty());
+    }
+
+    @Test
+    public void testContainsKey() throws  Exception{
+        RecodedLine rl = getRecodedLine();
+        assertTrue(rl.containsKey("2.5"));
+        assertFalse(rl.containsKey("2.50"));
+        assertFalse(rl.containsKey("patate"));
+        try{
+            assertFalse(rl.containsKey((Double) 2.0));
+            fail();
+        } catch(ClassCastException cce){
+            assertTrue(true);
+        }
+    }
+
+    @Test
+    public void testContainValue() throws Exception{
+        RecodedLine rl = getRecodedLine();
+        LineParameters lps = new LineParameters(new Color(34, 51, 68),1.0,0.5,"");
+        assertTrue(rl.containsValue(lps));
+        lps = new LineParameters(new Color(204, 0, 153),1.0,0.5,"");
+        assertTrue(rl.containsValue(lps));
+        lps = new LineParameters(new Color(204, 0, 153),1.0,2.5,"");
+        assertFalse(rl.containsValue(lps));
+
+    }
+
+    @Test
+    public void testEquals() throws Exception {
+        RecodedLine rl = getRecodedLine();
+        RecodedLine rl2 = getRecodedLine();
+        assertTrue(rl.equals(rl2));
+        rl2.put("patate", new LineParameters(new Color(204, 0, 153),1.0,0.5,"2"));
+        assertFalse(rl.equals(rl2));
+    }
+
+    @Test
+    public void testHashCode() throws Exception {
+        RecodedLine rl = getRecodedLine();
+        RecodedLine rl2 = getRecodedLine();
+        assertTrue(rl.hashCode() == rl2.hashCode());
+        rl2.put("patate", new LineParameters(new Color(204, 0, 153), 1.0, 0.5, "2"));
+        assertFalse(rl.hashCode() == rl2.hashCode());
+    }
+
+    @Test
+    public void testValues() throws Exception {
+        RecodedLine rl = getRecodedLine();
+        Collection<LineParameters> vals = rl.values();
+        assertTrue(vals.size() == 4);
+        assertTrue(vals.contains(new LineParameters(new Color(88, 174, 35),1.0,0.5,"")));
+        assertTrue(vals.contains(new LineParameters(new Color(204, 0, 153),1.0,0.5,"")));
+        assertTrue(vals.contains(new LineParameters(new Color(170, 23, 180),1.0,0.5,"")));
+        assertTrue(vals.contains(new LineParameters(new Color(34, 51, 68),1.0,0.5,"")));
+        assertFalse(vals.contains(new LineParameters(new Color(34, 51, 68),1.0,0.5,"20")));
     }
 
     private LineSymbolizer getLineSymbolizer() throws Exception{

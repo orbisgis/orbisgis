@@ -103,4 +103,9 @@ public class LineParameters {
             return false;
         }
     }
+
+    @Override
+    public int hashCode(){
+        return color.hashCode() + dash.hashCode()*7 + width.hashCode()*29 +  opacity.hashCode()*17;
+    }
 }

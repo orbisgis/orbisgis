@@ -129,7 +129,8 @@ class RecodedString extends AbstractAttributeLegend with RecodedLegend {
   def getItemValue(i : String) : String = parameter match {
     case c : StringLiteral => c.getValue(null)
     case a :Recode2String =>
-      a.getMapItemValue(i).getValue(null)
+      val sp : StringParameter = a.getMapItemValue(i)
+      if(sp == null) null else sp.getValue(null);
   }
   /**
    * Gets the ith key of the inner {@code Recode}.
