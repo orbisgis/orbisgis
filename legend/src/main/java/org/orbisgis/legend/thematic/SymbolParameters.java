@@ -26,19 +26,17 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.legend.structure.recode;
-
-import org.orbisgis.legend.structure.parameter.ParameterVisitor;
+package org.orbisgis.legend.thematic;
 
 /**
- * This visitor is dedicated to the processing of {@link RecodedLegend} instances.
+ * Simple marker for POJO that will gather parameters used to describe a Symbol.
  * @author alexis
  */
-public interface RecodedParameterVisitor extends ParameterVisitor<String>{
+public interface SymbolParameters {
+    @Override
+    boolean equals(Object other);
 
-    /**
-     * Visit the given {@link RecodedLegend}. It's the intelligent part of the visitor implementation.
-     * @param legend
-     */
-    void visit(RecodedLegend legend);
+    @Override
+    int hashCode();
+
 }

@@ -28,10 +28,15 @@
  */
 package org.orbisgis.legend.thematic.recode;
 
+import org.orbisgis.legend.Legend;
+import org.orbisgis.legend.structure.parameter.ParameterVisitor;
 import org.orbisgis.legend.structure.recode.*;
+import org.orbisgis.legend.thematic.SymbolParameters;
 import org.orbisgis.legend.thematic.SymbolizerLegend;
+import org.orbisgis.legend.thematic.map.MappedLegend;
 
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -43,7 +48,12 @@ import java.util.SortedSet;
  * </p>
  * @author alexis
  */
-public abstract class AbstractRecodedLegend extends SymbolizerLegend implements RecodedLegendStructure {
+public abstract class AbstractRecodedLegend<U extends SymbolParameters> extends MappedLegend<String,U> implements RecodedLegendStructure {
+
+    @Override
+    public void applyGlobalVisitor(ParameterVisitor pv){
+        applyGlobalVisitor((RecodedParameterVisitor)pv);
+    }
 
     /**
      * Apply the given visitor to all the RecodedLegend that are used in this {@code AbstractRecodedLegend}.
@@ -53,60 +63,5 @@ public abstract class AbstractRecodedLegend extends SymbolizerLegend implements 
         for(RecodedLegend rl : getRecodedLegends()){
             rl.acceptVisitor(rpv);
         }
-    }
-
-    /**
-     * Gets the analysis field.
-     * @return The name of the analysis field.
-     */
-    public String getAnalysisField(){
-        FieldAggregatorVisitor fav = new FieldAggregatorVisitor();
-        applyGlobalVisitor(fav);
-        Set<String> fields = fav.getFields();
-        if(fields.size() > 1){
-            throw new IllegalStateException("We won't be able to handle a RecodedLine with two analysis fields.");
-        } else {
-            Iterator<String> it = fields.iterator();
-            if(it.hasNext()){
-                return it.next();
-            } else {
-                return "";
-            }
-        }
-    }
-
-    /**
-     * Use {@code field} as the field name on which the analysis will be made.
-     * @param field The new field name.
-     */
-    public void setAnalysisField(String field) {
-        SetFieldVisitor sfv = new SetFieldVisitor(field);
-        applyGlobalVisitor(sfv);
-    }
-
-    /**
-     * Gets the keys currently used in the analysis.
-     * @return The keys used in a Set of String.
-     */
-    public SortedSet<String> keySet() {
-        KeysRetriever kr = new KeysRetriever();
-        applyGlobalVisitor(kr);
-        return kr.getKeys();
-    }
-
-    /**
-     * Returns the number of elements contained in this unique value classification.
-     * @return The number of elements contained in this unique value classification.
-     */
-    public int size(){
-        return keySet().size();
-    }
-
-    /**
-     * Returns true if there is nothing in this map.
-     * @return {@code true} if we don't have any key-value mapping.
-     */
-    public boolean isEmpty(){
-        return keySet().isEmpty();
     }
 }

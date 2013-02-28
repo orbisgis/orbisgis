@@ -37,7 +37,7 @@ import java.awt.*;
  * org.orbisgis.core.renderer.se.stroke.PenStroke}.
  * @author alexis
  */
-public class LineParameters {
+public class LineParameters implements SymbolParameters {
 
     private Color color;
     private Double opacity;
