@@ -40,9 +40,8 @@ import org.orbisgis.legend.structure.recode.RecodedParameterVisitor;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
 
 import java.awt.*;
-import java.util.Collection;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.Assert.*;
 
@@ -268,6 +267,18 @@ public class RecodedLineTest extends AnalyzerTest {
         assertTrue(vals.contains(new LineParameters(new Color(170, 23, 180),1.0,0.5,"")));
         assertTrue(vals.contains(new LineParameters(new Color(34, 51, 68),1.0,0.5,"")));
         assertFalse(vals.contains(new LineParameters(new Color(34, 51, 68),1.0,0.5,"20")));
+    }
+
+    @Test
+    public void testMapEntrySetValue() throws Exception {
+        RecodedLine rl = getRecodedLine();
+        Set<Map.Entry<String, LineParameters>> entries = rl.entrySet();
+        Iterator<Map.Entry<String, LineParameters>> it = entries.iterator();
+        Map.Entry<String, LineParameters> me = it.next();
+        String key = me.getKey();
+        me.setValue(new LineParameters(new Color(124,15,64), 2.0,1.4,"2"));
+        assertTrue(rl.get(key).equals(new LineParameters(new Color(124,15,64), 2.0,1.4,"2")));
+
     }
 
     private LineSymbolizer getLineSymbolizer() throws Exception{

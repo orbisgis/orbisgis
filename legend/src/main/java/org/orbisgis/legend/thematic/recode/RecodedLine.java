@@ -308,7 +308,14 @@ public class RecodedLine extends AbstractRecodedLegend implements StrokeUom, Map
 
             @Override
             public LineParameters setValue(LineParameters value) {
-                throw new UnsupportedOperationException();
+                RecodedLine outer = RecodedLine.this;
+                if(value == null){
+                    throw new NullPointerException("Null values are not allowed in RecodedLines.");
+                }
+                outer.put(s,value);
+                LineParameters ret = lp;
+                lp = value;
+                return ret;
             }
 
             @Override
