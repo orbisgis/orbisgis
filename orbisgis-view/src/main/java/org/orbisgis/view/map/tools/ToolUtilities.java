@@ -187,7 +187,7 @@ public class ToolUtilities {
 					return true;
 				} else {
 					for (Type geomType : geometryTypes) {
-						if ((geomType.getTypeCode() & geometryType)!=0) {
+						if ((geomType.getTypeCode() & geometryType)==geometryType) {
                                                         GeometryDimensionConstraint gdc =
                                                                 (GeometryDimensionConstraint) 
                                                                 geomType.getConstraint(Constraint.DIMENSION_2D_GEOMETRY);

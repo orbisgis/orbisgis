@@ -81,10 +81,21 @@ public class AutomatonAction extends DefaultAction implements AutomatonHolder {
         putValue(Action.SHORT_DESCRIPTION,automaton.getTooltip());
         putValue(ActionTools.TOGGLE_GROUP, MapEditorAction.TOGGLE_GROUP_AUTOMATONS); //radio group
         if(extension.getToolManager()!=null) {
-            putValue(Action.SELECTED_KEY,this.automaton.getName().equals(extension.getToolManager().getTool().getName()));
+            putValue(Action.SELECTED_KEY,isEqual(extension.getToolManager().getTool()));
         }
     }
 
+    /**
+     * @param otherAutomaton Automaton instance to compare with the Action's Automaton
+     * @return True if it is the same
+     */
+    private boolean isEqual(Automaton otherAutomaton) {
+        if(otherAutomaton!=null) {
+            return this.automaton.getName().equals(otherAutomaton.getName());
+        } else {
+            return false;
+        }
+    }
     /**
      * @return The Map extension linked with this Automaton Action
      */
@@ -238,7 +249,7 @@ public class AutomatonAction extends DefaultAction implements AutomatonHolder {
         @Override
         public void currentToolChanged(Automaton previous, ToolManager toolManager) {
             if(toolManager.getTool()!=null) {
-                putValue(Action.SELECTED_KEY,toolManager.getTool().equals(automaton));
+                putValue(Action.SELECTED_KEY,isEqual(toolManager.getTool()));
             }
         }
     }

@@ -28,17 +28,16 @@
  */
 package org.orbisgis.view.toc;
 
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import javax.swing.*;
 import org.apache.log4j.Logger;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.renderer.se.Style;
+import org.orbisgis.view.icons.OrbisGISIcon;
 
 /**
  * Toc renderer, try to stick to the Look&Feel but with custom controls.
@@ -48,6 +47,7 @@ public class TocRenderer extends TocAbstractRenderer {
         private static final long serialVersionUID = 1L;
         private static final int ROW_EMPTY_BORDER_SIZE = 2;
         private Rectangle checkBoxRect;
+        private MapContext mapContext;
 
         /**
          * Builds a TocRenderer using the given JTree.
@@ -57,13 +57,34 @@ public class TocRenderer extends TocAbstractRenderer {
                 super(tree);
         }
 
-        private void copyComponentStyle(JComponent source, JComponent destination) {
+        /**
+         * Set the MapContext, used to check if a Layer is Active
+         * @param mapContext
+         */
+        public void setMapContext(MapContext mapContext) {
+            this.mapContext = mapContext;
+        }
+
+    private void copyComponentStyle(JComponent source, JComponent destination) {
                 destination.setOpaque(source.isOpaque());
                 destination.setBackground(source.getBackground());
                 destination.setForeground(source.getForeground());
                 destination.setBorder(source.getBorder());
         }
-            
+        private static ImageIcon mergeIcons(ImageIcon bottom,ImageIcon top) {
+            if(bottom==null) {
+                return top;
+            }
+            if(top==null) {
+                return bottom;
+            }
+            BufferedImage image = new BufferedImage(Math.max(bottom.getIconWidth(),top.getIconWidth()),
+                    Math.max(bottom.getIconHeight(),top.getIconHeight()), BufferedImage.TYPE_INT_ARGB);
+            Graphics g = image.getGraphics();
+            g.drawImage(bottom.getImage(),0,0,null);
+            g.drawImage(top.getImage(), 0, 0, null);
+            return new ImageIcon(image);
+        }
         /**
          * Draw the component at the left of the provided icon
          * @param component
@@ -119,9 +140,13 @@ public class TocRenderer extends TocAbstractRenderer {
                                 copyComponentStyle(rendererComponent,checkBox);
                                 if (value instanceof TocTreeNodeLayer) {
                                         ILayer layerNode = ((TocTreeNodeLayer) value).getLayer();
-                                        Icon layerIcon = TocAbstractRenderer.getLayerIcon(layerNode);
-                                        rendererComponent.setIcon(layerIcon);
-                                        
+                                        ImageIcon nodeIcon = TocAbstractRenderer.getLayerIcon(layerNode);
+                                        if(mapContext!=null && layerNode.equals(mapContext.getActiveLayer())) {
+                                            nodeIcon = mergeIcons(nodeIcon, OrbisGISIcon.getIcon("edition/layer_edit"));
+                                        } else if(layerNode.getDataSource()!=null && layerNode.getDataSource().isModified()) {
+                                            nodeIcon = mergeIcons(nodeIcon, OrbisGISIcon.getIcon("edition/layer_modify"));
+                                        }
+                                        rendererComponent.setIcon(nodeIcon);
                                         String nodeLabel = layerNode.getName();
                                         
                                         if(layerNode.getDataSource()!=null &&
@@ -134,7 +159,6 @@ public class TocRenderer extends TocAbstractRenderer {
                                         checkBox.setSelected(layerNode.isVisible());
                                 } else if(value instanceof TocTreeNodeStyle)  {
                                         Style styleNode = ((TocTreeNodeStyle) value).getStyle();
-                                        rendererComponent.setIcon(null);
                                         rendererComponent.setText(styleNode.getName());
                                         checkBox.setSelected(styleNode.isVisible());
                                 }

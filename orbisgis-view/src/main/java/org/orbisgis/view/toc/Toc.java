@@ -131,7 +131,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         private static final String HAS_LAYER_GROUP = "HAS_LAYER_GROUP"; //One of the selected item is a layer group
         // Actions containers
         private ActionCommands popupActions = new ActionCommands();
-
+        private PropertyChangeListener mapContextPropertyChange = EventHandler.create(PropertyChangeListener.class,this,"onMapContextPropertyChange","");
         /**
          * Constructor
          */
@@ -642,6 +642,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                         removePropertyListeners(new TocTreeNodeLayer(this.mapContext.getLayerModel()));
                         this.mapContext.getLayerModel().removeLayerListenerRecursively(tocLayerListener);
                         this.mapContext.removeMapContextListener(tocMapContextListener);
+                        this.mapContext.removePropertyChangeListener(mapContextPropertyChange);
                         mapElement.removePropertyChangeListener(modificationListener);
                         for(TableEditableElement editable : linkedEditableElements.values()) {
                                 unlinkTableSelectionListening(editable);
@@ -652,7 +653,8 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
 
                 if (newMapElement != null) {
                         this.mapContext = ((MapContext) newMapElement.getObject());
-                        
+                        mapContext.addPropertyChangeListener(mapContextPropertyChange);
+                        treeRenderer.setMapContext(mapContext);
                         this.mapElement = newMapElement;
                         // Add the listeners to the new MapContext
                         this.mapContext.addMapContextListener(tocMapContextListener);
@@ -676,10 +678,20 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 }
         }
 
-        boolean isActive(ILayer layer) {
-            return mapContext != null && layer == mapContext.getActiveLayer();
+        /**
+         * A property of the MapContext has been updated
+         * @param evt Event information
+         */
+        public void onMapContextPropertyChange(PropertyChangeEvent evt) {
+            if(MapContext.PROP_ACTIVELAYER.equals(evt.getPropertyName())) {
+                if(evt.getOldValue() instanceof ILayer) {
+                    treeModel.nodeChanged(new TocTreeNodeLayer((ILayer)evt.getOldValue()));
+                }
+                if(evt.getNewValue() instanceof ILayer) {
+                    treeModel.nodeChanged(new TocTreeNodeLayer((ILayer)evt.getNewValue()));
+                }
+            }
         }
-
         @Override
         public JComponent getComponent() {
                 return this;

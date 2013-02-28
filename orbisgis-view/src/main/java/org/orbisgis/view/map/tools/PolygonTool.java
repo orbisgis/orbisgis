@@ -75,7 +75,8 @@ public class PolygonTool extends AbstractPolygonTool {
 
 	@Override
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
-		return ToolUtilities.geometryTypeIs(vc, TypeFactory.createType(Type.POLYGON))
+		return ToolUtilities.geometryTypeIs(vc, TypeFactory.createType(Type.POLYGON),
+                TypeFactory.createType(Type.MULTIPOLYGON))
 				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 

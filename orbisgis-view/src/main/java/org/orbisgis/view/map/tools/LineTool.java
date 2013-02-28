@@ -83,7 +83,7 @@ public class LineTool extends AbstractLineTool {
 
         @Override
         public boolean isEnabled(MapContext vc, ToolManager tm) {
-                return ToolUtilities.geometryTypeIs(vc, TypeFactory.createType(Type.LINESTRING))
+                return ToolUtilities.geometryTypeIs(vc, TypeFactory.createType(Type.LINESTRING), TypeFactory.createType(Type.MULTILINESTRING))
                         && ToolUtilities.isActiveLayerEditable(vc);
         }
 

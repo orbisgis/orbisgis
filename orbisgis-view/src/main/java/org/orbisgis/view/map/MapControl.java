@@ -611,10 +611,12 @@ public class MapControl extends JComponent implements ContainerListener {
                         //The error has to be shown to the user,
                         //without the stack trace
                         LOGGER.error(I18N.tr("Tool error {0}",e.getMessage())); //$NON-NLS-1$
+                        toolManager.checkToolStatus();
                 }
 
                 @Override
                 public void stateChanged(ToolManager toolManager) {
+                    toolManager.checkToolStatus();
                 }
 
                 @Override
