@@ -28,7 +28,7 @@
  */
 package org.orbisgis.view.components.actions;
 
-import org.orbisgis.sif.common.MenuCommonFunctions;
+import org.orbisgis.view.util.MenuCommonFunctions;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;

@@ -55,8 +55,10 @@ import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.background.Job;
 import org.orbisgis.view.background.JobQueue;
 import org.orbisgis.view.beanshell.BeanShellFrameFactory;
+import org.orbisgis.view.components.actions.MenuItemServiceTracker;
 import org.orbisgis.view.docking.DockingManager;
 import org.orbisgis.view.docking.DockingManagerImpl;
+import org.orbisgis.view.docking.internals.DockingPanelTracker;
 import org.orbisgis.view.edition.EditableElement;
 import org.orbisgis.view.edition.EditorManager;
 import org.orbisgis.view.edition.dialogs.SaveDocuments;
@@ -64,6 +66,8 @@ import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.main.bundles.BundleFromResources;
 import org.orbisgis.view.main.frames.MainFrame;
+import org.orbisgis.view.main.frames.ext.MainWindow;
+import org.orbisgis.view.main.frames.ext.ToolBarAction;
 import org.orbisgis.view.map.MapEditorFactory;
 import org.orbisgis.view.output.OutputManager;
 import org.orbisgis.view.sql.MapContext_AddLayer;
@@ -108,6 +112,9 @@ public class Core {
     ////////////////////
     // Plugins
     private PluginHost pluginFramework;
+    private DockingPanelTracker singleFrameTracker;
+    private MenuItemServiceTracker<MainWindow,ToolBarAction> toolBarTracker;
+
     /**
      * Core constructor, init Model instances
      * @param debugMode Show additional information for debugging purposes
@@ -341,8 +348,14 @@ public class Core {
 
         progress.init(I18N.tr("Loading docking system and frames"), 100);
         //Initiate the docking management system
-        dockManager = new DockingManagerImpl(mainFrame,pluginFramework.getHostBundleContext());
+        DockingManagerImpl dockManagerImpl = new DockingManagerImpl(mainFrame);
+        dockManager = dockManagerImpl;
         mainFrame.setDockingManager(dockManager);
+        // Initiate the docking panel tracker
+        singleFrameTracker = new DockingPanelTracker(pluginFramework.getHostBundleContext(), dockManager);
+        singleFrameTracker.open();
+        toolBarTracker = new MenuItemServiceTracker<MainWindow, ToolBarAction>(pluginFramework.getHostBundleContext(),ToolBarAction.class,dockManagerImpl,mainFrame);
+        toolBarTracker.open();
         progress.progressTo(35);
 
         //Load the log panels
@@ -462,6 +475,12 @@ public class Core {
         editors.dispose();
         geoCatalog.dispose();
         mainFrame.dispose();
+        if(singleFrameTracker!=null) {
+                singleFrameTracker.close();
+        }
+        if(toolBarTracker!=null) {
+            toolBarTracker.close();
+        }
         dockManager.dispose();
         loggerCollection.dispose();
 
@@ -470,7 +489,7 @@ public class Core {
 
         UIFactory.setMainFrame(null);
 
-        // Shutdown the plugin framwork
+        // Shutdown the plugin framework
         try {
             pluginFramework.stop();
         }catch(InterruptedException ex) {
@@ -520,12 +539,15 @@ public class Core {
                                 mainContext.saveStatus(); //Save the services status
                                 // Save dialogs status
                                 saveSIFState();
+                                // Save layout
+                                dockManager.saveLayout();
+
                                 this.dispose();
                         } finally {
-                                //While Plugins are not implemented do not close the VM in finally clause
+                                //While public Plugins are not implemented do not close the VM in finally clause
                                 // if(stopVM) {
                                 //SwingUtilities.invokeLater( new Runnable(){
-                                //   /** If an error occuring while unload resources, java machine
+                                //   /** If an error occur while unload resources, java machine
                                 //    * may continue to run. In this case, the following command
                                 //    * would terminate the application.
                                 //    */

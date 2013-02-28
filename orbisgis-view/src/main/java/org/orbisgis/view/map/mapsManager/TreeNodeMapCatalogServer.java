@@ -43,13 +43,13 @@ import javax.swing.tree.MutableTreeNode;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.mapcatalog.Workspace;
-import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
 import org.orbisgis.view.components.fstree.PopupTreeNode;
 import org.orbisgis.view.components.fstree.TreeNodeCustomIcon;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.mapsManager.jobs.DownloadWorkspaces;
+import org.orbisgis.view.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -188,7 +188,7 @@ public class TreeNodeMapCatalogServer extends AbstractTreeNodeContainer implemen
                 folderRemove.addActionListener(
                 EventHandler.create(ActionListener.class,
                 this, "onDeleteServer"));
-                MenuCommonFunctions.updateOrInsertMenuItem(menu,folderRemove);
+                MenuCommonFunctions.updateOrInsertMenuItem(menu, folderRemove);
                 if(downloaded.get()) {
                         JMenuItem updateMenu = new JMenuItem(I18N.tr("Update"),
                                 OrbisGISIcon.getIcon("arrow_refresh"));

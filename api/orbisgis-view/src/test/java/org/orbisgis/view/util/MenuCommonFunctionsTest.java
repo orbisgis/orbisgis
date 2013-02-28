@@ -26,7 +26,7 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.sif.common;
+package org.orbisgis.view.util;
 
 import org.junit.Test;
 import static junit.framework.Assert.assertEquals;

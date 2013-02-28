@@ -28,8 +28,9 @@
  */
 package org.orbisgis.view.edition;
 
-import org.orbisgis.core.common.BeanPropertyChangeSupport;
 import org.orbisgis.progress.ProgressMonitor;
+
+import java.beans.PropertyChangeListener;
 
 /**
  * Editable elements are used and moved through OrbisGIS GUI views.
@@ -38,38 +39,51 @@ import org.orbisgis.progress.ProgressMonitor;
  * Use the "Add property" NetBeans function to add properties easily.
  * See documentation related to java.beans management systems
  */
-public abstract class EditableElement extends BeanPropertyChangeSupport {
+public interface EditableElement {
 
         // Properties names
         public static final String PROP_ID = "id";
         public static final String PROP_MODIFIED = "modified";
         public static final String PROP_OPEN= "open";
-        
-        // Properties
-        protected String id = "none";
-        protected boolean modified = false;
-        protected boolean open = false;
+
+
+        /**
+         * Add a property-change listener for all properties.
+         * The listener is called for all properties.
+         * @param listener The PropertyChangeListener instance
+         * @note Use EventHandler.create to build the PropertyChangeListener instance
+         */
+        public void addPropertyChangeListener(PropertyChangeListener listener);
+
+        /**
+         * Add a property-change listener for a specific property.
+         * The listener is called only when there is a change to
+         * the specified property.
+         * @param prop The static property name PROP_..
+         * @param listener The PropertyChangeListener instance
+         * @note Use EventHandler.create to build the PropertyChangeListener instance
+         */
+        public void addPropertyChangeListener(String prop,PropertyChangeListener listener);
+
+        /**
+         * Remove the specified listener from the list
+         * @param listener The listener instance
+         */
+        public void removePropertyChangeListener(PropertyChangeListener listener);
+
+        /**
+         * Remove the specified listener for a specified property from the list
+         * @param prop The static property name PROP_..
+         * @param listener The listener instance
+         */
+        public void removePropertyChangeListener(String prop,PropertyChangeListener listener);
 
         /**
          * Return the Id of this element (instance).
          *
          * @return the value of id
          */
-        public String getId() {
-                return id;
-        }
-
-        /**
-         * Set the value of id
-         *
-         * @param id new value of id
-         */
-        protected void setId(String id) {
-                String oldId = this.id;
-                this.id = id;
-                propertyChangeSupport.firePropertyChange(PROP_ID, oldId, id);
-        }
-        
+        String getId();
 
         /**
          * Get the state of the editable element
@@ -77,46 +91,27 @@ public abstract class EditableElement extends BeanPropertyChangeSupport {
          * @return True if this element was modified since the last time save
          * or open was called
          */
-        public boolean isModified() {
-                return modified;
-        }
+        boolean isModified();
 
         /**
          * Set the value of modified
          *
          * @param modified new value of modified
          */
-        public void setModified(boolean modified) {
-                boolean oldModified = this.modified;
-                this.modified = modified;
-                propertyChangeSupport.firePropertyChange(PROP_MODIFIED, oldModified, modified);
-        }
+        void setModified(boolean modified);
 
         /**
         * True, if this editable is open by the editor
         * @return the value of open
         */
-        public boolean isOpen() {
-                return open;
-        }
+        boolean isOpen();
 
-        /**
-         * Set the value of the state of the editable element
-         *
-         * @param open new value of open
-         */
-        protected void setOpen(boolean open) {
-                boolean oldOpen = this.open;
-                this.open = open;
-                propertyChangeSupport.firePropertyChange(PROP_OPEN, oldOpen, open);
-        }
-        
         /**
          * Return an unique String that identifies the element type
          *         
          * @return
          */
-        public abstract String getTypeId();
+        String getTypeId();
 
         /**
          * Opens the element for edition. This method will typically be followed
@@ -128,7 +123,7 @@ public abstract class EditableElement extends BeanPropertyChangeSupport {
          * edited
          * @throws EditableElementException If the operation cannot be done
          */
-        public abstract void open(ProgressMonitor progressMonitor)
+        void open(ProgressMonitor progressMonitor)
                 throws UnsupportedOperationException, EditableElementException;
 
         /**
@@ -141,7 +136,7 @@ public abstract class EditableElement extends BeanPropertyChangeSupport {
          * successful but there were some extraordinary conditions during the
          * saving. The saving must always be done
          */
-        public abstract void save() throws UnsupportedOperationException, EditableElementException;
+        void save() throws UnsupportedOperationException, EditableElementException;
 
         /**
          * Closes the element. All resources should be freed and all memory
@@ -153,7 +148,7 @@ public abstract class EditableElement extends BeanPropertyChangeSupport {
          * edited
          * @throws EditableElementException If the closing was not done
          */
-        public abstract void close(ProgressMonitor progressMonitor)
+        void close(ProgressMonitor progressMonitor)
                 throws UnsupportedOperationException, EditableElementException;
 
         /**
@@ -163,5 +158,5 @@ public abstract class EditableElement extends BeanPropertyChangeSupport {
          * not supported
          * @throws UnsupportedOperationException If this element is a folder
          */
-        public abstract Object getObject() throws UnsupportedOperationException;
+        Object getObject() throws UnsupportedOperationException;
 }

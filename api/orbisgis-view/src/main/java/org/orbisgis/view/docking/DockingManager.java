@@ -29,6 +29,7 @@
 package org.orbisgis.view.docking;
 
 import java.util.List;
+import javax.swing.Action;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 
@@ -52,8 +53,21 @@ public interface DockingManager {
          * Remove docking panel id
          * @param dockId 
          */
-        public void removeDockingPanel( String dockId);     
-        
+        public void removeDockingPanel( String dockId);
+
+        /**
+         * Display this action on the owner frame
+         * @param action
+         * @return Unique ID
+         */
+        public String addToolbarItem(Action action);
+
+        /**
+         * @param action Action instance to remove
+         * @return True if the action has been found and deleted
+         */
+        public boolean removeToolbarItem(Action action);
+
         /**
          * @return the managed frame
          */
@@ -82,7 +96,7 @@ public interface DockingManager {
         /**
          * The multiple instances panels can be shown at the next start of application
          * if their factory is registered 
-         * before loading the layout {@link ##setDockingStateFile}
+         * before loading the layout {@link setDockingStateFile}
          * @param factoryName
          * @param factory  
          */
