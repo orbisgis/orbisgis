@@ -103,6 +103,6 @@ public class ST_XYMinMaxTest extends FunctionTest {
         assertEquals(7, evaluate(zMax, multiPoints).getAsDouble(), epsilon);
         assertEquals(100, evaluate(zMax, polygon).getAsDouble(), epsilon);
         assertTrue(evaluate(zMax, nullValue).isNull());
-        assertEquals(Double.NaN, evaluate(xMax, nanValue).getAsDouble(), epsilon);
+        assertEquals(Double.NaN, evaluate(zMax, nanValue).getAsDouble(), epsilon);
     }
 }
