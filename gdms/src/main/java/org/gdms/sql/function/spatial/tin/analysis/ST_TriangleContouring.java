@@ -105,7 +105,7 @@ public class ST_TriangleContouring extends AbstractTableFunction {
 
         @Override
         public String getDescription() {
-                return "Create an ISO surface contouring of the provided spatial table, use Z value of triangles if you not provide the name of vertices level columns.";
+                return "Create an ISO surface contouring of the provided spatial table, use Z value of triangles if you do not provide the name of vertices level columns.";
         }
 
         private static boolean computeSplitPositionOrdered(double marker1, double marker2,
