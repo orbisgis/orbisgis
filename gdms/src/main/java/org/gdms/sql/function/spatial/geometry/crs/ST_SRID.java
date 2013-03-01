@@ -50,9 +50,9 @@ import org.opengis.referencing.crs.CoordinateReferenceSystem;
  * 
  * Note that this has nothing to do with the CRS constraint on a table column.
  * 
- * @author Antoine Gourlay
+ * @author Antoine Gourlay, Erwan Bocher
  */
-public class ST_CRS extends AbstractScalarSpatialFunction {
+public class ST_SRID extends AbstractScalarSpatialFunction {
 
         @Override
         public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
@@ -77,12 +77,12 @@ public class ST_CRS extends AbstractScalarSpatialFunction {
 
         @Override
         public String getName() {
-                return "ST_CRS";
+                return "ST_SRID";
         }
 
         @Override
         public String getSqlOrder() {
-                return "SELECT ST_CRS(the_geom) FROM table;";
+                return "SELECT ST_SRID(the_geom) FROM table;";
         }
 
         @Override

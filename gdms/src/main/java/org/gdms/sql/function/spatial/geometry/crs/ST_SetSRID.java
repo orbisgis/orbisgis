@@ -34,6 +34,7 @@
 package org.gdms.sql.function.spatial.geometry.crs;
 
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.BasicFunctionSignature;
@@ -46,15 +47,15 @@ import org.opengis.referencing.FactoryException;
 import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-
 /**
- * Sets the internal CRS of a geometry.
- * 
+ * Sets the internal CRS of a geometry using an EPSG code or a authority + code
+ * ie : ST_SetSRID(the_geom, 4326) or ST_SetSRID(the_geom, 'EPSG:4326');
+ *
  * Note that this has nothing to do with the CRS constraint on a table column.
- * 
- * @author Antoine Gourlay
+ *
+ * @author Antoine Gourlay, Erwan Bocher
  */
-public class ST_SetCRS extends AbstractScalarSpatialFunction {
+public class ST_SetSRID extends AbstractScalarSpatialFunction {
 
         private CoordinateReferenceSystem crs;
 
@@ -62,13 +63,23 @@ public class ST_SetCRS extends AbstractScalarSpatialFunction {
         public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
                 if (crs == null) {
                         String epsgCode = null;
-                        try {
+                        if (args[1].getType() == Type.INT) {
+                                int code = args[1].getAsInt();
+                                if (code == -1) {
+                                        throw new FunctionException("-1 is an invalid SRID");
+                                } else {
+                                      epsgCode = "EPSG:"+code ;
+                                }
+                        } else {
                                 epsgCode = args[1].getAsString();
+                        }
+                        try {                                
                                 crs = CRS.decode(epsgCode);
                         } catch (NoSuchAuthorityCodeException ex) {
                                 throw new FunctionException("Cannot find an authority for " + epsgCode, ex);
                         } catch (FactoryException ex) {
-                                throw new FunctionException("Cannot find a factory for "+ epsgCode, ex);                        }
+                                throw new FunctionException("Cannot find a factory for " + epsgCode, ex);
+                        }
                 }
 
                 return ValueFactory.createValue(args[0].getAsGeometry(), crs);
@@ -81,18 +92,19 @@ public class ST_SetCRS extends AbstractScalarSpatialFunction {
 
         @Override
         public String getName() {
-                return "ST_SetCRS";
+                return "ST_SetSRID";
         }
 
         @Override
         public String getSqlOrder() {
-                return "SELECT ST_SetCRS(the_geom, 'EPSG:4326') FROM table;";
+                return "SELECT ST_SetSRID(the_geom, 4326 or 'EPSG:4326') FROM table;";
         }
 
         @Override
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
                                 new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY,
-                                ScalarArgument.STRING),};
+                                ScalarArgument.INT),new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY,
+                                ScalarArgument.STRING)};
         }
 }

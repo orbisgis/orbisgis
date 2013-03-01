@@ -34,19 +34,16 @@
 package org.gdms.sql.function;
 
 import com.vividsolutions.jts.geom.Geometry;
-import com.vividsolutions.jts.io.WKBReader;
 import com.vividsolutions.jts.io.WKTReader;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import org.gdms.TestBase;
 import org.gdms.data.DataSource;
+import static org.junit.Assert.assertTrue;
+import org.junit.Before;
+import org.junit.Test;
 
 /**
  *
- * @author Antoine Gourlay
+ * @author Antoine Gourlay, Erwan Bocher
  */
 public class CRSFunctionTest extends TestBase {
         
@@ -55,16 +52,26 @@ public class CRSFunctionTest extends TestBase {
                 super.setUpTestsWithEdition(false);
         }
         
+        
         @Test
-        public void testGetSetCRS() throws Exception {
+        public void testSetCRSdata() throws Exception {
+                dsf.executeSQL("CREATE TABLE init AS SELECT * FROM ST_RandomGeometry('point', 2);");
+                DataSource  ds = dsf.getDataSourceFromSQL("SELECT ST_SetSRID(the_geom, 'EPSG:27572') from init;");
+                ds.open();
+                ds.getCRS().getName().toString().equalsIgnoreCase("EPSG:27572");                
+                ds.close();
+        }
+        
+        @Test
+        public void testGetSetCRSOntheFly() throws Exception {
                 dsf.executeSQL("CREATE TABLE init AS SELECT * FROM ST_RandomGeometry('point', 10);");
-                DataSource ds = dsf.getDataSourceFromSQL("SELECT ST_CRS(the_geom) from init;");
+                DataSource ds = dsf.getDataSourceFromSQL("SELECT ST_SRID(the_geom) from init;");
                 
                 ds.open();
                 assertTrue(ds.isNull(0, 0));
                 ds.close();
                 
-                ds = dsf.getDataSourceFromSQL("SELECT ST_CRS(ST_SetCRS(the_geom, 'EPSG:27572')) from init;");
+                ds = dsf.getDataSourceFromSQL("SELECT ST_SRID(ST_SetSRID(the_geom, 'EPSG:27572')) from init;");
                 
                 ds.open();
                 for (int i = 0; i < ds.getRowCount(); i++) {
@@ -77,7 +84,7 @@ public class CRSFunctionTest extends TestBase {
         @Test
         public void testST_Transform() throws Exception {
                 dsf.executeSQL("CREATE TABLE init AS SELECT 'POINT(584173.736059813 2594514.82833411)'::GEOMETRY as the_geom;");
-                DataSource ds = dsf.getDataSourceFromSQL("SELECT * from init;");
+                DataSource ds = dsf.getDataSourceFromSQL("SELECT *  from init;");
                 //EPSG:27572;584173.736059813;2594514.82833411;EPSG:4326;;0.01
                 
                 WKTReader wKTReader = new WKTReader();
@@ -86,7 +93,7 @@ public class CRSFunctionTest extends TestBase {
                 assertTrue(!ds.isNull(0, 0));
                 ds.close();
                 
-                ds = dsf.getDataSourceFromSQL("SELECT ST_TRANSFORM(the_geom, 'EPSG:27572', 'EPSG:4326') from init;");
+                ds = dsf.getDataSourceFromSQL("SELECT ST_TRANSFORM(ST_SetSRID(the_geom, 'EPSG:27572'), 'EPSG:4326') from init;");
                 
                 ds.open();
                 
