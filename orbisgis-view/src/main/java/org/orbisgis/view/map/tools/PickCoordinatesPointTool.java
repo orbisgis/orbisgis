@@ -74,7 +74,8 @@ public class PickCoordinatesPointTool extends AbstractPointTool {
                 throws TransitionException {                             
                 Graphics g = tm.getComponent().getGraphics();
                 if ((g != null) && (g instanceof Graphics2D)) {
-                                SymbolUtil.flashPoint(point, (Graphics2D) g, tm.getMapTransform());
+                                // flash make the GUI unresponsive during 1s..
+                                //SymbolUtil.flashPoint(point, (Graphics2D) g, tm.getMapTransform());
                                 GUI_LOGGER.info(I18N.tr("Coordinate : {0}", point.toText()));
                         }
                 }

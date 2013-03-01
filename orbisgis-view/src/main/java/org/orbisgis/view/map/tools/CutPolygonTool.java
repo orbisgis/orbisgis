@@ -61,7 +61,7 @@ public class CutPolygonTool extends AbstractPolygonTool {
                 MapContext mc, ToolManager tm) throws TransitionException {
                 DataSource sds = mc.getActiveLayer().getDataSource();
                 try {
-                        ArrayList<Handler> handlers = tm.getCurrentHandlers();
+                        ArrayList<Handler> handlers = new ArrayList<Handler>(tm.getCurrentHandlers());
                         for (Handler handler : handlers) {
                                 if (handler instanceof MultiPolygonHandler) {
                                         MultiPolygonHandler mp = (MultiPolygonHandler) handler;
@@ -119,7 +119,7 @@ public class CutPolygonTool extends AbstractPolygonTool {
 
         @Override
         public String getTooltip() {
-                return I18N.tr("Cut polygons by drawing another one");
+                return I18N.tr("Select a polygon then draw another polygon to subtract the first one");
         }
 
         @Override

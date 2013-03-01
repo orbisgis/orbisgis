@@ -91,7 +91,7 @@ public class AutomatonAction extends DefaultAction implements AutomatonHolder {
      */
     private boolean isEqual(Automaton otherAutomaton) {
         if(otherAutomaton!=null) {
-            return this.automaton.getName().equals(otherAutomaton.getName());
+            return this.automaton.getClass().getName().equals(otherAutomaton.getClass().getName());
         } else {
             return false;
         }

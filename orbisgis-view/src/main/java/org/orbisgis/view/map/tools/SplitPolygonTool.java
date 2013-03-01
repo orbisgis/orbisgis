@@ -107,7 +107,7 @@ public class SplitPolygonTool extends AbstractLineTool {
                                         }
                                 }
                                 MultiPolygon result = gf.createMultiPolygon(pols.toArray(new Polygon[pols.size()]));
-                                if (result != null) {
+                                if (result != null && !pols.isEmpty()) {
                                         sds.setGeometry(handler.getGeometryIndex(), result);
                                 }
                         } else if (ToolUtilities.geometryTypeIs(vc, 

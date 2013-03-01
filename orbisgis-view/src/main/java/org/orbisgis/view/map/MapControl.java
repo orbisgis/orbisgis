@@ -616,7 +616,6 @@ public class MapControl extends JComponent implements ContainerListener {
 
                 @Override
                 public void stateChanged(ToolManager toolManager) {
-                    toolManager.checkToolStatus();
                 }
 
                 @Override

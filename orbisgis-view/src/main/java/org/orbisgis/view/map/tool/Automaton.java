@@ -93,11 +93,26 @@ public interface Automaton extends Observer {
                 SELECTION,
                 TERMINATE;
         }
+
+    /**
+     * Initialisation of the tool, done when the tool is set on the ToolManager {@link ToolManager#setTool(Automaton)}
+     * @param vc
+     * @param tm
+     * @throws TransitionException
+     * @throws FinishedAutomatonException
+     */
 	public void init(MapContext vc, ToolManager tm) throws TransitionException,
 			FinishedAutomatonException;
 
+    /**
+     * Get the label of Automaton Popup menu
+     * @return The translated message
+     */
 	public String[] getTransitionLabels();
 
+    /**
+     * @return The code that correspond to Popup menu
+     */
 	public Code[] getTransitionCodes();
 
 	public void transition(Code code) throws NoSuchTransitionException,
@@ -136,5 +151,11 @@ public interface Automaton extends Observer {
 			FinishedAutomatonException;
 
 	public Point getHotSpotOffset();
+
+    /**
+     * Help the user by displaying the next action waiting by the automaton.
+     * @return Translated message
+     */
+    String getMessage();
 
 }

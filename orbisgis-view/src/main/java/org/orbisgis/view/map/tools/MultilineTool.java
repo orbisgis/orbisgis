@@ -46,17 +46,16 @@ import javax.swing.*;
 
 public class MultilineTool extends AbstractMultilineTool {
 
-        @Override
+    @Override
 	public void update(Observable o, Object arg) {
-		//PlugInContext.checkTool(this);
 	}
 
-        @Override
+    @Override
 	public boolean isVisible(MapContext vc, ToolManager tm) {
 		return isEnabled(vc, tm);
 	}
 
-        @Override
+    @Override
 	public boolean isEnabled(MapContext vc, ToolManager tm) {
 		return ToolUtilities.geometryTypeIs(vc,
 				TypeFactory.createType(Type.MULTILINESTRING),
@@ -65,7 +64,7 @@ public class MultilineTool extends AbstractMultilineTool {
 				&& ToolUtilities.isActiveLayerEditable(vc);
 	}
 
-        @Override
+    @Override
 	protected void multilineDone(MultiLineString mls, MapContext mc,
 			ToolManager tm) throws TransitionException {
 		DataSource sds = mc.getActiveLayer().getDataSource();
@@ -79,14 +78,14 @@ public class MultilineTool extends AbstractMultilineTool {
 		}
 	}
 
-        @Override
+    @Override
 	public double getInitialZ(MapContext mapContext) {
 		return ToolUtilities.getActiveLayerInitialZ(mapContext);
 	}
 
-        @Override
+    @Override
 	public String getName() {
-		return I18N.tr("Draw a multiline");
+		return i18n.tr("Draw a multiline");
 	}
 
     @Override

@@ -456,12 +456,12 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
                 List<Action> before = new ArrayList<Action>(addedToolBarActions);
                 addedToolBarActions.addAll(newActions);
                 resetToolBarsCActions(addedToolBarActions);
-                propertyChangeSupport.firePropertyChange(PROP_ACTIONS,before,addedToolBarActions);
+                propertyChangeSupport.firePropertyChange(PROP_ACTIONS, before, addedToolBarActions);
         }
 
         @Override
         public boolean removeAction(Action action) {
-                removeActions(Arrays.asList(new Action[]{action}));
+                removeActions(Arrays.asList(action));
                 return addedToolBarActions.contains(action);
         }
 
@@ -470,11 +470,11 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
                 List<Action> before = new ArrayList<Action>(addedToolBarActions);
                 addedToolBarActions.removeAll(actionList);
                 resetToolBarsCActions(addedToolBarActions);
-                propertyChangeSupport.firePropertyChange(PROP_ACTIONS,before,addedToolBarActions);
+                propertyChangeSupport.firePropertyChange(PROP_ACTIONS, before, addedToolBarActions);
         }
         @Override
         public String addToolbarItem(Action action) {
-                addActions(Arrays.asList(new Action[]{action}));
+                addActions(Arrays.asList(action));
                 return ActionTools.getMenuId(action);
         }
 
@@ -524,7 +524,6 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
                         if(toolBarItem!=toolbar) {
                                 Action activeAction = toolBarItem.getAction();
                                 String activeId = ActionTools.getMenuId(activeAction);
-                                String activeLogicalGroup = ActionTools.getLogicalGroup(activeAction);
                                 String activeInsertAfter = ActionTools.getInsertAfterMenuId(activeAction);
                                 String activeInsertBefore = ActionTools.getInsertBeforeMenuId(activeAction);
                                 if((!insertAfter.isEmpty() && insertAfter.equals(activeId)) ||
@@ -567,17 +566,16 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
         @Override
         public boolean removeToolbarItem(Action action) {
                 String id = ActionTools.getMenuId(action);
-                if(id!=null) {
-                        return commonControl.removeSingleDockable(id);
-                }
-                return false;
+                return id != null && commonControl.removeSingleDockable(id);
         }
         private void setNextPosition(ToolBarItem item,ToolBarItem itemNext) {
-            CLocation location = commonControl.getLocationManager().getLocation(item.intern());
-            if(location!=null) {
-                    itemNext.setLocation(location.aside());
-                    itemNext.setVisible(true);
+            if(!item.isVisible()) {
+                item.setVisible(true);
             }
+            if(!itemNext.isVisible()) {
+                itemNext.setVisible(true);
+            }
+            itemNext.setLocationsAside(item);
         }
         /**
          * Recreate all CAction and put them in already shown ToolBarItems.
@@ -631,6 +629,7 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
             }
         }
 
+    @SuppressWarnings("deprecation")
     private CLocation getDefaultLocation(Map<String,CLocation> lastToolBarLocation, String logicalGroupId) {
         CLocation defaultLocation = lastToolBarLocation.get(logicalGroupId);
         if(defaultLocation==null) {
@@ -653,9 +652,7 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
                         if(dockable instanceof CustomPanelHolder && dockable instanceof DefaultCDockable) {
                                 CustomPanelHolder dockItem = (CustomPanelHolder)dockable;
                                 OrbisGISView.setListeners(dockItem.getDockingPanel(), (DefaultCDockable)dockable);
-                        } else if(dockable instanceof ToolBarItem) {
-                                // Known dockable
-                        } else {
+                        } else if(!(dockable instanceof ToolBarItem)) {
                                 LOGGER.error("Unknown dockable, not an OrbisGIS approved component.");
                         }
                 }

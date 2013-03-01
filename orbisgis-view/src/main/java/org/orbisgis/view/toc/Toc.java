@@ -289,6 +289,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
         public void onMapModified(PropertyChangeEvent evt) {
                 if(mapElement!=null && MapElement.PROP_MODIFIED.equals(evt.getPropertyName())) {
                         saveAction.setEnabled(mapElement.isModified());
+                        treeModel.reload();
                 }
         }
         /**
