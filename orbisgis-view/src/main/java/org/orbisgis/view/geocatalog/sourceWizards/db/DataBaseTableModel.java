@@ -54,10 +54,11 @@ public class DataBaseTableModel extends AbstractTableModel {
         private static final I18n I18N = I18nFactory.getI18n(DataBaseTableModel.class);
         private final String[] sourceNames;
         private static final String[] COLUMN_NAMES = new String[]{"Status", "Source name", "Table name", "Schema", 
-                "Input field", "Output field", "Input EPSG", "Output EPSG", "Export"};
+                "Input field", "Output field", "Input CRS", "Output EPSG", "Export"};
         private ArrayList<DataBaseRow> data = new ArrayList<DataBaseRow>();
         private boolean isEditable = false;
-        int epsgCode = -1;
+        private int epsgCode = -1;
+        private String crsInformation = "No crs";
 
         /**
          * Build a new {@code DataBaseTableModel} using the {@code Source}
@@ -95,8 +96,8 @@ public class DataBaseTableModel extends AbstractTableModel {
                         for (String sourceName : sourceNames) {
                                 int type = sourceManager.getSource(sourceName).getType();
                                 if ((validType & type) == 0) {
-                                        DataBaseRow row = new DataBaseRow(sourceName, sourceName, "public", "-",
-                                                "-", epsgCode, epsgCode,  Boolean.TRUE);
+                                        DataBaseRow row = new DataBaseRow(sourceName, sourceName, "public", "No geometry",
+                                                "No geometry", epsgCode, epsgCode,  Boolean.TRUE);
                                         //We don't need to call setSpatial : isSpatial is false
                                         //by default.
                                         data.add(row);
@@ -104,14 +105,19 @@ public class DataBaseTableModel extends AbstractTableModel {
                                         DataSource ds = dsf.getDataSource(sourceName);
                                         ds.open();
                                         String geomField = ds.getFieldName(ds.getSpatialFieldIndex());
-                                        CoordinateReferenceSystem crs = ds.getCRS();
+                                        CoordinateReferenceSystem crs = ds.getCRS();                                       
                                         if (crs != null) {
-                                                epsgCode = Integer.valueOf(crs.getName().getCode());
+                                                try {
+                                                        crsInformation = crs.getName().getCode();
+                                                        epsgCode = Integer.valueOf(crsInformation);                                                        
+                                                } catch (NumberFormatException e) {
+                                                        epsgCode = -1;
+                                                }
                                         }
                                         ds.close();
                                         DataBaseRow row = new DataBaseRow(sourceName, sourceName,
                                                 "public", geomField, geomField, epsgCode,epsgCode, Boolean.TRUE);
-
+                                        row.setCrsInformation(crsInformation);
                                         row.setSpatial(true);
                                         data.add(row);
                                 }

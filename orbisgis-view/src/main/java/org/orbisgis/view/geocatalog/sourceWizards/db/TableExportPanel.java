@@ -30,25 +30,13 @@ package org.orbisgis.view.geocatalog.sourceWizards.db;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionListener;
-import java.beans.EventHandler;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyVetoException;
-import java.beans.VetoableChangeListener;
+import java.beans.*;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import javax.swing.DefaultCellEditor;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.SwingUtilities;
+import javax.swing.*;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import org.apache.log4j.Logger;
@@ -104,7 +92,7 @@ public class TableExportPanel extends JDialog {
                 this.sourceManager = sourceManager;
                 initialize();
                 setModal(true);
-                setSize(400, 300);
+                setSize(500, 250);
         }
 
         @Override
@@ -148,7 +136,7 @@ public class TableExportPanel extends JDialog {
                                         int pColumn) {
                                         Component tableCellEditorComponent =
                                                 super.getTableCellEditorComponent(pTable, pValue, pIsSelected, pRow, pColumn);
-                                        if (2 == pColumn) {
+                                        if (3 == pColumn) {
                                                 JComboBox comboBox = (JComboBox) tableCellEditorComponent;
                                                 comboBox.removeAllItems();
                                                 for (String schema : getSchemas()) {
@@ -347,8 +335,7 @@ public class TableExportPanel extends JDialog {
                                         }
                                 }
                                 s.execute();                        
-                        }
-                        
+                        }                       
                        
                 }
         }

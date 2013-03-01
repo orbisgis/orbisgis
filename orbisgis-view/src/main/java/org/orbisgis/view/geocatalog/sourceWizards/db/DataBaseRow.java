@@ -52,6 +52,7 @@ public class DataBaseRow {
         private String outputSpatialField = "the_geom";
         private String inputSpatialField = "the_geom";
         private static final I18n I18N = I18nFactory.getI18n(Catalog.class);
+        private String crsInformation ="No crs";
 
         /**
          * Create a row object that stores all informations to export in a
@@ -158,7 +159,7 @@ public class DataBaseRow {
                         case 5:
                                 return getOutputSpatialField();                       
                         case 6:
-                                return String.valueOf(getInputEpsgCode());
+                                return getCrsInformation();
                         case 7:
                                 return String.valueOf(getOutputEpsgCode());
                         case 8:
@@ -202,7 +203,6 @@ public class DataBaseRow {
                                                 + "The default code will be used."));
                                 }
                                 break;
-
 
                         case 8:
                                 setExport(Boolean.valueOf(aValue.toString()));
@@ -248,7 +248,7 @@ public class DataBaseRow {
          */
         public Object[] getObjects() {
                 return new Object[]{this.exportStatus, getInputSourceName(), getOutputSourceName(), getSchema(),
-                        getInputSpatialField(), getOutputSpatialField(), getInputEpsgCode(),getOutputEpsgCode(), isExport()};
+                        getInputSpatialField(), getOutputSpatialField(), getCrsInformation(),getOutputEpsgCode(), isExport()};
         }
 
         /**
@@ -290,6 +290,38 @@ public class DataBaseRow {
          */
         public void setOutputEpsgCode(int outputEpsgCode) {
                 this.outputEpsgCode = outputEpsgCode;
-        }        
+        }
+
+        /**
+         * Return some informations about the input CRS
+         * 
+         * if the authority and the code are available return :  
+         * ie  EPSG:4326 or IGNF:301111...
+         * else if returns the name of the CRS 
+         * ie LAMBERT2 
+         * 
+         * else returns "No crs"
+         * 
+         * @return 
+         */
+        public String getCrsInformation() {
+                return crsInformation;
+        }
+
+        /**
+         * Set informations about the CRS
+         * if the authority and the code are available set :  
+         * ie  EPSG:4326 or IGNF:301111...
+         * else if set the name of the CRS 
+         * ie LAMBERT2
+         * else set "No crs"
+         * 
+         * @param crsInformation 
+         */
+        public void setCrsInformation(String crsInformation) {
+                this.crsInformation = crsInformation;
+        }      
+        
+        
         
 }
