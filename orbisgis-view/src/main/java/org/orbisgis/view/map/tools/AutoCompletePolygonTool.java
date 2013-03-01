@@ -97,7 +97,7 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
 
 
                 } catch (DriverException e) {
-                        throw new TransitionException(I18N.tr("Cannot Autocomplete the polygon"), e);
+                        throw new TransitionException(i18n.tr("Cannot Autocomplete the polygon"), e);
                 }
         }
 
@@ -178,7 +178,7 @@ public class AutoCompletePolygonTool extends AbstractPolygonTool {
 
         @Override
         public String getName() {
-                return I18N.tr("Autocomplete a polygon");
+                return i18n.tr("Autocomplete a polygon");
 
         }
 

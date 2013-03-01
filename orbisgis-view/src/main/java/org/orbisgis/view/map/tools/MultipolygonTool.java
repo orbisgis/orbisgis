@@ -43,6 +43,9 @@ import org.orbisgis.view.map.tool.TransitionException;
 
 import javax.swing.*;
 
+/**
+ * Draw multi polygon
+ */
 public class MultipolygonTool extends AbstractMultipolygonTool {
 
         @Override
@@ -83,7 +86,7 @@ public class MultipolygonTool extends AbstractMultipolygonTool {
 
         @Override
 	public String getName() {
-		return I18N.tr("Draw multi-polygon");
+		return i18n.tr("Draw multi-polygon");
 	}
     @Override
     public ImageIcon getImageIcon() {

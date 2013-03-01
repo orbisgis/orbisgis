@@ -52,6 +52,9 @@ import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.Handler;
 
+/**
+ * Convert a LineString into a MultiLineString
+ */
 public class SplitLineStringTool extends AbstractPointTool {
 
         @Override
@@ -97,19 +100,19 @@ public class SplitLineStringTool extends AbstractPointTool {
                         }
 
                 } catch (DriverException e) {
-                        throw new TransitionException(I18N.tr("Cannot split line"), e);
+                        throw new TransitionException(i18n.tr("Cannot split line"), e);
                 }
 
         }
 
         @Override
         public String getName() {
-                return I18N.tr("Split line");
+                return i18n.tr("Split line");
         }
 
     @Override
     public String getTooltip() {
-        return I18N.tr("Split a line by selecting a vertex");
+        return i18n.tr("Split a line by selecting a vertex");
     }
 
     @Override

@@ -31,6 +31,9 @@ package org.orbisgis.view.map.tools;
 import com.vividsolutions.jts.geom.Coordinate;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.gdms.data.types.Constraint;
 import org.gdms.data.types.GeometryDimensionConstraint;
@@ -44,9 +47,14 @@ import org.orbisgis.view.components.sif.AskValidValue;
 import org.orbisgis.view.map.tool.Automaton;
 import org.orbisgis.view.map.tool.TransitionException;
 
+/**
+ * Common utility for automatons.
+ */
 public class ToolUtilities {
+    private static final Logger LOGGER = Logger.getLogger(ToolUtilities.class);
 
-	public static double getActiveLayerInitialZ(MapContext mapContext) {
+
+    public static double getActiveLayerInitialZ(MapContext mapContext) {
 		DataSource sds = mapContext.getActiveLayer()
 				.getDataSource();
 		try {
@@ -55,6 +63,7 @@ public class ToolUtilities {
 				return 0;
 			}
 		} catch (DriverException e) {
+            LOGGER.error(e.getLocalizedMessage(),e);
 		}
 		return Double.NaN;
 	}
@@ -93,8 +102,8 @@ public class ToolUtilities {
 		return ret;
 	}
 
-	public static ArrayList<Coordinate> removeDuplicated(
-			ArrayList<Coordinate> points) {
+	public static List<Coordinate> removeDuplicated(
+			List<Coordinate> points) {
 		if (points.isEmpty()) {
 			return points;
 		} else {
@@ -111,20 +120,12 @@ public class ToolUtilities {
 
 	public static boolean isActiveLayerEditable(MapContext vc) {
 		ILayer activeLayer = vc.getActiveLayer();
-		if (activeLayer == null) {
-			return false;
-		} else {
-			return activeLayer.getDataSource().isEditable();
-		}
+        return activeLayer != null && activeLayer.getDataSource().isEditable();
 	}
 
 	public static boolean isActiveLayerVisible(MapContext vc) {
 		ILayer activeLayer = vc.getActiveLayer();
-		if (activeLayer == null) {
-			return false;
-		} else {
-			return activeLayer.isVisible();
-		}
+        return activeLayer != null && activeLayer.isVisible();
 	}
 
         /**
@@ -135,11 +136,7 @@ public class ToolUtilities {
          */
         public static boolean isSelectionGreaterOrEqualsThan(MapContext vc, int i){
                 ILayer activeLayer = vc.getActiveLayer();
-		if (activeLayer == null) {
-			return false;
-		} else {
-			return activeLayer.getSelection().size()>=i;
-		}
+            return activeLayer != null && activeLayer.getSelection().size() >= i;
         }
 
         /**
@@ -150,20 +147,12 @@ public class ToolUtilities {
          */
         public static boolean isSelectionEqualsTo(MapContext vc, int i){
                 ILayer activeLayer = vc.getActiveLayer();
-		if (activeLayer == null) {
-			return false;
-		} else {
-			return activeLayer.getSelection().size()==i;
-		}
+            return activeLayer != null && activeLayer.getSelection().size() == i;
         }
 
 	public static boolean activeSelectionGreaterThan(MapContext vc, int i) {
 		ILayer activeLayer = vc.getActiveLayer();
-		if (activeLayer == null) {
-			return false;
-		} else {
-			return activeLayer.getSelection().size() >= i;
-		}
+        return activeLayer != null && activeLayer.getSelection().size() >= i;
 	}
 
         /**
@@ -204,17 +193,15 @@ public class ToolUtilities {
 					}
 				}
 			} catch (DriverException e) {
+                LOGGER.error(e.getLocalizedMessage(),e);
 			}
 			return false;
 		}
 	}
 
 	public static boolean layerCountGreaterThan(MapContext vc, int i) {
-                if(vc==null || vc.getLayerModel()==null) {
-                        return false;
-                }
-		return vc.getLayerModel().getLayersRecursively().length > i;
-	}
+        return vc != null && vc.getLayerModel() != null && vc.getLayerModel().getLayersRecursively().length > i;
+    }
 
 	public static boolean isRestrictedPopup(Automaton currentTool) {
 

@@ -85,7 +85,7 @@ public class MultipointTool extends AbstractMultipointTool {
 
         @Override
 	public String getName() {
-		return I18N.tr("Draw a multipoint");
+		return i18n.tr("Draw a multipoint");
 	}
 
     @Override

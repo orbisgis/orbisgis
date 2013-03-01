@@ -105,7 +105,7 @@ public class VertexDeletionTool extends VertexDeletion {
                                 }
                         } catch (GeometryException e) {
                                 throw new DrawingException(
-                                        I18N.tr("Cannot delete vertex"));
+                                        i18n.tr("Cannot delete vertex"));
                         }
                 }
         }
@@ -134,7 +134,7 @@ public class VertexDeletionTool extends VertexDeletion {
 
 	    @Override
         public String getName() {
-                return I18N.tr("Delete vertex");
+                return i18n.tr("Delete vertex");
         }
         @Override
         public ImageIcon getImageIcon() {

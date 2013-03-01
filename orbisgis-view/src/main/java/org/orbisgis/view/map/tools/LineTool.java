@@ -113,7 +113,7 @@ public class LineTool extends AbstractLineTool {
                         row = ToolUtilities.populateNotNullFields(sds, row);
                         sds.insertFilledRow(row);
                 } catch (DriverException e) {
-                        throw new TransitionException(I18N.tr("Cannot insert linestring"), e);
+                        throw new TransitionException(i18n.tr("Cannot insert linestring"), e);
                 }
         }
 
@@ -128,7 +128,12 @@ public class LineTool extends AbstractLineTool {
         }
 
         @Override
+        public String getTooltip() {
+            return i18n.tr("Draw a line");
+        }
+
+        @Override
         public String getName() {
-                return I18N.tr("Draw a line");
+                return i18n.tr("Draw a line");
         }
 }

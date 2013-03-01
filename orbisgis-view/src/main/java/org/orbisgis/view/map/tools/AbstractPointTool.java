@@ -37,6 +37,9 @@ import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.tools.generated.Point;
 
+/**
+ * Point common methods.
+ */
 public abstract class AbstractPointTool extends Point implements InsertionTool {
 
 	@Override

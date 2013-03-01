@@ -157,16 +157,6 @@ public abstract class Drag extends AbstractAutomaton {
 			ToolManager tm) throws DrawingException;
 
     @Override
-	protected void setStatus(Status status) throws NoSuchTransitionException {
-		this.status = status;
-	}
-
-    @Override
-	public Status getStatus() {
-		return status;
-	}
-
-    @Override
     public String getMessage() {
             switch(status){
                     case STANDBY:

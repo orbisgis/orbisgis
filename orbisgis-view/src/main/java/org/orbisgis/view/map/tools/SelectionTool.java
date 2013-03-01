@@ -52,7 +52,6 @@
 package org.orbisgis.view.map.tools;
 
 import java.util.Observable;
-import javax.swing.AbstractButton;
 import javax.swing.ImageIcon;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.layerModel.ILayer;
@@ -70,7 +69,7 @@ public class SelectionTool extends AbstractSelectionTool {
 
 	@Override
 	public void update(Observable o, Object arg) {
-		//PlugInContext.checkTool(this);
+
 	}
 
 	@Override
@@ -100,7 +99,7 @@ public class SelectionTool extends AbstractSelectionTool {
 
         @Override
 	public String getName() {
-		return I18N.tr("Select a geometry");
+		return i18n.tr("Select a geometry");
 	}
 
         @Override

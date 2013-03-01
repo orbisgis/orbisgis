@@ -86,7 +86,7 @@ public class CutPolygonTool extends AbstractPolygonTool {
                         }
 
                 } catch (DriverException e) {
-                        throw new TransitionException(I18N.tr("Cannot cut the polygon"), e);
+                        throw new TransitionException(i18n.tr("Cannot cut the polygon"), e);
                 }
         }
 
@@ -114,12 +114,12 @@ public class CutPolygonTool extends AbstractPolygonTool {
 
         @Override
         public String getName() {
-                return I18N.tr("Cut a polygon");
+                return i18n.tr("Cut a polygon");
         }
 
         @Override
         public String getTooltip() {
-                return I18N.tr("Select a polygon then draw another polygon to subtract the first one");
+                return i18n.tr("Select a polygon then draw another polygon to subtract the first one");
         }
 
         @Override

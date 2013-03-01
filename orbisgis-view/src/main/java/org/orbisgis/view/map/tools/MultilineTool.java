@@ -44,6 +44,9 @@ import org.orbisgis.view.map.tool.TransitionException;
 
 import javax.swing.*;
 
+/**
+ * Draw a multi line.
+ */
 public class MultilineTool extends AbstractMultilineTool {
 
     @Override

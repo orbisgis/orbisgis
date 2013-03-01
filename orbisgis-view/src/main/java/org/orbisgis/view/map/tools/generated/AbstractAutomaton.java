@@ -74,7 +74,7 @@ public abstract class AbstractAutomaton implements Automaton {
     /**
      * @return Automaton status
      */
-    public Status getStatus() {
+    public final Status getStatus() {
         return status;
     }
 
@@ -82,7 +82,7 @@ public abstract class AbstractAutomaton implements Automaton {
      * Update the current state of status
      * @param status New status state
      */
-    protected void setStatus(Status status) {
+    protected final void setStatus(Status status) {
         this.status = status;
     }
 

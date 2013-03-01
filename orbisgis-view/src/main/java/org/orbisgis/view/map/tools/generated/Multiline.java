@@ -242,15 +242,7 @@ public abstract class Multiline extends AbstractAutomaton {
 	public abstract void drawIn_Cancel(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException;
 
-	protected void setStatus(Status status) throws NoSuchTransitionException {
-		this.status = status;
-	}
-
-	public Status getStatus() {
-		return status;
-	}
-
-        @Override
+    @Override
 	public String getName() {
 		return "Multiline";
 	}

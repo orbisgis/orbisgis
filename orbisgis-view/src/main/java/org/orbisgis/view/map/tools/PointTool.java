@@ -109,9 +109,14 @@ public class PointTool extends AbstractPointTool {
 		return ToolUtilities.getActiveLayerInitialZ(mapContext);
 	}
 
-        @Override
+    @Override
+    public String getTooltip() {
+        return i18n.tr("Draw a point");
+    }
+
+    @Override
 	public String getName() {
-		return I18N.tr("Draw a point");
+		return i18n.tr("Draw a point");
 	}
 
         @Override

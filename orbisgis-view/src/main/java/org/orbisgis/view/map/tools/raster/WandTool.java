@@ -30,7 +30,6 @@ package org.orbisgis.view.map.tools.raster;
 
 import com.vividsolutions.jts.geom.*;
 import ij.gui.Wand;
-import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.io.IOException;
 import java.util.Observable;
@@ -56,6 +55,9 @@ import org.orbisgis.view.map.tool.TransitionException;
 import org.orbisgis.view.map.tools.AbstractPointTool;
 import org.xnap.commons.i18n.I18n;
 
+/**
+ * Vectorisation of a set of pixels
+ */
 public class WandTool extends AbstractPointTool {
 	private static final String wandLayername = I18n.marktr("orbisgis.org.orbisgis.ui.tools.WandTool.0"); //$NON-NLS-1$
 	private static final DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
@@ -70,6 +72,7 @@ public class WandTool extends AbstractPointTool {
                     return true;
             }
 		} catch (DriverException e) {
+            UILOGGER.error(e.getLocalizedMessage(),e);
 		}
             return false;
 	}
@@ -109,10 +112,10 @@ public class WandTool extends AbstractPointTool {
 			final LinearRing shell = geometryFactory
 					.createLinearRing(jtsCoords);
 			final Polygon polygon = geometryFactory.createPolygon(shell, null);
-
-			if (dsf.getSourceManager().exists(I18N.tr(wandLayername))) {
-				dsf.remove(I18N.tr(wandLayername));
-				vc.getLayerModel().remove(I18N.tr(wandLayername));
+            String layerName = i18n.tr(wandLayername);
+			if (dsf.getSourceManager().exists(layerName)) {
+                dsf.getSourceManager().remove(layerName);
+				vc.getLayerModel().remove(layerName);
 			}
 			DataManager dataManager = Services.getService(DataManager.class);
 			final ILayer wandLayer = dataManager
@@ -123,22 +126,22 @@ public class WandTool extends AbstractPointTool {
 //			wandLayer.setLegend(uniqueSymbolLegend);
 		} catch (LayerException e) {
 			UILOGGER.error(
-					I18N.tr("Cannot use wand tool {0}",e.getMessage()), e); //$NON-NLS-1$
+					i18n.tr("Cannot use wand tool {0}",e.getMessage()), e); //$NON-NLS-1$
 		} catch (DriverException e) {
 			UILOGGER.error(
-					I18N.tr("Cannot apply the legend {0}",e.getMessage()), e); //$NON-NLS-1$
+					i18n.tr("Cannot apply the legend {0}",e.getMessage()), e); //$NON-NLS-1$
 		} catch (IOException e) {
 			UILOGGER.error(
-					I18N.tr("Error accessing the GeoRaster {0}",e.getMessage()), e); //$NON-NLS-1$
+					i18n.tr("Error accessing the GeoRaster {0}",e.getMessage()), e); //$NON-NLS-1$
 		} catch (DriverLoadException e) {
-			UILOGGER.error(I18N.tr("Error accessing the wand layer datasource {0}",e.getMessage()), e);
+			UILOGGER.error(i18n.tr("Error accessing the wand layer datasource {0}",e.getMessage()), e);
 		} catch (NoSuchTableException e) {
-			UILOGGER.error(I18N.tr("Error accessing the wand layer datasource {0}",e.getMessage()), e);
+			UILOGGER.error(i18n.tr("Error accessing the wand layer datasource {0}",e.getMessage()), e);
 		} catch (DataSourceCreationException e) {
-			UILOGGER.error(I18N.tr("Error accessing the wand layer datasource {0}",e.getMessage()), e);
+			UILOGGER.error(i18n.tr("Error accessing the wand layer datasource {0}",e.getMessage()), e);
 		} catch (NonEditableDataSourceException e) {
 			UILOGGER.error(
-					I18N.tr("Error committing the wand layer datasource {0}",e.getMessage()), e);
+					i18n.tr("Error committing the wand layer datasource {0}",e.getMessage()), e);
 		}
 	}
 
@@ -150,9 +153,9 @@ public class WandTool extends AbstractPointTool {
 				new String[] { "the_geom", "area" }, new Type[] { //$NON-NLS-1$ //$NON-NLS-2$
 						TypeFactory.createType(Type.GEOMETRY),
 						TypeFactory.createType(Type.DOUBLE) });
-		dsf.getSourceManager().register(I18N.tr(wandLayername), driver);
+		dsf.getSourceManager().register(i18n.tr(wandLayername), driver);
 
-		final DataSource dsResult = dsf.getDataSource(I18N.tr(wandLayername));
+		final DataSource dsResult = dsf.getDataSource(i18n.tr(wandLayername));
 		dsResult.open();
 		dsResult.insertFilledRow(new Value[] {
 				ValueFactory.createValue(polygon),
@@ -168,10 +171,15 @@ public class WandTool extends AbstractPointTool {
 
         @Override
 	public String getName() {
-		return I18N.tr("Vectorize a set of pixels"); //$NON-NLS-1$
+		return i18n.tr("Vectorize a set of pixels");
 	}
 
-        @Override
+    @Override
+    public String getTooltip() {
+        return i18n.tr("Vectorize a set of pixels");
+    }
+
+    @Override
         public ImageIcon getImageIcon() {
             return OrbisGISIcon.getIcon("watershed");
         }

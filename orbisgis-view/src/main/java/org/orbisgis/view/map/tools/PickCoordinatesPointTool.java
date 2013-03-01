@@ -58,11 +58,13 @@ import java.util.Observable;
 import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.layerModel.MapContext;
-import org.orbisgis.core.renderer.util.SymbolUtil;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.map.tool.ToolManager;
 import org.orbisgis.view.map.tool.TransitionException;
 
+/**
+ * Show in the log the coordinate of the selected point.
+ */
 public class PickCoordinatesPointTool extends AbstractPointTool {
 
         protected static Logger GUI_LOGGER = Logger.getLogger("gui."+PickCoordinatesPointTool.class);
@@ -76,13 +78,18 @@ public class PickCoordinatesPointTool extends AbstractPointTool {
                 if ((g != null) && (g instanceof Graphics2D)) {
                                 // flash make the GUI unresponsive during 1s..
                                 //SymbolUtil.flashPoint(point, (Graphics2D) g, tm.getMapTransform());
-                                GUI_LOGGER.info(I18N.tr("Coordinate : {0}", point.toText()));
+                                GUI_LOGGER.info(i18n.tr("Coordinate : {0}", point.toText()));
                         }
                 }
         
         @Override
         public String getName() {
-                return I18N.tr("Pick a point");
+                return i18n.tr("Pick a point");
+        }
+
+        @Override
+        public String getTooltip() {
+            return i18n.tr("Pick a point");
         }
 
         @Override
@@ -99,9 +106,9 @@ public class PickCoordinatesPointTool extends AbstractPointTool {
         public boolean isVisible(MapContext vc, ToolManager tm) {
                 return isEnabled(vc, tm);
         }
-        
+
         @Override
         public void update(Observable o, Object o1) {
-                
+
         }
 }

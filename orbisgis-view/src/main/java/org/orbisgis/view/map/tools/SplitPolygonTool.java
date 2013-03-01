@@ -46,6 +46,9 @@ import org.orbisgis.view.map.tool.TransitionException;
 
 import javax.swing.*;
 
+/**
+ * Draw a line to convert a polygon into a multi polygon.
+ */
 public class SplitPolygonTool extends AbstractLineTool {
 
         GeometryFactory gf = new GeometryFactory();
@@ -75,12 +78,12 @@ public class SplitPolygonTool extends AbstractLineTool {
 
         @Override
         public String getName() {
-                return I18N.tr("Split polygon");
+                return i18n.tr("Split polygon");
         }
 
         @Override
         public String getTooltip() {
-                return I18N.tr("Split a polygon by drawing a line");
+                return i18n.tr("Split a polygon by drawing a line");
         }
 
         @Override
@@ -128,7 +131,7 @@ public class SplitPolygonTool extends AbstractLineTool {
                         }
 
                 } catch (DriverException e) {
-                        throw new TransitionException(I18N.tr("Cannot split the polygon"), e);
+                        throw new TransitionException(i18n.tr("Cannot split the polygon"), e);
                 }
         }
 }

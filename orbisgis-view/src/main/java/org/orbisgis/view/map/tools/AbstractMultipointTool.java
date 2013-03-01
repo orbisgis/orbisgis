@@ -30,6 +30,7 @@ package org.orbisgis.view.map.tools;
 
 import java.awt.Graphics;
 import java.util.ArrayList;
+import java.util.List;
 
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.DrawingException;
@@ -42,10 +43,13 @@ import com.vividsolutions.jts.geom.Coordinate;
 import com.vividsolutions.jts.geom.Geometry;
 import com.vividsolutions.jts.geom.MultiPoint;
 
+/**
+ * Multi points common methods
+ */
 public abstract class AbstractMultipointTool extends Multipoint implements
 		InsertionTool {
 
-	private ArrayList<Coordinate> point = new ArrayList<Coordinate>();
+	private List<Coordinate> point = new ArrayList<Coordinate>();
 
 	@Override
 	public void transitionTo_Standby(MapContext vc, ToolManager tm)
@@ -73,7 +77,7 @@ public abstract class AbstractMultipointTool extends Multipoint implements
 			throws FinishedAutomatonException, TransitionException {
 		point = ToolUtilities.removeDuplicated(point);
 		MultiPoint g = ToolManager.toolsGeometryFactory.createMultiPoint(point
-				.toArray(new Coordinate[0]));
+                .toArray(new Coordinate[point.size()]));
 		multipointDone(g, vc, tm);
 
 		point = new ArrayList<Coordinate>();
@@ -98,7 +102,7 @@ public abstract class AbstractMultipointTool extends Multipoint implements
 	public void drawIn_Point(Graphics g, MapContext vc, ToolManager tm)
 			throws DrawingException {
 		Geometry geom = ToolManager.toolsGeometryFactory.createMultiPoint(point
-				.toArray(new Coordinate[0]));
+                .toArray(new Coordinate[point.size()]));
 		tm.addGeomToDraw(geom);
 	}
 

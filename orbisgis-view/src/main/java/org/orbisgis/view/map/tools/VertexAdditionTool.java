@@ -50,6 +50,9 @@ import org.orbisgis.view.map.tools.generated.VertexAddition;
 
 import javax.swing.*;
 
+/**
+ * Insert a vertex into a linestring
+ */
 public class VertexAdditionTool extends VertexAddition {
 
         @Override
@@ -134,7 +137,7 @@ public class VertexAdditionTool extends VertexAddition {
 
         @Override
         public String getName() {
-                return I18N.tr("Add a new vertex");
+                return i18n.tr("Add a new vertex");
         }
         @Override
         public ImageIcon getImageIcon() {

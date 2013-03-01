@@ -35,6 +35,8 @@ import com.vividsolutions.jts.geom.LinearRing;
 import java.awt.Graphics;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.List;
+
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.map.tool.DrawingException;
 import org.orbisgis.view.map.tool.FinishedAutomatonException;
@@ -48,7 +50,7 @@ public abstract class AbstractPolygonTool extends Polygon implements
     private GeometryFactory gf = new GeometryFactory();
 
 
-    private ArrayList<Coordinate> points = new ArrayList<Coordinate>();
+    private List<Coordinate> points = new ArrayList<Coordinate>();
 
 
     @Override
@@ -71,18 +73,18 @@ public abstract class AbstractPolygonTool extends Polygon implements
         points = ToolUtilities.removeDuplicated(points);
         if (points.size() < 3) {
             throw new TransitionException(
-                    I18N.tr("Polygons must have more than two points"));
+                    i18n.tr("Polygons must have more than two points"));
         }
-        ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points.clone();
+        List<Coordinate> tempPoints = new ArrayList<Coordinate>(points);
         double firstX = points.get(0).x;
         double firstY = points.get(0).y;
         tempPoints.add(newCoordinate(firstX, firstY, vc));
-        Coordinate[] polygonCoordinates = tempPoints.toArray(new Coordinate[0]);
+        Coordinate[] polygonCoordinates = tempPoints.toArray(new Coordinate[tempPoints.size()]);
         com.vividsolutions.jts.geom.Polygon pol = gf.createPolygon(gf.createLinearRing(polygonCoordinates), new LinearRing[0]);
 
         if (!pol.isValid()) {
             throw new TransitionException(
-                    I18N.tr("Invalid polygon"));
+                    i18n.tr("Invalid polygon"));
         }
         polygonDone(pol, vc, tm);
 
@@ -127,30 +129,28 @@ public abstract class AbstractPolygonTool extends Polygon implements
 
             if (!geom.isValid()) {
                 throw new DrawingException(
-                        I18N.tr("Invalid polygon"));
+                        i18n.tr("Invalid polygon"));
             }
         }
     }
 
-
-    @SuppressWarnings("unchecked")//$NON-NLS-1$
     protected Geometry getCurrentPolygon(MapContext vc, ToolManager tm) {
         Geometry geom;
         if (points.size() >= 2) {
-            ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points.clone();
+            List<Coordinate> tempPoints = new ArrayList<Coordinate>(points);
             Point2D current = tm.getLastRealMousePosition();
             tempPoints.add(newCoordinate(current.getX(), current.getY(), vc));
             tempPoints.add(newCoordinate(tempPoints.get(0).x,
                                          tempPoints.get(0).y, vc));
-            geom = gf.createPolygon(gf.createLinearRing(tempPoints.toArray(new Coordinate[0])), new LinearRing[0]);
+            geom = gf.createPolygon(gf.createLinearRing(tempPoints.toArray(new Coordinate[tempPoints.size()])), new LinearRing[0]);
 
         } else if (points.size() >= 1) {
-            ArrayList<Coordinate> tempPoints = (ArrayList<Coordinate>) points.clone();
+            List<Coordinate> tempPoints = new ArrayList<Coordinate>(points);
             Point2D current = tm.getLastRealMousePosition();
             tempPoints.add(newCoordinate(current.getX(), current.getY(), vc));
             tempPoints.add(newCoordinate(tempPoints.get(0).x,
                                          tempPoints.get(0).y, vc));
-            geom = gf.createLineString(tempPoints.toArray(new Coordinate[0]));
+            geom = gf.createLineString(tempPoints.toArray(new Coordinate[tempPoints.size()]));
 
         } else {
             geom = null;
