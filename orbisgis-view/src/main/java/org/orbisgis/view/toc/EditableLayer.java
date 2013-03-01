@@ -33,14 +33,14 @@ import java.beans.PropertyChangeListener;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.ProgressMonitor;
-import org.orbisgis.view.edition.EditableElement;
+import org.orbisgis.view.edition.AbstractEditableElement;
 import org.orbisgis.view.edition.EditableElementException;
 import org.orbisgis.view.map.MapElement;
 
 /**
  * This editable correspond to a Layer on the {@link Toc}.
  */
-public class EditableLayer extends EditableElement {
+public class EditableLayer extends AbstractEditableElement {
 
 	public static final String EDITABLE_LAYER_TYPE = "EditableLayer";
 

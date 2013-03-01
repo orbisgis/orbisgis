@@ -54,6 +54,7 @@ public class ActionTools {
         // if set, the action will be inserted first instead of last (default)
         public static final String INSERT_FIRST = "insertFirst";
         // Using logical group on actions will automatically create JSeparator between such groups
+        // Actions with the same logical group are created on the same toolbar also
         public static final String LOGICAL_GROUP = "logicalGroup";
         /** If set, other actions with the same actionGroup will be unSet if this action is set active.
          * ButtonGroup will be created by ActionCommands.

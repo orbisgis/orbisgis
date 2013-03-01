@@ -44,7 +44,6 @@ import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.core.layerModel.mapcatalog.RemoteMapContext;
 import org.orbisgis.core.layerModel.mapcatalog.Workspace;
-import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.fstree.AbstractTreeNodeContainer;
 import org.orbisgis.view.components.fstree.DropDestinationTreeNode;
@@ -54,6 +53,7 @@ import org.orbisgis.view.map.MapElement;
 import org.orbisgis.view.map.TransferableMap;
 import org.orbisgis.view.map.mapsManager.jobs.DownloadRemoteMapContext;
 import org.orbisgis.view.map.mapsManager.jobs.UploadMapContext;
+import org.orbisgis.view.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

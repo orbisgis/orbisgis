@@ -28,7 +28,10 @@
  */
 package org.orbisgis.view.docking;
 
-import bibliothek.gui.dock.common.MultipleCDockableLayout;
+import org.orbisgis.view.util.XElement;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 /**
  * When the application start,
@@ -36,6 +39,32 @@ import bibliothek.gui.dock.common.MultipleCDockableLayout;
  * feed the appropriate DockingPanelFactory to restore the DockingPanel state.
  */
 
-public interface DockingPanelLayout extends MultipleCDockableLayout {
-    
+public interface DockingPanelLayout {
+        /**
+         * Writes the content of this layout into <code>out</code>.
+         * @param out the stream to write into
+         * @throws java.io.IOException if an I/O-error occurs
+         */
+        public void writeStream( DataOutputStream out ) throws IOException;
+
+        /**
+         * Reads the content of this layout from <code>out</code>. All
+         * properties should be set to their default value or to the value read
+         * from the stream.
+         * @param in the stream to read
+         * @throws IOException if an I/O-error occurs
+         */
+        public void readStream( DataInputStream in ) throws IOException;
+
+        /**
+         * Writes the content of this layout into <code>element</code>.
+         * @param element the xml element into which this method can write,
+         * the attributes of <code>element</code> should not be changed
+         */
+        public void writeXML( XElement element );
+
+        /**
+         * Initialise this instance with the
+         */
+        public void readXML( XElement element );
 }

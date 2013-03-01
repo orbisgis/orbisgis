@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.map;
 
-import bibliothek.util.xml.XElement;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -37,6 +36,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.orbisgis.core.Services;
 import org.orbisgis.view.docking.DockingPanelLayout;
+import org.orbisgis.view.util.XElement;
 import org.orbisgis.view.workspace.ViewWorkspace;
 
 /**
@@ -122,11 +122,10 @@ public class MapEditorPersistence implements DockingPanelLayout, Serializable {
         public void writeXML(XElement element) {
                 element.addLong("serialVersionUID", serialVersionUID);
                 element.addString(PROP_DEFAULTMAPCONTEXT, defaultMapContext);
-                XElement urlList = new XElement(URL_LIST_NODE);                
+                XElement urlList = element.addElement(URL_LIST_NODE);
                 for(String mcUrl : mapCatalogUrlList) {
                         urlList.addElement(URL_NODE).addString(URL_NODE_PROPERTY, mcUrl);
                 }
-                element.addElement(urlList);
         }
 
         @Override

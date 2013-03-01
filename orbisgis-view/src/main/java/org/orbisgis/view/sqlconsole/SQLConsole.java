@@ -28,9 +28,8 @@
  */
 package org.orbisgis.view.sqlconsole;
 
-import javax.swing.JComponent;
+import javax.swing.*;
 
-import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.view.components.actions.ActionCommands;
 import org.orbisgis.view.components.actions.ActionDockingListener;
@@ -107,7 +106,7 @@ public class SQLConsole implements EditorDockable,SQLConsoleEditor {
         }
 
         @Override
-        public RSyntaxTextArea getTextArea() {
+        public JTextArea getTextArea() {
             return sqlPanel.getScriptPanel();
         }
 }

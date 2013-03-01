@@ -74,6 +74,11 @@
         </properties>
         <dependencies>
                 <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>orbisgis-view-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
                         <groupId>com.fifesoft</groupId>
                         <artifactId>autocomplete</artifactId>
                         <version>2.0.5.1</version>
@@ -84,14 +89,9 @@
                         <version>2.0.5.1</version>
                 </dependency>
                 <dependency>
-                        <groupId>org.dockingframes</groupId>
-                        <artifactId>docking-frames-core</artifactId>
-                        <version>1.1.1-SNAPSHOT</version>
-                </dependency>
-                <dependency>
-                        <groupId>org.dockingframes</groupId>
-                        <artifactId>docking-frames-common</artifactId>
-                        <version>1.1.1-SNAPSHOT</version>
+                    <groupId>org.dockingframes</groupId>
+                    <artifactId>docking-frames-ext-toolbar-common</artifactId>
+                    <version>1.1.2-SNAPSHOT</version>
                 </dependency>
                 <dependency>
                         <groupId>junit</groupId>
