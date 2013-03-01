@@ -114,13 +114,7 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
 
         /**
          * Retrieve a spinner with the wanted listener.
-         * @param min
-         *      The minimum value authorized in this spinner.
-         * @param max
-         *      The maximum value authorized in this spinner.
-         * @param inc
-         *      The value that will be added (or substracted) when using a
-         *      button of the spinner.
+         * @param cps The stroke that will be configured with the spinner.
          * @return
          *      The wanted {@code JNumericSpinner}.
          */
@@ -156,7 +150,7 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
 
         /**
          * Get a {@code TextField} instance linked to the given parameter.
-         * @param s
+         * @param cps
          *      The parameter we want to configure with our panel
          * @return
          *      A {@code JTextField} embedded in a {@code JPanel}.
@@ -261,7 +255,7 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
 
         /**
          * ComboBox to configure the unit of measure used to draw th stroke.
-         * @param line
+         * @param input
          * @return
          */
         public JComboBox getLineUomCombo(StrokeUom input){
@@ -290,7 +284,7 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
         }
 
         /**
-         * Initialiaze a {@code JComboBo} whose values are set according to the
+         * Initialize a {@code JComboBo} whose values are set according to the
          * numeric fields of {@code ds}.
          * @param ds
          * @return
