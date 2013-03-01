@@ -38,13 +38,15 @@ import org.orbisgis.legend.thematic.SymbolizerLegend;
 import java.util.*;
 
 /**
+ * This abstract class gathers methods that will be common to instances of unique value classifications and interval
+ * classifications. It presents a mapping between the keys and configurations of the associated classification.
  * @author alexis
  */
 public abstract class MappedLegend<T,U extends SymbolParameters> extends SymbolizerLegend implements Map<T,U> {
 
     /**
-     * Apply the given visitor to all the RecodedLegend that are used in this {@code AbstractRecodedLegend}.
-     * @param rpv The visitor that will be used in each inner {@code RecodedLegend}.
+     * Apply the given visitor to all the Legend that are used in this {@code MappedLegend}.
+     * @param rpv The visitor that will be used in each inner {@code MappedLegend}.
      */
     public abstract void applyGlobalVisitor(ParameterVisitor rpv);
 
@@ -57,7 +59,7 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
         applyGlobalVisitor(fav);
         Set<String> fields = fav.getFields();
         if(fields.size() > 1){
-            throw new IllegalStateException("We won't be able to handle a RecodedLine with two analysis fields.");
+            throw new IllegalStateException("We won't be able to handle a MappedLegend with two analysis fields.");
         } else {
             Iterator<String> it = fields.iterator();
             if(it.hasNext()){
@@ -89,8 +91,8 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
     }
 
     /**
-     * Returns the number of elements contained in this unique value classification.
-     * @return The number of elements contained in this unique value classification.
+     * Returns the number of elements contained in this classification.
+     * @return The number of elements contained in this classification.
      */
     @Override
     public int size(){
@@ -107,7 +109,7 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
     }
 
     /**
-     * Put all the entries found in the given map as entries in this RecodedLine.
+     * Put all the entries found in the given map as entries in this MappedLegend.
      * @param input The input map.
      */
     @Override
@@ -119,21 +121,21 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
     }
 
     /**
-     * Gets a {@code Set} representation of the key-value mapping we have in this {@code AbstractRecodedLegend}.
+     * Gets a {@code Set} representation of the key-value mapping we have in this {@code MappedLegend}.
      * @return The mapping in a set of {@code Map.Entry}.
      */
     public Set<Map.Entry<T, U>> entrySet(){
         Set<T> keys = keySet();
         HashSet<Map.Entry<T,U>> out = new HashSet<Map.Entry<T,U>>();
         for(T s : keys){
-            Map.Entry<T, U> ent = new RecodeMapEntry(s, get(s));
+            Map.Entry<T, U> ent = new MappedLegendEntry(s, get(s));
             out.add(ent);
         }
         return out;
     }
 
     /**
-     * Removes all the entries in this unique value classification.
+     * Removes all the entries in this classification.
      */
     public void clear() {
         Set<T> keys = keySet();
@@ -143,7 +145,7 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
     }
 
     /**
-     * Checks if {@code lp} is a value contained in this {@code AbstractRecodedLegend}
+     * Checks if {@code lp} is a value contained in this {@code MappedLegend}
      * @param lp    The value we search
      * @return {@code true} if we have a mapping to {@code lp}.
      */
@@ -153,7 +155,7 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
     }
 
     /**
-     * Checks whether s is a key of this unique value mapping.
+     * Checks whether s is a key of this mapping.
      * @param s The key we search
      * @return true if we have a mapping with s as a key.
      * @throws ClassCastException if the key is of an inappropriate type for this map
@@ -188,12 +190,12 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
     /**
      * MapEntry dedicated to MappedLegend instances.
      */
-    protected class RecodeMapEntry implements Map.Entry<T, U>{
+    protected class MappedLegendEntry implements Map.Entry<T, U>{
 
         private U lp;
         private final T s;
 
-        public RecodeMapEntry(T s, U lp){
+        public MappedLegendEntry(T s, U lp){
             this.s = s;
             this.lp = lp;
         }

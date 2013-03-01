@@ -28,17 +28,12 @@
  */
 package org.orbisgis.legend.thematic.recode;
 
-import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.structure.parameter.ParameterVisitor;
-import org.orbisgis.legend.structure.recode.*;
+import org.orbisgis.legend.structure.recode.RecodedLegend;
+import org.orbisgis.legend.structure.recode.RecodedLegendStructure;
+import org.orbisgis.legend.structure.recode.RecodedParameterVisitor;
 import org.orbisgis.legend.thematic.SymbolParameters;
-import org.orbisgis.legend.thematic.SymbolizerLegend;
 import org.orbisgis.legend.thematic.map.MappedLegend;
-
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.SortedSet;
 
 /**
  * Common base for all the legends describing unique value analysis. It provides useful method to globally manage
