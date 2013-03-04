@@ -36,11 +36,8 @@ import javax.swing.SwingUtilities;
 import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.core.workspace.CoreWorkspace;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.view.CoreBaseTest;
 import org.orbisgis.view.docking.DockingManagerImpl;
 import org.orbisgis.view.docking.DummyViewPanel;
 import org.orbisgis.view.geocatalog.Catalog;
@@ -51,29 +48,8 @@ import org.orbisgis.view.main.geocatalog.filters.UnitTestFilterFactory;
 /**
  * Unit Tests of org.orbisgis.view.main.Core.
  */
-public class CoreTest {
-    private static Core instance;
-    public CoreTest() {
-        
-    }   
-
-    /**
-     * Test of startup method, of class Core.
-     * @throws InterruptedException
-     * @throws InvocationTargetException  
-     */
-    @BeforeClass
-    public static void setUp() throws Exception {
-        System.out.println("startup");
-        if(!GraphicsEnvironment.isHeadless()) {
-            CoreWorkspace coreWorkspace = new CoreWorkspace();
-            coreWorkspace.setWorkspaceFolder("target/workspace/");
-            coreWorkspace.setApplicationFolder("target/app_folder/");
-            instance = new Core(coreWorkspace,true,new NullProgressMonitor());
-            instance.startup(new NullProgressMonitor());
-            SwingUtilities.invokeAndWait(new DummyThread());
-        }
-    }
+public class CoreTest extends  CoreBaseTest{
+     
     
     
     /**
@@ -125,7 +101,7 @@ public class CoreTest {
         String nameoftable = gdmsSourceManager.getUniqueName("unit_test_table");
         gdmsSourceManager.register(nameoftable, testDataSource);
         //Wait
-        SwingUtilities.invokeAndWait(new DummyThread());
+        SwingUtilities.invokeAndWait(new org.orbisgis.view.CoreBaseTest.DummyThread());
         //Test if the GeoCatalog has successfully listen to the event
         org.junit.Assert.assertTrue(nbsource==geoCatalog.getSourceList().getModel().getSize()-1);
         //Remove the source
@@ -137,14 +113,7 @@ public class CoreTest {
         //Set back the filters
         UImodel.setFilters(filters);
     }
-   /**
-    * This runnable is just to wait the execution of other runnables
-    */
-    private static class DummyThread implements Runnable {
-        @Override
-        public void run(){
-        }
-    }
+   
     /**
      * Test propagation of docking parameters modifications
      */
@@ -170,16 +139,5 @@ public class CoreTest {
         //Test if the new title is shown on the DockingFrames
         org.junit.Assert.assertTrue(dockedDummy.intern().getTitleText().equals(newTitle));
     }
-    /**
-     * Test of shutdown method, of class Core.
-     */
-    @AfterClass
-    public static void tearDown() throws Exception {
-        if(!GraphicsEnvironment.isHeadless()) {
-            SwingUtilities.invokeAndWait(new DummyThread());
-            System.out.println("dispose");
-            instance.dispose();
-            instance = null;
-        }
-    }
+    
 }

@@ -112,7 +112,8 @@ public final class BshConsolePanel extends JPanel {
                 setLayout(new BorderLayout());
                 add(getCenterPanel(), BorderLayout.CENTER);
                 add(statusMessage, BorderLayout.SOUTH);
-        }
+        }        
+        
 
         /**
          * This class is used to load all bsh scripts and register them without
@@ -128,7 +129,7 @@ public final class BshConsolePanel extends JPanel {
                                 //Load all bsh files from the ressource system folder
                                 //and register them
                                 StringBuilder sb = new StringBuilder("importCommands(");
-                                sb.append("\"org/orbisgis/view/beanshell/system/\"");
+                                sb.append("\"/org/orbisgis/view/beanshell/system\"");
                                 sb.append(")");
                                 interpreter.eval(sb.toString());
                                 //The user can specify an init file in its workspace folder
@@ -142,7 +143,7 @@ public final class BshConsolePanel extends JPanel {
                                         interpreter.source(bshInitFile.getAbsolutePath());
                                 } else {
                                         copyScripts(ws.getWorkspaceFolder(), "init.bsh");
-                                        copyScripts(ws.getWorkspaceFolder(), "user_demo.bsh");
+                                        copyScripts(ws.getWorkspaceFolder(), "layerCount.bsh");
                                         interpreter.source(bshInitFile.getAbsolutePath());
                                 }
 
