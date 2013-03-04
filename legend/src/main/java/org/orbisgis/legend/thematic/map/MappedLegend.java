@@ -54,7 +54,7 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
      * Gets the analysis field.
      * @return The name of the analysis field.
      */
-    public String getAnalysisField(){
+    public String getLookupFieldName(){
         FieldAggregatorVisitor fav = new FieldAggregatorVisitor();
         applyGlobalVisitor(fav);
         Set<String> fields = fav.getFields();

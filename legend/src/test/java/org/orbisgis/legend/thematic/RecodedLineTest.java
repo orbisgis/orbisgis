@@ -194,7 +194,7 @@ public class RecodedLineTest extends AnalyzerTest {
     @Test
     public void testGetAnalysisField() throws Exception {
         RecodedLine rl = getRecodedLine();
-        assertTrue(rl.getAnalysisField().equals("PREC_ALTI"));
+        assertTrue(rl.getLookupFieldName().equals("PREC_ALTI"));
     }
 
     @Test

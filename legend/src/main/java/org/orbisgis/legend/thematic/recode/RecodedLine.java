@@ -75,7 +75,7 @@ public class RecodedLine extends AbstractRecodedLegend<LineParameters> implement
                 ps=new RecodedPenStroke((PenStroke)p);
                 FieldAggregatorVisitor fav = new FieldAggregatorVisitor();
                 applyGlobalVisitor(fav);
-                String f = getAnalysisField();
+                String f = getLookupFieldName();
                 if(!f.isEmpty()){
                     SetFieldVisitor sfv = new SetFieldVisitor(f);
                     applyGlobalVisitor(sfv);
