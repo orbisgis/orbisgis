@@ -209,4 +209,26 @@ public class RecodedLine extends AbstractRecodedLegend<LineParameters> implement
         public List<RecodedLegend> getRecodedLegends() {
             return ps.getRecodedLegends();
         }
+
+        /**
+         * Gets the configuration used for the line style used to draw features we can't get a value for in the map.
+         * @return
+         */
+        public LineParameters getFallbackParameters(){
+            return new LineParameters(getLineColor().getFallbackValue(),
+                        getLineOpacity().getFallbackValue(),
+                        getLineWidth().getFallbackValue(),
+                        getLineDash().getFallbackValue());
+        }
+
+        /**
+         * Sets the configuration used for the line style used to draw features we can't get a value for in the map.
+         * @param lps The line configuration for orphan features.
+         */
+        public void setFallbackParameters(LineParameters lps){
+            getLineColor().setFallbackValue(lps.getLineColor());
+            getLineOpacity().setFallbackValue(lps.getLineOpacity());
+            getLineWidth().setFallbackValue(lps.getLineWidth());
+            getLineDash().setFallbackValue(lps.getLineDash());
+        }
 }

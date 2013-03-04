@@ -115,6 +115,15 @@ class RecodedReal extends AbstractAttributeLegend with RecodedLegend with Numeri
     case c : RealLiteral => c.getValue(null)
     case a : Recode2Real=> a.getFallbackValue().getValue(null)
   }
+
+  /**
+   * Sets the value that is used when no match is found for a given parameter.
+   * @param d
+   */
+  def setFallbackValue(d : Double) = parameter match {
+    case cl : RealLiteral => cl.setValue(d)
+    case rc : Recode2Real => rc.setFallbackValue(new RealLiteral(d))
+  }
   
   /**
    * Gets the ith key of the inner {@code Recode}.

@@ -281,6 +281,21 @@ public class RecodedLineTest extends AnalyzerTest {
 
     }
 
+    @Test
+    public void testGetFallback() throws Exception {
+        RecodedLine rl = getRecodedLine();
+        LineParameters lp = rl.getFallbackParameters();
+        assertTrue(lp.equals(new LineParameters(new Color(51, 85, 102),1.0,.5,"")));
+    }
+
+    @Test
+    public void testSetFallback() throws Exception {
+        RecodedLine rl = getRecodedLine();
+        rl.setFallbackParameters(new LineParameters(new Color(55, 73, 112),0.6,2.5,"2"));
+        LineParameters lp = rl.getFallbackParameters();
+        assertTrue(lp.equals(new LineParameters(new Color(55, 73, 112),0.6,2.5,"2")));
+    }
+
     private LineSymbolizer getLineSymbolizer() throws Exception{
         Style s = getStyle(COLOR_RECODE);
         return (LineSymbolizer) s.getRules().get(0).getCompositeSymbolizer().getChildren().get(0);

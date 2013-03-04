@@ -180,6 +180,26 @@ public class ColorAnalyzerTest extends AnalyzerTest{
                 assertTrue(r2d2.getFallbackValue().equals(new Color(0x33,0x55,0x66)));
         }
 
+        @Test
+        public void testColorRecodeFallback() throws Exception{
+                Recode2Color r2 = getRecode2Color();
+                RecodedColor r2d2 = new RecodedColor(r2);
+                assertTrue(r2d2.getFallbackValue().equals(new Color(0x33,0x55,0x66)));
+                r2d2.setFallbackValue(Color.CYAN);
+                assertTrue(r2d2.getFallbackValue().equals(Color.CYAN));
+                assertTrue(r2.getFallbackValue().getColor(null).equals(Color.CYAN));
+        }
+
+        @Test
+        public void testColorRecodeFallbackLiteral() throws Exception {
+                ColorLiteral sl = new ColorLiteral(new Color(0x5,0x5,0x5));
+                RecodedColor rs = new RecodedColor(sl);
+                assertTrue(rs.getFallbackValue().equals(new Color(0x5,0x5,0x5)));
+                rs.setFallbackValue(Color.CYAN);
+                assertTrue(rs.getFallbackValue().equals(Color.CYAN));
+                assertTrue(sl.getColor(null).equals(Color.CYAN));
+        }
+
         private Recode2Color getRecode2Color() throws Exception {
                 //We retrieve a Recode from an external file...
                 Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();

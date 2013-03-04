@@ -130,6 +130,15 @@ class RecodedColor extends AbstractAttributeLegend with RecodedLegend {
   }
 
   /**
+   * Sets the value that is used when no match is found for a given parameter.
+   * @param c
+   */
+  def setFallbackValue(c : Color) = parameter match {
+    case cl : ColorLiteral => cl.setColor(c)
+    case rc : Recode2Color => rc.setFallbackValue(new ColorLiteral(c))
+  }
+
+  /**
    * Gets the ith key of the inner {@code Recode}.
    * @param i
    * @return

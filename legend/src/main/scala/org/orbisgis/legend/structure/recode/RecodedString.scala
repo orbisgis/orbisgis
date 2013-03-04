@@ -121,6 +121,15 @@ class RecodedString extends AbstractAttributeLegend with RecodedLegend {
   }
 
   /**
+   * Sets the value that is used when no match is found for a given parameter.
+   * @param s
+   */
+  def setFallbackValue(s : String) = parameter match {
+    case cl : StringLiteral => cl.setValue(s)
+    case rc : Recode2String => rc.setFallbackValue(new StringLiteral(s))
+  }
+
+  /**
    * Gets the Double value, if any, associated to {@code key} in the inner {@code
    * Recode}.
    * @param i

@@ -205,6 +205,26 @@ public class RealAnalyzerTest extends AnalyzerTest {
                 assertTrue(r2d2.getFallbackValue() == 0);
         }
 
+        @Test
+        public void testSetFallbackRecode() throws Exception{
+                Recode2Real r2 = getRecode2Real();
+                RecodedReal r2d2 = new RecodedReal(r2);
+                assertTrue(r2d2.getFallbackValue() == 0);
+                r2d2.setFallbackValue(8.0);
+                assertTrue(r2d2.getFallbackValue() - 8 < 0.0001);
+                assertTrue(r2.getFallbackValue().getValue(null) - 8 < 0.0001);
+        }
+
+        @Test
+        public void testSetFallbackRecodeLiteral() throws Exception{
+                RealLiteral sl = new RealLiteral(0.5);
+                RecodedReal rs = new RecodedReal(sl);
+                assertTrue(rs.getFallbackValue() - 0.5 < 0.0001);
+                rs.setFallbackValue(8.0);
+                assertTrue(rs.getFallbackValue() - 8 < 0.0001);
+                assertTrue(sl.getValue(null) - 8 < 0.0001);
+        }
+
         private Recode2Real getRecode2Real() throws Exception {
                 Unmarshaller u = Services.JAXBCONTEXT.createUnmarshaller();
                 JAXBElement<StyleType> ftsElem = (JAXBElement<StyleType>) u.unmarshal(

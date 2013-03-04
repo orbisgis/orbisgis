@@ -98,9 +98,9 @@ class FillAnalyzer extends AbstractLiteralValidator {
   /**
    * @param c The parameter to check
    * @return true if and only if :
-   * <ul><li>c is a Recode without inner other analysis OR</li>
-   * <li>c is a Categorize without inner other analysis OR</li>
-   * <li> c is neither a Recode not a Categorize</li></ul>
+   * <ul><li>s is a Recode without inner other analysis OR</li>
+   * <li>s is a Categorize without inner other analysis OR</li>
+   * <li> s is neither a Recode not a Categorize</li></ul>
    */
   private  def validateParam(c : SeParameter) : Boolean = c match {
     case a : Recode[_,_] => validateRecode(a)
