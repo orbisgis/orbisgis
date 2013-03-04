@@ -98,7 +98,7 @@ public class RecodedLineTest extends AnalyzerTest {
     public void testSetFieldGlobally() throws Exception {
         RecodedLine rl = getRecodedLine();
         String field = "chewbidouah";
-        rl.setAnalysisField(field);
+        rl.setLookupFieldName(field);
         List<RecodedLegend> legs= rl.getRecodedLegends();
         for(RecodedLegend rec : legs){
             assertTrue(rec.field().equals(field));
@@ -265,7 +265,7 @@ public class RecodedLineTest extends AnalyzerTest {
         assertTrue(vals.contains(new LineParameters(new Color(88, 174, 35),1.0,0.5,"")));
         assertTrue(vals.contains(new LineParameters(new Color(204, 0, 153),1.0,0.5,"")));
         assertTrue(vals.contains(new LineParameters(new Color(170, 23, 180),1.0,0.5,"")));
-        assertTrue(vals.contains(new LineParameters(new Color(34, 51, 68),1.0,0.5,"")));
+        assertTrue(vals.contains(new LineParameters(new Color(34, 51, 68), 1.0, 0.5, "")));
         assertFalse(vals.contains(new LineParameters(new Color(34, 51, 68),1.0,0.5,"20")));
     }
 
@@ -276,8 +276,8 @@ public class RecodedLineTest extends AnalyzerTest {
         Iterator<Map.Entry<String, LineParameters>> it = entries.iterator();
         Map.Entry<String, LineParameters> me = it.next();
         String key = me.getKey();
-        me.setValue(new LineParameters(new Color(124,15,64), 2.0,1.4,"2"));
-        assertTrue(rl.get(key).equals(new LineParameters(new Color(124,15,64), 2.0,1.4,"2")));
+        me.setValue(new LineParameters(new Color(124, 15, 64), 2.0, 1.4, "2"));
+        assertTrue(rl.get(key).equals(new LineParameters(new Color(124, 15, 64), 2.0, 1.4, "2")));
 
     }
 

@@ -74,7 +74,7 @@ public abstract class MappedLegend<T,U extends SymbolParameters> extends Symboli
      * Use {@code field} as the field name on which the analysis will be made.
      * @param field The new field name.
      */
-    public void setAnalysisField(String field) {
+    public void setLookupFieldName(String field) {
         SetFieldVisitor sfv = new SetFieldVisitor(field);
         applyGlobalVisitor(sfv);
     }
