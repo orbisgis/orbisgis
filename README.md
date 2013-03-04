@@ -15,3 +15,19 @@ Licenses
 OrbisGIS in under the GPLv3 license. See [Licenses/license-GPL.txt](https://github.com/irstv/orbisgis/blob/master/Licenses/license-GPL.txt) for more information.
 
 
+Quick Build instruction
+------
+
+OrbisGIS uses the Maven build system. 
+
+ * To launch a full build (including tests):
+
+```
+mvn clean install
+```
+ * To run OrbisGIS from Maven:
+
+```
+cd orbisgis-dist\
+mvn exec:exec
+```
