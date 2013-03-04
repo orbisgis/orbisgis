@@ -71,7 +71,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * for unique symbols.
  * @author Alexis Guéganno
  */
-public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel, UIPanel {
+public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements ILegendPanel, UIPanel {
 
         private static final Logger LOGGER = Logger.getLogger("gui."+PnlUniqueSymbolSE.class);
         private static final I18n I18N = I18nFactory.getI18n(PnlUniqueSymbolSE.class);
@@ -281,29 +281,5 @@ public abstract class PnlUniqueSymbolSE extends  JPanel implements ILegendPanel,
          */
         public void updateLUComboBox(int index){
                 ((StrokeUom)getLegend()).setStrokeUom(Uom.fromString(strokeUoms[index].getKey()));
-        }
-
-        /**
-         * Initialize a {@code JComboBo} whose values are set according to the
-         * numeric fields of {@code ds}.
-         * @param ds
-         * @return
-         */
-        public JComboBox getNumericFieldCombo(DataSource ds){
-                JComboBox combo = new JComboBox();
-                if(ds != null){
-                        try {
-                                Metadata md = ds.getMetadata();
-                                int fc = md.getFieldCount();
-                                for (int i = 0; i < fc; i++) {
-                                        if(TypeFactory.isNumerical(md.getFieldType(i).getTypeCode())){
-                                                combo.addItem(md.getFieldName(i));
-                                        }
-                                }
-                        } catch (DriverException ex) {
-                                LOGGER.error(ex);
-                        }
-                }
-                return combo;
         }
 }
