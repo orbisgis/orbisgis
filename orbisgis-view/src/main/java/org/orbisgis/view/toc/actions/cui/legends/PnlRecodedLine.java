@@ -35,6 +35,8 @@ import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
+import org.orbisgis.sif.UIFactory;
+import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -49,6 +51,8 @@ import javax.swing.*;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.beans.EventHandler;
 import java.util.Map;
 import java.util.Set;
@@ -67,6 +71,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel {
     private String id;
     private RecodedLine legend;
     private DataSource ds;
+    private CanvasSE fallbackPreview;
 
     @Override
     public Component getComponent() {
@@ -104,6 +109,25 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel {
     @Override
     public String validateInput() {
         return "";
+    }
+
+    /**
+     * This methods is called by EventHandler when the user clicks on the fall back's preview. It opens an UI that lets
+     * the user edit the parameters of the fall back configuration and that apply it if the user clicks OK.
+     * @param me The MouseEvent that caused the call to this method.
+     */
+    public void onEditFallback(MouseEvent me){
+        LineParameters lps = legend.getFallbackParameters();
+        UniqueSymbolLine usl = new UniqueSymbolLine(lps);
+        PnlUniqueLineSE pls = new PnlUniqueLineSE();
+        pls.setLegend(usl);
+        if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
+            usl = (UniqueSymbolLine) pls.getLegend();
+            LineParameters nlp = usl.getLineParameters();
+            legend.setFallbackParameters(nlp);
+            fallbackPreview.setSymbol(usl.getSymbolizer());
+            fallbackPreview.invalidate();
+        }
     }
 
     /**
@@ -145,9 +169,11 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel {
      * Get a preview for the fallback configuration
      * @return The preview as a CanvasSE.
      */
-    private JPanel getPreview() {
+    private void initPreview() {
         UniqueSymbolLine usl = new UniqueSymbolLine(legend.getFallbackParameters());
-        return new CanvasSE(usl.getSymbolizer());
+        fallbackPreview = new CanvasSE(usl.getSymbolizer());
+        MouseListener l = EventHandler.create(MouseListener.class, this, "onEditFallback", "", "mouseClicked");
+        fallbackPreview.addMouseListener(l);
     }
 
     /**
@@ -158,7 +184,8 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel {
     private JPanel getFallback() {
         JPanel jp = new JPanel();
         jp.add(new JLabel(I18N.tr("Fallback Symbol")));
-        jp.add(getPreview());
+        initPreview();
+        jp.add(fallbackPreview);
         return jp;
     }
 
