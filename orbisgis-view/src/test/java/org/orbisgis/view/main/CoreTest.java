@@ -32,50 +32,58 @@ import bibliothek.gui.dock.common.intern.CDockable;
 import java.awt.GraphicsEnvironment;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.swing.SwingUtilities;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import org.gdms.data.DataSource;
 import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
-import org.orbisgis.core.workspace.CoreWorkspace;
-import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.view.CoreBaseTest;
+import org.orbisgis.view.NewSourceListener;
+import org.orbisgis.view.beanshell.BeanShellFrame;
+import org.orbisgis.view.beanshell.BshConsolePanel;
 import org.orbisgis.view.docking.DockingManagerImpl;
+import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DummyViewPanel;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.geocatalog.SourceListModel;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.main.geocatalog.filters.UnitTestFilterFactory;
-        
-/**
- * Unit Tests of org.orbisgis.view.main.Core.
- */
-public class CoreTest {
-    private static Core instance;
-    public CoreTest() {
-        
-    }   
+import static org.junit.Assert.assertTrue;
 
-    /**
-     * Test of startup method, of class Core.
-     * @throws InterruptedException
-     * @throws InvocationTargetException  
-     */
-    @BeforeClass
-    public static void setUp() throws Exception {
-        System.out.println("startup");
-        if(!GraphicsEnvironment.isHeadless()) {
-            CoreWorkspace coreWorkspace = new CoreWorkspace();
-            coreWorkspace.setWorkspaceFolder("target/workspace/");
-            coreWorkspace.setApplicationFolder("target/app_folder/");
-            instance = new Core(coreWorkspace,true,new NullProgressMonitor());
-            instance.startup(new NullProgressMonitor());
-            SwingUtilities.invokeAndWait(new DummyThread());
+/**
+ * Unit Tests of OrbisGIS View.
+ * In order to reduce the Unit Test time cost, the GUI is open only once.
+ * To do this, all unit test functions that need a GUI instance must be written here.
+ */
+public class CoreTest extends  CoreBaseTest{
+
+    @Test
+    public void beanshellSQLCommand() throws Exception {
+        List<DockingPanel> dockingPanels = instance.getDockManager().getPanels();
+        for (DockingPanel dockingPanel : dockingPanels) {
+            if (dockingPanel instanceof BeanShellFrame) {
+                BeanShellFrame beanShellFrame = (BeanShellFrame) dockingPanel;
+                BshConsolePanel bshConsolePanel = (BshConsolePanel) beanShellFrame.getComponent();
+                bshConsolePanel.getInterpreter().eval("sql(\"CREATE TABLE result as SELECT 'POINT(10 10)'::geometry;\")");
+                //Wait for data source
+                NewSourceListener srcListener =
+                        new NewSourceListener("result",instance.getMainContext().getDataSourceFactory());
+                srcListener.execute();
+                // Read the result
+                DataSource ds = srcListener.get(5, TimeUnit.SECONDS); // Wait for 5 s Max
+                assertTrue(ds != null);
+                ds.open();
+                assertTrue(ds.getGeometry(0).equalsExact(new GeometryFactory().createPoint(new Coordinate(10, 10))));
+                ds.close();
+            }
         }
     }
-    
-    
+
     /**
      * Test adding custom filter factory to the GeoCatalog
      */
@@ -125,7 +133,7 @@ public class CoreTest {
         String nameoftable = gdmsSourceManager.getUniqueName("unit_test_table");
         gdmsSourceManager.register(nameoftable, testDataSource);
         //Wait
-        SwingUtilities.invokeAndWait(new DummyThread());
+        SwingUtilities.invokeAndWait(new org.orbisgis.view.CoreBaseTest.DummyThread());
         //Test if the GeoCatalog has successfully listen to the event
         org.junit.Assert.assertTrue(nbsource==geoCatalog.getSourceList().getModel().getSize()-1);
         //Remove the source
@@ -137,14 +145,7 @@ public class CoreTest {
         //Set back the filters
         UImodel.setFilters(filters);
     }
-   /**
-    * This runnable is just to wait the execution of other runnables
-    */
-    private static class DummyThread implements Runnable {
-        @Override
-        public void run(){
-        }
-    }
+   
     /**
      * Test propagation of docking parameters modifications
      */
@@ -170,16 +171,5 @@ public class CoreTest {
         //Test if the new title is shown on the DockingFrames
         org.junit.Assert.assertTrue(dockedDummy.intern().getTitleText().equals(newTitle));
     }
-    /**
-     * Test of shutdown method, of class Core.
-     */
-    @AfterClass
-    public static void tearDown() throws Exception {
-        if(!GraphicsEnvironment.isHeadless()) {
-            SwingUtilities.invokeAndWait(new DummyThread());
-            System.out.println("dispose");
-            instance.dispose();
-            instance = null;
-        }
-    }
+    
 }
