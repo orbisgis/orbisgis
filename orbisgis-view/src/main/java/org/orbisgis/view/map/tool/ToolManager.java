@@ -450,28 +450,32 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
         }
 
         /**
-         * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#getValues()
+         *
+         * @return
          */
         public double[] getValues() {
                 return values;
         }
 
         /**
-         * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#setValues(double[])
+         *
+         * @param values
          */
         public void setValues(double[] values) {
                 this.values = values;
         }
 
         /**
-         * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#getTolerance()
+         *
+         * @return
          */
         public double getTolerance() {
                 return uiTolerance / mapTransform.getAffineTransform().getScaleX();
         }
 
         /**
-         * @see org.orbisgis.plugins.core.layerModel.persistence.estouro.ui.MapContext#setUITolerance(int)
+         *
+         * @param tolerance
          */
         public void setUITolerance(int tolerance) {
                 UILOGGER.info("setting uiTolerance: " + tolerance);
@@ -762,18 +766,23 @@ public class ToolManager implements MouseListener,MouseWheelListener,MouseMotion
                 //the color of the fill of the mark graphic. Let's go...
                 MarkGraphic mg = (MarkGraphic) pointSymbolizer.getGraphicCollection().getGraphic(0);
                 ((SolidFill)mg.getFill()).setColor(new ColorLiteral(col));
+                ((SolidFill)mg.getFill()).setOpacity(new RealLiteral(.5));
                 ((SolidFill)((PenStroke)mg.getStroke()).getFill()).setColor(new ColorLiteral(col));
+                ((SolidFill)((PenStroke)mg.getStroke()).getFill()).setOpacity(new RealLiteral(.8));
                 //Next, the line symbolizer
                 lineSymbolizer = new LineSymbolizer();
                 PenStroke ps = (PenStroke)lineSymbolizer.getStroke();
                 ((SolidFill)(ps).getFill()).setColor(new ColorLiteral(col));
+                ((SolidFill)(ps).getFill()).setOpacity(new RealLiteral(.8));
                 ps.setWidth(new RealLiteral(0.1));
                 //And finally, the AreaSymbolizer...
                 areaSymbolizer = new AreaSymbolizer();
                 PenStroke psa = (PenStroke)areaSymbolizer.getStroke();
                 ((SolidFill)(psa).getFill()).setColor(new ColorLiteral(col));
                 psa.setWidth(new RealLiteral(0.1));
+                ((SolidFill)(psa).getFill()).setOpacity(new RealLiteral(.8));
                 ((SolidFill)areaSymbolizer.getFill()).setColor(new ColorLiteral(Color.YELLOW));
+                ((SolidFill)areaSymbolizer.getFill()).setOpacity(new RealLiteral(.5));
         }
 
         /**
