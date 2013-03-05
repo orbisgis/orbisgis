@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.table;
 
-import bibliothek.util.xml.XElement;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
@@ -42,6 +41,7 @@ import java.util.Set;
 import org.apache.log4j.Logger;
 import org.orbisgis.core.common.IntegerUnion;
 import org.orbisgis.view.docking.DockingPanelLayout;
+import org.orbisgis.view.util.XElement;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 

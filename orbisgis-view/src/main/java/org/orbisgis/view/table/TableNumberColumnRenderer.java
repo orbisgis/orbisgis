@@ -32,25 +32,21 @@ import java.awt.Component;
 import java.awt.Point;
 import java.text.NumberFormat;
 import java.util.Locale;
-import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JTable;
-import javax.swing.text.DefaultFormatterFactory;
-import javax.swing.text.NumberFormatter;
 
 /**
  * Custom rendering for number columns in the table editor
  * @author Nicolas Fortin
  */
 public class TableNumberColumnRenderer extends TableDefaultColumnRenderer {
-        private JFormattedTextField formatedField = new JFormattedTextField();
+        private NumberFormat decimalFormat;
         
         public TableNumberColumnRenderer(JTable table,Point popupCellAdress) {
                 super(table, Number.class,popupCellAdress);
-                NumberFormat decimalFormat = NumberFormat.getInstance(Locale.getDefault());
+                decimalFormat = NumberFormat.getInstance(Locale.getDefault());
                 decimalFormat.setGroupingUsed(false);
-                DefaultFormatterFactory decimalFormatFactory = new DefaultFormatterFactory(new NumberFormatter(decimalFormat));
-                formatedField.setFormatterFactory(decimalFormatFactory);
+                decimalFormat.setMaximumFractionDigits(16);
         }
         
         @Override
@@ -58,8 +54,7 @@ public class TableNumberColumnRenderer extends TableDefaultColumnRenderer {
                 Component lafComp = super.getTableCellRendererComponent(jtable, o, bln, bln1, i, i1);
                 if(lafComp instanceof JLabel && o!=null) {
                         JLabel lafTF = (JLabel)lafComp;
-                        formatedField.setValue(o);
-                        lafTF.setText(formatedField.getText());                        
+                        lafTF.setText(decimalFormat.format(o));
                 }                
                 return lafComp;
         }

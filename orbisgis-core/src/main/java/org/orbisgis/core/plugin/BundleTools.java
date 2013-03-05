@@ -354,13 +354,13 @@ public class BundleTools {
                 try {
                     parseJar(filePath, packages);
                 } catch (IOException ex) {
-                    LOGGER.debug("Unable to fetch packages in "+filePath.getAbsolutePath(),ex);
+                    LOGGER.debug("Unable to fetch packages in "+filePath.getAbsolutePath());
                 }
             } else if (filePath.isDirectory()) {
                 try {
                     parseDirectory(filePath,filePath, packages);
                 } catch (SecurityException ex) {
-                    LOGGER.debug("Unable to fetch the folder "+filePath.getAbsolutePath(),ex);
+                    LOGGER.debug("Unable to fetch the folder "+filePath.getAbsolutePath());
                 }
             }
         }

@@ -49,8 +49,6 @@ import java.util.Map.Entry;
 public class ToolBarActions {
     // Root actions
     private List<CAction> customActions = new ArrayList<CAction>();
-    //Map with key the hashCode of ButtonGroup and value the corresponding CRadioGroup
-    private Map<Integer,CRadioGroup> radioGroups = new HashMap<Integer,CRadioGroup>();
 
     /**
      *

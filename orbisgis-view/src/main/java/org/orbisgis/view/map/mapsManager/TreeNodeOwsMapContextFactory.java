@@ -37,9 +37,9 @@ import javax.swing.JPopupMenu;
 import javax.swing.tree.MutableTreeNode;
 import org.apache.log4j.Logger;
 import org.orbisgis.sif.UIFactory;
-import org.orbisgis.sif.common.MenuCommonFunctions;
 import org.orbisgis.view.components.fstree.TreeNodeFileFactory;
 import org.orbisgis.view.components.fstree.TreeNodeFolder;
+import org.orbisgis.view.util.MenuCommonFunctions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -98,7 +98,7 @@ public class TreeNodeOwsMapContextFactory implements TreeNodeFileFactory {
                         createEmptyMap.setActionCommand(ACTION_ADD_OWS_MAP);
                         createEmptyMap.setToolTipText(I18N.tr("Create a new OWS Map in this folder"));
                         createEmptyMap.addActionListener(new CreateEmptyMap(folderNode));
-                        MenuCommonFunctions.updateOrInsertMenuItem(menu,createEmptyMap);
+                        MenuCommonFunctions.updateOrInsertMenuItem(menu, createEmptyMap);
                 }
         }
         
