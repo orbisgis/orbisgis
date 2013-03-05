@@ -76,21 +76,23 @@ public class CanvasSE extends JPanel {
         private MapTransform mt;
         private DataSet sample;
         private boolean displayed;
+        public final static int WIDTH = 126;
+        public final static int HEIGHT = 70;
 
         /**
-         * Build this as a JPanel of size 126*70.
+         * Build this as a JPanel of size WIDTH*HEIGHT.
          */
 	public CanvasSE(Symbolizer sym) {
-		super();
-		this.setSize(126, 70);
-		this.setPreferredSize(new Dimension(126, 70));
-		this.setMaximumSize(new Dimension(126, 70));
-                s = sym;
-                gf = new GeometryFactory();
-                geom = getSampleGeometry();
-                mt = new MapTransform();
-                mt.setExtent(new Envelope(0, 126, 0, 70));
-                displayed = true;
+        super();
+        this.setSize(WIDTH, HEIGHT);
+        this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
+        this.setMaximumSize(new Dimension(WIDTH, HEIGHT));
+        s = sym;
+        gf = new GeometryFactory();
+        geom = getSampleGeometry();
+        mt = new MapTransform();
+        mt.setExtent(new Envelope(0, WIDTH, 0, HEIGHT));
+        displayed = true;
 	}
 
 	@Override
@@ -205,7 +207,7 @@ public class CanvasSE extends JPanel {
          */
 	public void setSymbol(Symbolizer sym) {
 		this.s = sym;
-                geom = getSampleGeometry();
+        geom = getSampleGeometry();
 		this.repaint();
 	}
 
