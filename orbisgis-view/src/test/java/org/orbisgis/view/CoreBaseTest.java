@@ -28,12 +28,26 @@
 package org.orbisgis.view;
 
 import java.awt.GraphicsEnvironment;
-import javax.swing.SwingUtilities;
+import java.util.List;
+import javax.swing.*;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import org.gdms.data.DataSource;
+import org.gdms.source.SourceEvent;
+import org.gdms.source.SourceListener;
+import org.gdms.source.SourceRemovalEvent;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.Test;
 import org.orbisgis.core.workspace.CoreWorkspace;
 import org.orbisgis.progress.NullProgressMonitor;
+import org.orbisgis.view.beanshell.BeanShellFrame;
+import org.orbisgis.view.beanshell.BshConsolePanel;
+import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.main.Core;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * This class must be used to run orbisgis core
@@ -47,7 +61,6 @@ public class CoreBaseTest {
          * Test of startup method, of class Core.
          *
          * @throws InterruptedException
-         * @throws InvocationTargetException
          */
         @BeforeClass
         public static void setUp() throws Exception {

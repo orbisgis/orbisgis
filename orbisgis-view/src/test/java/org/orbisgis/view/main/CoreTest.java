@@ -32,26 +32,58 @@ import bibliothek.gui.dock.common.intern.CDockable;
 import java.awt.GraphicsEnvironment;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.swing.SwingUtilities;
+
+import com.vividsolutions.jts.geom.Coordinate;
+import com.vividsolutions.jts.geom.GeometryFactory;
+import org.gdms.data.DataSource;
 import org.gdms.driver.MemoryDriver;
 import org.gdms.driver.memory.MemoryDataSetDriver;
 import org.gdms.source.SourceManager;
 import org.junit.Test;
 import org.orbisgis.view.CoreBaseTest;
+import org.orbisgis.view.NewSourceListener;
+import org.orbisgis.view.beanshell.BeanShellFrame;
+import org.orbisgis.view.beanshell.BshConsolePanel;
 import org.orbisgis.view.docking.DockingManagerImpl;
+import org.orbisgis.view.docking.DockingPanel;
 import org.orbisgis.view.docking.DummyViewPanel;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.orbisgis.view.geocatalog.SourceListModel;
 import org.orbisgis.view.geocatalog.filters.IFilter;
 import org.orbisgis.view.main.geocatalog.filters.UnitTestFilterFactory;
-        
+import static org.junit.Assert.assertTrue;
+
 /**
- * Unit Tests of org.orbisgis.view.main.Core.
+ * Unit Tests of OrbisGIS View.
+ * In order to reduce the Unit Test time cost, the GUI is open only once.
+ * To do this, all unit test functions that need a GUI instance must be written here.
  */
 public class CoreTest extends  CoreBaseTest{
-     
-    
-    
+
+    @Test
+    public void beanshellSQLCommand() throws Exception {
+        List<DockingPanel> dockingPanels = instance.getDockManager().getPanels();
+        for (DockingPanel dockingPanel : dockingPanels) {
+            if (dockingPanel instanceof BeanShellFrame) {
+                BeanShellFrame beanShellFrame = (BeanShellFrame) dockingPanel;
+                BshConsolePanel bshConsolePanel = (BshConsolePanel) beanShellFrame.getComponent();
+                bshConsolePanel.getInterpreter().eval("sql(\"CREATE TABLE result as SELECT 'POINT(10 10)'::geometry;\")");
+                //Wait for data source
+                NewSourceListener srcListener =
+                        new NewSourceListener("result",instance.getMainContext().getDataSourceFactory());
+                srcListener.execute();
+                // Read the result
+                DataSource ds = srcListener.get(5, TimeUnit.SECONDS); // Wait for 5 s Max
+                assertTrue(ds != null);
+                ds.open();
+                assertTrue(ds.getGeometry(0).equalsExact(new GeometryFactory().createPoint(new Coordinate(10, 10))));
+                ds.close();
+            }
+        }
+    }
+
     /**
      * Test adding custom filter factory to the GeoCatalog
      */

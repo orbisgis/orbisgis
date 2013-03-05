@@ -14,8 +14,11 @@ bsh.help.cd = "usage: sql( \"SELECT * FROM mytable;\" )";
 
 
 sql(instruction){
-
-BackgroundManager bm = (BackgroundManager) Services.getService(BackgroundManager.class);
-bm.backgroundOperation(new ExecuteScriptProcess(instruction,MapElement.fetchFirstMapElement().getMapContext()));
-
+    BackgroundManager bm = (BackgroundManager) Services.getService(BackgroundManager.class);
+    MapElement me = MapElement.fetchFirstMapElement();
+    MapContext mc = null;
+    if(me!=null) {
+        mc = me.getMapContext();
+    }
+    bm.backgroundOperation(new ExecuteScriptProcess(instruction,mc));
 }
