@@ -46,10 +46,7 @@ import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.DefaultTableColumnModel;
 import javax.swing.table.TableColumn;
-import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.beans.EventHandler;
@@ -135,7 +132,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel {
     /**
      * Build the panel used to select the classification field.
      *
-     * @return
+     * @return The JPanel where the user will choose the classification field.
      */
     private JPanel getFieldLine() {
         JPanel jp = new JPanel();
@@ -150,14 +147,13 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel {
      */
     private JPanel getPreview() {
         UniqueSymbolLine usl = new UniqueSymbolLine(legend.getFallbackParameters());
-        CanvasSE cse = new CanvasSE(usl.getSymbolizer());
-        return cse;
+        return new CanvasSE(usl.getSymbolizer());
     }
 
     /**
      * Builds the panel used to display and configure the fallback symbol
      *
-     * @return
+     * @return The Panel where the fallback configuration is displayed.
      */
     private JPanel getFallback() {
         JPanel jp = new JPanel();
@@ -166,11 +162,14 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel {
         return jp;
     }
 
+    /**
+     * Build the panel that contains the JTable where the map is displayed.
+     * @return The panel that contains the JTable where the map is displayed.
+     */
     private JPanel getTablePanel() {
         JPanel jp = new JPanel();
         jp.setBorder(BorderFactory.createTitledBorder(I18N.tr("Unique value classification")));
         //we build the table here
-//        TableColumnModel cm = new DefaultTableColumnModel();
         JTable table = new JTable(new TableModelRecodedLine(legend));
         table.setRowHeight(CanvasSE.HEIGHT);
         final int previewWidth = CanvasSE.WIDTH;
@@ -217,7 +216,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel {
     /**
      * Used when the field against which the analysis is made changes.
      *
-     * @param obj
+     * @param obj The new field.
      */
     public void updateField(String obj) {
         legend.setLookupFieldName(obj);
