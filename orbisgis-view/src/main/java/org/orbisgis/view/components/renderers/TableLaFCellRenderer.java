@@ -52,7 +52,7 @@ public abstract class TableLaFCellRenderer implements TableCellRenderer {
         }
         /**
          * Set listener to L&F events
-         * {@link JTable.getDefaultRenderer}
+         * {@link JTable#getDefaultRenderer}
          * @param table Where the listener has to be installed
          * @param type  Default cell renderer for this columnClass 
          */
