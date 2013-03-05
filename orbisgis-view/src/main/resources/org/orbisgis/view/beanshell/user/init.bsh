@@ -7,7 +7,7 @@
 
 //This script is only for demo purpose.
 //Add here a new  script. 
-scripts = new String[]{"user_demo.bsh"};
+scripts = new String[]{"layerCount.bsh"};
 
 for (String name : scripts) {
         source(wsPath+File.separator+name) ;
