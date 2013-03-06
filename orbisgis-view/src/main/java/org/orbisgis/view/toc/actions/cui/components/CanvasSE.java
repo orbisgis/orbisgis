@@ -181,9 +181,9 @@ public class CanvasSE extends JPanel {
                 sb.append("\') as the_geom");
                 Set<Map.Entry<String,Object>> es =input.entrySet();
                 for(Map.Entry<String, Object> ent : es){
-                        sb.append(",");
+                        sb.append(",\'");
                         sb.append(ent.getValue().toString());
-                        sb.append(" as ");
+                        sb.append("\' as ");
                         sb.append(ent.getKey());
                 }
                 sb.append(";");
