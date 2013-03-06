@@ -28,10 +28,7 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends.model;
 
-import org.orbisgis.legend.thematic.LineParameters;
-import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
-import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
@@ -83,6 +80,19 @@ public class TableModelRecodedLine extends AbstractTableModel{
             return getPreviewAt(rowIndex);
         }
         throw new IndexOutOfBoundsException("We did not found a column at index "+columnIndex+" !");
+    }
+
+    /**
+     * Gets the associated unique value.
+     * @return   The associated unique value.
+     */
+    public RecodedLine getRecodedLine(){
+        return recodedLine;
+    }
+
+    @Override
+    public boolean isCellEditable(int rowIndex, int columnIndex){
+        return true;
     }
 
     private String getPreviewAt(int rowIndex) {
