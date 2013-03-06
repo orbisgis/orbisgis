@@ -335,9 +335,11 @@ public final class DockingManagerImpl extends BeanPropertyChangeSupport implemen
                 int count = commonControl.getCDockableCount();
                 for(int i=0; i<count; i++) {
                         CDockable libComponent = commonControl.getCDockable(i);
-                        DockingPanel cPanel = ((CustomPanelHolder)libComponent).getDockingPanel();
-                        if(cPanel.equals(panel)) {
-                                return libComponent;
+                        if(libComponent instanceof CustomPanelHolder) {
+                            DockingPanel cPanel = ((CustomPanelHolder)libComponent).getDockingPanel();
+                            if(cPanel.equals(panel)) {
+                                    return libComponent;
+                            }
                         }
                 }
                 return null;

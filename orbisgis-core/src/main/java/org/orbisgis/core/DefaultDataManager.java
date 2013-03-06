@@ -29,23 +29,41 @@
 package org.orbisgis.core;
 
 import java.io.File;
+import java.net.URI;
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.log4j.Logger;
-import org.gdms.data.*;
+import org.gdms.data.AlreadyClosedException;
+import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
+import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.Source;
+import org.gdms.source.SourceEvent;
+import org.gdms.source.SourceListener;
 import org.gdms.source.SourceManager;
-import org.orbisgis.core.layerModel.*;
+import org.gdms.source.SourceRemovalEvent;
+import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.layerModel.Layer;
+import org.orbisgis.core.layerModel.LayerCollection;
+import org.orbisgis.core.layerModel.LayerException;
+import org.orbisgis.utils.FileUtils;
 
-public class DefaultDataManager implements DataManager {
+public class DefaultDataManager implements DataManager, SourceListener {
 
 	private static final Logger logger = Logger
 			.getLogger(DefaultDataManager.class);
 	private DataSourceFactory dsf;
+    private Map<String,DataSource> createdDataSources = new HashMap<String, DataSource>();
+
 
 	public DefaultDataManager(DataSourceFactory dsf) {
 		this.dsf = dsf;
+        dsf.getSourceManager().addSourceListener(this);
 	}
 
         @Override
@@ -168,4 +186,54 @@ public class DefaultDataManager implements DataManager {
 		}
 	}
 
+    @Override
+    public DataSource getDataSource(String sourceName) throws NoSuchTableException, DataSourceCreationException {
+        DataSource source = createdDataSources.get(sourceName);
+        if(source==null) {
+            source = dsf.getDataSource(sourceName);
+            createdDataSources.put(sourceName, source);
+        }
+        return source;
+    }
+
+    @Override
+    public DataSource getDataSource(URI uri) throws NoSuchTableException, DataSourceCreationException {
+        SourceManager sm = dsf.getSourceManager();
+        try {
+            if (sm.exists(uri)) {
+                return getDataSource(sm.getNameFor(uri));
+            } else {
+                String sourceName = sm.getUniqueName(FileUtils.getNameFromURI(uri));
+                sm.register(sourceName, uri);
+                return getDataSource(sourceName);
+            }
+        } catch (SourceAlreadyExistsException ex) {
+            throw new DataSourceCreationException(ex);
+        }
+    }
+
+    @Override
+    public void sourceAdded(SourceEvent e) {
+        // Create DataSource on demand only
+    }
+
+    @Override
+    public void sourceRemoved(SourceRemovalEvent e) {
+        createdDataSources.remove(e.getName());
+    }
+
+    @Override
+    public void sourceNameChanged(SourceEvent e) {
+        // Update index
+        DataSource source = createdDataSources.get(e.getName());
+        if(source!=null) {
+            createdDataSources.put(e.getNewName(),source);
+            createdDataSources.remove(e.getName());
+        }
+    }
+
+    @Override
+    public void dispose() {
+        dsf.getSourceManager().removeSourceListener(this);
+    }
 }

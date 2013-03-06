@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.Observable;
 import javax.swing.ImageIcon;
 import org.apache.log4j.Logger;
+import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
@@ -121,9 +122,8 @@ public class WatershedTool extends AbstractPointTool {
 				grWatershedFromOutletIndex.save(tempFile);
 
 				// populate the GeoView TOC with a new RasterLayer
-				final ILayer newLayer = dataManager.createLayer(new File(
-						tempFile));
-				vc.getLayerModel().insertLayer(newLayer, 0);
+                DataSource newSource = dataManager.getDataSource(dataManager.getSourceManager().nameAndRegister(new File(tempFile)));
+				vc.getLayerModel().insertLayer(vc.createLayer(newSource), 0);
 			}
 		} catch (IOException e) {
 			UILOGGER.error(i18n.tr("Problem to access the GeoRaster"), //$NON-NLS-1$
@@ -136,7 +136,7 @@ public class WatershedTool extends AbstractPointTool {
 		} catch (DriverLoadException e) {
 			UILOGGER.error(
 					i18n.tr("Cannot create the resulting layer of raster type"), e); //$NON-NLS-1$
-		} catch (DriverException e) {
+		} catch (Exception e) {
 			UILOGGER.error(i18n.tr("Problem to access the GeoRaster"), //$NON-NLS-1$
 					e);
 		}

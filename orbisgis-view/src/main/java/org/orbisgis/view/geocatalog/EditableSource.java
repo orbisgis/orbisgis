@@ -29,11 +29,18 @@
 package org.orbisgis.view.geocatalog;
 
 
+import org.apache.log4j.Logger;
 import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.DataSourceListener;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.edition.EditionEvent;
+import org.gdms.data.edition.EditionListener;
+import org.gdms.data.edition.FieldEditionEvent;
+import org.gdms.data.edition.MetadataEditionListener;
+import org.gdms.data.edition.MultipleEditionEvent;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverLoadException;
 import org.gdms.source.SourceEvent;
@@ -44,6 +51,9 @@ import org.orbisgis.core.Services;
 import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.view.edition.AbstractEditableElement;
 import org.orbisgis.view.edition.EditableElementException;
+import org.xnap.commons.i18n.I18n;
+import org.xnap.commons.i18n.I18nFactory;
+
 
 /**
  * EditableElement that hold a DataSource.
@@ -58,7 +68,14 @@ public class EditableSource extends AbstractEditableElement {
         private boolean editing = false;
 	private DataSource ds;
 	private NameChangeSourceListener listener = new NameChangeSourceListener();
+    private GDMSSourceListener dataSourceListener = new GDMSSourceListener();
+    private final Logger logger = Logger.getLogger(EditableSource.class);
+    private final I18n i18n = I18nFactory.getI18n(EditableSource.class);
 
+    /**
+     * Construct a source from name. A new instance of DataSource will be created.
+     * @param sourceName
+     */
 	public EditableSource(String sourceName) {
                 if(sourceName==null) {
                         throw new IllegalArgumentException("Source name must "
@@ -68,18 +85,34 @@ public class EditableSource extends AbstractEditableElement {
                 setId(sourceName);
 	}
 
-        @Override
+    /**
+     * Construct a source from DataSource instance.
+     * @param ds
+     */
+    public EditableSource(DataSource ds) {
+        this(ds.getName());
+        this.ds = ds;
+    }
+
+    @Override
+    public String toString() {
+        return i18n.tr("Source {0}",sourceName);
+    }
+
+    @Override
 	public void close(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
-		try {
-			ds.close();
-			ds = null;
-                        setOpen(false);
-		} catch (AlreadyClosedException e) {
-			throw new EditableElementException("Cannot close the table", e);
-		} catch (DriverException e) {
-			throw new EditableElementException("Cannot close the table", e);
-		}
+        ds.removeDataSourceListener(dataSourceListener);
+        if(ds.isEditable()) {
+            try {
+                ds.removeEditionListener(dataSourceListener);
+                ds.removeMetadataEditionListener(dataSourceListener);
+            } catch (UnsupportedOperationException ex) {
+                // Ignore
+                logger.debug(ex.getLocalizedMessage(),ex);
+            }
+        }
+        setOpen(false);
 		Services.getService(DataManager.class).getSourceManager()
 				.removeSourceListener(listener);
 	}
@@ -92,24 +125,33 @@ public class EditableSource extends AbstractEditableElement {
         @Override
 	public void open(ProgressMonitor progressMonitor)
 			throws UnsupportedOperationException, EditableElementException {
-		try {
-			DataManager dataManager = Services.getService(DataManager.class);
-			if (ds == null) {
-				DataSourceFactory dsf = dataManager.getDataSourceFactory();
-				ds = dsf.getDataSource(sourceName);
-			}
-			ds.open();
-			dataManager.getSourceManager().addSourceListener(listener);
-                        setOpen(true);
-		} catch (DriverException e) {
-			throw new EditableElementException("Cannot open the source", e);
-		} catch (DriverLoadException e) {
-			throw new EditableElementException("Cannot open the source", e);
-		} catch (NoSuchTableException e) {
-			throw new EditableElementException("Cannot open the source", e);
-		} catch (DataSourceCreationException e) {
-			throw new EditableElementException("Cannot open the source", e);
-		}
+            try {
+                DataManager dataManager = Services.getService(DataManager.class);
+                ds = dataManager.getDataSource(sourceName);
+                if(!ds.isOpen()) {
+                    ds.open();
+                }
+                dataManager.getSourceManager().addSourceListener(listener);
+                ds.addDataSourceListener(dataSourceListener);
+                if(ds.isEditable()) {
+                    try {
+                        ds.addEditionListener(dataSourceListener);
+                        ds.addMetadataEditionListener(dataSourceListener);
+                    } catch (UnsupportedOperationException ex) {
+                        // Ignore
+                        logger.debug(ex.getLocalizedMessage(),ex);
+                    }
+                }
+                setOpen(true);
+            } catch (DriverException e) {
+                throw new EditableElementException("Cannot open the source", e);
+            } catch (DriverLoadException e) {
+                throw new EditableElementException("Cannot open the source", e);
+            } catch (NoSuchTableException e) {
+                throw new EditableElementException("Cannot open the source", e);
+            } catch (DataSourceCreationException e) {
+                throw new EditableElementException("Cannot open the source", e);
+            }
 	}
 
         @Override
@@ -164,7 +206,13 @@ public class EditableSource extends AbstractEditableElement {
 
         @Override
         public void save() throws UnsupportedOperationException, EditableElementException {
-                throw new UnsupportedOperationException("Not supported yet.");
+                if(ds!=null) {
+                    try {
+                        ds.commit();
+                    } catch (Exception ex) {
+                        throw new EditableElementException(i18n.tr("Cannot save the source modifications"),ex);
+                    }
+                }
         }
 
         @Override
@@ -188,4 +236,48 @@ public class EditableSource extends AbstractEditableElement {
 		public void sourceRemoved(SourceRemovalEvent e) {
 		}
 	}
+
+    private class GDMSSourceListener implements EditionListener,
+    MetadataEditionListener, DataSourceListener
+
+    {
+        @Override
+        public void singleModification(EditionEvent e) {
+            setModified(ds.isModified());
+        }
+
+        @Override
+        public void multipleModification(MultipleEditionEvent e) {
+            setModified(ds.isModified());
+        }
+
+        @Override
+        public void fieldAdded(FieldEditionEvent event) {
+            setModified(ds.isModified());
+        }
+
+        @Override
+        public void fieldRemoved(FieldEditionEvent event) {
+            setModified(ds.isModified());
+        }
+
+        @Override
+        public void fieldModified(FieldEditionEvent event) {
+            setModified(ds.isModified());
+        }
+
+        @Override
+        public void open(DataSource ds) {
+        }
+
+        @Override
+        public void cancel(DataSource ds) {
+            setModified(ds.isModified());
+        }
+
+        @Override
+        public void commit(DataSource ds) {
+            setModified(ds.isModified());
+        }
+    }
 }

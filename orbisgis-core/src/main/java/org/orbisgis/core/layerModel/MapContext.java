@@ -110,6 +110,14 @@ public interface MapContext {
          * @throws LayerException The creation of the layer fail
          */
         public ILayer createLayer(DataSource sds) throws LayerException;
+        /**
+         * Return a new layer corresponding to the provided data source
+         * @param layerName Layer name with the default Locale
+         * @param sds Spatial data source
+         * @return A new layer linked with this data source
+         * @throws LayerException The creation of the layer fail
+         */
+        public ILayer createLayer(String layerName, DataSource sds) throws LayerException;
 
         /**
          * Return a new layer group

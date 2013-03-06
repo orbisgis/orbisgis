@@ -29,15 +29,22 @@
 package org.orbisgis.core;
 
 import java.io.File;
+import java.net.URI;
+
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.source.SourceManager;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.LayerException;
 
 public interface DataManager {
-
+    /**
+     * Free DataManager instance resources
+     */
+    void dispose();
 	/**
 	 * Gets the DataSourceFactory of the system
 	 * 
@@ -59,6 +66,24 @@ public interface DataManager {
 	 */
 	IndexManager getIndexManager();
 
+    /**
+     * The method return a unique instance of DataSource for a given source name.
+     * {@link DataSourceFactory#getDataSource(String)} always create a new DataSource instance for each call.
+     * @param sourceName Source name, must exists.
+     * @return DataSource instance
+     * @throws NoSuchTableException if there is no source with that name
+     * @throws DataSourceCreationException if the DataSource could not be created
+     */
+    DataSource getDataSource(String sourceName) throws NoSuchTableException, DataSourceCreationException;
+
+    /**
+     * The method return a unique instance of DataSource for a given source path
+     * @param uri Source file path
+     * @return  DataSource instance
+     * @throws NoSuchTableException if there is no source with that name
+     * @throws DataSourceCreationException if the DataSource could not be created
+     */
+    DataSource getDataSource(URI uri) throws NoSuchTableException, DataSourceCreationException;
 	/**
 	 * Creates a layer on the source which name is equal to the specified name
 	 * 
@@ -66,6 +91,7 @@ public interface DataManager {
 	 * @return
 	 * @throws LayerException
 	 *             if the layer could not be created
+     * @deprecated Use {@link org.orbisgis.core.layerModel.MapContext#createLayer(org.gdms.data.DataSource)}
 	 */
 	ILayer createLayer(String sourceName) throws LayerException;
 
@@ -78,14 +104,13 @@ public interface DataManager {
 	 * @return
 	 * @throws LayerException
 	 *             If the layer cannot be created
+     * @deprecated Use {@link org.orbisgis.core.layerModel.MapContext#createLayer(org.gdms.data.DataSource)}
 	 */
 	ILayer createLayer(DataSource dataSource) throws LayerException;
 
 	/**
 	 * Creates a layer collection with the specified name
-	 * 
-	 * @param string
-	 * @return
+     * @deprecated Use {@link org.orbisgis.core.layerModel.MapContext#createLayer(org.gdms.data.DataSource)}
 	 */
 	ILayer createLayerCollection(String layerName);
 
@@ -98,6 +123,7 @@ public interface DataManager {
 	 * @return
 	 * @throws LayerException
 	 *             If the layer could not be created
+     * @deprecated Use {@link org.orbisgis.core.layerModel.MapContext#createLayer(org.gdms.data.DataSource)}
 	 */
 	ILayer createLayer(String name, File file) throws LayerException;
 
@@ -109,6 +135,7 @@ public interface DataManager {
 	 * @return
 	 * @throws LayerException
 	 *             If the layer could not be created
+     * @deprecated Use {@link org.orbisgis.core.layerModel.MapContext#createLayer(org.gdms.data.DataSource)}
 	 */
 	ILayer createLayer(File file) throws LayerException;
 

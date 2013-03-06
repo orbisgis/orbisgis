@@ -51,6 +51,7 @@ import javax.xml.bind.JAXBElement;
 import net.opengis.se._2_0.core.StyleType;
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
+import org.gdms.data.NoSuchTableException;
 import org.gdms.data.types.Type;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.DataManager;
@@ -906,7 +907,7 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                 for (ILayer layer : layers) {
                         DataSource source = layer.getDataSource();
                         if(source!=null) {
-                                TableEditableElement tableDocument = new TableEditableElement(source.getName());
+                                TableEditableElement tableDocument = new TableEditableElement(source);
                                 editorManager.openEditable(tableDocument);
                         }
                 }
@@ -1269,9 +1270,9 @@ public class Toc extends JPanel implements EditorDockable, TocExt {
                                 } else {
                                         pm.progressTo(100 * i / draggedResources.size());
                                         try {
-                                                ILayer nl = dataManager.createLayer(sourceName);
-                                                dropNode.insertLayer(nl, dropIndex);
-                                        } catch (LayerException e) {
+                                                    ILayer nl = mapContext.createLayer(dataManager.getDataSource(sourceName));
+                                                    dropNode.insertLayer(nl, dropIndex);
+                                        } catch (Exception e) {
                                                 throw new RuntimeException(I18N.tr("Cannot add the layer to the destination"), e);
                                         }
                                 }

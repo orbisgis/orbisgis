@@ -657,6 +657,11 @@ public class MapEditor extends JPanel implements TransformListener, MapEditorExt
         }
 
         @Override
+        public String toString() {
+            return "MapEditor#CursorCoordinateProcessing";
+        }
+
+        @Override
         protected Point2D doInBackground() throws Exception {
             return mapTransform.toMapPoint(mousePosition.x, mousePosition.y);
         }

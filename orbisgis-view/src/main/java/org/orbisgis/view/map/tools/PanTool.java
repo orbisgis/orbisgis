@@ -90,10 +90,11 @@ public class PanTool extends AbstractDragTool {
 
                 // move the envelope
 		Envelope extent = tm.getMapTransform().getExtent();
-		tm.getMapTransform().setExtent(
-				new Envelope(extent.getMinX() + dx, extent.getMaxX() + dx,
-						extent.getMinY() + dy, extent.getMaxY() + dy));
-
+        if(extent!=null) {
+            tm.getMapTransform().setExtent(
+                    new Envelope(extent.getMinX() + dx, extent.getMaxX() + dx,
+                            extent.getMinY() + dy, extent.getMaxY() + dy));
+        }
                 // we're done, this will get us back to StandBy
 		transition(Code.FINISHED);
 	}
