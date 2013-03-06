@@ -53,6 +53,7 @@ import javax.swing.*;
 import javax.swing.event.CellEditorListener;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -68,12 +69,15 @@ import java.util.Set;
  *
  * @author Alexis Guéganno
  */
-public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel {
+public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, ActionListener {
     private static I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
     private String id;
     private RecodedLine legend;
     private DataSource ds;
     private CanvasSE fallbackPreview;
+    private static final String ADD = "add";
+    private static final String REMOVE = "remove";
+    private JTable table;
 
     @Override
     public Component getComponent() {
@@ -202,10 +206,12 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel {
      */
     private JPanel getTablePanel() {
         JPanel jp = new JPanel();
+        BoxLayout bl = new BoxLayout(jp, BoxLayout.Y_AXIS);
+        jp.setLayout(bl);
         jp.setBorder(BorderFactory.createTitledBorder(I18N.tr("Unique value classification")));
         //we build the table here
-        final TableModelRecodedLine model = new TableModelRecodedLine(legend);
-        final JTable table = new JTable(model);
+        TableModelRecodedLine model = new TableModelRecodedLine(legend);
+        table = new JTable(model);
         table.setDefaultEditor(Object.class, null);
         table.setRowHeight(CanvasSE.HEIGHT);
         final int previewWidth = CanvasSE.WIDTH;
@@ -223,11 +229,58 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel {
         keys.setCellEditor(ker);
         JScrollPane jsp = new JScrollPane(table);
         table.setPreferredScrollableViewportSize(new Dimension(400,200));
+        jsp.setAlignmentX((float).5);
         jp.add(jsp, BorderLayout.CENTER);
         table.doLayout();
+        jp.add(getButtonsPanel());
         return jp;
     }
 
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if(e.getActionCommand().equals(ADD)){
+            String key = getNewValue();
+            LineParameters lp = legend.getFallbackParameters();
+            legend.put(key, lp);
+            TableModelRecodedLine model = (TableModelRecodedLine) table.getModel();
+            model.fireTableDataChanged();
+        } else if (e.getActionCommand().equals(REMOVE)){
+
+        }
+    }
+
+    /**
+     * Creates the two buttons add and remove, links them to this through actions and put them in a JPanel.
+     * @return the two buttons in a JPanel.
+     */
+    private JPanel getButtonsPanel(){
+        JPanel jp = new JPanel();
+        JButton jb1 = new JButton(I18N.tr("Add"));
+        jb1.setActionCommand(ADD);
+        jb1.addActionListener(this);
+        jp.add(jb1);
+        jp.setAlignmentX((float).5);
+        return jp;
+    }
+
+    /**
+     * Get a a key that isn't already in the map.
+     * @return "newValue"+n, where n = Min({n in naturals so that "newValue"+n is not a key of the map}).
+     */
+    private String getNewValue(){
+        final String base = "newValue";
+        String s = base;
+        int n = 0;
+        while(legend.containsKey(s)){
+            s = base + n;
+            n++;
+        }
+        return s;
+    }
+
+    /**
+     * Here are made all the initializations. Look at the specialized methods to have more details.
+     */
     private void initializeLegendFields() {
         this.removeAll();
         JPanel glob = new JPanel();
