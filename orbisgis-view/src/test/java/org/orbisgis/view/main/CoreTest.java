@@ -64,6 +64,7 @@ public class CoreTest extends  CoreBaseTest{
 
     @Test
     public void beanshellSQLCommand() throws Exception {
+        org.junit.Assume.assumeTrue(!GraphicsEnvironment.isHeadless());
         List<DockingPanel> dockingPanels = instance.getDockManager().getPanels();
         for (DockingPanel dockingPanel : dockingPanels) {
             if (dockingPanel instanceof BeanShellFrame) {
