@@ -42,12 +42,15 @@ import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
 import org.orbisgis.view.toc.actions.cui.legend.ILegendPanel;
 import org.orbisgis.view.toc.actions.cui.legend.ISELegendPanel;
+import org.orbisgis.view.toc.actions.cui.legends.model.KeyEditorRecodedLine;
+import org.orbisgis.view.toc.actions.cui.legends.model.ParametersEditorRecodedLine;
 import org.orbisgis.view.toc.actions.cui.legends.model.PreviewCellRenderer;
 import org.orbisgis.view.toc.actions.cui.legends.model.TableModelRecodedLine;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
 
 import javax.swing.*;
+import javax.swing.event.CellEditorListener;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -66,7 +69,6 @@ import java.util.Set;
  * @author Alexis Guéganno
  */
 public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel {
-    private static final Logger LOGGER = Logger.getLogger("gui." + PnlProportionalPointSE.class);
     private static I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
     private String id;
     private RecodedLine legend;
@@ -117,16 +119,21 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel {
      * @param me The MouseEvent that caused the call to this method.
      */
     public void onEditFallback(MouseEvent me){
-        LineParameters lps = legend.getFallbackParameters();
+        legend.setFallbackParameters(editCanvas(fallbackPreview, legend.getFallbackParameters()));
+    }
+
+    private LineParameters editCanvas(CanvasSE cse, LineParameters lps){
         UniqueSymbolLine usl = new UniqueSymbolLine(lps);
         PnlUniqueLineSE pls = new PnlUniqueLineSE();
         pls.setLegend(usl);
         if(UIFactory.showDialog(new UIPanel[]{pls}, true, true)){
             usl = (UniqueSymbolLine) pls.getLegend();
             LineParameters nlp = usl.getLineParameters();
-            legend.setFallbackParameters(nlp);
-            fallbackPreview.setSymbol(usl.getSymbolizer());
-            fallbackPreview.invalidate();
+            cse.setSymbol(usl.getSymbolizer());
+            cse.invalidate();
+            return nlp;
+        } else {
+            return lps;
         }
     }
 
@@ -197,7 +204,9 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel {
         JPanel jp = new JPanel();
         jp.setBorder(BorderFactory.createTitledBorder(I18N.tr("Unique value classification")));
         //we build the table here
-        JTable table = new JTable(new TableModelRecodedLine(legend));
+        final TableModelRecodedLine model = new TableModelRecodedLine(legend);
+        final JTable table = new JTable(model);
+        table.setDefaultEditor(Object.class, null);
         table.setRowHeight(CanvasSE.HEIGHT);
         final int previewWidth = CanvasSE.WIDTH;
         TableColumn previews = table.getColumnModel().getColumn(TableModelRecodedLine.PREVIEW_COLUMN);
@@ -205,9 +214,14 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel {
         previews.setMinWidth(previewWidth);
         previews.setMaxWidth(previewWidth);
         previews.setCellRenderer(new PreviewCellRenderer(table, String.class, legend));
+        previews.setCellEditor(new ParametersEditorRecodedLine());
+        //We put a default editor on the keys.
+        TableColumn keys = table.getColumnModel().getColumn(TableModelRecodedLine.KEY_COLUMN);
+        KeyEditorRecodedLine ker = new KeyEditorRecodedLine();
+        CellEditorListener  cel = EventHandler.create(CellEditorListener.class, model, "fireTableDataChanged", null, "editingStopped");
+        ker.addCellEditorListener(cel);
+        keys.setCellEditor(ker);
         JScrollPane jsp = new JScrollPane(table);
-        jsp.setMaximumSize(new Dimension(200,200));
-        table.setMaximumSize(new Dimension(200,200));
         table.setPreferredScrollableViewportSize(new Dimension(400,200));
         jp.add(jsp, BorderLayout.CENTER);
         table.doLayout();
