@@ -127,9 +127,9 @@ public class RecodedLine extends AbstractRecodedLegend<LineParameters> implement
             Color c = getLineColor().getItemValue(key);
             c = c==null ? getLineColor().getFallbackValue() : c;
             Double op = getLineOpacity().getItemValue(key);
-            op = op==null ? getLineOpacity().getFallbackValue() : op;
+            op = op==null || op.isNaN() ? getLineOpacity().getFallbackValue() : op;
             Double w = getLineWidth().getItemValue(key);
-            w = w==null ? getLineWidth().getFallbackValue() : w;
+            w = w==null || w.isNaN()? getLineWidth().getFallbackValue() : w;
             String d = getLineDash().getItemValue(key);
             d = d==null ? getLineDash().getFallbackValue() : d;
             return new LineParameters(c,op,w,d);

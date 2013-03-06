@@ -101,10 +101,13 @@ class RecodedReal extends AbstractAttributeLegend with RecodedLegend with Numeri
    * @param i
    * @return
    */
-  def getItemValue(i : String) : Double = parameter match {
+  def getItemValue(i : String) : java.lang.Double = parameter match {
     case c : RealLiteral => c.getValue(null)
     case a :Recode2Real =>
-      Option(a.getMapItemValue(i)).map(_.getValue(null) : Double).getOrElse(Double.NaN)
+      a.getMapItemValue(i) match {
+        case d : RealLiteral => d.getValue(null)
+        case _ => java.lang.Double.NaN
+      }
   }
 
   /**
