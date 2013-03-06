@@ -31,34 +31,27 @@ import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.event.ActionListener;
 import java.beans.*;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import javax.swing.*;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableColumnModel;
 import org.apache.log4j.Logger;
-import org.gdms.data.DataSourceFactory;
-import org.gdms.data.values.ValueFactory;
 import org.gdms.driver.DBDriver;
 import org.gdms.driver.DriverException;
 import org.gdms.driver.driverManager.DriverManager;
 import org.gdms.source.SourceManager;
-import org.gdms.sql.engine.Engine;
-import org.gdms.sql.engine.SQLScript;
-import org.gdms.sql.engine.SemanticException;
-import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.events.Listener;
-import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.multiInputPanel.MIPValidation;
 import org.orbisgis.sif.multiInputPanel.MultiInputPanel;
 import org.orbisgis.sif.multiInputPanel.PasswordType;
 import org.orbisgis.sif.multiInputPanel.TextBoxType;
-import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.geocatalog.Catalog;
 import org.xnap.commons.i18n.I18n;
@@ -79,13 +72,16 @@ public class TableExportPanel extends JDialog {
         //private final ConnectionPanel firstPanel;
         private final String[] sourceNames;
         private JScrollPane jScrollPane;
-        private JTable jtableExporter;
+        public JTable jtableExporter;
         private ConnectionToolBar connectionToolBar;
         private final SourceManager sourceManager;
         private JComboBox comboBoxSchemas;
         private String[] schemas = new String[]{"public"};
         private String[] dbParameters = null;
         private String dbpassWord, dbLogin;
+        public JButton saveButton;
+        public JButton closeButton;
+        private DataBaseTableModel dataBaseTableModel;
 
         public TableExportPanel(String[] layerNames, SourceManager sourceManager) {
                 this.sourceNames = layerNames;
@@ -123,7 +119,7 @@ public class TableExportPanel extends JDialog {
                         this.setLayout(new BorderLayout());
                         jtableExporter = new JTable();
                         jtableExporter.setRowHeight(20);
-                        DataBaseTableModel dataBaseTableModel = new DataBaseTableModel(sourceManager, sourceNames);
+                         dataBaseTableModel = new DataBaseTableModel(sourceManager, sourceNames);
                         jtableExporter.setModel(dataBaseTableModel);
                         TableColumnModel columnModel = jtableExporter.getColumnModel();
                         columnModel.getColumn(0).setCellRenderer(new StatusColumnRenderer());
@@ -149,17 +145,17 @@ public class TableExportPanel extends JDialog {
                         jScrollPane = new JScrollPane();
                         jScrollPane.setViewportView(jtableExporter);
                         JPanel buttonPanels = new JPanel();
-                        JButton okButtons = new JButton(I18N.tr("Save"));
-                        okButtons.addActionListener(EventHandler.create(ActionListener.class, this, "onExport"));
-                        okButtons.setBorderPainted(false);
+                        saveButton = new JButton(I18N.tr("Save"));
+                        saveButton.addActionListener(EventHandler.create(ActionListener.class, this, "onExport"));
+                        saveButton.setBorderPainted(false);
+                        saveButton.setEnabled(false);
 
-                        JButton cancelButtons = new JButton(I18N.tr("Cancel"));
-                        cancelButtons.addActionListener(EventHandler.create(ActionListener.class, this, "onCancel"));
-                        cancelButtons.setBorderPainted(false);
-
-
-                        buttonPanels.add(okButtons);
-                        buttonPanels.add(cancelButtons);
+                        closeButton = new JButton(I18N.tr("Close"));
+                        closeButton.addActionListener(EventHandler.create(ActionListener.class, this, "onCancel"));
+                        closeButton.setBorderPainted(false);
+                        
+                        buttonPanels.add(saveButton);
+                        buttonPanels.add(closeButton);
 
                         this.add(connectionToolBar(), BorderLayout.NORTH);
                         this.add(jScrollPane, BorderLayout.CENTER);
@@ -181,20 +177,23 @@ public class TableExportPanel extends JDialog {
                 } else {
                         BackgroundManager backgroundManager = Services.getService(BackgroundManager.class);
                         int count = model.getRowCount();
+                        List<DataBaseRow> rows = new LinkedList<DataBaseRow>();
                         for (int i = 0; i < count; i++) {
                                 DataBaseRow row = model.getRow(i);
-                                if (row.isExport()) {
-                                        Map<String, String> userParams = new HashMap<String, String>();
-                                        userParams.put("vendor", dbParameters[0]);
-                                        userParams.put("host", dbParameters[1]);
-                                        int port = Integer.valueOf(dbParameters[2]);
-                                        userParams.put("dbName", dbParameters[4]);
-                                        userParams.put("userName", dbLogin);
-                                        userParams.put("password", dbpassWord);
-                                        userParams.put("ssl", dbParameters[3]);
-                                        backgroundManager.nonBlockingBackgroundOperation(new ExportToDatabase(row, userParams, port));                                        
+                                if (row.isExport()) {                                        
+                                        rows.add(row);
                                 }
-                        }
+                        } 
+                        
+                        Map<String, String> userParams = new HashMap<String, String>();
+                        userParams.put("vendor", dbParameters[0]);
+                        userParams.put("host", dbParameters[1]);
+                        int port = Integer.valueOf(dbParameters[2]);
+                        userParams.put("dbName", dbParameters[4]);
+                        userParams.put("userName", dbLogin);
+                        userParams.put("password", dbpassWord);
+                        userParams.put("ssl", dbParameters[3]);
+                        backgroundManager.nonBlockingBackgroundOperation(new ExportToDatabase(this, rows, userParams, port));   
                 }
         }
 
@@ -238,107 +237,7 @@ public class TableExportPanel extends JDialog {
                 return schemas;
         }
 
-        /**
-         * A background job to export the source in a database.
-         *
-         */
-        private class ExportToDatabase implements BackgroundJob {
-
-                private final DataBaseRow row;
-                private final Map<String, String> params;
-                private final int port;
-
-                private ExportToDatabase( DataBaseRow row, Map<String, String> params, int port) {
-                        this.row = row;
-                        this.params = params;
-                        this.port = port;
-                }
-
-                @Override
-                public void run(ProgressMonitor pm) {
-                        try {   
-                                loadAndExecuteScript();
-                                
-                                SwingUtilities.invokeLater(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                                row.setExportStatus(DataBaseRow.ExportStatus.OK);                                                
-                                        }
-                                });
-                        } catch (SemanticException ex) {
-                                LOGGER.warn(ex.getLocalizedMessage(), ex);
-                                showOkOnlyDialog(ex.getLocalizedMessage());
-                                row.setExportStatus(DataBaseRow.ExportStatus.ERROR);
-                        } catch (IOException ex) {
-                                LOGGER.warn(ex.getLocalizedMessage(), ex);
-                                showOkOnlyDialog(ex.getLocalizedMessage());
-                                row.setExportStatus(DataBaseRow.ExportStatus.ERROR);
-                        }
-                }
- 
-                private void showOkOnlyDialog(final String message) {
-                        SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                         JOptionPane.showMessageDialog(jScrollPane, message);
-                                }
-                        });                       
-                }
-
-
-                @Override
-                public String getTaskName() {
-                        return I18N.tr("Saving the source in a database.");
-                }
-
-                /**
-                 * A method to load the requiered script and execute it.
-                 */
-                private void loadAndExecuteScript() throws IOException{
-                        DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
-                        //If the table is not spatial run the simple script                       
-                        if (!row.isSpatial()) {
-                                SQLScript s = Engine.loadScript(TableExportPanel.class.getResourceAsStream("export-to-database.bsql"));
-                                s.setDataSourceFactory(dsf);
-                                s.setTableParameter("tableName", row.getInputSourceName());
-                                s.setValueParameter("outputSchema", ValueFactory.createValue(row.getSchema()));
-                                s.setValueParameter("outputTableName", ValueFactory.createValue(row.getOutputSourceName()));
-                                s.setValueParameter("port", ValueFactory.createValue(port));
-                                for (Map.Entry<String, String> e : params.entrySet()) {
-                                        if(e.getKey().equals("ssl")){
-                                              s.setValueParameter(e.getKey(), ValueFactory.createValue(Boolean.valueOf(e.getValue())));  
-                                        }
-                                        else{
-                                        s.setValueParameter(e.getKey(), ValueFactory.createValue(e.getValue()));
-                                        }
-                                }
-                                s.execute();  
-                        }
-                        //If the table is spatial:
-                        //Note : the user must set a correct CRS to the datasource
-                        else{
-                                SQLScript s = Engine.loadScript(TableExportPanel.class.getResourceAsStream("spatial-export-to-database.bsql"));
-                                s.setDataSourceFactory(dsf);
-                                s.setTableParameter("tableName", row.getInputSourceName());
-                                s.setFieldParameter("outputGeomField", row.getOutputSpatialField());
-                                s.setFieldParameter("inputGeomField", row.getInputSpatialField());
-                                s.setValueParameter("outputSchema", ValueFactory.createValue(row.getSchema()));
-                                s.setValueParameter("outputTableName", ValueFactory.createValue(row.getOutputSourceName()));
-                                s.setValueParameter("crs", ValueFactory.createValue("EPSG:" + row.getOutputEpsgCode()));
-                                s.setValueParameter("port", ValueFactory.createValue(port));
-                                for (Map.Entry<String, String> e : params.entrySet()) {
-                                        if(e.getKey().equals("ssl")){
-                                             s.setValueParameter(e.getKey(), ValueFactory.createValue(Boolean.valueOf(e.getValue())));     
-                                        }
-                                        else{
-                                        s.setValueParameter(e.getKey(), ValueFactory.createValue(e.getValue()));
-                                        }
-                                }
-                                s.execute();                        
-                        }                       
-                       
-                }
-        }
+        
         /**
          * The connection or disconnection is done
          */
@@ -417,14 +316,17 @@ public class TableExportPanel extends JDialog {
 
                 if (isCmbEmpty) {
                         DataBaseTableModel model = (DataBaseTableModel) jtableExporter.getModel();
-                        model.setEditable(false);
+                        model.setEditable(false);                        
+                        saveButton.setEnabled(false);
                 } else {
                         if (connectionToolBar.isConnected()) {
                                 DataBaseTableModel model = (DataBaseTableModel) jtableExporter.getModel();
                                 model.setEditable(true);
+                                saveButton.setEnabled(true);
                         } else {
                                 DataBaseTableModel model = (DataBaseTableModel) jtableExporter.getModel();
                                 model.setEditable(false);
+                                saveButton.setEnabled(false);
                         }
                 }
         }
@@ -435,5 +337,13 @@ public class TableExportPanel extends JDialog {
          */
         public void onMessagePanel(String message) {
                 JOptionPane.showMessageDialog(jScrollPane, message);
+        }
+
+        /**
+         * Return the database table model
+         * @return 
+         */
+        public DataBaseTableModel getTableModel() {
+                return dataBaseTableModel;
         }
 }

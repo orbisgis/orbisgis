@@ -57,12 +57,10 @@ public class DataBaseTableModel extends AbstractTableModel {
                 "Input field", "Output field", "Input CRS", "Output EPSG", "Export"};
         private ArrayList<DataBaseRow> data = new ArrayList<DataBaseRow>();
         private boolean isEditable = false;
-        private int epsgCode = -1;
-        private String crsInformation = "No crs";
 
         /**
          * Build a new {@code DataBaseTableModel} using the {@code Source}
-         * instances regeistered in {@code sourceManager} with names {@code
+         * instances registered in {@code sourceManager} with names {@code
          * sourceNames}.
          * @param sourceManager
          * @param sourceNames
@@ -73,6 +71,11 @@ public class DataBaseTableModel extends AbstractTableModel {
 
         }
 
+        /**
+         * Update the status of the all rows to allow cell edition.
+         * This update is done when a connection is openned.
+         * @param isEditable 
+         */
         public void setEditable(boolean isEditable) {
                 this.isEditable = isEditable;
         }
@@ -88,8 +91,7 @@ public class DataBaseTableModel extends AbstractTableModel {
         private void init(SourceManager sourceManager) {
                 try {
                         DataManager dm = Services.getService(DataManager.class);
-                        DataSourceFactory dsf = dm.getDataSourceFactory();
-                        
+                        DataSourceFactory dsf = dm.getDataSourceFactory();                       
                         
                         final int validType = SourceManager.VECTORIAL | SourceManager.RASTER
                                 | SourceManager.STREAM | SourceManager.SYSTEM_TABLE;
@@ -97,7 +99,7 @@ public class DataBaseTableModel extends AbstractTableModel {
                                 int type = sourceManager.getSource(sourceName).getType();
                                 if ((validType & type) == 0) {
                                         DataBaseRow row = new DataBaseRow(sourceName, sourceName, "public", "No geometry",
-                                                "No geometry", epsgCode, epsgCode,  Boolean.TRUE);
+                                                "No geometry", DataBaseRow.DEFAULT_EPSG, DataBaseRow.DEFAULT_EPSG,  Boolean.TRUE);
                                         //We don't need to call setSpatial : isSpatial is false
                                         //by default.
                                         data.add(row);
@@ -105,11 +107,21 @@ public class DataBaseTableModel extends AbstractTableModel {
                                         DataSource ds = dsf.getDataSource(sourceName);
                                         ds.open();
                                         String geomField = ds.getFieldName(ds.getSpatialFieldIndex());
-                                        CoordinateReferenceSystem crs = ds.getCRS();                                       
+                                        CoordinateReferenceSystem crs = ds.getCRS();  
+                                        String crsInformation = DataBaseRow.DEFAULT_CRS;
+                                        int epsgCode = DataBaseRow.DEFAULT_EPSG;
                                         if (crs != null) {
                                                 try {
-                                                        crsInformation = crs.getName().getCode();
-                                                        epsgCode = Integer.valueOf(crsInformation);                                                        
+                                                        String identifiers = crs.getIdentifiers().toString();
+                                                        if (!identifiers.isEmpty() && !identifiers.equals("[]")) {
+                                                                String[] crsCodes = identifiers.substring(1, (identifiers.length()-1)).split(":") ;
+                                                                if(crsCodes[0].equalsIgnoreCase("epsg")){
+                                                                       epsgCode = Integer.valueOf(crsCodes[1]);                                                                        
+                                                                }
+                                                                crsInformation = identifiers;                                                               
+                                                        } else {
+                                                                crsInformation = crs.getName().getCode();
+                                                        }                                                        
                                                 } catch (NumberFormatException e) {
                                                         epsgCode = -1;
                                                 }
@@ -152,11 +164,21 @@ public class DataBaseTableModel extends AbstractTableModel {
                         if (columnIndex == 1 || columnIndex == 4 || columnIndex == 6) {
                                 return false;
                         }
-                        if (!data.get(rowIndex).isSpatial()) {
+                        DataBaseRow row = data.get(rowIndex);
+                        if (!row.isSpatial()) {
                                 if ((columnIndex == 5) || (columnIndex == 7)) {
                                         return false;
                                 }
-                        }                        
+                        }
+                        else{
+                                //Ensure all CRS cases
+                                String rowCRSInformation = row.getCrsInformation();
+                                if(rowCRSInformation.equals(DataBaseRow.DEFAULT_CRS)&& (columnIndex == 7)){
+                                     //The user cannot change the output crs code.
+                                     // The -1 code will be used.
+                                      return false;
+                                }
+                        }
                         return true;
                 }
                 return false;
@@ -167,7 +189,7 @@ public class DataBaseTableModel extends AbstractTableModel {
                 DataBaseRow row = data.get(rowIndex);
                 row.setValue(aValue, columnIndex);
                 data.set(rowIndex, row);
-                fireTableCellUpdated(rowIndex, columnIndex);
+                fireTableRowsUpdated(rowIndex, rowIndex);
         }
 
         @Override

@@ -42,9 +42,10 @@ import org.orbisgis.view.icons.OrbisGISIcon;
  * @author Erwan Bocher
  */
 public class StatusColumnRenderer extends DefaultTableCellRenderer {
-        private static final Icon WAITING_ICON = OrbisGISIcon.getIcon("help");
+        private static final Icon WAITING_ICON = OrbisGISIcon.getIcon("flag_blue");
         private static final Icon OK_ICON = OrbisGISIcon.getIcon("emoticon_smile");
         private static final Icon ERROR_ICON = OrbisGISIcon.getIcon("emoticon_unhappy");
+        private static final Icon UNSELECTED_ICON = OrbisGISIcon.getIcon("flag_red");
        
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
@@ -57,8 +58,10 @@ public class StatusColumnRenderer extends DefaultTableCellRenderer {
                                         return new JLabel(OK_ICON);
                                 case ERROR:
                                         return new JLabel(ERROR_ICON);
-                                 case UNKNOWN:
+                                case WAITING:
                                         return new JLabel(WAITING_ICON);
+                                case UNSELECTED:
+                                        return new JLabel(UNSELECTED_ICON);
                                 default:
                                         return component;
                                 

@@ -40,19 +40,21 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class DataBaseRow {
         
-        public static enum ExportStatus{UNKNOWN, OK, ERROR};
-        private ExportStatus exportStatus = ExportStatus.UNKNOWN;
+        public static enum ExportStatus{WAITING, OK, ERROR, UNSELECTED};
+        private ExportStatus exportStatus = ExportStatus.WAITING;
         private String intputSourceName;
         private String outputSourceName;
         private String schema;
-        private int inputEpsgCode = -1;
+        public static final int DEFAULT_EPSG = -1;
+        private  int inputEpsgCode = -1;
         private int outputEpsgCode = -1;
         private Boolean export;
         private boolean isSpatial = false;
         private String outputSpatialField = "the_geom";
         private String inputSpatialField = "the_geom";
-        private static final I18n I18N = I18nFactory.getI18n(Catalog.class);
-        private String crsInformation ="No crs";
+        private static final I18n I18N = I18nFactory.getI18n(Catalog.class);        
+        public static final String DEFAULT_CRS = "No crs";
+        private String crsInformation  = DEFAULT_CRS;
 
         /**
          * Create a row object that stores all informations to export in a
@@ -192,7 +194,14 @@ public class DataBaseRow {
                                 setSchema(String.valueOf(aValue));
                                 break;
                         case 5:
-                                setOutputSpatialField(String.valueOf(aValue));
+                                //The crs is not null and the epsg code exists but the user wants to set a -1
+                                 //Because of best pratices the user must used the default epsg code
+                                if (!crsInformation.equals(DEFAULT_CRS)&& getInputEpsgCode() != -1) {
+                                        JOptionPane.showMessageDialog(null, I18N.tr("-1 is not allowed .\n"
+                                                + "The input code will be used."));
+                                } else {
+                                        setOutputSpatialField(String.valueOf(aValue));
+                                }
                                 break;
                         case 7:
                                 try {
@@ -205,7 +214,14 @@ public class DataBaseRow {
                                 break;
 
                         case 8:
-                                setExport(Boolean.valueOf(aValue.toString()));
+                                Boolean isExportable = Boolean.valueOf(aValue.toString());
+                                setExport(isExportable);
+                                if(isExportable.booleanValue()){
+                                       setExportStatus(ExportStatus.WAITING);
+                                }
+                                else{
+                                       setExportStatus(ExportStatus.UNSELECTED); 
+                                }
                                 break;
                         default:
                                 break;

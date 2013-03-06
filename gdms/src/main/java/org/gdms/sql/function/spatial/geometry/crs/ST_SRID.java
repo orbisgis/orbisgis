@@ -62,7 +62,7 @@ public class ST_SRID extends AbstractScalarSpatialFunction {
                         return ValueFactory.createNullValue();
                 } else {
                         String identifiers = crs.getIdentifiers().toString();
-                        if(!identifiers.isEmpty()){
+                        if(!identifiers.isEmpty()&&!identifiers.equals("[]")){
                                 return ValueFactory.createValue(identifiers);
                         }
                         return ValueFactory.createValue(crs.getName().getCode());
