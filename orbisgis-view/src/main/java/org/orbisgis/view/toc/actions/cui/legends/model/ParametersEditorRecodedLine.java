@@ -42,17 +42,18 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 /**
+ * This editor is sued to change the values stored in a Map of type RecodedLine. It will let the user handle a
+ * LineParameters instance in a dedicated UI, similar to the one used for unique symbols.
  * @author alexis
  */
 public class ParametersEditorRecodedLine extends AbstractCellEditor implements TableCellEditor, ActionListener {
-    private LineParameters lPValue = new LineParameters(Color.BLACK, 1.0,0.25,"");
     protected static final String EDIT = "edit";
     private JButton button;
     private String val;
     private RecodedLine rl;
 
     /**
-     *
+     * Editors for a LineParameters stored in a JTable. We'll open a dedicated dialog
      */
     public ParametersEditorRecodedLine(){
         button = new JButton();

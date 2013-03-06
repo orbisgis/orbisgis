@@ -219,7 +219,7 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
                 Component source = (Component)e.getSource();
                 if(source.isEnabled()){
                         ColorPicker picker = new ColorPicker();
-                        if (UIFactory.showDialog(picker)) {
+                        if (UIFactory.showDialog(picker,false, true)) {
                                 Color color = picker.getColor();
                                 source.setBackground(color);
                         }
