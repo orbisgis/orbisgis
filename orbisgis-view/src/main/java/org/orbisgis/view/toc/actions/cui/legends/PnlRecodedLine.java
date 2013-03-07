@@ -28,7 +28,6 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
-import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.legend.Legend;
@@ -126,6 +125,12 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         legend.setFallbackParameters(editCanvas(fallbackPreview, legend.getFallbackParameters()));
     }
 
+    /**
+     * Builds a SIF dialog used to edit the given LineParameters.
+     * @param cse
+     * @param lps
+     * @return
+     */
     private LineParameters editCanvas(CanvasSE cse, LineParameters lps){
         UniqueSymbolLine usl = new UniqueSymbolLine(lps);
         PnlUniqueLineSE pls = new PnlUniqueLineSE();
