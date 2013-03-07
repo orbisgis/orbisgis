@@ -245,7 +245,14 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
             TableModelRecodedLine model = (TableModelRecodedLine) table.getModel();
             model.fireTableDataChanged();
         } else if (e.getActionCommand().equals(REMOVE)){
-
+            TableModelRecodedLine model = (TableModelRecodedLine) table.getModel();
+            int col = table.getSelectedColumn();
+            int row = table.getSelectedRow();
+            if(col>=0 && row >= 0){
+                String key = (String)table.getValueAt(row, col);
+                legend.remove(key);
+                model.fireTableDataChanged();
+            }
         }
     }
 
@@ -259,6 +266,12 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         jb1.setActionCommand(ADD);
         jb1.addActionListener(this);
         jp.add(jb1);
+        jp.setAlignmentX((float).5);
+        JButton remove = new JButton(I18N.tr("Remove"));
+        remove.setActionCommand(REMOVE);
+        remove.addActionListener(this);
+        jp.add(jb1);
+        jp.add(remove);
         jp.setAlignmentX((float).5);
         return jp;
     }
