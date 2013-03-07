@@ -36,6 +36,8 @@ import javax.swing.table.TableCellEditor;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.util.EventObject;
 
 /**
  * A cell editor dedicated to the management of keys in a recoded legend. It embeds a simple JTextField that is used
@@ -57,6 +59,15 @@ public class KeyEditorRecodedLine extends AbstractCellEditor implements TableCel
         field.addActionListener(this);
     }
 
+    @Override
+    public boolean isCellEditable(EventObject event){
+        if(event instanceof MouseEvent){
+            MouseEvent me = (MouseEvent) event;
+            return me.getClickCount()>=2;
+        }
+        return false;
+    }
+
 
     @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
@@ -73,6 +84,7 @@ public class KeyEditorRecodedLine extends AbstractCellEditor implements TableCel
 
     @Override
     public void actionPerformed(ActionEvent e) {
+
         if(e.getActionCommand().equals(EDIT)){
             LineParameters lp = rl.get(val);
             rl.remove(val);
