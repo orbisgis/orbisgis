@@ -118,6 +118,15 @@ public class RecodedLineTest extends AnalyzerTest {
     }
 
     @Test
+    public void testGetNotUsedKey() throws Exception {
+        RecodedLine rl = getRecodedLine();
+        assertTrue(rl.getNotUsedKey("").equals("0"));
+        assertTrue(rl.getNotUsedKey(null).equals("0"));
+        assertTrue(rl.getNotUsedKey("ahoi").equals("ahoi"));
+        assertTrue(rl.getNotUsedKey("1").equals("10"));
+    }
+
+    @Test
     public void testGet() throws Exception {
         RecodedLine rl = getRecodedLine();
         LineParameters lp = rl.get("1");

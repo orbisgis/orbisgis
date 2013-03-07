@@ -59,4 +59,21 @@ public abstract class AbstractRecodedLegend<U extends SymbolParameters> extends 
             rl.acceptVisitor(rpv);
         }
     }
+
+    /**
+     * Search in this recoded legend for a key that is not already used, based on the {@code String} given in argument
+     * @param orig The original {@code String}
+     * @return base+n if base is empty or already in use, where n is the smaller positive integer so that base+n is not
+     *         an already used key. base if it is not already a key of this map.
+     */
+    public String getNotUsedKey(String orig){
+        String base = orig == null ? "" : orig;
+        String s = base;
+        int n = 0;
+        while(s.isEmpty() || containsKey(s)){
+            s = base + n;
+            n++;
+        }
+        return s;
+    }
 }
