@@ -238,7 +238,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
     @Override
     public void actionPerformed(ActionEvent e) {
         if(e.getActionCommand().equals(ADD)){
-            String key = getNewValue();
+            String key = legend.getNotUsedKey("newValue");
             LineParameters lp = legend.getFallbackParameters();
             legend.put(key, lp);
             TableModelRecodedLine model = (TableModelRecodedLine) table.getModel();
@@ -273,21 +273,6 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         jp.add(remove);
         jp.setAlignmentX((float).5);
         return jp;
-    }
-
-    /**
-     * Get a a key that isn't already in the map.
-     * @return "newValue"+n, where n = Min({n in naturals so that "newValue"+n is not a key of the map}).
-     */
-    private String getNewValue(){
-        final String base = "newValue";
-        String s = base;
-        int n = 0;
-        while(legend.containsKey(s)){
-            s = base + n;
-            n++;
-        }
-        return s;
     }
 
     /**

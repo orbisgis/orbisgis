@@ -84,11 +84,10 @@ public class KeyEditorRecodedLine extends AbstractCellEditor implements TableCel
 
     @Override
     public void actionPerformed(ActionEvent e) {
-
         if(e.getActionCommand().equals(EDIT)){
             LineParameters lp = rl.get(val);
             rl.remove(val);
-            rl.put(field.getText(), lp);
+            rl.put(rl.getNotUsedKey(field.getText()), lp);
             fireEditingStopped();
         }
     }
