@@ -177,8 +177,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
     }
 
     /**
-     * Get a preview for the fallback configuration
-     * @return The preview as a CanvasSE.
+     * Initializes the preview for the fallback configuration
      */
     private void initPreview() {
         UniqueSymbolLine usl = new UniqueSymbolLine(legend.getFallbackParameters());
