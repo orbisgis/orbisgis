@@ -28,7 +28,14 @@
  */
 package org.orbisgis.view.toc.actions.cui.legends;
 
+import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
+import org.gdms.data.DataSourceCreationException;
+import org.gdms.data.DataSourceFactory;
+import org.gdms.driver.DriverException;
+import org.gdms.sql.engine.ParseException;
+import org.orbisgis.core.DataManager;
+import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
@@ -69,6 +76,7 @@ import java.util.Set;
  * @author Alexis Guéganno
  */
 public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, ActionListener {
+    public final static Logger LOGGER = Logger.getLogger(PnlRecodedLine.class);
     private static I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
     private static final String FALLBACK = "Fallback";
     private static final String COMPUTED = "Computed";
@@ -80,6 +88,9 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
     private static final String REMOVE = "remove";
     private JTable table;
     private JPanel colorConfig;
+    private JComboBox fieldCombo;
+    private JLabel endCol;
+    private JLabel startCol;
 
     @Override
     public Component getComponent() {
@@ -180,7 +191,8 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
     private JPanel getFieldLine() {
         JPanel jp = new JPanel();
         jp.add(new JLabel(I18N.tr("Classification field : ")));
-        jp.add(getFieldComboBox());
+        fieldCombo =getFieldComboBox();
+        jp.add(fieldCombo);
         return jp;
     }
 
@@ -279,7 +291,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         remove.addActionListener(this);
         jp.add(jb1);
         jp.add(remove);
-        jp.setAlignmentX((float).5);
+        jp.setAlignmentX((float) .5);
         return jp;
     }
 
@@ -348,28 +360,132 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         //The start colour
         JPanel start = new JPanel();
         start.add(new JLabel(I18N.tr("Start colour :")));
-        JLabel startCol = getFilledLabel(Color.BLUE);
+        startCol = getFilledLabel(Color.BLUE);
         start.add(startCol);
         start.setAlignmentX((float).5);
         colorConfig.add(start);
         //The end colour
         JPanel end = new JPanel();
         end.add(new JLabel(I18N.tr("End colour :")));
-        JLabel endCol = getFilledLabel(Color.RED);
+        endCol = getFilledLabel(Color.RED);
         end.setAlignmentX((float).5);
         end.add(endCol);
         colorConfig.add(end);
         //We add colorConfig to the global panel
         colorConfig.setAlignmentX((float).5);
         ret.add(colorConfig);
+        //We still need a button to configure all of that
+        JPanel btnPanel = new JPanel();
+        JButton createButton = new JButton(I18N.tr("Create Classification"));
+        btnPanel.add(createButton);
+        btnPanel.setAlignmentX((float).5);
+        ret.add(btnPanel);
         //We still must feed all of that with listeners...
+        //Colours
         ActionListener al1 = EventHandler.create(ActionListener.class, this, "onFromFallback");
         ActionListener al2 = EventHandler.create(ActionListener.class, this, "onComputed");
         fromFallback.addActionListener(al1);
         computed.addActionListener(al2);
+        //Creation
+        ActionListener btn = EventHandler.create(ActionListener.class, this, "onCreateClassification");
+        createButton.addActionListener(btn);
         //We disable the color config by default
         onFromFallback();
         return ret;
+    }
+
+    /**
+     * Called to build a classification from the given data source and field. Makes a SELECT DISTINCT field FROM ds;
+     * and feeds the legend that has been cleared prior to that.
+     */
+    public void onCreateClassification(){
+        DataManager dm = Services.getService(DataManager.class);
+        DataSourceFactory dsf = dm.getDataSourceFactory();
+        try {
+            String fieldName = fieldCombo.getSelectedItem().toString();
+            StringBuilder sb = new StringBuilder("SELECT DISTINCT ");
+            sb.append(fieldName);
+            sb.append(" FROM ");
+            sb.append(ds.getName());
+            sb.append(";");
+            DataSource result = dsf.getDataSourceFromSQL(sb.toString());
+            result.open();
+            if(colorConfig.isEnabled() && result.getRowCount() > 0){
+                createColouredClassification(result);
+            } else {
+                createConstantClassification(result);
+            }
+            result.close();
+            ((TableModelRecodedLine) table.getModel()).fireTableDataChanged();
+        } catch (DataSourceCreationException e) {
+            LOGGER.error("Couldn't create the temporary data source : "+e.getMessage());
+        } catch (DriverException e) {
+            LOGGER.error("IO error while handling the temporary data source : "+e.getMessage());
+        } catch (ParseException e) {
+            LOGGER.error("Couldn't parse the data source creation script: "+e.getMessage());
+        }
+    }
+
+    /**
+     * We take the fallback configuration and copy it for each key.
+     * @param ds
+     */
+    private void createConstantClassification(DataSource ds) {
+        legend.clear();
+        LineParameters lp = legend.getFallbackParameters();
+        try {
+            long rowCount = ds.getRowCount();
+            for(long i=0; i<rowCount; i++){
+                String key =ds.getFieldValue(i, 0).toString();
+                legend.put(key, lp);
+            }
+        } catch (DriverException e) {
+            LOGGER.error("Couldn't read the temporary data source : " + e.getMessage());
+        }
+    }
+
+    /**
+     * We take the fallback configuration and copy it for each key, changing the colour.
+     * @param ds
+     */
+    private void createColouredClassification(DataSource ds) {
+        legend.clear();
+        LineParameters lp = legend.getFallbackParameters();
+        try {
+            long rowCount = ds.getRowCount();
+            Color start = startCol.getBackground();
+            Color end = endCol.getBackground();
+            int redStart = start.getRed();
+            int greenStart = start.getGreen();
+            int blueStart = start.getBlue();
+            int alphaStart = start.getAlpha();
+            int redThreshold;
+            int greenThreshold;
+            int blueThreshold;
+            int alphaThreshold;
+            if(rowCount <= 1){
+                redThreshold = 0;
+                greenThreshold = 0;
+                blueThreshold = 0;
+                alphaThreshold = 0;
+            } else {
+                redThreshold = (int)((redStart-end.getRed())/(rowCount-1));
+                greenThreshold = (int)((greenStart-end.getGreen())/(rowCount-1));
+                blueThreshold = (int)((blueStart-end.getBlue())/(rowCount-1));
+                alphaThreshold = (int)((alphaStart-end.getAlpha())/(rowCount-1));
+            }
+            for(long i=0; i<rowCount; i++){
+                String key =ds.getFieldValue(i, 0).toString();
+                Color newCol = new Color((int)(redStart-redThreshold*i),
+                            (int)(greenStart-i*greenThreshold),
+                            (int)(blueStart-i*blueThreshold),
+                            (int)(alphaStart-i*alphaThreshold));
+                LineParameters value = new LineParameters(newCol, lp.getLineOpacity(), lp.getLineWidth(), lp.getLineDash());
+                legend.put(key, value);
+            }
+        } catch (DriverException e) {
+            LOGGER.error("Couldn't read the temporary data source : "+e.getMessage());
+        }
     }
 
     public void onFromFallback(){
@@ -377,7 +493,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
     }
 
     public void onComputed(){
-        setFieldState(true,colorConfig);
+        setFieldState(true, colorConfig);
     }
 
     /**
