@@ -268,22 +268,6 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 penStrokeMemory = cpsl;
         }
 
-        /**
-         * Recursively enables or disables all the components contained in the
-         * containers of {@code comps}.
-         * @param enable
-         * @param comp
-         */
-        protected void setFieldState(boolean enable, Component comp){
-                comp.setEnabled(enable);
-                if(comp instanceof Container){
-                        Component[] comps = ((Container)comp).getComponents();
-                        for(Component c: comps){
-                                setFieldState(enable, c);
-                        }
-                }
-        }
-
         private void initializeLegendFields() {
                 this.removeAll();
                 JPanel glob = new JPanel();

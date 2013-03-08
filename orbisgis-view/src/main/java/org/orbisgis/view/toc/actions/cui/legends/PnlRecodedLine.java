@@ -70,6 +70,8 @@ import java.util.Set;
  */
 public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, ActionListener {
     private static I18n I18N = I18nFactory.getI18n(PnlRecodedLine.class);
+    private static final String FALLBACK = "Fallback";
+    private static final String COMPUTED = "Computed";
     private String id;
     private RecodedLine legend;
     private DataSource ds;
@@ -77,6 +79,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
     private static final String ADD = "add";
     private static final String REMOVE = "remove";
     private JTable table;
+    private JPanel colorConfig;
 
     @Override
     public Component getComponent() {
@@ -300,13 +303,81 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         gbc.gridy = 1;
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getFallback(), gbc);
-        //Table for the recoded configurations
+        //Classification generator
         gbc = new GridBagConstraints();
         gbc.gridx = 0;
         gbc.gridy = 2;
         gbc.fill = GridBagConstraints.HORIZONTAL;
+        glob.add(getCreateClassificationPanel(), gbc);
+        //Table for the recoded configurations
+        gbc = new GridBagConstraints();
+        gbc.gridx = 0;
+        gbc.gridy = 3;
+        gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getTablePanel(), gbc);
         this.add(glob);
+    }
+
+    private JPanel getCreateClassificationPanel() {
+        JPanel ret = new JPanel();
+        BoxLayout bl = new BoxLayout(ret, BoxLayout.Y_AXIS);
+        ret.setLayout(bl);
+        ret.setBorder(BorderFactory.createTitledBorder(I18N.tr("Generate")));
+        //The button Group
+        JPanel btnPnl = new JPanel();
+        BoxLayout btnLayout = new BoxLayout(btnPnl, BoxLayout.Y_AXIS);
+        btnPnl.setLayout(btnLayout);
+        ButtonGroup bg = new ButtonGroup();
+        JRadioButton fromFallback = new JRadioButton(I18N.tr("Colour from the fallback symbol"));
+        fromFallback.setActionCommand(FALLBACK);
+        JRadioButton computed = new JRadioButton(I18N.tr("Computed colour"));
+        computed.setActionCommand(COMPUTED);
+        bg.add(fromFallback);
+        bg.add(computed);
+        bg.setSelected(fromFallback.getModel(), true);
+        fromFallback.setAlignmentX((float) 0);
+        computed.setAlignmentX((float)0);
+        btnPnl.add(fromFallback);
+        btnPnl.add(computed);
+        btnPnl.setAlignmentX((float).5);
+        ret.add(btnPnl);
+        //We build the panel used to configure the color before creating the classification.
+        colorConfig = new JPanel();
+        BoxLayout classLayout = new BoxLayout(colorConfig, BoxLayout.Y_AXIS);
+        colorConfig.setLayout(classLayout);
+        //The start colour
+        JPanel start = new JPanel();
+        start.add(new JLabel(I18N.tr("Start colour :")));
+        JLabel startCol = getFilledLabel(Color.BLUE);
+        start.add(startCol);
+        start.setAlignmentX((float).5);
+        colorConfig.add(start);
+        //The end colour
+        JPanel end = new JPanel();
+        end.add(new JLabel(I18N.tr("End colour :")));
+        JLabel endCol = getFilledLabel(Color.RED);
+        end.setAlignmentX((float).5);
+        end.add(endCol);
+        colorConfig.add(end);
+        //We add colorConfig to the global panel
+        colorConfig.setAlignmentX((float).5);
+        ret.add(colorConfig);
+        //We still must feed all of that with listeners...
+        ActionListener al1 = EventHandler.create(ActionListener.class, this, "onFromFallback");
+        ActionListener al2 = EventHandler.create(ActionListener.class, this, "onComputed");
+        fromFallback.addActionListener(al1);
+        computed.addActionListener(al2);
+        //We disable the color config by default
+        onFromFallback();
+        return ret;
+    }
+
+    public void onFromFallback(){
+        setFieldState(false,colorConfig);
+    }
+
+    public void onComputed(){
+        setFieldState(true,colorConfig);
     }
 
     /**

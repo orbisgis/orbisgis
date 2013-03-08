@@ -193,38 +193,15 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
          * @return
          */
         public JPanel getColorField(final ConstantSolidFill c){
-                JLabel lblFill = new JLabel();
-                MouseListener ma = EventHandler.create(MouseListener.class,this,"chooseFillColor","","mouseClicked");
-                lblFill.addMouseListener(ma);
+                JLabel lblFill = getFilledLabel(c.getColor());
                 PropertyChangeListener pcl = EventHandler.create(PropertyChangeListener.class,c,"color","newValue");
                 PropertyChangeListener pcl2 = EventHandler.create(PropertyChangeListener.class, preview, "repaint");
                 lblFill.addPropertyChangeListener("background", pcl);
                 lblFill.addPropertyChangeListener("background", pcl2);
-                lblFill.setBackground(c.getColor());
-                lblFill.setBorder(BorderFactory.createLineBorder(Color.black));
-                lblFill.setPreferredSize(new Dimension(40, 20));
-                lblFill.setMaximumSize(new Dimension(40, 20));
-                lblFill.setOpaque(true);
                 JPanel jp = new JPanel();
                 jp.add(lblFill);
                 return jp;
         }
-
-        /**
-         * This method will let the user choose a color that will be set as the
-         * background of the source of the event.
-         * @param e
-         */
-	public void chooseFillColor(MouseEvent e) {
-                Component source = (Component)e.getSource();
-                if(source.isEnabled()){
-                        ColorPicker picker = new ColorPicker();
-                        if (UIFactory.showDialog(picker,false, true)) {
-                                Color color = picker.getColor();
-                                source.setBackground(color);
-                        }
-                }
-	}
 
         @Override
         public String getId(){
