@@ -30,6 +30,8 @@ package org.orbisgis.view.docking;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.beans.VetoableChangeListener;
+import java.beans.VetoableChangeSupport;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -37,6 +39,8 @@ import java.util.List;
 import javax.swing.*;
 
 import org.orbisgis.view.docking.DockingLocation.Location;
+import org.orbisgis.view.util.PropertyHost;
+import org.orbisgis.view.util.VetoablePropertyHost;
 
 
 /**
@@ -51,9 +55,9 @@ import org.orbisgis.view.docking.DockingLocation.Location;
  * Using parameter beans instead of implementing docking frame panels
  * help to extends/update functionality of application without breaking codes
  * 
- * New properties must be linked with the current docking system {@link org.orbisgis.view.docking.internals.OrbisGISView}
+ * New properties must be linked with the current docking system org.orbisgis.view.docking.internals.OrbisGISView
  */
-public class DockingPanelParameters implements Serializable {
+public class DockingPanelParameters implements Serializable, PropertyHost, VetoablePropertyHost {
 
         private static final long serialVersionUID = 12L; /*
          * <! Update this integer while adding properties (1 for each new property)
@@ -64,7 +68,7 @@ public class DockingPanelParameters implements Serializable {
         public static final String PROP_EXTERNALIZABLE = "externalizable";
         public static final String PROP_DOCKINGAREAPARAMETERS = "dockingAreaParameters";
         public static final String PROP_CLOSEABLE = "closeable";
-        public static final String PROP_VISIBLE = "visible";
+        public static final String PROP_VISIBLE = "visible"; // Vetoable
         public static final String PROP_NAME = "name";
         public static final String PROP_TITLE = "title";
         public static final String PROP_TITLEICON = "titleIcon";
@@ -74,7 +78,10 @@ public class DockingPanelParameters implements Serializable {
         public static final String PROP_DOCK_ACTIONS = "dockActions";
         
         // Property Change Support
-        private PropertyChangeSupport propertySupport;
+        private PropertyChangeSupport propertySupport = new PropertyChangeSupport(this);
+        private VetoableChangeSupport vetoableChangeSupport = new VetoableChangeSupport(this);
+
+
         // Private property
         private String title;
         private Icon titleIcon = null;
@@ -141,13 +148,19 @@ public class DockingPanelParameters implements Serializable {
 
         /**
          * Set the value of visible
-         *
          * @param visible new value of visible
+         * @return true if the update has not been vetoed
          */
-        public void setVisible(boolean visible) {
-                boolean oldVisible = this.visible;
-                this.visible = visible;
-                propertySupport.firePropertyChange(PROP_VISIBLE, oldVisible, visible);
+        public boolean setVisible(boolean visible) {
+                try {
+                    vetoableChangeSupport.fireVetoableChange(PROP_VISIBLE,this.visible, visible);
+                    boolean oldVisible = this.visible;
+                    this.visible = visible;
+                    propertySupport.firePropertyChange(PROP_VISIBLE, oldVisible, visible);
+                    return true;
+                } catch (Exception ex) {
+                    return false;
+                }
         }
 
         /**
@@ -318,53 +331,40 @@ public class DockingPanelParameters implements Serializable {
                 propertySupport.firePropertyChange(PROP_TITLE, oldTitle, title);
         }
 
-        /**
-         * Default constructor
-         */
-        public DockingPanelParameters() {
-                propertySupport = new PropertyChangeSupport(this);
-        }
-
-        /**
-         * Add a property-change listener for all properties. The listener is
-         * called for all properties.
-         *
-         * @param listener The PropertyChangeListener instance @note Use
-         * EventHandler.create to build the PropertyChangeListener instance
-         */
         public void addPropertyChangeListener(PropertyChangeListener listener) {
                 propertySupport.addPropertyChangeListener(listener);
         }
 
-        /**
-         * Add a property-change listener for a specific property. The listener
-         * is called only when there is a change to the specified property.
-         *
-         * @param prop The static property name PROP_..
-         * @param listener The PropertyChangeListener instance @note Use
-         * EventHandler.create to build the PropertyChangeListener instance
-         */
         public void addPropertyChangeListener(String prop, PropertyChangeListener listener) {
                 propertySupport.addPropertyChangeListener(prop, listener);
         }
 
-        /**
-         * Remove the specified listener from the list
-         *
-         * @param listener The listener instance
-         */
         public void removePropertyChangeListener(PropertyChangeListener listener) {
                 propertySupport.removePropertyChangeListener(listener);
         }
 
-        /**
-         * Remove the specified listener for a specified property from the list
-         *
-         * @param prop The static property name PROP_..
-         * @param listener The listener instance
-         */
         public void removePropertyChangeListener(String prop, PropertyChangeListener listener) {
                 propertySupport.removePropertyChangeListener(prop, listener);
+        }
+
+        @Override
+        public void addVetoableChangeListener(VetoableChangeListener vetoableChangeListener) {
+                vetoableChangeSupport.addVetoableChangeListener(vetoableChangeListener);
+        }
+
+        @Override
+        public void removeVetoableChangeListener(VetoableChangeListener vetoableChangeListener) {
+                vetoableChangeSupport.removeVetoableChangeListener(vetoableChangeListener);
+        }
+
+        @Override
+        public void addVetoableChangeListener(String s, VetoableChangeListener vetoableChangeListener) {
+                vetoableChangeSupport.addVetoableChangeListener(s,vetoableChangeListener);
+        }
+
+        @Override
+        public void removeVetoableChangeListener(String s, VetoableChangeListener vetoableChangeListener) {
+                vetoableChangeSupport.removeVetoableChangeListener(s,vetoableChangeListener);
         }
 
         /**

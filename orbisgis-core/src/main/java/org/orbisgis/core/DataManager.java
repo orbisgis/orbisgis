@@ -68,6 +68,7 @@ public interface DataManager {
 
     /**
      * The method return a unique instance of DataSource for a given source name.
+     * Do not forget to call {@link org.gdms.data.DataSource#open()} and {@link org.gdms.data.DataSource#close()} when no longer used.
      * {@link DataSourceFactory#getDataSource(String)} always create a new DataSource instance for each call.
      * @param sourceName Source name, must exists.
      * @return DataSource instance

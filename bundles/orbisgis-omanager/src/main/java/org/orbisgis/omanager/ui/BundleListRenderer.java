@@ -139,7 +139,7 @@ public class BundleListRenderer implements ListCellRenderer {
     }
     public Component getListCellRendererComponent(JList jList, Object o, int i, boolean b, boolean b2) {
         Component lafComp = lookAndFeelRenderer.getListCellRendererComponent(jList,o,i,b,b2);
-        if(lafComp instanceof JLabel) {
+        if(lafComp instanceof JLabel && o!=null) {
                 try {
                     JLabel label = (JLabel)lafComp;
                     BundleItem bi = (BundleItem)o;

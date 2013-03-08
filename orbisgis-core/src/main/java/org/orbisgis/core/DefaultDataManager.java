@@ -38,6 +38,7 @@ import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
 import org.gdms.data.NoSuchTableException;
+import org.gdms.data.OCCounterDecorator;
 import org.gdms.data.SourceAlreadyExistsException;
 import org.gdms.data.indexes.IndexManager;
 import org.gdms.driver.DriverException;
@@ -192,6 +193,9 @@ public class DefaultDataManager implements DataManager, SourceListener {
         if(source==null) {
             source = dsf.getDataSource(sourceName);
             createdDataSources.put(sourceName, source);
+        } else {
+            // Additional close will not close the root DataSource if it is used by another call of getDataSource.
+            source = new OCCounterDecorator(source);
         }
         return source;
     }

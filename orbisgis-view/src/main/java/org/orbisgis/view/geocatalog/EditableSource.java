@@ -63,7 +63,7 @@ import org.xnap.commons.i18n.I18nFactory;
 public class EditableSource extends AbstractEditableElement {
 
 	public static final String EDITABLE_RESOURCE_TYPE = "EditableSource";
-
+    public static final String PROP_EDITING = "editing";
 	private String sourceName;
         private boolean editing = false;
 	private DataSource ds;
@@ -112,7 +112,12 @@ public class EditableSource extends AbstractEditableElement {
                 logger.debug(ex.getLocalizedMessage(),ex);
             }
         }
-        setOpen(false);
+        try {
+            ds.close();
+            setOpen(false);
+        } catch (DriverException ex) {
+            logger.error(ex.getLocalizedMessage(),ex);
+        }
 		Services.getService(DataManager.class).getSourceManager()
 				.removeSourceListener(listener);
 	}
@@ -128,15 +133,14 @@ public class EditableSource extends AbstractEditableElement {
             try {
                 DataManager dataManager = Services.getService(DataManager.class);
                 ds = dataManager.getDataSource(sourceName);
-                if(!ds.isOpen()) {
-                    ds.open();
-                }
+                ds.open();
                 dataManager.getSourceManager().addSourceListener(listener);
                 ds.addDataSourceListener(dataSourceListener);
                 if(ds.isEditable()) {
                     try {
                         ds.addEditionListener(dataSourceListener);
                         ds.addMetadataEditionListener(dataSourceListener);
+                        setModified(ds.isModified());
                     } catch (UnsupportedOperationException ex) {
                         // Ignore
                         logger.debug(ex.getLocalizedMessage(),ex);
@@ -198,10 +202,12 @@ public class EditableSource extends AbstractEditableElement {
         }
 
         /**
-         * @param Editing the Editing to set
+         * @param editing New state of this editable
          */
-        public void setEditing(boolean Editing) {
-                this.editing = Editing;
+        public void setEditing(boolean editing) {
+                boolean oldValue = this.editing;
+                this.editing = editing;
+                propertyChangeSupport.firePropertyChange(PROP_EDITING,oldValue,this.editing);
         }
 
         @Override

@@ -34,22 +34,17 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
-import javax.swing.JComponent;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.RowSorter.SortKey;
-import javax.swing.SortOrder;
-import javax.swing.SwingUtilities;
-import javax.swing.UIManager;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.PopupMenuListener;
@@ -76,6 +71,7 @@ import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.core.layerModel.MapContext;
 import org.orbisgis.progress.NullProgressMonitor;
 import org.orbisgis.progress.ProgressMonitor;
+import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.background.BackgroundJob;
 import org.orbisgis.view.background.BackgroundManager;
 import org.orbisgis.view.components.filter.DefaultActiveFilter;
@@ -142,11 +138,57 @@ public class TableEditor extends JPanel implements EditorDockable {
                 dockingPanelParameters.setTitleIcon(OrbisGISIcon.getIcon("openattributes"));
                 dockingPanelParameters.setDefaultDockingLocation(
                         new DockingLocation(DockingLocation.Location.STACKED_ON, "map_editor"));
+                dockingPanelParameters.addVetoableChangeListener(DockingPanelParameters.PROP_VISIBLE,EventHandler.create(VetoableChangeListener.class,this,"onVisibleChanging",""));
                 tableScrollPane = new JScrollPane(makeTable());
                 add(tableScrollPane,BorderLayout.CENTER);
                 updateTitle();
-        }    
+        }
 
+        List<Action> getDockActions() {
+            List<Action> actions = new LinkedList<Action>();
+            if(tableEditableElement.getDataSource().isEditable()) {
+                try {
+                    actions.add(new ActionCancel(tableEditableElement));
+                    actions.add(new ActionUndo(tableEditableElement));
+                    actions.add(new ActionRedo(tableEditableElement));
+                    actions.add(new ActionSave(tableEditableElement));
+                    actions.add(new ActionEdition(tableEditableElement));
+                } catch (UnsupportedOperationException ex) {
+                    LOGGER.error(ex.getLocalizedMessage(),ex);
+                }
+            }
+            return actions;
+        }
+        /**
+         * The window is going to be closed, check for unsaved modifications
+         * @param evt
+         * @throws PropertyVetoException
+         */
+        public void onVisibleChanging(PropertyChangeEvent evt) throws PropertyVetoException {
+            if(Boolean.FALSE.equals(evt.getNewValue())) {
+                if(tableEditableElement.isModified()) {
+                    int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                            I18N.tr("This table use modified data source, do you want to save these modifications before closing it ?"),
+                            I18N.tr("Unsaved modifications"),
+                            JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+                    if(response==JOptionPane.YES_OPTION) {
+                        try {
+                            tableEditableElement.save();
+                        } catch (EditableElementException ex) {
+                            int errorResponse = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                                    I18N.tr("The data source {0} can not be saved, are you sure you want to continue ?", tableEditableElement.getSourceName()),
+                                    I18N.tr("Errors on data source save process"),
+                                    JOptionPane.YES_NO_OPTION,JOptionPane.WARNING_MESSAGE);
+                            if(errorResponse==JOptionPane.NO_OPTION) {
+                                throw new PropertyVetoException(I18N.tr("Canceled by user"),evt);
+                            }
+                        }
+                    } else if(response==JOptionPane.CANCEL_OPTION) {
+                        throw new PropertyVetoException(I18N.tr("Canceled by user"),evt);
+                    }
+                }
+            }
+        }
         /**
          * A source has been removed, check that it is not the table source, if
          * it is close the editor
@@ -724,6 +766,7 @@ public class TableEditor extends JPanel implements EditorDockable {
                 // Add a selection listener on the editable element
                 tableEditableElement.addPropertyChangeListener(TableEditableElement.PROP_SELECTION,
                         editableSelectionListener);
+                dockingPanelParameters.setDockActions(getDockActions());
         }
         
         /**
@@ -733,6 +776,15 @@ public class TableEditor extends JPanel implements EditorDockable {
         public void onChangeVisibility(boolean visible) {
                 if(!visible) {                        
                         tableModel.dispose();
+                        for(Action action : dockingPanelParameters.getDockActions()) {
+                            if(action instanceof ActionDispose){
+                                try {
+                                    ((ActionDispose) action).dispose();
+                                }catch (Exception ex) {
+                                    LOGGER.error(ex.getLocalizedMessage(),ex);
+                                }
+                            }
+                        }
                         try {
                                 LOGGER.debug("Close table "+dockingPanelParameters.getTitle());
                                 tableEditableElement.close(new NullProgressMonitor());                                

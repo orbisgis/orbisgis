@@ -242,6 +242,7 @@ public class SQLConsolePanel extends JPanel {
         public void onExecute() {      
                 if (scriptPanel.getDocument().getLength() > 0) {
                 BackgroundManager bm = Services.getService(BackgroundManager.class);
+
                 bm.nonBlockingBackgroundOperation(new ExecuteScriptProcess(getText(), this,mapContext));
                 }
         }
