@@ -36,8 +36,8 @@ import org.orbisgis.view.components.actions.ActionTools;
 import org.orbisgis.view.table.ext.TableEditorActions;
 import org.xnap.commons.i18n.I18n;
 import org.xnap.commons.i18n.I18nFactory;
-import javax.swing.AbstractAction;
-import javax.swing.Icon;
+
+import javax.swing.*;
 import java.beans.EventHandler;
 
 /**
@@ -48,8 +48,8 @@ public abstract class ActionAbstractEdition extends AbstractAction implements Ac
     protected TableEditableElement editable;
     protected static final I18n I18N = I18nFactory.getI18n(ActionAbstractEdition.class);
     protected static final Logger LOGGER = Logger.getLogger(ActionAbstractEdition.class);
-    private final EditionListener editionListener = EventHandler.create(EditionListener.class, this, "onSourceUpdate");
-    private final DataSourceListener dataSourceListener = EventHandler.create(DataSourceListener.class, this, "onSourceUpdate");
+    private final EditionListener editionListener = EventHandler.create(EditionListener.class, this, "sourceEvent");
+    private final DataSourceListener dataSourceListener = EventHandler.create(DataSourceListener.class, this, "sourceEvent");
 
     protected ActionAbstractEdition(TableEditableElement editable) {
         setEditable(editable);
@@ -63,13 +63,21 @@ public abstract class ActionAbstractEdition extends AbstractAction implements Ac
     protected ActionAbstractEdition(String s, Icon icon, TableEditableElement editable) {
         super(s, icon);
         setEditable(editable);
+        putValue(ActionTools.LOGICAL_GROUP, TableEditorActions.LGROUP_EDITION);
     }
 
     /**
      * Called when DataSource fire an event.
      */
     public abstract void onSourceUpdate();
-
+    public final void sourceEvent() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                onSourceUpdate();
+            }
+        });
+    }
     @Override
     public void dispose() {
         editable.getDataSource().removeEditionListener(editionListener);

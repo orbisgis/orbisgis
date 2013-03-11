@@ -60,7 +60,7 @@ import org.xnap.commons.i18n.I18nFactory;
  * @author Nicolas Fortin
  */
 public class SaveDocuments extends JDialog {
-        public enum CHOICE { CLOSE, CANCEL };
+        public enum CHOICE { CLOSE, CANCEL, SAVE_NONE };
         private final static int BUTTON_VERTICAL_SPACE = 5;
         private static final Dimension minimumPanelDimension = new Dimension(320,200);
         private final static int PANEL_EMPTY_BORDER = 8; 
@@ -230,7 +230,7 @@ public class SaveDocuments extends JDialog {
          * The user want to discard all modifications
          */
         public void onSaveNoneDocuments() {
-                userCoice = CHOICE.CLOSE;
+                userCoice = CHOICE.SAVE_NONE;
                 setVisible(false);
         }
         /**
