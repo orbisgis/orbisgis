@@ -247,19 +247,5 @@ public class OrbisGISView {
                                                 internalDock,
                                                 "setVisible",
                                                 "newValue"));
-        //Visible state back listener, change property on user action        
-        internalDock.addCDockableStateListener(
-                EventHandler.create(CDockableStateListener.class,this,"visibilityChanged"));
     }
-
-    /**
-     * Propagate property change
-     */
-        public void visibilityChanged() {
-                if(internalDock.isVisible()!=dockableParameters.isVisible()) {
-                        dockableParameters.setVisible(internalDock.isVisible());
-                }
-        }
-
-    
 }
