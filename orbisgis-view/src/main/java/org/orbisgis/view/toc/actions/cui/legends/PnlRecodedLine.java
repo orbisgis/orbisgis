@@ -41,8 +41,12 @@ import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.legend.thematic.recode.RecodedLine;
+import org.orbisgis.progress.ProgressMonitor;
 import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
+import org.orbisgis.view.background.*;
+import org.orbisgis.view.joblist.JobListItem;
+import org.orbisgis.view.joblist.JobListItemPanel;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -91,6 +95,9 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
     private JComboBox fieldCombo;
     private JLabel endCol;
     private JLabel startCol;
+    private final static String JOB_NAME = "recodeSelectDistinct";
+    private SelectDistinctJob selectDistinct;
+    private BackgroundListener background;
 
     @Override
     public Component getComponent() {
@@ -141,9 +148,9 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
 
     /**
      * Builds a SIF dialog used to edit the given LineParameters.
-     * @param cse
-     * @param lps
-     * @return
+     * @param cse The canvas we want to edit
+     * @param lps The LineParameters to feed the canvas
+     * @return The LineParameters that must be used at the end of the edition.
      */
     private LineParameters editCanvas(CanvasSE cse, LineParameters lps){
         UniqueSymbolLine usl = new UniqueSymbolLine(lps);
@@ -377,6 +384,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         //We still need a button to configure all of that
         JPanel btnPanel = new JPanel();
         JButton createButton = new JButton(I18N.tr("Create Classification"));
+        createButton.setActionCommand("click");
         btnPanel.add(createButton);
         btnPanel.setAlignmentX((float).5);
         ret.add(btnPanel);
@@ -387,7 +395,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         fromFallback.addActionListener(al1);
         computed.addActionListener(al2);
         //Creation
-        ActionListener btn = EventHandler.create(ActionListener.class, this, "onCreateClassification");
+        ActionListener btn = EventHandler.create(ActionListener.class, this, "onCreateClassification","");
         createButton.addActionListener(btn);
         //We disable the color config by default
         onFromFallback();
@@ -398,31 +406,17 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
      * Called to build a classification from the given data source and field. Makes a SELECT DISTINCT field FROM ds;
      * and feeds the legend that has been cleared prior to that.
      */
-    public void onCreateClassification(){
-        DataManager dm = Services.getService(DataManager.class);
-        DataSourceFactory dsf = dm.getDataSourceFactory();
-        try {
+    public void onCreateClassification(ActionEvent e){
+        if(e.getActionCommand().equals("click")){
             String fieldName = fieldCombo.getSelectedItem().toString();
-            StringBuilder sb = new StringBuilder("SELECT DISTINCT ");
-            sb.append(fieldName);
-            sb.append(" FROM ");
-            sb.append(ds.getName());
-            sb.append(";");
-            DataSource result = dsf.getDataSourceFromSQL(sb.toString());
-            result.open();
-            if(colorConfig.isEnabled() && result.getRowCount() > 0){
-                createColouredClassification(result);
-            } else {
-                createConstantClassification(result);
+            selectDistinct = new SelectDistinctJob(fieldName);
+            BackgroundManager bm = Services.getService(BackgroundManager.class);
+            JobId jid = new DefaultJobId(JOB_NAME);
+            if(background == null){
+                background = new OperationListener();
+                bm.addBackgroundListener(background);
             }
-            result.close();
-            ((TableModelRecodedLine) table.getModel()).fireTableDataChanged();
-        } catch (DataSourceCreationException e) {
-            LOGGER.error("Couldn't create the temporary data source : "+e.getMessage());
-        } catch (DriverException e) {
-            LOGGER.error("IO error while handling the temporary data source : "+e.getMessage());
-        } catch (ParseException e) {
-            LOGGER.error("Couldn't parse the data source creation script: "+e.getMessage());
+            bm.nonBlockingBackgroundOperation(jid, selectDistinct);
         }
     }
 
@@ -542,5 +536,163 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         rl.setFallbackParameters(legend.getFallbackParameters());
         rl.setLookupFieldName(legend.getLookupFieldName());
         return rl;
+    }
+
+    /**
+     * This Job can be used as a background operation to retrieve a set containing the distinct data of a specific
+     * field in a DataSource.
+     */
+    private class SelectDistinctJob implements BackgroundJob {
+
+        private final String fieldName;
+        private DataSource result = null;
+
+        /**
+         * Builds the BackgroundJob.
+         * @param f The name of the field we want the data from.
+         */
+        public SelectDistinctJob(String f){
+            fieldName = f;
+        }
+
+        @Override
+        public void run(ProgressMonitor pm) {
+            DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
+            StringBuilder sb = new StringBuilder("SELECT DISTINCT ");
+            sb.append(fieldName);
+            sb.append(" FROM ");
+            sb.append(ds.getName());
+            sb.append(";");
+            try {
+                result = dsf.getDataSourceFromSQL(sb.toString(), pm);
+                result.open();
+                result.close();
+                if(pm.isCancelled()){
+                    result = null;
+                } else {
+                    pm.endTask();
+                }
+            } catch (DataSourceCreationException e) {
+                LOGGER.error("Couldn't create the temporary data source : " + e.getMessage());
+            } catch (DriverException e) {
+                LOGGER.error("IO error while handling the temporary data source : " + e.getMessage());
+            } catch (ParseException e) {
+                LOGGER.error("Couldn't parse the data source creation script: " + e.getMessage());
+            }
+
+        }
+
+        /**
+         * Gets the generated DataSource.
+         * @return The gathered information in a DataSource.
+         */
+        public DataSource getResult() {
+            return result;
+        }
+
+        @Override
+        public String getTaskName() {
+            return "select distinct";
+        }
+    }
+
+    /**
+     * This progress listener listens to the progression of the background operation that retrieves data from
+     * the analysed source and builds a simple unique value classification with it.
+     */
+    public class DistinctListener implements ProgressListener {
+
+        private JDialog window;
+        private final JobListItem jli;
+
+        /**
+         * Builds the listener from the given {@code JobListItem}. Not that the construction ends by displaying
+         * a {@link JDialog} in modal mode that stays always on top of the application.
+         * @param jli The item that will provide the progress bar.
+         */
+        public DistinctListener(JobListItem jli){
+            this.jli = jli;
+            JobListItemPanel pnl = jli.getItemPanel();
+            JLabel cancel = pnl.getJobCancelLabel();
+            JDialog root = (JDialog) SwingUtilities.getRoot(PnlRecodedLine.this);
+            this.window = new JDialog(root,I18N.tr("Operation in progress..."));
+            window.setLayout(new BorderLayout());
+            window.setAlwaysOnTop(true);
+            window.setEnabled(true);
+            window.setVisible(true);
+            window.setModal(true);
+            window.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+            window.add(jli.getItemPanel());
+            window.setLocationRelativeTo(root);
+            window.setMinimumSize(jli.getItemPanel().getPreferredSize());
+            MouseListener ml = EventHandler.create(MouseListener.class,window,
+                        "dispose",null,"mouseClicked");
+            cancel.addMouseListener(ml);
+        }
+
+        @Override
+        public void progressChanged(Job job) {
+        }
+
+        @Override
+        public void subTaskStarted(Job job) {
+        }
+
+        @Override
+        public void subTaskFinished(Job job) {
+            window.setVisible(false);
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    jli.dispose();
+                }
+            });
+
+        }
+    }
+
+    /**
+     * This backgroundListener waits for operation on {@code Job} with {@link PnlRecodedLine#JOB_NAME} as its name.
+     * When such a {@link Job} is added, it adds a DistinctListener to the associated Job. When it is removed, it
+     * retrieves the gathered information and build a new classification from it.
+     */
+    public class OperationListener implements BackgroundListener {
+
+        @Override
+        public  void jobAdded(Job job) {
+            if(job.getId().is(new DefaultJobId(JOB_NAME))){
+                JobListItem jli = new JobListItem(job).listenToJob(true);
+                DistinctListener listener = new DistinctListener(jli);
+                job.addProgressListener(listener);
+            }
+        }
+
+        @Override
+        public void jobRemoved(Job job) {
+            try {
+                if(job.getId().is(new DefaultJobId(JOB_NAME))){
+
+                    DataSource result = selectDistinct.getResult();
+                    if(result != null){
+                        result.open();
+                        if(colorConfig.isEnabled() && result.getRowCount() > 0){
+                            createColouredClassification(result);
+                        } else {
+                            createConstantClassification(result);
+                        }
+                        result.close();
+                        ((TableModelRecodedLine) table.getModel()).fireTableDataChanged();
+                        table.invalidate();
+                    }
+                }
+            } catch (DriverException e) {
+                LOGGER.error("IO error while handling the temporary data source : "+e.getMessage());
+            }
+        }
+
+
+        @Override
+        public void jobReplaced(Job job) {
+        }
     }
 }
