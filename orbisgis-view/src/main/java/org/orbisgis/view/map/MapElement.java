@@ -244,8 +244,13 @@ public final class MapElement extends AbstractEditableElement {
             return;
         }
         layer.addLayerListener(layerUpdateListener);
-        if(layer.getDataSource()!=null) {
-            layer.getDataSource().addEditionListener(sourceUpdateListener);
+        DataSource dataSource = layer.getDataSource();
+        if(dataSource!=null && dataSource.isEditable()) {
+            try {
+                layer.getDataSource().addEditionListener(sourceUpdateListener);
+            } catch (UnsupportedOperationException ex) {
+                LOGGER.warn(ex.getLocalizedMessage(),ex);
+            }
         }
         ILayer[] layers = layer.getLayersRecursively();
         if(layers!=null) {
@@ -260,8 +265,12 @@ public final class MapElement extends AbstractEditableElement {
         }
         layer.removeLayerListener(layerUpdateListener);
         DataSource src = layer.getDataSource();
-        if(src!=null) {
-            src.removeEditionListener(sourceUpdateListener);
+        if(src!=null && src.isEditable()) {
+            try {
+                src.removeEditionListener(sourceUpdateListener);
+            } catch (UnsupportedOperationException ex) {
+                LOGGER.warn(ex.getLocalizedMessage(),ex);
+            }
         }
         ILayer[] layers = layer.getLayersRecursively();
         if(layers!=null) {

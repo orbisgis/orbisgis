@@ -67,9 +67,10 @@ public interface DataManager {
 	IndexManager getIndexManager();
 
     /**
-     * The method return a unique instance of DataSource for a given source name.
+     * The method return a unique instance of editable DataSource for a given source name.
      * Do not forget to call {@link org.gdms.data.DataSource#open()} and {@link org.gdms.data.DataSource#close()} when no longer used.
      * {@link DataSourceFactory#getDataSource(String)} always create a new DataSource instance for each call.
+     * This method has been created in order to see the impact of edition before the {@link org.gdms.data.DataSource#commit()} method is called.
      * @param sourceName Source name, must exists.
      * @return DataSource instance
      * @throws NoSuchTableException if there is no source with that name

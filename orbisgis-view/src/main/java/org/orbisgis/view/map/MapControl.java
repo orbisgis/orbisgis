@@ -471,15 +471,15 @@ public class MapControl extends JComponent implements ContainerListener {
 			return true;
 		}
 
-                @Override
+        @Override
 		public void layerRemoved(LayerCollectionEvent listener) {
 			for (ILayer layer : listener.getAffected()) {
 				removeLayerListenerRecursively(layer, this);
-                                if(!mapContext.isLayerModelSpatial()){
-                                        mapTransform.setExtent(new Envelope());
-                                }
-				invalidateImage();
 			}
+            if(!mapContext.isLayerModelSpatial()){
+                mapTransform.setExtent(new Envelope());
+            }
+            invalidateImage();
 		}
 
                 @Override

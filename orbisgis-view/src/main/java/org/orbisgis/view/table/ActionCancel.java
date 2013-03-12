@@ -31,6 +31,7 @@ package org.orbisgis.view.table;
 
 
 import org.apache.log4j.Logger;
+import org.orbisgis.sif.UIFactory;
 import org.orbisgis.view.components.actions.ActionTools;
 import org.orbisgis.view.icons.OrbisGISIcon;
 import org.orbisgis.view.table.ext.TableEditorActions;
@@ -69,10 +70,16 @@ public class ActionCancel extends AbstractAction {
     }
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        try {
-            editable.getDataSource().syncWithSource();
-        } catch (Exception ex) {
-            logger.error(ex.getLocalizedMessage(),ex);
+        int response = JOptionPane.showConfirmDialog(UIFactory.getMainFrame(),
+                I18N.tr("Are you sure to cancel all your modifications ?"),
+                I18N.tr("Return to original state"),
+                JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+        if(response==JOptionPane.YES_OPTION) {
+            try {
+                editable.getDataSource().syncWithSource();
+            } catch (Exception ex) {
+                logger.error(ex.getLocalizedMessage(),ex);
+            }
         }
     }
 }

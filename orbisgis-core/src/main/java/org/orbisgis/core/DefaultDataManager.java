@@ -37,6 +37,7 @@ import org.gdms.data.AlreadyClosedException;
 import org.gdms.data.DataSource;
 import org.gdms.data.DataSourceCreationException;
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.DataSourceListener;
 import org.gdms.data.NoSuchTableException;
 import org.gdms.data.OCCounterDecorator;
 import org.gdms.data.SourceAlreadyExistsException;
@@ -60,7 +61,7 @@ public class DefaultDataManager implements DataManager, SourceListener {
 			.getLogger(DefaultDataManager.class);
 	private DataSourceFactory dsf;
     private Map<String,DataSource> createdDataSources = new HashMap<String, DataSource>();
-
+    private EditableSourceListener editableSourceListener = new EditableSourceListener();
 
 	public DefaultDataManager(DataSourceFactory dsf) {
 		this.dsf = dsf;
@@ -192,7 +193,12 @@ public class DefaultDataManager implements DataManager, SourceListener {
         DataSource source = createdDataSources.get(sourceName);
         if(source==null) {
             source = dsf.getDataSource(sourceName);
-            createdDataSources.put(sourceName, source);
+            // Store only editable source
+            if(source.isEditable()) {
+                createdDataSources.put(sourceName, source);
+                source.addDataSourceListener(editableSourceListener);
+                source = new OCCounterDecorator(source);
+            }
         } else {
             // Additional close will not close the root DataSource if it is used by another call of getDataSource.
             source = new OCCounterDecorator(source);
@@ -223,7 +229,7 @@ public class DefaultDataManager implements DataManager, SourceListener {
 
     @Override
     public void sourceRemoved(SourceRemovalEvent e) {
-        createdDataSources.remove(e.getName());
+        removeStoredDataSource(e.getName());
     }
 
     @Override
@@ -236,8 +242,35 @@ public class DefaultDataManager implements DataManager, SourceListener {
         }
     }
 
+    private void removeStoredDataSource(String dataSourceName) {
+        DataSource source = createdDataSources.remove(dataSourceName);
+        if(source!=null) {
+            source.removeDataSourceListener(editableSourceListener);
+        }
+    }
     @Override
     public void dispose() {
         dsf.getSourceManager().removeSourceListener(this);
+        createdDataSources.clear();
+    }
+
+    /**
+     * Remove closed DataSource
+     */
+    private class EditableSourceListener implements DataSourceListener {
+        @Override
+        public void open(DataSource ds) {
+        }
+
+        @Override
+        public void cancel(DataSource ds) {
+            if(ds!=null && !ds.isOpen() && !ds.isModified()) {
+                removeStoredDataSource(ds.getName());
+            }
+        }
+
+        @Override
+        public void commit(DataSource ds) {
+        }
     }
 }
