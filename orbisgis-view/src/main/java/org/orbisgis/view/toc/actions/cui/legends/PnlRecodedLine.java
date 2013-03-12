@@ -586,13 +586,18 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         public void run(ProgressMonitor pm) {
             result = getValues(pm);
             result = result == null ? new HashSet<String>() : result;
-            RecodedLine rl;
-            if(colorConfig.isEnabled() && result.size() > 0){
-                rl = createColouredClassification(result, pm);
+            if(result != null){
+                RecodedLine rl;
+                if(colorConfig.isEnabled() && result.size() > 0){
+                    rl = createColouredClassification(result, pm);
+                } else {
+                    rl = createConstantClassification(result, pm);
+                }
+                legend = rl == null ? legend : rl;
             } else {
-                rl = createConstantClassification(result, pm);
+                pm.startTask(PnlRecodedLine.CREATE_CLASSIF, 100);
+                pm.endTask();
             }
-            legend = rl == null ? legend : rl;
         }
 
         /**
@@ -660,10 +665,11 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         public DistinctListener(JobListItem jli){
             this.jli = jli;
             JDialog root = (JDialog) SwingUtilities.getRoot(PnlRecodedLine.this);
+            root.setEnabled(false);
             this.window = new JDialog(root,I18N.tr("Operation in progress..."));
             window.setLayout(new BorderLayout());
             window.setAlwaysOnTop(true);
-            window.setEnabled(true);
+//            window.setEnabled(true);
             window.setVisible(true);
             window.setModal(true);
             window.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -684,8 +690,10 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         @Override
         public void subTaskFinished(Job job) {
             count ++;
-            if(count == 2){
+            if(count >= 2){
                 window.setVisible(false);
+                JDialog root = (JDialog) SwingUtilities.getRoot(PnlRecodedLine.this);
+                root.setEnabled(true);
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
