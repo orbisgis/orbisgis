@@ -93,6 +93,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
     private JLabel endCol;
     private JLabel startCol;
     private final static String JOB_NAME = "recodeSelectDistinct";
+    public final static String CREATE_CLASSIF = "Create classification";
     private SelectDistinctJob selectDistinct;
     private BackgroundListener background;
 
@@ -421,21 +422,40 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
      * We take the fallback configuration and copy it for each key.
      * @param set A set of keys we use as a basis.
      */
-    private void createConstantClassification(HashSet<String> set) {
-        legend.clear();
+    private RecodedLine createConstantClassification(HashSet<String> set, ProgressMonitor pm) {
         LineParameters lp = legend.getFallbackParameters();
+        RecodedLine newRL = new RecodedLine();
+        newRL.setFallbackParameters(lp);
+        int size = set.size();
+        double m = size == 0 ? 0 : 90.0/(double)size;
+        int i = 0;
+        int n = 0;
+        pm.startTask(CREATE_CLASSIF, 100);
         for(String s : set){
-            legend.put(s, lp);
+            newRL.put(s, lp);
+            if(i*m>n){
+                if(pm.isCancelled()){
+                    pm.endTask();
+                    return null;
+                }
+                n++;
+                pm.progressTo(n+10);
+            }
+            i++;
         }
+        pm.progressTo(100);
+        pm.endTask();
+        return newRL;
     }
 
     /**
      * We take the fallback configuration and copy it for each key, changing the colour.
      * @param set A set of keys we use as a basis.
      */
-    private void createColouredClassification(HashSet<String> set) {
-        legend.clear();
+    private RecodedLine createColouredClassification(HashSet<String> set, ProgressMonitor pm) {
         LineParameters lp = legend.getFallbackParameters();
+        RecodedLine newRL = new RecodedLine();
+        newRL.setFallbackParameters(lp);
         int size = set.size();
         Color start = startCol.getBackground();
         Color end = endCol.getBackground();
@@ -458,22 +478,41 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
             blueThreshold = (blueStart-end.getBlue())/(size-1);
             alphaThreshold = (alphaStart-end.getAlpha())/(size-1);
         }
+        double m = size == 0 ? 0 : 90.0/(double)size;
         int i=0;
+        int n = 0;
+        pm.startTask(CREATE_CLASSIF , 100);
         for(String s : set){
             Color newCol = new Color(redStart-redThreshold*i,
                         greenStart-i*greenThreshold,
                         blueStart-i*blueThreshold,
                         alphaStart-i*alphaThreshold);
             LineParameters value = new LineParameters(newCol, lp.getLineOpacity(), lp.getLineWidth(), lp.getLineDash());
-            legend.put(s, value);
+            newRL.put(s, value);
+            if(i*m>n){
+                if(pm.isCancelled()){
+                    pm.endTask();
+                    return null;
+                }
+                n++;
+                pm.progressTo(n+10);
+            }
             i++;
         }
+        pm.endTask();
+        return newRL;
     }
 
+    /**
+     * Disables the colour configuration.
+     */
     public void onFromFallback(){
         setFieldState(false,colorConfig);
     }
 
+    /**
+     * Enables the colour configuration.
+     */
     public void onComputed(){
         setFieldState(true, colorConfig);
     }
@@ -546,6 +585,14 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         @Override
         public void run(ProgressMonitor pm) {
             result = getValues(pm);
+            result = result == null ? new HashSet<String>() : result;
+            RecodedLine rl;
+            if(colorConfig.isEnabled() && result.size() > 0){
+                rl = createColouredClassification(result, pm);
+            } else {
+                rl = createConstantClassification(result, pm);
+            }
+            legend = rl == null ? legend : rl;
         }
 
         /**
@@ -557,14 +604,15 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
             HashSet<String> ret = new HashSet<String>();
             try {
                 long rowCount=ds.getRowCount();
+                pm.startTask(I18N.tr("Retrieving classes"), 10);
                 pm.progressTo(0);
-                double m = rowCount>0 ?(double)100/rowCount : 0;
+                double m = rowCount>0 ?(double)10/rowCount : 0;
                 int n =0;
                 int fieldIndex = ds.getFieldIndexByName(fieldName);
                 for(long i=0; i<rowCount; i++){
                     Value val = ds.getFieldValue(i, fieldIndex);
                     ret.add(val.toString());
-                    if(i*m>n){
+                    if(i*m>n*10){
                         if(pm.isCancelled()){
                             pm.endTask();
                             return null;
@@ -602,6 +650,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
 
         private JDialog window;
         private final JobListItem jli;
+        private int count = 0;
 
         /**
          * Builds the listener from the given {@code JobListItem}. Not that the construction ends by displaying
@@ -634,13 +683,16 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
 
         @Override
         public void subTaskFinished(Job job) {
-            window.setVisible(false);
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    jli.dispose();
-                }
-            });
+            count ++;
+            if(count == 2){
+                window.setVisible(false);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        jli.dispose();
+                    }
+                });
+            }
 
         }
     }
@@ -664,14 +716,6 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         @Override
         public void jobRemoved(Job job) {
             if(job.getId().is(new DefaultJobId(JOB_NAME))){
-
-                HashSet<String> result = selectDistinct.getResult();
-                result = result == null ? new HashSet<String>() : result;
-                if(colorConfig.isEnabled() && result.size() > 0){
-                    createColouredClassification(result);
-                } else {
-                    createConstantClassification(result);
-                }
                 ((TableModelRecodedLine) table.getModel()).fireTableDataChanged();
                 table.invalidate();
             }
