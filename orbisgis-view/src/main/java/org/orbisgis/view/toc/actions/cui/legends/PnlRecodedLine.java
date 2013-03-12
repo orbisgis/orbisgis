@@ -30,11 +30,8 @@ package org.orbisgis.view.toc.actions.cui.legends;
 
 import org.apache.log4j.Logger;
 import org.gdms.data.DataSource;
-import org.gdms.data.DataSourceCreationException;
-import org.gdms.data.DataSourceFactory;
+import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
-import org.gdms.sql.engine.ParseException;
-import org.orbisgis.core.DataManager;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
 import org.orbisgis.legend.Legend;
@@ -46,7 +43,6 @@ import org.orbisgis.sif.UIFactory;
 import org.orbisgis.sif.UIPanel;
 import org.orbisgis.view.background.*;
 import org.orbisgis.view.joblist.JobListItem;
-import org.orbisgis.view.joblist.JobListItemPanel;
 import org.orbisgis.view.toc.actions.cui.LegendContext;
 import org.orbisgis.view.toc.actions.cui.SimpleGeometryType;
 import org.orbisgis.view.toc.actions.cui.components.CanvasSE;
@@ -68,6 +64,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.beans.EventHandler;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -422,63 +419,54 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
 
     /**
      * We take the fallback configuration and copy it for each key.
-     * @param ds
+     * @param set A set of keys we use as a basis.
      */
-    private void createConstantClassification(DataSource ds) {
+    private void createConstantClassification(HashSet<String> set) {
         legend.clear();
         LineParameters lp = legend.getFallbackParameters();
-        try {
-            long rowCount = ds.getRowCount();
-            for(long i=0; i<rowCount; i++){
-                String key =ds.getFieldValue(i, 0).toString();
-                legend.put(key, lp);
-            }
-        } catch (DriverException e) {
-            LOGGER.error("Couldn't read the temporary data source : " + e.getMessage());
+        for(String s : set){
+            legend.put(s, lp);
         }
     }
 
     /**
      * We take the fallback configuration and copy it for each key, changing the colour.
-     * @param ds
+     * @param set A set of keys we use as a basis.
      */
-    private void createColouredClassification(DataSource ds) {
+    private void createColouredClassification(HashSet<String> set) {
         legend.clear();
         LineParameters lp = legend.getFallbackParameters();
-        try {
-            long rowCount = ds.getRowCount();
-            Color start = startCol.getBackground();
-            Color end = endCol.getBackground();
-            int redStart = start.getRed();
-            int greenStart = start.getGreen();
-            int blueStart = start.getBlue();
-            int alphaStart = start.getAlpha();
-            int redThreshold;
-            int greenThreshold;
-            int blueThreshold;
-            int alphaThreshold;
-            if(rowCount <= 1){
-                redThreshold = 0;
-                greenThreshold = 0;
-                blueThreshold = 0;
-                alphaThreshold = 0;
-            } else {
-                redThreshold = (int)((redStart-end.getRed())/(rowCount-1));
-                greenThreshold = (int)((greenStart-end.getGreen())/(rowCount-1));
-                blueThreshold = (int)((blueStart-end.getBlue())/(rowCount-1));
-                alphaThreshold = (int)((alphaStart-end.getAlpha())/(rowCount-1));
-            }
-            for(long i=0; i<rowCount; i++){
-                String key =ds.getFieldValue(i, 0).toString();
-                Color newCol = new Color((int)(redStart-redThreshold*i),
-                            (int)(greenStart-i*greenThreshold),
-                            (int)(blueStart-i*blueThreshold),
-                            (int)(alphaStart-i*alphaThreshold));
-                LineParameters value = new LineParameters(newCol, lp.getLineOpacity(), lp.getLineWidth(), lp.getLineDash());
-                legend.put(key, value);
-            }
-        } catch (DriverException e) {
-            LOGGER.error("Couldn't read the temporary data source : "+e.getMessage());
+        int size = set.size();
+        Color start = startCol.getBackground();
+        Color end = endCol.getBackground();
+        int redStart = start.getRed();
+        int greenStart = start.getGreen();
+        int blueStart = start.getBlue();
+        int alphaStart = start.getAlpha();
+        int redThreshold;
+        int greenThreshold;
+        int blueThreshold;
+        int alphaThreshold;
+        if(size <= 1){
+            redThreshold = 0;
+            greenThreshold = 0;
+            blueThreshold = 0;
+            alphaThreshold = 0;
+        } else {
+            redThreshold = (redStart-end.getRed())/(size-1);
+            greenThreshold = (greenStart-end.getGreen())/(size-1);
+            blueThreshold = (blueStart-end.getBlue())/(size-1);
+            alphaThreshold = (alphaStart-end.getAlpha())/(size-1);
+        }
+        int i=0;
+        for(String s : set){
+            Color newCol = new Color(redStart-redThreshold*i,
+                        greenStart-i*greenThreshold,
+                        blueStart-i*blueThreshold,
+                        alphaStart-i*alphaThreshold);
+            LineParameters value = new LineParameters(newCol, lp.getLineOpacity(), lp.getLineWidth(), lp.getLineDash());
+            legend.put(s, value);
+            i++;
         }
     }
 
@@ -545,7 +533,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
     private class SelectDistinctJob implements BackgroundJob {
 
         private final String fieldName;
-        private DataSource result = null;
+        private HashSet<String> result = null;
 
         /**
          * Builds the BackgroundJob.
@@ -557,36 +545,46 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
 
         @Override
         public void run(ProgressMonitor pm) {
-            DataSourceFactory dsf = Services.getService(DataManager.class).getDataSourceFactory();
-            StringBuilder sb = new StringBuilder("SELECT DISTINCT ");
-            sb.append(fieldName);
-            sb.append(" FROM ");
-            sb.append(ds.getName());
-            sb.append(";");
-            try {
-                result = dsf.getDataSourceFromSQL(sb.toString(), pm);
-                result.open();
-                result.close();
-                if(pm.isCancelled()){
-                    result = null;
-                } else {
-                    pm.endTask();
-                }
-            } catch (DataSourceCreationException e) {
-                LOGGER.error("Couldn't create the temporary data source : " + e.getMessage());
-            } catch (DriverException e) {
-                LOGGER.error("IO error while handling the temporary data source : " + e.getMessage());
-            } catch (ParseException e) {
-                LOGGER.error("Couldn't parse the data source creation script: " + e.getMessage());
-            }
+            result = getValues(pm);
+        }
 
+        /**
+         * Gathers all the distinct values of the input DataSource in a {@link HashSet}.
+         * @param pm Used to be able to cancel the job.
+         * @return The distinct values as String instances in a {@link HashSet} or null if the job has been cancelled.
+         */
+        public HashSet<String> getValues(ProgressMonitor pm){
+            HashSet<String> ret = new HashSet<String>();
+            try {
+                long rowCount=ds.getRowCount();
+                pm.progressTo(0);
+                double m = rowCount>0 ?(double)100/rowCount : 0;
+                int n =0;
+                int fieldIndex = ds.getFieldIndexByName(fieldName);
+                for(long i=0; i<rowCount; i++){
+                    Value val = ds.getFieldValue(i, fieldIndex);
+                    ret.add(val.toString());
+                    if(i*m>n){
+                        if(pm.isCancelled()){
+                            pm.endTask();
+                            return null;
+                        }
+                        n++;
+                        pm.progressTo(n);
+                    }
+                }
+            } catch (DriverException e) {
+                LOGGER.error("IO error while handling the input data source : " + e.getMessage());
+            }
+            pm.endTask();
+            return ret;
         }
 
         /**
          * Gets the generated DataSource.
          * @return The gathered information in a DataSource.
          */
-        public DataSource getResult() {
+        public HashSet<String> getResult() {
             return result;
         }
 
@@ -612,8 +610,6 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
          */
         public DistinctListener(JobListItem jli){
             this.jli = jli;
-            JobListItemPanel pnl = jli.getItemPanel();
-            JLabel cancel = pnl.getJobCancelLabel();
             JDialog root = (JDialog) SwingUtilities.getRoot(PnlRecodedLine.this);
             this.window = new JDialog(root,I18N.tr("Operation in progress..."));
             window.setLayout(new BorderLayout());
@@ -625,13 +621,11 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
             window.add(jli.getItemPanel());
             window.setLocationRelativeTo(root);
             window.setMinimumSize(jli.getItemPanel().getPreferredSize());
-            MouseListener ml = EventHandler.create(MouseListener.class,window,
-                        "dispose",null,"mouseClicked");
-            cancel.addMouseListener(ml);
         }
 
         @Override
         public void progressChanged(Job job) {
+            window.pack();
         }
 
         @Override
@@ -669,24 +663,17 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
 
         @Override
         public void jobRemoved(Job job) {
-            try {
-                if(job.getId().is(new DefaultJobId(JOB_NAME))){
+            if(job.getId().is(new DefaultJobId(JOB_NAME))){
 
-                    DataSource result = selectDistinct.getResult();
-                    if(result != null){
-                        result.open();
-                        if(colorConfig.isEnabled() && result.getRowCount() > 0){
-                            createColouredClassification(result);
-                        } else {
-                            createConstantClassification(result);
-                        }
-                        result.close();
-                        ((TableModelRecodedLine) table.getModel()).fireTableDataChanged();
-                        table.invalidate();
-                    }
+                HashSet<String> result = selectDistinct.getResult();
+                result = result == null ? new HashSet<String>() : result;
+                if(colorConfig.isEnabled() && result.size() > 0){
+                    createColouredClassification(result);
+                } else {
+                    createConstantClassification(result);
                 }
-            } catch (DriverException e) {
-                LOGGER.error("IO error while handling the temporary data source : "+e.getMessage());
+                ((TableModelRecodedLine) table.getModel()).fireTableDataChanged();
+                table.invalidate();
             }
         }
 
