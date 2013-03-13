@@ -246,14 +246,14 @@ public class PnlUniqueLineSE extends PnlUniqueSymbolSE {
                 if(lineCheckBox.isSelected()){
                         ((IUniqueSymbolLine)getLegend()).setPenStroke(penStrokeMemory);
                         setLineFieldsState(true);
-                        getPreview().repaint();
+                        getPreview().imageChanged();
                 } else {
                         //We must replace the old PenStroke representation with
                         //its null representation
                         NullPenStrokeLegend npsl = new NullPenStrokeLegend();
                         ((IUniqueSymbolLine)getLegend()).setPenStroke(npsl);
                         setLineFieldsState(false);
-                        getPreview().repaint();
+                        getPreview().imageChanged();
                 }
         }
 

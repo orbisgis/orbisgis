@@ -262,7 +262,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                 }
                 PropertyChangeListener al = EventHandler.create(PropertyChangeListener.class, prop, "secondValue", "source.value");
                 jftf.addPropertyChangeListener("value", al);
-                PropertyChangeListener al2 = EventHandler.create(PropertyChangeListener.class, prev, "repaint");
+                PropertyChangeListener al2 = EventHandler.create(PropertyChangeListener.class, prev, "imageChanged");
                 jftf.addPropertyChangeListener("value", al2);
                 ret.add(jftf);
                 return ret;
@@ -314,7 +314,7 @@ public class PnlProportionalPointSE extends PnlUniquePointSE {
                         sample.put(obj, mnm[1]);
                         getPreview().setSampleDatasource(sample);
                         getPreview().setDisplayed(true);
-                        getPreview().repaint();
+                        getPreview().imageChanged();
                 } catch (DriverException ex) {
                         LOGGER.error("", ex);
                 } catch (ParameterException ex) {

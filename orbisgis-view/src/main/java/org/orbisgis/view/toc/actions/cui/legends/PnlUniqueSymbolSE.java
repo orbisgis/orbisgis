@@ -87,7 +87,7 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
                 Legend leg = getLegend();
                 if(leg != null){
                         preview= new CanvasSE(leg.getSymbolizer());
-                        preview.repaint();
+                        preview.imageChanged();
                 }
         }
 
@@ -125,7 +125,7 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
                 jns.setValue(cps.getLineWidth());
                 jns.setMaximumSize(new Dimension(60,30));
                 jns.setPreferredSize(new Dimension(60,30));
-                ChangeListener cl2 = EventHandler.create(ChangeListener.class, preview, "repaint");
+                ChangeListener cl2 = EventHandler.create(ChangeListener.class, preview, "imageChanged");
                 jns.addChangeListener(cl2);
                 return jns;
         }
@@ -143,7 +143,7 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
                 jns.setValue(cps.getOpacity());
                 jns.setMaximumSize(new Dimension(60,30));
                 jns.setPreferredSize(new Dimension(60,30));
-                ChangeListener cl2 = EventHandler.create(ChangeListener.class, preview, "repaint");
+                ChangeListener cl2 = EventHandler.create(ChangeListener.class, preview, "imageChanged");
                 jns.addChangeListener(cl2);
                 return jns;
         }
@@ -178,7 +178,7 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
                         }
                 };
                 jrf.addFocusListener(fl);
-                FocusListener prev = EventHandler.create(FocusListener.class, preview, "repaint");
+                FocusListener prev = EventHandler.create(FocusListener.class, preview, "imageChanged");
                 jrf.addFocusListener(prev);
                 jrf.setText(cps.getDashArray());
                 cont.add(jrf);
@@ -195,7 +195,7 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
         public JPanel getColorField(final ConstantSolidFill c){
                 JLabel lblFill = getFilledLabel(c.getColor());
                 PropertyChangeListener pcl = EventHandler.create(PropertyChangeListener.class,c,"color","newValue");
-                PropertyChangeListener pcl2 = EventHandler.create(PropertyChangeListener.class, preview, "repaint");
+                PropertyChangeListener pcl2 = EventHandler.create(PropertyChangeListener.class, preview, "imageChanged");
                 lblFill.addPropertyChangeListener("background", pcl);
                 lblFill.addPropertyChangeListener("background", pcl2);
                 JPanel jp = new JPanel();
@@ -243,7 +243,7 @@ public abstract class PnlUniqueSymbolSE extends  AbstractFieldPanel implements I
                         values[i] = I18N.tr(strokeUoms[i].getLabel());
                 }
                 final JComboBox jcc = new JComboBox(values);
-                ActionListener acl = EventHandler.create(ActionListener.class, prev, "repaint");
+                ActionListener acl = EventHandler.create(ActionListener.class, prev, "imageChanged");
                 ActionListener acl2 = EventHandler.create(ActionListener.class, this, "updateLUComboBox", "source.selectedIndex");
                 jcc.addActionListener(acl2);
                 jcc.addActionListener(acl);

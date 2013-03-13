@@ -58,14 +58,17 @@ public class PreviewCellRenderer extends TableLaFCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+        JLabel lab = (JLabel)lookAndFeelRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
         if(value instanceof String){
+            lab.setText("");
             CanvasSE cse = new CanvasSE(symbolizer.getSymbolizer());
             Map<String,Object> map = new HashMap<String,Object>();
             map.put(symbolizer.getLookupFieldName(), value);
             cse.setSampleDatasource(map);
-            return cse;
-        } else {
-            return lookAndFeelRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            ImageIcon ii = new ImageIcon(cse.getImage());
+            lab.setIcon(ii);
+            lab.setOpaque(true);
         }
+        return lab;
     }
 }
