@@ -29,6 +29,7 @@
 package org.orbisgis.legend.thematic;
 
 import org.junit.Test;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 
 import java.awt.*;
@@ -47,7 +48,7 @@ public class LineParametersTest extends AnalyzerTest {
         assertTrue(lp.getLineColor().equals(Color.BLACK));
         assertTrue(lp.getLineDash().isEmpty());
         assertTrue(lp.getLineOpacity() == 1.0);
-        assertTrue(lp.getLineWidth() == 0.25);
+        assertTrue(lp.getLineWidth() == PenStroke.DEFAULT_WIDTH);
     }
 
     @Test
