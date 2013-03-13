@@ -445,12 +445,12 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         for(String s : set){
             newRL.put(s, lp);
             if(i*m>n){
-                if(pm.isCancelled()){
-                    pm.endTask();
-                    return null;
-                }
                 n++;
                 pm.progressTo(n+10);
+            }
+            if(pm.isCancelled()){
+                pm.endTask();
+                return null;
             }
             i++;
         }
@@ -501,12 +501,12 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
             LineParameters value = new LineParameters(newCol, lp.getLineOpacity(), lp.getLineWidth(), lp.getLineDash());
             newRL.put(s, value);
             if(i*m>n){
-                if(pm.isCancelled()){
-                    pm.endTask();
-                    return null;
-                }
                 n++;
                 pm.progressTo(n+10);
+            }
+            if(pm.isCancelled()){
+                pm.endTask();
+                return null;
             }
             i++;
         }
@@ -640,12 +640,12 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
                     Value val = ds.getFieldValue(i, fieldIndex);
                     ret.add(val.toString());
                     if(i*m>n*10){
-                        if(pm.isCancelled()){
-                            pm.endTask();
-                            return null;
-                        }
                         n++;
                         pm.progressTo(n);
+                    }
+                    if(pm.isCancelled()){
+                        pm.endTask();
+                        return null;
                     }
                 }
             } catch (DriverException e) {
