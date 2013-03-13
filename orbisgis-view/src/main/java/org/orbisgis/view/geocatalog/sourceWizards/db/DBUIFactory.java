@@ -94,12 +94,13 @@ public class DBUIFactory {
                                 String port = mid.getInput(PORT);
 
                                 if (port.isEmpty()) {
+                                    return I18N.tr("The port field is mandatory");
+                                } else {
                                         try {
                                                 Integer portNumber = Integer.valueOf(port);
-                                                if (portNumber >= 0 && portNumber <= 32767) {
+                                                if (!(portNumber >= 0 && portNumber <= 32767)) {
                                                         return I18N.tr("The port number must be comprise between 0 and 32767");
                                                 }
-
                                         } catch (NumberFormatException e) {
                                                 return I18N.tr("Cannot format the port code into an int");
                                         }
