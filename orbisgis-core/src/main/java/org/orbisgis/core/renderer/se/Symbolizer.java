@@ -243,7 +243,7 @@ public abstract class Symbolizer extends AbstractSymbolizerNode implements Symbo
      */
     public Rule getRule() {
         SymbolizerNode pIt = getParent();
-        while (!(pIt instanceof Rule)) {
+        while (pIt != null && !(pIt instanceof Rule)) {
             pIt = pIt.getParent();
         }
 
