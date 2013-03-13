@@ -71,10 +71,14 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * This panel must be used to manage all the parameters of a line symbolizer
+ * <p></p>This panel must be used to manage all the parameters of a line symbolizer
  * which is configured thanks to a "simple" recoded PenStroke. All the parameters
  * of the PenStroke must be configured either with a Recode or a Literal, all
- * the Recode must be done with the same analysis field.
+ * the Recode must be done with the same analysis field.</p>
+ * <p>This panel proposes a way to build a classification from scratch. This feature comes fortunately with a
+ * ProgressMonitor that can be used to cancel the building. This way, if accidentally trying to build a classification
+ * on a field with a lot of different values, the user can still cancel the operation. The feeding of the underlying
+ * recoded analysis becomes in fact really inefficient when it manages a lot of elements.</p>
  *
  * @author Alexis Guéganno
  */
@@ -338,6 +342,10 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         this.revalidate();
     }
 
+    /**
+     * Gets the JPanel that gathers all the buttons and labels to create a classification from scratch;
+     * @return The JPanel used to create a classification from scratch.
+     */
     private JPanel getCreateClassificationPanel() {
         JPanel ret = new JPanel();
         BoxLayout bl = new BoxLayout(ret, BoxLayout.Y_AXIS);
@@ -683,7 +691,6 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
             this.window = new JDialog(root,I18N.tr("Operation in progress..."));
             window.setLayout(new BorderLayout());
             window.setAlwaysOnTop(true);
-//            window.setEnabled(true);
             window.setVisible(true);
             window.setModal(true);
             window.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
@@ -704,6 +711,8 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         @Override
         public void subTaskFinished(Job job) {
             count ++;
+            //I know I have two subtasks... This is unfortunate, but I don't find really efficient way to hide my
+            //dialog from the listener without that..
             if(count >= 2){
                 window.setVisible(false);
                 JDialog root = (JDialog) SwingUtilities.getRoot(PnlRecodedLine.this);
