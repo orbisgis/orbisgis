@@ -33,7 +33,9 @@
  */
 package org.gdms.sql.function.spatial.geometry.crs;
 
+
 import org.gdms.data.DataSourceFactory;
+import org.gdms.data.types.Type;
 import org.gdms.data.values.Value;
 import org.gdms.data.values.ValueFactory;
 import org.gdms.sql.function.BasicFunctionSignature;
@@ -41,58 +43,57 @@ import org.gdms.sql.function.FunctionException;
 import org.gdms.sql.function.FunctionSignature;
 import org.gdms.sql.function.ScalarArgument;
 import org.gdms.sql.function.spatial.geometry.AbstractScalarSpatialFunction;
-import org.geotools.referencing.CRS;
-import org.opengis.referencing.FactoryException;
-import org.opengis.referencing.NoSuchAuthorityCodeException;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 
-
 /**
- * Sets the internal CRS of a geometry.
+ * Gets the CRS name of a geometry.
  * 
  * Note that this has nothing to do with the CRS constraint on a table column.
  * 
- * @author Antoine Gourlay
+ * @author Antoine Gourlay, Erwan Bocher
  */
-public class ST_SetCRS extends AbstractScalarSpatialFunction {
-
-        private CoordinateReferenceSystem crs;
+public class ST_SRID extends AbstractScalarSpatialFunction {
 
         @Override
         public Value evaluate(DataSourceFactory dsf, Value... args) throws FunctionException {
+                final CoordinateReferenceSystem crs = args[0].getCRS();
+                
                 if (crs == null) {
-                        String epsgCode = null;
-                        try {
-                                epsgCode = args[1].getAsString();
-                                crs = CRS.decode(epsgCode);
-                        } catch (NoSuchAuthorityCodeException ex) {
-                                throw new FunctionException("Cannot find an authority for " + epsgCode, ex);
-                        } catch (FactoryException ex) {
-                                throw new FunctionException("Cannot find a factory for "+ epsgCode, ex);                        }
+                        return ValueFactory.createNullValue();
+                } else {
+                        String identifiers = crs.getIdentifiers().toString();
+                        if(!identifiers.isEmpty()&&!identifiers.equals("[]")){
+                                return ValueFactory.createValue(identifiers);
+                        }
+                        return ValueFactory.createValue(crs.getName().getCode());
                 }
-
-                return ValueFactory.createValue(args[0].getAsGeometry(), crs);
+                
         }
 
         @Override
         public String getDescription() {
-                return "Sets the internal CRS of a geometry without reprojecting it.";
+                return "Gets the name of the CRS associated with a particular geometry, or a null value if none.";
         }
 
         @Override
         public String getName() {
-                return "ST_SetCRS";
+                return "ST_SRID";
         }
 
         @Override
         public String getSqlOrder() {
-                return "SELECT ST_SetCRS(the_geom, 'EPSG:4326') FROM table;";
+                return "SELECT ST_SRID(the_geom) FROM table;";
         }
 
         @Override
+        public int getType(int[] types) {
+                return Type.STRING;
+        }
+        
+        @Override
         public FunctionSignature[] getFunctionSignatures() {
                 return new FunctionSignature[]{
-                                new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY,
-                                ScalarArgument.STRING),};
+                                new BasicFunctionSignature(getType(null), ScalarArgument.GEOMETRY)
+                };
         }
 }

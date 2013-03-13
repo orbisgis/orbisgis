@@ -40,17 +40,21 @@ import org.xnap.commons.i18n.I18nFactory;
  */
 public class DataBaseRow {
         
+        public static enum ExportStatus{WAITING, OK, ERROR, UNSELECTED};
+        private ExportStatus exportStatus = ExportStatus.WAITING;
         private String intputSourceName;
         private String outputSourceName;
         private String schema;
-        private String pk = "gid";
-        private int inputEpsgCode;
-        private String crsName = "Unknown";
+        public static final int DEFAULT_EPSG = -1;
+        private  int inputEpsgCode = -1;
+        private int outputEpsgCode = -1;
         private Boolean export;
         private boolean isSpatial = false;
         private String outputSpatialField = "the_geom";
         private String inputSpatialField = "the_geom";
-        private static final I18n I18N = I18nFactory.getI18n(Catalog.class);
+        private static final I18n I18N = I18nFactory.getI18n(Catalog.class);        
+        public static final String DEFAULT_CRS = "No crs";
+        private String crsInformation  = DEFAULT_CRS;
 
         /**
          * Create a row object that stores all informations to export in a
@@ -58,26 +62,31 @@ public class DataBaseRow {
          * @param intputSourceName
          * @param outputSourceName
          * @param schema
-         * @param pk
          * @param inputSpatialField
-         * @param crsName
          * @param inputEpsgCode
          * @param export
          */
-        public DataBaseRow(String intputSourceName, String outputSourceName, String schema, 
-                        String pk, String inputSpatialField, String crsName,
-                        int inputEpsgCode, Boolean export) {
+        public DataBaseRow(String intputSourceName, String outputSourceName, String schema, String inputSpatialField, String outputSpatialField,
+                        int inputEpsgCode, int outputEpsgCode, Boolean export) {
                 this.intputSourceName = intputSourceName;
                 this.outputSourceName = outputSourceName;
+                this.schema = schema;                
                 this.inputSpatialField = inputSpatialField;
-                this.schema = schema;
-                this.pk = pk;
-                this.outputSpatialField = inputSpatialField;
+                this.outputSpatialField = outputSpatialField;
                 this.inputEpsgCode = inputEpsgCode;
-                this.crsName=crsName;
+                this.outputEpsgCode=outputEpsgCode;                
                 this.export = export;
         }
 
+        /**
+         * Update the status of the row
+         * @param exportStatus 
+         */
+        public void setExportStatus(ExportStatus exportStatus) {
+                this.exportStatus = exportStatus;                
+        }
+
+        
         /**
          * Specify if the input source is spatial
          * @return
@@ -110,14 +119,7 @@ public class DataBaseRow {
                 return export;
         }
 
-        /**
-         * Return the list of all primary key
-         *
-         * @return
-         */
-        public String getPK() {
-                return pk;
-        }
+       
 
         /**
          * Return the name of the schema
@@ -145,34 +147,28 @@ public class DataBaseRow {
          */
         public Object getValue(int col) {
                 switch (col) {
+                        
                         case 0:
-                                return getInputSourceName();
+                                return this.exportStatus;                                 
                         case 1:
-                                return getOutputSourceName();
+                                return getInputSourceName();
                         case 2:
-                                return getSchema();
+                                return getOutputSourceName();
                         case 3:
-                                return getPK();
-                        case 4:
-                                return getOutputSpatialField();
+                                return getSchema();   
+                        case 4 :
+                                return getInputSpatialField();
                         case 5:
-                                return getCrsName();
+                                return getOutputSpatialField();                       
                         case 6:
-                                return String.valueOf(getInputEpsgCode());
+                                return getCrsInformation();
                         case 7:
+                                return String.valueOf(getOutputEpsgCode());
+                        case 8:
                                 return isExport();
                         default:
                                 return null;
                 }
-        }
-
-        /**
-         * Return the name of the CRS
-         *
-         * @return
-         */
-        public String getCrsName() {
-                return crsName;
         }
 
         public String getOutputSpatialField() {
@@ -191,31 +187,41 @@ public class DataBaseRow {
          */
         public void setValue(Object aValue, int col) {
                 switch (col) {
-                        case 1:
+                        case 2:
                                 setOutputSourceName(String.valueOf(aValue));
                                 break;
-                        case 2:
+                        case 3:
                                 setSchema(String.valueOf(aValue));
                                 break;
-                        case 3:
-                                setPk(String.valueOf(aValue));
+                        case 5:
+                                //The crs is not null and the epsg code exists but the user wants to set a -1
+                                 //Because of best pratices the user must used the default epsg code
+                                if (!crsInformation.equals(DEFAULT_CRS)&& getInputEpsgCode() != -1) {
+                                        JOptionPane.showMessageDialog(null, I18N.tr("-1 is not allowed .\n"
+                                                + "The input code will be used."));
+                                } else {
+                                        setOutputSpatialField(String.valueOf(aValue));
+                                }
                                 break;
-                        case 4:
-                                setOutputSpatialField(String.valueOf(aValue));
-                                break;
-                        case 6:
+                        case 7:
                                 try {
                                         Integer value = Integer.valueOf(aValue.toString());
-                                        setInputEpsgCode(value);
+                                        setOutputEpsgCode(value);
                                 } catch (NumberFormatException e) {
                                         JOptionPane.showMessageDialog(null, I18N.tr("Cannot format the EPSG code into an int.\n"
                                                 + "The default code will be used."));
                                 }
                                 break;
 
-
-                        case 7:
-                                setExport(Boolean.valueOf(aValue.toString()));
+                        case 8:
+                                Boolean isExportable = Boolean.valueOf(aValue.toString());
+                                setExport(isExportable);
+                                if(isExportable.booleanValue()){
+                                       setExportStatus(ExportStatus.WAITING);
+                                }
+                                else{
+                                       setExportStatus(ExportStatus.UNSELECTED); 
+                                }
                                 break;
                         default:
                                 break;
@@ -240,14 +246,7 @@ public class DataBaseRow {
                 this.export = export;
         }
 
-        /**
-         * Change the name of the primary key
-         *
-         * @param pk
-         */
-        public void setPk(String pk) {
-                this.pk = pk;
-        }
+        
 
         /**
          * Change the schema name
@@ -264,23 +263,81 @@ public class DataBaseRow {
          * @return
          */
         public Object[] getObjects() {
-                return new Object[]{getInputSourceName(), getOutputSourceName(), getSchema(),
-                        getPK(), getInputSpatialField(), getInputEpsgCode(), isExport()};
+                return new Object[]{this.exportStatus, getInputSourceName(), getOutputSourceName(), getSchema(),
+                        getInputSpatialField(), getOutputSpatialField(), getCrsInformation(),getOutputEpsgCode(), isExport()};
         }
 
+        /**
+         * Change the name of the datasource
+         * @param outPutsourceName 
+         */
         public void setOutputSourceName(String outPutsourceName) {
                 this.outputSourceName = outPutsourceName;
         }
 
+        /**
+         * Return the name of the output table
+         * @return 
+         */
         public String getOutputSourceName() {
                 return outputSourceName;
         }
 
+        /**
+         * Return the field name of the default spatial column
+         * @return 
+         */
         public String getInputSpatialField() {
                 return inputSpatialField;
         }
+        
 
-        public void setInputSpatialField(String inputSpatialField) {
-                this.inputSpatialField = inputSpatialField;
+        /**
+         * Return the output epsg code set by the user
+         * @return 
+         */
+        public int getOutputEpsgCode() {
+                return outputEpsgCode;
         }
+
+        /**
+         * Change the name of the output epsg code
+         * @param outputEpsgCode 
+         */
+        public void setOutputEpsgCode(int outputEpsgCode) {
+                this.outputEpsgCode = outputEpsgCode;
+        }
+
+        /**
+         * Return some informations about the input CRS
+         * 
+         * if the authority and the code are available return :  
+         * ie  EPSG:4326 or IGNF:301111...
+         * else if returns the name of the CRS 
+         * ie LAMBERT2 
+         * 
+         * else returns "No crs"
+         * 
+         * @return 
+         */
+        public String getCrsInformation() {
+                return crsInformation;
+        }
+
+        /**
+         * Set informations about the CRS
+         * if the authority and the code are available set :  
+         * ie  EPSG:4326 or IGNF:301111...
+         * else if set the name of the CRS 
+         * ie LAMBERT2
+         * else set "No crs"
+         * 
+         * @param crsInformation 
+         */
+        public void setCrsInformation(String crsInformation) {
+                this.crsInformation = crsInformation;
+        }      
+        
+        
+        
 }

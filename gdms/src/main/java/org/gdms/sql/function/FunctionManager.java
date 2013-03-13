@@ -107,8 +107,8 @@ import org.gdms.sql.function.spatial.geometry.create.ST_MinimumRectangle;
 import org.gdms.sql.function.spatial.geometry.create.ST_OctogonalEnvelope;
 import org.gdms.sql.function.spatial.geometry.create.ST_RandomGeometry;
 import org.gdms.sql.function.spatial.geometry.create.ST_RemoveDuplicateCoordinate;
-import org.gdms.sql.function.spatial.geometry.crs.ST_CRS;
-import org.gdms.sql.function.spatial.geometry.crs.ST_SetCRS;
+import org.gdms.sql.function.spatial.geometry.crs.ST_SRID;
+import org.gdms.sql.function.spatial.geometry.crs.ST_SetSRID;
 import org.gdms.sql.function.spatial.geometry.crs.ST_Transform;
 import org.gdms.sql.function.spatial.geometry.distance.ST_FurthestPoint;
 import org.gdms.sql.function.spatial.geometry.distance.ST_LocateAlong;
@@ -380,8 +380,8 @@ public final class FunctionManager {
                 addFunction(ST_PixelValue.class);
                 addFunction(ST_TIN.class);
                 addFunction(ST_PLYExporter.class);
-                addFunction(ST_SetCRS.class);
-                addFunction(ST_CRS.class);
+                addFunction(ST_SetSRID.class);
+                addFunction(ST_SRID.class);
         }
 
         /**

@@ -12,7 +12,7 @@ EditorManager editorManager = Services.getService(EditorManager.class);
 layerCount(){
 for (EditableElement editable : editorManager.getEditableElements()) {
          if (editable instanceof MapElement) {
-         		MapElement mapElement = (MapElement) editable;
+         	MapElement mapElement = (MapElement) editable;
        		return mapElement.getMapContext().getLayerModel().getLayerCount();
          }
 }
