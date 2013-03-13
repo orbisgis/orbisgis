@@ -34,6 +34,8 @@ import org.gdms.data.values.Value;
 import org.gdms.driver.DriverException;
 import org.orbisgis.core.Services;
 import org.orbisgis.core.layerModel.ILayer;
+import org.orbisgis.core.renderer.se.CompositeSymbolizer;
+import org.orbisgis.core.renderer.se.Rule;
 import org.orbisgis.legend.Legend;
 import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
@@ -333,6 +335,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getTablePanel(), gbc);
         this.add(glob);
+        this.invalidate();
     }
 
     private JPanel getCreateClassificationPanel() {
@@ -534,6 +537,14 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
     @Override
     public void setLegend(Legend legend) {
         if (legend instanceof RecodedLine) {
+            if(this.legend != null){
+                Rule rule = this.legend.getSymbolizer().getRule();
+                if(rule != null){
+                    CompositeSymbolizer compositeSymbolizer = rule.getCompositeSymbolizer();
+                    int i = compositeSymbolizer.getSymbolizerList().indexOf(this.getLegend().getSymbolizer());
+                    compositeSymbolizer.setSymbolizer(i, legend.getSymbolizer());
+                }
+            }
             this.legend = (RecodedLine) legend;
             this.initializeLegendFields();
         } else {
@@ -593,7 +604,10 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
                 } else {
                     rl = createConstantClassification(result, pm);
                 }
-                legend = rl == null ? legend : rl;
+                if(rl != null){
+                    rl.setLookupFieldName(legend.getLookupFieldName());
+                    setLegend(rl);
+                }
             } else {
                 pm.startTask(PnlRecodedLine.CREATE_CLASSIF, 100);
                 pm.endTask();
