@@ -335,7 +335,7 @@ public class PnlRecodedLine extends AbstractFieldPanel implements ILegendPanel, 
         gbc.fill = GridBagConstraints.HORIZONTAL;
         glob.add(getTablePanel(), gbc);
         this.add(glob);
-        this.invalidate();
+        this.revalidate();
     }
 
     private JPanel getCreateClassificationPanel() {
