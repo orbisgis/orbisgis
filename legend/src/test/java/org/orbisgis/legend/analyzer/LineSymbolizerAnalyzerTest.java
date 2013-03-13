@@ -45,6 +45,7 @@ import org.orbisgis.core.renderer.se.parameter.string.StringLiteral;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.legend.AnalyzerTest;
 import org.orbisgis.legend.analyzer.symbolizers.LineSymbolizerAnalyzer;
+import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.constant.UniqueSymbolLine;
 import org.orbisgis.legend.thematic.proportional.ProportionalLine;
 
@@ -64,9 +65,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testInitializationUniqueSymbol() throws Exception {
-        Style st = getStyle(CONSTANT_LINE);
-        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        UniqueSymbolLine usl = new UniqueSymbolLine(ls);
+        UniqueSymbolLine usl = getUniqueSymbolLine(CONSTANT_LINE);
         assertTrue(true);
     }
 
@@ -100,9 +99,7 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testGetUniqueValueColor() throws Exception{
-        Style st = getStyle(CONSTANT_LINE);
-        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        UniqueSymbolLine usl = new UniqueSymbolLine(ls);
+        UniqueSymbolLine usl = getUniqueSymbolLine(CONSTANT_LINE);
         Color col = usl.getLineColor();
         assertTrue(col.equals(new Color((int)SolidFill.GRAY50,(int)SolidFill.GRAY50,(int)SolidFill.GRAY50)));
 
@@ -110,36 +107,28 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
 
     @Test
     public void testSetUniqueValueColor() throws Exception{
-        Style st = getStyle(CONSTANT_LINE);
-        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        UniqueSymbolLine usl = new UniqueSymbolLine(ls);
+        UniqueSymbolLine usl = getUniqueSymbolLine(CONSTANT_LINE);
         usl.setLineColor(Color.BLUE);
         assertTrue(usl.getLineColor().equals(Color.BLUE));
     }
 
     @Test
     public void testGetUniqueValueWidth() throws Exception{
-        Style st = getStyle(CONSTANT_LINE);
-        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        UniqueSymbolLine usl = new UniqueSymbolLine(ls);
+        UniqueSymbolLine usl = getUniqueSymbolLine(CONSTANT_LINE);
         assertTrue(usl.getPenStroke().getLineWidth() == 8.0);
 
     }
 
     @Test
     public void testSetUniqueValueWidth() throws Exception{
-        Style st = getStyle(CONSTANT_LINE);
-        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        UniqueSymbolLine usl = new UniqueSymbolLine(ls);
+        UniqueSymbolLine usl = getUniqueSymbolLine(CONSTANT_LINE);
         usl.getPenStroke().setLineWidth(15.0);
         assertTrue(usl.getPenStroke().getLineWidth() == 15.0);
     }
 
     @Test
     public void testUniqueValueGetDash() throws Exception {
-        Style st = getStyle(CONSTANT_DASHED_LINE);
-        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
-        UniqueSymbolLine usl = new UniqueSymbolLine(ls);
+        UniqueSymbolLine usl = getUniqueSymbolLine(CONSTANT_DASHED_LINE);
         assertTrue(usl.getPenStroke().getDashArray().equals("1 2 1 3"));
     }
 
@@ -260,5 +249,28 @@ public class LineSymbolizerAnalyzerTest extends AnalyzerTest {
         Interpolate2Real rp= (Interpolate2Real) ((PenStroke)ls.getStroke()).getWidth();
         rp.setLookupValue(new RealLiteral(2.0));
         assertFalse(lsa.validateLinearInterpolate(rp));
+    }
+
+    @Test
+    public void testGetLineParams() throws Exception {
+        UniqueSymbolLine usl = getUniqueSymbolLine(CONSTANT_LINE);
+        LineParameters lp = usl.getLineParameters();
+        assertTrue(lp.equals(new LineParameters(new Color((int)SolidFill.GRAY50,(int)SolidFill.GRAY50,(int)SolidFill.GRAY50), 1.0,8.0,"")));
+
+    }
+
+    @Test
+    public void testFromLineParams() throws Exception {
+        UniqueSymbolLine usl = new UniqueSymbolLine(new LineParameters(Color.BLUE, .5, 2.6, "2 2 2 5"));
+        assertTrue(usl.getPenStroke().getDashArray().equals("2 2 2 5"));
+        assertTrue(usl.getPenStroke().getLineOpacity() == .5);
+        assertTrue(usl.getPenStroke().getLineWidth() == 2.6);
+        assertTrue(usl.getPenStroke().getLineColor().equals(Color.BLUE));
+    }
+
+    private UniqueSymbolLine getUniqueSymbolLine(String s)  throws Exception {
+        Style st = getStyle(s);
+        LineSymbolizer ls = (LineSymbolizer)st.getRules().get(0).getCompositeSymbolizer().getSymbolizerList().get(0);
+        return new UniqueSymbolLine(ls);
     }
 }

@@ -28,25 +28,34 @@
  */
 package org.orbisgis.legend.structure.recode;
 
+import java.util.HashSet;
+import java.util.Set;
+
 /**
- * Sets the field name of the visited RecodedLegend to the name given at instanciation time.
+ * Gathers all the fields used in the visited RecodedLegend instances.
  * @author alexis
  */
-public class SetFieldVisitor implements RecodedParameterVisitor {
+public class FieldAggregatorVisitor implements RecodedParameterVisitor {
 
-    private String name;
+    private Set<String> fields = new HashSet<String>();
 
     /**
-     * Builds a new {@code SetFieldVisitor} with the given string.
-     * @param n The name that will be applied to {@link RecodedLegend} instances.
-     * @throws IllegalArgumentException if {@code n== null || n.isEmpty()}
+     * Adds the legend's field to the set of analysed fields. If {@code legend.field() == null}, don't do anything.
+     * @param legend The {@link RecodedLegend} we will analyse
      */
-    public SetFieldVisitor(String n){
-        name = n == null ? "" : n;
-    }
-
     @Override
     public void visit(RecodedLegend legend) {
-        legend.setField(name);
+        if(legend.field() !=null && !legend.field().isEmpty()){
+            fields.add(legend.field());
+        }
     }
+
+    /**
+     * Return the set containing all the fields that have been encountered in the analysed {@link RecodedLegend}.
+     * @return
+     */
+    public Set<String> getFields(){
+        return fields;
+    }
+
 }

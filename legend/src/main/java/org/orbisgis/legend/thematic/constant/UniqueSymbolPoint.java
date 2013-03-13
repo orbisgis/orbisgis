@@ -62,8 +62,8 @@ public class UniqueSymbolPoint extends ConstantFormPoint implements IUniqueSymbo
      * structure.</p>
      * <p>We basically instanciate a new default {@code PointSymbolizer}, and
      * use it to compute our {@code LegendStructure} structure. That means we know
-     * everything but the colour about the {@code Symbolizer}. An d we can be
-     * sur it is a constant.
+     * everything but the colour about the {@code Symbolizer}. And we can be
+     * sure it is a constant.
      */
     public UniqueSymbolPoint() {
         super(new PointSymbolizer());

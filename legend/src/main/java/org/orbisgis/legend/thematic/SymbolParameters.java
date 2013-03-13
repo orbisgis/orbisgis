@@ -26,27 +26,17 @@
  * or contact directly:
  * info_at_ orbisgis.org
  */
-package org.orbisgis.legend.structure.recode;
+package org.orbisgis.legend.thematic;
 
 /**
- * Sets the field name of the visited RecodedLegend to the name given at instanciation time.
+ * Simple marker for POJO that will gather parameters used to describe a Symbol.
  * @author alexis
  */
-public class SetFieldVisitor implements RecodedParameterVisitor {
-
-    private String name;
-
-    /**
-     * Builds a new {@code SetFieldVisitor} with the given string.
-     * @param n The name that will be applied to {@link RecodedLegend} instances.
-     * @throws IllegalArgumentException if {@code n== null || n.isEmpty()}
-     */
-    public SetFieldVisitor(String n){
-        name = n == null ? "" : n;
-    }
+public interface SymbolParameters {
+    @Override
+    boolean equals(Object other);
 
     @Override
-    public void visit(RecodedLegend legend) {
-        legend.setField(name);
-    }
+    int hashCode();
+
 }

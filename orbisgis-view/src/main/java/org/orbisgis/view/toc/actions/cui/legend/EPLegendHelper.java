@@ -62,6 +62,11 @@ public class EPLegendHelper {
                 ILegendPanel proportionalLine = new PnlProportionalLine();
                 proportionalLine.initialize(legendContext);
                 legends.add(proportionalLine);
+                //Line Unique Value
+                ILegendPanel uniqueLine = new PnlRecodedLine();
+                uniqueLine.initialize(legendContext);
+                legends.add(uniqueLine);
+
 		return legends.toArray(new ILegendPanel[legends.size()]);
 	}
 

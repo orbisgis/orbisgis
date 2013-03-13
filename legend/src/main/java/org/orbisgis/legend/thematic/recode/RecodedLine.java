@@ -33,12 +33,13 @@ import org.orbisgis.core.renderer.se.Symbolizer;
 import org.orbisgis.core.renderer.se.common.Uom;
 import org.orbisgis.core.renderer.se.stroke.PenStroke;
 import org.orbisgis.core.renderer.se.stroke.Stroke;
-import org.orbisgis.legend.structure.fill.RecodedSolidFillLegend;
 import org.orbisgis.legend.structure.recode.*;
 import org.orbisgis.legend.structure.stroke.RecodedPenStroke;
-import org.orbisgis.legend.thematic.SymbolizerLegend;
+import org.orbisgis.legend.thematic.LineParameters;
 import org.orbisgis.legend.thematic.uom.StrokeUom;
 
+import java.awt.*;
+import java.util.*;
 import java.util.List;
 
 /**
@@ -46,23 +47,39 @@ import java.util.List;
  * {@code Recode} instances on a common field or of {@code Literal}.
  * @author Alexis Guéganno
  */
-public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
+public class RecodedLine extends AbstractRecodedLegend<LineParameters> implements StrokeUom {
 
         private final LineSymbolizer ls;
         private final RecodedPenStroke ps;
 
         /**
+         * Default constructor. Builds a {@code RecodedLine} from scratch using a constant {@link LineSymbolizer} that
+         * embeds a constant {@link PenStroke}.
+         */
+        public RecodedLine(){
+            this(new LineSymbolizer());
+        }
+
+        /**
          * Builds a new {@code RecodedLine} instance from the given {@link LineSymbolizer}. Take care to validate the
          * configuration of the symbolizer before calling this constructor.
-         * @param sym
+         * @param sym The original LineSymbolizer.
          * @throws ClassCastException
          * @throws UnsupportedOperationException If the inner stroke is not a {@link PenStroke} instance.
+         * @throws IllegalStateException If the inner parameters have different analysis fields.
          */
         public RecodedLine(LineSymbolizer sym){
             ls=sym;
             Stroke p = ls.getStroke();
             if(p instanceof PenStroke){
                 ps=new RecodedPenStroke((PenStroke)p);
+                FieldAggregatorVisitor fav = new FieldAggregatorVisitor();
+                applyGlobalVisitor(fav);
+                String f = getLookupFieldName();
+                if(!f.isEmpty()){
+                    SetFieldVisitor sfv = new SetFieldVisitor(f);
+                    applyGlobalVisitor(sfv);
+                }
             } else {
                 throw new UnsupportedOperationException("Can't build a RecodedLine with such a Stroke: "+p.getClass().getName());
             }
@@ -70,7 +87,7 @@ public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
 
         /**
          * Gets the wrapper that manages the width of the line.
-         * @return
+         * @return the recoded width
          */
         public RecodedReal getLineWidth(){
                 return ps.getWidthLegend();
@@ -78,7 +95,7 @@ public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
 
         /**
          * Gets the wrapper that manages the opacity of the line.
-         * @return
+         * @return the recoded opacity
          */
         public RecodedReal getLineOpacity(){
                 return (RecodedReal) ps.getFillLegend().getFillOpacityLegend();
@@ -86,7 +103,7 @@ public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
 
         /**
          * Gets the wrapper that manages the color of the line.
-         * @return
+         * @return the recoded color
          */
         public RecodedColor getLineColor(){
                 return (RecodedColor) ps.getFillLegend().getFillColorLegend();
@@ -94,10 +111,78 @@ public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
 
         /**
          * Gets the wrapper that manages the dash pattern of the line.
-         * @return
+         * @return the recoded dash
          */
         public RecodedString getLineDash() {
                 return ps.getDashLegend();
+        }
+
+        /**
+         * Gets the {@link LineParameters} that is used to build the line associated to {@code key}.
+         * @param objKey The key of the map
+         * @return The {@link LineParameters} instance associated to {@code key}.
+         */
+        public LineParameters get(Object objKey){
+            String key = (String) objKey;
+            Color c = getLineColor().getItemValue(key);
+            c = c==null ? getLineColor().getFallbackValue() : c;
+            Double op = getLineOpacity().getItemValue(key);
+            op = op==null || op.isNaN() ? getLineOpacity().getFallbackValue() : op;
+            Double w = getLineWidth().getItemValue(key);
+            w = w==null || w.isNaN()? getLineWidth().getFallbackValue() : w;
+            String d = getLineDash().getItemValue(key);
+            d = d==null ? getLineDash().getFallbackValue() : d;
+            return new LineParameters(c,op,w,d);
+        }
+
+        /**
+         * Puts the given line configuration in the unique values managed by this {@code RecodedLine}. If there was
+         * already a value associated to {@code key}, the former configuration is returned by the method.
+         * @param  key Key with which the specified value is to be associated
+         * @param value  Value to be associated with the specified key
+         * @return The former configuration associated to {@code key}, if any, {@code null} otherwise.
+         * @throws NullPointerException if key or value are null.
+         */
+        public LineParameters put(String key, LineParameters value){
+            if(key == null || value == null){
+                throw new NullPointerException("We don't manage null as key");
+            }
+            LineParameters ret = keySet().contains(key) ? get(key) : null;
+            getLineColor().addItem(key, value.getLineColor());
+            getLineOpacity().addItem(key, value.getLineOpacity());
+            getLineWidth().addItem(key, value.getLineWidth());
+            getLineDash().addItem(key, value.getLineDash());
+            return ret;
+        }
+
+        @Override
+        public int hashCode(){
+            int ret = 0;
+            Set<Map.Entry<String, LineParameters>> entries = entrySet();
+            for(Map.Entry m : entries){
+                ret += m.hashCode();
+            }
+            return ret;
+        }
+
+
+        /**
+         * Removes the mapping for the given key.
+         * @param objKey The key we want to remove from this unique value analysis. If it's not a String, a
+         *               {@link ClassCastException} will be thrown.
+         * @return  The value previously associated to the given key, or null if there was not.
+         */
+        public LineParameters remove(Object objKey){
+            String key = (String) objKey;
+            if(key == null){
+                throw new NullPointerException("We don't manage null as key");
+            }
+            LineParameters ret = keySet().contains(key) ? get(key) : null;
+            getLineColor().removeItem(key);
+            getLineDash().removeItem(key);
+            getLineOpacity().removeItem(key);
+            getLineWidth().removeItem(key);
+            return ret;
         }
 
         @Override
@@ -123,5 +208,27 @@ public class RecodedLine extends AbstractRecodedLegend implements StrokeUom {
         @Override
         public List<RecodedLegend> getRecodedLegends() {
             return ps.getRecodedLegends();
+        }
+
+        /**
+         * Gets the configuration used for the line style used to draw features we can't get a value for in the map.
+         * @return
+         */
+        public LineParameters getFallbackParameters(){
+            return new LineParameters(getLineColor().getFallbackValue(),
+                        getLineOpacity().getFallbackValue(),
+                        getLineWidth().getFallbackValue(),
+                        getLineDash().getFallbackValue());
+        }
+
+        /**
+         * Sets the configuration used for the line style used to draw features we can't get a value for in the map.
+         * @param lps The line configuration for orphan features.
+         */
+        public void setFallbackParameters(LineParameters lps){
+            getLineColor().setFallbackValue(lps.getLineColor());
+            getLineOpacity().setFallbackValue(lps.getLineOpacity());
+            getLineWidth().setFallbackValue(lps.getLineWidth());
+            getLineDash().setFallbackValue(lps.getLineDash());
         }
 }
