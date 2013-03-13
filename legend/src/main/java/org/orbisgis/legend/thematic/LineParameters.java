@@ -28,7 +28,9 @@
  */
 package org.orbisgis.legend.thematic;
 
+import org.orbisgis.core.renderer.se.fill.SolidFill;
 import org.orbisgis.core.renderer.se.parameter.ParameterUtil;
+import org.orbisgis.core.renderer.se.stroke.PenStroke;
 
 import java.awt.*;
 
@@ -54,8 +56,8 @@ public class LineParameters implements SymbolParameters {
      */
     public  LineParameters(Color c, Double op, Double w, String d){
         color = c == null ? Color.BLACK : c;
-        opacity = op == null ? 1.0 : Math.min(1.0, Math.max(0,op));
-        width = w == null ? .25 : w;
+        opacity = op == null ? SolidFill.DEFAULT_OPACITY : Math.min(1.0, Math.max(0,op));
+        width = w == null ? PenStroke.DEFAULT_WIDTH : w;
         dash = d == null || !ParameterUtil.validateDashArray(d)? "" : d;
     }
 
